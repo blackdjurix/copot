@@ -6,9 +6,9 @@ copot consists of three primary layers:
 
 ```text
 Core
-↓
+->
 Modules
-↓
+->
 Themes
 ```
 
@@ -30,19 +30,21 @@ Responsibilities:
 * Theme Loading
 * Request Lifecycle Management
 
+These responsibilities are introduced progressively by milestone. Authentication begins in M1.2, Module Loading is planned for M1.3, and Theme Loading is planned for M1.4.
+
 Example:
 
 ```text
 Request
-↓
+->
 Router
-↓
+->
 Controller
-↓
+->
 Service
-↓
+->
 View
-↓
+->
 Response
 ```
 
@@ -191,3 +193,4 @@ Future milestones may introduce:
 * Package Ecosystem
 
 These features are not part of M1.1.
+

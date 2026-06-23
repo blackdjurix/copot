@@ -8,17 +8,17 @@
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
-The project is currently in the planning and core bootstrap phase.
+The project has completed M1.1 Core Bootstrap and is preparing for M1.2 User & Authentication.
 
 ---
 
 ## Current Phase
 
-### M1.1 Core Bootstrap
+### M1.2 User & Authentication
 
 Primary goal:
 
-Create the initial framework skeleton that can run locally and serve a basic default page.
+Build the authentication and authorization foundation on top of the completed M1.1 core bootstrap.
 
 ---
 
@@ -231,6 +231,7 @@ M1.1 Define core bootstrap architecture
 
 ## Current Immediate Goal
 
-Prepare the project for M1.1 Core Bootstrap implementation.
+M1.1 Core Bootstrap is implemented.
 
-The next implementation task should produce a minimal runnable PHP framework skeleton, not a complete CMS.
+The next implementation task should prepare M1.2 User & Authentication, including users, roles, permissions, login, logout, and sessions without turning the project into a complete CMS.
+

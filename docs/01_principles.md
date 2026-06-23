@@ -34,6 +34,8 @@ Examples:
 * Module Loading
 * Theme Loading
 
+Core responsibilities such as Authentication, Module Loading, and Theme Loading are planned framework responsibilities. They are implemented progressively according to the roadmap, not all at once in the initial bootstrap.
+
 ### Modules
 
 Provide business functionality.
@@ -101,11 +103,11 @@ Projects should be able to evolve from:
 
 ```text
 Simple Website
-↓
+->
 Content Platform
-↓
+->
 Business Platform
-↓
+->
 Automation Platform
 ```
 
@@ -149,3 +151,4 @@ Avoid introducing patterns without a demonstrated need.
 ## Long-Term Goal
 
 Build a modular framework capable of supporting content management, business operations, automation workflows, and future platform services from a unified architecture.
+
