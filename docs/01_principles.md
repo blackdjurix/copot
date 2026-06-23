@@ -2,55 +2,41 @@
 
 ## Purpose
 
-copot is a modular website framework designed to support multiple business and content use cases through a shared core system.
+copot is a modular PHP-based website framework designed to support websites, content platforms, business applications, and workflow automation systems through a shared architecture.
 
-The framework should remain lightweight, extensible, and maintainable.
+The framework should remain lightweight, extensible, maintainable, and deployable on common hosting environments.
 
 ---
 
 ## Core Philosophy
 
-The framework is built around three primary layers:
+copot is built around three primary layers:
 
-Core System
-
-*
-
+```text
+Core
++
 Modules
-
-*
-
++
 Themes
+```
 
-The Core System provides infrastructure.
+### Core
 
-Modules provide business functionality.
+Provides infrastructure and framework services.
 
-Themes provide presentation.
+Examples:
 
----
+* Routing
+* Configuration
+* Authentication
+* Permissions
+* Database Access
+* Module Loading
+* Theme Loading
 
-## Separation of Concerns
+### Modules
 
-Business logic must never exist inside themes.
-
-Themes must never directly access database resources.
-
-Modules must remain independent whenever possible.
-
----
-
-## Documentation First
-
-Architecture decisions should be documented before implementation.
-
-Documentation is considered part of the source code.
-
----
-
-## Modular First
-
-Every major feature should be implemented as a module whenever practical.
+Provide business functionality.
 
 Examples:
 
@@ -60,11 +46,47 @@ Examples:
 * Assets
 * Store
 
+### Themes
+
+Provide presentation and visual layout.
+
+Themes should never own business logic.
+
+---
+
+## Separation of Concerns
+
+Business logic belongs to modules.
+
+Infrastructure belongs to the core.
+
+Presentation belongs to themes.
+
+A layer should not take responsibility for another layer's concerns.
+
+---
+
+## Documentation First
+
+Architecture decisions should be documented before implementation.
+
+Documentation is considered part of the source code.
+
+Major architectural changes require documentation updates.
+
+---
+
+## Modular First
+
+New business functionality should be implemented as modules whenever practical.
+
+The framework should encourage modular development instead of monolithic development.
+
 ---
 
 ## Shared Hosting First
 
-The framework must be deployable on:
+The framework must operate on:
 
 * Shared Hosting
 * cPanel Hosting
@@ -75,15 +97,19 @@ without requiring advanced server configuration.
 
 ## Progressive Scalability
 
-A project should be able to grow from:
+Projects should be able to evolve from:
 
+```text
 Simple Website
-
-to
-
+↓
+Content Platform
+↓
 Business Platform
+↓
+Automation Platform
+```
 
-without rebuilding the entire system.
+without requiring a complete rebuild.
 
 ---
 
@@ -91,7 +117,7 @@ without rebuilding the entire system.
 
 Backend:
 
-* PHP
+* PHP 8.x
 
 Database:
 
@@ -102,8 +128,24 @@ Frontend:
 
 * Bootstrap
 
+Development Environment:
+
+* XAMPP
+
+---
+
+## Simplicity Over Complexity
+
+Prefer simple solutions before introducing abstractions.
+
+Avoid unnecessary dependencies.
+
+Avoid premature optimization.
+
+Avoid introducing patterns without a demonstrated need.
+
 ---
 
 ## Long-Term Goal
 
-Provide a flexible platform that can support websites, portals, automation systems, and business applications from a single architecture.
+Build a modular framework capable of supporting content management, business operations, automation workflows, and future platform services from a unified architecture.

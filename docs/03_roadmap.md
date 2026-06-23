@@ -2,118 +2,174 @@
 
 ## M1.1 Core Bootstrap
 
-Target:
+### Objective
+
+Establish the foundation of the framework.
+
+### Scope
 
 * Folder Structure
 * Configuration System
+* Environment Loading
 * Autoloader
 * Router
-* Database Layer
+* Database Connection
 * Application Bootstrap
+* Default Page Rendering
 
-Deliverable:
+### Deliverable
 
-Framework skeleton capable of serving a basic page.
+A minimal runnable framework skeleton capable of serving a basic page.
 
 ---
 
 ## M1.2 User & Authentication
 
-Target:
+### Scope
 
+* Users
+* Roles
+* Permissions
 * Login
 * Logout
 * Sessions
-* Users
-* Roles
+
+### Deliverable
+
+Working authentication and authorization foundation.
 
 ---
 
 ## M1.3 Module Manager
 
-Target:
+### Scope
 
 * Install Module
 * Enable Module
 * Disable Module
 * Uninstall Module
+* Dependency Validation
+
+### Deliverable
+
+Operational module management system.
 
 ---
 
 ## M1.4 Theme System
 
-Target:
+### Scope
 
 * Theme Loader
 * Layout Engine
-* Theme Switcher
+* Theme Discovery
+* Theme Switching
+
+### Deliverable
+
+Operational theme management system.
 
 ---
 
 ## M1.5 Articles Module
 
-Target:
+### Scope
 
 * Pages
 * Articles
 * Categories
 * Tags
 
+### Deliverable
+
+Content publishing foundation.
+
 ---
 
-## M1.6 Taxonomy
+## M1.6 Taxonomy System
 
-Target:
+### Scope
 
-* Generic Category System
-* Generic Tag System
+* Generic Categories
+* Generic Tags
+* Reusable Taxonomies
+
+### Deliverable
+
+Reusable classification system.
 
 ---
 
 ## M1.7 Site Settings
 
-Target:
+### Scope
 
 * Site Title
+* Site Description
 * Logo
 * Email
 * Localization
+
+### Deliverable
+
+Centralized site configuration management.
 
 ---
 
 ## M1.8 Installer
 
-Target:
+### Scope
 
 * Installation Wizard
 * Database Setup
+* Environment Configuration
 * Administrator Creation
+
+### Deliverable
+
+Fresh installation process for new deployments.
 
 ---
 
-## Future Milestones
+# Future Milestones
 
-M2
+## M2 Business Platform
 
-Business Modules
+Modules:
 
 * Asset Management
 * Workflow Automation
 * Internal Dashboard
 
-M3
+---
 
-Commerce Modules
+## M3 Commerce Platform
+
+Modules:
 
 * Catalog
 * Store
 * Orders
+* Customers
 
-M4
+---
 
-Platform Services
+## M4 Platform Services
+
+Core Services:
 
 * API Layer
 * Event System
 * Queue System
 * Background Jobs
+
+---
+
+## M5 Ecosystem
+
+Platform Expansion:
+
+* Marketplace
+* Package System
+* External Integrations
+* Developer SDK
