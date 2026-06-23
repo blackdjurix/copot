@@ -16,7 +16,7 @@ class Request
         $uri = $_SERVER['REQUEST_URI'] ?? '/';
         $path = parse_url($uri, PHP_URL_PATH) ?: '/';
 
-        return new self($method, self::normalizePath($path));
+        return new self($method, self::normalizePath(self::stripBasePath($path)));
     }
 
     public function method(): string
@@ -34,5 +34,25 @@ class Request
         $path = '/' . trim($path, '/');
 
         return $path === '/' ? '/' : rtrim($path, '/');
+    }
+
+    private static function stripBasePath(string $path): string
+    {
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        $basePath = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+
+        if ($basePath === '' || $basePath === '.') {
+            return $path;
+        }
+
+        if ($path === $basePath) {
+            return '/';
+        }
+
+        if (str_starts_with($path, $basePath . '/')) {
+            return substr($path, strlen($basePath));
+        }
+
+        return $path;
     }
 }

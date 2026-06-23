@@ -20,12 +20,20 @@ class Database
             return $this->connection;
         }
 
-        $host = $this->config->get('database.connections.mysql.host', '127.0.0.1');
-        $port = $this->config->get('database.connections.mysql.port', '3306');
-        $database = $this->config->get('database.connections.mysql.database', '');
-        $username = $this->config->get('database.connections.mysql.username', 'root');
-        $password = $this->config->get('database.connections.mysql.password', '');
-        $charset = $this->config->get('database.connections.mysql.charset', 'utf8mb4');
+        $connectionName = $this->config->get('database.default', 'mysql');
+        $connectionKey = "database.connections.{$connectionName}";
+        $driver = $this->config->get("{$connectionKey}.driver", $connectionName);
+
+        if ($driver !== 'mysql') {
+            throw new \RuntimeException("Unsupported database driver [{$driver}].");
+        }
+
+        $host = $this->config->get("{$connectionKey}.host", '127.0.0.1');
+        $port = $this->config->get("{$connectionKey}.port", '3306');
+        $database = $this->config->get("{$connectionKey}.database", '');
+        $username = $this->config->get("{$connectionKey}.username", 'root');
+        $password = $this->config->get("{$connectionKey}.password", '');
+        $charset = $this->config->get("{$connectionKey}.charset", 'utf8mb4');
 
         $dsn = "mysql:host={$host};port={$port};dbname={$database};charset={$charset}";
 
