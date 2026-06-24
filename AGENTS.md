@@ -35,6 +35,48 @@ Build the authentication and authorization foundation on top of the completed M1
 
 ---
 
+## Approval Rules
+
+* Agent may:
+
+  * read files
+  * analyze code
+  * review architecture
+  * create proposals
+  * modify files when explicitly requested
+
+* Agent must request approval before:
+
+  * creating commits
+  * amending commits
+  * rebasing branches
+  * merging branches
+  * deleting branches
+  * creating tags
+  * creating releases
+  * pushing to remote repositories
+  * deleting files
+  * renaming files or folders
+  * modifying database schemas
+  * introducing new dependencies
+  * introducing new frameworks
+  * changing roadmap scope
+  * changing architecture direction
+
+* If uncertain whether an action has long-term impact or is difficult to reverse, request approval first.
+
+---
+
+## Architecture Protection Rules
+
+* Do not expand milestone scope without approval.
+* Do not implement features from future milestones.
+* Do not introduce abstractions for hypothetical future needs.
+* Do not add dependencies to solve problems that do not yet exist.
+* Focus only on the active milestone.
+* If a future feature appears necessary, propose it first and wait for approval.
+
+---
 ## Architecture Rules
 
 * Core system handles infrastructure.
@@ -234,4 +276,5 @@ M1.1 Define core bootstrap architecture
 M1.1 Core Bootstrap is implemented.
 
 The next implementation task should prepare M1.2 User & Authentication, including users, roles, permissions, login, logout, and sessions without turning the project into a complete CMS.
+
 

@@ -6,6 +6,7 @@ class Router
 {
     private array $routes = [
         'GET' => [],
+        'POST' => [],
     ];
 
     public function get(string $path, callable $handler): void
@@ -13,13 +14,18 @@ class Router
         $this->routes['GET'][$this->normalizePath($path)] = $handler;
     }
 
+    public function post(string $path, callable $handler): void
+    {
+        $this->routes['POST'][$this->normalizePath($path)] = $handler;
+    }
+
     public function dispatch(Request $request): Response
     {
-        if ($request->method() !== 'GET') {
+        if (!array_key_exists($request->method(), $this->routes)) {
             return Response::html('404 Not Found', 404);
         }
 
-        $handler = $this->routes['GET'][$request->path()] ?? null;
+        $handler = $this->routes[$request->method()][$request->path()] ?? null;
 
         if ($handler === null) {
             return Response::html('404 Not Found', 404);

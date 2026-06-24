@@ -9,6 +9,8 @@ class Application
     private Router $router;
     private View $view;
     private Database $database;
+    private Session $session;
+    private Auth $auth;
 
     public function __construct(string $basePath)
     {
@@ -17,6 +19,13 @@ class Application
         $this->router = new Router();
         $this->view = new View($this->path('resources/views'));
         $this->database = new Database($this->config);
+        $this->session = new Session($this->config);
+        $this->auth = new Auth(
+            $this->config,
+            $this->session,
+            new UserProvider($this->database),
+            new PasswordHasher()
+        );
     }
 
     public function path(string $path = ''): string
@@ -48,6 +57,16 @@ class Application
     public function database(): Database
     {
         return $this->database;
+    }
+
+    public function session(): Session
+    {
+        return $this->session;
+    }
+
+    public function auth(): Auth
+    {
+        return $this->auth;
     }
 
     public function run(Request $request): Response

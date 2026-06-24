@@ -10,7 +10,9 @@ require $basePath . '/bootstrap/autoload.php';
 Env::load($basePath . '/.env');
 
 $app = new Application($basePath);
+$app->session()->start();
 
 require $basePath . '/routes/web.php';
+require $basePath . '/routes/auth.php';
 
 return $app;

@@ -6,7 +6,9 @@ class Request
 {
     public function __construct(
         private string $method,
-        private string $path
+        private string $path,
+        private array $query = [],
+        private array $input = []
     ) {
     }
 
@@ -16,7 +18,12 @@ class Request
         $uri = $_SERVER['REQUEST_URI'] ?? '/';
         $path = parse_url($uri, PHP_URL_PATH) ?: '/';
 
-        return new self($method, self::normalizePath(self::stripBasePath($path)));
+        return new self(
+            $method,
+            self::normalizePath(self::stripBasePath($path)),
+            $_GET,
+            $_POST
+        );
     }
 
     public function method(): string
@@ -27,6 +34,16 @@ class Request
     public function path(): string
     {
         return $this->path;
+    }
+
+    public function input(string $key, mixed $default = null): mixed
+    {
+        return $this->input[$key] ?? $this->query[$key] ?? $default;
+    }
+
+    public function all(): array
+    {
+        return array_merge($this->query, $this->input);
     }
 
     private static function normalizePath(string $path): string

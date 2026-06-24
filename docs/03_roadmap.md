@@ -25,6 +25,8 @@ A minimal runnable framework skeleton capable of serving a basic page.
 
 ## M1.2 User & Authentication
 
+Status: Implemented in v0.2.0.
+
 ### Scope
 
 * Users
@@ -36,7 +38,7 @@ A minimal runnable framework skeleton capable of serving a basic page.
 
 ### Deliverable
 
-Working authentication and authorization foundation.
+Working authentication and authorization foundation with session login/logout, CSRF protection, basic roles, basic permissions, and a protected milestone test route.
 
 ---
 
@@ -173,3 +175,4 @@ Platform Expansion:
 * Package System
 * External Integrations
 * Developer SDK
+
