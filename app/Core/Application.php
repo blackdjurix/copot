@@ -11,6 +11,8 @@ class Application
     private Database $database;
     private Session $session;
     private Auth $auth;
+    private ModuleManager $modules;
+    private ModuleLoader $moduleLoader;
 
     public function __construct(string $basePath)
     {
@@ -26,6 +28,10 @@ class Application
             new UserProvider($this->database),
             new PasswordHasher()
         );
+        $moduleDiscovery = new ModuleDiscovery($this->path('modules'));
+        $moduleRepository = new ModuleRepository($this->database);
+        $this->modules = new ModuleManager($moduleDiscovery, $moduleRepository);
+        $this->moduleLoader = new ModuleLoader($moduleDiscovery, $moduleRepository);
     }
 
     public function path(string $path = ''): string
@@ -67,6 +73,16 @@ class Application
     public function auth(): Auth
     {
         return $this->auth;
+    }
+
+    public function modules(): ModuleManager
+    {
+        return $this->modules;
+    }
+
+    public function moduleLoader(): ModuleLoader
+    {
+        return $this->moduleLoader;
     }
 
     public function run(Request $request): Response

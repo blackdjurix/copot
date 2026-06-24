@@ -1,6 +1,31 @@
 # Changelog
 
 <details open>
+<summary>v0.3.0 - M1.3 Module Manager</summary>
+
+### Added
+
+- Added local module metadata definitions through `module.json`.
+- Added module discovery for direct children of the `modules/` folder.
+- Added module registry tables for installed modules and module permission metadata.
+- Added module manager operations for discover, install, enable, disable, and uninstall.
+- Added enabled module route loading after core and auth routes.
+- Added simple duplicate route detection in the router.
+- Added dependency validation when enabling modules.
+- Added dependency guards before disabling or uninstalling modules required by enabled modules.
+- Added a minimal sample module at `modules/example`.
+
+### Notes
+
+- Module install registers local module metadata only and leaves modules disabled by default.
+- Module uninstall removes database registration only; it does not delete module folders, drop data, or run migrations.
+- Module permission metadata is stored in `module_permissions` but is not auto-synced into the core `permissions` table.
+- Module route files are treated as trusted local project code.
+- M1.3 intentionally does not include a module UI, marketplace, installer, migration runner, asset publishing, theme integration, composer package system, or complex dependency resolver.
+
+</details>
+
+<details>
 <summary>v0.2.0 - M1.2 User & Authentication</summary>
 
 ### Added

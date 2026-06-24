@@ -4,13 +4,13 @@ A modular PHP-based website framework designed for flexible content, business, a
 
 ## Status
 
-M1.2 User & Authentication is complete.
+M1.3 Module Manager is complete.
 
-The framework is runnable as a lightweight PHP skeleton with a basic authentication and authorization foundation. It can serve public pages, login/logout users, protect a test route, and verify basic role-based permissions.
+The framework is runnable as a lightweight PHP skeleton with authentication, authorization, and a local module manager foundation. It can serve public pages, login/logout users, protect a test route, discover local modules, register modules in the database, enable or disable modules, and load routes from enabled modules.
 
 ## Current Milestone
 
-M1.2 User & Authentication
+M1.3 Module Manager
 
 Included so far:
 
@@ -31,11 +31,21 @@ Included so far:
 - Basic roles and permissions foundation
 - Login and logout routes
 - Protected milestone test route
+- Local module discovery through `modules/*/module.json`
+- Module install registration
+- Module enable, disable, and uninstall registration removal
+- Simple module dependency validation
+- Dependency guard before disabling or uninstalling required modules
+- Module permission metadata storage without auto-syncing to core permissions
+- Enabled module route loading
+- Sample `modules/example` module
 
 Not included yet:
 
 - Admin dashboard
 - User management UI
+- Module management UI
+- Marketplace
 - Password reset
 - Email verification
 - OAuth
@@ -45,7 +55,8 @@ Not included yet:
 - Queue system
 - Event system
 - Migration runner
-- Module or theme integration
+- Theme integration
+- Remote module download
 
 ## Local Development
 
@@ -91,6 +102,8 @@ The schema creates:
 - `permissions`
 - `user_roles`
 - `role_permissions`
+- `modules`
+- `module_permissions`
 
 The schema seeds the `admin` and `user` roles and the `protected.access` permission. It does not seed a default admin user.
 
@@ -134,6 +147,41 @@ Run these checks at `http://copot.test`:
 - `GET /protected` after valid admin login shows the protected test page.
 - `POST /logout` logs out and redirects to `/`.
 - Setting a logged-in user to `inactive` causes `/protected` to reject the session and redirect to `/login`.
+
+## Manual Module Test Checklist
+
+The repository includes a sample module at:
+
+```text
+modules/example
+```
+
+The sample module is discovered and installable, but it is not enabled automatically.
+
+Run these checks at `http://copot.test`:
+
+- Before enabling the module, `GET /example` returns `404 Not Found`.
+- Install the sample module:
+
+```powershell
+cd "K:\My Drive\GitHub\copot"
+& "C:\xampp\php\php.exe" -r "chdir('K:/My Drive/GitHub/copot'); `$app = require 'bootstrap/app.php'; `$app->modules()->install('example'); echo 'installed';"
+```
+
+- Enable the sample module:
+
+```powershell
+& "C:\xampp\php\php.exe" -r "chdir('K:/My Drive/GitHub/copot'); `$app = require 'bootstrap/app.php'; `$app->modules()->enable('example'); echo 'enabled';"
+```
+
+- After enabling the module, `GET /example` shows `Example Module`.
+- Disable the sample module:
+
+```powershell
+& "C:\xampp\php\php.exe" -r "chdir('K:/My Drive/GitHub/copot'); `$app = require 'bootstrap/app.php'; `$app->modules()->disable('example'); echo 'disabled';"
+```
+
+- After disabling the module, `GET /example` returns `404 Not Found`.
 
 ## Documentation
 

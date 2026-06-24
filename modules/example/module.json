@@ -1,0 +1,17 @@
+{
+  "name": "example",
+  "title": "Example Module",
+  "description": "Minimal sample module for testing the M1.3 module manager.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "routes": "routes.php",
+  "requires": {
+    "modules": []
+  },
+  "permissions": [
+    {
+      "slug": "example.access",
+      "name": "Access Example Module"
+    }
+  ]
+}

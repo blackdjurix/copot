@@ -11,12 +11,12 @@ class Router
 
     public function get(string $path, callable $handler): void
     {
-        $this->routes['GET'][$this->normalizePath($path)] = $handler;
+        $this->addRoute('GET', $path, $handler);
     }
 
     public function post(string $path, callable $handler): void
     {
-        $this->routes['POST'][$this->normalizePath($path)] = $handler;
+        $this->addRoute('POST', $path, $handler);
     }
 
     public function dispatch(Request $request): Response
@@ -45,5 +45,16 @@ class Router
         $path = '/' . trim($path, '/');
 
         return $path === '/' ? '/' : rtrim($path, '/');
+    }
+
+    private function addRoute(string $method, string $path, callable $handler): void
+    {
+        $path = $this->normalizePath($path);
+
+        if (isset($this->routes[$method][$path])) {
+            throw new \RuntimeException("Route [{$method} {$path}] is already registered.");
+        }
+
+        $this->routes[$method][$path] = $handler;
     }
 }

@@ -30,7 +30,7 @@ Responsibilities:
 * Theme Loading
 * Request Lifecycle Management
 
-These responsibilities are introduced progressively by milestone. Basic Authentication and Permissions are implemented in M1.2, Module Loading is planned for M1.3, and Theme Loading is planned for M1.4.
+These responsibilities are introduced progressively by milestone. Basic Authentication and Permissions are implemented in M1.2, Module Loading begins in M1.3, and Theme Loading is planned for M1.4.
 
 Example:
 
@@ -109,6 +109,33 @@ Assets/
 Migrations/
 ```
 
+---
+
+## Module Manager
+
+M1.3 introduces a local module manager foundation.
+
+Current goals:
+
+* Discover local modules from `modules/`
+* Validate `module.json` metadata
+* Register installed modules in the database
+* Enable and disable modules
+* Uninstall module registrations without deleting module files
+* Load routes from enabled modules
+* Store module permission metadata separately from core permissions
+
+Current limits:
+
+* No marketplace
+* No admin module UI
+* No remote package download
+* No composer package system
+* No migration runner
+* No asset publishing
+* No theme integration
+* No article module
+* No complex dependency resolver
 ---
 
 ## Theme Layer
@@ -222,5 +249,6 @@ Future milestones may introduce:
 * Package Ecosystem
 
 These features are not part of M1.1 or M1.2.
+
 
 

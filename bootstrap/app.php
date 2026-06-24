@@ -15,4 +15,6 @@ $app->session()->start();
 require $basePath . '/routes/web.php';
 require $basePath . '/routes/auth.php';
 
+$app->moduleLoader()->loadRoutes($app);
+
 return $app;

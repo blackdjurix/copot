@@ -61,3 +61,29 @@ SELECT roles.id, permissions.id
 FROM roles
 INNER JOIN permissions ON permissions.slug = 'protected.access'
 WHERE roles.slug = 'admin';
+
+CREATE TABLE modules (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    title VARCHAR(150) NOT NULL,
+    version VARCHAR(50) NOT NULL,
+    path VARCHAR(255) NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'disabled',
+    installed_at DATETIME NOT NULL,
+    enabled_at DATETIME NULL,
+    disabled_at DATETIME NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL
+);
+
+CREATE TABLE module_permissions (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    module_name VARCHAR(100) NOT NULL,
+    permission_slug VARCHAR(150) NOT NULL,
+    permission_name VARCHAR(150) NOT NULL,
+    created_at DATETIME NOT NULL,
+    UNIQUE KEY uq_module_permission (module_name, permission_slug),
+    CONSTRAINT fk_module_permissions_module
+        FOREIGN KEY (module_name) REFERENCES modules(name)
+        ON DELETE CASCADE
+);
