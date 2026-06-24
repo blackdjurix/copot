@@ -1,0 +1,14 @@
+{
+  "id": "default",
+  "name": "Default Theme",
+  "version": "0.1.0",
+  "description": "Default frontend theme for copot.",
+  "author": "blackdjurix",
+  "type": "frontend",
+  "entry": {
+    "layout": "layouts/app.php"
+  },
+  "supports": {
+    "module_view_overrides": true
+  }
+}

@@ -21,6 +21,11 @@ class Response
         return new self('', $status, ['Location' => $url]);
     }
 
+    public static function content(string $content, int $status = 200, array $headers = []): self
+    {
+        return new self($content, $status, $headers);
+    }
+
     public function send(): void
     {
         http_response_code($this->status);

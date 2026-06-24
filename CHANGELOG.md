@@ -1,6 +1,38 @@
 # Changelog
 
 <details open>
+<summary>v0.4.0 - M1.4 Theme System</summary>
+
+### Added
+
+- Added local theme metadata definitions through `theme.json`.
+- Added theme discovery for direct children of the `themes/` folder.
+- Added theme registry table with one active frontend theme.
+- Added theme manager lifecycle operations for register, activate, and unregister.
+- Added active theme loading and layout resolution.
+- Added `ViewResolver` for `core::`, `theme::`, and module view namespaces.
+- Added theme override support for core and module views.
+- Added `ViewRenderer` for wrapping resolved content in the active theme layout.
+- Added controlled active-theme asset serving through `/theme-assets/{theme-id}/{asset-path}`.
+- Added a minimal default theme at `themes/default`.
+
+### Security
+
+- Theme and view resolution validate safe relative paths and resolved filesystem boundaries.
+- Theme asset serving rejects traversal, encoded traversal, backslash traversal, null bytes, absolute paths, Windows drive paths, inactive theme IDs, and unsupported extensions.
+- Theme asset responses include `X-Content-Type-Options: nosniff`.
+- Frontend theme rendering errors use a generic public message without stack traces, filesystem paths, or internal diagnostics.
+- Theme templates receive only `$content`, `$title`, `$theme`, `$themeAsset`, and `$context`; `$app` and core services are not injected.
+
+### Notes
+
+- Theme code is trusted local project code.
+- The database stores theme registry state and metadata snapshots, not template source.
+- M1.4 intentionally does not include an admin shell, admin theming, theme marketplace, installer, ZIP upload, asset pipeline, bundler, minifier, cache busting manifest, theme settings UI, theme editor, child themes, multi-site support, or generic theme hooks.
+
+</details>
+
+<details>
 <summary>v0.3.0 - M1.3 Module Manager</summary>
 
 ### Added

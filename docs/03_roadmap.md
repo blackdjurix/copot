@@ -62,6 +62,8 @@ Operational local module management system with discovery, install registration,
 
 ## M1.4 Theme System
 
+Status: Implemented in v0.4.0.
+
 ### Scope
 
 * Theme Loader
@@ -71,7 +73,7 @@ Operational local module management system with discovery, install registration,
 
 ### Deliverable
 
-Operational theme management system.
+Operational frontend theme system with local theme discovery, registry, activation, layout rendering, view resolution, theme overrides, controlled active-theme asset serving, and a minimal default theme.
 
 ---
 
