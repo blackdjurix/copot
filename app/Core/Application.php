@@ -13,6 +13,11 @@ class Application
     private Auth $auth;
     private ModuleManager $modules;
     private ModuleLoader $moduleLoader;
+    private ThemeManager $themes;
+    private ThemeLoader $themeLoader;
+    private ThemeAssets $themeAssets;
+    private ViewRenderer $viewRenderer;
+    private ViewResolver $viewResolver;
 
     public function __construct(string $basePath)
     {
@@ -32,6 +37,19 @@ class Application
         $moduleRepository = new ModuleRepository($this->database);
         $this->modules = new ModuleManager($moduleDiscovery, $moduleRepository);
         $this->moduleLoader = new ModuleLoader($moduleDiscovery, $moduleRepository);
+        $this->themes = new ThemeManager(
+            $themeRepository = new ThemeRepository($this->database),
+            $this->database,
+            $this->basePath
+        );
+        $this->themeLoader = new ThemeLoader($themeRepository, $this->basePath);
+        $this->themeAssets = new ThemeAssets($this->themeLoader);
+        $this->viewRenderer = new ViewRenderer($this->themeLoader, $this->themeAssets);
+        $this->viewResolver = new ViewResolver(
+            $this->themeLoader,
+            $this->path('resources/views'),
+            $this->path('modules')
+        );
     }
 
     public function path(string $path = ''): string
@@ -83,6 +101,31 @@ class Application
     public function moduleLoader(): ModuleLoader
     {
         return $this->moduleLoader;
+    }
+
+    public function themes(): ThemeManager
+    {
+        return $this->themes;
+    }
+
+    public function themeLoader(): ThemeLoader
+    {
+        return $this->themeLoader;
+    }
+
+    public function themeAssets(): ThemeAssets
+    {
+        return $this->themeAssets;
+    }
+
+    public function viewRenderer(): ViewRenderer
+    {
+        return $this->viewRenderer;
+    }
+
+    public function viewResolver(): ViewResolver
+    {
+        return $this->viewResolver;
     }
 
     public function run(Request $request): Response

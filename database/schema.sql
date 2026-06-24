@@ -87,3 +87,18 @@ CREATE TABLE module_permissions (
         FOREIGN KEY (module_name) REFERENCES modules(name)
         ON DELETE CASCADE
 );
+
+CREATE TABLE themes (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    theme_id VARCHAR(100) NOT NULL,
+    name VARCHAR(150) NOT NULL,
+    version VARCHAR(50) NOT NULL,
+    type VARCHAR(30) NOT NULL,
+    path VARCHAR(255) NOT NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 0,
+    metadata TEXT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    UNIQUE KEY uq_themes_theme_id (theme_id),
+    INDEX idx_themes_type_active (type, is_active)
+);

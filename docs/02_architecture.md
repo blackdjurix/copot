@@ -30,7 +30,7 @@ Responsibilities:
 * Theme Loading
 * Request Lifecycle Management
 
-These responsibilities are introduced progressively by milestone. Basic Authentication and Permissions are implemented in M1.2, Module Loading begins in M1.3, and Theme Loading is planned for M1.4.
+These responsibilities are introduced progressively by milestone. Basic Authentication and Permissions are implemented in M1.2, Module Loading begins in M1.3, and Theme Loading is implemented in M1.4.
 
 Example:
 
@@ -103,7 +103,7 @@ routes.php
 
 Controllers/
 Models/
-Views/
+views/
 Services/
 Assets/
 Migrations/
@@ -164,6 +164,34 @@ Themes are not responsible for:
 * Database Access
 * Business Logic
 * Authentication Logic
+
+M1.4 implements the first frontend theme system foundation.
+
+Current capabilities:
+
+* Local theme discovery from `themes/*/theme.json`
+* Theme registry in the `themes` database table
+* Single active frontend theme
+* Theme activation and active-theme guards
+* Layout rendering through the active theme
+* Core, theme-owned, and module view namespace resolution
+* Theme overrides for core and module views
+* Controlled active-theme asset serving through `/theme-assets/{theme-id}/{asset-path}`
+* Minimal default theme at `themes/default`
+
+Current limits:
+
+* No admin shell
+* No admin theme support
+* No theme marketplace
+* No theme installer
+* No ZIP upload
+* No asset pipeline, bundler, or minifier
+* No template engine beyond PHP includes
+* No theme settings UI or editor
+* No child themes
+* No multi-site theme support
+* No generic theme hooks
 
 ---
 

@@ -4,13 +4,13 @@ A modular PHP-based website framework designed for flexible content, business, a
 
 ## Status
 
-M1.3 Module Manager is complete.
+M1.4 Theme System is complete.
 
-The framework is runnable as a lightweight PHP skeleton with authentication, authorization, and a local module manager foundation. It can serve public pages, login/logout users, protect a test route, discover local modules, register modules in the database, enable or disable modules, and load routes from enabled modules.
+The framework is runnable as a lightweight PHP skeleton with authentication, authorization, a local module manager foundation, and a frontend theme system. It can serve public pages through an active theme, login/logout users, protect a test route, discover local modules and themes, register them in the database, enable or disable modules, activate a frontend theme, resolve themed views, and serve controlled active-theme assets.
 
 ## Current Milestone
 
-M1.3 Module Manager
+M1.4 Theme System
 
 Included so far:
 
@@ -39,6 +39,14 @@ Included so far:
 - Module permission metadata storage without auto-syncing to core permissions
 - Enabled module route loading
 - Sample `modules/example` module
+- Local theme discovery through `themes/*/theme.json`
+- Theme registry and single active frontend theme
+- Theme activation and active-theme lifecycle guards
+- Active theme layout rendering
+- Core, theme-owned, and module view namespace resolution
+- Theme overrides for core and module views
+- Controlled active-theme asset serving through `/theme-assets/{theme-id}/{asset-path}`
+- Minimal default theme at `themes/default`
 
 Not included yet:
 
@@ -55,7 +63,12 @@ Not included yet:
 - Queue system
 - Event system
 - Migration runner
-- Theme integration
+- Admin shell
+- Theme marketplace
+- Theme installer
+- Asset pipeline
+- Template engine
+- Theme settings UI
 - Remote module download
 
 ## Local Development
@@ -78,7 +91,7 @@ Expected public output:
 
 ```text
 Copot
-M1.1 Core Bootstrap is running.
+Default frontend theme rendering is active.
 ```
 
 ## Configuration
@@ -104,8 +117,37 @@ The schema creates:
 - `role_permissions`
 - `modules`
 - `module_permissions`
+- `themes`
 
 The schema seeds the `admin` and `user` roles and the `protected.access` permission. It does not seed a default admin user.
+
+## Manual Default Theme
+
+M1.4 stores active theme state in the database. After importing the schema, register and activate the default theme:
+
+```sql
+INSERT INTO themes (
+    theme_id,
+    name,
+    version,
+    type,
+    path,
+    is_active,
+    metadata,
+    created_at,
+    updated_at
+) VALUES (
+    'default',
+    'Default Theme',
+    '0.1.0',
+    'frontend',
+    'themes/default',
+    1,
+    '{"id":"default","name":"Default Theme","version":"0.1.0","description":"Default frontend theme for copot.","author":"blackdjurix","type":"frontend","entry":{"layout":"layouts/app.php"},"supports":{"module_view_overrides":true}}',
+    NOW(),
+    NOW()
+);
+```
 
 ## Manual Admin User
 
@@ -182,6 +224,48 @@ cd "K:\My Drive\GitHub\copot"
 ```
 
 - After disabling the module, `GET /example` returns `404 Not Found`.
+
+## Manual Theme Test Checklist
+
+Run these checks at `http://copot.test` after the default theme is active:
+
+- `GET /` renders through the active frontend theme.
+- `GET /theme-assets/default/css/app.css` serves the default theme CSS.
+- `GET /theme-assets/default/%2e%2e/theme.json` returns controlled `404 Not Found`.
+- `GET /theme-assets/other/css/app.css` returns controlled `404 Not Found`.
+- Missing active theme or missing theme files return a generic `Theme rendering error.` without stack traces or filesystem paths.
+
+Theme view names use namespaces:
+
+```text
+core::home
+theme::landing
+example::index
+```
+
+Resolution order:
+
+```text
+core::home
+1. themes/<active-theme>/views/home.php
+2. resources/views/home.php
+
+example::index
+1. themes/<active-theme>/views/modules/example/index.php
+2. modules/example/views/index.php
+```
+
+Theme templates receive only:
+
+```text
+$content
+$title
+$theme
+$themeAsset
+$context
+```
+
+The application container, database, auth service, repositories, and managers are not injected into theme templates.
 
 ## Documentation
 

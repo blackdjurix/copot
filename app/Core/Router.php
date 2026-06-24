@@ -8,6 +8,10 @@ class Router
         'GET' => [],
         'POST' => [],
     ];
+    private array $patternRoutes = [
+        'GET' => [],
+        'POST' => [],
+    ];
 
     public function get(string $path, callable $handler): void
     {
@@ -27,17 +31,37 @@ class Router
 
         $handler = $this->routes[$request->method()][$request->path()] ?? null;
 
-        if ($handler === null) {
-            return Response::html('404 Not Found', 404);
+        if ($handler !== null) {
+            $result = $handler($request);
+
+            if ($result instanceof Response) {
+                return $result;
+            }
+
+            return Response::html((string) $result);
         }
 
-        $result = $handler($request);
+        foreach ($this->patternRoutes[$request->method()] as $route) {
+            if (!preg_match($route['regex'], $request->path(), $matches)) {
+                continue;
+            }
 
-        if ($result instanceof Response) {
-            return $result;
+            $params = [];
+
+            foreach ($route['params'] as $index => $name) {
+                $params[$name] = $matches[$index + 1] ?? '';
+            }
+
+            $result = $route['handler']($request, $params);
+
+            if ($result instanceof Response) {
+                return $result;
+            }
+
+            return Response::html((string) $result);
         }
 
-        return Response::html((string) $result);
+        return Response::html('404 Not Found', 404);
     }
 
     private function normalizePath(string $path): string
@@ -55,6 +79,37 @@ class Router
             throw new \RuntimeException("Route [{$method} {$path}] is already registered.");
         }
 
+        if (str_contains($path, '{')) {
+            $this->patternRoutes[$method][] = $this->compilePatternRoute($path, $handler);
+
+            return;
+        }
+
         $this->routes[$method][$path] = $handler;
+    }
+
+    private function compilePatternRoute(string $path, callable $handler): array
+    {
+        $segments = explode('/', trim($path, '/'));
+        $params = [];
+        $regexSegments = [];
+        $lastIndex = count($segments) - 1;
+
+        foreach ($segments as $index => $segment) {
+            if (preg_match('/^\{([a-zA-Z_][a-zA-Z0-9_]*)\}$/', $segment, $matches)) {
+                $params[] = $matches[1];
+                $regexSegments[] = $index === $lastIndex ? '(.+)' : '([^/]+)';
+
+                continue;
+            }
+
+            $regexSegments[] = preg_quote($segment, '#');
+        }
+
+        return [
+            'regex' => '#^/' . implode('/', $regexSegments) . '$#',
+            'params' => $params,
+            'handler' => $handler,
+        ];
     }
 }

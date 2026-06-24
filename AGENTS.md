@@ -8,17 +8,17 @@
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
-The project has completed M1.2 User & Authentication and is preparing for M1.3 Module Manager.
+The project has completed M1.4 Theme System.
 
 ---
 
 ## Current Phase
 
-### M1.3 Module Manager
+### M1.4 Theme System
 
 Primary goal:
 
-Build the local module manager foundation for discovering, installing, enabling, disabling, uninstalling, and loading routes from local modules.
+Maintain the frontend theme system foundation for local theme discovery, registry, activation, view resolution, rendering, and controlled active-theme asset serving.
 
 ---
 
@@ -138,7 +138,7 @@ module.json
 routes.php
 Controllers/
 Models/
-Views/
+views/
 Services/
 migrations/
 assets/
@@ -157,6 +157,7 @@ A theme may contain:
 ```text
 theme.json
 layouts/
+views/
 partials/
 assets/
 ```
@@ -164,6 +165,7 @@ assets/
 Themes are responsible for layout and visual presentation.
 
 Themes must not contain business logic.
+Themes must not directly access the service container, database, authentication, or module lifecycle services.
 
 ---
 
@@ -273,9 +275,9 @@ M1.1 Define core bootstrap architecture
 
 ## Current Immediate Goal
 
-M1.2 User & Authentication is implemented.
+M1.4 Theme System is implemented.
 
-The next implementation task should prepare M1.3 Module Manager, including local module discovery, install, enable, disable, uninstall, dependency validation, route loading, and a minimal sample module without building a marketplace or module UI.
+The next implementation task should prepare M1.4 release validation and documentation, without adding an admin shell, theme marketplace, installer, asset pipeline, template engine, or theme settings UI.
 
 
 
