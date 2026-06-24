@@ -30,7 +30,7 @@ Responsibilities:
 * Theme Loading
 * Request Lifecycle Management
 
-These responsibilities are introduced progressively by milestone. Authentication begins in M1.2, Module Loading is planned for M1.3, and Theme Loading is planned for M1.4.
+These responsibilities are introduced progressively by milestone. Basic Authentication and Permissions are implemented in M1.2, Module Loading is planned for M1.3, and Theme Loading is planned for M1.4.
 
 Example:
 
@@ -47,6 +47,35 @@ View
 ->
 Response
 ```
+
+---
+
+## Authentication and Permissions
+
+M1.2 implements a basic core authentication and authorization foundation.
+
+Current capabilities:
+
+* Session-based login and logout
+* CSRF protection for auth forms
+* Native PHP password hashing
+* User lookup through the core database layer
+* Active/inactive user validation
+* Basic role and permission checks
+* Manual database schema for auth tables
+* Protected milestone test route
+
+Current limits:
+
+* No admin dashboard
+* No user management UI
+* No password reset
+* No email verification
+* No OAuth or 2FA
+* No policy or gate system
+* No middleware system
+* No ORM or migration runner
+* No module permission registration
 
 ---
 
@@ -192,5 +221,6 @@ Future milestones may introduce:
 * Background Jobs
 * Package Ecosystem
 
-These features are not part of M1.1.
+These features are not part of M1.1 or M1.2.
+
 
