@@ -1,6 +1,33 @@
 # Changelog
 
 <details open>
+<summary>v0.4.1 - M1.4.1 Admin Shell</summary>
+
+### Added
+
+- Added configurable single-segment admin path through `config/admin.php`.
+- Added core admin routes loaded after auth routes and before module routes.
+- Added admin login at the configured admin path instead of redirecting to `/login`.
+- Added CSRF-protected admin login and admin logout flow.
+- Added `admin.access` permission seed and admin role mapping.
+- Added minimal core admin layout, static Dashboard navigation, and dashboard status page.
+- Added responsive admin login and dashboard shell styles.
+
+### Security
+
+- Admin access uses the existing authentication and permission system.
+- Admin login and logout require CSRF tokens.
+- Admin path validation accepts only lowercase single-segment slugs.
+- Admin Shell does not use the frontend Theme System and does not allow frontend themes to override admin UI.
+
+### Notes
+
+- M1.4.1 intentionally does not include Content CRUD, module UI, theme UI, role/permission UI, settings UI, analytics, editor functionality, media/image services, localization, admin theming, an admin navigation manager, or middleware.
+- The M1.2 `/protected` route remains a separate milestone test route.
+
+</details>
+
+<details>
 <summary>v0.4.0 - M1.4 Theme System</summary>
 
 ### Added

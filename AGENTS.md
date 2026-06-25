@@ -8,17 +8,17 @@
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
-The project has completed M1.4 Theme System.
+The project has completed M1.4 Theme System and is preparing M1.4.1 Admin Shell release.
 
 ---
 
 ## Current Phase
 
-### M1.4 Theme System
+### M1.4.1 Admin Shell
 
 Primary goal:
 
-Maintain the frontend theme system foundation for local theme discovery, registry, activation, view resolution, rendering, and controlled active-theme asset serving.
+Complete Admin Shell release preparation while preserving the M1.4 frontend theme boundary and avoiding future milestone scope creep.
 
 ---
 
@@ -75,6 +75,57 @@ Maintain the frontend theme system foundation for local theme discovery, registr
 * Do not add dependencies to solve problems that do not yet exist.
 * Focus only on the active milestone.
 * If a future feature appears necessary, propose it first and wait for approval.
+
+---
+## Domain Naming Rules
+
+* Use Content as the future primary domain concept instead of Article.
+* Article, Page, News, Video, Gallery, and similar terms are content types or use cases.
+* Do not hardcode Article as the primary domain model unless explicitly approved.
+* Internal architecture should use stable domain terminology.
+* UI labels may initially mirror internal terminology.
+* Future localization may translate or customize UI labels without renaming internal classes, tables, or architecture concepts.
+* Do not rename internal concepts only to improve UI wording.
+* When naming is uncertain, prefer the term that is most stable for database and code.
+
+---
+## Future Core Service Strategy
+
+* Editor.js is the planned default editor strategy.
+* Treat editor capability as a future Core Service, not as a regular feature module.
+* Do not implement editor functionality until its milestone is approved.
+* Future image handling should use an ImageService abstraction.
+* Browser image editor candidates may include Cropper.js.
+* Server-side image processing should support GD as baseline and Imagick as optional enhancement.
+* Do not make Imagick required for core.
+* UI/system localization should be treated as a future Core Service.
+* Localization may include language, timezone, locale, date format, number format, currency format, and UI translation.
+* Content translation is separate from UI localization and belongs to future Content/multilanguage work.
+* Do not implement localization yet.
+
+---
+## Permission Strategy
+
+* Use one permission system for core and modules.
+* Do not create separate role systems for web/core and modules.
+* Role means permission bundle.
+* Workflow approval should be permission-driven, not hardcoded by role hierarchy.
+
+---
+## Admin Path Strategy
+
+* Admin URL path must be configurable.
+* Do not hardcode `/admin` as the only possible admin path.
+* Default admin path may be `/admin`.
+* Future installer may allow selecting admin path such as `/administrator`, `/backend`, `/dapur`, etc.
+
+---
+## Core Services vs Core Features
+
+* Core Services provide capabilities.
+* Core Features provide UI/business features.
+* Editor, Media/Image, Localization, and Cache are future Core Services unless explicitly changed.
+* Content, Menu, Settings, and Users are Core Features.
 
 ---
 ## Architecture Rules
@@ -186,7 +237,7 @@ Themes must not directly access the service container, database, authentication,
 * Full authentication system
 * Full module manager
 * Full theme marketplace
-* Article CMS
+* Content CMS
 * Admin dashboard
 * Online store
 * Workflow automation
@@ -275,9 +326,9 @@ M1.1 Define core bootstrap architecture
 
 ## Current Immediate Goal
 
-M1.4 Theme System is implemented.
+M1.4.1 Admin Shell is implemented.
 
-The next implementation task should prepare M1.4 release validation and documentation, without adding an admin shell, theme marketplace, installer, asset pipeline, template engine, or theme settings UI.
+The next implementation task should complete M1.4.1 release validation and documentation, without adding Content CRUD, module UI, theme UI, role/permission UI, settings UI, analytics, editor functionality, media/image services, localization, admin theming, or a middleware system.
 
 
 
