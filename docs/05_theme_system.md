@@ -8,6 +8,8 @@ Themes own layout, markup, partials, view overrides, and frontend assets. Themes
 
 M1.4 introduces the first local frontend theme foundation. It is intentionally small and does not include an admin shell, marketplace, installer, ZIP upload, asset pipeline, template engine, theme editor, child themes, multi-site behavior, or generic hook system.
 
+M1.4.1 introduces a separate core Admin Shell. The Admin Shell does not use frontend themes, active theme layouts, `ViewRenderer`, or frontend theme overrides.
+
 ---
 
 ## M1.4 Scope
@@ -32,7 +34,7 @@ Excluded:
 
 * Admin Shell
 * Admin theme support
-* Articles Module
+* Content Module
 * Theme Marketplace
 * Theme Installer
 * ZIP upload
@@ -45,6 +47,8 @@ Excluded:
 * Child themes
 * Multi-site themes
 * Generic theme hooks
+
+M1.4.1 keeps admin UI outside the frontend Theme System. Frontend themes must not override admin layout, admin login, admin dashboard, admin navigation, or admin logout behavior.
 
 ---
 

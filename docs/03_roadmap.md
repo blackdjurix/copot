@@ -77,12 +77,31 @@ Operational frontend theme system with local theme discovery, registry, activati
 
 ---
 
-## M1.5 Articles Module
+## M1.4.1 Admin Shell
+
+Status: Implemented in v0.4.1.
+
+### Scope
+
+* Configurable Admin Path
+* Admin Login
+* Admin Logout
+* Admin Access Permission
+* Admin Layout
+* Minimal Dashboard
+
+### Deliverable
+
+Minimal core admin shell with configurable single-segment admin path, same-path admin login, CSRF-protected admin logout, `admin.access` permission guard, static Dashboard navigation, and a responsive dashboard/status page.
+
+---
+
+## M1.5 Content Module
 
 ### Scope
 
 * Pages
-* Articles
+* Content Types
 * Categories
 * Tags
 

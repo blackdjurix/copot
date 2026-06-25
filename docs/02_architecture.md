@@ -79,6 +79,41 @@ Current limits:
 
 ---
 
+## Admin Shell
+
+M1.4.1 adds a minimal core Admin Shell.
+
+Current capabilities:
+
+* Configurable single-segment admin path through `config/admin.php`
+* Default admin path value `admin`, which becomes `/admin` at runtime
+* Admin login form served at the same admin path
+* CSRF-protected admin login and logout
+* Admin access protected by the existing authentication system
+* Minimal `admin.access` permission requirement
+* Core admin layout under `resources/views/admin`
+* Static Dashboard navigation
+* Minimal dashboard/status page
+
+The Admin Shell uses the existing include-only `View` renderer and core `resources/views/admin` views. It does not use the frontend Theme System, active frontend theme, `ViewRenderer`, or `ViewResolver`.
+
+Current limits:
+
+* No Content CRUD
+* No module management UI
+* No theme management UI
+* No role or permission UI
+* No settings UI
+* No analytics
+* No editor integration
+* No media or image service
+* No localization
+* No admin theming
+* No admin navigation manager
+* No middleware system
+
+---
+
 ## Module Layer
 
 Modules provide business functionality.
@@ -134,7 +169,7 @@ Current limits:
 * No migration runner
 * No asset publishing
 * No theme integration
-* No article module
+* No Content module
 * No complex dependency resolver
 ---
 
@@ -181,7 +216,6 @@ Current capabilities:
 
 Current limits:
 
-* No admin shell
 * No admin theme support
 * No theme marketplace
 * No theme installer
