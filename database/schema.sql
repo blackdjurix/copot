@@ -55,7 +55,11 @@ INSERT INTO roles (name, slug, created_at, updated_at) VALUES
 
 INSERT INTO permissions (name, slug, created_at, updated_at) VALUES
     ('Access protected area', 'protected.access', NOW(), NOW()),
-    ('Access admin shell', 'admin.access', NOW(), NOW());
+    ('Access admin shell', 'admin.access', NOW(), NOW()),
+    ('Create content', 'content.create', NOW(), NOW()),
+    ('Update content', 'content.update', NOW(), NOW()),
+    ('Archive content', 'content.delete', NOW(), NOW()),
+    ('Publish content', 'content.publish', NOW(), NOW());
 
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
@@ -67,6 +71,17 @@ INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
 FROM roles
 INNER JOIN permissions ON permissions.slug = 'admin.access'
+WHERE roles.slug = 'admin';
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT roles.id, permissions.id
+FROM roles
+INNER JOIN permissions ON permissions.slug IN (
+    'content.create',
+    'content.update',
+    'content.delete',
+    'content.publish'
+)
 WHERE roles.slug = 'admin';
 
 CREATE TABLE modules (
@@ -108,4 +123,25 @@ CREATE TABLE themes (
     updated_at DATETIME NOT NULL,
     UNIQUE KEY uq_themes_theme_id (theme_id),
     INDEX idx_themes_type_active (type, is_active)
+);
+
+CREATE TABLE content (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(190) NOT NULL,
+    slug VARCHAR(190) NOT NULL,
+    excerpt TEXT NULL,
+    body MEDIUMTEXT NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'draft',
+    author_id BIGINT UNSIGNED NULL,
+    published_at DATETIME NULL,
+    archived_at DATETIME NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    UNIQUE KEY uq_content_slug (slug),
+    INDEX idx_content_status_published (status, published_at),
+    INDEX idx_content_type_status (type, status),
+    CONSTRAINT fk_content_author
+        FOREIGN KEY (author_id) REFERENCES users(id)
+        ON DELETE SET NULL
 );

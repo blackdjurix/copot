@@ -50,6 +50,19 @@ Response
 
 ---
 
+## Core Services
+
+Small Core Services provide reusable infrastructure capabilities without becoming feature modules.
+
+Current examples:
+
+* `AdminNavigation` provides request-scope admin navigation items without a database-backed menu manager.
+* `Csrf` centralizes POST-body-only CSRF validation and controlled `419` responses.
+
+Feature routes should use these services instead of repeating security-sensitive logic manually.
+
+---
+
 ## Authentication and Permissions
 
 M1.2 implements a basic core authentication and authorization foundation.
@@ -99,7 +112,7 @@ The Admin Shell uses the existing include-only `View` renderer and core `resourc
 
 Current limits:
 
-* No Content CRUD
+* No built-in Content CRUD owned by Admin Shell
 * No module management UI
 * No theme management UI
 * No role or permission UI
@@ -169,8 +182,41 @@ Current limits:
 * No migration runner
 * No asset publishing
 * No theme integration
-* No Content module
 * No complex dependency resolver
+---
+
+## Content Module
+
+M1.5 adds the first publishing foundation as a local module at `modules/content`.
+
+Content is the primary domain concept. Article, Page, News, Video, Gallery, and similar labels are content types or use cases, not separate core architecture models.
+
+Current capabilities:
+
+* `content` database table
+* PDO-based content repository
+* Simple string content types
+* Default content types: `page`, `article`
+* Draft, published, and archived statuses
+* Admin list, create, edit, publish, draft, and archive workflows
+* Frontend route at `/content/{slug}` for published content
+* Theme System rendering through `content::show`
+* Theme override support through `themes/<active-theme>/views/modules/content/show.php`
+
+The Content Module is not a hardcoded core Article system. It remains a module loaded by the local Module Manager.
+
+Current limits:
+
+* No taxonomy categories or tags
+* No Editor.js implementation
+* No media or image service
+* No SEO module
+* No comments
+* No advanced search
+* No revisions or autosave
+* No approval workflow
+* No Content Workspace
+
 ---
 
 ## Theme Layer

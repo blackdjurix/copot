@@ -39,12 +39,7 @@ $renderAdminDashboard = function (string $path, $user) use ($app): string {
     return $app->view()->render('admin/layout', array_merge($viewData, [
         'title' => 'Admin Shell',
         'csrfToken' => $app->session()->csrfToken(),
-        'navigation' => [
-            [
-                'label' => 'Dashboard',
-                'url' => $path,
-            ],
-        ],
+        'navigation' => $app->adminNavigation()->itemsFor($user),
         'content' => $content,
     ]));
 };

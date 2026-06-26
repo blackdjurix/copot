@@ -98,20 +98,25 @@ Minimal core admin shell with configurable single-segment admin path, same-path 
 
 ## M1.5 Content Module
 
+Status: Implemented in v0.5.0.
+
 ### Scope
 
-* Pages
-* Content Types
-* Categories
-* Tags
+* Content Module
+* Basic Content Types
+* Basic Content Creation
+* Basic Publishing Lifecycle
+* Frontend Content Rendering
 
 ### Deliverable
 
-Content publishing foundation.
+Content publishing foundation with a local Content module, admin create/edit/list/archive workflows, simple content types, status lifecycle, slug-based frontend rendering at `/content/{slug}`, and textarea-based body editing.
 
 ---
 
 ## M1.6 Taxonomy System
+
+Status: Next planned milestone after M1.5.
 
 ### Scope
 

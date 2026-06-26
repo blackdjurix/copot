@@ -1,6 +1,37 @@
 # Changelog
 
 <details open>
+<summary>v0.5.0 - M1.5 Content Module</summary>
+
+### Added
+
+- Added a local `modules/content` Content Module foundation.
+- Added `content` database schema and PDO-based content repository.
+- Added content permissions for create, update, archive, and publish actions.
+- Added admin Content navigation through the request-scope `AdminNavigation` service.
+- Added admin content list, create, edit, publish, draft, and archive workflows.
+- Added POST-body-only CSRF helper service through `Copot\Core\Csrf`.
+- Added frontend content rendering at `/content/{slug}` for published content.
+- Added module view fallback at `modules/content/views/show.php`.
+- Added Theme System integration through `content::show` with active theme override support.
+
+### Security
+
+- Content POST actions use `$app->csrf()->validateOrReject($request)`.
+- CSRF tokens are read from POST body only.
+- Invalid or missing CSRF tokens return `419` before content database changes.
+- Frontend content body rendering escapes plaintext and preserves line breaks.
+- Draft and archived content return `404` on the frontend route.
+
+### Notes
+
+- Content is the primary domain concept; Article and Page are content types.
+- M1.5 uses a plain textarea and does not implement Editor.js.
+- M1.5 intentionally does not include taxonomy, media/image services, SEO, analytics, AI, translation, comments, newsletter, forms, advanced search, revisions, autosave, approval workflow, custom fields, scheduling engine, menu manager, settings UI, role/permission UI, module UI, theme UI, or Content Workspace.
+
+</details>
+
+<details>
 <summary>v0.4.1 - M1.4.1 Admin Shell</summary>
 
 ### Added

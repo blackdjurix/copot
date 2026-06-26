@@ -8,17 +8,17 @@
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
-The project has completed M1.4 Theme System and is preparing M1.4.1 Admin Shell release.
+The project has completed M1.4.1 Admin Shell and is preparing the M1.5 Content Module release.
 
 ---
 
 ## Current Phase
 
-### M1.4.1 Admin Shell
+### M1.5 Content Module
 
 Primary goal:
 
-Complete Admin Shell release preparation while preserving the M1.4 frontend theme boundary and avoiding future milestone scope creep.
+Prepare the M1.5 Content Module release with basic content creation, lifecycle, and frontend rendering while avoiding future optional publishing features.
 
 ---
 
@@ -326,9 +326,9 @@ M1.1 Define core bootstrap architecture
 
 ## Current Immediate Goal
 
-M1.4.1 Admin Shell is implemented.
+M1.5 Content Module is in release preparation.
 
-The next implementation task should complete M1.4.1 release validation and documentation, without adding Content CRUD, module UI, theme UI, role/permission UI, settings UI, analytics, editor functionality, media/image services, localization, admin theming, or a middleware system.
+The next implementation task should prepare documentation, release notes, and final review for the Content Module without adding Editor.js, Media Library, Image Editor, SEO, Analytics, AI, Translation, Comments, Newsletter, Forms, Advanced Search, Revisions, Autosave, Approval Workflow, Custom Fields, Scheduling Engine, Menu Manager, Settings UI, Role/Permission UI, Module UI, or Theme UI.
 
 
 

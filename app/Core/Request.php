@@ -41,6 +41,11 @@ class Request
         return $this->input[$key] ?? $this->query[$key] ?? $default;
     }
 
+    public function post(string $key, mixed $default = null): mixed
+    {
+        return $this->input[$key] ?? $default;
+    }
+
     public function all(): array
     {
         return array_merge($this->query, $this->input);

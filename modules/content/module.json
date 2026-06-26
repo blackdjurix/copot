@@ -1,0 +1,29 @@
+{
+  "name": "content",
+  "title": "Content Module",
+  "description": "Basic content publishing foundation for Copot.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "routes": "routes.php",
+  "requires": {
+    "modules": []
+  },
+  "permissions": [
+    {
+      "slug": "content.create",
+      "name": "Create content"
+    },
+    {
+      "slug": "content.update",
+      "name": "Update content"
+    },
+    {
+      "slug": "content.delete",
+      "name": "Archive content"
+    },
+    {
+      "slug": "content.publish",
+      "name": "Publish content"
+    }
+  ]
+}

@@ -4,13 +4,13 @@ A modular PHP-based website framework designed for flexible content, business, a
 
 ## Status
 
-M1.4.1 Admin Shell is complete.
+M1.5 Content Module is ready for release.
 
-The framework is runnable as a lightweight PHP skeleton with authentication, authorization, a local module manager foundation, a frontend theme system, and a minimal core admin shell. It can serve public pages through an active theme, login/logout users, protect routes, discover local modules and themes, register them in the database, enable or disable modules, activate a frontend theme, resolve themed views, serve controlled active-theme assets, and provide a configurable admin entry point.
+The framework is runnable as a lightweight PHP skeleton with authentication, authorization, a local module manager foundation, a frontend theme system, a minimal core admin shell, and a first local Content Module. It can serve public pages through an active theme, login/logout users, protect routes, discover local modules and themes, register them in the database, enable or disable modules, activate a frontend theme, resolve themed views, serve controlled active-theme assets, provide a configurable admin entry point, and create/render basic published content.
 
 ## Current Milestone
 
-M1.4.1 Admin Shell
+M1.5 Content Module
 
 Included so far:
 
@@ -53,6 +53,18 @@ Included so far:
 - Static admin navigation foundation
 - Admin logout route returning to the admin path
 - `admin.access` permission for admin shell access
+- Request-scope `AdminNavigation` service
+- POST-body-only `Csrf` service helper
+- Local `modules/content` module
+- Content database schema and PDO repository
+- Content permissions: `content.create`, `content.update`, `content.delete`, `content.publish`
+- Admin content list, create, edit, publish, draft, and archive workflows
+- Plain textarea content body input
+- Draft, published, and archived content statuses
+- Frontend published content route at `/content/{slug}`
+- Escaped plaintext content body rendering with line breaks
+- Theme System rendering through `content::show`
+- Theme override support for content view rendering
 
 Not included yet:
 
@@ -73,14 +85,22 @@ Not included yet:
 - Asset pipeline
 - Template engine
 - Theme settings UI
-- Content CRUD
 - Admin theming
 - Admin navigation manager
 - Role/permission UI
 - Settings UI
 - Analytics
 - Editor.js
+- Taxonomy categories and tags
 - Media/image service
+- SEO module
+- Comments
+- Advanced search
+- Revisions or autosave
+- Approval workflow
+- Custom fields
+- Scheduling engine
+- Content Workspace
 - Localization
 - Remote module download
 
@@ -131,8 +151,9 @@ The schema creates:
 - `modules`
 - `module_permissions`
 - `themes`
+- `content`
 
-The schema seeds the `admin` and `user` roles plus the `protected.access` and `admin.access` permissions. It does not seed a default admin user.
+The schema seeds the `admin` and `user` roles plus the `protected.access`, `admin.access`, and basic content permissions. It does not seed a default admin user.
 
 ## Manual Default Theme
 
@@ -202,6 +223,8 @@ INNER JOIN permissions ON permissions.slug = 'admin.access'
 WHERE roles.slug = 'admin';
 ```
 
+For an existing local database created before M1.5, apply the `content` table and content permission statements from `database/schema.sql`, or recreate the local database from the full schema if that is acceptable for your test data.
+
 ## Admin Shell
 
 M1.4.1 adds a minimal core admin shell.
@@ -238,6 +261,51 @@ Admin login lives at the same admin path. `GET /admin` shows the admin login for
 
 M1.4.1 intentionally does not include admin theming, an admin navigation manager, Content CRUD, module UI, theme UI, role/permission UI, settings UI, analytics, editor functionality, media/image services, localization, or middleware.
 
+## Content Module
+
+M1.5 adds a basic local Content Module at:
+
+```text
+modules/content
+```
+
+The module must be installed and enabled through the Module Manager, like other local modules. It is not enabled automatically.
+
+Install and enable the Content Module:
+
+```powershell
+cd "K:\My Drive\GitHub\copot"
+& "C:\xampp\php\php.exe" -r "chdir('K:/My Drive/GitHub/copot'); `$app = require 'bootstrap/app.php'; `$app->modules()->install('content'); `$app->modules()->enable('content'); echo 'content enabled';"
+```
+
+After the module is enabled, the admin content area is available at:
+
+```text
+/admin/content
+```
+
+Current capabilities:
+
+- List content entries.
+- Create content.
+- Edit content.
+- Publish content.
+- Move published content back to draft.
+- Archive content without hard delete UI.
+- Render published content at `/content/{slug}`.
+
+Content statuses:
+
+```text
+draft
+published
+archived
+```
+
+Only `published` content renders on the frontend. Draft, archived, and missing content return `404 Not Found`.
+
+M1.5 uses a plain textarea for the body. It does not include Editor.js, taxonomy categories/tags, media/image handling, SEO, comments, advanced search, revisions, autosave, approval workflow, custom fields, scheduling, or Content Workspace.
+
 ## Manual Auth Test Checklist
 
 Run these checks at `http://copot.test`:
@@ -264,6 +332,20 @@ Run these checks at `http://copot.test`:
 - A logged-in user without `admin.access` receives `403 Forbidden` at `/admin`.
 - `GET /login` still uses the existing public/auth login flow.
 - `GET /protected` remains the separate M1.2 protected route.
+
+## Manual Content Module Test Checklist
+
+Run these checks at `http://copot.test` after the Content Module is installed and enabled:
+
+- `GET /admin/content` shows the Content list in the Admin Shell.
+- `GET /admin/content/create` shows the create form.
+- Create content as draft and confirm it appears in the list.
+- Edit the content and confirm changes are saved.
+- Invalid or missing CSRF on create, update, publish, draft, or archive returns `419`.
+- Publish the content and confirm `/content/{slug}` renders through the active frontend theme.
+- Draft content returns `404` at `/content/{slug}`.
+- Archived content remains visible in admin but returns `404` at `/content/{slug}`.
+- A temporary theme override at `themes/default/views/modules/content/show.php` wins over `modules/content/views/show.php`, then remove the temporary file after testing.
 
 ## Manual Module Test Checklist
 

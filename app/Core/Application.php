@@ -10,6 +10,7 @@ class Application
     private View $view;
     private Database $database;
     private Session $session;
+    private Csrf $csrf;
     private Auth $auth;
     private ModuleManager $modules;
     private ModuleLoader $moduleLoader;
@@ -18,6 +19,7 @@ class Application
     private ThemeAssets $themeAssets;
     private ViewRenderer $viewRenderer;
     private ViewResolver $viewResolver;
+    private AdminNavigation $adminNavigation;
 
     public function __construct(string $basePath)
     {
@@ -27,6 +29,7 @@ class Application
         $this->view = new View($this->path('resources/views'));
         $this->database = new Database($this->config);
         $this->session = new Session($this->config);
+        $this->csrf = new Csrf($this->session);
         $this->auth = new Auth(
             $this->config,
             $this->session,
@@ -50,6 +53,8 @@ class Application
             $this->path('resources/views'),
             $this->path('modules')
         );
+        $this->adminNavigation = new AdminNavigation();
+        $this->adminNavigation->add('Dashboard', $this->adminPath());
     }
 
     public function path(string $path = ''): string
@@ -86,6 +91,11 @@ class Application
     public function session(): Session
     {
         return $this->session;
+    }
+
+    public function csrf(): Csrf
+    {
+        return $this->csrf;
     }
 
     public function auth(): Auth
@@ -128,8 +138,24 @@ class Application
         return $this->viewResolver;
     }
 
+    public function adminNavigation(): AdminNavigation
+    {
+        return $this->adminNavigation;
+    }
+
     public function run(Request $request): Response
     {
         return $this->router->dispatch($request);
+    }
+
+    private function adminPath(): string
+    {
+        $path = $this->config->get('admin.path', 'admin');
+
+        if (!is_string($path) || !preg_match('/^[a-z0-9-]+$/', $path)) {
+            throw new \RuntimeException('Invalid admin path configuration.');
+        }
+
+        return '/' . $path;
     }
 }
