@@ -207,7 +207,6 @@ The Content Module is not a hardcoded core Article system. It remains a module l
 
 Current limits:
 
-* No taxonomy categories or tags
 * No Editor.js implementation
 * No media or image service
 * No SEO module
@@ -216,6 +215,41 @@ Current limits:
 * No revisions or autosave
 * No approval workflow
 * No Content Workspace
+
+---
+
+## Taxonomy Module
+
+M1.6 adds a reusable Taxonomy Foundation as a local module at `modules/taxonomy`.
+
+Taxonomy is the primary classification domain concept. Category and Tag are taxonomy types, not separate primary architecture models.
+
+Current capabilities:
+
+* `taxonomy_types` database table
+* `taxonomy_terms` database table
+* `taxonomy_assignments` database table
+* Seeded taxonomy types: `category`, `tag`
+* Flat admin term management for category and tag terms
+* Generic assignment engine using `entity_type` and `entity_id`
+* Content integration using `entity_type = content`
+* Delete guard that rejects deleting assigned terms
+
+The Taxonomy Module does not replace the Content Module. Content remains responsible for content lifecycle, publishing, and frontend rendering. Taxonomy provides reusable classification that Content can use when the Taxonomy module is enabled.
+
+Current limits:
+
+* No public taxonomy URLs
+* No taxonomy archive pages
+* No taxonomy type management UI
+* No tree UI or drag-drop hierarchy UI
+* No SEO taxonomy pages
+* No multilingual taxonomy
+* No API endpoints
+* No search indexing
+* No import/export
+* No taxonomy custom fields
+* No taxonomy media or icon handling
 
 ---
 

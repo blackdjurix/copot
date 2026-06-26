@@ -1,0 +1,25 @@
+{
+  "name": "taxonomy",
+  "title": "Taxonomy",
+  "description": "Reusable taxonomy foundation for classification types, terms, and assignments.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "routes": "routes.php",
+  "requires": {
+    "modules": []
+  },
+  "permissions": [
+    {
+      "slug": "taxonomy.create",
+      "name": "Create taxonomy terms"
+    },
+    {
+      "slug": "taxonomy.update",
+      "name": "Update taxonomy terms"
+    },
+    {
+      "slug": "taxonomy.delete",
+      "name": "Delete unused taxonomy terms"
+    }
+  ]
+}

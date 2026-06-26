@@ -63,6 +63,50 @@
             <p>Publishing status changes require content.publish permission.</p>
         <?php endif; ?>
 
+        <?php if (!empty($taxonomy['available'])): ?>
+            <fieldset>
+                <legend>Taxonomy</legend>
+
+                <p>
+                    <strong>Categories</strong><br>
+                    <?php if (empty($taxonomy['categories'])): ?>
+                        No category terms yet.
+                    <?php endif; ?>
+
+                    <?php foreach (($taxonomy['categories'] ?? []) as $term): ?>
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="category_ids[]"
+                                value="<?= htmlspecialchars((string) $term->id(), ENT_QUOTES, 'UTF-8') ?>"
+                                <?= in_array($term->id(), $selectedTaxonomy['category_ids'] ?? [], true) ? 'checked' : '' ?>
+                            >
+                            <?= htmlspecialchars($term->name(), ENT_QUOTES, 'UTF-8') ?>
+                        </label><br>
+                    <?php endforeach; ?>
+                </p>
+
+                <p>
+                    <strong>Tags</strong><br>
+                    <?php if (empty($taxonomy['tags'])): ?>
+                        No tag terms yet.
+                    <?php endif; ?>
+
+                    <?php foreach (($taxonomy['tags'] ?? []) as $term): ?>
+                        <label>
+                            <input
+                                type="checkbox"
+                                name="tag_ids[]"
+                                value="<?= htmlspecialchars((string) $term->id(), ENT_QUOTES, 'UTF-8') ?>"
+                                <?= in_array($term->id(), $selectedTaxonomy['tag_ids'] ?? [], true) ? 'checked' : '' ?>
+                            >
+                            <?= htmlspecialchars($term->name(), ENT_QUOTES, 'UTF-8') ?>
+                        </label><br>
+                    <?php endforeach; ?>
+                </p>
+            </fieldset>
+        <?php endif; ?>
+
         <p>
             <button type="submit"><?= htmlspecialchars($submitLabel ?? 'Save content', ENT_QUOTES, 'UTF-8') ?></button>
         </p>

@@ -59,7 +59,10 @@ INSERT INTO permissions (name, slug, created_at, updated_at) VALUES
     ('Create content', 'content.create', NOW(), NOW()),
     ('Update content', 'content.update', NOW(), NOW()),
     ('Archive content', 'content.delete', NOW(), NOW()),
-    ('Publish content', 'content.publish', NOW(), NOW());
+    ('Publish content', 'content.publish', NOW(), NOW()),
+    ('Create taxonomy terms', 'taxonomy.create', NOW(), NOW()),
+    ('Update taxonomy terms', 'taxonomy.update', NOW(), NOW()),
+    ('Delete unused taxonomy terms', 'taxonomy.delete', NOW(), NOW());
 
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
@@ -81,6 +84,16 @@ INNER JOIN permissions ON permissions.slug IN (
     'content.update',
     'content.delete',
     'content.publish'
+)
+WHERE roles.slug = 'admin';
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT roles.id, permissions.id
+FROM roles
+INNER JOIN permissions ON permissions.slug IN (
+    'taxonomy.create',
+    'taxonomy.update',
+    'taxonomy.delete'
 )
 WHERE roles.slug = 'admin';
 
@@ -144,4 +157,50 @@ CREATE TABLE content (
     CONSTRAINT fk_content_author
         FOREIGN KEY (author_id) REFERENCES users(id)
         ON DELETE SET NULL
+);
+
+CREATE TABLE taxonomy_types (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    slug VARCHAR(100) NOT NULL UNIQUE,
+    name VARCHAR(150) NOT NULL,
+    description TEXT NULL,
+    is_hierarchical TINYINT(1) NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL
+);
+
+INSERT INTO taxonomy_types (slug, name, description, is_hierarchical, created_at, updated_at) VALUES
+    ('category', 'Category', 'Default hierarchical content classification type.', 1, NOW(), NOW()),
+    ('tag', 'Tag', 'Default flat content classification type.', 0, NOW(), NOW());
+
+CREATE TABLE taxonomy_terms (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    taxonomy_type_id BIGINT UNSIGNED NOT NULL,
+    parent_id BIGINT UNSIGNED NULL,
+    name VARCHAR(150) NOT NULL,
+    slug VARCHAR(150) NOT NULL,
+    description TEXT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    UNIQUE KEY uq_taxonomy_terms_type_slug (taxonomy_type_id, slug),
+    INDEX idx_taxonomy_terms_type_parent (taxonomy_type_id, parent_id),
+    CONSTRAINT fk_taxonomy_terms_type
+        FOREIGN KEY (taxonomy_type_id) REFERENCES taxonomy_types(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_taxonomy_terms_parent
+        FOREIGN KEY (parent_id) REFERENCES taxonomy_terms(id)
+        ON DELETE SET NULL
+);
+
+CREATE TABLE taxonomy_assignments (
+    taxonomy_term_id BIGINT UNSIGNED NOT NULL,
+    entity_type VARCHAR(100) NOT NULL,
+    entity_id BIGINT UNSIGNED NOT NULL,
+    created_at DATETIME NOT NULL,
+    PRIMARY KEY (taxonomy_term_id, entity_type, entity_id),
+    INDEX idx_taxonomy_assignments_entity (entity_type, entity_id),
+    CONSTRAINT fk_taxonomy_assignments_term
+        FOREIGN KEY (taxonomy_term_id) REFERENCES taxonomy_terms(id)
+        ON DELETE CASCADE
 );

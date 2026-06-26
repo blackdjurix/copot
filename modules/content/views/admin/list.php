@@ -14,6 +14,9 @@
                 <th>Title</th>
                 <th>Type</th>
                 <th>Slug</th>
+                <?php if (!empty($taxonomyAvailable)): ?>
+                    <th>Taxonomy</th>
+                <?php endif; ?>
                 <th>Status</th>
                 <th>Updated</th>
                 <th>Actions</th>
@@ -22,15 +25,31 @@
         <tbody>
             <?php if (empty($contents)): ?>
                 <tr>
-                    <td colspan="6">No content yet.</td>
+                    <td colspan="<?= !empty($taxonomyAvailable) ? '7' : '6' ?>">No content yet.</td>
                 </tr>
             <?php endif; ?>
 
             <?php foreach (($contents ?? []) as $item): ?>
+                <?php
+                $assigned = ($taxonomyTerms ?? [])[$item->id()] ?? ['categories' => [], 'tags' => []];
+                $categoryNames = array_map(fn ($term): string => $term->name(), $assigned['categories'] ?? []);
+                $tagNames = array_map(fn ($term): string => $term->name(), $assigned['tags'] ?? []);
+                ?>
                 <tr>
                     <td><?= htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') ?></td>
                     <td><?= htmlspecialchars($item->type(), ENT_QUOTES, 'UTF-8') ?></td>
                     <td><?= htmlspecialchars($item->slug(), ENT_QUOTES, 'UTF-8') ?></td>
+                    <?php if (!empty($taxonomyAvailable)): ?>
+                        <td>
+                            <?php if ($categoryNames !== []): ?>
+                                Categories: <?= htmlspecialchars(implode(', ', $categoryNames), ENT_QUOTES, 'UTF-8') ?><br>
+                            <?php endif; ?>
+
+                            <?php if ($tagNames !== []): ?>
+                                Tags: <?= htmlspecialchars(implode(', ', $tagNames), ENT_QUOTES, 'UTF-8') ?>
+                            <?php endif; ?>
+                        </td>
+                    <?php endif; ?>
                     <td><?= htmlspecialchars($item->status(), ENT_QUOTES, 'UTF-8') ?></td>
                     <td><?= htmlspecialchars($item->updatedAt(), ENT_QUOTES, 'UTF-8') ?></td>
                     <td>

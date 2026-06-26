@@ -1,6 +1,36 @@
 # Changelog
 
 <details open>
+<summary>v0.6.0 - M1.6 Taxonomy Foundation</summary>
+
+### Added
+
+- Added a local `modules/taxonomy` Taxonomy Foundation module.
+- Added `taxonomy_types`, `taxonomy_terms`, and `taxonomy_assignments` database tables.
+- Added seeded `category` and `tag` taxonomy types.
+- Added taxonomy permissions for create, update, and delete actions.
+- Added admin taxonomy navigation and minimal term management UI.
+- Added flat category and tag term list, create, edit, and delete workflows.
+- Added generic assignment repository support for entity/type assignment syncing.
+- Added Content Module integration for selecting category and tag terms during create/edit.
+- Added assigned category/tag display on the admin content list when taxonomy is enabled.
+
+### Security
+
+- Taxonomy admin POST actions use `$app->csrf()->validateOrReject($request)`.
+- Term delete rejects assigned terms through usage-count validation.
+- Content taxonomy assignment sync is skipped when the Taxonomy module is disabled.
+- Content admin screens hide taxonomy columns and fields when the Taxonomy module is disabled.
+
+### Notes
+
+- Taxonomy is the primary classification domain concept; Category and Tag are taxonomy types.
+- M1.6 uses generic assignments with `entity_type`, but only `content` is integrated in this milestone.
+- M1.6 intentionally does not include public taxonomy URLs, taxonomy archive pages, taxonomy type management UI, tree UI, drag-drop hierarchy UI, SEO taxonomy pages, multilingual taxonomy, API endpoints, search indexing, import/export, taxonomy custom fields, taxonomy media/icon handling, or a roadmap overhaul.
+
+</details>
+
+<details>
 <summary>v0.5.0 - M1.5 Content Module</summary>
 
 ### Added

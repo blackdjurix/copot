@@ -8,17 +8,17 @@
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
-The project has completed M1.4.1 Admin Shell and is preparing the M1.5 Content Module release.
+The project has completed M1.5 Content Module and is preparing the M1.6 Taxonomy Foundation release.
 
 ---
 
 ## Current Phase
 
-### M1.5 Content Module
+### M1.6 Taxonomy Foundation
 
 Primary goal:
 
-Prepare the M1.5 Content Module release with basic content creation, lifecycle, and frontend rendering while avoiding future optional publishing features.
+Prepare the M1.6 Taxonomy Foundation release with taxonomy types, terms, generic assignments, admin term management, and minimal Content integration while avoiding category-only architecture and future optional taxonomy features.
 
 ---
 
@@ -82,6 +82,8 @@ Prepare the M1.5 Content Module release with basic content creation, lifecycle, 
 * Use Content as the future primary domain concept instead of Article.
 * Article, Page, News, Video, Gallery, and similar terms are content types or use cases.
 * Do not hardcode Article as the primary domain model unless explicitly approved.
+* Use Taxonomy as the primary classification domain concept instead of Category.
+* Category and Tag are taxonomy types, not separate primary architecture models.
 * Internal architecture should use stable domain terminology.
 * UI labels may initially mirror internal terminology.
 * Future localization may translate or customize UI labels without renaming internal classes, tables, or architecture concepts.
@@ -200,6 +202,16 @@ Each module should define its own metadata in `module.json`.
 Modules should not assume another module exists unless dependency rules are documented.
 
 ---
+## Taxonomy Rules
+
+* M1.6 is Taxonomy Foundation, not a category-only module.
+* Default taxonomy types for M1.6 are `category` and `tag`.
+* M1.6 must not add public taxonomy URLs such as `/category/{slug}` or `/tag/{slug}`.
+* M1.6 must not add taxonomy type management UI.
+* M1.6 must not add tree UI, drag-drop hierarchy UI, SEO taxonomy pages, multilingual taxonomy, API endpoints, search indexing, import/export, taxonomy custom fields, or taxonomy media/icon handling.
+* Taxonomy assignments should use a generic `entity_type` domain key, but M1.6 implementation should only use `content` unless explicitly approved.
+
+---
 
 ## Theme Rules
 
@@ -268,6 +280,7 @@ When adding or changing major behavior, update the relevant documentation:
 * `docs/04_module_system.md`
 * `docs/05_theme_system.md`
 * `docs/06_container_engine.md`
+* `docs/07_taxonomy_system.md`
 * `docs/07_installer_system.md`
 
 Update `CHANGELOG.md` for meaningful project changes.
@@ -326,9 +339,11 @@ M1.1 Define core bootstrap architecture
 
 ## Current Immediate Goal
 
-M1.5 Content Module is in release preparation.
+M1.6 Taxonomy Foundation is in release preparation.
 
-The next implementation task should prepare documentation, release notes, and final review for the Content Module without adding Editor.js, Media Library, Image Editor, SEO, Analytics, AI, Translation, Comments, Newsletter, Forms, Advanced Search, Revisions, Autosave, Approval Workflow, Custom Fields, Scheduling Engine, Menu Manager, Settings UI, Role/Permission UI, Module UI, or Theme UI.
+The next task should finalize documentation, audit, and release readiness for M1.6 without adding public taxonomy URLs, taxonomy archive pages, taxonomy type UI, tree UI, SEO, search, API endpoints, M1.7 work, or a larger roadmap overhaul.
+
+Roadmap overhaul and M1.7 planning are deferred until after M1.6 is merged and tagged.
 
 
 

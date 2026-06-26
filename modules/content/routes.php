@@ -3,10 +3,34 @@
 use Copot\Core\Response;
 use Copot\Core\ThemeException;
 use Copot\Core\ViewException;
+use Copot\Core\ModuleRepository;
 
 require_once __DIR__ . '/Services/Content.php';
 require_once __DIR__ . '/Services/ContentRepository.php';
 require_once __DIR__ . '/Services/Slugger.php';
+
+$taxonomyServicesPath = dirname(__DIR__) . '/taxonomy/Services';
+$contentTaxonomyAvailable = is_file($taxonomyServicesPath . '/TaxonomyType.php')
+    && is_file($taxonomyServicesPath . '/TaxonomyTerm.php')
+    && is_file($taxonomyServicesPath . '/TaxonomyRepository.php')
+    && is_file($taxonomyServicesPath . '/TaxonomyAssignmentRepository.php');
+$contentTaxonomyEnabled = false;
+
+if ($contentTaxonomyAvailable) {
+    try {
+        $taxonomyModule = (new ModuleRepository($app->database()))->findByName('taxonomy');
+        $contentTaxonomyEnabled = ($taxonomyModule['status'] ?? null) === 'enabled';
+    } catch (Throwable) {
+        $contentTaxonomyEnabled = false;
+    }
+}
+
+if ($contentTaxonomyAvailable && $contentTaxonomyEnabled) {
+    require_once $taxonomyServicesPath . '/TaxonomyType.php';
+    require_once $taxonomyServicesPath . '/TaxonomyTerm.php';
+    require_once $taxonomyServicesPath . '/TaxonomyRepository.php';
+    require_once $taxonomyServicesPath . '/TaxonomyAssignmentRepository.php';
+}
 
 $contentAdminPath = $app->config()->get('admin.path', 'admin');
 
@@ -17,6 +41,8 @@ if (!is_string($contentAdminPath) || !preg_match('/^[a-z0-9-]+$/', $contentAdmin
 $contentAdminBase = '/' . $contentAdminPath;
 $contentRepository = new ContentRepository($app->database());
 $contentSlugger = new Slugger();
+$contentTaxonomyRepository = $contentTaxonomyEnabled ? new TaxonomyRepository($app->database()) : null;
+$contentTaxonomyAssignments = $contentTaxonomyEnabled ? new TaxonomyAssignmentRepository($app->database()) : null;
 
 $app->adminNavigation()->add('Content', $contentAdminBase . '/content', [
     'content.create',
@@ -138,6 +164,118 @@ $contentReadFormData = function ($request, $user, ?Content $existing = null) use
     return [$data, $errors];
 };
 
+$contentTaxonomyIdsFromRequest = function ($request, string $field): array {
+    $values = $request->post($field, []);
+
+    if (!is_array($values)) {
+        $values = [$values];
+    }
+
+    $ids = [];
+
+    foreach ($values as $value) {
+        if (!is_numeric($value) || (int) $value <= 0) {
+            continue;
+        }
+
+        $id = (int) $value;
+
+        if (!in_array($id, $ids, true)) {
+            $ids[] = $id;
+        }
+    }
+
+    return $ids;
+};
+
+$contentTaxonomyOptions = function () use ($contentTaxonomyRepository): array {
+    $empty = [
+        'available' => false,
+        'categories' => [],
+        'tags' => [],
+    ];
+
+    if (!$contentTaxonomyRepository) {
+        return $empty;
+    }
+
+    try {
+        return [
+            'available' => true,
+            'categories' => $contentTaxonomyRepository->termsByType('category'),
+            'tags' => $contentTaxonomyRepository->termsByType('tag'),
+        ];
+    } catch (Throwable) {
+        return $empty;
+    }
+};
+
+$contentSelectedTaxonomy = function (?Content $content = null) use ($contentTaxonomyAssignments): array {
+    $empty = [
+        'category_ids' => [],
+        'tag_ids' => [],
+    ];
+
+    if (!$content || !$contentTaxonomyAssignments) {
+        return $empty;
+    }
+
+    try {
+        return [
+            'category_ids' => array_map(
+                fn (TaxonomyTerm $term): int => $term->id(),
+                $contentTaxonomyAssignments->termsForEntityByType('content', $content->id(), 'category')
+            ),
+            'tag_ids' => array_map(
+                fn (TaxonomyTerm $term): int => $term->id(),
+                $contentTaxonomyAssignments->termsForEntityByType('content', $content->id(), 'tag')
+            ),
+        ];
+    } catch (Throwable) {
+        return $empty;
+    }
+};
+
+$contentSelectedTaxonomyFromRequest = function ($request) use ($contentTaxonomyIdsFromRequest): array {
+    return [
+        'category_ids' => $contentTaxonomyIdsFromRequest($request, 'category_ids'),
+        'tag_ids' => $contentTaxonomyIdsFromRequest($request, 'tag_ids'),
+    ];
+};
+
+$contentSyncTaxonomy = function (int $contentId, array $selected) use ($contentTaxonomyAssignments): void {
+    if (!$contentTaxonomyAssignments) {
+        return;
+    }
+
+    try {
+        $contentTaxonomyAssignments->syncForType('content', $contentId, 'category', $selected['category_ids'] ?? []);
+        $contentTaxonomyAssignments->syncForType('content', $contentId, 'tag', $selected['tag_ids'] ?? []);
+    } catch (Throwable) {
+    }
+};
+
+$contentTaxonomyForList = function (array $contents) use ($contentTaxonomyAssignments): array {
+    $terms = [];
+
+    if (!$contentTaxonomyAssignments) {
+        return $terms;
+    }
+
+    foreach ($contents as $entry) {
+        try {
+            $terms[$entry->id()] = [
+                'categories' => $contentTaxonomyAssignments->termsForEntityByType('content', $entry->id(), 'category'),
+                'tags' => $contentTaxonomyAssignments->termsForEntityByType('content', $entry->id(), 'tag'),
+            ];
+        } catch (Throwable) {
+            return [];
+        }
+    }
+
+    return $terms;
+};
+
 $contentRenderAdmin = function (string $title, string $content, $user, int $status = 200) use ($app, $contentAdminBase): Response {
     return Response::html($app->view()->render('admin/layout', [
         'title' => $title,
@@ -157,6 +295,8 @@ $app->router()->get($contentAdminBase . '/content', function () use (
     $contentRequireAdmin,
     $contentRenderAdmin,
     $contentRenderView,
+    $contentTaxonomyForList,
+    $contentTaxonomyEnabled,
     $contentAdminBase
 ): Response {
     $user = $contentRequireAdmin([
@@ -170,9 +310,12 @@ $app->router()->get($contentAdminBase . '/content', function () use (
         return $user;
     }
 
+    $contents = $contentRepository->paginate(50);
     $content = $contentRenderView('list', [
         'adminBase' => $contentAdminBase,
-        'contents' => $contentRepository->paginate(50),
+        'contents' => $contents,
+        'taxonomyAvailable' => $contentTaxonomyEnabled,
+        'taxonomyTerms' => $contentTaxonomyForList($contents),
         'canCreate' => $user->can('content.create'),
         'canUpdate' => $user->can('content.update'),
         'canPublish' => $user->can('content.publish'),
@@ -213,6 +356,8 @@ $app->router()->get($contentAdminBase . '/content/create', function () use (
     $contentRequireAdmin,
     $contentRenderAdmin,
     $contentRenderView,
+    $contentSelectedTaxonomy,
+    $contentTaxonomyOptions,
     $contentToFormData,
     $contentAdminBase
 ): Response {
@@ -232,6 +377,8 @@ $app->router()->get($contentAdminBase . '/content/create', function () use (
         'canPublish' => $user->can('content.publish'),
         'errors' => [],
         'content' => $contentToFormData(),
+        'taxonomy' => $contentTaxonomyOptions(),
+        'selectedTaxonomy' => $contentSelectedTaxonomy(),
     ]);
 
     return $contentRenderAdmin('Create Content', $content, $user);
@@ -243,6 +390,8 @@ $app->router()->get($contentAdminBase . '/content/{id}/edit', function ($request
     $contentRequireAdmin,
     $contentRenderAdmin,
     $contentRenderView,
+    $contentSelectedTaxonomy,
+    $contentTaxonomyOptions,
     $contentToFormData,
     $contentAdminBase
 ): Response {
@@ -269,6 +418,8 @@ $app->router()->get($contentAdminBase . '/content/{id}/edit', function ($request
         'canPublish' => $user->can('content.publish'),
         'errors' => [],
         'content' => $contentToFormData($entry),
+        'taxonomy' => $contentTaxonomyOptions(),
+        'selectedTaxonomy' => $contentSelectedTaxonomy($entry),
     ]);
 
     return $contentRenderAdmin('Edit Content', $content, $user);
@@ -281,6 +432,9 @@ $app->router()->post($contentAdminBase . '/content', function ($request) use (
     $contentRenderAdmin,
     $contentRenderView,
     $contentReadFormData,
+    $contentSelectedTaxonomyFromRequest,
+    $contentSyncTaxonomy,
+    $contentTaxonomyOptions,
     $contentToFormData,
     $contentValidateCsrf,
     $contentAdminBase
@@ -298,6 +452,7 @@ $app->router()->post($contentAdminBase . '/content', function ($request) use (
     }
 
     [$data, $errors] = $contentReadFormData($request, $user);
+    $selectedTaxonomy = $contentSelectedTaxonomyFromRequest($request);
 
     if ($errors !== []) {
         $content = $contentRenderView('form', [
@@ -310,13 +465,16 @@ $app->router()->post($contentAdminBase . '/content', function ($request) use (
             'canPublish' => $user->can('content.publish'),
             'errors' => $errors,
             'content' => array_merge($contentToFormData(), $data),
+            'taxonomy' => $contentTaxonomyOptions(),
+            'selectedTaxonomy' => $selectedTaxonomy,
         ]);
 
         return $contentRenderAdmin('Create Content', $content, $user, 422);
     }
 
     try {
-        $contentRepository->create($data);
+        $contentId = $contentRepository->create($data);
+        $contentSyncTaxonomy($contentId, $selectedTaxonomy);
     } catch (InvalidArgumentException $exception) {
         $content = $contentRenderView('form', [
             'adminBase' => $contentAdminBase,
@@ -328,6 +486,8 @@ $app->router()->post($contentAdminBase . '/content', function ($request) use (
             'canPublish' => $user->can('content.publish'),
             'errors' => [$exception->getMessage()],
             'content' => array_merge($contentToFormData(), $data),
+            'taxonomy' => $contentTaxonomyOptions(),
+            'selectedTaxonomy' => $selectedTaxonomy,
         ]);
 
         return $contentRenderAdmin('Create Content', $content, $user, 422);
@@ -430,6 +590,9 @@ $app->router()->post($contentAdminBase . '/content/{id}', function ($request, ar
     $contentRenderAdmin,
     $contentRenderView,
     $contentReadFormData,
+    $contentSelectedTaxonomyFromRequest,
+    $contentSyncTaxonomy,
+    $contentTaxonomyOptions,
     $contentToFormData,
     $contentValidateCsrf,
     $contentAdminBase
@@ -454,6 +617,7 @@ $app->router()->post($contentAdminBase . '/content/{id}', function ($request, ar
     }
 
     [$data, $errors] = $contentReadFormData($request, $user, $entry);
+    $selectedTaxonomy = $contentSelectedTaxonomyFromRequest($request);
 
     if ($errors !== []) {
         $content = $contentRenderView('form', [
@@ -466,6 +630,8 @@ $app->router()->post($contentAdminBase . '/content/{id}', function ($request, ar
             'canPublish' => $user->can('content.publish'),
             'errors' => $errors,
             'content' => array_merge($contentToFormData($entry), $data),
+            'taxonomy' => $contentTaxonomyOptions(),
+            'selectedTaxonomy' => $selectedTaxonomy,
         ]);
 
         return $contentRenderAdmin('Edit Content', $content, $user, 422);
@@ -473,6 +639,7 @@ $app->router()->post($contentAdminBase . '/content/{id}', function ($request, ar
 
     try {
         $contentRepository->update($entry->id(), $data);
+        $contentSyncTaxonomy($entry->id(), $selectedTaxonomy);
     } catch (InvalidArgumentException $exception) {
         $content = $contentRenderView('form', [
             'adminBase' => $contentAdminBase,
@@ -484,6 +651,8 @@ $app->router()->post($contentAdminBase . '/content/{id}', function ($request, ar
             'canPublish' => $user->can('content.publish'),
             'errors' => [$exception->getMessage()],
             'content' => array_merge($contentToFormData($entry), $data),
+            'taxonomy' => $contentTaxonomyOptions(),
+            'selectedTaxonomy' => $selectedTaxonomy,
         ]);
 
         return $contentRenderAdmin('Edit Content', $content, $user, 422);

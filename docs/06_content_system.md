@@ -156,6 +156,20 @@ CSRF handling uses `app/Core/Csrf.php`. New POST routes should use `$app->csrf()
 
 ## Taxonomy Boundary
 
-Categories and tags are deferred to M1.6 Taxonomy System.
+Categories and tags are provided by the M1.6 Taxonomy Foundation when the Taxonomy module is installed and enabled.
 
-M1.5 must not create taxonomy tables or category/tag UI.
+Content can integrate taxonomy terms in the admin create/edit form:
+
+* Category terms from taxonomy type `category`
+* Tag terms from taxonomy type `tag`
+
+Assignments are stored through the Taxonomy module using:
+
+```text
+entity_type = content
+entity_id = content.id
+```
+
+Content still works when the Taxonomy module is disabled. In that case, taxonomy fields and taxonomy list columns are hidden and assignment sync is skipped.
+
+The Content Module remains responsible for content lifecycle and rendering. Taxonomy does not replace Content and does not add public taxonomy URLs in M1.6.

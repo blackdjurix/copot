@@ -114,19 +114,21 @@ Content publishing foundation with a local Content module, admin create/edit/lis
 
 ---
 
-## M1.6 Taxonomy System
+## M1.6 Taxonomy Foundation
 
-Status: Next planned milestone after M1.5.
+Status: Implemented in v0.6.0.
 
 ### Scope
 
-* Generic Categories
-* Generic Tags
-* Reusable Taxonomies
+* Taxonomy Module
+* Taxonomy Types
+* Taxonomy Terms
+* Generic Assignments
+* Content Integration
 
 ### Deliverable
 
-Reusable classification system.
+Reusable classification foundation with seeded category/tag taxonomy types, admin term management, generic assignments, delete guards for assigned terms, and minimal Content integration when the Taxonomy module is enabled.
 
 ---
 

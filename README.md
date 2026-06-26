@@ -4,13 +4,13 @@ A modular PHP-based website framework designed for flexible content, business, a
 
 ## Status
 
-M1.5 Content Module is ready for release.
+M1.6 Taxonomy Foundation is ready for release.
 
-The framework is runnable as a lightweight PHP skeleton with authentication, authorization, a local module manager foundation, a frontend theme system, a minimal core admin shell, and a first local Content Module. It can serve public pages through an active theme, login/logout users, protect routes, discover local modules and themes, register them in the database, enable or disable modules, activate a frontend theme, resolve themed views, serve controlled active-theme assets, provide a configurable admin entry point, and create/render basic published content.
+The framework is runnable as a lightweight PHP skeleton with authentication, authorization, a local module manager foundation, a frontend theme system, a minimal core admin shell, a first local Content Module, and a reusable Taxonomy Foundation. It can serve public pages through an active theme, login/logout users, protect routes, discover local modules and themes, register them in the database, enable or disable modules, activate a frontend theme, resolve themed views, serve controlled active-theme assets, provide a configurable admin entry point, create/render basic published content, and manage category/tag terms for content classification when the Taxonomy module is enabled.
 
 ## Current Milestone
 
-M1.5 Content Module
+M1.6 Taxonomy Foundation
 
 Included so far:
 
@@ -65,6 +65,14 @@ Included so far:
 - Escaped plaintext content body rendering with line breaks
 - Theme System rendering through `content::show`
 - Theme override support for content view rendering
+- Local `modules/taxonomy` module
+- Taxonomy database schema for types, terms, and assignments
+- Default taxonomy types: `category`, `tag`
+- Taxonomy permissions: `taxonomy.create`, `taxonomy.update`, `taxonomy.delete`
+- Admin taxonomy term management under `/admin/taxonomy`
+- Generic taxonomy assignment engine using `entity_type`
+- Content admin category/tag selection when Taxonomy module is enabled
+- Content admin fallback when Taxonomy module is disabled
 
 Not included yet:
 
@@ -91,7 +99,6 @@ Not included yet:
 - Settings UI
 - Analytics
 - Editor.js
-- Taxonomy categories and tags
 - Media/image service
 - SEO module
 - Comments
@@ -102,6 +109,10 @@ Not included yet:
 - Scheduling engine
 - Content Workspace
 - Localization
+- Public taxonomy URLs
+- Taxonomy type management UI
+- Taxonomy tree UI
+- Taxonomy archive pages
 - Remote module download
 
 ## Local Development
@@ -152,8 +163,11 @@ The schema creates:
 - `module_permissions`
 - `themes`
 - `content`
+- `taxonomy_types`
+- `taxonomy_terms`
+- `taxonomy_assignments`
 
-The schema seeds the `admin` and `user` roles plus the `protected.access`, `admin.access`, and basic content permissions. It does not seed a default admin user.
+The schema seeds the `admin` and `user` roles plus the `protected.access`, `admin.access`, basic content permissions, and basic taxonomy permissions. It does not seed a default admin user.
 
 ## Manual Default Theme
 
@@ -224,6 +238,8 @@ WHERE roles.slug = 'admin';
 ```
 
 For an existing local database created before M1.5, apply the `content` table and content permission statements from `database/schema.sql`, or recreate the local database from the full schema if that is acceptable for your test data.
+
+For an existing local database created before M1.6, apply the taxonomy table, seed, permission, and admin role mapping statements from `database/schema.sql`, or recreate the local database from the full schema if that is acceptable for your test data.
 
 ## Admin Shell
 
@@ -304,7 +320,52 @@ archived
 
 Only `published` content renders on the frontend. Draft, archived, and missing content return `404 Not Found`.
 
-M1.5 uses a plain textarea for the body. It does not include Editor.js, taxonomy categories/tags, media/image handling, SEO, comments, advanced search, revisions, autosave, approval workflow, custom fields, scheduling, or Content Workspace.
+M1.5 uses a plain textarea for the body. M1.6 adds optional taxonomy integration when the Taxonomy module is enabled. Content still works when the Taxonomy module is disabled; the category/tag fields and list column are hidden and assignment sync is skipped.
+
+The Content Module does not include Editor.js, media/image handling, SEO, comments, advanced search, revisions, autosave, approval workflow, custom fields, scheduling, or Content Workspace.
+
+## Taxonomy Foundation
+
+M1.6 adds a reusable local Taxonomy Foundation module at:
+
+```text
+modules/taxonomy
+```
+
+The module must be installed and enabled through the Module Manager, like other local modules. It is not enabled automatically.
+
+Install and enable the Taxonomy Module:
+
+```powershell
+cd "K:\My Drive\GitHub\copot"
+& "C:\xampp\php\php.exe" -r "chdir('K:/My Drive/GitHub/copot'); `$app = require 'bootstrap/app.php'; `$app->modules()->install('taxonomy'); `$app->modules()->enable('taxonomy'); echo 'taxonomy enabled';"
+```
+
+Admin routes:
+
+```text
+/admin/taxonomy
+/admin/taxonomy/category
+/admin/taxonomy/tag
+```
+
+Current capabilities:
+
+- Manage seeded taxonomy types `category` and `tag`.
+- Create, edit, and delete flat terms.
+- Reject deleting a term while it is assigned.
+- Assign category/tag terms to content entries from the content create/edit form.
+- Hide taxonomy fields in Content admin when the Taxonomy module is disabled.
+
+Permissions:
+
+```text
+taxonomy.create
+taxonomy.update
+taxonomy.delete
+```
+
+M1.6 intentionally does not include public taxonomy URLs, `/category/{slug}`, `/tag/{slug}`, taxonomy archive pages, taxonomy type management UI, tree UI, drag-drop hierarchy UI, SEO taxonomy pages, search indexing, API endpoints, import/export, taxonomy custom fields, or taxonomy media/icon handling.
 
 ## Manual Auth Test Checklist
 
@@ -346,6 +407,21 @@ Run these checks at `http://copot.test` after the Content Module is installed an
 - Draft content returns `404` at `/content/{slug}`.
 - Archived content remains visible in admin but returns `404` at `/content/{slug}`.
 - A temporary theme override at `themes/default/views/modules/content/show.php` wins over `modules/content/views/show.php`, then remove the temporary file after testing.
+- With the Taxonomy module enabled, create category/tag terms and confirm the content create/edit form can select them.
+- With the Taxonomy module disabled, confirm content list/create/edit still work and taxonomy fields are hidden.
+
+## Manual Taxonomy Module Test Checklist
+
+Run these checks at `http://copot.test` after the Taxonomy Module is installed and enabled:
+
+- `GET /admin/taxonomy` shows available taxonomy types.
+- `GET /admin/taxonomy/category` shows category terms.
+- `GET /admin/taxonomy/tag` shows tag terms.
+- Create a category term and tag term.
+- Edit each term and confirm changes save.
+- Invalid or missing CSRF on term create, update, or delete returns `419`.
+- Delete an unused term successfully.
+- Assign a term to content, then confirm deleting the assigned term is rejected.
 
 ## Manual Module Test Checklist
 
