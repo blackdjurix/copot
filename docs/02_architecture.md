@@ -59,6 +59,27 @@ Current examples:
 * `AdminNavigation` provides request-scope admin navigation items without a database-backed menu manager.
 * `Csrf` centralizes POST-body-only CSRF validation and controlled `419` responses.
 
+M1.7 implements Settings as a Core/platform service rather than an optional module.
+
+The Settings components have focused responsibilities:
+
+* `SettingDefinition` describes a known namespace/key, type, default, validation, allowed values, and metadata.
+* `SettingsRegistry` owns code-defined definitions and rejects invalid or duplicate identifiers.
+* `SettingsRepository` persists raw override rows through PDO.
+* `SettingsService` resolves effective values, validates writes, serializes/casts typed values, and provides the public Settings API.
+
+Defaults come from definitions. The `settings` table stores overrides only. Core and module consumers read settings through `Application::settings()` rather than querying the settings table or repository directly.
+
+Dependency direction:
+
+```text
+Core Settings
+->
+Core and Modules
+```
+
+Settings must not depend on Content, Taxonomy, Theme, or business modules. Modules may depend on Settings and may own module-specific namespaces in future, but module-specific definitions and UI are outside M1.7. Runtime consumers use effective service values with controlled definition-default fallback when storage or an individual stored override is unusable.
+
 Feature routes should use these services instead of repeating security-sensitive logic manually.
 
 ---
@@ -116,11 +137,11 @@ Current limits:
 * No module management UI
 * No theme management UI
 * No role or permission UI
-* No settings UI
+* No arbitrary settings definition editor
 * No analytics
 * No editor integration
 * No media or image service
-* No localization
+* No translation or multilingual UI
 * No admin theming
 * No admin navigation manager
 * No middleware system

@@ -8,23 +8,25 @@
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
-The project has completed M1.6 Taxonomy Foundation and is preparing M1.7 Settings Foundation.
+M1.7 Settings Foundation implementation is complete, and the project is preparing the v0.7.0 release.
 
 ---
 
 ## Current Phase
 
-### M1.7 Settings Foundation
+### M1.7 Release Prep / Final Audit
 
 Primary goal:
 
-Prepare the M1.7 Settings Foundation work after completing a post-M1 roadmap cleanup.
+Complete M1.7 documentation, final audit, and release preparation for v0.7.0.
 
 Current batch:
 
-Batch 0 - Post-M1 Roadmap Cleanup.
+Batch 6 - Docs + Release Prep.
 
-Coding for M1.7 Settings has not started. Batch 0 must be reviewed before Batch 1 Settings implementation begins.
+Target release: v0.7.0.
+
+M1.7 implementation is complete and awaiting final audit. The next milestone is M1.8 Installer, but its scope must not be opened during M1.7 release preparation.
 
 ---
 
@@ -106,10 +108,11 @@ Coding for M1.7 Settings has not started. Batch 0 must be reviewed before Batch 
 * Browser image editor candidates may include Cropper.js.
 * Server-side image processing should support GD as baseline and Imagick as optional enhancement.
 * Do not make Imagick required for core.
-* UI/system localization should be treated as a future Core Service.
-* Localization may include language, timezone, locale, date format, number format, currency format, and UI translation.
+* Basic localization settings for timezone, locale, date format, and time format are part of M1.7 Settings Foundation.
+* Broader UI/system localization should be treated as a future Core Service capability.
+* Localization may later include language, number format, currency format, and UI translation.
 * Content translation is separate from UI localization and belongs to future Content/multilanguage work.
-* Do not implement localization yet.
+* Do not implement a translation engine or multilingual content in M1.7.
 
 ---
 ## Permission Strategy
@@ -132,8 +135,20 @@ Coding for M1.7 Settings has not started. Batch 0 must be reviewed before Batch 
 
 * Core Services provide capabilities.
 * Core Features provide UI/business features.
-* Editor, Media/Image, Localization, and Cache are future Core Services unless explicitly changed.
-* Content, Menu, Settings, and Users are Core Features.
+* Settings is a Core/platform service. Its M1.7 Admin Settings UI is part of the platform foundation.
+* Editor, Media/Image, broader Localization, and Cache are future Core Services unless explicitly changed.
+* Content, Menu, and Users are Core Features.
+
+---
+## Settings Rules
+
+* Settings provides core persistence, retrieval, validation, and type casting for known setting definitions.
+* M1.7 covers global/site settings and basic localization settings only.
+* Database rows store overrides; defaults remain defined in code or configuration.
+* Modules may use their own settings namespaces in future, but remain responsible for their definitions and UI.
+* Settings must not depend on Content, Taxonomy, Theme, or business modules.
+* Do not store secrets, passwords, SMTP credentials, API tokens, or environment configuration in Settings.
+* The M1.7 Admin Settings UI must not allow arbitrary namespace or key creation.
 
 ---
 ## Architecture Rules
@@ -288,6 +303,7 @@ When adding or changing major behavior, update the relevant documentation:
 * `docs/06_container_engine.md`
 * `docs/07_taxonomy_system.md`
 * `docs/07_installer_system.md`
+* `docs/08_settings_system.md`
 
 Update `CHANGELOG.md` for meaningful project changes.
 
@@ -347,9 +363,11 @@ M1.1 Define core bootstrap architecture
 
 M1.6 Taxonomy Foundation has been released as v0.6.0.
 
-The current task is M1.7 Batch 0: Post-M1 Roadmap Cleanup.
+The current task is M1.7 Batch 6: Docs + Release Prep.
 
-Do not start Settings implementation until Batch 0 is reviewed and approved.
+Target release is v0.7.0. M1.7 implementation and manual testing are complete.
+
+The immediate goal is to audit, commit, merge, and tag v0.7.0 after approval. M1.8 Installer is next, but no M1.8 implementation or scope expansion begins in this batch.
 
 
 

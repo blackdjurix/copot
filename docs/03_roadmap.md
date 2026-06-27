@@ -134,17 +134,20 @@ Reusable classification foundation with seeded category/tag taxonomy types, admi
 
 ## M1.7 Settings
 
+Status: Implemented in v0.7.0.
+
 ### Scope
 
-* Site Title
-* Site Description
-* Logo
-* Email
-* Localization
+* Namespaced Settings Persistence
+* Code-defined Defaults
+* Typed Setting Values
+* General Settings Admin UI
+* Basic Localization Settings Admin UI
+* Basic Runtime Integration
 
 ### Deliverable
 
-Centralized site configuration management.
+Core Settings Foundation with known global/site definitions, database overrides, typed retrieval, controlled validation, General and Localization admin sections, and basic runtime use of site name and localization values.
 
 ---
 

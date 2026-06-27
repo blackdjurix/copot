@@ -1,6 +1,34 @@
 # Changelog
 
 <details open>
+<summary>v0.7.0 - M1.7 Settings Foundation</summary>
+
+### Added
+
+- Added the Core Settings definition, registry, repository, and typed service foundation.
+- Added namespaced setting identifiers with code-defined defaults and database overrides.
+- Added typed serialization and casting for string, integer, boolean, float, and JSON values.
+- Added the `settings` database table and `settings.update` permission with admin role mapping.
+- Added a General and Localization Admin Settings page at the configured admin path.
+- Added runtime timezone application, active locale access, and Site Name admin browser titles.
+
+### Security
+
+- Settings POST uses the Core CSRF service and `settings.update` permission guard.
+- The Admin Settings form accepts only six explicit whitelisted fields.
+- Settings save validates all fields before a transactional write.
+- Admin output and browser titles escape stored Site Name and Site Tagline values.
+- Missing storage and invalid stored overrides use controlled defaults without exposing SQL or exception details.
+
+### Notes
+
+- The database stores overrides only; defaults remain in code-defined settings definitions.
+- Invalid stored rows are not rewritten automatically and do not discard other valid overrides.
+- M1.7 does not include a translation engine, multilingual content/UI, per-user settings, module-specific settings UI, public Settings UI, settings cache, flash infrastructure, public theme title integration, a generic date/time formatter, or installer integration.
+
+</details>
+
+<details>
 <summary>v0.6.0 - M1.6 Taxonomy Foundation</summary>
 
 ### Added

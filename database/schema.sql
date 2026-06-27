@@ -62,7 +62,8 @@ INSERT INTO permissions (name, slug, created_at, updated_at) VALUES
     ('Publish content', 'content.publish', NOW(), NOW()),
     ('Create taxonomy terms', 'taxonomy.create', NOW(), NOW()),
     ('Update taxonomy terms', 'taxonomy.update', NOW(), NOW()),
-    ('Delete unused taxonomy terms', 'taxonomy.delete', NOW(), NOW());
+    ('Delete unused taxonomy terms', 'taxonomy.delete', NOW(), NOW()),
+    ('Update site settings', 'settings.update', NOW(), NOW());
 
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
@@ -96,6 +97,23 @@ INNER JOIN permissions ON permissions.slug IN (
     'taxonomy.delete'
 )
 WHERE roles.slug = 'admin';
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT roles.id, permissions.id
+FROM roles
+INNER JOIN permissions ON permissions.slug = 'settings.update'
+WHERE roles.slug = 'admin';
+
+CREATE TABLE settings (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    namespace VARCHAR(64) NOT NULL,
+    setting_key VARCHAR(128) NOT NULL,
+    setting_value MEDIUMTEXT NOT NULL,
+    value_type VARCHAR(20) NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    UNIQUE KEY uq_settings_namespace_key (namespace, setting_key)
+);
 
 CREATE TABLE modules (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

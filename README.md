@@ -4,13 +4,13 @@ A modular PHP-based website framework designed for flexible content, business, a
 
 ## Status
 
-M1.6 Taxonomy Foundation is ready for release.
+M1.7 Settings Foundation is ready for final audit and the v0.7.0 release.
 
-The framework is runnable as a lightweight PHP skeleton with authentication, authorization, a local module manager foundation, a frontend theme system, a minimal core admin shell, a first local Content Module, and a reusable Taxonomy Foundation. It can serve public pages through an active theme, login/logout users, protect routes, discover local modules and themes, register them in the database, enable or disable modules, activate a frontend theme, resolve themed views, serve controlled active-theme assets, provide a configurable admin entry point, create/render basic published content, and manage category/tag terms for content classification when the Taxonomy module is enabled.
+The framework is runnable as a lightweight PHP skeleton with authentication, authorization, a local module manager foundation, a frontend theme system, a minimal core admin shell, Content and Taxonomy modules, and a Core Settings Foundation. It can serve public pages through an active theme, manage local modules and themes, provide a configurable admin entry point, publish basic content, classify content, persist typed global settings, and apply site/localization settings at runtime.
 
 ## Current Milestone
 
-M1.6 Taxonomy Foundation
+M1.7 Settings Foundation
 
 Included so far:
 
@@ -73,6 +73,14 @@ Included so far:
 - Generic taxonomy assignment engine using `entity_type`
 - Content admin category/tag selection when Taxonomy module is enabled
 - Content admin fallback when Taxonomy module is disabled
+- Core Settings definitions, registry, repository, and typed service
+- Namespaced settings overrides with code-defined defaults
+- Configurable Admin Settings route under `/{admin_path}/settings`
+- `settings.update` permission for viewing and saving settings
+- Transactional, CSRF-protected Settings form
+- Runtime timezone application and active locale foundation
+- Admin browser titles using the configured Site Name
+- Controlled per-setting fallback for missing, unavailable, or invalid overrides
 
 Not included yet:
 
@@ -96,7 +104,6 @@ Not included yet:
 - Admin theming
 - Admin navigation manager
 - Role/permission UI
-- Settings UI
 - Analytics
 - Editor.js
 - Media/image service
@@ -108,7 +115,10 @@ Not included yet:
 - Custom fields
 - Scheduling engine
 - Content Workspace
-- Localization
+- Translation engine and multilingual UI/content
+- Per-user settings, timezone, or locale
+- Public Settings UI
+- Settings cache layer
 - Public taxonomy URLs
 - Taxonomy type management UI
 - Taxonomy tree UI
@@ -166,8 +176,9 @@ The schema creates:
 - `taxonomy_types`
 - `taxonomy_terms`
 - `taxonomy_assignments`
+- `settings`
 
-The schema seeds the `admin` and `user` roles plus the `protected.access`, `admin.access`, basic content permissions, and basic taxonomy permissions. It does not seed a default admin user.
+The schema seeds the `admin` and `user` roles plus the `protected.access`, `admin.access`, basic content permissions, basic taxonomy permissions, and `settings.update`. It does not seed a default admin user or default setting rows.
 
 ## Manual Default Theme
 
@@ -241,6 +252,8 @@ For an existing local database created before M1.5, apply the `content` table an
 
 For an existing local database created before M1.6, apply the taxonomy table, seed, permission, and admin role mapping statements from `database/schema.sql`, or recreate the local database from the full schema if that is acceptable for your test data.
 
+For an existing local database created before M1.7, apply the `settings` table plus the `settings.update` permission and admin role mapping statements from `database/schema.sql`. The table stores overrides only; defaults remain in Core definitions.
+
 ## Admin Shell
 
 M1.4.1 adds a minimal core admin shell.
@@ -275,7 +288,7 @@ Admin path rules for M1.4.1:
 
 Admin login lives at the same admin path. `GET /admin` shows the admin login form for guests and does not redirect to `/login`. `POST /admin` handles admin login with CSRF protection. Successful login redirects back to `/admin`, where the dashboard renders. Admin logout posts to `/admin/logout` and returns to `/admin`.
 
-M1.4.1 intentionally does not include admin theming, an admin navigation manager, Content CRUD, module UI, theme UI, role/permission UI, settings UI, analytics, editor functionality, media/image services, localization, or middleware.
+M1.4.1 itself does not include admin theming, an admin navigation manager, Content CRUD, module UI, theme UI, role/permission UI, analytics, editor functionality, media/image services, or middleware. M1.7 adds the Core Admin Settings page without introducing admin theming or a generic settings editor.
 
 ## Content Module
 
@@ -366,6 +379,50 @@ taxonomy.delete
 ```
 
 M1.6 intentionally does not include public taxonomy URLs, `/category/{slug}`, `/tag/{slug}`, taxonomy archive pages, taxonomy type management UI, tree UI, drag-drop hierarchy UI, SEO taxonomy pages, search indexing, API endpoints, import/export, taxonomy custom fields, or taxonomy media/icon handling.
+
+## Settings Foundation
+
+M1.7 adds Core Settings at the configured admin path:
+
+```text
+/{admin_path}/settings
+```
+
+With the default `admin.path` value, the route is `/admin/settings`. Access and save operations require `settings.update`.
+
+M1.7 defines six settings:
+
+```text
+site.name
+site.tagline
+localization.timezone
+localization.locale
+localization.date_format
+localization.time_format
+```
+
+Definitions and defaults live in Core code. The `settings` database table stores overrides only. Runtime behavior applies the active timezone before route/module handling, exposes the active locale through `Application`, and formats common admin browser titles as `<Page Title> | <site.name>`.
+
+Missing tables, unavailable storage reads, missing overrides, and invalid stored overrides fall back to definition defaults without exposing SQL or exception details. An invalid stored row is not rewritten automatically, and valid overrides for other settings remain available.
+
+M1.7 does not add a translation engine, multilingual content/UI, per-user settings, a public Settings page, a settings cache layer, public theme title integration, flash infrastructure, or a generic date/time formatter.
+
+## Manual Settings Test Checklist
+
+Run these checks at `http://copot.test` after applying the M1.7 schema statements:
+
+- Login as an admin with `settings.update` and open `/{admin_path}/settings`.
+- Confirm all six effective values render from overrides or definitions.
+- Save General and Localization values and confirm POST/Redirect/GET success feedback.
+- Save repeatedly and confirm one row remains for each namespace/key pair.
+- Submit an empty Site Name and confirm status `422` without changing previous overrides.
+- Submit an unsupported timezone, locale, date format, or time format and confirm controlled validation.
+- Submit an invalid or missing CSRF token and confirm status `419` without changes.
+- Confirm unknown posted fields do not create definitions or rows.
+- Confirm a user without `settings.update` cannot see navigation or access the page directly.
+- Confirm HTML characters in Site Name and Site Tagline render as text.
+- Confirm changing `admin.path` moves the Settings route and leaves no hardcoded `/admin/settings` route.
+- Confirm missing storage or an invalid stored override falls back to the relevant definition default while other valid settings remain available.
 
 ## Manual Auth Test Checklist
 

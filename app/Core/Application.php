@@ -9,6 +9,10 @@ class Application
     private Router $router;
     private View $view;
     private Database $database;
+    private SettingsService $settings;
+    private string $siteName;
+    private string $timezone;
+    private string $locale;
     private Session $session;
     private Csrf $csrf;
     private Auth $auth;
@@ -28,6 +32,12 @@ class Application
         $this->router = new Router();
         $this->view = new View($this->path('resources/views'));
         $this->database = new Database($this->config);
+        $settingsRegistry = SettingsRegistry::core();
+        $this->settings = new SettingsService(
+            $settingsRegistry,
+            new SettingsRepository($this->database)
+        );
+        $this->initializeRuntimeSettings($settingsRegistry);
         $this->session = new Session($this->config);
         $this->csrf = new Csrf($this->session);
         $this->auth = new Auth(
@@ -86,6 +96,26 @@ class Application
     public function database(): Database
     {
         return $this->database;
+    }
+
+    public function settings(): SettingsService
+    {
+        return $this->settings;
+    }
+
+    public function siteName(): string
+    {
+        return $this->siteName;
+    }
+
+    public function timezone(): string
+    {
+        return $this->timezone;
+    }
+
+    public function locale(): string
+    {
+        return $this->locale;
     }
 
     public function session(): Session
@@ -157,5 +187,31 @@ class Application
         }
 
         return '/' . $path;
+    }
+
+    private function initializeRuntimeSettings(SettingsRegistry $registry): void
+    {
+        $this->siteName = $this->runtimeSetting($registry, 'site', 'name');
+        $this->timezone = $this->runtimeSetting($registry, 'localization', 'timezone');
+        $this->locale = $this->runtimeSetting($registry, 'localization', 'locale');
+
+        date_default_timezone_set($this->timezone);
+    }
+
+    private function runtimeSetting(SettingsRegistry $registry, string $namespace, string $key): string
+    {
+        $definition = $registry->find($namespace, $key);
+
+        if (!$definition instanceof SettingDefinition || !is_string($definition->defaultValue())) {
+            throw new SettingsException("Missing runtime setting definition [{$namespace}.{$key}].");
+        }
+
+        try {
+            $value = $this->settings->get($namespace, $key);
+        } catch (SettingsException) {
+            return $definition->defaultValue();
+        }
+
+        return is_string($value) ? $value : $definition->defaultValue();
     }
 }

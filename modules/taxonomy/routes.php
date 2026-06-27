@@ -70,6 +70,7 @@ $taxonomyRenderAdmin = function (string $title, string $content, $user, int $sta
     return Response::html($app->view()->render('admin/layout', [
         'title' => $title,
         'appName' => $app->config()->get('app.name', 'Copot'),
+        'siteName' => $app->siteName(),
         'adminPath' => $taxonomyAdminBase,
         'csrfToken' => $app->csrf()->token(),
         'userName' => $user->name(),

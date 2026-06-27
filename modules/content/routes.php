@@ -280,6 +280,7 @@ $contentRenderAdmin = function (string $title, string $content, $user, int $stat
     return Response::html($app->view()->render('admin/layout', [
         'title' => $title,
         'appName' => $app->config()->get('app.name', 'Copot'),
+        'siteName' => $app->siteName(),
         'adminPath' => $contentAdminBase,
         'csrfToken' => $app->session()->csrfToken(),
         'userName' => $user->name(),
