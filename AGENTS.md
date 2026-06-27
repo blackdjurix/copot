@@ -8,17 +8,23 @@
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
-The project has completed M1.5 Content Module and is preparing the M1.6 Taxonomy Foundation release.
+The project has completed M1.6 Taxonomy Foundation and is preparing M1.7 Settings Foundation.
 
 ---
 
 ## Current Phase
 
-### M1.6 Taxonomy Foundation
+### M1.7 Settings Foundation
 
 Primary goal:
 
-Prepare the M1.6 Taxonomy Foundation release with taxonomy types, terms, generic assignments, admin term management, and minimal Content integration while avoiding category-only architecture and future optional taxonomy features.
+Prepare the M1.7 Settings Foundation work after completing a post-M1 roadmap cleanup.
+
+Current batch:
+
+Batch 0 - Post-M1 Roadmap Cleanup.
+
+Coding for M1.7 Settings has not started. Batch 0 must be reviewed before Batch 1 Settings implementation begins.
 
 ---
 
@@ -339,11 +345,11 @@ M1.1 Define core bootstrap architecture
 
 ## Current Immediate Goal
 
-M1.6 Taxonomy Foundation is in release preparation.
+M1.6 Taxonomy Foundation has been released as v0.6.0.
 
-The next task should finalize documentation, audit, and release readiness for M1.6 without adding public taxonomy URLs, taxonomy archive pages, taxonomy type UI, tree UI, SEO, search, API endpoints, M1.7 work, or a larger roadmap overhaul.
+The current task is M1.7 Batch 0: Post-M1 Roadmap Cleanup.
 
-Roadmap overhaul and M1.7 planning are deferred until after M1.6 is merged and tagged.
+Do not start Settings implementation until Batch 0 is reviewed and approved.
 
 
 

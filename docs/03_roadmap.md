@@ -132,7 +132,7 @@ Reusable classification foundation with seeded category/tag taxonomy types, admi
 
 ---
 
-## M1.7 Site Settings
+## M1.7 Settings
 
 ### Scope
 
@@ -165,45 +165,86 @@ Fresh installation process for new deployments.
 
 # Future Milestones
 
-## M2 Business Platform
+The roadmap phases are organized as:
 
-Modules:
+```text
+M1 = Framework Foundation
+M2 = Platform Capabilities
+M3 = Business Modules
+M4 = Commerce
+M5 = Ecosystem
+```
 
-* Asset Management
-* Workflow Automation
+M1 establishes the framework foundation. M2 adds reusable platform capabilities needed for production and commercial solutions. After M2, copot should be mature enough to support production/commercial projects as a platform foundation, even though not every business module will exist yet.
+
+---
+
+## M2 Platform Capabilities
+
+Objective:
+
+Make copot ready to support production/commercial applications and websites by adding reusable platform capabilities. M2 is not a collection of business modules; it strengthens the shared capabilities that later modules can build on.
+
+Candidate capabilities:
+
+* Media Library
+* Image Service and basic image processing
+* Editor Framework and editor adapter/plugin support
+* Content Workspace
+* Navigation / Menu system
+* Search foundation
+* Notification foundation
+* Workflow / Automation foundation
+* Asset Management foundation
 * Internal Dashboard
 
 ---
 
-## M3 Commerce Platform
+## M3 Business Modules
 
-Modules:
+Objective:
 
-* Catalog
-* Store
-* Orders
-* Customers
+Use the Core and M2 Platform Capabilities to build business-oriented modules.
+
+Candidate modules:
+
+* CRM
+* Inventory
+* POS
+* HR
+* Finance
+* Project / Task Management
 
 ---
 
-## M4 Platform Services
+## M4 Commerce
 
-Core Services:
+Objective:
 
-* API Layer
-* Event System
-* Queue System
-* Background Jobs
+Build commerce capabilities on top of the framework foundation and platform capabilities.
+
+Candidate directions:
+
+* Catalog
+* Orders
+* Checkout
+* Payment integration
+* Customer/account commerce flows
 
 ---
 
 ## M5 Ecosystem
 
-Platform Expansion:
+Objective:
 
-* Marketplace
-* Package System
-* External Integrations
-* Developer SDK
+Support distribution, extension, and integration around the copot platform.
+
+Candidate directions:
+
+* Module/package distribution
+* Update lifecycle
+* Extension ecosystem
+* Developer tooling
+* Integration/API ecosystem
 
 
