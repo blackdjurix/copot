@@ -7,7 +7,7 @@ CREATE TABLE users (
     last_login_at DATETIME NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE roles (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -15,7 +15,7 @@ CREATE TABLE roles (
     slug VARCHAR(100) NOT NULL UNIQUE,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE permissions (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -23,7 +23,7 @@ CREATE TABLE permissions (
     slug VARCHAR(150) NOT NULL UNIQUE,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE user_roles (
     user_id BIGINT UNSIGNED NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE user_roles (
     CONSTRAINT fk_user_roles_role
         FOREIGN KEY (role_id) REFERENCES roles(id)
         ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE role_permissions (
     role_id BIGINT UNSIGNED NOT NULL,
@@ -47,7 +47,7 @@ CREATE TABLE role_permissions (
     CONSTRAINT fk_role_permissions_permission
         FOREIGN KEY (permission_id) REFERENCES permissions(id)
         ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO roles (name, slug, created_at, updated_at) VALUES
     ('Administrator', 'admin', NOW(), NOW()),
@@ -113,7 +113,7 @@ CREATE TABLE settings (
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL,
     UNIQUE KEY uq_settings_namespace_key (namespace, setting_key)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE modules (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -127,7 +127,7 @@ CREATE TABLE modules (
     disabled_at DATETIME NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE module_permissions (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -139,7 +139,7 @@ CREATE TABLE module_permissions (
     CONSTRAINT fk_module_permissions_module
         FOREIGN KEY (module_name) REFERENCES modules(name)
         ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE themes (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -154,7 +154,7 @@ CREATE TABLE themes (
     updated_at DATETIME NOT NULL,
     UNIQUE KEY uq_themes_theme_id (theme_id),
     INDEX idx_themes_type_active (type, is_active)
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE content (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -175,7 +175,7 @@ CREATE TABLE content (
     CONSTRAINT fk_content_author
         FOREIGN KEY (author_id) REFERENCES users(id)
         ON DELETE SET NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE taxonomy_types (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -185,7 +185,7 @@ CREATE TABLE taxonomy_types (
     is_hierarchical TINYINT(1) NOT NULL DEFAULT 0,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO taxonomy_types (slug, name, description, is_hierarchical, created_at, updated_at) VALUES
     ('category', 'Category', 'Default hierarchical content classification type.', 1, NOW(), NOW()),
@@ -209,7 +209,7 @@ CREATE TABLE taxonomy_terms (
     CONSTRAINT fk_taxonomy_terms_parent
         FOREIGN KEY (parent_id) REFERENCES taxonomy_terms(id)
         ON DELETE SET NULL
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE taxonomy_assignments (
     taxonomy_term_id BIGINT UNSIGNED NOT NULL,
@@ -221,4 +221,4 @@ CREATE TABLE taxonomy_assignments (
     CONSTRAINT fk_taxonomy_assignments_term
         FOREIGN KEY (taxonomy_term_id) REFERENCES taxonomy_terms(id)
         ON DELETE CASCADE
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

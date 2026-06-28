@@ -4,13 +4,13 @@ A modular PHP-based website framework designed for flexible content, business, a
 
 ## Status
 
-M1.7 Settings Foundation is ready for final audit and the v0.7.0 release.
+M1.8 Installer Foundation implementation is complete and is being prepared for the v0.8.0 final audit and release.
 
-The framework is runnable as a lightweight PHP skeleton with authentication, authorization, a local module manager foundation, a frontend theme system, a minimal core admin shell, Content and Taxonomy modules, and a Core Settings Foundation. It can serve public pages through an active theme, manage local modules and themes, provide a configurable admin entry point, publish basic content, classify content, persist typed global settings, and apply site/localization settings at runtime.
+The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer. New deployments can be configured through `/install` before normal application bootstrap is allowed.
 
 ## Current Milestone
 
-M1.7 Settings Foundation
+M1.8 Installer Foundation
 
 Included so far:
 
@@ -81,6 +81,16 @@ Included so far:
 - Runtime timezone application and active locale foundation
 - Admin browser titles using the configured Site Name
 - Controlled per-setting fallback for missing, unavailable, or invalid overrides
+- Pre-bootstrap installation gate
+- Fresh web installer at `/install`
+- Runtime, filesystem, and database requirement checks
+- Atomic root `.env` database configuration persistence
+- Canonical `database/schema.sql` installation
+- First administrator and initial site/localization setup
+- Automatic default-theme activation
+- Automatic Content and Taxonomy module enablement
+- Atomic final installation marker at `storage/installed.lock`
+- Installer denial after successful installation
 
 Not included yet:
 
@@ -406,6 +416,35 @@ Definitions and defaults live in Core code. The `settings` database table stores
 Missing tables, unavailable storage reads, missing overrides, and invalid stored overrides fall back to definition defaults without exposing SQL or exception details. An invalid stored row is not rewritten automatically, and valid overrides for other settings remain available.
 
 M1.7 does not add a translation engine, multilingual content/UI, per-user settings, a public Settings page, a settings cache layer, public theme title integration, flash infrastructure, or a generic date/time formatter.
+
+## Installer Foundation
+
+M1.8 provides a fresh-install web flow at:
+
+```text
+/install
+```
+
+When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The installer checks the environment, tests a dedicated empty database, persists the five `DB_*` connection values in the root `.env`, installs the canonical schema, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables Content and Taxonomy. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
+
+Requirements:
+
+- PHP 8.2 minimum; PHP 8.3+ recommended; PHP 8.4 preferred.
+- PDO, `pdo_mysql`, Session, JSON, and Filter support.
+- MySQL 8.0+ or MariaDB 10.4.32+.
+- MySQL 8.4 LTS+ or MariaDB 10.11+ recommended for production; MariaDB 11.4 LTS preferred.
+- A pre-created dedicated empty database. Existing tables or views are rejected.
+- Writable `storage`, writable root `.env` when present, and a writable project root for same-directory atomic replacement.
+
+M1.8 is designed for conventional PHP/MySQL shared hosting where PHP can write and rename files in the project root and `storage`, and where `flock()` is available. Hosts that prohibit those operations are not supported by an FTP/SFTP fallback. The installer does not create databases, use table prefixes, upgrade an installation, repair/reset partial installations, select optional modules/themes, or provide backup/restore.
+
+For a fresh manual check:
+
+1. Ensure `storage/installed.lock` is absent and select an empty disposable database.
+2. Open `/install` and complete Requirements, Database, Administrator & Site, and Finalize.
+3. Confirm the final redirect uses the configured admin path.
+4. Confirm `/install` returns `404`, the default theme is active, and Content and Taxonomy are enabled.
+5. If schema execution fails partially, use a new clean database; M1.8 has no destructive repair/reset flow.
 
 ## Manual Settings Test Checklist
 

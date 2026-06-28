@@ -8,25 +8,25 @@
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
-M1.7 Settings Foundation implementation is complete, and the project is preparing the v0.7.0 release.
+M1.8 Installer Foundation implementation is complete. The project is preparing release v0.8.0.
 
 ---
 
 ## Current Phase
 
-### M1.7 Release Prep / Final Audit
+### M1.8 Release Preparation and Final Audit
 
 Primary goal:
 
-Complete M1.7 documentation, final audit, and release preparation for v0.7.0.
+Finalize M1.8 documentation, run the milestone-wide audit, and prepare release v0.8.0 without opening M2 work.
 
 Current batch:
 
-Batch 6 - Docs + Release Prep.
+Batch 8 - Documentation and v0.8.0 Release Preparation.
 
-Target release: v0.7.0.
+Target release: v0.8.0.
 
-M1.7 implementation is complete and awaiting final audit. The next milestone is M1.8 Installer, but its scope must not be opened during M1.7 release preparation.
+Batches 1 through 7 are complete. Batch 8 is limited to documentation, consistency audit, repository hygiene, and release preparation.
 
 ---
 
@@ -149,6 +149,30 @@ M1.7 implementation is complete and awaiting final audit. The next milestone is 
 * Settings must not depend on Content, Taxonomy, Theme, or business modules.
 * Do not store secrets, passwords, SMTP credentials, API tokens, or environment configuration in Settings.
 * The M1.7 Admin Settings UI must not allow arbitrary namespace or key creation.
+
+---
+## Installer Rules
+
+* M1.8 provides a web installer for fresh installations on PHP/MySQL shared hosting.
+* The installer URL is `/install`.
+* The minimum supported PHP runtime is PHP 8.2. PHP 8.2 is accepted with an aging warning, PHP 8.3 or newer is recommended, and PHP 8.4 is preferred. Newer compatible PHP releases must not be rejected solely for being newer.
+* Installation requires a dedicated empty database and does not support table prefixes.
+* Supported database baselines are MySQL 8.0+ and MariaDB 10.4.32+. MariaDB releases before 10.6 are accepted with a legacy/end-of-life warning. Production recommendations are MySQL 8.4 LTS+ or MariaDB 10.11+, with MariaDB 11.4 LTS preferred.
+* The installer must check runtime requirements and writable locations before changing persistent state.
+* Database credentials must be validated with a connection test and persisted through the existing root `.env` pattern.
+* The installer must execute the canonical `database/schema.sql` with a runner designed only for copot's schema format, not a universal SQL parser.
+* The first administrator must be created through a dedicated installer workflow service that reuses existing password, user, role, and permission primitives. The password requires at least 10 characters and confirmation.
+* The installer must save initial site/localization values through `SettingsService`, activate the default theme, and enable the Content and Taxonomy modules.
+* The final installation marker is `storage/installed.lock`. Its exact JSON contract contains only `installed_at` as an ISO-8601 timestamp and `version` as the installed copot version; it contains no status flag, schema version, or secrets.
+* The final installation marker may be created only after every required setup step succeeds.
+* Concurrent installation execution must use an exclusive non-blocking `flock`; temporary lock-file presence alone is not installation state.
+* Installer step presentation must be derived from live schema/administrator state. `/install?step=database` may request the database form without persisting step state or weakening empty-database and duplicate-administrator guards.
+* A client-side successful database-test state is UX only. Database installation must always repeat server-side requirements, CSRF, connection/version, empty-database, mutex, environment-write, and schema checks.
+* Once the installation lock exists, the installer must be unavailable.
+* Public installer errors must not expose database credentials, SQL, filesystem paths, or stack traces.
+* M1.8 does not include a CLI installer, upgrade or migration engine, repair/reset flow, table prefix, multisite, module/theme selection UI, marketplace, infrastructure provisioning, or M2 work.
+* M1.8 batch order is: installation state/gate; requirements/database validation; atomic config/schema; first admin/settings; baseline theme/modules/final lock; installer UI/session; failure/security/shared-hosting hardening; documentation/release prep.
+* M1.8 changes remain uncommitted and unpushed until the milestone-wide final audit and explicit approval.
 
 ---
 ## Architecture Rules
@@ -302,8 +326,8 @@ When adding or changing major behavior, update the relevant documentation:
 * `docs/05_theme_system.md`
 * `docs/06_container_engine.md`
 * `docs/07_taxonomy_system.md`
-* `docs/07_installer_system.md`
 * `docs/08_settings_system.md`
+* `docs/09_installer_system.md`
 
 Update `CHANGELOG.md` for meaningful project changes.
 
@@ -361,13 +385,13 @@ M1.1 Define core bootstrap architecture
 
 ## Current Immediate Goal
 
-M1.6 Taxonomy Foundation has been released as v0.6.0.
+M1.8 Installer Foundation implementation is complete.
 
-The current task is M1.7 Batch 6: Docs + Release Prep.
+The current task is M1.8 Batch 8: Documentation and v0.8.0 Release Preparation.
 
-Target release is v0.7.0. M1.7 implementation and manual testing are complete.
+Target release is v0.8.0. Batches 1 through 7 are approved and Batch 8 is active.
 
-The immediate goal is to audit, commit, merge, and tag v0.7.0 after approval. M1.8 Installer is next, but no M1.8 implementation or scope expansion begins in this batch.
+The immediate goal is to complete the milestone-wide documentation and consistency audit, then prepare M1.8 for final review, commit, merge, and release. M2 work must not begin yet.
 
 
 

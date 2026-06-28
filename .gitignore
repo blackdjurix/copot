@@ -21,6 +21,9 @@ storage/cache/*
 storage/logs/*
 !storage/cache/.gitkeep
 !storage/logs/.gitkeep
+/storage/installed.lock
+/storage/.install.lock
+/storage/.installed-*
 Homestead.yaml
 Homestead.json
 /.vagrant

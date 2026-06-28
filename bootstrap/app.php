@@ -5,7 +5,7 @@ use Copot\Core\Env;
 
 $basePath = dirname(__DIR__);
 
-require $basePath . '/bootstrap/autoload.php';
+require_once $basePath . '/bootstrap/autoload.php';
 
 Env::load($basePath . '/.env');
 

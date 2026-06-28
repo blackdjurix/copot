@@ -153,16 +153,24 @@ Core Settings Foundation with known global/site definitions, database overrides,
 
 ## M1.8 Installer
 
+Status: Implemented in v0.8.0.
+
 ### Scope
 
-* Installation Wizard
-* Database Setup
-* Environment Configuration
-* Administrator Creation
+* Fresh Web Installation Wizard
+* Pre-bootstrap Installation Gate
+* Requirements and Dedicated Empty Database Validation
+* Atomic Environment Configuration
+* Canonical Schema Installation
+* First Administrator and Initial Settings
+* Default Theme and Baseline Module Activation
+* Final Installation Lock
 
 ### Deliverable
 
-Fresh installation process for new deployments.
+Fresh web installation foundation for new deployments, with controlled failure handling and installer denial after successful completion.
+
+M1 Framework Foundation is complete in v0.8.0. M2 remains planning direction only; no M2 capability is implemented as part of M1.8.
 
 ---
 

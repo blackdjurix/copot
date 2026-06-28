@@ -84,6 +84,33 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ---
 
+## Installer Bootstrap Boundary
+
+M1.8 adds a fresh-install boundary before normal `Application` construction. `public/index.php` loads only the Core autoloader, captures the request, validates installation state through `InstallationState`, and asks `InstallerGate` whether to redirect to `/install`, run the isolated installer bootstrap, block the installer, or continue to `bootstrap/app.php`.
+
+Normal application bootstrap is allowed only when `storage/installed.lock` exists and matches the exact marker contract. A missing marker sends normal requests to `/install`. A malformed marker fails safely and does not allow normal bootstrap or marker overwrite. Once the marker is valid, `/install` returns `404`.
+
+Installer responsibilities are divided across focused Core components:
+
+* `InstallerRequirements` checks the supported PHP/extensions and actual writable filesystem prerequisites.
+* `InstallerDatabaseValidator` and `InstallerDatabaseProbe` validate controlled input, server version, connection, and the dedicated empty database.
+* `InstallerEnvironmentWriter` persists only the approved database keys through same-directory atomic replacement.
+* `InstallerSchemaRunner` executes only the controlled statement format in canonical `database/schema.sql`.
+* `InstallerAdministratorSetup` creates the first active administrator, assigns the seeded admin role, and saves initial Settings in one database transaction.
+* `InstallerFinalizer` rechecks live state, activates the default theme, enables Content and Taxonomy, and creates the final marker last.
+* `InstallationMutex` serializes state-changing workflows with exclusive non-blocking `flock()`.
+
+The installer bootstrap reuses Request, Response, Session/CSRF, Database, Settings, Theme, and Module primitives without constructing the complete normal `Application` prematurely. It provides no upgrade, migration, repair, reset, table-prefix, or destructive cleanup path.
+
+```text
+public/index.php
+-> InstallationState + InstallerGate
+-> uninstalled: bootstrap/installer.php
+-> installed: bootstrap/app.php -> Application
+```
+
+---
+
 ## Authentication and Permissions
 
 M1.2 implements a basic core authentication and authorization foundation.

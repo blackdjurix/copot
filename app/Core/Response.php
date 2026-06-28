@@ -28,7 +28,12 @@ class Response
 
     public function send(): void
     {
-        http_response_code($this->status);
+        if ($this->status === 419) {
+            $protocol = $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1';
+            header($protocol . ' 419 Invalid CSRF Token', true, 419);
+        } else {
+            http_response_code($this->status);
+        }
 
         foreach ($this->headers as $name => $value) {
             header($name . ': ' . $value);

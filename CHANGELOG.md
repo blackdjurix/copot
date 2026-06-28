@@ -1,6 +1,34 @@
 # Changelog
 
 <details open>
+<summary>v0.8.0 - M1.8 Installer Foundation</summary>
+
+### Added
+
+- Added a pre-bootstrap installation gate and fresh web installer at `/install`.
+- Added PHP, extension, filesystem, MySQL/MariaDB version, connection, and empty-database checks.
+- Added atomic root `.env` database configuration persistence and focused canonical schema execution.
+- Added transactional first-administrator creation and initial Site Name, Site Tagline, Timezone, and Locale setup.
+- Added default frontend theme activation and automatic Content and Taxonomy installation/enablement.
+- Added atomic `storage/installed.lock` creation after successful finalization.
+- Added live-state installer progress, POST/Redirect/GET transitions, and responsive form presentation.
+
+### Security
+
+- All installer POST actions require session-backed CSRF validation.
+- Credentials, passwords, DSNs, SQL, absolute paths, and stack traces are excluded from public errors.
+- Installer writes use same-directory temporary files, controlled cleanup, atomic rename, and exclusive non-blocking `flock()` coordination.
+- Malformed markers fail safely and are never overwritten; a valid marker disables `/install`.
+
+### Notes
+
+- Installation requires a pre-created dedicated empty database and does not support table prefixes.
+- Partial schema DDL is not automatically rolled back; retry requires a clean empty database.
+- M1.8 does not include CLI installation, upgrades/migrations, repair/reset, multisite, optional module/theme selection, marketplace integration, backup/restore, infrastructure provisioning, or M2 capabilities.
+
+</details>
+
+<details>
 <summary>v0.7.0 - M1.7 Settings Foundation</summary>
 
 ### Added
