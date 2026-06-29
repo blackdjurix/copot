@@ -32,31 +32,31 @@ if ($contentTaxonomyAvailable && $contentTaxonomyEnabled) {
     require_once $taxonomyServicesPath . '/TaxonomyAssignmentRepository.php';
 }
 
-$contentAdminPath = $app->config()->get('admin.path', 'admin');
-
-if (!is_string($contentAdminPath) || !preg_match('/^[a-z0-9-]+$/', $contentAdminPath)) {
-    throw new RuntimeException('Invalid admin path configuration.');
-}
-
-$contentAdminBase = '/' . $contentAdminPath;
+$contentAdminBase = $app->adminUrl()->baseUrl();
 $contentRepository = new ContentRepository($app->database());
 $contentSlugger = new Slugger();
 $contentTaxonomyRepository = $contentTaxonomyEnabled ? new TaxonomyRepository($app->database()) : null;
 $contentTaxonomyAssignments = $contentTaxonomyEnabled ? new TaxonomyAssignmentRepository($app->database()) : null;
+$contentAdminUrlService = $app->adminUrl();
+$contentAdminUrl = static function (string $path = '') use ($contentAdminUrlService): string {
+    return $contentAdminUrlService->childUrl($path);
+};
 
-$app->adminNavigation()->add('Content', $contentAdminBase . '/content', [
+$app->adminNavigation()->add('Content', $app->adminUrl()->childUrl('content'), [
     'content.create',
     'content.update',
     'content.delete',
     'content.publish',
 ]);
 
-$contentRenderView = function (string $view, array $data = []): string {
+$contentRenderView = function (string $view, array $data = []) use ($contentAdminUrl): string {
     $file = __DIR__ . '/views/admin/' . $view . '.php';
 
     if (!is_file($file)) {
         throw new RuntimeException("Content admin view [{$view}] was not found.");
     }
+
+    $data['adminUrl'] = $contentAdminUrl;
 
     extract($data, EXTR_SKIP);
 
@@ -276,21 +276,23 @@ $contentTaxonomyForList = function (array $contents) use ($contentTaxonomyAssign
     return $terms;
 };
 
-$contentRenderAdmin = function (string $title, string $content, $user, int $status = 200) use ($app, $contentAdminBase): Response {
-    return Response::html($app->view()->render('admin/layout', [
-        'title' => $title,
-        'appName' => $app->config()->get('app.name', 'Copot'),
-        'siteName' => $app->siteName(),
-        'adminPath' => $contentAdminBase,
-        'csrfToken' => $app->session()->csrfToken(),
-        'userName' => $user->name(),
-        'userEmail' => $user->email(),
-        'navigation' => $app->adminNavigation()->itemsFor($user),
-        'content' => $content,
-    ]), $status);
+$contentRenderAdmin = function (
+    string $title,
+    string $content,
+    $user,
+    string $currentPath,
+    int $status = 200
+) use ($app): Response {
+    return Response::html($app->adminPageRenderer()->render(
+        $title,
+        $content,
+        $user,
+        $app->session()->csrfToken(),
+        $currentPath
+    ), $status);
 };
 
-$app->router()->get($contentAdminBase . '/content', function () use (
+$app->router()->get($app->adminUrl()->childUrl('content'), function ($request) use (
     $app,
     $contentRepository,
     $contentRequireAdmin,
@@ -324,7 +326,7 @@ $app->router()->get($contentAdminBase . '/content', function () use (
         'csrfToken' => $app->session()->csrfToken(),
     ]);
 
-    return $contentRenderAdmin('Content', $content, $user);
+    return $contentRenderAdmin('Content', $content, $user, $request->path());
 });
 
 $app->router()->get('/content/{slug}', function ($request, array $params) use ($app, $contentRepository): Response {
@@ -352,7 +354,7 @@ $app->router()->get('/content/{slug}', function ($request, array $params) use ($
     }
 });
 
-$app->router()->get($contentAdminBase . '/content/create', function () use (
+$app->router()->get($app->adminUrl()->childUrl('content/create'), function ($request) use (
     $app,
     $contentRequireAdmin,
     $contentRenderAdmin,
@@ -370,7 +372,7 @@ $app->router()->get($contentAdminBase . '/content/create', function () use (
 
     $content = $contentRenderView('form', [
         'adminBase' => $contentAdminBase,
-        'formAction' => $contentAdminBase . '/content',
+        'formAction' => $app->adminUrl()->childUrl('content'),
         'formMode' => 'create',
         'heading' => 'Create Content',
         'submitLabel' => 'Create content',
@@ -382,10 +384,10 @@ $app->router()->get($contentAdminBase . '/content/create', function () use (
         'selectedTaxonomy' => $contentSelectedTaxonomy(),
     ]);
 
-    return $contentRenderAdmin('Create Content', $content, $user);
+    return $contentRenderAdmin('Create Content', $content, $user, $request->path());
 });
 
-$app->router()->get($contentAdminBase . '/content/{id}/edit', function ($request, array $params) use (
+$app->router()->get($app->adminUrl()->childUrl('content/{id}/edit'), function ($request, array $params) use (
     $app,
     $contentRepository,
     $contentRequireAdmin,
@@ -411,7 +413,7 @@ $app->router()->get($contentAdminBase . '/content/{id}/edit', function ($request
 
     $content = $contentRenderView('form', [
         'adminBase' => $contentAdminBase,
-        'formAction' => $contentAdminBase . '/content/' . $entry->id(),
+        'formAction' => $app->adminUrl()->childUrl('content/' . $entry->id()),
         'formMode' => 'edit',
         'heading' => 'Edit Content',
         'submitLabel' => 'Save changes',
@@ -423,10 +425,10 @@ $app->router()->get($contentAdminBase . '/content/{id}/edit', function ($request
         'selectedTaxonomy' => $contentSelectedTaxonomy($entry),
     ]);
 
-    return $contentRenderAdmin('Edit Content', $content, $user);
+    return $contentRenderAdmin('Edit Content', $content, $user, $request->path());
 });
 
-$app->router()->post($contentAdminBase . '/content', function ($request) use (
+$app->router()->post($app->adminUrl()->childUrl('content'), function ($request) use (
     $app,
     $contentRepository,
     $contentRequireAdmin,
@@ -458,7 +460,7 @@ $app->router()->post($contentAdminBase . '/content', function ($request) use (
     if ($errors !== []) {
         $content = $contentRenderView('form', [
             'adminBase' => $contentAdminBase,
-            'formAction' => $contentAdminBase . '/content',
+            'formAction' => $app->adminUrl()->childUrl('content'),
             'formMode' => 'create',
             'heading' => 'Create Content',
             'submitLabel' => 'Create content',
@@ -470,7 +472,7 @@ $app->router()->post($contentAdminBase . '/content', function ($request) use (
             'selectedTaxonomy' => $selectedTaxonomy,
         ]);
 
-        return $contentRenderAdmin('Create Content', $content, $user, 422);
+        return $contentRenderAdmin('Create Content', $content, $user, $request->path(), 422);
     }
 
     try {
@@ -479,7 +481,7 @@ $app->router()->post($contentAdminBase . '/content', function ($request) use (
     } catch (InvalidArgumentException $exception) {
         $content = $contentRenderView('form', [
             'adminBase' => $contentAdminBase,
-            'formAction' => $contentAdminBase . '/content',
+            'formAction' => $app->adminUrl()->childUrl('content'),
             'formMode' => 'create',
             'heading' => 'Create Content',
             'submitLabel' => 'Create content',
@@ -491,17 +493,17 @@ $app->router()->post($contentAdminBase . '/content', function ($request) use (
             'selectedTaxonomy' => $selectedTaxonomy,
         ]);
 
-        return $contentRenderAdmin('Create Content', $content, $user, 422);
+        return $contentRenderAdmin('Create Content', $content, $user, $request->path(), 422);
     }
 
-    return Response::redirect($contentAdminBase . '/content');
+    return Response::redirect($app->adminUrl()->childUrl('content'));
 });
 
-$app->router()->post($contentAdminBase . '/content/{id}/publish', function ($request, array $params) use (
+$app->router()->post($app->adminUrl()->childUrl('content/{id}/publish'), function ($request, array $params) use (
+    $app,
     $contentRepository,
     $contentRequireAdmin,
-    $contentValidateCsrf,
-    $contentAdminBase
+    $contentValidateCsrf
 ): Response {
     $csrfResponse = $contentValidateCsrf($request);
 
@@ -523,14 +525,14 @@ $app->router()->post($contentAdminBase . '/content/{id}/publish', function ($req
 
     $contentRepository->publish($id);
 
-    return Response::redirect($contentAdminBase . '/content');
+    return Response::redirect($app->adminUrl()->childUrl('content'));
 });
 
-$app->router()->post($contentAdminBase . '/content/{id}/draft', function ($request, array $params) use (
+$app->router()->post($app->adminUrl()->childUrl('content/{id}/draft'), function ($request, array $params) use (
+    $app,
     $contentRepository,
     $contentRequireAdmin,
-    $contentValidateCsrf,
-    $contentAdminBase
+    $contentValidateCsrf
 ): Response {
     $csrfResponse = $contentValidateCsrf($request);
 
@@ -552,14 +554,14 @@ $app->router()->post($contentAdminBase . '/content/{id}/draft', function ($reque
 
     $contentRepository->draft($id);
 
-    return Response::redirect($contentAdminBase . '/content');
+    return Response::redirect($app->adminUrl()->childUrl('content'));
 });
 
-$app->router()->post($contentAdminBase . '/content/{id}/archive', function ($request, array $params) use (
+$app->router()->post($app->adminUrl()->childUrl('content/{id}/archive'), function ($request, array $params) use (
+    $app,
     $contentRepository,
     $contentRequireAdmin,
-    $contentValidateCsrf,
-    $contentAdminBase
+    $contentValidateCsrf
 ): Response {
     $csrfResponse = $contentValidateCsrf($request);
 
@@ -581,10 +583,10 @@ $app->router()->post($contentAdminBase . '/content/{id}/archive', function ($req
 
     $contentRepository->archive($id);
 
-    return Response::redirect($contentAdminBase . '/content');
+    return Response::redirect($app->adminUrl()->childUrl('content'));
 });
 
-$app->router()->post($contentAdminBase . '/content/{id}', function ($request, array $params) use (
+$app->router()->post($app->adminUrl()->childUrl('content/{id}'), function ($request, array $params) use (
     $app,
     $contentRepository,
     $contentRequireAdmin,
@@ -623,7 +625,7 @@ $app->router()->post($contentAdminBase . '/content/{id}', function ($request, ar
     if ($errors !== []) {
         $content = $contentRenderView('form', [
             'adminBase' => $contentAdminBase,
-            'formAction' => $contentAdminBase . '/content/' . $entry->id(),
+            'formAction' => $app->adminUrl()->childUrl('content/' . $entry->id()),
             'formMode' => 'edit',
             'heading' => 'Edit Content',
             'submitLabel' => 'Save changes',
@@ -635,7 +637,7 @@ $app->router()->post($contentAdminBase . '/content/{id}', function ($request, ar
             'selectedTaxonomy' => $selectedTaxonomy,
         ]);
 
-        return $contentRenderAdmin('Edit Content', $content, $user, 422);
+        return $contentRenderAdmin('Edit Content', $content, $user, $request->path(), 422);
     }
 
     try {
@@ -644,7 +646,7 @@ $app->router()->post($contentAdminBase . '/content/{id}', function ($request, ar
     } catch (InvalidArgumentException $exception) {
         $content = $contentRenderView('form', [
             'adminBase' => $contentAdminBase,
-            'formAction' => $contentAdminBase . '/content/' . $entry->id(),
+            'formAction' => $app->adminUrl()->childUrl('content/' . $entry->id()),
             'formMode' => 'edit',
             'heading' => 'Edit Content',
             'submitLabel' => 'Save changes',
@@ -656,8 +658,8 @@ $app->router()->post($contentAdminBase . '/content/{id}', function ($request, ar
             'selectedTaxonomy' => $selectedTaxonomy,
         ]);
 
-        return $contentRenderAdmin('Edit Content', $content, $user, 422);
+        return $contentRenderAdmin('Edit Content', $content, $user, $request->path(), 422);
     }
 
-    return Response::redirect($contentAdminBase . '/content');
+    return Response::redirect($app->adminUrl()->childUrl('content'));
 });

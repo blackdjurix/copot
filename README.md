@@ -12,19 +12,29 @@ New deployments can be configured through `/install` before normal application b
 
 ## Current Phase
 
-Post-M1 Roadmap Review
+M2.1 Admin UI Foundation Preparation
 
-The current work formalizes the phase boundaries between:
+The Post-M1 Roadmap Review is complete.
 
-* M2 Platform Capabilities
-* M3 Core Modules
-* M4 Business/Application Modules
-* M5 Commerce
-* M6 Ecosystem
+The current work is locking the first M2 Platform Capability:
 
-No M2 implementation has started.
+```text
+M2.1 Admin UI Foundation
+```
 
-The next release version will be determined during M2.1 Preparation.
+Current preparation covers:
+
+* centralized admin path and URL ownership;
+* centralized Admin Shell and page rendering;
+* static Admin UI assets and design tokens;
+* reusable accessible and responsive UI patterns;
+* permission-aware navigation with stable IDs, ordering, and active state;
+* a minimal dashboard-widget contribution contract;
+* migration of existing Admin Dashboard, Settings, Content, and Taxonomy presentation without changing domain behavior.
+
+M2.1 implementation has not started yet.
+
+Target release: v0.9.0.
 
 ## Implemented Foundation
 
@@ -127,10 +137,12 @@ Not included yet:
 - Asset pipeline
 - Template engine
 - Theme settings UI
-- Admin theming
+- Full admin theme or skin system
 - Admin navigation manager
 - Role/permission UI
 - Analytics
+- Full Internal Dashboard
+- Database-backed dashboard customization
 - Editor.js
 - Media/image service
 - SEO module
@@ -280,9 +292,9 @@ For an existing local database created before M1.6, apply the taxonomy table, se
 
 For an existing local database created before M1.7, apply the `settings` table plus the `settings.update` permission and admin role mapping statements from `database/schema.sql`. The table stores overrides only; defaults remain in Core definitions.
 
-## Admin Shell
+## Admin Shell and M2.1 Direction
 
-M1.4.1 adds a minimal core admin shell.
+M1.4.1 adds a minimal core Admin Shell.
 
 The admin path is configured in:
 
@@ -299,22 +311,34 @@ return [
 ];
 ```
 
-The configured path is stored without a leading slash. The runtime route becomes:
+The configured path is stored without a leading slash. The default runtime route becomes:
 
 ```text
 /admin
 ```
 
-Admin path rules for M1.4.1:
+Admin path rules:
 
-- Single segment only.
-- Lowercase letters, numbers, and hyphens only.
-- Valid examples: `admin`, `backend`, `administrator`, `dapur`.
-- Invalid examples: `/admin`, `admin/panel`, `../admin`, `Admin`, `admin\`, empty.
+* Single segment only.
+* Lowercase letters, numbers, and hyphens only.
+* Valid examples: `admin`, `backend`, `administrator`, `dapur`.
+* Invalid examples: `/admin`, `admin/panel`, `../admin`, `Admin`, `admin\`, empty.
 
-Admin login lives at the same admin path. `GET /admin` shows the admin login form for guests and does not redirect to `/login`. `POST /admin` handles admin login with CSRF protection. Successful login redirects back to `/admin`, where the dashboard renders. Admin logout posts to `/admin/logout` and returns to `/admin`.
+Admin login lives at the configured admin path. With the default configuration, `GET /admin` shows the admin login form for guests and does not redirect to `/login`. `POST /admin` handles admin login with CSRF protection. Successful login redirects back to the configured admin path, where the dashboard renders. Admin logout posts to the configured admin logout route and returns to the same admin base path.
 
-M1.4.1 itself does not include admin theming, an admin navigation manager, Content CRUD, module UI, theme UI, role/permission UI, analytics, editor functionality, media/image services, or middleware. M1.7 adds the Core Admin Settings page without introducing admin theming or a generic settings editor.
+M1.4.1 provides only the minimal shell. M1.7 adds the Core Admin Settings page without introducing admin theming or a generic settings editor.
+
+M2.1 Admin UI Foundation will evolve the existing shell into reusable, theme-independent Admin UI infrastructure with:
+
+* centralized admin path and URL generation;
+* centralized Admin Shell and page rendering;
+* static Admin UI assets and design tokens;
+* reusable alert, form, action, panel, table, and empty-state patterns;
+* responsive and accessibility baseline;
+* stable permission-aware navigation with ordering and active-state resolution;
+* a minimal dashboard-widget contribution contract.
+
+M2.1 does not include a full admin theme system, user-selectable skins, M3 manager modules, analytics, a full Internal Dashboard, database-backed dashboard customization, frontend build tooling, or domain behavior changes.
 
 ## Content Module
 
@@ -614,10 +638,12 @@ The application container, database, auth service, repositories, and managers ar
 
 ## Documentation
 
-See `docs/` for project vision, principles, architecture, and roadmap.
+See `docs/` for project vision, principles, architecture, roadmap, and capability specifications.
 
-Roadmap:
+Key documents:
 
 ```text
+docs/02_architecture.md
 docs/03_roadmap.md
+docs/10_admin_ui_foundation.md
 ```

@@ -4,7 +4,7 @@
 
     <?php if (!empty($canCreate)): ?>
         <p>
-            <a href="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/content/create">Create content</a>
+            <a href="<?= htmlspecialchars($adminUrl('content/create'), ENT_QUOTES, 'UTF-8') ?>">Create content</a>
         </p>
     <?php endif; ?>
 
@@ -54,25 +54,25 @@
                     <td><?= htmlspecialchars($item->updatedAt(), ENT_QUOTES, 'UTF-8') ?></td>
                     <td>
                         <?php if (!empty($canUpdate)): ?>
-                            <a href="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/content/<?= htmlspecialchars((string) $item->id(), ENT_QUOTES, 'UTF-8') ?>/edit">Edit</a>
+                            <a href="<?= htmlspecialchars($adminUrl('content/' . $item->id() . '/edit'), ENT_QUOTES, 'UTF-8') ?>">Edit</a>
                         <?php endif; ?>
 
                         <?php if (!empty($canPublish) && $item->status() !== 'published'): ?>
-                            <form method="post" action="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/content/<?= htmlspecialchars((string) $item->id(), ENT_QUOTES, 'UTF-8') ?>/publish" style="display:inline">
+                            <form method="post" action="<?= htmlspecialchars($adminUrl('content/' . $item->id() . '/publish'), ENT_QUOTES, 'UTF-8') ?>" style="display:inline">
                                 <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <button type="submit">Publish</button>
                             </form>
                         <?php endif; ?>
 
                         <?php if (!empty($canPublish) && $item->status() === 'published'): ?>
-                            <form method="post" action="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/content/<?= htmlspecialchars((string) $item->id(), ENT_QUOTES, 'UTF-8') ?>/draft" style="display:inline">
+                            <form method="post" action="<?= htmlspecialchars($adminUrl('content/' . $item->id() . '/draft'), ENT_QUOTES, 'UTF-8') ?>" style="display:inline">
                                 <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <button type="submit">Draft</button>
                             </form>
                         <?php endif; ?>
 
                         <?php if (!empty($canDelete) && !$item->isArchived()): ?>
-                            <form method="post" action="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/content/<?= htmlspecialchars((string) $item->id(), ENT_QUOTES, 'UTF-8') ?>/archive" style="display:inline">
+                            <form method="post" action="<?= htmlspecialchars($adminUrl('content/' . $item->id() . '/archive'), ENT_QUOTES, 'UTF-8') ?>" style="display:inline">
                                 <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <button type="submit">Archive</button>
                             </form>

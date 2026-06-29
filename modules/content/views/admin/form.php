@@ -9,7 +9,7 @@
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?= htmlspecialchars($formAction ?? (($adminBase ?? '/admin') . '/content'), ENT_QUOTES, 'UTF-8') ?>">
+    <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8') ?>">
         <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
         <p>

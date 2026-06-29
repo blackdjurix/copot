@@ -3,39 +3,35 @@
 use Copot\Core\Response;
 use Copot\Core\SettingsException;
 
-$adminPath = $app->config()->get('admin.path', 'admin');
+$adminUrl = $app->adminUrl();
 $adminPermission = $app->config()->get('admin.permission', 'admin.access');
-
-if (!is_string($adminPath) || !preg_match('/^[a-z0-9-]+$/', $adminPath)) {
-    throw new RuntimeException('Invalid admin path configuration.');
-}
 
 if (!is_string($adminPermission) || trim($adminPermission) === '') {
     throw new RuntimeException('Invalid admin permission configuration.');
 }
 
 $adminPermission = trim($adminPermission);
-$adminBase = '/' . $adminPath;
-$settingsPath = $adminBase . '/settings';
+$adminBase = $adminUrl->baseUrl();
+$settingsPath = $adminUrl->childUrl('settings');
 
 $app->adminNavigation()->add('Settings', $settingsPath, 'settings.update');
 
-$renderAdminLogin = function (string $path, string $email = '', ?string $error = null) use ($app): string {
+$renderAdminLogin = function (string $email = '', ?string $error = null) use ($app, $adminBase): string {
     return $app->view()->render('admin/login', [
         'appName' => $app->config()->get('app.name', 'Copot'),
         'siteName' => $app->siteName(),
-        'adminPath' => $path,
+        'adminBaseUrl' => $adminBase,
         'csrfToken' => $app->session()->csrfToken(),
         'email' => $email,
         'error' => $error,
     ]);
 };
 
-$renderAdminDashboard = function (string $path, $user) use ($app): string {
+$renderAdminDashboard = function (string $currentPath, $user) use ($app, $adminBase): string {
     $viewData = [
         'appName' => $app->config()->get('app.name', 'Copot'),
         'siteName' => $app->siteName(),
-        'adminPath' => $path,
+        'adminBaseUrl' => $adminBase,
         'frameworkStatus' => 'M1.4.1 Admin Shell',
         'userName' => $user->name(),
         'userEmail' => $user->email(),
@@ -43,12 +39,13 @@ $renderAdminDashboard = function (string $path, $user) use ($app): string {
 
     $content = $app->view()->render('admin/dashboard', $viewData);
 
-    return $app->view()->render('admin/layout', array_merge($viewData, [
-        'title' => 'Admin Shell',
-        'csrfToken' => $app->session()->csrfToken(),
-        'navigation' => $app->adminNavigation()->itemsFor($user),
-        'content' => $content,
-    ]));
+    return $app->adminPageRenderer()->render(
+        'Admin Shell',
+        $content,
+        $user,
+        $app->session()->csrfToken(),
+        $currentPath
+    );
 };
 
 $settingsFields = [
@@ -102,8 +99,9 @@ $renderSettings = function (
     array $values,
     array $errors = [],
     bool $saved = false,
+    string $currentPath = '',
     int $status = 200
-) use ($app, $adminBase, $settingsPath): Response {
+) use ($app, $settingsPath): Response {
     $timezones = array_values(array_filter(
         timezone_identifiers_list(),
         static fn (string $timezone): bool => $timezone !== 'UTC'
@@ -123,24 +121,18 @@ $renderSettings = function (
         'timeFormats' => ['H:i', 'h:i A'],
     ]);
 
-    return Response::html($app->view()->render('admin/layout', [
-        'title' => 'Settings',
-        'appName' => $app->config()->get('app.name', 'Copot'),
-        'siteName' => $app->siteName(),
-        'adminPath' => $adminBase,
-        'csrfToken' => $app->csrf()->token(),
-        'userName' => $user->name(),
-        'userEmail' => $user->email(),
-        'navigation' => $app->adminNavigation()->itemsFor($user),
-        'content' => $content,
-    ]), $status);
+    return Response::html($app->adminPageRenderer()->render(
+        'Settings',
+        $content,
+        $user,
+        $app->csrf()->token(),
+        $currentPath
+    ), $status);
 };
 
-$app->router()->get('/' . $adminPath, function () use ($app, $adminPath, $adminPermission, $renderAdminLogin, $renderAdminDashboard): Response {
-    $path = '/' . $adminPath;
-
+$app->router()->get($adminBase, function ($request) use ($app, $adminPermission, $renderAdminLogin, $renderAdminDashboard): Response {
     if (!$app->auth()->check()) {
-        return Response::html($renderAdminLogin($path));
+        return Response::html($renderAdminLogin());
     }
 
     $user = $app->auth()->user();
@@ -149,11 +141,10 @@ $app->router()->get('/' . $adminPath, function () use ($app, $adminPath, $adminP
         return Response::html('403 Forbidden', 403);
     }
 
-    return Response::html($renderAdminDashboard($path, $user));
+    return Response::html($renderAdminDashboard($request->path(), $user));
 });
 
-$app->router()->post('/' . $adminPath, function ($request) use ($app, $adminPath, $renderAdminLogin): Response {
-    $path = '/' . $adminPath;
+$app->router()->post($adminBase, function ($request) use ($app, $adminBase, $renderAdminLogin): Response {
     $email = strtolower(trim((string) $request->input('email', '')));
     $password = (string) $request->input('password', '');
     $token = $request->input('_token');
@@ -163,14 +154,13 @@ $app->router()->post('/' . $adminPath, function ($request) use ($app, $adminPath
     }
 
     if ($email === '' || $password === '' || !$app->auth()->attempt($email, $password)) {
-        return Response::html($renderAdminLogin($path, $email, 'Invalid credentials or inactive account.'), 422);
+        return Response::html($renderAdminLogin($email, 'Invalid credentials or inactive account.'), 422);
     }
 
-    return Response::redirect($path);
+    return Response::redirect($adminBase);
 });
 
-$app->router()->post('/' . $adminPath . '/logout', function ($request) use ($app, $adminPath): Response {
-    $path = '/' . $adminPath;
+$app->router()->post($adminUrl->childUrl('logout'), function ($request) use ($app, $adminBase): Response {
     $token = $request->input('_token');
 
     if (!$app->session()->validateCsrf(is_string($token) ? $token : null)) {
@@ -179,7 +169,7 @@ $app->router()->post('/' . $adminPath . '/logout', function ($request) use ($app
 
     $app->auth()->logout();
 
-    return Response::redirect($path);
+    return Response::redirect($adminBase);
 });
 
 $app->router()->get($settingsPath, function ($request) use (
@@ -199,7 +189,7 @@ $app->router()->get($settingsPath, function ($request) use (
         return Response::html('Settings storage is unavailable.', 503);
     }
 
-    return $renderSettings($user, $values, [], $request->input('saved') === '1');
+    return $renderSettings($user, $values, [], $request->input('saved') === '1', $request->path());
 });
 
 $app->router()->post($settingsPath, function ($request) use (
@@ -237,7 +227,7 @@ $app->router()->post($settingsPath, function ($request) use (
     }
 
     if ($errors !== []) {
-        return $renderSettings($user, $values, $errors, false, 422);
+        return $renderSettings($user, $values, $errors, false, $request->path(), 422);
     }
 
     $connection = null;

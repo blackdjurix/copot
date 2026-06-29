@@ -1,5 +1,6 @@
 <?php
 
+use Copot\Core\Admin\AdminUrl;
 use Copot\Core\Config;
 use Copot\Core\Csrf;
 use Copot\Core\Database;
@@ -176,15 +177,11 @@ if ($installationStateError) {
                         throw new InstallationException('Installation prerequisites are not ready.');
                     }
 
-                    $adminPath = (new Config($basePath . '/config'))->get('admin.path', 'admin');
-
-                    if (!is_string($adminPath) || !preg_match('/^[a-z0-9-]+$/', $adminPath)) {
-                        throw new InstallationException('Admin path configuration is invalid.');
-                    }
+                    $adminUrl = new AdminUrl(new Config($basePath . '/config'));
 
                     $finalizer->finalize();
 
-                    return Response::redirect('/' . $adminPath);
+                    return Response::redirect($adminUrl->baseUrl());
                 } catch (\Throwable) {
                     $status = 503;
                     $message = 'Installation could not be finalized.';

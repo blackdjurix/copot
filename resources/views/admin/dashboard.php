@@ -10,7 +10,7 @@
         <dd><?= htmlspecialchars($frameworkStatus ?? 'M1.4.1 Admin Shell', ENT_QUOTES, 'UTF-8') ?></dd>
 
         <dt>Admin path</dt>
-        <dd><?= htmlspecialchars($adminPath ?? '/admin', ENT_QUOTES, 'UTF-8') ?></dd>
+        <dd><?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?></dd>
 
         <dt>User</dt>
         <dd>

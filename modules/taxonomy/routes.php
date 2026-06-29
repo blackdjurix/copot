@@ -8,16 +8,14 @@ require_once __DIR__ . '/Services/TaxonomyRepository.php';
 require_once __DIR__ . '/Services/TaxonomyAssignmentRepository.php';
 require_once __DIR__ . '/Services/Slugger.php';
 
-$taxonomyAdminPath = $app->config()->get('admin.path', 'admin');
-
-if (!is_string($taxonomyAdminPath) || !preg_match('/^[a-z0-9-]+$/', $taxonomyAdminPath)) {
-    throw new RuntimeException('Invalid admin path configuration.');
-}
-
-$taxonomyAdminBase = '/' . $taxonomyAdminPath;
+$taxonomyAdminBase = $app->adminUrl()->baseUrl();
 $taxonomyRepository = new TaxonomyRepository($app->database());
 $taxonomyAssignments = new TaxonomyAssignmentRepository($app->database());
 $taxonomySlugger = new TaxonomySlugger();
+$taxonomyAdminUrlService = $app->adminUrl();
+$taxonomyAdminUrl = static function (string $path = '') use ($taxonomyAdminUrlService): string {
+    return $taxonomyAdminUrlService->childUrl($path);
+};
 $taxonomyAllowedTypes = ['category', 'tag'];
 $taxonomyPermissions = [
     'taxonomy.create',
@@ -25,7 +23,7 @@ $taxonomyPermissions = [
     'taxonomy.delete',
 ];
 
-$app->adminNavigation()->add('Taxonomy', $taxonomyAdminBase . '/taxonomy', $taxonomyPermissions);
+$app->adminNavigation()->add('Taxonomy', $app->adminUrl()->childUrl('taxonomy'), $taxonomyPermissions);
 
 $taxonomyUserCanAny = function ($user, array $permissions): bool {
     foreach ($permissions as $permission) {
@@ -51,12 +49,14 @@ $taxonomyRequireAdmin = function (array $permissions) use ($app, $taxonomyAdminB
     return $user;
 };
 
-$taxonomyRenderView = function (string $view, array $data = []): string {
+$taxonomyRenderView = function (string $view, array $data = []) use ($taxonomyAdminUrl): string {
     $file = __DIR__ . '/views/admin/' . $view . '.php';
 
     if (!is_file($file)) {
         throw new RuntimeException("Taxonomy admin view [{$view}] was not found.");
     }
+
+    $data['adminUrl'] = $taxonomyAdminUrl;
 
     extract($data, EXTR_SKIP);
 
@@ -66,18 +66,20 @@ $taxonomyRenderView = function (string $view, array $data = []): string {
     return (string) ob_get_clean();
 };
 
-$taxonomyRenderAdmin = function (string $title, string $content, $user, int $status = 200) use ($app, $taxonomyAdminBase): Response {
-    return Response::html($app->view()->render('admin/layout', [
-        'title' => $title,
-        'appName' => $app->config()->get('app.name', 'Copot'),
-        'siteName' => $app->siteName(),
-        'adminPath' => $taxonomyAdminBase,
-        'csrfToken' => $app->csrf()->token(),
-        'userName' => $user->name(),
-        'userEmail' => $user->email(),
-        'navigation' => $app->adminNavigation()->itemsFor($user),
-        'content' => $content,
-    ]), $status);
+$taxonomyRenderAdmin = function (
+    string $title,
+    string $content,
+    $user,
+    string $currentPath,
+    int $status = 200
+) use ($app): Response {
+    return Response::html($app->adminPageRenderer()->render(
+        $title,
+        $content,
+        $user,
+        $app->csrf()->token(),
+        $currentPath
+    ), $status);
 };
 
 $taxonomyTypeAllowed = function (string $typeSlug) use ($taxonomyAllowedTypes): bool {
@@ -168,7 +170,7 @@ $taxonomyValidateCsrf = function ($request) use ($app): ?Response {
     return $app->csrf()->validateOrReject($request);
 };
 
-$app->router()->get($taxonomyAdminBase . '/taxonomy/{type}/{term_id}/edit', function ($request, array $params) use (
+$app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/edit'), function ($request, array $params) use (
     $app,
     $taxonomyAdminBase,
     $taxonomyRequireAdmin,
@@ -192,7 +194,7 @@ $app->router()->get($taxonomyAdminBase . '/taxonomy/{type}/{term_id}/edit', func
     $content = $taxonomyRenderView('form', [
         'adminBase' => $taxonomyAdminBase,
         'type' => $type,
-        'formAction' => $taxonomyAdminBase . '/taxonomy/' . $type->slug() . '/' . $term->id(),
+        'formAction' => $app->adminUrl()->childUrl('taxonomy/' . $type->slug() . '/' . $term->id()),
         'heading' => 'Edit ' . $type->name(),
         'submitLabel' => 'Save term',
         'csrfToken' => $app->csrf()->token(),
@@ -200,10 +202,10 @@ $app->router()->get($taxonomyAdminBase . '/taxonomy/{type}/{term_id}/edit', func
         'term' => $taxonomyToFormData($term),
     ]);
 
-    return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user);
+    return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user, $request->path());
 });
 
-$app->router()->get($taxonomyAdminBase . '/taxonomy/{type}/create', function ($request, array $params) use (
+$app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/create'), function ($request, array $params) use (
     $app,
     $taxonomyAdminBase,
     $taxonomyRequireAdmin,
@@ -227,7 +229,7 @@ $app->router()->get($taxonomyAdminBase . '/taxonomy/{type}/create', function ($r
     $content = $taxonomyRenderView('form', [
         'adminBase' => $taxonomyAdminBase,
         'type' => $type,
-        'formAction' => $taxonomyAdminBase . '/taxonomy/' . $type->slug(),
+        'formAction' => $app->adminUrl()->childUrl('taxonomy/' . $type->slug()),
         'heading' => 'Create ' . $type->name(),
         'submitLabel' => 'Create term',
         'csrfToken' => $app->csrf()->token(),
@@ -235,10 +237,10 @@ $app->router()->get($taxonomyAdminBase . '/taxonomy/{type}/create', function ($r
         'term' => $taxonomyToFormData(),
     ]);
 
-    return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user);
+    return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user, $request->path());
 });
 
-$app->router()->get($taxonomyAdminBase . '/taxonomy', function () use (
+$app->router()->get($app->adminUrl()->childUrl('taxonomy'), function ($request) use (
     $taxonomyAllowedTypes,
     $taxonomyPermissions,
     $taxonomyRepository,
@@ -266,10 +268,10 @@ $app->router()->get($taxonomyAdminBase . '/taxonomy', function () use (
         'canDelete' => $user->can('taxonomy.delete'),
     ]);
 
-    return $taxonomyRenderAdmin('Taxonomy', $content, $user);
+    return $taxonomyRenderAdmin('Taxonomy', $content, $user, $request->path());
 });
 
-$app->router()->get($taxonomyAdminBase . '/taxonomy/{type}', function ($request, array $params) use (
+$app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}'), function ($request, array $params) use (
     $app,
     $taxonomyAssignments,
     $taxonomyRepository,
@@ -311,10 +313,10 @@ $app->router()->get($taxonomyAdminBase . '/taxonomy/{type}', function ($request,
         'error' => null,
     ]);
 
-    return $taxonomyRenderAdmin($type->name(), $content, $user);
+    return $taxonomyRenderAdmin($type->name(), $content, $user, $request->path());
 });
 
-$app->router()->post($taxonomyAdminBase . '/taxonomy/{type}/{term_id}/delete', function ($request, array $params) use (
+$app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/delete'), function ($request, array $params) use (
     $app,
     $taxonomyAssignments,
     $taxonomyRepository,
@@ -365,13 +367,13 @@ $app->router()->post($taxonomyAdminBase . '/taxonomy/{type}/{term_id}/delete', f
             'error' => $exception->getMessage(),
         ]);
 
-        return $taxonomyRenderAdmin($type->name(), $content, $user, 409);
+        return $taxonomyRenderAdmin($type->name(), $content, $user, $request->path(), 409);
     }
 
-    return Response::redirect($taxonomyAdminBase . '/taxonomy/' . $type->slug());
+    return Response::redirect($app->adminUrl()->childUrl('taxonomy/' . $type->slug()));
 });
 
-$app->router()->post($taxonomyAdminBase . '/taxonomy/{type}/{term_id}', function ($request, array $params) use (
+$app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}'), function ($request, array $params) use (
     $app,
     $taxonomyRepository,
     $taxonomyRequireAdmin,
@@ -407,7 +409,7 @@ $app->router()->post($taxonomyAdminBase . '/taxonomy/{type}/{term_id}', function
         $content = $taxonomyRenderView('form', [
             'adminBase' => $taxonomyAdminBase,
             'type' => $type,
-            'formAction' => $taxonomyAdminBase . '/taxonomy/' . $type->slug() . '/' . $term->id(),
+            'formAction' => $app->adminUrl()->childUrl('taxonomy/' . $type->slug() . '/' . $term->id()),
             'heading' => 'Edit ' . $type->name(),
             'submitLabel' => 'Save term',
             'csrfToken' => $app->csrf()->token(),
@@ -415,7 +417,7 @@ $app->router()->post($taxonomyAdminBase . '/taxonomy/{type}/{term_id}', function
             'term' => array_merge($taxonomyToFormData($term), $data),
         ]);
 
-        return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user, 422);
+        return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user, $request->path(), 422);
     }
 
     try {
@@ -424,7 +426,7 @@ $app->router()->post($taxonomyAdminBase . '/taxonomy/{type}/{term_id}', function
         $content = $taxonomyRenderView('form', [
             'adminBase' => $taxonomyAdminBase,
             'type' => $type,
-            'formAction' => $taxonomyAdminBase . '/taxonomy/' . $type->slug() . '/' . $term->id(),
+            'formAction' => $app->adminUrl()->childUrl('taxonomy/' . $type->slug() . '/' . $term->id()),
             'heading' => 'Edit ' . $type->name(),
             'submitLabel' => 'Save term',
             'csrfToken' => $app->csrf()->token(),
@@ -432,13 +434,13 @@ $app->router()->post($taxonomyAdminBase . '/taxonomy/{type}/{term_id}', function
             'term' => array_merge($taxonomyToFormData($term), $data),
         ]);
 
-        return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user, 422);
+        return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user, $request->path(), 422);
     }
 
-    return Response::redirect($taxonomyAdminBase . '/taxonomy/' . $type->slug());
+    return Response::redirect($app->adminUrl()->childUrl('taxonomy/' . $type->slug()));
 });
 
-$app->router()->post($taxonomyAdminBase . '/taxonomy/{type}', function ($request, array $params) use (
+$app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}'), function ($request, array $params) use (
     $app,
     $taxonomyRepository,
     $taxonomyRequireAdmin,
@@ -474,7 +476,7 @@ $app->router()->post($taxonomyAdminBase . '/taxonomy/{type}', function ($request
         $content = $taxonomyRenderView('form', [
             'adminBase' => $taxonomyAdminBase,
             'type' => $type,
-            'formAction' => $taxonomyAdminBase . '/taxonomy/' . $type->slug(),
+            'formAction' => $app->adminUrl()->childUrl('taxonomy/' . $type->slug()),
             'heading' => 'Create ' . $type->name(),
             'submitLabel' => 'Create term',
             'csrfToken' => $app->csrf()->token(),
@@ -482,7 +484,7 @@ $app->router()->post($taxonomyAdminBase . '/taxonomy/{type}', function ($request
             'term' => array_merge($taxonomyToFormData(), $data),
         ]);
 
-        return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user, 422);
+        return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user, $request->path(), 422);
     }
 
     try {
@@ -491,7 +493,7 @@ $app->router()->post($taxonomyAdminBase . '/taxonomy/{type}', function ($request
         $content = $taxonomyRenderView('form', [
             'adminBase' => $taxonomyAdminBase,
             'type' => $type,
-            'formAction' => $taxonomyAdminBase . '/taxonomy/' . $type->slug(),
+            'formAction' => $app->adminUrl()->childUrl('taxonomy/' . $type->slug()),
             'heading' => 'Create ' . $type->name(),
             'submitLabel' => 'Create term',
             'csrfToken' => $app->csrf()->token(),
@@ -499,8 +501,8 @@ $app->router()->post($taxonomyAdminBase . '/taxonomy/{type}', function ($request
             'term' => array_merge($taxonomyToFormData(), $data),
         ]);
 
-        return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user, 422);
+        return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user, $request->path(), 422);
     }
 
-    return Response::redirect($taxonomyAdminBase . '/taxonomy/' . $type->slug());
+    return Response::redirect($app->adminUrl()->childUrl('taxonomy/' . $type->slug()));
 });

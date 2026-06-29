@@ -10,30 +10,33 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The project is currently performing the Post-M1 Roadmap Review before beginning M2 Platform Capabilities.
+The Post-M1 Roadmap Review is complete. The project is currently preparing M2.1 Admin UI Foundation.
 
 ---
 
 ## Current Phase
 
-### Post-M1 Roadmap Review
+### M2.1 Admin UI Foundation Preparation
 
 Primary goal:
 
-Formalize the architecture and roadmap boundaries between Platform Capabilities, Core Modules, Business/Application Modules, Commerce, and Ecosystem work before opening M2 implementation.
+Define and lock the first M2 Platform Capability: a theme-independent, shared-hosting-safe Admin UI Foundation with centralized admin URL and page rendering, reusable accessible UI patterns, permission-aware navigation, and a minimal dashboard contribution contract.
 
 Current work:
 
-* Lock the M1-M6 phase model.
-* Define Platform Capability, Core Module, and Business/Application Module.
-* Separate reusable services from user-facing manager modules.
-* Establish the dependency direction from M2 capabilities to M3 core modules.
-* Remove stale roadmap terminology and obsolete milestone placement.
-* Keep all M2 implementation closed until the review is complete.
+* Lock the M2.1 architecture and implementation boundaries.
+* Centralize admin path and URL generation.
+* Centralize Admin Shell and page rendering ownership.
+* Define reusable admin layout, form, alert, action, panel, table, and empty-state patterns.
+* Improve navigation with stable IDs, ordering, permissions, and active-state resolution.
+* Establish a minimal permission-aware dashboard-widget contribution contract.
+* Keep frontend Theme System, M3 manager modules, and domain behavior outside M2.1.
 
 Latest release: v0.8.0.
 
-M1 Framework Foundation is complete. No M2 capability is currently implemented.
+The Post-M1 Roadmap Review is complete.
+
+M2.1 implementation has not started yet.
 
 ---
 
@@ -152,6 +155,24 @@ M1 Framework Foundation is complete. No M2 capability is currently implemented.
 * Do not hardcode `/admin` as the only possible admin path.
 * Default admin path may be `/admin`.
 * Future installer may allow selecting admin path such as `/administrator`, `/backend`, `/dapur`, etc.
+
+## M2.1 Admin UI Foundation Rules
+
+* M2.1 provides reusable Admin UI infrastructure, not a full admin theme or skin system.
+* Admin UI must remain independent from the frontend Theme System.
+* Admin assets must be directly deployable from the public document root without Node, a bundler, a daemon, or advanced server configuration.
+* Admin path validation and URL generation must have one centralized owner.
+* Runtime templates must not depend on literal `/admin` fallbacks.
+* Admin page and shell rendering must use one centralized contract with common context.
+* Shared UI patterns should cover alerts, fields, actions, panels, tables, empty states, focus behavior, and responsive layout.
+* Navigation must support stable IDs, explicit ordering, permission-aware visibility, and active-state resolution.
+* Initial navigation remains flat. Grouping, nested menus, and icon systems are deferred.
+* M2.1 must provide a minimal dashboard-widget registry with stable IDs, permission checks, ordering, and controlled rendering.
+* M2.1 must not introduce database-backed dashboard layout, drag-drop widgets, analytics, or the M3 Internal Dashboard.
+* M2.1 must not add an admin theme marketplace, user-selectable skins, SPA runtime, CSS framework, JavaScript framework, or frontend build pipeline.
+* M2.1 must not change Content, Taxonomy, Settings, authentication, or other domain behavior beyond migrating their admin presentation to the shared Admin UI Foundation.
+* Public login redesign, installer redesign, localization implementation, Editor, Media, Image, Navigation Manager, and other M2/M3 capabilities remain outside scope.
+* Database schema changes and new third-party dependencies are outside scope unless separately approved.
 
 ---
 
@@ -434,6 +455,7 @@ When adding or changing major behavior, update the relevant documentation:
 * `docs/07_taxonomy_system.md`
 * `docs/08_settings_system.md`
 * `docs/09_installer_system.md`
+* `docs/10_admin_ui_foundation.md`
 
 Documentation and instruction files are user-maintained unless the user explicitly authorizes Codex to edit them.
 
@@ -505,20 +527,20 @@ Commit messages should remain clear and milestone-aware.
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The current work is the Post-M1 Roadmap Review.
+The Post-M1 Roadmap Review is complete.
+
+The current work is M2.1 Admin UI Foundation Preparation.
 
 The immediate goal is to:
 
-* formalize the M1-M6 phase model;
-* define Platform Capability, Core Module, and Business/Application Module;
-* separate M2 shared capabilities from M3 management modules;
-* establish the dependency direction between M2 and M3;
-* align architecture and roadmap terminology;
-* keep M2 implementation closed until the review is complete.
+* lock the M2.1 objective, scope, exclusions, and dependency boundaries;
+* centralize admin URL and page-rendering ownership;
+* define reusable accessible and responsive Admin UI patterns;
+* improve permission-aware navigation and active-state behavior;
+* establish a minimal dashboard contribution contract;
+* preserve frontend Theme System separation;
+* avoid M3 manager functionality, domain behavior changes, and premature UI abstractions.
 
-No post-v0.8.0 release version is assumed yet.
+M2.1 implementation must not begin until its documentation and batch plan are approved.
 
-The next release version will be determined during M2.1 Preparation.
-
-
-
+The target release version is v0.9.0.

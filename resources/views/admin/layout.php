@@ -162,11 +162,11 @@
             <p>
                 <?= htmlspecialchars($userName ?? 'User', ENT_QUOTES, 'UTF-8') ?>
                 &lt;<?= htmlspecialchars($userEmail ?? '', ENT_QUOTES, 'UTF-8') ?>&gt;
-                - <?= htmlspecialchars($adminPath ?? '/admin', ENT_QUOTES, 'UTF-8') ?>
+                - <?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?>
             </p>
         </div>
 
-        <form method="post" action="<?= htmlspecialchars(($adminPath ?? '/admin') . '/logout', ENT_QUOTES, 'UTF-8') ?>">
+        <form method="post" action="<?= htmlspecialchars($adminLogoutUrl, ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
             <button type="submit">Logout</button>
         </form>

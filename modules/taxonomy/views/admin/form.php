@@ -9,7 +9,7 @@
         </div>
     <?php endif; ?>
 
-    <form method="post" action="<?= htmlspecialchars($formAction ?? (($adminBase ?? '/admin') . '/taxonomy'), ENT_QUOTES, 'UTF-8') ?>">
+    <form method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8') ?>">
         <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
         <p>
@@ -34,7 +34,7 @@
 
         <p>
             <button type="submit"><?= htmlspecialchars($submitLabel ?? 'Save term', ENT_QUOTES, 'UTF-8') ?></button>
-            <a href="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/taxonomy/<?= htmlspecialchars($type?->slug() ?? '', ENT_QUOTES, 'UTF-8') ?>">Cancel</a>
+            <a href="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '')), ENT_QUOTES, 'UTF-8') ?>">Cancel</a>
         </p>
     </form>
 </section>

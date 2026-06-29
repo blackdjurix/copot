@@ -93,7 +93,7 @@
             <div class="error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>
 
-        <form method="post" action="<?= htmlspecialchars($adminPath ?? '/admin', ENT_QUOTES, 'UTF-8') ?>">
+        <form method="post" action="<?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
             <label for="email">Email</label>

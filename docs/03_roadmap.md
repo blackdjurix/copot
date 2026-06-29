@@ -199,11 +199,15 @@ M5 adds commerce-specific transactional capabilities.
 
 M6 supports distribution, tooling, integrations, and the broader extension ecosystem.
 
-No release version after v0.8.0 is assumed by this roadmap review.
+The Post-M1 Roadmap Review is complete.
 
-The first M2 minor milestone, its exact scope, numbering, and target release version will be determined during a dedicated M2.1 Preparation phase after the Post-M1 Roadmap Review is complete.
+The first M2 minor milestone is M2.1 Admin UI Foundation.
 
-M2.1 Preparation is a planning and scope-lock step, not an implemented capability and not a release by itself.
+M2.1 is currently in Preparation and scope lock.
+
+Its target release is v0.9.0.
+
+Implementation must not begin until the M2.1 documentation, architecture boundaries, batch plan, and acceptance criteria are approved.
 
 ---
 
@@ -226,23 +230,40 @@ A Platform Capability may provide:
 * storage abstraction;
 * processing infrastructure.
 
-### Candidate Capability Groups
+### Locked and Candidate Capabilities
 
-#### 1. Admin UI Foundation
+#### M2.1 Admin UI Foundation
 
-Planned direction:
+Status: Preparation and scope lock.
 
-* admin design tokens;
-* reusable layout and component patterns;
-* form and table patterns;
-* validation and alert presentation;
-* extension slots;
-* dashboard/widget registration;
-* responsive and accessibility baseline.
+Target release: v0.9.0.
 
-A full admin theme or skin system is not part of the initial scope.
+##### Objective
 
-Internal Dashboard implementation belongs to M3.
+Establish the first M2 Platform Capability: a theme-independent, shared-hosting-safe Admin UI Foundation for Core and module-owned administrative interfaces.
+
+##### Scope
+
+* centralized admin path validation and URL generation;
+* centralized Admin Shell and page rendering;
+* static Admin UI assets and design tokens;
+* reusable layout, alert, form, action, panel, table, and empty-state patterns;
+* responsive and accessibility baseline;
+* stable permission-aware admin navigation with ordering and active-state resolution;
+* minimal dashboard-widget contribution registry;
+* migration of existing Admin Dashboard, Settings, Content, and Taxonomy presentation.
+
+##### Deliverable
+
+A reusable Admin UI Foundation that removes duplicated admin rendering and presentation patterns while preserving existing routes, permissions, CSRF protection, validation, persistence, and domain behavior.
+
+Detailed scope and architecture are defined in:
+
+```text
+docs/10_admin_ui_foundation.md
+```
+
+A full admin theme or skin system, M3 Internal Dashboard, manager modules, database-backed dashboard customization, frontend build tooling, and domain behavior changes are outside M2.1.
 
 #### 2. Event Foundation
 

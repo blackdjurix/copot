@@ -2,6 +2,9 @@
 
 namespace Copot\Core;
 
+use Copot\Core\Admin\AdminPageRenderer;
+use Copot\Core\Admin\AdminUrl;
+
 class Application
 {
     private string $basePath;
@@ -24,6 +27,8 @@ class Application
     private ViewRenderer $viewRenderer;
     private ViewResolver $viewResolver;
     private AdminNavigation $adminNavigation;
+    private AdminUrl $adminUrl;
+    private AdminPageRenderer $adminPageRenderer;
 
     public function __construct(string $basePath)
     {
@@ -63,8 +68,16 @@ class Application
             $this->path('resources/views'),
             $this->path('modules')
         );
+        $this->adminUrl = new AdminUrl($this->config);
         $this->adminNavigation = new AdminNavigation();
-        $this->adminNavigation->add('Dashboard', $this->adminPath());
+        $this->adminNavigation->add('Dashboard', $this->adminUrl->baseUrl());
+        $this->adminPageRenderer = new AdminPageRenderer(
+            $this->view,
+            $this->adminUrl,
+            $this->adminNavigation,
+            (string) $this->config->get('app.name', 'Copot'),
+            $this->siteName
+        );
     }
 
     public function path(string $path = ''): string
@@ -173,20 +186,19 @@ class Application
         return $this->adminNavigation;
     }
 
+    public function adminUrl(): AdminUrl
+    {
+        return $this->adminUrl;
+    }
+
+    public function adminPageRenderer(): AdminPageRenderer
+    {
+        return $this->adminPageRenderer;
+    }
+
     public function run(Request $request): Response
     {
         return $this->router->dispatch($request);
-    }
-
-    private function adminPath(): string
-    {
-        $path = $this->config->get('admin.path', 'admin');
-
-        if (!is_string($path) || !preg_match('/^[a-z0-9-]+$/', $path)) {
-            throw new \RuntimeException('Invalid admin path configuration.');
-        }
-
-        return '/' . $path;
     }
 
     private function initializeRuntimeSettings(SettingsRegistry $registry): void

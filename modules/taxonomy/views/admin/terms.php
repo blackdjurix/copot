@@ -9,10 +9,10 @@
     <?php endif; ?>
 
     <p>
-        <a href="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/taxonomy">All taxonomy types</a>
+        <a href="<?= htmlspecialchars($adminUrl('taxonomy'), ENT_QUOTES, 'UTF-8') ?>">All taxonomy types</a>
         <?php if (!empty($canCreate)): ?>
             |
-            <a href="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/taxonomy/<?= htmlspecialchars($type?->slug() ?? '', ENT_QUOTES, 'UTF-8') ?>/create">Create term</a>
+            <a href="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/create'), ENT_QUOTES, 'UTF-8') ?>">Create term</a>
         <?php endif; ?>
     </p>
 
@@ -44,11 +44,11 @@
                     <td><?= htmlspecialchars((string) $usageCount, ENT_QUOTES, 'UTF-8') ?></td>
                     <td>
                         <?php if (!empty($canUpdate)): ?>
-                            <a href="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/taxonomy/<?= htmlspecialchars($type?->slug() ?? '', ENT_QUOTES, 'UTF-8') ?>/<?= htmlspecialchars((string) $term->id(), ENT_QUOTES, 'UTF-8') ?>/edit">Edit</a>
+                            <a href="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/' . $term->id() . '/edit'), ENT_QUOTES, 'UTF-8') ?>">Edit</a>
                         <?php endif; ?>
 
                         <?php if (!empty($canDelete) && $usageCount === 0): ?>
-                            <form method="post" action="<?= htmlspecialchars($adminBase ?? '/admin', ENT_QUOTES, 'UTF-8') ?>/taxonomy/<?= htmlspecialchars($type?->slug() ?? '', ENT_QUOTES, 'UTF-8') ?>/<?= htmlspecialchars((string) $term->id(), ENT_QUOTES, 'UTF-8') ?>/delete" style="display:inline">
+                            <form method="post" action="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/' . $term->id() . '/delete'), ENT_QUOTES, 'UTF-8') ?>" style="display:inline">
                                 <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <button type="submit">Delete</button>
                             </form>
