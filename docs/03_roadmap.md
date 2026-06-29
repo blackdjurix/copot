@@ -181,81 +181,428 @@ The roadmap phases are organized as:
 ```text
 M1 = Framework Foundation
 M2 = Platform Capabilities
-M3 = Business Modules
-M4 = Commerce
-M5 = Ecosystem
+M3 = Core Modules
+M4 = Business / Application Modules
+M5 = Commerce
+M6 = Ecosystem
 ```
 
-M1 establishes the framework foundation. M2 adds reusable platform capabilities needed for production and commercial solutions. After M2, copot should be mature enough to support production/commercial projects as a platform foundation, even though not every business module will exist yet.
+M1 establishes the minimum framework foundation.
+
+M2 adds reusable services, contracts, registries, adapters, processing, and extension foundations.
+
+M3 builds reusable first-party management modules on top of M1 and M2.
+
+M4 introduces domain-specific Business/Application Modules.
+
+M5 adds commerce-specific transactional capabilities.
+
+M6 supports distribution, tooling, integrations, and the broader extension ecosystem.
+
+No release version after v0.8.0 is assumed by this roadmap review.
+
+The first M2 minor milestone, its exact scope, numbering, and target release version will be determined during a dedicated M2.1 Preparation phase after the Post-M1 Roadmap Review is complete.
+
+M2.1 Preparation is a planning and scope-lock step, not an implemented capability and not a release by itself.
 
 ---
 
 ## M2 Platform Capabilities
 
-Objective:
+### Objective
 
-Make copot ready to support production/commercial applications and websites by adding reusable platform capabilities. M2 is not a collection of business modules; it strengthens the shared capabilities that later modules can build on.
+Strengthen copot with reusable platform capabilities that can support production and commercial applications without embedding business-specific domains into the platform layer.
 
-Candidate capabilities:
+M2 is not a collection of user-facing manager modules or business modules.
 
-* Media Library
-* Image Service and basic image processing
-* Editor Framework and editor adapter/plugin support
-* Content Workspace
-* Navigation / Menu system
-* Search foundation
-* Notification foundation
-* Workflow / Automation foundation
-* Asset Management foundation
-* Internal Dashboard
+A Platform Capability may provide:
+
+* a shared service;
+* a registry;
+* an adapter interface;
+* extension points;
+* lifecycle hooks;
+* resolution logic;
+* storage abstraction;
+* processing infrastructure.
+
+### Candidate Capability Groups
+
+#### 1. Admin UI Foundation
+
+Planned direction:
+
+* admin design tokens;
+* reusable layout and component patterns;
+* form and table patterns;
+* validation and alert presentation;
+* extension slots;
+* dashboard/widget registration;
+* responsive and accessibility baseline.
+
+A full admin theme or skin system is not part of the initial scope.
+
+Internal Dashboard implementation belongs to M3.
+
+#### 2. Event Foundation
+
+Planned direction:
+
+* application and module events;
+* listener registration;
+* controlled dispatch;
+* decoupled module integration;
+* extension hooks for Notifications and Workflow.
+
+Queue infrastructure remains deferred until concrete asynchronous workloads require it.
+
+#### 3. Editor Framework
+
+Planned direction:
+
+* editor contract;
+* adapter support;
+* editor configuration;
+* serialization boundaries;
+* sanitization integration;
+* media-picker integration;
+* plugin or adapter extension points.
+
+Editor.js is the leading planned default adapter, not the permanent platform contract.
+
+Content Manager / Workspace belongs to M3.
+
+#### 4. Media Foundation
+
+Planned direction:
+
+* upload validation;
+* storage abstraction;
+* media records and metadata;
+* ownership and references;
+* URL and delivery handling;
+* variant lifecycle;
+* delete safeguards.
+
+Media Library belongs to M3.
+
+#### 5. Image Service
+
+Planned direction:
+
+* GD baseline adapter;
+* optional Imagick adapter;
+* dimensions and metadata;
+* resize;
+* crop;
+* rotate;
+* format and quality handling;
+* thumbnail and variant generation;
+* processing limits suitable for shared hosting.
+
+Browser editing libraries such as Cropper.js may provide UI interaction but do not replace server-side processing.
+
+#### 6. Navigation Foundation
+
+Planned direction:
+
+* navigation registry;
+* menu locations;
+* hierarchical item model;
+* target resolution;
+* permission-aware rendering;
+* active-state resolution;
+* module-contributed navigation entries;
+* theme-declared menu locations.
+
+Navigation Manager belongs to M3.
+
+#### 7. Search Foundation
+
+Planned direction:
+
+* searchable-resource contract;
+* provider or adapter registration;
+* permission-aware result handling;
+* database-backed baseline search;
+* cross-module discovery.
+
+#### 8. Notification Foundation
+
+Planned direction:
+
+* notification contract;
+* in-application notification channel;
+* persistence;
+* read and unread state;
+* module extension hooks.
+
+External mail, SMS, push, and queue-backed delivery remain outside the initial foundation unless separately approved.
+
+#### 9. Workflow / Automation Foundation
+
+Planned direction:
+
+* trigger and action contracts;
+* event integration;
+* workflow definitions;
+* controlled execution records;
+* extension points for future automation modules.
+
+A full visual workflow builder is not assumed.
+
+### M2 Exclusions
+
+M2 does not include:
+
+* Media Library management UI;
+* Content Manager / Workspace;
+* Theme Manager;
+* Settings Manager;
+* Navigation Manager;
+* Business/Application Modules;
+* Commerce;
+* marketplace or package distribution;
+* general API platform;
+* queue infrastructure without a concrete workload;
+* generic Asset Management Foundation.
+
+### Asset Terminology
+
+The roadmap does not use generic “Asset Management Foundation” because the term is ambiguous.
+
+Use:
+
+```text
+Media Foundation
+```
+
+for uploaded files, storage, metadata, references, variants, and delivery.
+
+Future Digital Asset Management may be considered as a Core or Application Module if advanced collections, ownership, approval, lifecycle, and usage requirements emerge.
+
+Physical or business asset management belongs to M4 as a domain-specific Business/Application Module.
 
 ---
 
-## M3 Business Modules
+## M3 Core Modules
 
-Objective:
+### Objective
 
-Use the Core and M2 Platform Capabilities to build business-oriented modules.
+Build reusable first-party management modules on top of M1 Framework Foundation and M2 Platform Capabilities.
+
+Core Modules:
+
+* provide user-facing or administrative management functionality;
+* are not tied to a specific business domain;
+* follow the Module Manager lifecycle;
+* may become dependencies of other modules;
+* remain modular even when distributed with copot.
+
+### Essential Candidates
+
+1. Users & Access
+2. Settings Manager
+3. Media Library
+4. Theme Manager
+5. Content Manager / Workspace
+6. Taxonomy Manager
+7. Navigation Manager
+8. Internal Dashboard
+
+### Supporting Candidates
+
+9. Redirect Manager
+10. Form Manager
+
+This order represents candidate priority and dependency direction, not a final locked M3.x submilestone sequence.
+
+### Existing Module Evolution
+
+The existing Content and Taxonomy modules remain the same modules.
+
+```text
+Content Module
+->
+Content Manager / Workspace
+```
+
+describes future evolution of its administrative and editorial experience.
+
+```text
+Taxonomy Module
+->
+Taxonomy Manager
+```
+
+describes future evolution of its management UI and capabilities.
+
+These names do not create duplicate replacement modules.
+
+### Manager and Service Boundaries
+
+```text
+Theme System
+!=
+Theme Manager
+```
+
+The Theme System provides lifecycle infrastructure.
+
+Theme Manager provides administrative theme management and theme-settings UI.
+
+```text
+SettingsService
+!=
+Settings Manager
+```
+
+SettingsService provides definitions, persistence, retrieval, validation, and typed values.
+
+Settings Manager provides administrator-facing settings management.
+
+```text
+Media Foundation + Image Service
+!=
+Media Library
+```
+
+Media Foundation and Image Service provide infrastructure.
+
+Media Library provides management and selection UI.
+
+---
+
+## M4 Business / Application Modules
+
+### Objective
+
+Use Platform Capabilities and Core Modules to build domain-specific applications and business functionality.
 
 Candidate modules:
 
+* Catalog
+* Property
+* Booking
 * CRM
 * Inventory
 * POS
 * HR
 * Finance
 * Project / Task Management
+* Physical or Business Asset Management
+
+Business/Application Modules are not universal copot requirements.
+
+They may be installed only when their domain is needed.
 
 ---
 
-## M4 Commerce
+## M5 Commerce
 
-Objective:
+### Objective
 
-Build commerce capabilities on top of the framework foundation and platform capabilities.
+Build commerce functionality on top of the framework, platform capabilities, and relevant core or business modules.
 
 Candidate directions:
 
-* Catalog
+* Product Catalog
 * Orders
+* Cart
 * Checkout
 * Payment integration
-* Customer/account commerce flows
+* Customer accounts
+* Transactional status flows
+* Inventory integration
+* Tax and pricing integration
+
+Commerce remains a separate phase because transactional correctness, payments, order state, and external integrations require dedicated architecture and testing.
 
 ---
 
-## M5 Ecosystem
+## M6 Ecosystem
 
-Objective:
+### Objective
 
-Support distribution, extension, and integration around the copot platform.
+Support distribution, extension, integration, and long-term platform maintenance.
 
 Candidate directions:
 
-* Module/package distribution
-* Update lifecycle
-* Extension ecosystem
-* Developer tooling
-* Integration/API ecosystem
+* module and package distribution;
+* update discovery and lifecycle;
+* extension ecosystem;
+* developer tooling;
+* integration and API ecosystem;
+* package signing and verification;
+* compatibility metadata;
+* remote repository or marketplace concepts.
 
+M6 depends on stable contracts established by the earlier phases.
 
+---
+
+## Dependency Direction
+
+The high-level dependency direction is:
+
+```text
+M1 Framework Foundation
+->
+M2 Platform Capabilities
+->
+M3 Core Modules
+->
+M4 Business / Application Modules
+->
+M5 Commerce
+->
+M6 Ecosystem
+```
+
+Important dependency chains include:
+
+```text
+Admin UI Foundation
+->
+Core Module management interfaces
+```
+
+```text
+Event Foundation
+->
+Notifications
+->
+Workflow / Automation
+->
+Module integration
+```
+
+```text
+Media Foundation + Image Service
+->
+Media Library
+->
+Theme Manager and Content Manager media fields
+```
+
+```text
+Editor Framework
+->
+Content Manager / Workspace
+```
+
+```text
+Navigation Foundation
+->
+Navigation Manager
+```
+
+```text
+Content + Taxonomy + Theme menu locations
+->
+Navigation target integration
+```
+
+Dependencies should remain directional.
+
+Later modules may depend on earlier capabilities, but shared platform services must not depend on user-facing manager modules or business domains.

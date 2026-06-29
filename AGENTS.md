@@ -8,25 +8,32 @@
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
-M1.8 Installer Foundation implementation is complete. The project is preparing release v0.8.0.
+M1 Framework Foundation is complete and released as v0.8.0.
+
+The project is currently performing the Post-M1 Roadmap Review before beginning M2 Platform Capabilities.
 
 ---
 
 ## Current Phase
 
-### M1.8 Release Preparation and Final Audit
+### Post-M1 Roadmap Review
 
 Primary goal:
 
-Finalize M1.8 documentation, run the milestone-wide audit, and prepare release v0.8.0 without opening M2 work.
+Formalize the architecture and roadmap boundaries between Platform Capabilities, Core Modules, Business/Application Modules, Commerce, and Ecosystem work before opening M2 implementation.
 
-Current batch:
+Current work:
 
-Batch 8 - Documentation and v0.8.0 Release Preparation.
+* Lock the M1-M6 phase model.
+* Define Platform Capability, Core Module, and Business/Application Module.
+* Separate reusable services from user-facing manager modules.
+* Establish the dependency direction from M2 capabilities to M3 core modules.
+* Remove stale roadmap terminology and obsolete milestone placement.
+* Keep all M2 implementation closed until the review is complete.
 
-Target release: v0.8.0.
+Latest release: v0.8.0.
 
-Batches 1 through 7 are complete. Batch 8 is limited to documentation, consistency audit, repository hygiene, and release preparation.
+M1 Framework Foundation is complete. No M2 capability is currently implemented.
 
 ---
 
@@ -40,6 +47,19 @@ Batches 1 through 7 are complete. Batch 8 is limited to documentation, consisten
 * Keep the framework deployable on shared hosting.
 * Prefer simple PHP solutions before introducing heavy dependencies.
 * Do not turn this project into Laravel-lite unless explicitly instructed.
+
+---
+
+## Execution Workflow Rules
+
+* Use one Codex session per minor milestone by default.
+* If a batch becomes unusually large or its working context becomes too heavy, stop at a stable checkpoint and consider continuing in a new Codex session.
+* Git and GitHub operations are user-owned.
+* The agent must not create or delete branches, commit, push, merge, tag, create releases, or perform repository-history operations unless the user explicitly requests an exception.
+* Documentation and instruction files that guide Codex execution are maintained manually by the user.
+* The assistant prepares documentation material as targeted replacements, copy-ready sections, patches, or full files when requested.
+* Codex must not edit documentation or instruction source-of-truth files unless the user explicitly requests an exception.
+* Codex may perform read-only documentation audits, terminology searches, reference checks, and validation when requested.
 
 ---
 
@@ -85,6 +105,7 @@ Batches 1 through 7 are complete. Batch 8 is limited to documentation, consisten
 * If a future feature appears necessary, propose it first and wait for approval.
 
 ---
+
 ## Domain Naming Rules
 
 * Use Content as the future primary domain concept instead of Article.
@@ -99,22 +120,23 @@ Batches 1 through 7 are complete. Batch 8 is limited to documentation, consisten
 * When naming is uncertain, prefer the term that is most stable for database and code.
 
 ---
-## Future Core Service Strategy
 
-* Editor.js is the planned default editor strategy.
-* Treat editor capability as a future Core Service, not as a regular feature module.
-* Do not implement editor functionality until its milestone is approved.
-* Future image handling should use an ImageService abstraction.
-* Browser image editor candidates may include Cropper.js.
-* Server-side image processing should support GD as baseline and Imagick as optional enhancement.
-* Do not make Imagick required for core.
-* Basic localization settings for timezone, locale, date format, and time format are part of M1.7 Settings Foundation.
-* Broader UI/system localization should be treated as a future Core Service capability.
-* Localization may later include language, number format, currency format, and UI translation.
-* Content translation is separate from UI localization and belongs to future Content/multilanguage work.
-* Do not implement a translation engine or multilingual content in M1.7.
+## Future Platform Capability Strategy
+
+* Editor functionality belongs to the future Editor Framework in M2.
+* Editor.js is the leading planned default editor adapter, not the permanent platform contract.
+* Content modules must depend on an editor abstraction rather than hardcoding one editor implementation.
+* Future image handling must use an Image Service abstraction.
+* Browser image-editor candidates may include Cropper.js.
+* Server-side image processing must support GD as the baseline and may support Imagick as an optional enhancement.
+* Imagick must not be required for the shared-hosting baseline.
+* Basic timezone, locale, date-format, and time-format support is already provided by M1.7 Settings Foundation.
+* Broader UI and system localization may become a future platform capability.
+* Content translation is separate from UI localization and belongs to future Content or multilanguage work.
+* Do not implement editor, media, image-processing, translation, or multilingual capability before its milestone is approved.
 
 ---
+
 ## Permission Strategy
 
 * Use one permission system for core and modules.
@@ -123,6 +145,7 @@ Batches 1 through 7 are complete. Batch 8 is limited to documentation, consisten
 * Workflow approval should be permission-driven, not hardcoded by role hierarchy.
 
 ---
+
 ## Admin Path Strategy
 
 * Admin URL path must be configurable.
@@ -131,15 +154,84 @@ Batches 1 through 7 are complete. Batch 8 is limited to documentation, consisten
 * Future installer may allow selecting admin path such as `/administrator`, `/backend`, `/dapur`, etc.
 
 ---
-## Core Services vs Core Features
 
-* Core Services provide capabilities.
-* Core Features provide UI/business features.
-* Settings is a Core/platform service. Its M1.7 Admin Settings UI is part of the platform foundation.
-* Editor, Media/Image, broader Localization, and Cache are future Core Services unless explicitly changed.
-* Content, Menu, and Users are Core Features.
+## Architecture Classification Model
+
+### Platform Capability
+
+A Platform Capability is reusable infrastructure, a service, a registry, an adapter contract, or a shared runtime facility.
+
+A Platform Capability:
+
+* is not a business-specific domain;
+* does not require a standalone management UI;
+* may be used by multiple modules;
+* may provide APIs, registries, adapters, lifecycle hooks, resolution, storage, or shared processing;
+* belongs to M2.
+
+Planned examples include:
+
+* Admin UI Foundation
+* Event Foundation
+* Editor Framework
+* Media Foundation
+* Image Service
+* Navigation Foundation
+* Search Foundation
+* Notification Foundation
+* Workflow / Automation Foundation
+
+### Core Module
+
+A Core Module is a first-party reusable module that provides user-facing or administrative management functionality without representing a specific business domain.
+
+A Core Module:
+
+* is built on M1 infrastructure and M2 Platform Capabilities;
+* follows the existing Module Manager lifecycle;
+* may become a dependency of other modules;
+* remains modular even when included in the standard copot distribution;
+* belongs to M3.
+
+Planned examples include:
+
+* Users & Access
+* Settings Manager
+* Media Library
+* Theme Manager
+* Content Manager / Workspace
+* Taxonomy Manager
+* Navigation Manager
+* Internal Dashboard
+* Redirect Manager
+* Form Manager
+
+The existing Content and Taxonomy modules remain the same modules. Future “Manager” naming describes their management-UI evolution, not duplicate replacement modules.
+
+Theme Manager is distinct from the existing Theme System lifecycle services.
+
+Settings Manager is distinct from the existing SettingsService persistence and retrieval foundation.
+
+### Business / Application Module
+
+A Business or Application Module implements a specific domain or use case.
+
+Examples include:
+
+* Catalog
+* Property
+* Booking
+* CRM
+* Inventory
+* Project Management
+
+Business/Application Modules belong to M4 or later domain phases and are not universal copot requirements.
+
+Commerce remains a separate M5 phase because its transactional and integration requirements are substantial.
+
 
 ---
+
 ## Settings Rules
 
 * Settings provides core persistence, retrieval, validation, and type casting for known setting definitions.
@@ -151,6 +243,7 @@ Batches 1 through 7 are complete. Batch 8 is limited to documentation, consisten
 * The M1.7 Admin Settings UI must not allow arbitrary namespace or key creation.
 
 ---
+
 ## Installer Rules
 
 * M1.8 provides a web installer for fresh installations on PHP/MySQL shared hosting.
@@ -172,20 +265,24 @@ Batches 1 through 7 are complete. Batch 8 is limited to documentation, consisten
 * Public installer errors must not expose database credentials, SQL, filesystem paths, or stack traces.
 * M1.8 does not include a CLI installer, upgrade or migration engine, repair/reset flow, table prefix, multisite, module/theme selection UI, marketplace, infrastructure provisioning, or M2 work.
 * M1.8 batch order is: installation state/gate; requirements/database validation; atomic config/schema; first admin/settings; baseline theme/modules/final lock; installer UI/session; failure/security/shared-hosting hardening; documentation/release prep.
-* M1.8 changes remain uncommitted and unpushed until the milestone-wide final audit and explicit approval.
+* M1.8 is complete and released as v0.8.0.
+* Installer behavior remains frozen unless a future approved milestone explicitly changes it.
 
 ---
+
 ## Architecture Rules
 
-* Core system handles infrastructure.
-* Modules handle business logic.
+* Core infrastructure handles bootstrap, configuration, routing, persistence access, security primitives, and lifecycle management.
+* Platform Capabilities provide reusable services, contracts, registries, adapters, and shared runtime behavior.
+* Core Modules provide reusable user-facing and administrative functionality.
+* Business/Application Modules provide domain-specific functionality.
 * Themes handle presentation only.
 * Themes must not contain business logic.
 * Themes must not directly access the database.
-* Modules should be independent whenever practical.
+* Modules should remain independent whenever practical.
 * Database access should go through the core database layer.
-* Initial database strategy should use PDO.
-* Do not introduce an ORM in M1.1.
+* Initial database access uses PDO.
+* Do not introduce an ORM without an approved milestone and documented need.
 
 ---
 
@@ -246,7 +343,16 @@ Each module should define its own metadata in `module.json`.
 
 Modules should not assume another module exists unless dependency rules are documented.
 
+Modules may be classified as Core Modules or Business/Application Modules.
+
+Core Modules provide reusable management functionality and belong to M3.
+
+Business/Application Modules implement specific domains and belong to M4 or later.
+
+A Platform Capability is not automatically a module. Shared services, registries, adapters, and runtime infrastructure may remain in the platform layer without a standalone module UI.
+
 ---
+
 ## Taxonomy Rules
 
 * M1.6 is Taxonomy Foundation, not a category-only module.
@@ -319,15 +425,19 @@ Themes must not directly access the service container, database, authentication,
 
 When adding or changing major behavior, update the relevant documentation:
 
+* `docs/00_vision.md`
 * `docs/01_principles.md`
 * `docs/02_architecture.md`
 * `docs/03_roadmap.md`
 * `docs/04_module_system.md`
 * `docs/05_theme_system.md`
-* `docs/06_container_engine.md`
 * `docs/07_taxonomy_system.md`
 * `docs/08_settings_system.md`
 * `docs/09_installer_system.md`
+
+Documentation and instruction files are user-maintained unless the user explicitly authorizes Codex to edit them.
+
+Codex may audit these files read-only and report inconsistencies, stale references, or broken documentation links.
 
 Update `CHANGELOG.md` for meaningful project changes.
 
@@ -335,23 +445,29 @@ Update `CHANGELOG.md` for meaningful project changes.
 
 ## Git Rules
 
-Use milestone branches.
+Git and GitHub operations are performed by the user.
 
-Examples:
+Codex must not perform the following unless the user explicitly requests an exception:
 
-```text
-feature/m1.1-core-bootstrap
-feature/m1.2-user-authentication
-feature/m1.3-module-manager
-```
+* create or delete branches;
+* commit or amend commits;
+* rebase;
+* merge;
+* push;
+* create or delete tags;
+* create releases;
+* delete remote branches.
 
-Commit messages should be clear and milestone-aware.
+Codex may inspect Git state and report:
 
-Example:
+* current branch;
+* working-tree status;
+* diff summary;
+* untracked or suspicious files;
+* merge or tag consistency;
+* validation findings.
 
-```text
-M1.1 Define core bootstrap architecture
-```
+Commit messages should remain clear and milestone-aware.
 
 ---
 
@@ -372,26 +488,37 @@ M1.1 Define core bootstrap architecture
 
 ## Preferred Development Order
 
-1. Update documentation.
-2. Confirm milestone scope.
-3. Create implementation skeleton.
-4. Add minimal working behavior.
-5. Test locally.
-6. Update changelog.
-7. Commit.
-8. Merge after review.
+1. Lock scope and architecture decisions.
+2. Prepare documentation changes.
+3. User updates documentation and instruction files manually.
+4. Confirm milestone scope.
+5. Codex audits targeted implementation files.
+6. Add the minimal working implementation.
+7. Run automated tests and validation.
+8. Perform manual testing.
+9. User handles Git and GitHub operations.
+10. Merge only after review and approval.
 
 ---
 
 ## Current Immediate Goal
 
-M1.8 Installer Foundation implementation is complete.
+M1 Framework Foundation is complete and released as v0.8.0.
 
-The current task is M1.8 Batch 8: Documentation and v0.8.0 Release Preparation.
+The current work is the Post-M1 Roadmap Review.
 
-Target release is v0.8.0. Batches 1 through 7 are approved and Batch 8 is active.
+The immediate goal is to:
 
-The immediate goal is to complete the milestone-wide documentation and consistency audit, then prepare M1.8 for final review, commit, merge, and release. M2 work must not begin yet.
+* formalize the M1-M6 phase model;
+* define Platform Capability, Core Module, and Business/Application Module;
+* separate M2 shared capabilities from M3 management modules;
+* establish the dependency direction between M2 and M3;
+* align architecture and roadmap terminology;
+* keep M2 implementation closed until the review is complete.
+
+No post-v0.8.0 release version is assumed yet.
+
+The next release version will be determined during M2.1 Preparation.
 
 
 

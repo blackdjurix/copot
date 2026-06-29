@@ -2,15 +2,35 @@
 
 ## Architecture Overview
 
-copot consists of three primary layers:
+copot is organized into four architectural layers:
 
 ```text
-Core
+Core Infrastructure
+->
+Platform Capabilities
 ->
 Modules
 ->
 Themes
 ```
+
+The layers have different responsibilities:
+
+* Core Infrastructure provides the minimum runtime, lifecycle, security, persistence, and extension foundations.
+* Platform Capabilities provide reusable services, contracts, registries, adapters, and shared processing.
+* Modules provide reusable management functionality or domain-specific application behavior.
+* Themes provide frontend presentation only.
+
+Modules are further classified as:
+
+```text
+Core Modules
+Business / Application Modules
+```
+
+Core Modules are reusable first-party management modules.
+
+Business/Application Modules implement specific domains or use cases.
 
 ---
 
@@ -47,6 +67,87 @@ View
 ->
 Response
 ```
+
+---
+
+## Platform Capability Layer
+
+Platform Capabilities provide reusable infrastructure above the minimum Core runtime.
+
+A Platform Capability may provide:
+
+* a service;
+* a registry;
+* an adapter interface;
+* lifecycle hooks;
+* resolution logic;
+* storage abstraction;
+* shared processing;
+* extension points.
+
+A Platform Capability does not need a standalone management UI and must not represent a business-specific domain.
+
+Planned M2 Platform Capabilities are:
+
+* Admin UI Foundation
+* Event Foundation
+* Editor Framework
+* Media Foundation
+* Image Service
+* Navigation Foundation
+* Search Foundation
+* Notification Foundation
+* Workflow / Automation Foundation
+
+Dependency direction:
+
+```text
+Core Infrastructure
+->
+Platform Capabilities
+->
+Core Modules
+->
+Business / Application Modules
+```
+
+### Important Naming Boundaries
+
+The following names refer to different architectural responsibilities:
+
+```text
+Theme System
+!=
+Theme Manager
+```
+
+The Theme System provides discovery, validation, registry, activation, view resolution, and rendering lifecycle behavior.
+
+Theme Manager is a future M3 Core Module that provides administrative theme listing, activation controls, validation status, and theme-settings UI.
+
+```text
+SettingsService
+!=
+Settings Manager
+```
+
+SettingsService provides definitions, persistence, retrieval, type casting, and validation.
+
+Settings Manager is a future M3 Core Module that expands administrator-facing settings management on top of the existing SettingsService foundation.
+
+The minimal Admin Settings UI introduced in M1.7 remains part of the M1 platform foundation and is not itself the future Settings Manager.
+
+The future Settings Manager may organize registered settings sections, render reusable setting field types, and support module-contributed settings without allowing arbitrary unregistered keys.
+
+```text
+Media Foundation + Image Service
+!=
+Media Library
+```
+
+Media Foundation and Image Service provide storage, metadata, references, delivery, and image processing.
+
+Media Library is a future M3 Core Module that provides upload, browsing, selection, metadata management, usage visibility, and basic image-editing UI.
 
 ---
 
@@ -144,6 +245,12 @@ Current limits:
 
 M1.4.1 adds a minimal core Admin Shell.
 
+The current Admin Shell is M1 infrastructure.
+
+The future Admin UI Foundation in M2 will provide reusable design tokens, layout components, form patterns, table patterns, extension slots, and dashboard/widget registration.
+
+A full admin theme or skin system is not part of the initial Admin UI Foundation scope.
+
 Current capabilities:
 
 * Configurable single-segment admin path through `config/admin.php`
@@ -177,19 +284,61 @@ Current limits:
 
 ## Module Layer
 
-Modules provide business functionality.
+Modules provide reusable user-facing functionality or domain-specific application behavior.
+
+Modules are classified as either Core Modules or Business/Application Modules.
+
+### Core Modules
+
+Core Modules are first-party reusable modules that provide general management functionality.
+
+They:
+
+* are not tied to one business domain;
+* are built on Core Infrastructure and Platform Capabilities;
+* follow the normal Module Manager lifecycle;
+* may become dependencies of other modules;
+* belong to M3.
+
+Planned examples:
+
+```text
+Users & Access
+Settings Manager
+Media Library
+Theme Manager
+Content Manager / Workspace
+Taxonomy Manager
+Navigation Manager
+Internal Dashboard
+Redirect Manager
+Form Manager
+```
+
+The existing Content and Taxonomy modules remain the same modules. Their future Manager or Workspace naming describes expanded management UI and capability, not replacement modules.
+
+### Business / Application Modules
+
+Business/Application Modules implement specific domains or use cases.
+
+They:
+
+* depend on shared Platform Capabilities and Core Modules;
+* are not required by every copot installation;
+* belong to M4 or later domain phases.
 
 Examples:
 
 ```text
-Articles
 Catalog
-Workflow
-Assets
-Store
+Property
+Booking
+CRM
+Inventory
+Project Management
 ```
 
-Each module should remain as self-contained as possible.
+Commerce is treated as a dedicated M5 phase because orders, checkout, payment integrations, and transactional state require a separate scope.
 
 A module may contain:
 
@@ -262,7 +411,9 @@ Current limits:
 * No advanced search
 * No revisions or autosave
 * No approval workflow
-* No Content Workspace
+* No expanded Content Manager / Workspace
+
+The future Content Manager / Workspace is an M3 evolution of the existing Content module. It is not a separate replacement module.
 
 ---
 
@@ -430,15 +581,41 @@ All architectural decisions should consider compatibility with the primary deplo
 
 ## Future Expansion Areas
 
-Future milestones may introduce:
+Future phases are organized as:
 
-* Event System
-* Queue System
-* API Layer
-* Background Jobs
-* Package Ecosystem
+```text
+M1 = Framework Foundation
+M2 = Platform Capabilities
+M3 = Core Modules
+M4 = Business / Application Modules
+M5 = Commerce
+M6 = Ecosystem
+```
 
-These features are not part of M1.1 or M1.2.
+M2 may introduce:
 
+* Admin UI Foundation
+* Event Foundation
+* Editor Framework
+* Media Foundation
+* Image Service
+* Navigation Foundation
+* Search Foundation
+* Notification Foundation
+* Workflow / Automation Foundation
 
+The following are explicitly deferred until a concrete requirement exists:
 
+* Queue Foundation
+* General API Foundation
+* Background-job infrastructure
+* Remote package distribution
+* Marketplace infrastructure
+
+Generic “Asset Management Foundation” is not used as an M2 milestone because the term is ambiguous.
+
+The architecture distinguishes:
+
+* Media Foundation for uploaded files, metadata, storage, references, variants, and delivery;
+* future Digital Asset Management for advanced collections, ownership, approval, and lifecycle use cases;
+* physical or business asset management as an M4 Business/Application domain.

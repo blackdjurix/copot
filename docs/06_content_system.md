@@ -128,29 +128,25 @@ Draft, archived, and missing content return `404 Not Found`.
 
 M1.5 uses a plain textarea.
 
-Editor.js is a planned future editor strategy, but it is not implemented in M1.5, not required by core, and not hardcoded into Content.
+Editor.js is the leading planned default editor adapter, but it is not implemented in M1.5, required by Core Infrastructure, or hardcoded into Content.
 
-The Content Module owns content lifecycle and future content workspace behavior. Editor implementations must remain pluggable or optional.
+The future M2 Editor Framework must keep editor implementations pluggable and replaceable.
 
-M1.5 uses basic CRUD/form UI only.
+The Content Module owns content lifecycle and will evolve toward the future M3 Content Manager / Workspace without becoming a duplicate replacement module.
 
-Long-term editing direction is a Content Workspace, not just CRUD forms. Row-click or open workspace behavior, preview mode, HTML mode, plugin panels, and richer editor UX are future work and not part of M1.5.
+M1.5 uses basic CRUD and form UI only.
 
----
+The long-term editing direction is an expanded Content Manager / Workspace, including possible row-open workspace behavior, preview mode, HTML mode, plugin panels, and richer editor UX.
 
-## Admin Action UX
-
-M1.5 may hide unavailable actions.
-
-Future Admin UX should prefer disabled actions when the action concept exists but is unavailable because of current state or permission.
+These features are future work and are not part of M1.5.
 
 ---
 
 ## Security Services
 
-Repeated security-sensitive logic should move into dedicated Core Services.
+Repeated security-sensitive logic should move into dedicated shared services in Core Infrastructure or an approved Platform Capability, according to ownership and dependency direction.
 
-CSRF handling uses `app/Core/Csrf.php`. New POST routes should use `$app->csrf()->validateOrReject($request)` or a future equivalent instead of manually extracting tokens.
+CSRF handling currently uses `app/Core/Csrf.php`. New POST routes should use `$app->csrf()->validateOrReject($request)` or a future equivalent instead of manually extracting tokens.
 
 ---
 

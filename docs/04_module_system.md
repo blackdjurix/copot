@@ -2,9 +2,14 @@
 
 ## Purpose
 
-The module system allows copot projects to add business functionality without mixing that functionality into the core or theme layers.
+The module system allows copot projects to add reusable management functionality and domain-specific application behavior without mixing those responsibilities into Core Infrastructure, Platform Capabilities, or Themes.
 
-M1.3 focuses on a local module manager foundation. It does not introduce a marketplace, remote package downloads, a module UI, a composer package system, a migration runner, or theme integration.
+Modules may be classified as:
+
+* Core Modules
+* Business/Application Modules
+
+M1.3 focuses on a local module-manager foundation. It does not introduce a marketplace, remote package downloads, a module UI, a Composer package system, a migration runner, or theme integration.
 
 ---
 
@@ -29,7 +34,7 @@ Excluded:
 * Marketplace
 * Admin module UI
 * Theme system
-* Article module
+* Content Module
 * Installer
 * Complex dependency resolver
 * Composer package system
@@ -37,6 +42,12 @@ Excluded:
 * Asset publishing
 * Remote module download
 * Module permission auto-sync into core permissions
+
+Core Modules and Business/Application Modules use the same Module Manager lifecycle.
+
+The classification describes module responsibility, not a separate installation or registry mechanism.
+
+Platform Capabilities are not automatically modules. A shared service, registry, adapter, or runtime facility may remain in the platform layer without a standalone `module.json`.
 
 ---
 
@@ -276,7 +287,7 @@ modules/example
 
 The sample module exists only to verify discovery, install, enable, disable, route loading, and permission metadata behavior.
 
-It is not an article module, admin dashboard, marketplace package, or product feature.
+It is not a content-management module, admin dashboard, marketplace package, or product feature.
 
 ---
 

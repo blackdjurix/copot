@@ -4,13 +4,29 @@ A modular PHP-based website framework designed for flexible content, business, a
 
 ## Status
 
-M1.8 Installer Foundation implementation is complete and is being prepared for the v0.8.0 final audit and release.
+M1 Framework Foundation is complete and released as v0.8.0.
 
-The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer. New deployments can be configured through `/install` before normal application bootstrap is allowed.
+The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
-## Current Milestone
+New deployments can be configured through `/install` before normal application bootstrap is allowed.
 
-M1.8 Installer Foundation
+## Current Phase
+
+Post-M1 Roadmap Review
+
+The current work formalizes the phase boundaries between:
+
+* M2 Platform Capabilities
+* M3 Core Modules
+* M4 Business/Application Modules
+* M5 Commerce
+* M6 Ecosystem
+
+No M2 implementation has started.
+
+The next release version will be determined during M2.1 Preparation.
+
+## Implemented Foundation
 
 Included so far:
 
@@ -124,7 +140,7 @@ Not included yet:
 - Approval workflow
 - Custom fields
 - Scheduling engine
-- Content Workspace
+- Expanded Content Manager / Workspace
 - Translation engine and multilingual UI/content
 - Per-user settings, timezone, or locale
 - Public Settings UI
@@ -345,7 +361,7 @@ Only `published` content renders on the frontend. Draft, archived, and missing c
 
 M1.5 uses a plain textarea for the body. M1.6 adds optional taxonomy integration when the Taxonomy module is enabled. Content still works when the Taxonomy module is disabled; the category/tag fields and list column are hidden and assignment sync is skipped.
 
-The Content Module does not include Editor.js, media/image handling, SEO, comments, advanced search, revisions, autosave, approval workflow, custom fields, scheduling, or Content Workspace.
+The current Content Module does not include Editor.js, media/image handling, SEO, comments, advanced search, revisions, autosave, approval workflow, custom fields, scheduling, or the expanded Content Manager / Workspace planned for M3.
 
 ## Taxonomy Foundation
 

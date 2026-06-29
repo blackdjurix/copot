@@ -261,7 +261,7 @@ Hardened filesystem checks, atomic writes, malformed-marker behavior, mutex fail
 
 Finalized README, architecture, roadmap, changelog, governance, installer documentation, and release material for v0.8.0 without adding installer behavior.
 
-All implementation batches require milestone-wide final audit and explicit approval before commit, merge, tag, or release.
+All implementation milestones require a final audit and explicit approval before the user performs commit, merge, tag, or release operations.
 
 ## Explicit Exclusions
 

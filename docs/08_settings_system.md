@@ -6,6 +6,16 @@ M1.7 Settings Foundation provides global settings for one copot installation. Se
 
 Core owns setting persistence, retrieval, validation, and type casting. The Admin Settings UI is also part of the platform foundation. M1.7 is limited to global/site settings and basic localization settings.
 
+## Future Settings Manager Boundary
+
+The Admin Settings UI introduced in M1.7 is a minimal platform-foundation interface for the six approved General and Localization settings.
+
+It is not the future M3 Settings Manager.
+
+The future Settings Manager will remain built on `SettingsService` and may provide broader registered-settings organization, reusable field rendering, module-contributed settings sections, and permission-aware management UI.
+
+It must not replace the SettingsService foundation, permit arbitrary unregistered keys, or store environment secrets.
+
 Settings must not store secrets, passwords, SMTP credentials, API tokens, or environment configuration. Sensitive and deployment-specific values belong in environment variables or appropriate configuration files.
 
 ---

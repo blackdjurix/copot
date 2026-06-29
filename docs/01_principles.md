@@ -10,61 +10,106 @@ The framework should remain lightweight, extensible, maintainable, and deployabl
 
 ## Core Philosophy
 
-copot is built around three primary layers:
+copot is organized around four architectural layers:
 
 ```text
-Core
+Core Infrastructure
++
+Platform Capabilities
 +
 Modules
 +
 Themes
 ```
 
-### Core
+Modules are further classified as:
 
-Provides infrastructure and framework services.
+```text
+Core Modules
+Business / Application Modules
+```
+
+### Core Infrastructure
+
+Provides the minimum runtime and lifecycle foundation.
 
 Examples:
 
-* Routing
+* Application bootstrap
 * Configuration
+* Routing
 * Authentication
 * Permissions
-* Database Access
-* Module Loading
-* Theme Loading
+* Database access
+* Module lifecycle
+* Theme lifecycle
+* Request and response handling
 
-Core responsibilities such as Authentication, Module Loading, and Theme Loading are planned framework responsibilities. They are implemented progressively according to the roadmap, not all at once in the initial bootstrap.
+Core responsibilities are implemented progressively according to the roadmap.
+
+### Platform Capabilities
+
+Provide reusable services, contracts, registries, adapters, processing, and extension foundations.
+
+Examples:
+
+* Admin UI Foundation
+* Event Foundation
+* Editor Framework
+* Media Foundation
+* Image Service
+* Navigation Foundation
+* Search Foundation
+* Notification Foundation
+* Workflow / Automation Foundation
+
+Platform Capabilities do not need standalone management interfaces and must not represent business-specific domains.
 
 ### Modules
 
-Provide business functionality.
+Modules provide reusable management functionality or domain-specific application behavior.
 
-Examples:
+Core Module examples:
 
-* Articles
+* Content
+* Taxonomy
+* Users & Access
+* Settings Manager
+* Media Library
+* Theme Manager
+* Navigation Manager
+* Internal Dashboard
+
+Business/Application Module examples:
+
 * Catalog
-* Workflow
-* Assets
-* Store
+* Property
+* Booking
+* CRM
+* Inventory
+* Project Management
 
 ### Themes
 
-Provide presentation and visual layout.
+Themes provide presentation and visual layout only.
 
-Themes should never own business logic.
+Themes must not own business logic, persistence, authentication, platform services, or module lifecycle behavior.
 
 ---
 
 ## Separation of Concerns
 
-Business logic belongs to modules.
+Runtime and lifecycle infrastructure belongs to Core Infrastructure.
 
-Infrastructure belongs to the core.
+Reusable services, registries, adapters, processing, and extension contracts belong to Platform Capabilities.
 
-Presentation belongs to themes.
+Reusable administrative functionality belongs to Core Modules.
 
-A layer should not take responsibility for another layer's concerns.
+Domain-specific application behavior belongs to Business/Application Modules.
+
+Presentation belongs to Themes.
+
+A layer must not take responsibility for another layer's concerns.
 
 ---
 
@@ -80,7 +125,11 @@ Major architectural changes require documentation updates.
 
 ## Modular First
 
-New business functionality should be implemented as modules whenever practical.
+Reusable management functionality should be implemented as Core Modules whenever practical.
+
+Domain-specific functionality should be implemented as Business/Application Modules.
+
+Platform services must not be disguised as modules merely because they may later receive management UI.
 
 The framework should encourage modular development instead of monolithic development.
 

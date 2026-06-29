@@ -113,7 +113,7 @@
 
 - Content is the primary domain concept; Article and Page are content types.
 - M1.5 uses a plain textarea and does not implement Editor.js.
-- M1.5 intentionally does not include taxonomy, media/image services, SEO, analytics, AI, translation, comments, newsletter, forms, advanced search, revisions, autosave, approval workflow, custom fields, scheduling engine, menu manager, settings UI, role/permission UI, module UI, theme UI, or Content Workspace.
+- M1.5 intentionally does not include taxonomy, media/image services, SEO, analytics, AI, translation, comments, newsletter, forms, advanced search, revisions, autosave, approval workflow, custom fields, scheduling, menu management, settings management, role/permission management, module management UI, theme management UI, or the expanded Content Manager / Workspace.
 
 </details>
 
