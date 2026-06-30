@@ -13,19 +13,35 @@
             <p><?= htmlspecialchars($appName ?? 'Copot', ENT_QUOTES, 'UTF-8') ?> admin shell</p>
 
             <?php if (!empty($error)): ?>
-                <div class="error" role="alert"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>
+                <div class="admin-alert admin-alert--danger" id="admin-login-error" role="alert">
+                    <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?>
+                </div>
             <?php endif; ?>
 
-            <form method="post" action="<?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?>">
+            <form class="admin-form" method="post" action="<?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?>">
                 <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
-                <label for="email">Email</label>
-                <input id="email" name="email" type="email" value="<?= htmlspecialchars($email ?? '', ENT_QUOTES, 'UTF-8') ?>" required>
+                <div class="admin-field">
+                    <label class="admin-field__label" for="email">
+                        Email
+                        <span class="admin-field__required" aria-hidden="true">*</span>
+                        <span class="admin-visually-hidden">required</span>
+                    </label>
+                    <input id="email" name="email" type="email" autocomplete="email" value="<?= htmlspecialchars($email ?? '', ENT_QUOTES, 'UTF-8') ?>" required>
+                </div>
 
-                <label for="password">Password</label>
-                <input id="password" name="password" type="password" required>
+                <div class="admin-field">
+                    <label class="admin-field__label" for="password">
+                        Password
+                        <span class="admin-field__required" aria-hidden="true">*</span>
+                        <span class="admin-visually-hidden">required</span>
+                    </label>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required>
+                </div>
 
-                <button type="submit">Login</button>
+                <div class="admin-actions">
+                    <button class="admin-button admin-button--primary" type="submit">Login</button>
+                </div>
             </form>
         </section>
     </main>

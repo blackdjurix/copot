@@ -37,7 +37,7 @@
 
                 <form method="post" action="<?= htmlspecialchars($adminLogoutUrl, ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                    <button type="submit">Logout</button>
+                    <button class="admin-button admin-button--secondary" type="submit">Logout</button>
                 </form>
             </div>
         </aside>
