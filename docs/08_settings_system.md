@@ -14,6 +14,10 @@ It is not the future M3 Settings Manager.
 
 The future Settings Manager will remain built on `SettingsService` and may provide broader registered-settings organization, reusable field rendering, module-contributed settings sections, and permission-aware management UI.
 
+After the future M2 Branding Foundation defines its contract, the M3 Settings Manager may provide UI to edit the four Core palette values: main, accent, neutral dark, and neutral light. Site Settings must not make the locked Core semantic mapping editable.
+
+Theme-specific palette or semantic-mapping overrides, advanced color settings, and later Custom CSS belong to the future Theme Manager. Their values remain scoped to the active theme and must not write back to the Core palette. See `docs/11_branding_foundation.md`.
+
 It must not replace the SettingsService foundation, permit arbitrary unregistered keys, or store environment secrets.
 
 Settings must not store secrets, passwords, SMTP credentials, API tokens, or environment configuration. Sensitive and deployment-specific values belong in environment variables or appropriate configuration files.
@@ -255,6 +259,10 @@ M1.7 does not include:
 * Cache or server configuration
 * Environment variable editor
 * Logo or favicon upload
+* Core brand palette editing before Branding Foundation and Settings Manager
+* Semantic color-mapping editor
+* Theme-specific advanced color settings
+* Custom CSS
 * Media Library integration
 * Feature flags
 * Settings cache layer

@@ -26,7 +26,7 @@ It is not a business module, management module, admin theme marketplace, visual 
 
 ### M2.1 Admin UI Foundation
 
-Status: Preparation and scope lock.
+Status: Implementation in progress. Batch 1 Admin URL and Page Rendering and Batch 2 Shared Assets and Shell Baseline are complete. Batch 3 Core Admin Patterns is the current focus.
 
 Latest release before this milestone:
 
@@ -332,7 +332,7 @@ They do not require:
 
 ## Design Token Direction
 
-Admin CSS should use a small set of centralized custom properties.
+Admin CSS uses a small set of centralized custom properties.
 
 Candidate groups:
 
@@ -365,7 +365,7 @@ Candidate naming direction:
 --admin-color-info
 ```
 
-Exact values are implementation decisions within the approved visual direction.
+Exact values are implementation decisions within the approved visual direction. These tokens are internal to Admin UI and do not read Site Branding. Any future brand-color integration must be limited, explicit, contrast-safe, and separately approved. The broader branding boundary is defined in `docs/11_branding_foundation.md`.
 
 Tokens are implementation infrastructure, not a user-selectable admin skin system.
 
@@ -763,6 +763,8 @@ Manual verification should include:
 
 ### Batch 1 — Admin URL and Page Rendering
 
+Status: Complete.
+
 * centralize admin path validation;
 * centralize admin URL generation;
 * introduce one Admin Page/Shell renderer;
@@ -771,6 +773,8 @@ Manual verification should include:
 * add focused tests.
 
 ### Batch 2 — Shared Assets and Shell Baseline
+
+Status: Complete.
 
 * add static Admin CSS;
 * establish design tokens;
@@ -781,6 +785,8 @@ Manual verification should include:
 * add focused tests.
 
 ### Batch 3 — Core Admin Patterns
+
+Status: Current focus.
 
 * add focused alert, field, action, panel, table, and empty-state patterns;
 * migrate admin login;
@@ -866,3 +872,5 @@ Business/Application Module admin interfaces
 Those systems may consume the Admin UI Foundation.
 
 They must not force Admin UI Foundation to depend on their domain logic.
+
+The future Branding Foundation does not change this dependency direction. M2.1 retains internal Admin UI color tokens; future Admin brand integration, if approved, remains limited and contrast-safe. See `docs/11_branding_foundation.md`.

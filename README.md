@@ -12,27 +12,24 @@ New deployments can be configured through `/install` before normal application b
 
 ## Current Phase
 
-M2.1 Admin UI Foundation Preparation
+M2.1 Admin UI Foundation — Batch 3 Core Admin Patterns
 
 The Post-M1 Roadmap Review is complete.
 
-The current work is locking the first M2 Platform Capability:
+The current work is implementing the first M2 Platform Capability:
 
 ```text
 M2.1 Admin UI Foundation
 ```
 
-Current preparation covers:
+Progress and current focus:
 
-* centralized admin path and URL ownership;
-* centralized Admin Shell and page rendering;
-* static Admin UI assets and design tokens;
-* reusable accessible and responsive UI patterns;
-* permission-aware navigation with stable IDs, ordering, and active state;
-* a minimal dashboard-widget contribution contract;
-* migration of existing Admin Dashboard, Settings, Content, and Taxonomy presentation without changing domain behavior.
+* Batch 1 Admin URL and Page Rendering is complete;
+* Batch 2 Shared Assets and Shell Baseline is complete;
+* Batch 3 Core Admin Patterns is the current focus;
+* later batches complete module presentation migration, navigation and dashboard contracts, and regression verification.
 
-M2.1 implementation has not started yet.
+M2.1 implementation is in progress.
 
 Target release: v0.9.0.
 
@@ -328,7 +325,7 @@ Admin login lives at the configured admin path. With the default configuration, 
 
 M1.4.1 provides only the minimal shell. M1.7 adds the Core Admin Settings page without introducing admin theming or a generic settings editor.
 
-M2.1 Admin UI Foundation will evolve the existing shell into reusable, theme-independent Admin UI infrastructure with:
+M2.1 Admin UI Foundation is evolving the existing shell into reusable, theme-independent Admin UI infrastructure with:
 
 * centralized admin path and URL generation;
 * centralized Admin Shell and page rendering;
@@ -339,6 +336,10 @@ M2.1 Admin UI Foundation will evolve the existing shell into reusable, theme-ind
 * a minimal dashboard-widget contribution contract.
 
 M2.1 does not include a full admin theme system, user-selectable skins, M3 manager modules, analytics, a full Internal Dashboard, database-backed dashboard customization, frontend build tooling, or domain behavior changes.
+
+Batch 1 and Batch 2 are complete. Batch 3 Core Admin Patterns is the current focus. Admin colors remain internal Admin UI tokens and do not consume Site Branding.
+
+The future Core brand palette, Theme override boundary, Settings Manager ownership, and later Custom CSS direction are defined in `docs/11_branding_foundation.md`.
 
 ## Content Module
 
@@ -646,4 +647,5 @@ Key documents:
 docs/02_architecture.md
 docs/03_roadmap.md
 docs/10_admin_ui_foundation.md
+docs/11_branding_foundation.md
 ```

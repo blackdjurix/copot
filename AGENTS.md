@@ -10,33 +10,32 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. The project is currently preparing M2.1 Admin UI Foundation.
+The Post-M1 Roadmap Review is complete. The project is implementing M2.1 Admin UI Foundation.
 
 ---
 
 ## Current Phase
 
-### M2.1 Admin UI Foundation Preparation
+### M2.1 Admin UI Foundation — Batch 3
 
 Primary goal:
 
-Define and lock the first M2 Platform Capability: a theme-independent, shared-hosting-safe Admin UI Foundation with centralized admin URL and page rendering, reusable accessible UI patterns, permission-aware navigation, and a minimal dashboard contribution contract.
+Continue the first M2 Platform Capability by implementing reusable Core Admin patterns on the completed URL, rendering, asset, token, shell, responsive, and accessibility baseline.
 
 Current work:
 
-* Lock the M2.1 architecture and implementation boundaries.
-* Centralize admin path and URL generation.
-* Centralize Admin Shell and page rendering ownership.
-* Define reusable admin layout, form, alert, action, panel, table, and empty-state patterns.
-* Improve navigation with stable IDs, ordering, permissions, and active-state resolution.
-* Establish a minimal permission-aware dashboard-widget contribution contract.
-* Keep frontend Theme System, M3 manager modules, and domain behavior outside M2.1.
+* Batch 1 Admin URL and Page Rendering is complete.
+* Batch 2 Shared Assets and Shell Baseline is complete.
+* Current focus is Batch 3 Core Admin Patterns.
+* Add focused alert, field, action, panel, table, and empty-state patterns.
+* Migrate Admin Login, Dashboard, and Core Settings presentation without changing behavior.
+* Keep Site Branding, frontend Theme System, M3 manager modules, and domain behavior outside M2.1.
 
 Latest release: v0.8.0.
 
 The Post-M1 Roadmap Review is complete.
 
-M2.1 implementation has not started yet.
+M2.1 implementation is in progress.
 
 ---
 
@@ -136,6 +135,8 @@ M2.1 implementation has not started yet.
 * Basic timezone, locale, date-format, and time-format support is already provided by M1.7 Settings Foundation.
 * Broader UI and system localization may become a future platform capability.
 * Content translation is separate from UI localization and belongs to future Content or multilanguage work.
+* A future M2 Branding Foundation owns the Core four-color palette contract, locked semantic mapping, validation, fallback, and consumer contract.
+* Advanced color settings and Custom CSS belong to the frontend Theme and future Theme Manager, not the base Branding Foundation.
 * Do not implement editor, media, image-processing, translation, or multilingual capability before its milestone is approved.
 
 ---
@@ -170,6 +171,8 @@ M2.1 implementation has not started yet.
 * M2.1 must provide a minimal dashboard-widget registry with stable IDs, permission checks, ordering, and controlled rendering.
 * M2.1 must not introduce database-backed dashboard layout, drag-drop widgets, analytics, or the M3 Internal Dashboard.
 * M2.1 must not add an admin theme marketplace, user-selectable skins, SPA runtime, CSS framework, JavaScript framework, or frontend build pipeline.
+* M2.1 uses internal, contrast-safe Admin UI color tokens and does not read Site Branding.
+* Any future Admin UI brand-color integration must remain limited, explicit, and contrast-safe.
 * M2.1 must not change Content, Taxonomy, Settings, authentication, or other domain behavior beyond migrating their admin presentation to the shared Admin UI Foundation.
 * Public login redesign, installer redesign, localization implementation, Editor, Media, Image, Navigation Manager, and other M2/M3 capabilities remain outside scope.
 * Database schema changes and new third-party dependencies are outside scope unless separately approved.
@@ -193,6 +196,7 @@ A Platform Capability:
 Planned examples include:
 
 * Admin UI Foundation
+* Branding Foundation
 * Event Foundation
 * Editor Framework
 * Media Foundation
@@ -259,6 +263,7 @@ Commerce remains a separate M5 phase because its transactional and integration r
 * M1.7 covers global/site settings and basic localization settings only.
 * Database rows store overrides; defaults remain defined in code or configuration.
 * Modules may use their own settings namespaces in future, but remain responsible for their definitions and UI.
+* The future M3 Settings Manager may edit the four Core palette values defined by Branding Foundation, but must not expose the locked semantic mapping as Site Settings.
 * Settings must not depend on Content, Taxonomy, Theme, or business modules.
 * Do not store secrets, passwords, SMTP credentials, API tokens, or environment configuration in Settings.
 * The M1.7 Admin Settings UI must not allow arbitrary namespace or key creation.
@@ -399,6 +404,8 @@ assets/
 
 Themes are responsible for layout and visual presentation.
 
+Themes may ignore the Core brand palette, consume it with the default mapping, or provide scoped palette and semantic-mapping overrides. Theme overrides must not write back to the Core palette. Advanced color settings and Custom CSS remain Theme/Theme Manager responsibilities.
+
 Themes must not contain business logic.
 Themes must not directly access the service container, database, authentication, or module lifecycle services.
 
@@ -456,6 +463,7 @@ When adding or changing major behavior, update the relevant documentation:
 * `docs/08_settings_system.md`
 * `docs/09_installer_system.md`
 * `docs/10_admin_ui_foundation.md`
+* `docs/11_branding_foundation.md`
 
 Documentation and instruction files are user-maintained unless the user explicitly authorizes Codex to edit them.
 
@@ -529,18 +537,15 @@ M1 Framework Foundation is complete and released as v0.8.0.
 
 The Post-M1 Roadmap Review is complete.
 
-The current work is M2.1 Admin UI Foundation Preparation.
+The current work is M2.1 Admin UI Foundation Batch 3 — Core Admin Patterns.
 
 The immediate goal is to:
 
-* lock the M2.1 objective, scope, exclusions, and dependency boundaries;
-* centralize admin URL and page-rendering ownership;
-* define reusable accessible and responsive Admin UI patterns;
-* improve permission-aware navigation and active-state behavior;
-* establish a minimal dashboard contribution contract;
-* preserve frontend Theme System separation;
-* avoid M3 manager functionality, domain behavior changes, and premature UI abstractions.
+* build focused reusable Core Admin patterns on the completed Batch 1 and Batch 2 foundation;
+* migrate Admin Login, Dashboard, and Core Settings presentation;
+* preserve existing behavior, frontend Theme System separation, and internal Admin token ownership;
+* avoid Site Branding integration, M3 manager functionality, domain behavior changes, and premature abstractions.
 
-M2.1 implementation must not begin until its documentation and batch plan are approved.
+Batch 1 and Batch 2 are complete. Batch 3 is the active implementation focus.
 
 The target release version is v0.9.0.

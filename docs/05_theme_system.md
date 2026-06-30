@@ -12,6 +12,24 @@ M1.4.1 introduces a separate core Admin Shell. The Admin Shell does not use fron
 
 ---
 
+## Future Branding and Theme Settings Boundary
+
+The future M2 Branding Foundation defines a Core palette of main, accent, neutral dark, and neutral light plus a locked default semantic mapping. A theme may:
+
+* declare that it does not support the Core brand palette;
+* consume the Core palette and default semantic mapping;
+* override the palette for the active theme;
+* override semantic mapping for the active theme;
+* provide advanced color settings for buttons, hover states, links, navigation, surfaces, borders, gradients, and component-specific roles.
+
+Theme overrides are scoped to the active theme and must never write back to the Core palette. Advanced color settings are exclusively a Theme capability. The future M3 Theme Manager reads theme capabilities and provides the UI for these scoped settings.
+
+Custom CSS is deferred to a later Theme Manager enhancement. It is not part of the base Branding Foundation. Admin UI remains separately tokenized and does not currently consume Site Branding.
+
+The complete ownership and milestone contract is defined in `docs/11_branding_foundation.md`.
+
+---
+
 ## M1.4 Scope
 
 Included:

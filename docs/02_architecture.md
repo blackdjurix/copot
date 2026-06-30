@@ -90,6 +90,7 @@ A Platform Capability does not need a standalone management UI and must not repr
 Planned M2 Platform Capabilities are:
 
 * Admin UI Foundation
+* Branding Foundation
 * Event Foundation
 * Editor Framework
 * Media Foundation
@@ -138,6 +139,16 @@ Settings Manager is a future M3 Core Module that expands administrator-facing se
 The minimal Admin Settings UI introduced in M1.7 remains part of the M1 platform foundation and is not itself the future Settings Manager.
 
 The future Settings Manager may organize registered settings sections, render reusable setting field types, and support module-contributed settings without allowing arbitrary unregistered keys.
+
+```text
+Branding Foundation
+!=
+Settings Manager
+!=
+Theme Manager
+```
+
+The future M2 Branding Foundation defines the Core four-color palette, locked semantic mapping, validation, fallback, and consumer contract. The future M3 Settings Manager edits only the four Core palette values. The future M3 Theme Manager manages active-theme-scoped palette or mapping overrides and advanced color settings. Full ownership details are defined in `docs/11_branding_foundation.md`.
 
 ```text
 Media Foundation + Image Service
@@ -472,6 +483,8 @@ Themes are responsible for:
 * Templates
 * Styling
 * Assets
+
+Themes may opt out of the Core brand palette, consume the Core palette and default mapping, or provide active-theme-scoped palette and semantic-mapping overrides. Theme overrides never write back to the Core palette. Advanced component colors and Custom CSS remain Theme/Theme Manager capabilities rather than Core Branding Foundation behavior.
 
 Themes are not responsible for:
 

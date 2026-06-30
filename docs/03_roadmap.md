@@ -203,11 +203,11 @@ The Post-M1 Roadmap Review is complete.
 
 The first M2 minor milestone is M2.1 Admin UI Foundation.
 
-M2.1 is currently in Preparation and scope lock.
+M2.1 implementation is in progress. Batch 1 Admin URL and Page Rendering and Batch 2 Shared Assets and Shell Baseline are complete. Batch 3 Core Admin Patterns is the current focus.
 
 Its target release is v0.9.0.
 
-Implementation must not begin until the M2.1 documentation, architecture boundaries, batch plan, and acceptance criteria are approved.
+The approved M2.1 architecture boundaries, batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
 ---
 
@@ -234,7 +234,7 @@ A Platform Capability may provide:
 
 #### M2.1 Admin UI Foundation
 
-Status: Preparation and scope lock.
+Status: Implementation in progress; Batch 1 and Batch 2 complete; Batch 3 current.
 
 Target release: v0.9.0.
 
@@ -264,6 +264,18 @@ docs/10_admin_ui_foundation.md
 ```
 
 A full admin theme or skin system, M3 Internal Dashboard, manager modules, database-backed dashboard customization, frontend build tooling, and domain behavior changes are outside M2.1.
+
+#### Future Branding Foundation
+
+Planned direction:
+
+* define the Core four-color palette contract: main, accent, neutral dark, and neutral light;
+* define a locked default semantic mapping, validation, fallback, and consumer contract;
+* keep semantic mapping out of Site Settings;
+* allow themes to opt out, consume defaults, or provide active-theme-scoped palette and mapping overrides;
+* keep advanced theme color settings and Custom CSS outside the base foundation.
+
+The future M3 Settings Manager edits the four Core palette values. The future M3 Theme Manager manages theme-specific palette or mapping overrides and advanced color settings. Full ownership and milestone boundaries are defined in `docs/11_branding_foundation.md`.
 
 #### 2. Event Foundation
 
@@ -481,6 +493,8 @@ Settings Manager
 SettingsService provides definitions, persistence, retrieval, validation, and typed values.
 
 Settings Manager provides administrator-facing settings management.
+
+For Branding Foundation, Settings Manager edits only the four Core palette values. Theme Manager reads theme capabilities and manages active-theme-scoped palette or semantic-mapping overrides plus advanced theme color settings. Custom CSS is deferred to a later Theme Manager enhancement. Neither manager changes the locked Core semantic mapping.
 
 ```text
 Media Foundation + Image Service
