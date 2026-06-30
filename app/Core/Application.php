@@ -76,7 +76,8 @@ class Application
             $this->adminUrl,
             $this->adminNavigation,
             (string) $this->config->get('app.name', 'Copot'),
-            $this->siteName
+            $this->siteName,
+            $this->locale
         );
     }
 

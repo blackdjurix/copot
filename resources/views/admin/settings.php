@@ -1,5 +1,4 @@
 <section class="panel settings-panel">
-    <h2>Settings</h2>
     <p>Manage global site and localization settings.</p>
 
     <?php if (!empty($saved)): ?>

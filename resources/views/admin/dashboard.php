@@ -1,5 +1,5 @@
 <section class="panel">
-    <h2>Admin Shell</h2>
+    <h2>Framework status</h2>
     <p>Copot Admin Shell foundation is running.</p>
 
     <dl>

@@ -13,13 +13,15 @@ if (!is_string($adminPermission) || trim($adminPermission) === '') {
 $adminPermission = trim($adminPermission);
 $adminBase = $adminUrl->baseUrl();
 $settingsPath = $adminUrl->childUrl('settings');
+$documentLocale = $app->adminPageRenderer()->documentLocale();
 
 $app->adminNavigation()->add('Settings', $settingsPath, 'settings.update');
 
-$renderAdminLogin = function (string $email = '', ?string $error = null) use ($app, $adminBase): string {
+$renderAdminLogin = function (string $email = '', ?string $error = null) use ($app, $adminBase, $documentLocale): string {
     return $app->view()->render('admin/login', [
         'appName' => $app->config()->get('app.name', 'Copot'),
         'siteName' => $app->siteName(),
+        'documentLocale' => $documentLocale,
         'adminBaseUrl' => $adminBase,
         'csrfToken' => $app->session()->csrfToken(),
         'email' => $email,

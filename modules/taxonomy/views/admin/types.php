@@ -1,5 +1,4 @@
 <section class="panel">
-    <h2>Taxonomy</h2>
     <p>Manage reusable classification terms.</p>
 
     <table>

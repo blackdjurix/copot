@@ -172,7 +172,7 @@ PHP
     $assertSame('Admin User', $rendered['userName'], 'Renderer user name context is incorrect.');
     $assertSame('admin@example.test', $rendered['userEmail'], 'Renderer user email context is incorrect.');
     $assertSame('<section>Content</section>', $rendered['content'], 'Renderer content context is incorrect.');
-    $assertSame([['label' => 'Dashboard', 'url' => '/dapur']], $rendered['navigation'], 'Renderer navigation context is incorrect.');
+    $assertSame([['label' => 'Dashboard', 'url' => '/dapur', 'active' => false]], $rendered['navigation'], 'Renderer navigation context is incorrect.');
     $assertSame(false, $rendered['hasApplication'], 'Renderer must not expose the Application to the layout.');
 
     $migratedTemplates = [

@@ -1,6 +1,4 @@
 <section class="panel">
-    <h2><?= htmlspecialchars($heading ?? 'Content', ENT_QUOTES, 'UTF-8') ?></h2>
-
     <?php if (!empty($errors)): ?>
         <div>
             <?php foreach ($errors as $error): ?>

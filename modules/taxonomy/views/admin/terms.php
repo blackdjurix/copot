@@ -1,5 +1,4 @@
 <section class="panel">
-    <h2><?= htmlspecialchars($type?->name() ?? 'Taxonomy Terms', ENT_QUOTES, 'UTF-8') ?></h2>
     <p>Manage <?= htmlspecialchars($type?->slug() ?? 'taxonomy', ENT_QUOTES, 'UTF-8') ?> terms.</p>
 
     <?php if (!empty($error)): ?>

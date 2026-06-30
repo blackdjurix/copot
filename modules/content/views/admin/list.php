@@ -1,5 +1,4 @@
 <section class="panel">
-    <h2>Content</h2>
     <p>Manage content entries.</p>
 
     <?php if (!empty($canCreate)): ?>
