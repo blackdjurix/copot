@@ -14,9 +14,16 @@
 - Corrected the M2.2 completion contract so controlled temporary fixture coverage proves the foundation without requiring a speculative production event.
 - Deferred First Production Consumer Integration to the first milestone with a real caller/listener pair.
 
+### Verification
+
+- Unified M2.2 regression, automated-assisted application/runtime checks, and manual browser verification pass.
+- Verified public home, Admin login and dashboard, Content and Taxonomy admin routes, and Admin CSS delivery.
+- Verified keyboard navigation, focus visibility, responsive behavior, browser zoom, and real-user `admin.access` denial.
+- Verified malformed contribution behavior with `display_errors=Off` without sensitive-detail leakage.
+
 ### Notes
 
-- M2.2 implementation is complete and its automated regression gate passes; manual verification remains pending.
+- M2.2 implementation and verification are complete and ready for merge and release preparation; no release version is assigned here.
 - Temporary fixture event names are test-only and do not establish production API.
 - M2.4 Platform Hardening remains a separate planned milestone.
 

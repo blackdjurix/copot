@@ -10,27 +10,27 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. The active milestone is M2.2 Extensibility Foundation.
+The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is complete. The active focus is M2.3 Minimal Site Capabilities.
 
 ---
 
 ## Current Phase
 
-### M2.2 Extensibility Foundation
+### M2.3 Minimal Site Capabilities
 
 Primary goal:
 
-Prepare and implement the next lean M2 Platform Capability: a minimal, predictable extension boundary for Core and modules.
+Prepare the next lean M2 Platform Capability without expanding its approved roadmap scope.
 
 Current work:
 
 * M2.1 Admin UI Foundation implementation and verification are complete.
 * All six M2.1 batches are complete.
-* M2.2 Extensibility Foundation implementation is complete; manual verification remains pending.
-* Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, and the unified regression gate are complete.
-* First Production Consumer Integration is deferred to the first milestone with one real caller/listener pair and is not a blocker for M2.2 completion.
-* Keep the initial extensibility contract synchronous, explicit, and small.
-* Defer asynchronous events, persistent event logs, wildcard buses, external APIs, webhooks, and unrelated future capabilities until a concrete dependency requires them.
+* M2.2 Extensibility Foundation implementation and verification are complete.
+* Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, unified regression, automated-assisted runtime verification, and manual browser verification pass.
+* First Production Consumer Integration is deferred to the first milestone with one real caller/listener pair and is not part of the M2.2 release.
+* M2.3 Minimal Site Capabilities is the next focus; its approved scope remains defined in `docs/03_roadmap.md`.
+* Do not begin M2.3 implementation before its documentation and execution plan are confirmed.
 
 Latest release: v0.9.0.
 
@@ -571,15 +571,14 @@ The Post-M1 Roadmap Review is complete.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-M2.2 Extensibility Foundation implementation is complete, with manual verification pending.
+M2.2 Extensibility Foundation implementation and verification are complete.
 
-The completion checkpoint is to:
+The next checkpoint is to:
 
-* preserve the implemented synchronous event and listener contract;
-* retain controlled Core and enabled-module extension wiring;
-* preserve predictable failure handling and request-scope behavior;
-* avoid asynchronous processing, event persistence, external API/webhook scope, and speculative abstractions;
-* defer the first production event until a consumer milestone proves one real caller/listener pair;
-* complete manual verification without pulling M2.4 Platform Hardening into M2.2.
+* preserve the completed M2.2 synchronous event and listener contract;
+* keep production events deferred until a consumer milestone proves one real caller/listener pair;
+* prepare M2.3 Minimal Site Capabilities within its existing roadmap scope;
+* keep M2.4 Platform Hardening as a separate milestone;
+* avoid recalling deferred capabilities without a concrete dependency and approval.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.

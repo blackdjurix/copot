@@ -2,9 +2,9 @@
 
 ## Status
 
-Implementation complete. Manual verification pending.
+Complete. Ready for merge and release preparation.
 
-Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, and the unified Batch 5 regression gate are complete. First Production Consumer Integration is deferred to the first milestone that requires it and is not a blocker for completing this foundation.
+Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, the unified Batch 5 regression gate, automated-assisted runtime verification, and manual browser verification are complete. First Production Consumer Integration is deferred to the first milestone that requires it and is not part of this release.
 
 Latest completed release:
 
@@ -12,7 +12,7 @@ Latest completed release:
 v0.9.0 — M2.1 Admin UI Foundation
 ```
 
-Release readiness remains pending manual verification and user-owned release preparation.
+The milestone is ready for user-owned merge and release preparation. No release version is assigned by this document.
 
 ---
 
@@ -441,7 +441,7 @@ M2.2 does not add placeholder production events while no such consumer exists.
 
 ### Batch 5 — Regression and Completion Preparation
 
-Status: Automated regression complete and passing. Documentation checkpoint updated. Manual verification pending.
+Status: Complete. Automated regression, documentation, runtime verification, and manual browser verification pass.
 
 * run existing M1 and M2.1 regression suites;
 * add unified M2.2 regression coverage;
@@ -478,7 +478,7 @@ Listener priority is not part of M2.2.
 
 ## Manual Verification
 
-Manual verification remains pending. It covers the foundation wiring and preserved application flows; there is no production event flow to verify in M2.2.
+Manual verification is complete. It covers the foundation wiring and preserved application flows; there is no production event flow in M2.2.
 
 At minimum:
 
@@ -490,6 +490,18 @@ At minimum:
 * disabling it removes its contribution on the next request;
 * controlled listener failure behavior remains fail-fast when exercised directly;
 * public responses expose no stack traces, filesystem paths, credentials, or payload internals.
+
+Verification record:
+
+* public home rendered successfully;
+* Admin login and dashboard rendered successfully;
+* Content and Taxonomy admin routes remained available with their existing guards;
+* Admin CSS loaded successfully;
+* keyboard navigation and visible focus passed;
+* responsive layout and browser zoom passed;
+* `admin.access` denial passed with a real user;
+* malformed listener contribution behavior passed with `display_errors=Off`;
+* public output exposed no sensitive filesystem, credential, environment, stack-trace, or payload details.
 
 ---
 
@@ -515,6 +527,28 @@ M2.2 is complete when:
 * documentation and CHANGELOG reflect the completed implementation.
 
 First Production Consumer Integration is not an M2.2 completion criterion. It belongs to the first later milestone that requires a production event.
+
+---
+
+## Completion Record
+
+M2.2 delivers:
+
+* one synchronous request-scoped dispatcher per `Application`;
+* stable lowercase dotted string event names with object payloads;
+* explicit listener registration and registration-order execution;
+* no listener priority;
+* successful no-listener dispatch;
+* independent duplicate explicit registrations;
+* unchanged fail-fast listener exception propagation with later listeners skipped;
+* one optional metadata-declared `listeners.php` contribution boundary for installed and enabled modules;
+* no listener contribution from disabled or merely installed modules;
+* listener path containment, declared-file, return-map, event-name, and callable validation;
+* controlled temporary fixture proof covering dispatcher-to-module wiring end to end;
+* no production lifecycle event or speculative hook;
+* passing unified regression, automated-assisted runtime verification, and manual browser verification.
+
+The first production caller/listener integration remains demand-driven and belongs to the first consumer milestone that requires it. M2.4 Platform Hardening remains a separate milestone.
 
 ---
 

@@ -203,9 +203,9 @@ The Post-M1 Roadmap Review is complete.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-The active milestone is M2.2 Extensibility Foundation.
+M2.2 Extensibility Foundation is complete.
 
-The next focus is M2.2 Extensibility Foundation.
+The next focus is M2.3 Minimal Site Capabilities.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -266,7 +266,7 @@ docs/10_admin_ui_foundation.md
 
 #### M2.2 Extensibility Foundation
 
-Status: Implementation complete. Manual verification pending.
+Status: Complete.
 
 ##### Minimum scope
 
@@ -287,6 +287,7 @@ Status: Implementation complete. Manual verification pending.
 * disabled-module non-contribution;
 * controlled temporary fixture coverage proving end-to-end wiring;
 * unified M2.2 regression gate passing with M2.1 regression coverage preserved.
+* automated-assisted runtime and manual browser verification passing.
 
 First Production Consumer Integration is deferred to the first milestone that has a real caller/listener pair. It is not a blocker for completing the M2.2 foundation. Temporary fixture events are test-only and do not establish production API.
 
@@ -310,7 +311,7 @@ Production lifecycle events without a real consumer are also deferred. M2.2 must
 
 #### M2.3 Minimal Site Capabilities
 
-Status: Planned.
+Status: Next focus. Planned scope unchanged.
 
 ##### Minimum scope
 

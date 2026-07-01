@@ -8,7 +8,7 @@ M1 Framework Foundation is complete and released as v0.8.0.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-M2.2 Extensibility Foundation implementation is complete. Manual verification remains pending.
+M2.2 Extensibility Foundation implementation and verification are complete. It is ready for merge and release preparation.
 
 The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
@@ -16,26 +16,29 @@ New deployments can be configured through `/install` before normal application b
 
 ## Current Phase
 
-M2.2 Extensibility Foundation
+M2.3 Minimal Site Capabilities
 
 The Post-M1 Roadmap Review is complete.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-The active implementation checkpoint is:
+The next lean M2 capability is:
 
 ```text
-M2.2 Extensibility Foundation
+M2.3 Minimal Site Capabilities
 ```
 
-Current direction:
+M2.2 completion record:
 
-* preserve the implemented synchronous event and listener contract;
-* provide controlled enabled-module listener contribution;
-* keep failure handling predictable;
-* defer the first production event, asynchronous events, persistent event logs, external APIs, webhooks, and speculative extension machinery until a concrete dependency requires them.
+* synchronous request-scoped dispatch with stable lowercase dotted names and object payloads;
+* explicit registration-order listener execution without priority;
+* no-listener no-op, duplicate explicit registrations, and unchanged fail-fast exception propagation;
+* controlled optional `listeners.php` contribution from installed and enabled modules only;
+* path containment and contribution-map validation;
+* fixture-based end-to-end proof, unified regression, automated-assisted runtime verification, and manual browser verification passing;
+* no production lifecycle event; the first production integration remains deferred to its real consumer milestone.
 
-M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`. Core implementation and automated regression are complete; manual verification remains pending. A production event is not required to complete the foundation and will be introduced only by a future milestone with a real caller/listener pair.
+M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 is now the active focus, with scope unchanged from `docs/03_roadmap.md`.
 
 ## Implemented Foundation
 
@@ -355,7 +358,7 @@ The future Core brand palette, Theme override boundary, Settings Manager ownersh
 
 M2.2 adds a small, synchronous extension boundary for Core and enabled modules.
 
-Implementation status: complete, with manual verification pending.
+Status: complete. Implementation, automated regression, runtime verification, and manual browser verification pass.
 
 The approved direction is:
 
@@ -369,6 +372,8 @@ The approved direction is:
 Each `Application` owns one request-scoped dispatcher. Enabled modules may declare one optional `listeners.php` contribution file in `module.json`; disabled modules contribute nothing. Listener files are trusted local code, and contribution loading is controlled rather than sandboxed.
 
 The dispatcher and enabled-module wiring are proven end to end through controlled temporary test fixtures. Fixture event names are test-only and are not production API. No production event is introduced by M2.2; the first production consumer milestone will add one only when a real caller/listener pair exists.
+
+Manual verification passed for the public home, Admin login and dashboard, Content and Taxonomy admin routes, Admin CSS, keyboard navigation, focus visibility, responsive layout, browser zoom, real-user `admin.access` denial, and malformed contribution behavior with `display_errors=Off` and no sensitive-detail leakage.
 
 The unified regression command is:
 
