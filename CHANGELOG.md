@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added the Core `EventDispatcher` contract and synchronous request-scoped implementation.
+- Added stable lowercase dotted event-name validation, object payload delivery, registration-order execution, duplicate registration support, no-listener no-op behavior, and fail-fast exception propagation.
+- Added optional enabled-module listener contribution through a metadata-declared `listeners.php` file with controlled path and contribution-map validation.
+- Added Batch 2 dispatcher coverage, Batch 3 enabled-module wiring integration coverage, and a unified M2.2 regression gate.
+
+### Changed
+
+- Corrected the M2.2 completion contract so controlled temporary fixture coverage proves the foundation without requiring a speculative production event.
+- Deferred First Production Consumer Integration to the first milestone with a real caller/listener pair.
+
+### Notes
+
+- M2.2 implementation is complete and its automated regression gate passes; manual verification remains pending.
+- Temporary fixture event names are test-only and do not establish production API.
+- M2.4 Platform Hardening remains a separate planned milestone.
+
 <details open>
 <summary>v0.8.0 - M1.8 Installer Foundation</summary>
 

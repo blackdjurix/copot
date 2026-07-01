@@ -26,8 +26,9 @@ Current work:
 
 * M2.1 Admin UI Foundation implementation and verification are complete.
 * All six M2.1 batches are complete.
-* M2.2 Extensibility Foundation scope and architecture are locked in `docs/12_extensibility_foundation.md`.
-* Current focus is repository audit and the first approved implementation batch.
+* M2.2 Extensibility Foundation implementation is complete; manual verification remains pending.
+* Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, and the unified regression gate are complete.
+* First Production Consumer Integration is deferred to the first milestone with one real caller/listener pair and is not a blocker for M2.2 completion.
 * Keep the initial extensibility contract synchronous, explicit, and small.
 * Defer asynchronous events, persistent event logs, wildcard buses, external APIs, webhooks, and unrelated future capabilities until a concrete dependency requires them.
 
@@ -198,7 +199,9 @@ M2.1 is complete and released as v0.9.0.
 * The optional listener file may access `$app` through include scope, matching existing trusted module route wiring.
 * Disabled modules must not contribute listeners.
 * Extension points must correspond to current Core or module lifecycle needs. Do not add speculative hooks.
-* Batch 4 concrete events remain gated until one real caller/listener pair has a narrow payload and a safe transaction boundary.
+* Controlled temporary fixture coverage is sufficient to prove the foundation end to end; fixture event names are not production API.
+* First Production Consumer Integration is deferred until a later milestone has one real caller/listener pair with a narrow payload and safe transaction boundary.
+* Production events are demand-driven and must not be added merely to complete M2.2.
 * M2.2 must not introduce asynchronous execution, queues, scheduler infrastructure, event persistence, replay, wildcard buses, distributed messaging, external APIs, or webhooks.
 * M2.2 must not rewrite the service container, Module Manager, Router, or application bootstrap.
 * M2.2 must not add a generic plugin framework, package marketplace, or user-facing management UI.
@@ -568,14 +571,15 @@ The Post-M1 Roadmap Review is complete.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-The current work is M2.2 Extensibility Foundation.
+M2.2 Extensibility Foundation implementation is complete, with manual verification pending.
 
-The immediate goal is to:
+The completion checkpoint is to:
 
-* lock a minimal synchronous event and listener contract;
-* define controlled Core and module extension points;
+* preserve the implemented synchronous event and listener contract;
+* retain controlled Core and enabled-module extension wiring;
 * preserve predictable failure handling and request-scope behavior;
 * avoid asynchronous processing, event persistence, external API/webhook scope, and speculative abstractions;
-* keep deferred M2 capabilities available for recall only when a concrete dependency appears.
+* defer the first production event until a consumer milestone proves one real caller/listener pair;
+* complete manual verification without pulling M2.4 Platform Hardening into M2.2.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.

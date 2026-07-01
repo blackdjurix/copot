@@ -96,6 +96,7 @@ Example:
     "modules": []
   },
   "routes": "routes.php",
+  "listeners": "listeners.php",
   "permissions": [
     {
       "slug": "example.access",
@@ -117,6 +118,7 @@ Optional fields:
 * `author`
 * `requires`
 * `routes`
+* `listeners`
 * `permissions`
 
 Validation rules:
@@ -124,6 +126,7 @@ Validation rules:
 * `name` must be a lowercase slug.
 * `name` must match the module folder name.
 * `routes`, when present, must point to a file inside the module folder.
+* `listeners`, when present, must be a non-empty safe relative path inside the module folder.
 * Permission metadata is informational in M1.3 and is not auto-synced to the core `permissions` table.
 
 ---
@@ -238,6 +241,7 @@ Expected flow:
 bootstrap/app.php
 -> core routes
 -> auth routes
+-> enabled module listeners
 -> enabled module routes
 ```
 
@@ -256,6 +260,24 @@ Route loading rules:
 * Do not build a complex route conflict manager in M1.3.
 
 Module route files are trusted local project code. M1.3 does not provide sandboxing, marketplace trust checks, or remote package validation.
+
+---
+
+## Listener Loading Strategy
+
+M2.2 adds one optional enabled-module listener contribution boundary. A module opts in explicitly with:
+
+```json
+{
+  "listeners": "listeners.php"
+}
+```
+
+The declared file must remain inside the module folder and return an insertion-ordered map of approved event names to callables. Listener contributions load only for installed and enabled modules, in the existing enabled-module order, before enabled module routes. Disabled or merely installed modules contribute nothing.
+
+Listener files are trusted local application code. `$app` is available through include scope, matching route-file wiring. Loading is controlled through metadata, path containment, return-type, event-name, and callable validation; it is not sandboxing and does not restrict service access inside trusted module code.
+
+M2.2 does not establish a production event merely to exercise this boundary. Controlled temporary fixtures prove end-to-end loading, deterministic registration, disabled-module exclusion, and route preservation. Fixture event names are not production API. The first production event belongs to the first consumer milestone with one real caller/listener pair.
 
 ---
 

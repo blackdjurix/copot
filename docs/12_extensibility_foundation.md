@@ -2,9 +2,9 @@
 
 ## Status
 
-Active milestone.
+Implementation complete. Manual verification pending.
 
-Scope and architecture are locked. Batch 1 repository audit and contract validation are complete. Batch 2 Core Dispatcher is ready for implementation.
+Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, and the unified Batch 5 regression gate are complete. First Production Consumer Integration is deferred to the first milestone that requires it and is not a blocker for completing this foundation.
 
 Latest completed release:
 
@@ -12,7 +12,7 @@ Latest completed release:
 v0.9.0 — M2.1 Admin UI Foundation
 ```
 
-Target release for this milestone will be confirmed after the repository audit and batch plan are validated.
+Release readiness remains pending manual verification and user-owned release preparation.
 
 ---
 
@@ -216,7 +216,9 @@ The audit found no candidate that currently has both:
 
 Content-to-Taxonomy integration is real coupling, but it spans reads, form composition, validation input, and persistence. Converting only post-save synchronization into an event would retain Taxonomy semantics inside Content and could introduce partial-write risk under fail-fast behavior.
 
-Batch 4 therefore remains gated. M2.2 must not add a dummy event merely to satisfy an acceptance checklist.
+First Production Consumer Integration is therefore deferred to the first milestone that requires it. It is not a blocker for M2.2 foundation completion. M2.2 must not add a dummy event merely to satisfy an acceptance checklist.
+
+The dispatcher and enabled-module contribution boundary are proven end to end with controlled temporary fixtures. Fixture event names are test-only and do not establish production API.
 
 ---
 
@@ -303,13 +305,11 @@ The repository audit approved one optional module metadata field:
 }
 ```
 
-The dedicated file returns an event-to-callable map:
+The dedicated file returns an approved event-to-callable map:
 
 ```php
 return [
-    'content.published' => static function (object $event) use ($app): void {
-        // Synchronous trusted module listener.
-    },
+    $approvedEventName => $listener,
 ];
 ```
 
@@ -332,27 +332,13 @@ Rules:
 
 ## Event Naming and Versioning
 
-The implementation must choose one documented convention.
+M2.2 uses stable lowercase dotted string names with object payloads.
 
-Acceptable directions include:
+No production event name is introduced or reserved by the foundation itself. Each future production event must be defined by the first consumer milestone with a real caller/listener pair and must document its owner, dispatch point, payload, listener expectations, ordering, and failure behavior.
 
-```text
-core.application.ready
-core.module.enabled
-content.published
-taxonomy.assignments.updated
-```
+Temporary fixture event names exist only inside automated tests. They are not production API and must not be copied into production documentation as established lifecycle hooks.
 
-or explicit event classes such as:
-
-```text
-Copot\Core\Events\ApplicationReady
-Copot\Modules\Content\Events\ContentPublished
-```
-
-Do not mix conventions casually.
-
-Event names or classes become internal compatibility contracts. Renaming them requires documentation and regression coverage.
+Once introduced by an approved consumer milestone, an event name becomes an internal compatibility contract. Renaming it requires documentation and regression coverage.
 
 Public semantic versioning guarantees for third-party extensions are not established by M2.2 alone.
 
@@ -411,9 +397,11 @@ Batch 1 locked these decisions:
 * one optional module metadata entry pointing to `listeners.php`;
 * enabled modules only;
 * trusted local listener code with controlled contribution, not sandboxing;
-* Batch 4 remains gated until one real caller/listener pair has a narrow payload and safe transaction boundary.
+* First Production Consumer Integration is deferred until one real caller/listener pair has a narrow payload and safe transaction boundary; it is not a blocker for foundation completion.
 
 ### Batch 2 — Core Dispatcher
+
+Status: Complete.
 
 * add the minimal Core dispatcher contract and implementation;
 * add explicit listener registration;
@@ -421,7 +409,11 @@ Batch 1 locked these decisions:
 * add validation and fail-fast exception behavior;
 * add focused unit or smoke coverage.
 
+Implemented through the Core `EventDispatcher`, `SynchronousEventDispatcher`, and Batch 2 smoke coverage.
+
 ### Batch 3 — Application and Module Wiring
+
+Status: Complete.
 
 * create one request-scope dispatcher instance;
 * expose it only through the approved application boundary;
@@ -430,19 +422,30 @@ Batch 1 locked these decisions:
 * confirm disabled modules contribute nothing;
 * add integration coverage.
 
-### Batch 4 — First Concrete Extension Points
+Implemented with one dispatcher per `Application`, optional listener metadata, enabled-only controlled loading before module routes, sanitized validation failures, and temporary fixture integration coverage.
 
-* add only audit-approved lifecycle events;
-* provide at least one real listener use case;
-* remove any direct coupling made redundant by the approved event;
+### Batch 4 — First Production Consumer Integration
+
+Status: Deferred to the first milestone that requires it. Not a blocker for M2.2 completion.
+
+When a real consumer appears, that milestone must:
+
+* identify one real caller and one real independent listener;
+* approve a narrow payload and safe transaction boundary;
+* add only the required production event;
+* remove direct coupling only where the event genuinely replaces it;
 * preserve existing domain behavior;
 * add caller, listener, ordering, and failure tests.
 
-### Batch 5 — Regression and Documentation Completion
+M2.2 does not add placeholder production events while no such consumer exists.
+
+### Batch 5 — Regression and Completion Preparation
+
+Status: Automated regression complete and passing. Documentation checkpoint updated. Manual verification pending.
 
 * run existing M1 and M2.1 regression suites;
 * add unified M2.2 regression coverage;
-* manually verify affected admin and frontend flows;
+* manually verify affected admin and frontend flows before release readiness;
 * verify disabled-module behavior;
 * verify safe error handling;
 * update README, roadmap, this document, AGENTS, and CHANGELOG for completion.
@@ -466,19 +469,16 @@ Automated coverage must verify at minimum:
 * enabled-module listener contribution;
 * disabled-module non-contribution;
 * malformed module contribution handling;
-* concrete event dispatch at the approved lifecycle point;
+* end-to-end dispatcher and enabled-module wiring through controlled temporary fixtures;
 * preservation of existing route, permission, CSRF, persistence, and rendering behavior.
 
-If priority is implemented, tests must verify:
-
-* priority precedence;
-* stable registration order for equal priority.
+Listener priority is not part of M2.2.
 
 ---
 
 ## Manual Verification
 
-Manual verification should cover only flows affected by implemented events.
+Manual verification remains pending. It covers the foundation wiring and preserved application flows; there is no production event flow to verify in M2.2.
 
 At minimum:
 
@@ -488,7 +488,7 @@ At minimum:
 * Content and Taxonomy admin flows still work;
 * enabling a listener-owning module activates its contribution;
 * disabling it removes its contribution on the next request;
-* listener failure produces the approved controlled application behavior;
+* controlled listener failure behavior remains fail-fast when exercised directly;
 * public responses expose no stack traces, filesystem paths, credentials, or payload internals.
 
 ---
@@ -504,13 +504,17 @@ M2.2 is complete when:
 * exception behavior is documented and tested;
 * enabled modules can contribute listeners through one controlled boundary;
 * disabled modules contribute no listeners;
-* at least one concrete caller/listener integration proves the capability;
+* controlled temporary fixture coverage proves dispatcher-to-enabled-module wiring end to end;
+* fixture event names remain test-only and are not treated as production API;
+* production events remain demand-driven and are deferred until one real caller/listener pair exists;
 * speculative hooks are absent;
 * existing focused registries remain intact unless a documented need justifies change;
 * no queue, scheduler, persistence, replay, wildcard, API, webhook, or distributed system has been introduced;
 * no database schema or third-party dependency has been added without separate approval;
 * existing M1 and M2.1 behavior passes regression verification;
 * documentation and CHANGELOG reflect the completed implementation.
+
+First Production Consumer Integration is not an M2.2 completion criterion. It belongs to the first later milestone that requires a production event.
 
 ---
 
@@ -538,7 +542,8 @@ The locked M2.2 direction is:
 small synchronous dispatcher
 + explicit listeners
 + controlled enabled-module contribution
-+ concrete lifecycle events only
++ fixture-proven foundation wiring
++ demand-driven production events only
 + deterministic fail-fast behavior
 ```
 
@@ -552,3 +557,5 @@ universal hook system
 + webhook platform
 + plugin-framework rewrite
 ```
+
+M2.4 Platform Hardening remains a separate milestone and is not moved into this completion contract.

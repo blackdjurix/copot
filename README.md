@@ -8,6 +8,8 @@ M1 Framework Foundation is complete and released as v0.8.0.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
+M2.2 Extensibility Foundation implementation is complete. Manual verification remains pending.
+
 The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
 New deployments can be configured through `/install` before normal application bootstrap is allowed.
@@ -20,7 +22,7 @@ The Post-M1 Roadmap Review is complete.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-The next lean M2 capability is:
+The active implementation checkpoint is:
 
 ```text
 M2.2 Extensibility Foundation
@@ -28,12 +30,12 @@ M2.2 Extensibility Foundation
 
 Current direction:
 
-* define a minimal synchronous event and listener contract;
-* provide controlled Core and module extension points;
+* preserve the implemented synchronous event and listener contract;
+* provide controlled enabled-module listener contribution;
 * keep failure handling predictable;
-* defer asynchronous events, persistent event logs, external APIs, webhooks, and speculative extension machinery until a concrete dependency requires them.
+* defer the first production event, asynchronous events, persistent event logs, external APIs, webhooks, and speculative extension machinery until a concrete dependency requires them.
 
-M2.2 scope and architecture are locked in `docs/12_extensibility_foundation.md`. Implementation begins with a repository audit followed by approved, minimal batches.
+M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`. Core implementation and automated regression are complete; manual verification remains pending. A production event is not required to complete the foundation and will be introduced only by a future milestone with a real caller/listener pair.
 
 ## Implemented Foundation
 
@@ -63,6 +65,10 @@ Included so far:
 - Dependency guard before disabling or uninstalling required modules
 - Module permission metadata storage without auto-syncing to core permissions
 - Enabled module route loading
+- Request-scoped synchronous event dispatcher
+- Explicit registration-order listener execution with fail-fast exception propagation
+- Optional enabled-module listener contribution through declared `listeners.php` metadata
+- Unified M2.2 regression gate with controlled temporary end-to-end fixtures
 - Sample `modules/example` module
 - Local theme discovery through `themes/*/theme.json`
 - Theme registry and single active frontend theme
@@ -129,7 +135,7 @@ Not included yet:
 - ORM
 - API layer
 - Queue system
-- Extensibility event/listener runtime
+- Production lifecycle events without a concrete caller/listener consumer
 - Migration runner
 - Theme marketplace
 - Theme installer
@@ -349,6 +355,8 @@ The future Core brand palette, Theme override boundary, Settings Manager ownersh
 
 M2.2 adds a small, synchronous extension boundary for Core and enabled modules.
 
+Implementation status: complete, with manual verification pending.
+
 The approved direction is:
 
 * in-process, request-scoped dispatch;
@@ -357,6 +365,16 @@ The approved direction is:
 * predictable exception handling;
 * module participation only through controlled integration points;
 * lifecycle events only where current behavior proves a concrete need.
+
+Each `Application` owns one request-scoped dispatcher. Enabled modules may declare one optional `listeners.php` contribution file in `module.json`; disabled modules contribute nothing. Listener files are trusted local code, and contribution loading is controlled rather than sandboxed.
+
+The dispatcher and enabled-module wiring are proven end to end through controlled temporary test fixtures. Fixture event names are test-only and are not production API. No production event is introduced by M2.2; the first production consumer milestone will add one only when a real caller/listener pair exists.
+
+The unified regression command is:
+
+```powershell
+& "C:\xampp\php-8.5.7\php.exe" tests/extensibility_m2_2_regression.php
+```
 
 M2.2 intentionally does not include queues, asynchronous processing, persistent event logs, replay, wildcard matching, webhooks, external APIs, distributed messaging, a service-container rewrite, or a generic plugin framework.
 

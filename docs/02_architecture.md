@@ -91,7 +91,7 @@ Planned M2 Platform Capabilities are:
 
 * Admin UI Foundation
 * Branding Foundation
-* Event Foundation
+* Extensibility Foundation
 * Editor Framework
 * Media Foundation
 * Image Service
@@ -170,6 +170,12 @@ Current examples:
 
 * `AdminNavigation` provides request-scope admin navigation items without a database-backed menu manager.
 * `Csrf` centralizes POST-body-only CSRF validation and controlled `419` responses.
+* `EventDispatcher` defines explicit synchronous event registration and object-payload dispatch.
+* `SynchronousEventDispatcher` stores request-scoped listeners in registration order and propagates listener failures unchanged.
+
+`Application` owns one dispatcher instance per request. Enabled modules may contribute listeners through one optional metadata-declared `listeners.php` file loaded before enabled module routes. Contribution files are trusted local code with `$app` available through include scope; controlled loading is not sandboxing or restricted service access.
+
+The foundation is proven end to end with controlled temporary fixtures. Fixture event names are not production API. Production events remain demand-driven and may be introduced only when a consumer milestone has one real caller/listener pair. M2.2 therefore does not add speculative lifecycle hooks.
 
 M1.7 implements Settings as a Core/platform service rather than an optional module.
 
@@ -608,7 +614,7 @@ M6 = Ecosystem
 M2 may introduce:
 
 * Admin UI Foundation
-* Event Foundation
+* Extensibility Foundation
 * Editor Framework
 * Media Foundation
 * Image Service

@@ -266,7 +266,7 @@ docs/10_admin_ui_foundation.md
 
 #### M2.2 Extensibility Foundation
 
-Status: Active. Scope and architecture locked.
+Status: Implementation complete. Manual verification pending.
 
 ##### Minimum scope
 
@@ -276,6 +276,19 @@ Status: Active. Scope and architecture locked.
 * deterministic listener ordering where required;
 * predictable failure handling;
 * lifecycle integration only where current module behavior proves the need.
+
+##### Implemented checkpoint
+
+* synchronous request-scoped Core dispatcher;
+* stable lowercase dotted event names with object payloads;
+* explicit registration-order listener execution without priority;
+* fail-fast exception propagation;
+* controlled listener contribution from installed and enabled modules;
+* disabled-module non-contribution;
+* controlled temporary fixture coverage proving end-to-end wiring;
+* unified M2.2 regression gate passing with M2.1 regression coverage preserved.
+
+First Production Consumer Integration is deferred to the first milestone that has a real caller/listener pair. It is not a blocker for completing the M2.2 foundation. Temporary fixture events are test-only and do not establish production API.
 
 Detailed scope, architecture, batch planning, and acceptance criteria are defined in:
 
@@ -292,6 +305,8 @@ docs/12_extensibility_foundation.md
 * external APIs;
 * webhooks;
 * distributed messaging.
+
+Production lifecycle events without a real consumer are also deferred. M2.2 must not add placeholder events merely to manufacture a caller/listener pair.
 
 #### M2.3 Minimal Site Capabilities
 

@@ -52,7 +52,7 @@ Provide reusable services, contracts, registries, adapters, processing, and exte
 Examples include:
 
 * Admin UI Foundation
-* Event Foundation
+* Extensibility Foundation
 * Editor Framework
 * Media Foundation
 * Image Service
