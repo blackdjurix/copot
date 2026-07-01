@@ -201,13 +201,13 @@ M6 supports distribution, tooling, integrations, and the broader extension ecosy
 
 The Post-M1 Roadmap Review is complete.
 
-The first M2 minor milestone is M2.1 Admin UI Foundation.
+M2.1 Admin UI Foundation implementation and verification are complete across all six batches.
 
-M2.1 implementation is in progress. Batch 1 Admin URL and Page Rendering and Batch 2 Shared Assets and Shell Baseline are complete. Batch 3 Core Admin Patterns is the current focus.
+M2.1 targets v0.9.0. Merge, tag, and release remain user-owned Git/GitHub operations.
 
-Its target release is v0.9.0.
+The next focus is M2.2 Extensibility Foundation.
 
-The approved M2.1 architecture boundaries, batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
+The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
 ---
 
@@ -230,175 +230,128 @@ A Platform Capability may provide:
 * storage abstraction;
 * processing infrastructure.
 
-### Locked and Candidate Capabilities
+### Lean M2 Plan
+
+M2 is intentionally compressed to four minor milestones so Core Module work can begin sooner.
+
+Capabilities deferred from the earlier expanded M2 plan are not discarded. They may be recalled into M2 when a concrete Core Module dependency proves they are required.
 
 #### M2.1 Admin UI Foundation
 
-Status: Implementation in progress; Batch 1 and Batch 2 complete; Batch 3 current.
+Status: Complete.
 
 Target release: v0.9.0.
 
 ##### Objective
 
-Establish the first M2 Platform Capability: a theme-independent, shared-hosting-safe Admin UI Foundation for Core and module-owned administrative interfaces.
+Provide theme-independent, shared-hosting-safe Admin UI infrastructure for Core and module-owned administrative interfaces.
 
-##### Scope
+##### Delivered
 
 * centralized admin path validation and URL generation;
 * centralized Admin Shell and page rendering;
-* static Admin UI assets and design tokens;
+* static Admin UI assets and internal design tokens;
 * reusable layout, alert, form, action, panel, table, and empty-state patterns;
 * responsive and accessibility baseline;
-* stable permission-aware admin navigation with ordering and active-state resolution;
-* minimal dashboard-widget contribution registry;
-* migration of existing Admin Dashboard, Settings, Content, and Taxonomy presentation.
+* permission-aware admin navigation with active-state resolution;
+* minimal permission-aware dashboard-widget registry;
+* migrated Admin Login, Dashboard, Settings, Content, and Taxonomy presentation;
+* unified regression gate and completed manual browser verification.
 
-##### Deliverable
-
-A reusable Admin UI Foundation that removes duplicated admin rendering and presentation patterns while preserving existing routes, permissions, CSRF protection, validation, persistence, and domain behavior.
-
-Detailed scope and architecture are defined in:
+Detailed scope and completion criteria are defined in:
 
 ```text
 docs/10_admin_ui_foundation.md
 ```
 
-A full admin theme or skin system, M3 Internal Dashboard, manager modules, database-backed dashboard customization, frontend build tooling, and domain behavior changes are outside M2.1.
+#### M2.2 Extensibility Foundation
 
-#### Future Branding Foundation
+Status: Next focus.
 
-Planned direction:
+##### Minimum scope
 
-* define the Core four-color palette contract: main, accent, neutral dark, and neutral light;
-* define a locked default semantic mapping, validation, fallback, and consumer contract;
-* keep semantic mapping out of Site Settings;
-* allow themes to opt out, consume defaults, or provide active-theme-scoped palette and mapping overrides;
-* keep advanced theme color settings and Custom CSS outside the base foundation.
-
-The future M3 Settings Manager edits the four Core palette values. The future M3 Theme Manager manages theme-specific palette or mapping overrides and advanced color settings. Full ownership and milestone boundaries are defined in `docs/11_branding_foundation.md`.
-
-#### 2. Event Foundation
-
-Planned direction:
-
-* application and module events;
+* synchronous event dispatch;
 * listener registration;
-* controlled dispatch;
-* decoupled module integration;
-* extension hooks for Notifications and Workflow.
+* explicit Core and module extension points;
+* deterministic listener ordering where required;
+* predictable failure handling;
+* lifecycle integration only where current module behavior proves the need.
 
-Queue infrastructure remains deferred until concrete asynchronous workloads require it.
+##### Deferred from M2.2
 
-#### 3. Editor Framework
+* asynchronous events;
+* queue infrastructure;
+* event persistence or replay;
+* wildcard event buses;
+* external APIs;
+* webhooks;
+* distributed messaging.
 
-Planned direction:
+#### M2.3 Minimal Site Capabilities
 
-* editor contract;
-* adapter support;
-* editor configuration;
-* serialization boundaries;
-* sanitization integration;
-* media-picker integration;
-* plugin or adapter extension points.
+Status: Planned.
 
-Editor.js is the leading planned default adapter, not the permanent platform contract.
+##### Minimum scope
 
-Content Manager / Workspace belongs to M3.
+* locale and timezone baseline;
+* date, time, and number formatting boundary;
+* Core Branding contract for main, accent, neutral dark, and neutral light;
+* locked default semantic color mapping;
+* minimal local asset and upload foundation;
+* safe upload validation, controlled storage paths, public URL retrieval, replace/remove behavior, and minimum metadata;
+* initial logo and favicon use cases without a full Media Library.
 
-#### 4. Media Foundation
+The Branding contract remains defined in `docs/11_branding_foundation.md`.
 
-Planned direction:
+##### Deferred from M2.3
 
-* upload validation;
-* storage abstraction;
-* media records and metadata;
-* ownership and references;
-* URL and delivery handling;
-* variant lifecycle;
-* delete safeguards.
+* multilingual content and translation management;
+* advanced branding UI;
+* theme-specific advanced color controls;
+* Custom CSS;
+* media library, picker, folders, search, and bulk actions;
+* image editor, crop/resize pipeline, optimization, CDN, or external storage.
 
-Media Library belongs to M3.
+#### M2.4 Platform Hardening
 
-#### 5. Image Service
+Status: Planned.
 
-Planned direction:
+##### Minimum scope
 
-* GD baseline adapter;
-* optional Imagick adapter;
-* dimensions and metadata;
-* resize;
-* crop;
-* rotate;
-* format and quality handling;
-* thumbnail and variant generation;
-* processing limits suitable for shared hosting.
+* consistent application error boundaries;
+* internal logging baseline without exposing sensitive details;
+* security and escaping review;
+* authentication, permission, CSRF, upload, and storage review;
+* regression gate across M1 and lean M2;
+* shared-hosting operational checks;
+* documentation and release-readiness review.
 
-Browser editing libraries such as Cropper.js may provide UI interaction but do not replace server-side processing.
+M2.4 is a release gate, not an invitation to build enterprise observability before the framework has managers to observe.
 
-#### 6. Navigation Foundation
+### M2 Exclusions and Deferred Capabilities
 
-Planned direction:
-
-* navigation registry;
-* menu locations;
-* hierarchical item model;
-* target resolution;
-* permission-aware rendering;
-* active-state resolution;
-* module-contributed navigation entries;
-* theme-declared menu locations.
-
-Navigation Manager belongs to M3.
-
-#### 7. Search Foundation
-
-Planned direction:
-
-* searchable-resource contract;
-* provider or adapter registration;
-* permission-aware result handling;
-* database-backed baseline search;
-* cross-module discovery.
-
-#### 8. Notification Foundation
-
-Planned direction:
-
-* notification contract;
-* in-application notification channel;
-* persistence;
-* read and unread state;
-* module extension hooks.
-
-External mail, SMS, push, and queue-backed delivery remain outside the initial foundation unless separately approved.
-
-#### 9. Workflow / Automation Foundation
-
-Planned direction:
-
-* trigger and action contracts;
-* event integration;
-* workflow definitions;
-* controlled execution records;
-* extension points for future automation modules.
-
-A full visual workflow builder is not assumed.
-
-### M2 Exclusions
-
-M2 does not include:
+Lean M2 does not include:
 
 * Media Library management UI;
 * Content Manager / Workspace;
 * Theme Manager;
 * Settings Manager;
+* Module Manager;
 * Navigation Manager;
 * Business/Application Modules;
 * Commerce;
 * marketplace or package distribution;
-* general API platform;
-* queue infrastructure without a concrete workload;
+* general API platform or webhooks;
+* queue and scheduler infrastructure without a concrete workload;
+* notifications;
+* search indexing;
+* workflow or automation infrastructure;
+* multilingual content management;
+* advanced image processing;
+* full Branding Manager functionality;
 * generic Asset Management Foundation.
+
+A deferred capability may return to M2 only when a concrete M3 dependency requires it before Core Module implementation can proceed safely.
 
 ### Asset Terminology
 
@@ -436,19 +389,24 @@ Core Modules:
 
 1. Users & Access
 2. Settings Manager
-3. Media Library
-4. Theme Manager
-5. Content Manager / Workspace
-6. Taxonomy Manager
-7. Navigation Manager
-8. Internal Dashboard
+3. Module Manager
+4. Navigation Manager
+5. Theme Manager
+6. Content Manager / Workspace
+7. Taxonomy Manager
+8. Media Library
 
 ### Supporting Candidates
 
-9. Redirect Manager
-10. Form Manager
+9. Internal Dashboard
+10. Redirect Manager
+11. Form Manager
 
-This order represents candidate priority and dependency direction, not a final locked M3.x submilestone sequence.
+This order represents the current lean priority and dependency direction, not an immutable M3.x sequence.
+
+Navigation data belongs to Core/Navigation Manager, while themes declare locations and control rendering. Theme Manager follows Navigation Manager so the first basic theme can consume a stable menu contract.
+
+Content and Taxonomy already have Webcore foundations. Media Library may follow them because M2.3 provides only the minimal asset/upload boundary needed for logo, favicon, theme, and early content use cases. If a concrete Content Manager requirement makes a reusable media picker mandatory, Media Library may move earlier.
 
 ### Existing Module Evolution
 

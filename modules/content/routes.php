@@ -49,6 +49,20 @@ $app->adminNavigation()->add('Content', $app->adminUrl()->childUrl('content'), [
     'content.publish',
 ]);
 
+$app->adminDashboard()->add(
+    'content.overview',
+    'Content',
+    'Create, review, publish, and archive site content.',
+    $app->adminUrl()->childUrl('content'),
+    [
+        'content.create',
+        'content.update',
+        'content.delete',
+        'content.publish',
+    ],
+    200
+);
+
 $contentRenderView = function (string $view, array $data = []) use ($contentAdminUrl): string {
     $file = __DIR__ . '/views/admin/' . $view . '.php';
 

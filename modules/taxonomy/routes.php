@@ -25,6 +25,15 @@ $taxonomyPermissions = [
 
 $app->adminNavigation()->add('Taxonomy', $app->adminUrl()->childUrl('taxonomy'), $taxonomyPermissions);
 
+$app->adminDashboard()->add(
+    'taxonomy.overview',
+    'Taxonomy',
+    'Manage classification types and the terms assigned to content.',
+    $app->adminUrl()->childUrl('taxonomy'),
+    $taxonomyPermissions,
+    300
+);
+
 $taxonomyUserCanAny = function ($user, array $permissions): bool {
     foreach ($permissions as $permission) {
         if ($user?->can($permission)) {

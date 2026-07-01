@@ -12,26 +12,26 @@ New deployments can be configured through `/install` before normal application b
 
 ## Current Phase
 
-M2.1 Admin UI Foundation — Batch 3 Core Admin Patterns
+M2.2 Extensibility Foundation
 
 The Post-M1 Roadmap Review is complete.
 
-The current work is implementing the first M2 Platform Capability:
+M2.1 Admin UI Foundation implementation and verification are complete across all six batches.
+
+The next lean M2 capability is:
 
 ```text
-M2.1 Admin UI Foundation
+M2.2 Extensibility Foundation
 ```
 
-Progress and current focus:
+Current direction:
 
-* Batch 1 Admin URL and Page Rendering is complete;
-* Batch 2 Shared Assets and Shell Baseline is complete;
-* Batch 3 Core Admin Patterns is the current focus;
-* later batches complete module presentation migration, navigation and dashboard contracts, and regression verification.
+* define a minimal synchronous event and listener contract;
+* provide controlled Core and module extension points;
+* keep failure handling predictable;
+* defer asynchronous events, persistent event logs, external APIs, webhooks, and speculative extension machinery until a concrete dependency requires them.
 
-M2.1 implementation is in progress.
-
-Target release: v0.9.0.
+M2.1 targets v0.9.0. Merge, tag, and release remain pending user-owned Git/GitHub operations.
 
 ## Implemented Foundation
 
@@ -325,19 +325,21 @@ Admin login lives at the configured admin path. With the default configuration, 
 
 M1.4.1 provides only the minimal shell. M1.7 adds the Core Admin Settings page without introducing admin theming or a generic settings editor.
 
-M2.1 Admin UI Foundation is evolving the existing shell into reusable, theme-independent Admin UI infrastructure with:
+M2.1 Admin UI Foundation evolved the existing shell into reusable, theme-independent Admin UI infrastructure with:
 
 * centralized admin path and URL generation;
 * centralized Admin Shell and page rendering;
 * static Admin UI assets and design tokens;
 * reusable alert, form, action, panel, table, and empty-state patterns;
 * responsive and accessibility baseline;
-* stable permission-aware navigation with ordering and active-state resolution;
-* a minimal dashboard-widget contribution contract.
+* stable permission-aware navigation with active-state resolution;
+* a minimal permission-aware dashboard-widget contribution registry;
+* migrated Admin Login, Dashboard, Settings, Content, and Taxonomy presentation;
+* a unified M2.1 regression gate.
 
 M2.1 does not include a full admin theme system, user-selectable skins, M3 manager modules, analytics, a full Internal Dashboard, database-backed dashboard customization, frontend build tooling, or domain behavior changes.
 
-Batch 1 and Batch 2 are complete. Batch 3 Core Admin Patterns is the current focus. Admin colors remain internal Admin UI tokens and do not consume Site Branding.
+All six M2.1 batches are complete. Automated regression and manual browser verification pass. Admin colors remain internal Admin UI tokens and do not consume Site Branding.
 
 The future Core brand palette, Theme override boundary, Settings Manager ownership, and later Custom CSS direction are defined in `docs/11_branding_foundation.md`.
 

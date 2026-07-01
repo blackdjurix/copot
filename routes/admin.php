@@ -37,12 +37,13 @@ $renderAdminDashboard = function (string $currentPath, $user) use ($app, $adminB
         'frameworkStatus' => 'M1.4.1 Admin Shell',
         'userName' => $user->name(),
         'userEmail' => $user->email(),
+        'widgets' => $app->adminDashboard()->itemsFor($user),
     ];
 
     $content = $app->view()->render('admin/dashboard', $viewData);
 
     return $app->adminPageRenderer()->render(
-        'Admin Shell',
+        'Dashboard',
         $content,
         $user,
         $app->session()->csrfToken(),

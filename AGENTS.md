@@ -10,32 +10,31 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. The project is implementing M2.1 Admin UI Foundation.
+The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation implementation and verification are complete. The next focus is M2.2 Extensibility Foundation.
 
 ---
 
 ## Current Phase
 
-### M2.1 Admin UI Foundation — Batch 3
+### M2.2 Extensibility Foundation
 
 Primary goal:
 
-Continue the first M2 Platform Capability by implementing reusable Core Admin patterns on the completed URL, rendering, asset, token, shell, responsive, and accessibility baseline.
+Prepare and implement the next lean M2 Platform Capability: a minimal, predictable extension boundary for Core and modules.
 
 Current work:
 
-* Batch 1 Admin URL and Page Rendering is complete.
-* Batch 2 Shared Assets and Shell Baseline is complete.
-* Current focus is Batch 3 Core Admin Patterns.
-* Add focused alert, field, action, panel, table, and empty-state patterns.
-* Migrate Admin Login, Dashboard, and Core Settings presentation without changing behavior.
-* Keep Site Branding, frontend Theme System, M3 manager modules, and domain behavior outside M2.1.
+* M2.1 Admin UI Foundation implementation and verification are complete.
+* All six M2.1 batches are complete.
+* Current focus is M2.2 Extensibility Foundation scope lock and implementation planning.
+* Keep the initial extensibility contract synchronous, explicit, and small.
+* Defer asynchronous events, persistent event logs, wildcard buses, external APIs, webhooks, and unrelated future capabilities until a concrete dependency requires them.
 
 Latest release: v0.8.0.
 
 The Post-M1 Roadmap Review is complete.
 
-M2.1 implementation is in progress.
+M2.1 targets v0.9.0. Merge, tag, and release remain user-owned Git/GitHub operations.
 
 ---
 
@@ -537,15 +536,16 @@ M1 Framework Foundation is complete and released as v0.8.0.
 
 The Post-M1 Roadmap Review is complete.
 
-The current work is M2.1 Admin UI Foundation Batch 3 — Core Admin Patterns.
+M2.1 Admin UI Foundation implementation and verification are complete across all six batches.
+
+The current work is M2.2 Extensibility Foundation.
 
 The immediate goal is to:
 
-* build focused reusable Core Admin patterns on the completed Batch 1 and Batch 2 foundation;
-* migrate Admin Login, Dashboard, and Core Settings presentation;
-* preserve existing behavior, frontend Theme System separation, and internal Admin token ownership;
-* avoid Site Branding integration, M3 manager functionality, domain behavior changes, and premature abstractions.
+* lock a minimal synchronous event and listener contract;
+* define controlled Core and module extension points;
+* preserve predictable failure handling and request-scope behavior;
+* avoid asynchronous processing, event persistence, external API/webhook scope, and speculative abstractions;
+* keep deferred M2 capabilities available for recall only when a concrete dependency appears.
 
-Batch 1 and Batch 2 are complete. Batch 3 is the active implementation focus.
-
-The target release version is v0.9.0.
+M2.1 targets v0.9.0. Merge, tag, and release remain pending user-owned operations.

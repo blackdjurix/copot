@@ -215,7 +215,7 @@ try {
         'modules/taxonomy/views/admin/form.php',
     ] as $viewFile) {
         $viewSource = (string) file_get_contents($basePath . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $viewFile));
-        $assert(!preg_match('/<h1\b|<h2\b/i', $viewSource), "Duplicate page heading remains in [{$viewFile}].");
+        $assert(!preg_match('/<h1\b/i', $viewSource), "Authenticated Admin view must not define a second page-level H1 in [{$viewFile}].");
     }
 
     [, $dashboardRender] = $renderWithPath('dapur', '/dapur');

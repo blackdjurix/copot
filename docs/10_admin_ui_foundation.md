@@ -26,7 +26,7 @@ It is not a business module, management module, admin theme marketplace, visual 
 
 ### M2.1 Admin UI Foundation
 
-Status: Implementation in progress. Batch 1 Admin URL and Page Rendering and Batch 2 Shared Assets and Shell Baseline are complete. Batch 3 Core Admin Patterns is the current focus.
+Status: Complete. All six batches, automated regression coverage, and manual browser verification are complete.
 
 Latest release before this milestone:
 
@@ -786,7 +786,7 @@ Status: Complete.
 
 ### Batch 3 — Core Admin Patterns
 
-Status: Current focus.
+Status: Complete.
 
 * add focused alert, field, action, panel, table, and empty-state patterns;
 * migrate admin login;
@@ -797,6 +797,8 @@ Status: Current focus.
 
 ### Batch 4 — Module Admin Migration
 
+Status: Complete.
+
 * migrate Content admin views;
 * migrate Taxonomy admin views;
 * preserve domain behavior and permissions;
@@ -804,6 +806,8 @@ Status: Current focus.
 * add focused tests.
 
 ### Batch 5 — Dashboard Registry and Extension Boundary
+
+Status: Complete.
 
 * introduce minimal dashboard-widget registration;
 * migrate existing status information as the first widget;
@@ -813,6 +817,8 @@ Status: Current focus.
 
 ### Batch 6 — Regression and Manual Verification
 
+Status: Complete.
+
 * run automated regression coverage;
 * verify configurable admin path;
 * run accessibility checks;
@@ -821,6 +827,23 @@ Status: Current focus.
 * confirm frontend Theme System independence;
 * fix only M2.1 regressions;
 * prepare final documentation and release review.
+
+---
+
+## Completion Record
+
+M2.1 implementation and verification are complete.
+
+Completion evidence includes:
+
+* all six implementation batches complete;
+* Batch 1 integration coverage passing with one explicit environment-dependent permission skip;
+* Batch 1 through Batch 5 smoke suites passing;
+* unified M2.1 regression gate passing;
+* responsive layout, 320px and 375px widths, 200% zoom, keyboard flow, focus visibility, and live static-asset delivery manually verified;
+* no database schema change, third-party dependency, frontend build pipeline, or frontend Theme System coupling introduced.
+
+The milestone targets v0.9.0. Merge, tag, and release remain user-owned Git/GitHub operations.
 
 ---
 

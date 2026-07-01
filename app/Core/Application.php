@@ -2,6 +2,7 @@
 
 namespace Copot\Core;
 
+use Copot\Core\Admin\AdminDashboardRegistry;
 use Copot\Core\Admin\AdminPageRenderer;
 use Copot\Core\Admin\AdminUrl;
 
@@ -27,6 +28,7 @@ class Application
     private ViewRenderer $viewRenderer;
     private ViewResolver $viewResolver;
     private AdminNavigation $adminNavigation;
+    private AdminDashboardRegistry $adminDashboard;
     private AdminUrl $adminUrl;
     private AdminPageRenderer $adminPageRenderer;
 
@@ -70,6 +72,7 @@ class Application
         );
         $this->adminUrl = new AdminUrl($this->config);
         $this->adminNavigation = new AdminNavigation();
+        $this->adminDashboard = new AdminDashboardRegistry();
         $this->adminNavigation->add('Dashboard', $this->adminUrl->baseUrl());
         $this->adminPageRenderer = new AdminPageRenderer(
             $this->view,
@@ -185,6 +188,11 @@ class Application
     public function adminNavigation(): AdminNavigation
     {
         return $this->adminNavigation;
+    }
+
+    public function adminDashboard(): AdminDashboardRegistry
+    {
+        return $this->adminDashboard;
     }
 
     public function adminUrl(): AdminUrl
