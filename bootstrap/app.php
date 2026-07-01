@@ -16,6 +16,7 @@ require $basePath . '/routes/web.php';
 require $basePath . '/routes/auth.php';
 require $basePath . '/routes/admin.php';
 
+$app->moduleLoader()->loadListeners($app);
 $app->moduleLoader()->loadRoutes($app);
 
 return $app;

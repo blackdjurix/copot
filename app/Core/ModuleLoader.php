@@ -12,6 +12,33 @@ class ModuleLoader
     ) {
     }
 
+    public function loadListeners(Application $app): void
+    {
+        $this->errors = [];
+        $discovered = $this->discoveredByName();
+
+        try {
+            $enabled = $this->repository->enabled();
+        } catch (\Throwable) {
+            throw new \RuntimeException('Unable to load enabled module listener contributions.');
+        }
+
+        foreach ($enabled as $moduleRow) {
+            $name = (string) ($moduleRow['name'] ?? '');
+            $module = $discovered[$name] ?? null;
+
+            if (!$module instanceof ModuleDefinition) {
+                if ($this->hasDiscoveryError($name)) {
+                    throw new \RuntimeException("Module [{$name}] listener contribution metadata is invalid.");
+                }
+
+                continue;
+            }
+
+            $this->loadModuleListeners($app, $module);
+        }
+    }
+
     public function loadRoutes(Application $app): void
     {
         $this->errors = [];
@@ -92,6 +119,66 @@ class ModuleLoader
         }
 
         require $resolvedRoutePath;
+    }
+
+    private function loadModuleListeners(Application $app, ModuleDefinition $module): void
+    {
+        $listeners = $module->listeners();
+
+        if ($listeners === null) {
+            return;
+        }
+
+        $modulePath = realpath($module->path());
+
+        if ($modulePath === false) {
+            throw new \RuntimeException("Module [{$module->name()}] listener contribution is unavailable.");
+        }
+
+        $listenerPath = $modulePath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $listeners);
+
+        if (!is_file($listenerPath)) {
+            throw new \RuntimeException("Module [{$module->name()}] listener contribution file is missing.");
+        }
+
+        $resolvedListenerPath = realpath($listenerPath);
+
+        if ($resolvedListenerPath === false || !$this->isInsideModule($resolvedListenerPath, $modulePath)) {
+            throw new \RuntimeException("Module [{$module->name()}] listener contribution must stay inside the module folder.");
+        }
+
+        try {
+            $contributions = require $resolvedListenerPath;
+        } catch (\Throwable) {
+            throw new \RuntimeException("Module [{$module->name()}] listener contribution could not be loaded.");
+        }
+
+        if (!is_array($contributions)) {
+            throw new \RuntimeException("Module [{$module->name()}] listener contribution must return an array.");
+        }
+
+        foreach ($contributions as $eventName => $listener) {
+            if (!is_string($eventName) || !is_callable($listener)) {
+                throw new \RuntimeException("Module [{$module->name()}] listener contribution map is invalid.");
+            }
+
+            try {
+                $app->events()->listen($eventName, $listener);
+            } catch (\InvalidArgumentException) {
+                throw new \RuntimeException("Module [{$module->name()}] listener contribution contains an invalid event name.");
+            }
+        }
+    }
+
+    private function hasDiscoveryError(string $name): bool
+    {
+        foreach ($this->discovery->errors() as $error) {
+            if (($error['module'] ?? null) === $name) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function isInsideModule(string $path, string $modulePath): bool

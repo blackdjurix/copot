@@ -12,6 +12,7 @@ class ModuleDefinition
         private ?string $description = null,
         private ?string $author = null,
         private ?string $routes = null,
+        private ?string $listeners = null,
         private array $requires = [],
         private array $permissions = []
     ) {
@@ -52,6 +53,11 @@ class ModuleDefinition
         return $this->routes;
     }
 
+    public function listeners(): ?string
+    {
+        return $this->listeners;
+    }
+
     public function requires(): array
     {
         return $this->requires;
@@ -72,6 +78,7 @@ class ModuleDefinition
             'description' => $this->description,
             'author' => $this->author,
             'routes' => $this->routes,
+            'listeners' => $this->listeners,
             'requires' => $this->requires,
             'permissions' => $this->permissions,
         ];

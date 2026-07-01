@@ -80,6 +80,7 @@ class ModuleDiscovery
             description: isset($metadata['description']) ? (string) $metadata['description'] : null,
             author: isset($metadata['author']) ? (string) $metadata['author'] : null,
             routes: isset($metadata['routes']) ? (string) $metadata['routes'] : null,
+            listeners: isset($metadata['listeners']) ? (string) $metadata['listeners'] : null,
             requires: isset($metadata['requires']) && is_array($metadata['requires']) ? $metadata['requires'] : [],
             permissions: isset($metadata['permissions']) && is_array($metadata['permissions']) ? $metadata['permissions'] : []
         );
@@ -107,6 +108,16 @@ class ModuleDiscovery
             return 'Module routes path must be a safe relative path inside the module folder.';
         }
 
+        if (array_key_exists('listeners', $metadata)) {
+            if (!is_string($metadata['listeners']) || trim($metadata['listeners']) === '') {
+                return 'Module listeners path must be a non-empty string.';
+            }
+
+            if (!$this->isSafeListenerPath($metadata['listeners'])) {
+                return 'Module listeners path must be a safe relative path inside the module folder.';
+            }
+        }
+
         return null;
     }
 
@@ -119,6 +130,28 @@ class ModuleDiscovery
             && !str_contains($path, '../')
             && !str_contains($path, '..\\')
             && $path !== '..';
+    }
+
+    private function isSafeListenerPath(string $path): bool
+    {
+        if (
+            str_contains($path, "\0")
+            || str_starts_with($path, '/')
+            || str_starts_with($path, '\\')
+            || preg_match('/^[A-Za-z]:[\\\\\/]/', $path) === 1
+        ) {
+            return false;
+        }
+
+        $segments = explode('/', str_replace('\\', '/', $path));
+
+        foreach ($segments as $segment) {
+            if ($segment === '' || $segment === '.' || $segment === '..') {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private function addError(string $module, string $message): void

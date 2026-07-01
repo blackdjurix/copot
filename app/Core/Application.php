@@ -11,6 +11,7 @@ class Application
     private string $basePath;
     private Config $config;
     private Router $router;
+    private EventDispatcher $events;
     private View $view;
     private Database $database;
     private SettingsService $settings;
@@ -37,6 +38,7 @@ class Application
         $this->basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
         $this->config = new Config($this->path('config'));
         $this->router = new Router();
+        $this->events = new SynchronousEventDispatcher();
         $this->view = new View($this->path('resources/views'));
         $this->database = new Database($this->config);
         $settingsRegistry = SettingsRegistry::core();
@@ -103,6 +105,11 @@ class Application
     public function router(): Router
     {
         return $this->router;
+    }
+
+    public function events(): EventDispatcher
+    {
+        return $this->events;
     }
 
     public function view(): View
