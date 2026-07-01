@@ -1,62 +1,81 @@
-<section class="panel">
-    <p>Manage <?= htmlspecialchars($type?->slug() ?? 'taxonomy', ENT_QUOTES, 'UTF-8') ?> terms.</p>
-
-    <?php if (!empty($error)): ?>
-        <div>
-            <p><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+<section class="admin-panel" aria-labelledby="taxonomy-terms-title">
+    <header class="admin-panel__header">
+        <div class="admin-panel__heading">
+            <h2 class="admin-panel__title" id="taxonomy-terms-title">
+                <?= htmlspecialchars($type?->name() ?? 'Taxonomy', ENT_QUOTES, 'UTF-8') ?> terms
+            </h2>
+            <p class="admin-panel__description">Manage reusable <?= htmlspecialchars($type?->slug() ?? 'taxonomy', ENT_QUOTES, 'UTF-8') ?> terms.</p>
         </div>
-    <?php endif; ?>
 
-    <p>
-        <a href="<?= htmlspecialchars($adminUrl('taxonomy'), ENT_QUOTES, 'UTF-8') ?>">All taxonomy types</a>
-        <?php if (!empty($canCreate)): ?>
-            |
-            <a href="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/create'), ENT_QUOTES, 'UTF-8') ?>">Create term</a>
-        <?php endif; ?>
-    </p>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Slug</th>
-                <th>Description</th>
-                <th>Sort</th>
-                <th>Usage</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if (empty($terms)): ?>
-                <tr>
-                    <td colspan="6">No terms yet.</td>
-                </tr>
+        <div class="admin-actions">
+            <a class="admin-button admin-button--secondary" href="<?= htmlspecialchars($adminUrl('taxonomy'), ENT_QUOTES, 'UTF-8') ?>">All taxonomy types</a>
+            <?php if (!empty($canCreate)): ?>
+                <a class="admin-button admin-button--primary" href="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/create'), ENT_QUOTES, 'UTF-8') ?>">Create term</a>
             <?php endif; ?>
+        </div>
+    </header>
 
-            <?php foreach (($terms ?? []) as $term): ?>
-                <?php $usageCount = (int) (($usageCounts ?? [])[$term->id()] ?? 0); ?>
-                <tr>
-                    <td><?= htmlspecialchars($term->name(), ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= htmlspecialchars($term->slug(), ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= htmlspecialchars($term->description() ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= htmlspecialchars((string) $term->sortOrder(), ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= htmlspecialchars((string) $usageCount, ENT_QUOTES, 'UTF-8') ?></td>
-                    <td>
-                        <?php if (!empty($canUpdate)): ?>
-                            <a href="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/' . $term->id() . '/edit'), ENT_QUOTES, 'UTF-8') ?>">Edit</a>
-                        <?php endif; ?>
+    <div class="admin-panel__body">
+        <?php if (!empty($error)): ?>
+            <div class="admin-alert admin-alert--danger" role="alert">
+                <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?>
+            </div>
+        <?php endif; ?>
 
-                        <?php if (!empty($canDelete) && $usageCount === 0): ?>
-                            <form method="post" action="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/' . $term->id() . '/delete'), ENT_QUOTES, 'UTF-8') ?>" style="display:inline">
-                                <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                                <button type="submit">Delete</button>
-                            </form>
-                        <?php elseif (!empty($canDelete)): ?>
-                            <span>In use</span>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+        <?php if (empty($terms)): ?>
+            <div class="admin-empty-state">
+                <h3 class="admin-empty-state__title">No terms yet</h3>
+                <p class="admin-empty-state__description">Create the first term for this taxonomy type.</p>
+
+                <?php if (!empty($canCreate)): ?>
+                    <div class="admin-empty-state__actions">
+                        <a class="admin-button admin-button--primary" href="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/create'), ENT_QUOTES, 'UTF-8') ?>">Create term</a>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php else: ?>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Name</th>
+                            <th scope="col">Slug</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Sort</th>
+                            <th scope="col">Usage</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach (($terms ?? []) as $term): ?>
+                            <?php $usageCount = (int) (($usageCounts ?? [])[$term->id()] ?? 0); ?>
+                            <tr>
+                                <td><?= htmlspecialchars($term->name(), ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><?= htmlspecialchars($term->slug(), ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><?= htmlspecialchars($term->description() ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><?= htmlspecialchars((string) $term->sortOrder(), ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><?= htmlspecialchars((string) $usageCount, ENT_QUOTES, 'UTF-8') ?></td>
+                                <td>
+                                    <div class="admin-row-actions">
+                                        <?php if (!empty($canUpdate)): ?>
+                                            <a class="admin-button admin-button--link" href="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/' . $term->id() . '/edit'), ENT_QUOTES, 'UTF-8') ?>">Edit</a>
+                                        <?php endif; ?>
+
+                                        <?php if (!empty($canDelete) && $usageCount === 0): ?>
+                                            <form class="admin-inline-form" method="post" action="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/' . $term->id() . '/delete'), ENT_QUOTES, 'UTF-8') ?>">
+                                                <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                                <button class="admin-button admin-button--link admin-action-danger" type="submit">Delete</button>
+                                            </form>
+                                        <?php elseif (!empty($canDelete)): ?>
+                                            <span class="admin-text-muted">In use</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        <?php endif; ?>
+    </div>
 </section>

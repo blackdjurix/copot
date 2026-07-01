@@ -643,6 +643,49 @@ dd {
     width: 100%;
 }
 
+
+.admin-form {
+    display: grid;
+    gap: var(--admin-space-5);
+}
+
+.admin-check-list {
+    display: grid;
+    gap: var(--admin-space-2);
+}
+
+.admin-check-option {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--admin-space-2);
+}
+
+.admin-check-option input {
+    width: auto;
+    min-height: 0;
+    margin: 0.25em 0 0;
+}
+
+.admin-row-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--admin-space-3);
+}
+
+.admin-inline-form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.admin-action-danger {
+    color: var(--admin-color-danger);
+}
+
+.admin-text-muted {
+    color: var(--admin-color-muted);
+}
+
 @media (max-width: 900px) {
     .admin-shell {
         grid-template-columns: 1fr;
