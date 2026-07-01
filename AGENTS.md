@@ -10,7 +10,7 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation implementation and verification are complete. The next focus is M2.2 Extensibility Foundation.
+The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. The active milestone is M2.2 Extensibility Foundation.
 
 ---
 
@@ -26,15 +26,16 @@ Current work:
 
 * M2.1 Admin UI Foundation implementation and verification are complete.
 * All six M2.1 batches are complete.
-* Current focus is M2.2 Extensibility Foundation scope lock and implementation planning.
+* M2.2 Extensibility Foundation scope and architecture are locked in `docs/12_extensibility_foundation.md`.
+* Current focus is repository audit and the first approved implementation batch.
 * Keep the initial extensibility contract synchronous, explicit, and small.
 * Defer asynchronous events, persistent event logs, wildcard buses, external APIs, webhooks, and unrelated future capabilities until a concrete dependency requires them.
 
-Latest release: v0.8.0.
+Latest release: v0.9.0.
 
 The Post-M1 Roadmap Review is complete.
 
-M2.1 targets v0.9.0. Merge, tag, and release remain user-owned Git/GitHub operations.
+M2.1 is complete and released as v0.9.0.
 
 ---
 
@@ -178,6 +179,27 @@ M2.1 targets v0.9.0. Merge, tag, and release remain user-owned Git/GitHub operat
 
 ---
 
+## M2.2 Extensibility Foundation Rules
+
+* M2.2 provides a minimal synchronous extension boundary for Core and enabled modules.
+* The initial contract is request-scoped and in-process only.
+* Events must use explicit stable names or explicit event classes approved by the implementation design; do not add wildcard matching.
+* Listener registration must be explicit and deterministic.
+* Listener priority may be introduced only where a concrete ordering requirement exists.
+* Dispatch must preserve predictable failure behavior. Exceptions must not be silently swallowed.
+* Event payloads must be small, documented, and must not expose the application container as an escape hatch.
+* Core must own the dispatcher contract and runtime wiring.
+* Modules may register listeners only through the approved module integration boundary.
+* Disabled modules must not contribute listeners.
+* Extension points must correspond to current Core or module lifecycle needs. Do not add speculative hooks.
+* M2.2 must not introduce asynchronous execution, queues, scheduler infrastructure, event persistence, replay, wildcard buses, distributed messaging, external APIs, or webhooks.
+* M2.2 must not rewrite the service container, Module Manager, Router, or application bootstrap.
+* M2.2 must not add a generic plugin framework, package marketplace, or user-facing management UI.
+* Database schema changes and new third-party dependencies are outside scope unless separately approved.
+* Detailed scope, architecture, batches, and acceptance criteria are defined in `docs/12_extensibility_foundation.md`.
+
+---
+
 ## Architecture Classification Model
 
 ### Platform Capability
@@ -196,7 +218,7 @@ Planned examples include:
 
 * Admin UI Foundation
 * Branding Foundation
-* Event Foundation
+* Extensibility Foundation
 * Editor Framework
 * Media Foundation
 * Image Service
@@ -463,6 +485,7 @@ When adding or changing major behavior, update the relevant documentation:
 * `docs/09_installer_system.md`
 * `docs/10_admin_ui_foundation.md`
 * `docs/11_branding_foundation.md`
+* `docs/12_extensibility_foundation.md`
 
 Documentation and instruction files are user-maintained unless the user explicitly authorizes Codex to edit them.
 
@@ -536,7 +559,7 @@ M1 Framework Foundation is complete and released as v0.8.0.
 
 The Post-M1 Roadmap Review is complete.
 
-M2.1 Admin UI Foundation implementation and verification are complete across all six batches.
+M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 The current work is M2.2 Extensibility Foundation.
 
@@ -548,4 +571,4 @@ The immediate goal is to:
 * avoid asynchronous processing, event persistence, external API/webhook scope, and speculative abstractions;
 * keep deferred M2 capabilities available for recall only when a concrete dependency appears.
 
-M2.1 targets v0.9.0. Merge, tag, and release remain pending user-owned operations.
+M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.

@@ -6,6 +6,8 @@ A modular PHP-based website framework designed for flexible content, business, a
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
+M2.1 Admin UI Foundation is complete and released as v0.9.0.
+
 The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
 New deployments can be configured through `/install` before normal application bootstrap is allowed.
@@ -16,7 +18,7 @@ M2.2 Extensibility Foundation
 
 The Post-M1 Roadmap Review is complete.
 
-M2.1 Admin UI Foundation implementation and verification are complete across all six batches.
+M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 The next lean M2 capability is:
 
@@ -31,7 +33,7 @@ Current direction:
 * keep failure handling predictable;
 * defer asynchronous events, persistent event logs, external APIs, webhooks, and speculative extension machinery until a concrete dependency requires them.
 
-M2.1 targets v0.9.0. Merge, tag, and release remain pending user-owned Git/GitHub operations.
+M2.2 scope and architecture are locked in `docs/12_extensibility_foundation.md`. Implementation begins with a repository audit followed by approved, minimal batches.
 
 ## Implemented Foundation
 
@@ -127,7 +129,7 @@ Not included yet:
 - ORM
 - API layer
 - Queue system
-- Event system
+- Extensibility event/listener runtime
 - Migration runner
 - Theme marketplace
 - Theme installer
@@ -342,6 +344,27 @@ M2.1 does not include a full admin theme system, user-selectable skins, M3 manag
 All six M2.1 batches are complete. Automated regression and manual browser verification pass. Admin colors remain internal Admin UI tokens and do not consume Site Branding.
 
 The future Core brand palette, Theme override boundary, Settings Manager ownership, and later Custom CSS direction are defined in `docs/11_branding_foundation.md`.
+
+## M2.2 Extensibility Foundation
+
+M2.2 adds a small, synchronous extension boundary for Core and enabled modules.
+
+The approved direction is:
+
+* in-process, request-scoped dispatch;
+* explicit listener registration;
+* deterministic behavior;
+* predictable exception handling;
+* module participation only through controlled integration points;
+* lifecycle events only where current behavior proves a concrete need.
+
+M2.2 intentionally does not include queues, asynchronous processing, persistent event logs, replay, wildcard matching, webhooks, external APIs, distributed messaging, a service-container rewrite, or a generic plugin framework.
+
+Detailed scope, architecture, batch planning, and acceptance criteria are defined in:
+
+```text
+docs/12_extensibility_foundation.md
+```
 
 ## Content Module
 
@@ -650,4 +673,5 @@ docs/02_architecture.md
 docs/03_roadmap.md
 docs/10_admin_ui_foundation.md
 docs/11_branding_foundation.md
+docs/12_extensibility_foundation.md
 ```

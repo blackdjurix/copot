@@ -201,9 +201,9 @@ M6 supports distribution, tooling, integrations, and the broader extension ecosy
 
 The Post-M1 Roadmap Review is complete.
 
-M2.1 Admin UI Foundation implementation and verification are complete across all six batches.
+M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-M2.1 targets v0.9.0. Merge, tag, and release remain user-owned Git/GitHub operations.
+The active milestone is M2.2 Extensibility Foundation.
 
 The next focus is M2.2 Extensibility Foundation.
 
@@ -266,7 +266,7 @@ docs/10_admin_ui_foundation.md
 
 #### M2.2 Extensibility Foundation
 
-Status: Next focus.
+Status: Active. Scope and architecture locked.
 
 ##### Minimum scope
 
@@ -276,6 +276,12 @@ Status: Next focus.
 * deterministic listener ordering where required;
 * predictable failure handling;
 * lifecycle integration only where current module behavior proves the need.
+
+Detailed scope, architecture, batch planning, and acceptance criteria are defined in:
+
+```text
+docs/12_extensibility_foundation.md
+```
 
 ##### Deferred from M2.2
 
@@ -561,7 +567,7 @@ Core Module management interfaces
 ```
 
 ```text
-Event Foundation
+Extensibility Foundation
 ->
 Notifications
 ->
