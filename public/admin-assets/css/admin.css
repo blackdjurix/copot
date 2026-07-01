@@ -607,7 +607,7 @@ dd {
     font-size: 32px;
 }
 
-.admin-login-card p {
+.admin-login-card > p {
     margin: 0 0 var(--admin-space-6);
     color: var(--admin-color-muted);
 }

@@ -123,9 +123,9 @@ $assert(str_contains($layoutSource, 'class="admin-button admin-button--secondary
 // Table and empty-state contracts are available for Batch 4 consumers.
 $assert(str_contains($css, '.admin-table-wrap'), 'Responsive table wrapper pattern is missing.');
 $assert(preg_match('/\.admin-table-wrap\s*\{[^}]*overflow-x:\s*auto;/s', $css) === 1, 'Table wrapper lacks controlled horizontal overflow.');
-$assert(str_contains($css, '.admin-table'), 'Shared table treatment is missing.');
+$assert(preg_match('/\.admin-table\s*\{/', $css) === 1, 'Shared table treatment is missing.');
 $assert(str_contains($css, '.admin-table__empty'), 'Table empty-row treatment is missing.');
-$assert(str_contains($css, '.admin-empty-state'), 'Empty-state container pattern is missing.');
+$assert(preg_match('/\.admin-empty-state\s*\{/', $css) === 1, 'Empty-state container pattern is missing.');
 $assert(str_contains($css, '.admin-empty-state__title'), 'Empty-state title pattern is missing.');
 $assert(str_contains($css, '.admin-empty-state__description'), 'Empty-state description pattern is missing.');
 $assert(str_contains($css, '.admin-empty-state__actions'), 'Optional empty-state action pattern is missing.');
