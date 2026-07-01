@@ -4,7 +4,7 @@
 
 Active milestone.
 
-Scope and architecture are locked for repository audit and phased implementation.
+Scope and architecture are locked. Batch 1 repository audit and contract validation are complete. Batch 2 Core Dispatcher is ready for implementation.
 
 Latest completed release:
 
@@ -202,6 +202,24 @@ M2.2 must not migrate them automatically to dispatcher-based behavior.
 
 ---
 
+## Batch 1 Event Admission Result
+
+No initial lifecycle event is approved.
+
+The audit found no candidate that currently has both:
+
+* one real caller;
+* one real independent listener;
+* a narrow stable payload;
+* reduced coupling;
+* a safe transaction boundary.
+
+Content-to-Taxonomy integration is real coupling, but it spans reads, form composition, validation input, and persistence. Converting only post-save synchronization into an event would retain Taxonomy semantics inside Content and could introduce partial-write risk under fail-fast behavior.
+
+Batch 4 therefore remains gated. M2.2 must not add a dummy event merely to satisfy an acceptance checklist.
+
+---
+
 ## Candidate Concrete Event Areas
 
 The repository audit must verify whether any of these areas justify an initial event:
@@ -226,22 +244,31 @@ Events with no real listener must not be added as future-proofing.
 
 ---
 
-## Proposed Runtime Contract
+## Locked Runtime Contract
 
-The exact class names remain subject to repository audit, but the implementation should remain equivalent to:
+The repository audit approved a stable string-name dispatcher with object payloads:
 
 ```php
 interface EventDispatcher
 {
     public function listen(string $eventName, callable $listener): void;
 
-    public function dispatch(string $eventName, object $event): object;
+    public function dispatch(string $eventName, object $event): void;
 }
 ```
 
-This example is directional, not a mandatory signature.
+Contract rules:
 
-The audit may recommend explicit event classes, a separate listener provider, or another small contract when that better matches the current codebase.
+* event names use lowercase dotted segments;
+* listener execution follows registration order;
+* listener priority is not part of M2.2;
+* dispatch with no listeners succeeds as a no-op;
+* duplicate explicit registrations are allowed and execute independently;
+* the same payload object is delivered to every listener;
+* invalid event names or listener definitions raise `InvalidArgumentException`;
+* listener exceptions propagate unchanged;
+* later listeners do not execute after a fail-fast exception;
+* one dispatcher instance belongs to one `Application` instance/request.
 
 The final design must avoid:
 
@@ -268,14 +295,38 @@ A disabled module must not:
 
 Malformed listener definitions must fail in a controlled and diagnosable way without exposing sensitive filesystem or environment details to public responses.
 
-The repository audit must determine whether listener registration belongs in:
+The repository audit approved one optional module metadata field:
 
-* `module.json`;
-* `routes.php`-adjacent module bootstrap code;
-* a dedicated optional module file;
-* a Core-owned registration callback.
+```json
+{
+  "listeners": "listeners.php"
+}
+```
 
-No format is approved before the audit compares it with current module-loading behavior.
+The dedicated file returns an event-to-callable map:
+
+```php
+return [
+    'content.published' => static function (object $event) use ($app): void {
+        // Synchronous trusted module listener.
+    },
+];
+```
+
+Rules:
+
+* only installed and enabled modules are inspected;
+* the existing enabled-module order remains authoritative;
+* the path must resolve safely inside the module directory;
+* a declared file must exist and return an array;
+* every key must be a valid event name;
+* every value must be callable;
+* one callable per event per module keeps the format unambiguous;
+* malformed declared contributions fail with a sanitized module-specific runtime exception;
+* disabled modules contribute nothing on the next request;
+* listener contribution is controlled, but listener code remains trusted application code;
+* `$app` may be available through include scope, matching existing trusted route-file wiring;
+* this is not sandboxing and does not restrict service access inside trusted local module code.
 
 ---
 
@@ -335,7 +386,7 @@ The final batch plan may be refined after the repository audit, but implementati
 
 ### Batch 1 — Repository Audit and Contract Lock
 
-Status: Next.
+Status: Complete.
 
 * inspect existing extension mechanisms and lifecycle wiring;
 * identify concrete initial caller/listener pairs;
@@ -346,6 +397,21 @@ Status: Next.
 * update this document only if the audit proves a necessary architecture correction.
 
 No runtime implementation belongs in this batch unless separately approved.
+
+Batch 1 locked these decisions:
+
+* stable lowercase dotted string event names;
+* object payloads;
+* synchronous request-scoped dispatch;
+* registration-order execution;
+* no listener priority;
+* successful no-op dispatch when no listeners exist;
+* duplicate explicit registrations execute independently;
+* unchanged exception propagation with later listeners skipped;
+* one optional module metadata entry pointing to `listeners.php`;
+* enabled modules only;
+* trusted local listener code with controlled contribution, not sandboxing;
+* Batch 4 remains gated until one real caller/listener pair has a narrow payload and safe transaction boundary.
 
 ### Batch 2 — Core Dispatcher
 

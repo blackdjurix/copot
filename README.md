@@ -374,7 +374,7 @@ M1.5 adds a basic local Content Module at:
 modules/content
 ```
 
-The module must be installed and enabled through the Module Manager, like other local modules. It is not enabled automatically.
+For an existing or manually prepared installation, install and enable the Content Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content and Taxonomy automatically as baseline modules.
 
 Install and enable the Content Module:
 
@@ -421,7 +421,7 @@ M1.6 adds a reusable local Taxonomy Foundation module at:
 modules/taxonomy
 ```
 
-The module must be installed and enabled through the Module Manager, like other local modules. It is not enabled automatically.
+For an existing or manually prepared installation, install and enable the Taxonomy Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content and Taxonomy automatically as baseline modules.
 
 Install and enable the Taxonomy Module:
 

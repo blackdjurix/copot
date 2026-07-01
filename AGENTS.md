@@ -183,15 +183,22 @@ M2.1 is complete and released as v0.9.0.
 
 * M2.2 provides a minimal synchronous extension boundary for Core and enabled modules.
 * The initial contract is request-scoped and in-process only.
+* Event routing uses stable lowercase dotted string names with object payloads.
+* Listener execution follows registration order only; M2.2 does not add listener priority.
+* Dispatch with no listeners is a successful no-op.
+* Duplicate explicit registrations are allowed and execute independently.
 * Events must use explicit stable names or explicit event classes approved by the implementation design; do not add wildcard matching.
 * Listener registration must be explicit and deterministic.
 * Listener priority may be introduced only where a concrete ordering requirement exists.
 * Dispatch must preserve predictable failure behavior. Exceptions must not be silently swallowed.
 * Event payloads must be small, documented, and must not expose the application container as an escape hatch.
 * Core must own the dispatcher contract and runtime wiring.
-* Modules may register listeners only through the approved module integration boundary.
+* Modules may contribute listeners only through one optional dedicated `listeners.php` file declared by module metadata.
+* Listener contribution is controlled, but listener code remains trusted local application code and is not sandboxed.
+* The optional listener file may access `$app` through include scope, matching existing trusted module route wiring.
 * Disabled modules must not contribute listeners.
 * Extension points must correspond to current Core or module lifecycle needs. Do not add speculative hooks.
+* Batch 4 concrete events remain gated until one real caller/listener pair has a narrow payload and a safe transaction boundary.
 * M2.2 must not introduce asynchronous execution, queues, scheduler infrastructure, event persistence, replay, wildcard buses, distributed messaging, external APIs, or webhooks.
 * M2.2 must not rewrite the service container, Module Manager, Router, or application bootstrap.
 * M2.2 must not add a generic plugin framework, package marketplace, or user-facing management UI.
