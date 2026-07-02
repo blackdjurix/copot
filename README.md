@@ -391,7 +391,7 @@ docs/12_extensibility_foundation.md
 
 ## M2.3 Minimal Site Capabilities
 
-M2.3 Batch 1 documentation and contract lock are complete. Batch 2 Localization and Formatting Foundation is implemented; later Branding and asset/upload batches have not started.
+M2.3 Batch 1 documentation and contract lock, Batch 2 Localization and Formatting Foundation, and Batch 3 Core Branding Settings Contract are implemented. Asset/upload and presentation-integration batches have not started.
 
 The locked lean scope is:
 
@@ -412,6 +412,8 @@ docs/13_minimal_site_capabilities.md
 ```
 
 Batch 2 provides one request-scoped `SiteFormatter` per `Application`, explicit configured-Timezone conversion, deterministic date/time/date-time output, and locale-aware integer/decimal separators for `en_US` and `id_ID`. Unsupported locales fall back to `en_US`. Output does not depend on the server timezone, OS locale, or `ext-intl`.
+
+Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON descriptors plus one request-scoped read-only `SiteBranding` value. It exposes Site Name and optional Tagline only; Logo and Favicon URLs remain `null` until the approved storage and delivery foundation exists.
 
 ## Content Module
 

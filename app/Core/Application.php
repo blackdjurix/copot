@@ -19,6 +19,7 @@ class Application
     private string $timezone;
     private string $locale;
     private SiteFormatter $formatter;
+    private SiteBranding $branding;
     private Session $session;
     private Csrf $csrf;
     private Auth $auth;
@@ -148,6 +149,11 @@ class Application
         return $this->formatter;
     }
 
+    public function branding(): SiteBranding
+    {
+        return $this->branding;
+    }
+
     public function session(): Session
     {
         return $this->session;
@@ -226,6 +232,7 @@ class Application
     private function initializeRuntimeSettings(SettingsRegistry $registry): void
     {
         $this->siteName = $this->runtimeSetting($registry, 'site', 'name');
+        $siteTagline = $this->runtimeSetting($registry, 'site', 'tagline');
         $this->timezone = $this->runtimeSetting($registry, 'localization', 'timezone');
         $this->locale = $this->runtimeSetting($registry, 'localization', 'locale');
         $dateFormat = $this->runtimeSetting($registry, 'localization', 'date_format');
@@ -239,6 +246,7 @@ class Application
             $dateFormat,
             $timeFormat
         );
+        $this->branding = new SiteBranding($this->siteName, $siteTagline);
     }
 
     private function runtimeSetting(SettingsRegistry $registry, string $namespace, string $key): string

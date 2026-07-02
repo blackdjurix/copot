@@ -6,7 +6,7 @@ M2.3 completes the smallest site-level capability layer needed before Core Modul
 
 M2.3 extends existing Settings and Theme boundaries. It does not create a multilingual system, Media Library, generic upload platform, or visual Branding Manager.
 
-Status: Batch 1 contract lock complete; Batch 2 Localization and Formatting Foundation implemented with automated verification passing.
+Status: Batch 1 contract lock, Batch 2 Localization and Formatting Foundation, and Batch 3 Core Branding Settings Contract implemented with automated verification passing.
 
 ---
 
@@ -176,6 +176,8 @@ Resolution rules:
 * existing Admin browser-title Site Name behavior remains valid;
 * `ViewRenderer` supplies the read-only value as `$branding` to frontend content views and layouts, alongside the existing controlled render variables; Themes do not receive `Application`, Settings, or database access.
 
+Batch 3 establishes the read-only `SiteBranding` value but keeps `logoUrl()` and `faviconUrl()` at `null`. It does not read, retain, or expose descriptors and does not form URLs from filenames. Batch 4 may resolve a URL only after controlled storage and delivery can prove the active asset is available; Theme consumption remains Batch 5.
+
 M2.3 will add two registered JSON definitions:
 
 ```text
@@ -339,7 +341,7 @@ Implemented the request-scoped `SiteFormatter`, explicit site-Timezone conversio
 
 ### Batch 3 — Core Branding Settings Contract
 
-Add validated optional Logo/Favicon descriptor definitions and the read-only `SiteBranding` resolver with safe fallbacks. Keep palette work and upload handling out of this batch.
+Implemented validated optional Logo/Favicon descriptor definitions and the read-only request-scoped `SiteBranding` value with safe Site Name and Tagline fallbacks. Logo/Favicon URLs remain `null`; palette, upload, storage, delivery, Admin UI, and Theme integration remain outside this batch.
 
 ### Batch 4 — Minimal Local Asset/upload Foundation
 

@@ -30,8 +30,9 @@ Current work:
 * Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, unified regression, automated-assisted runtime verification, and manual browser verification pass.
 * First Production Consumer Integration is deferred to the first milestone with one real caller/listener pair and is not part of the M2.2 release.
 * M2.3 Batch 1 documentation, repository audit, architecture, and contract lock are complete.
-* M2.3 Batch 2 Localization and Formatting Foundation is implemented and automated verification passes.
-* Do not begin M2.3 Batch 3 Branding work until Batch 2 is reviewed and approved.
+* M2.3 Batch 2 Localization and Formatting Foundation is implemented, reviewed, and approved.
+* M2.3 Batch 3 Core Branding Settings Contract is implemented and automated verification passes.
+* Do not begin M2.3 Batch 4 upload/storage work until Batch 3 is reviewed and approved.
 
 Latest release: v0.10.0.
 
@@ -608,7 +609,9 @@ The next checkpoint is to:
 * preserve the completed M2.2 synchronous event and listener contract;
 * keep production events deferred until a consumer milestone proves one real caller/listener pair;
 * preserve the completed M2.3 Batch 1 contract and Batch 2 formatting boundary;
-* review Batch 2 before separately approving M2.3 Batch 3 Core Branding work;
+* preserve the completed M2.3 Batch 3 descriptor and read-only Site Branding contract;
+* review Batch 3 before separately approving M2.3 Batch 4 upload/storage work;
+* keep delivery routes, Admin UI integration, and Theme integration out until their approved batches;
 * keep M2.4 Platform Hardening as a separate milestone;
 * avoid recalling deferred capabilities without a concrete dependency and approval.
 

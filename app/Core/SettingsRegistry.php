@@ -48,6 +48,37 @@ class SettingsRegistry
                 metadata: ['max_length' => 255]
             ),
             new SettingDefinition(
+                'site',
+                'logo',
+                'json',
+                null,
+                static fn (mixed $value): bool => self::validSiteAssetDescriptor(
+                    $value,
+                    'logo',
+                    [
+                        'png' => ['image/png'],
+                        'jpg' => ['image/jpeg'],
+                        'webp' => ['image/webp'],
+                    ],
+                    2 * 1024 * 1024
+                )
+            ),
+            new SettingDefinition(
+                'site',
+                'favicon',
+                'json',
+                null,
+                static fn (mixed $value): bool => self::validSiteAssetDescriptor(
+                    $value,
+                    'favicon',
+                    [
+                        'png' => ['image/png'],
+                        'ico' => ['image/x-icon', 'image/vnd.microsoft.icon'],
+                    ],
+                    512 * 1024
+                )
+            ),
+            new SettingDefinition(
                 'localization',
                 'timezone',
                 'string',
@@ -143,5 +174,50 @@ class SettingsRegistry
         $length = preg_match_all('/./us', $value);
 
         return is_int($length) ? $length : null;
+    }
+
+    private static function validSiteAssetDescriptor(
+        mixed $value,
+        string $slot,
+        array $mimeTypesByExtension,
+        int $maximumSize
+    ): bool {
+        if ($value === null) {
+            return true;
+        }
+
+        if (!is_array($value) || array_is_list($value) || count($value) !== 3) {
+            return false;
+        }
+
+        $keys = array_keys($value);
+        sort($keys, SORT_STRING);
+
+        if ($keys !== ['filename', 'mime_type', 'size']) {
+            return false;
+        }
+
+        $filename = $value['filename'];
+        $mimeType = $value['mime_type'];
+        $size = $value['size'];
+
+        if (!is_string($filename) || !is_string($mimeType) || !is_int($size)) {
+            return false;
+        }
+
+        if ($size < 1 || $size > $maximumSize) {
+            return false;
+        }
+
+        $slotPattern = preg_quote($slot, '/');
+
+        if (!preg_match('/^' . $slotPattern . '-[a-f0-9]{32}\.([a-z]+)$/D', $filename, $matches)) {
+            return false;
+        }
+
+        $extension = $matches[1];
+
+        return isset($mimeTypesByExtension[$extension])
+            && in_array($mimeType, $mimeTypesByExtension[$extension], true);
     }
 }

@@ -214,6 +214,8 @@ The formatter uses an explicit configured `DateTimeZone` and deterministic `en_U
 
 M2.3 Batch 2 implements `SiteFormatter` as one request-scoped object owned by `Application`. It formats presentation dates, times, date-times, integers, and decimals, falls back from unsupported locales to `en_US`, and leaves database, lock, and protocol timestamps on their existing machine contracts.
 
+M2.3 Batch 3 registers optional strictly validated `site.logo` and `site.favicon` JSON descriptors and adds one request-scoped `SiteBranding` snapshot. The snapshot exposes effective Site Name and Tagline while Logo/Favicon URLs remain `null`; descriptors, filenames, Settings, and database access are not exposed to branding consumers.
+
 Complete M2.3 ownership, security, storage, batch, and acceptance contracts are defined in `docs/13_minimal_site_capabilities.md`.
 
 Feature routes should use these services instead of repeating security-sensitive logic manually.

@@ -11,6 +11,9 @@
 - Added focused M2.3 Batch 2 formatting coverage, including environment isolation and per-Application ownership.
 - Defined the Core Site Name, Tagline, Logo, and Favicon contract.
 - Defined the two-slot local Logo/Favicon upload, storage, replacement, removal, and controlled delivery contract.
+- Added strict internal JSON definitions for optional `site.logo` and `site.favicon` descriptors.
+- Added request-scoped read-only `SiteBranding` with Site Name and Tagline fallbacks while Logo/Favicon URLs remain unavailable.
+- Added focused M2.3 Batch 3 descriptor, fallback, isolation, and scope-guard coverage.
 
 ### Changed
 
@@ -20,11 +23,13 @@
 ### Verification
 
 - M2.3 Batch 2 focused formatting tests, normal Application bootstrap, and the existing M2.2 regression gate pass on the canonical PHP 8.5 runtime.
+- M2.3 Batch 3 focused branding tests, Batch 2 smoke, normal Application bootstrap, and the existing M2.2 regression gate pass.
 
 ### Notes
 
 - M2.3 Batch 2 is implemented without a database migration, dependency, production event, or presentation-call-site migration.
-- M2.3 is not complete; Core Branding and asset/upload batches remain deferred to their approved sequence.
+- M2.3 Batch 3 adds no upload, storage, URL delivery, Admin UI, Theme integration, database change, or production event.
+- M2.3 is not complete; asset/upload and presentation-integration batches remain deferred to their approved sequence.
 
 <details open>
 <summary>v0.10.0 - M2.2 Extensibility Foundation</summary>
