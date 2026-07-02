@@ -90,8 +90,8 @@ A Platform Capability does not need a standalone management UI and must not repr
 Planned M2 Platform Capabilities are:
 
 * Admin UI Foundation
-* Branding Foundation
 * Extensibility Foundation
+* Minimal Site Capabilities
 * Editor Framework
 * Media Foundation
 * Image Service
@@ -141,14 +141,16 @@ The minimal Admin Settings UI introduced in M1.7 remains part of the M1 platform
 The future Settings Manager may organize registered settings sections, render reusable setting field types, and support module-contributed settings without allowing arbitrary unregistered keys.
 
 ```text
-Branding Foundation
+Minimal Site Capabilities
 !=
 Settings Manager
 !=
 Theme Manager
 ```
 
-The future M2 Branding Foundation defines the Core four-color palette, locked semantic mapping, validation, fallback, and consumer contract. The future M3 Settings Manager edits only the four Core palette values. The future M3 Theme Manager manages active-theme-scoped palette or mapping overrides and advanced color settings. Full ownership details are defined in `docs/11_branding_foundation.md`.
+M2.3 Minimal Site Capabilities defines only the site-level formatting boundary and the Core site-identity contract for Site Name, optional Tagline, optional Logo, and optional Favicon. The existing Admin Settings surface persists registered values, but it does not become the future M3 Settings Manager. Themes consume a controlled read-only branding value and retain presentation ownership without direct Settings or database access.
+
+The separate Core four-color palette and semantic-mapping proposal in `docs/11_branding_foundation.md` remains deferred. Advanced theme colors and Custom CSS remain future Theme Manager concerns.
 
 ```text
 Media Foundation + Image Service
@@ -197,6 +199,20 @@ Core and Modules
 ```
 
 Settings must not depend on Content, Taxonomy, Theme, or business modules. Modules may depend on Settings and may own module-specific namespaces in future, but module-specific definitions and UI are outside M1.7. Runtime consumers use effective service values with controlled definition-default fallback when storage or an individual stored override is unusable.
+
+M2.3 extends this foundation without changing the dependency direction:
+
+```text
+Core Settings
+->
+Site Formatter + Site Branding + Focused Site Asset Storage
+->
+Core and Theme presentation consumers
+```
+
+The formatter uses an explicit configured `DateTimeZone` and deterministic `en_US`/`id_ID` conventions without depending on server locale packages or requiring `ext-intl`. Site identity assets remain outside `public/` and are delivered only through fixed Logo/Favicon routes that resolve the currently active validated descriptor. The focused storage boundary is not a Media Library or generic upload service.
+
+Complete M2.3 ownership, security, storage, batch, and acceptance contracts are defined in `docs/13_minimal_site_capabilities.md`.
 
 Feature routes should use these services instead of repeating security-sensitive logic manually.
 
@@ -490,7 +506,9 @@ Themes are responsible for:
 * Styling
 * Assets
 
-Themes may opt out of the Core brand palette, consume the Core palette and default mapping, or provide active-theme-scoped palette and semantic-mapping overrides. Theme overrides never write back to the Core palette. Advanced component colors and Custom CSS remain Theme/Theme Manager capabilities rather than Core Branding Foundation behavior.
+Under M2.3, Themes may render the controlled Site Name, Tagline, Logo URL, and Favicon URL supplied by Core. Themes must not query Settings, the database, or site-asset storage directly. Empty optional values have explicit fallbacks.
+
+The separate palette and semantic-mapping proposal remains deferred. Advanced component colors and Custom CSS remain future Theme/Theme Manager capabilities.
 
 Themes are not responsible for:
 
@@ -615,6 +633,7 @@ M2 may introduce:
 
 * Admin UI Foundation
 * Extensibility Foundation
+* Minimal Site Capabilities
 * Editor Framework
 * Media Foundation
 * Image Service

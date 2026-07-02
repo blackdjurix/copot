@@ -8,7 +8,7 @@ M1 Framework Foundation is complete and released as v0.8.0.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-M2.2 Extensibility Foundation implementation and verification are complete. It is ready for merge and release preparation.
+M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
@@ -22,7 +22,7 @@ The Post-M1 Roadmap Review is complete.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-The next lean M2 capability is:
+The active lean M2 capability is:
 
 ```text
 M2.3 Minimal Site Capabilities
@@ -38,7 +38,7 @@ M2.2 completion record:
 * fixture-based end-to-end proof, unified regression, automated-assisted runtime verification, and manual browser verification passing;
 * no production lifecycle event; the first production integration remains deferred to its real consumer milestone.
 
-M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 is now the active focus, with scope unchanged from `docs/03_roadmap.md`.
+M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 is now active at Batch 1 scope, repository audit, architecture, and contract lock.
 
 ## Implemented Foundation
 
@@ -387,6 +387,28 @@ Detailed scope, architecture, batch planning, and acceptance criteria are define
 
 ```text
 docs/12_extensibility_foundation.md
+```
+
+## M2.3 Minimal Site Capabilities
+
+M2.3 is active at Batch 1 documentation and contract lock. Runtime implementation has not started.
+
+The locked lean scope is:
+
+* reuse the existing site-level Locale, Timezone, Date Format, and Time Format settings;
+* add one explicit deterministic date, time, date-time, and number formatting boundary;
+* expose Site Name, optional Tagline, optional Logo, and optional Favicon through one controlled Core branding contract;
+* store only Logo and Favicon locally outside the public document root;
+* validate upload status, content MIME, file size, image structure/dimensions, generated names, and path containment;
+* deliver only the active Logo and Favicon through stable controlled public URLs;
+* preserve shared-hosting operation without a new dependency or required `ext-intl` behavior.
+
+M2.3 does not include multilingual content/UI, per-user localization, Media Library, arbitrary uploads, SVG upload, image processing, CDN/cloud storage, palette editing, Theme Manager, Settings Manager, queues, or background cleanup. The separate four-color palette proposal remains deferred.
+
+The implementation batches are Localization/Formatting, Core Branding, focused local asset/upload storage, Logo/Favicon integration, and final regression/manual verification. Detailed contracts are defined in:
+
+```text
+docs/13_minimal_site_capabilities.md
 ```
 
 ## Content Module

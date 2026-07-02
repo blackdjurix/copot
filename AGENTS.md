@@ -29,14 +29,16 @@ Current work:
 * M2.2 Extensibility Foundation implementation and verification are complete.
 * Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, unified regression, automated-assisted runtime verification, and manual browser verification pass.
 * First Production Consumer Integration is deferred to the first milestone with one real caller/listener pair and is not part of the M2.2 release.
-* M2.3 Minimal Site Capabilities is the next focus; its approved scope remains defined in `docs/03_roadmap.md`.
-* Do not begin M2.3 implementation before its documentation and execution plan are confirmed.
+* M2.3 Minimal Site Capabilities is active at Batch 1 documentation, repository audit, architecture, and contract lock.
+* Do not begin M2.3 runtime implementation before Batch 1 is reviewed and approved.
 
-Latest release: v0.9.0.
+Latest release: v0.10.0.
 
 The Post-M1 Roadmap Review is complete.
 
 M2.1 is complete and released as v0.9.0.
+
+M2.2 is complete and released as v0.10.0.
 
 ---
 
@@ -136,8 +138,9 @@ M2.1 is complete and released as v0.9.0.
 * Basic timezone, locale, date-format, and time-format support is already provided by M1.7 Settings Foundation.
 * Broader UI and system localization may become a future platform capability.
 * Content translation is separate from UI localization and belongs to future Content or multilanguage work.
-* A future M2 Branding Foundation owns the Core four-color palette contract, locked semantic mapping, validation, fallback, and consumer contract.
-* Advanced color settings and Custom CSS belong to the frontend Theme and future Theme Manager, not the base Branding Foundation.
+* M2.3 owns only the lean site-identity contract for Site Name, optional Tagline, Logo, and Favicon.
+* The separate Core four-color palette and semantic-mapping proposal in `docs/11_branding_foundation.md` remains deferred and is not an M2.3 acceptance requirement.
+* Advanced color settings and Custom CSS belong to the frontend Theme and future Theme Manager.
 * Do not implement editor, media, image-processing, translation, or multilingual capability before its milestone is approved.
 
 ---
@@ -207,6 +210,31 @@ M2.1 is complete and released as v0.9.0.
 * M2.2 must not add a generic plugin framework, package marketplace, or user-facing management UI.
 * Database schema changes and new third-party dependencies are outside scope unless separately approved.
 * Detailed scope, architecture, batches, and acceptance criteria are defined in `docs/12_extensibility_foundation.md`.
+
+---
+
+## M2.3 Minimal Site Capabilities Rules
+
+* M2.3 is a lean platform capability, not a Media Library, multilingual system, or Branding Manager.
+* Reuse the existing `SettingsService` definitions for Site Name, Tagline, Locale, Timezone, Date Format, and Time Format.
+* Locale and timezone remain site-level only. Per-user locale/timezone and multilingual content are deferred.
+* Formatting must use one explicit Core boundary. Views and new runtime consumers must not introduce scattered date, time, or number formatting.
+* The site timezone must be applied explicitly; server timezone must not silently determine display output.
+* The M2.3 formatter must remain deterministic without requiring `ext-intl`. Extension availability must not change the initial supported output contract.
+* M2.3 site identity consists only of Site Name, optional Tagline, optional Logo, and optional Favicon.
+* Empty Tagline, Logo, and Favicon values are valid. Site Name falls back to its registered non-empty Core default.
+* Branding consumers receive a controlled site-branding contract; themes must not query Settings or the database directly.
+* The separate four-color palette and semantic-mapping proposal remains deferred and is not part of M2.3.
+* Uploaded assets are limited to the Logo and Favicon slots. Arbitrary file uploads and generic asset browsing are forbidden.
+* Uploads must fail closed with explicit size and MIME allowlists, canonical generated filenames, path containment, and generic public errors.
+* SVG upload is excluded from M2.3.
+* Site identity files remain outside the public document root and are exposed only through controlled stable public URLs.
+* Replacement must make the new file active only after successful validation and persistence. Removal must clear the active reference even if later orphan cleanup cannot complete.
+* Raw filesystem paths, client filenames, stack traces, and sensitive runtime details must not reach public or Admin responses.
+* Shared-hosting compatibility requires synchronous request-local PHP and local filesystem operations only; no daemon, queue, scheduler, worker, cloud storage, or new dependency.
+* Do not rewrite Settings, Theme, Router, Module Manager, or the service architecture for M2.3.
+* Do not create a production event merely to exercise the M2.2 dispatcher. Record a candidate only when a real caller and listener both exist.
+* Detailed scope, architecture, batches, and acceptance criteria are defined in `docs/13_minimal_site_capabilities.md`.
 
 ---
 
@@ -294,7 +322,8 @@ Commerce remains a separate M5 phase because its transactional and integration r
 * M1.7 covers global/site settings and basic localization settings only.
 * Database rows store overrides; defaults remain defined in code or configuration.
 * Modules may use their own settings namespaces in future, but remain responsible for their definitions and UI.
-* The future M3 Settings Manager may edit the four Core palette values defined by Branding Foundation, but must not expose the locked semantic mapping as Site Settings.
+* M2.3 may add only the registered internal references required for the Logo and Favicon slots; it must not turn Settings into a generic file store.
+* The future M3 Settings Manager and the deferred Core palette proposal remain outside M2.3.
 * Settings must not depend on Content, Taxonomy, Theme, or business modules.
 * Do not store secrets, passwords, SMTP credentials, API tokens, or environment configuration in Settings.
 * The M1.7 Admin Settings UI must not allow arbitrary namespace or key creation.
@@ -571,14 +600,16 @@ The Post-M1 Roadmap Review is complete.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-M2.2 Extensibility Foundation implementation and verification are complete.
+M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 The next checkpoint is to:
 
 * preserve the completed M2.2 synchronous event and listener contract;
 * keep production events deferred until a consumer milestone proves one real caller/listener pair;
-* prepare M2.3 Minimal Site Capabilities within its existing roadmap scope;
+* complete M2.3 Batch 1 repository audit, architecture, and contract lock before runtime implementation;
 * keep M2.4 Platform Hardening as a separate milestone;
 * avoid recalling deferred capabilities without a concrete dependency and approval.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
+
+M2.3 scope and architecture are defined in `docs/13_minimal_site_capabilities.md`.

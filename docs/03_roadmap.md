@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete.
 
-The next focus is M2.3 Minimal Site Capabilities.
+The active focus is M2.3 Minimal Site Capabilities, beginning with Batch 1 documentation and contract lock.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -311,28 +311,46 @@ Production lifecycle events without a real consumer are also deferred. M2.2 must
 
 #### M2.3 Minimal Site Capabilities
 
-Status: Next focus. Planned scope unchanged.
+Status: Active. Batch 1 scope, repository audit, architecture, and contract lock.
 
 ##### Minimum scope
 
 * locale and timezone baseline;
 * date, time, and number formatting boundary;
-* Core Branding contract for main, accent, neutral dark, and neutral light;
-* locked default semantic color mapping;
+* Core site-branding contract for Site Name, optional Tagline, optional Logo, and optional Favicon;
 * minimal local asset and upload foundation;
 * safe upload validation, controlled storage paths, public URL retrieval, replace/remove behavior, and minimum metadata;
 * initial logo and favicon use cases without a full Media Library.
 
-The Branding contract remains defined in `docs/11_branding_foundation.md`.
+M2.3 reuses the existing Settings and Theme boundaries and does not require a database schema change. Its detailed scope, architecture, batch plan, and acceptance criteria are defined in:
+
+```text
+docs/13_minimal_site_capabilities.md
+```
+
+The separate Core four-color palette and semantic-mapping proposal in `docs/11_branding_foundation.md` remains deferred and is not an M2.3 acceptance requirement.
 
 ##### Deferred from M2.3
 
 * multilingual content and translation management;
+* per-user or per-module locale and timezone;
 * advanced branding UI;
+* Core color palette and semantic mapping;
 * theme-specific advanced color controls;
 * Custom CSS;
 * media library, picker, folders, search, and bulk actions;
+* arbitrary file upload and generic file management;
+* SVG upload without a separately approved security contract;
 * image editor, crop/resize pipeline, optimization, CDN, or external storage.
+
+##### Batch plan
+
+1. Scope, audit, architecture, and contract lock.
+2. Localization and formatting foundation.
+3. Core Branding settings contract.
+4. Minimal local asset/upload foundation.
+5. Logo and Favicon integration.
+6. Regression, manual verification, and completion.
 
 #### M2.4 Platform Hardening
 

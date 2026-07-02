@@ -4,6 +4,26 @@
 
 ### Added
 
+- Added the M2.3 Minimal Site Capabilities scope, repository audit, architecture, batch plan, and acceptance contract.
+- Defined the deterministic site-level localization and formatting boundary.
+- Defined the Core Site Name, Tagline, Logo, and Favicon contract.
+- Defined the two-slot local Logo/Favicon upload, storage, replacement, removal, and controlled delivery contract.
+
+### Changed
+
+- Moved the active project focus to M2.3 Batch 1 documentation and contract lock.
+- Kept Media Library, multilingual capability, image processing, arbitrary uploads, external storage, and the separate Core color-palette proposal deferred.
+
+### Notes
+
+- M2.3 runtime implementation has not started.
+- Batch 1 changes documentation only and requires no database migration.
+
+<details open>
+<summary>v0.10.0 - M2.2 Extensibility Foundation</summary>
+
+### Added
+
 - Added the Core `EventDispatcher` contract and synchronous request-scoped implementation.
 - Added stable lowercase dotted event-name validation, object payload delivery, registration-order execution, duplicate registration support, no-listener no-op behavior, and fail-fast exception propagation.
 - Added optional enabled-module listener contribution through a metadata-declared `listeners.php` file with controlled path and contribution-map validation.
@@ -23,9 +43,11 @@
 
 ### Notes
 
-- M2.2 implementation and verification are complete and ready for merge and release preparation; no release version is assigned here.
+- M2.2 implementation and verification are complete and released as v0.10.0.
 - Temporary fixture event names are test-only and do not establish production API.
 - M2.4 Platform Hardening remains a separate planned milestone.
+
+</details>
 
 <details open>
 <summary>v0.8.0 - M1.8 Installer Foundation</summary>
