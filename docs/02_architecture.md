@@ -212,6 +212,8 @@ Core and Theme presentation consumers
 
 The formatter uses an explicit configured `DateTimeZone` and deterministic `en_US`/`id_ID` conventions without depending on server locale packages or requiring `ext-intl`. Site identity assets remain outside `public/` and are delivered only through fixed Logo/Favicon routes that resolve the currently active validated descriptor. The focused storage boundary is not a Media Library or generic upload service.
 
+M2.3 Batch 2 implements `SiteFormatter` as one request-scoped object owned by `Application`. It formats presentation dates, times, date-times, integers, and decimals, falls back from unsupported locales to `en_US`, and leaves database, lock, and protocol timestamps on their existing machine contracts.
+
 Complete M2.3 ownership, security, storage, batch, and acceptance contracts are defined in `docs/13_minimal_site_capabilities.md`.
 
 Feature routes should use these services instead of repeating security-sensitive logic manually.

@@ -6,7 +6,7 @@ M2.3 completes the smallest site-level capability layer needed before Core Modul
 
 M2.3 extends existing Settings and Theme boundaries. It does not create a multilingual system, Media Library, generic upload platform, or visual Branding Manager.
 
-Status: Batch 1 scope, repository audit, architecture, and contract lock.
+Status: Batch 1 contract lock complete; Batch 2 Localization and Formatting Foundation implemented with automated verification passing.
 
 ---
 
@@ -113,6 +113,8 @@ id_ID
 
 The default Locale remains `en_US`. The default Timezone remains `UTC`. Timezone values remain valid PHP timezone identifiers. Invalid or unavailable overrides resolve through the existing registered defaults and must not fall back silently to the server timezone.
 
+When `SiteFormatter` is constructed directly with an unsupported Locale, it falls back deterministically to `en_US` without consulting the OS locale.
+
 M2.3 localization means deterministic presentation conventions. It does not translate interface text or content.
 
 The runtime may retain the existing `date_default_timezone_set()` compatibility behavior, but the new formatting boundary must construct and use the configured `DateTimeZone` explicitly. Formatter output must not depend on the process or server default timezone.
@@ -131,6 +133,8 @@ Its minimum contract is:
 formatDate(DateTimeInterface $value): string
 formatTime(DateTimeInterface $value): string
 formatDateTime(DateTimeInterface $value): string
+formatInteger(int $value): string
+formatDecimal(int|float $value, int $fractionDigits = 2): string
 formatNumber(int|float $value, int $fractionDigits = 0): string
 ```
 
@@ -331,7 +335,7 @@ Document existing capabilities, security boundaries, exact non-goals, batch orde
 
 ### Batch 2 — Localization and Formatting Foundation
 
-Add the request-scoped formatting boundary, explicit site-Timezone conversion, deterministic supported-locale number formatting, focused tests, and Application wiring. Do not modify presentation callers without a real display requirement.
+Implemented the request-scoped `SiteFormatter`, explicit site-Timezone conversion, deterministic supported-locale number formatting, focused tests, and Application wiring. Existing machine/internal timestamp callers remain unchanged because Batch 2 has no real presentation migration requirement.
 
 ### Batch 3 — Core Branding Settings Contract
 

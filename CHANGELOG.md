@@ -6,18 +6,25 @@
 
 - Added the M2.3 Minimal Site Capabilities scope, repository audit, architecture, batch plan, and acceptance contract.
 - Defined the deterministic site-level localization and formatting boundary.
+- Added the request-scoped `SiteFormatter` with explicit site-Timezone conversion.
+- Added deterministic date, time, date-time, integer, and decimal formatting for `en_US` and `id_ID` with `en_US` fallback.
+- Added focused M2.3 Batch 2 formatting coverage, including environment isolation and per-Application ownership.
 - Defined the Core Site Name, Tagline, Logo, and Favicon contract.
 - Defined the two-slot local Logo/Favicon upload, storage, replacement, removal, and controlled delivery contract.
 
 ### Changed
 
-- Moved the active project focus to M2.3 Batch 1 documentation and contract lock.
+- Completed M2.3 Batch 1 documentation and contract lock and implemented the Batch 2 Localization and Formatting Foundation.
 - Kept Media Library, multilingual capability, image processing, arbitrary uploads, external storage, and the separate Core color-palette proposal deferred.
+
+### Verification
+
+- M2.3 Batch 2 focused formatting tests, normal Application bootstrap, and the existing M2.2 regression gate pass on the canonical PHP 8.5 runtime.
 
 ### Notes
 
-- M2.3 runtime implementation has not started.
-- Batch 1 changes documentation only and requires no database migration.
+- M2.3 Batch 2 is implemented without a database migration, dependency, production event, or presentation-call-site migration.
+- M2.3 is not complete; Core Branding and asset/upload batches remain deferred to their approved sequence.
 
 <details open>
 <summary>v0.10.0 - M2.2 Extensibility Foundation</summary>

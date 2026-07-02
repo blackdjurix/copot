@@ -311,7 +311,7 @@ Production lifecycle events without a real consumer are also deferred. M2.2 must
 
 #### M2.3 Minimal Site Capabilities
 
-Status: Active. Batch 1 scope, repository audit, architecture, and contract lock.
+Status: Active. Batch 1 contract lock complete; Batch 2 Localization and Formatting Foundation implemented.
 
 ##### Minimum scope
 
@@ -345,8 +345,8 @@ The separate Core four-color palette and semantic-mapping proposal in `docs/11_b
 
 ##### Batch plan
 
-1. Scope, audit, architecture, and contract lock.
-2. Localization and formatting foundation.
+1. Scope, audit, architecture, and contract lock — complete.
+2. Localization and formatting foundation — implemented.
 3. Core Branding settings contract.
 4. Minimal local asset/upload foundation.
 5. Logo and Favicon integration.

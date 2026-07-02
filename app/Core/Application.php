@@ -18,6 +18,7 @@ class Application
     private string $siteName;
     private string $timezone;
     private string $locale;
+    private SiteFormatter $formatter;
     private Session $session;
     private Csrf $csrf;
     private Auth $auth;
@@ -142,6 +143,11 @@ class Application
         return $this->locale;
     }
 
+    public function formatter(): SiteFormatter
+    {
+        return $this->formatter;
+    }
+
     public function session(): Session
     {
         return $this->session;
@@ -222,8 +228,17 @@ class Application
         $this->siteName = $this->runtimeSetting($registry, 'site', 'name');
         $this->timezone = $this->runtimeSetting($registry, 'localization', 'timezone');
         $this->locale = $this->runtimeSetting($registry, 'localization', 'locale');
+        $dateFormat = $this->runtimeSetting($registry, 'localization', 'date_format');
+        $timeFormat = $this->runtimeSetting($registry, 'localization', 'time_format');
 
         date_default_timezone_set($this->timezone);
+
+        $this->formatter = new SiteFormatter(
+            $this->locale,
+            $this->timezone,
+            $dateFormat,
+            $timeFormat
+        );
     }
 
     private function runtimeSetting(SettingsRegistry $registry, string $namespace, string $key): string

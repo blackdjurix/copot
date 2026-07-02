@@ -391,7 +391,7 @@ docs/12_extensibility_foundation.md
 
 ## M2.3 Minimal Site Capabilities
 
-M2.3 is active at Batch 1 documentation and contract lock. Runtime implementation has not started.
+M2.3 Batch 1 documentation and contract lock are complete. Batch 2 Localization and Formatting Foundation is implemented; later Branding and asset/upload batches have not started.
 
 The locked lean scope is:
 
@@ -410,6 +410,8 @@ The implementation batches are Localization/Formatting, Core Branding, focused l
 ```text
 docs/13_minimal_site_capabilities.md
 ```
+
+Batch 2 provides one request-scoped `SiteFormatter` per `Application`, explicit configured-Timezone conversion, deterministic date/time/date-time output, and locale-aware integer/decimal separators for `en_US` and `id_ID`. Unsupported locales fall back to `en_US`. Output does not depend on the server timezone, OS locale, or `ext-intl`.
 
 ## Content Module
 
