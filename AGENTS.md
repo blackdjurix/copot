@@ -10,7 +10,7 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is complete. The active focus is M2.3 Minimal Site Capabilities.
+The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is released as v0.10.0. M2.3 Minimal Site Capabilities implementation and verification are complete and ready for merge and release preparation.
 
 ---
 
@@ -20,7 +20,7 @@ The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as 
 
 Primary goal:
 
-Prepare the next lean M2 Platform Capability without expanding its approved roadmap scope.
+Finish M2.3 merge and release preparation without expanding the completed capability scope or starting M2.4 early.
 
 Current work:
 
@@ -33,7 +33,9 @@ Current work:
 * M2.3 Batch 2 Localization and Formatting Foundation is implemented, reviewed, and approved.
 * M2.3 Batch 3 Core Branding Settings Contract is implemented, reviewed, committed, and pushed.
 * M2.3 Batch 4 Minimal Local Asset/Upload Foundation is implemented, verified, committed, and pushed.
-* M2.3 Batch 5 Logo and Favicon Integration is implemented in the working package; canonical local verification and approval are pending.
+* M2.3 Batch 5 Logo and Favicon Integration is implemented, verified, approved, committed, and pushed.
+* M2.3 Batch 6 unified regression, manual verification record, and completion documentation are complete.
+* M2.3 is ready for merge and release preparation; do not begin M2.4 before the M2.3 release is finished.
 
 Latest release: v0.10.0.
 
@@ -612,11 +614,9 @@ The next checkpoint is to:
 
 * preserve the completed M2.2 synchronous event and listener contract;
 * keep production events deferred until a consumer milestone proves one real caller/listener pair;
-* preserve the completed M2.3 Batch 1 contract and Batch 2 formatting boundary;
-* preserve the completed M2.3 Batch 3 descriptor and read-only Site Branding contract;
-* preserve the completed M2.3 Batch 4 storage and controlled-delivery foundation;
-* verify the M2.3 Batch 5 Admin upload/removal and active-Theme branding integration;
-* keep final regression/completion work in Batch 6;
+* preserve the completed M2.3 formatting, branding, two-slot storage, controlled delivery, Admin integration, and Theme integration contracts;
+* run the unified M2.3 regression gate before merge and again from the release branch;
+* finish M2.3 merge, tag, and release preparation without beginning M2.4 work;
 * keep M2.4 Platform Hardening as a separate milestone;
 * avoid recalling deferred capabilities without a concrete dependency and approval.
 

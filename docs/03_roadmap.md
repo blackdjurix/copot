@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete.
 
-The active focus is M2.3 Minimal Site Capabilities, beginning with Batch 1 documentation and contract lock.
+M2.3 Minimal Site Capabilities implementation and verification are complete and ready for merge and release preparation. M2.4 Platform Hardening remains the next planned milestone.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -311,7 +311,7 @@ Production lifecycle events without a real consumer are also deferred. M2.2 must
 
 #### M2.3 Minimal Site Capabilities
 
-Status: Active. Batch 1 contract lock, Batch 2 Localization and Formatting Foundation, and Batch 3 Core Branding Settings Contract implemented.
+Status: Complete. Implementation, unified regression, and manual verification pass; merge and release preparation remain.
 
 ##### Minimum scope
 
@@ -346,11 +346,11 @@ The separate Core four-color palette and semantic-mapping proposal in `docs/11_b
 ##### Batch plan
 
 1. Scope, audit, architecture, and contract lock — complete.
-2. Localization and formatting foundation — implemented.
-3. Core Branding settings contract — implemented.
+2. Localization and formatting foundation — complete.
+3. Core Branding settings contract — complete.
 4. Minimal local asset/upload foundation — complete.
-5. Logo and Favicon integration — implemented; canonical verification pending.
-6. Regression, manual verification, and completion — pending.
+5. Logo and Favicon integration — complete.
+6. Regression, manual verification, and completion — complete.
 
 #### M2.4 Platform Hardening
 

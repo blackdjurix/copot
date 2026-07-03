@@ -38,7 +38,7 @@ M2.2 completion record:
 * fixture-based end-to-end proof, unified regression, automated-assisted runtime verification, and manual browser verification passing;
 * no production lifecycle event; the first production integration remains deferred to its real consumer milestone.
 
-M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 has completed Batches 1–4; Batch 5 Logo and Favicon Integration is implemented with canonical local verification pending.
+M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 Minimal Site Capabilities implementation and verification are complete and ready for merge and release preparation.
 
 ## Implemented Foundation
 
@@ -391,7 +391,7 @@ docs/12_extensibility_foundation.md
 
 ## M2.3 Minimal Site Capabilities
 
-M2.3 Batches 1–4 are implemented and approved. Batch 5 Logo and Favicon Integration is implemented; canonical local verification and approval are pending.
+M2.3 Batches 1–6 are complete. The unified regression gate and manual browser verification pass, and the milestone is ready for merge and release preparation.
 
 The locked lean scope is:
 
@@ -413,7 +413,7 @@ docs/13_minimal_site_capabilities.md
 
 Batch 2 provides one request-scoped `SiteFormatter` per `Application`, explicit configured-Timezone conversion, deterministic date/time/date-time output, and locale-aware integer/decimal separators for `en_US` and `id_ID`. Unsupported locales fall back to `en_US`. Output does not depend on the server timezone, OS locale, or `ext-intl`.
 
-Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON descriptors plus one request-scoped read-only `SiteBranding` value. Batch 4 adds the two-slot storage, validation, replacement/removal, controlled delivery, and focused failure coverage. Batch 5 adds permission- and CSRF-protected Admin upload/removal controls plus active-Theme consumption of the controlled branding value.
+Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON descriptors plus one request-scoped read-only `SiteBranding` value. Batch 4 adds the two-slot storage, validation, replacement/removal, controlled delivery, and focused failure coverage. Batch 5 adds permission- and CSRF-protected Admin upload/removal controls plus active-Theme consumption of the controlled branding value. Batch 6 adds the unified M2.3 regression gate and records completed manual verification.
 
 ## Content Module
 

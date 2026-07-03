@@ -6,7 +6,7 @@ M2.3 completes the smallest site-level capability layer needed before Core Modul
 
 M2.3 extends existing Settings and Theme boundaries. It does not create a multilingual system, Media Library, generic upload platform, or visual Branding Manager.
 
-Status: Batches 1–4 are implemented and approved. Batch 5 Logo and Favicon Integration is implemented; canonical local verification and approval are pending. Batch 6 has not started.
+Status: Complete. Batches 1–6 are implemented and approved. Focused tests, the unified M2.3 regression gate, and manual browser/runtime verification pass. The milestone is ready for merge and release preparation.
 
 ---
 
@@ -349,13 +349,11 @@ Complete and approved. Adds only the request-scoped two-slot `SiteAssetStorage`,
 
 ### Batch 5 — Logo and Favicon Integration
 
-Implemented in the working package; canonical local verification and approval are pending. Adds fixed Admin upload/removal controls protected by existing permission and CSRF boundaries, a controlled PHP upload adapter through `Request`, active-Theme consumption of `SiteBranding`, Logo/Favicon preview and fallback rendering, and focused integration coverage. It does not add arbitrary uploads, Media Library behavior, image processing, or a new management module.
-
-Extend the existing Admin Settings page with narrow Logo/Favicon upload/remove controls backed by dedicated configured-path POST actions, and integrate the read-only branding contract into the default public Theme. Preserve Admin UI independence and the existing six-field Settings transaction/security behavior.
+Complete and approved. Adds fixed Admin upload/removal controls protected by existing permission and CSRF boundaries, a controlled PHP upload adapter through `Request`, active-Theme consumption of `SiteBranding`, Logo/Favicon preview and fallback rendering, and focused integration coverage. It does not add arbitrary uploads, Media Library behavior, image processing, or a new management module.
 
 ### Batch 6 — Regression, Manual Verification, and Completion
 
-Add a unified M2.3 regression gate, preserve M2.1/M2.2 coverage, audit the locked contract, verify shared-hosting failure paths, complete browser/runtime checks, and prepare completion documentation.
+Complete and approved. Adds the unified M2.3 regression gate covering focused Batches 2–5 and the complete M2.2 regression chain. Manual verification confirms valid upload/replace/remove, invalid and oversized file handling, controlled stable URLs, Theme fallback rendering, keyboard flow, responsive behavior, and sanitized public/Admin errors. No runtime defect required a production-code change during Batch 6.
 
 ---
 
@@ -398,7 +396,33 @@ M2.3 is complete only when all applicable criteria pass:
 
 ---
 
-## 15. Deferred Capabilities
+## 15. Completion Evidence
+
+Automated verification:
+
+* Batch 2 formatting smoke: 27 assertions pass;
+* Batch 3 branding smoke: 65 assertions pass;
+* Batch 4 site-asset smoke: 55 assertions pass;
+* Batch 5 branding integration smoke: 37 assertions pass;
+* unified M2.3 regression gate passes;
+* the complete M2.2 regression gate passes, including the M2.1 regression chain;
+* `git diff --check` passes on the canonical Windows/PHP environment.
+
+Manual verification:
+
+* Admin upload, replacement, and removal pass for valid Logo and Favicon files;
+* invalid, unsupported, and oversized files fail safely without leaking paths or internals;
+* stable Logo/Favicon delivery routes return only the active validated assets;
+* the active Theme renders Site Name, optional Tagline, Logo, and Favicon correctly;
+* missing or removed assets preserve safe Theme fallbacks;
+* Admin keyboard flow, focus behavior, responsive layout, and browser rendering remain usable;
+* public and Admin error presentation remains sanitized for the tested capability paths.
+
+M2.3 implementation and verification are complete. Merge, tag, and release operations are repository finishing steps rather than remaining capability work.
+
+---
+
+## 16. Deferred Capabilities
 
 Deferred beyond M2.3:
 
@@ -419,7 +443,7 @@ Deferred work must not be pulled into M2.3 without a concrete dependency and exp
 
 ---
 
-## 16. Risks and Open Decisions
+## 17. Risks and Open Decisions
 
 The Batch 1 audit leaves no unresolved architecture decision that blocks Batch 2.
 
