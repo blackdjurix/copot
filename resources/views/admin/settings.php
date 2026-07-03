@@ -159,5 +159,94 @@
                 <button class="admin-button admin-button--primary" type="submit">Save Settings</button>
             </div>
         </form>
+
+        <section class="admin-settings-section" aria-labelledby="site-branding-title">
+            <div class="admin-settings-section__header">
+                <h3 id="site-branding-title">Site Branding</h3>
+                <p>Upload the public Logo and Favicon used by the active frontend theme.</p>
+            </div>
+
+            <?php if (!empty($assetNotice)): ?>
+                <div class="admin-alert admin-alert--success" role="status">
+                    <?= htmlspecialchars($assetNotice, ENT_QUOTES, 'UTF-8') ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="admin-asset-grid">
+                <article class="admin-asset-card" aria-labelledby="logo-slot-title">
+                    <div>
+                        <h4 id="logo-slot-title">Logo</h4>
+                        <p class="admin-field__help">PNG, JPG, or WebP. Maximum 2 MB and 4096 × 4096 px.</p>
+                    </div>
+
+                    <?php if (!empty($logoUrl)): ?>
+                        <div class="admin-asset-preview">
+                            <img src="<?= htmlspecialchars($logoUrl, ENT_QUOTES, 'UTF-8') ?>" alt="Current site logo">
+                        </div>
+                    <?php else: ?>
+                        <p class="admin-empty-state">No Logo uploaded.</p>
+                    <?php endif; ?>
+
+                    <?php if (isset($assetErrors['logo'])): ?>
+                        <div class="admin-alert admin-alert--danger" role="alert">
+                            <?= htmlspecialchars($assetErrors['logo'], ENT_QUOTES, 'UTF-8') ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form class="admin-form admin-asset-form" method="post" enctype="multipart/form-data" action="<?= htmlspecialchars($logoUploadAction ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="site_logo">Upload Logo</label>
+                            <input id="site_logo" name="site_asset" type="file" accept="image/png,image/jpeg,image/webp" required>
+                        </div>
+                        <button class="admin-button admin-button--primary" type="submit">Upload Logo</button>
+                    </form>
+
+                    <?php if (!empty($logoUrl)): ?>
+                        <form method="post" action="<?= htmlspecialchars($logoRemoveAction ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                            <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                            <button class="admin-button admin-button--danger" type="submit">Remove Logo</button>
+                        </form>
+                    <?php endif; ?>
+                </article>
+
+                <article class="admin-asset-card" aria-labelledby="favicon-slot-title">
+                    <div>
+                        <h4 id="favicon-slot-title">Favicon</h4>
+                        <p class="admin-field__help">PNG or ICO. Maximum 512 KB and 512 × 512 px.</p>
+                    </div>
+
+                    <?php if (!empty($faviconUrl)): ?>
+                        <div class="admin-asset-preview admin-asset-preview--favicon">
+                            <img src="<?= htmlspecialchars($faviconUrl, ENT_QUOTES, 'UTF-8') ?>" alt="Current site favicon">
+                        </div>
+                    <?php else: ?>
+                        <p class="admin-empty-state">No Favicon uploaded.</p>
+                    <?php endif; ?>
+
+                    <?php if (isset($assetErrors['favicon'])): ?>
+                        <div class="admin-alert admin-alert--danger" role="alert">
+                            <?= htmlspecialchars($assetErrors['favicon'], ENT_QUOTES, 'UTF-8') ?>
+                        </div>
+                    <?php endif; ?>
+
+                    <form class="admin-form admin-asset-form" method="post" enctype="multipart/form-data" action="<?= htmlspecialchars($faviconUploadAction ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                        <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="site_favicon">Upload Favicon</label>
+                            <input id="site_favicon" name="site_asset" type="file" accept="image/png,image/x-icon,image/vnd.microsoft.icon,.ico" required>
+                        </div>
+                        <button class="admin-button admin-button--primary" type="submit">Upload Favicon</button>
+                    </form>
+
+                    <?php if (!empty($faviconUrl)): ?>
+                        <form method="post" action="<?= htmlspecialchars($faviconRemoveAction ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                            <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                            <button class="admin-button admin-button--danger" type="submit">Remove Favicon</button>
+                        </form>
+                    <?php endif; ?>
+                </article>
+            </div>
+        </section>
     </div>
 </section>

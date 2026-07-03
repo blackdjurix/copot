@@ -70,7 +70,7 @@ class Application
         );
         $this->themeLoader = new ThemeLoader($themeRepository, $this->basePath);
         $this->themeAssets = new ThemeAssets($this->themeLoader);
-        $this->viewRenderer = new ViewRenderer($this->themeLoader, $this->themeAssets);
+        $this->viewRenderer = new ViewRenderer($this->themeLoader, $this->themeAssets, $this->branding);
         $this->viewResolver = new ViewResolver(
             $this->themeLoader,
             $this->path('resources/views'),

@@ -148,7 +148,7 @@ Settings Manager
 Theme Manager
 ```
 
-M2.3 Minimal Site Capabilities defines only the site-level formatting boundary and the Core site-identity contract for Site Name, optional Tagline, optional Logo, and optional Favicon. The existing Admin Settings surface persists registered values, but it does not become the future M3 Settings Manager. Themes consume a controlled read-only branding value and retain presentation ownership without direct Settings or database access. Batches 1–3 are approved. Batch 4 implements the fixed Logo/Favicon local asset storage and controlled delivery foundation; canonical verification is pending. Admin UI and Theme consumption remain Batch 5.
+M2.3 Minimal Site Capabilities defines only the site-level formatting boundary and the Core site-identity contract for Site Name, optional Tagline, optional Logo, and optional Favicon. The existing Admin Settings surface persists registered values, but it does not become the future M3 Settings Manager. Themes consume a controlled read-only branding value and retain presentation ownership without direct Settings or database access. Batches 1–4 are approved. Batch 5 implements permission- and CSRF-protected Admin upload/removal controls and active-Theme consumption of the controlled branding value; canonical verification is pending. Final regression and completion remain Batch 6.
 
 The separate Core four-color palette and semantic-mapping proposal in `docs/11_branding_foundation.md` remains deferred. Advanced theme colors and Custom CSS remain future Theme Manager concerns.
 

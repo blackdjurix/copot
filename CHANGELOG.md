@@ -16,11 +16,15 @@
 - Added focused M2.3 Batch 3 descriptor, fallback, isolation, and scope-guard coverage.
 - Added request-scoped `SiteAssetStorage` for fixed Logo/Favicon slots with content MIME, image structure, dimension, size, generated-name, containment, and symlink validation.
 - Added safe descriptor persistence, replacement/removal cleanup, stable `/site-assets/logo` and `/site-assets/favicon` delivery, and focused Batch 4 failure coverage.
+- Added fixed Admin Logo/Favicon upload and removal controls using existing permission and CSRF boundaries.
+- Added controlled request upload access and active-Theme consumption of `SiteBranding`, including Logo, Favicon, Site Name, and Tagline fallbacks.
+- Added focused M2.3 Batch 5 integration and scope-guard coverage.
 
 ### Changed
 
 - Completed M2.3 Batch 1 documentation and contract lock, Batch 2 Localization and Formatting Foundation, and Batch 3 Core Branding Settings Contract.
-- Implemented the narrow Batch 4 two-slot local asset/storage and controlled delivery foundation; canonical local verification remains pending.
+- Completed and verified the narrow Batch 4 two-slot local asset/storage and controlled delivery foundation.
+- Implemented Batch 5 Admin upload/removal controls and active-Theme branding consumption; canonical local verification remains pending.
 - Kept Media Library, multilingual capability, image processing, arbitrary uploads, external storage, and the separate Core color-palette proposal deferred.
 
 ### Verification
@@ -32,8 +36,9 @@
 
 - M2.3 Batch 2 is implemented without a database migration, dependency, production event, or presentation-call-site migration.
 - M2.3 Batch 3 adds no upload, storage, URL delivery, Admin UI, Theme integration, database change, or production event.
-- M2.3 Batch 4 runtime is implemented without Admin upload controls or Theme integration; canonical local verification and approval remain pending.
-- M2.3 is not complete; asset/upload, presentation integration, and final verification remain in their approved sequence.
+- M2.3 Batch 4 is verified and committed without widening into generic uploads or Media Library behavior.
+- M2.3 Batch 5 keeps upload handling limited to the two fixed site-identity slots and adds no generic file API, Media Library, or image editor.
+- M2.3 is not complete; Batch 5 canonical verification and Batch 6 final regression/completion remain.
 
 <details open>
 <summary>v0.10.0 - M2.2 Extensibility Foundation</summary>

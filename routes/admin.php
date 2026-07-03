@@ -2,6 +2,7 @@
 
 use Copot\Core\Response;
 use Copot\Core\SettingsException;
+use Copot\Core\SiteAssetException;
 
 $adminUrl = $app->adminUrl();
 $adminPermission = $app->config()->get('admin.permission', 'admin.access');
@@ -13,6 +14,10 @@ if (!is_string($adminPermission) || trim($adminPermission) === '') {
 $adminPermission = trim($adminPermission);
 $adminBase = $adminUrl->baseUrl();
 $settingsPath = $adminUrl->childUrl('settings');
+$logoUploadPath = $adminUrl->childUrl('settings/site-assets/logo');
+$logoRemovePath = $adminUrl->childUrl('settings/site-assets/logo/remove');
+$faviconUploadPath = $adminUrl->childUrl('settings/site-assets/favicon');
+$faviconRemovePath = $adminUrl->childUrl('settings/site-assets/favicon/remove');
 $documentLocale = $app->adminPageRenderer()->documentLocale();
 
 $app->adminNavigation()->add('Settings', $settingsPath, 'settings.update');
@@ -103,8 +108,17 @@ $renderSettings = function (
     array $errors = [],
     bool $saved = false,
     string $currentPath = '',
-    int $status = 200
-) use ($app, $settingsPath): Response {
+    int $status = 200,
+    array $assetErrors = [],
+    ?string $assetNotice = null
+) use (
+    $app,
+    $settingsPath,
+    $logoUploadPath,
+    $logoRemovePath,
+    $faviconUploadPath,
+    $faviconRemovePath
+): Response {
     $timezones = array_values(array_filter(
         timezone_identifiers_list(),
         static fn (string $timezone): bool => $timezone !== 'UTC'
@@ -122,6 +136,14 @@ $renderSettings = function (
         'locales' => ['en_US', 'id_ID'],
         'dateFormats' => ['Y-m-d', 'd/m/Y', 'm/d/Y', 'd M Y'],
         'timeFormats' => ['H:i', 'h:i A'],
+        'assetErrors' => $assetErrors,
+        'assetNotice' => $assetNotice,
+        'logoUrl' => $app->siteAssets()->url('logo'),
+        'faviconUrl' => $app->siteAssets()->url('favicon'),
+        'logoUploadAction' => $logoUploadPath,
+        'logoRemoveAction' => $logoRemovePath,
+        'faviconUploadAction' => $faviconUploadPath,
+        'faviconRemoveAction' => $faviconRemovePath,
     ]);
 
     return Response::html($app->adminPageRenderer()->render(
@@ -192,7 +214,24 @@ $app->router()->get($settingsPath, function ($request) use (
         return Response::html('Settings storage is unavailable.', 503);
     }
 
-    return $renderSettings($user, $values, [], $request->input('saved') === '1', $request->path());
+    $assetNotice = match ($request->input('asset')) {
+        'logo-uploaded' => 'Logo uploaded successfully.',
+        'logo-removed' => 'Logo removed successfully.',
+        'favicon-uploaded' => 'Favicon uploaded successfully.',
+        'favicon-removed' => 'Favicon removed successfully.',
+        default => null,
+    };
+
+    return $renderSettings(
+        $user,
+        $values,
+        [],
+        $request->input('saved') === '1',
+        $request->path(),
+        200,
+        [],
+        $assetNotice
+    );
 });
 
 $app->router()->post($settingsPath, function ($request) use (
@@ -260,3 +299,139 @@ $app->router()->post($settingsPath, function ($request) use (
 
     return Response::redirect($settingsPath . '?saved=1');
 });
+
+$renderAssetFailure = function (
+    $user,
+    string $slot,
+    string $message,
+    int $status = 422
+) use ($settingsEffectiveValues, $renderSettings, $settingsPath): Response {
+    try {
+        $values = $settingsEffectiveValues();
+    } catch (\PDOException) {
+        return Response::html('Settings storage is unavailable.', 503);
+    }
+
+    return $renderSettings(
+        $user,
+        $values,
+        [],
+        false,
+        $settingsPath,
+        $status,
+        [$slot => $message]
+    );
+};
+
+$registerAssetUpload = function (
+    string $slot,
+    string $label,
+    string $path
+) use (
+    $app,
+    $settingsRequireUser,
+    $renderAssetFailure,
+    $settingsPath
+): void {
+    $app->router()->post($path, function ($request) use (
+        $app,
+        $slot,
+        $label,
+        $settingsRequireUser,
+        $renderAssetFailure,
+        $settingsPath
+    ): Response {
+        $user = $settingsRequireUser();
+
+        if ($user instanceof Response) {
+            return $user;
+        }
+
+        $csrfResponse = $app->csrf()->validateOrReject($request);
+
+        if ($csrfResponse instanceof Response) {
+            return $csrfResponse;
+        }
+
+        $upload = $request->file('site_asset');
+
+        if ($upload === null) {
+            return $renderAssetFailure($user, $slot, "Choose a {$label} file to upload.");
+        }
+
+        $error = $upload['error'];
+
+        if (!is_int($error) || $error !== UPLOAD_ERR_OK) {
+            $message = $error === UPLOAD_ERR_NO_FILE
+                ? "Choose a {$label} file to upload."
+                : "{$label} upload did not complete.";
+
+            return $renderAssetFailure($user, $slot, $message);
+        }
+
+        $temporaryPath = $upload['tmp_name'];
+
+        if (!is_string($temporaryPath) || $temporaryPath === '' || !is_uploaded_file($temporaryPath)) {
+            return $renderAssetFailure($user, $slot, "{$label} upload source is invalid.");
+        }
+
+        try {
+            $app->siteAssets()->store($slot, $temporaryPath);
+        } catch (SiteAssetException) {
+            return $renderAssetFailure(
+                $user,
+                $slot,
+                "{$label} could not be uploaded. Check the file type, dimensions, and size."
+            );
+        } catch (SettingsException|\PDOException) {
+            return $renderAssetFailure($user, $slot, 'Site asset storage is unavailable.', 503);
+        }
+
+        return Response::redirect($settingsPath . '?asset=' . $slot . '-uploaded');
+    });
+};
+
+$registerAssetRemoval = function (
+    string $slot,
+    string $label,
+    string $path
+) use (
+    $app,
+    $settingsRequireUser,
+    $renderAssetFailure,
+    $settingsPath
+): void {
+    $app->router()->post($path, function ($request) use (
+        $app,
+        $slot,
+        $label,
+        $settingsRequireUser,
+        $renderAssetFailure,
+        $settingsPath
+    ): Response {
+        $user = $settingsRequireUser();
+
+        if ($user instanceof Response) {
+            return $user;
+        }
+
+        $csrfResponse = $app->csrf()->validateOrReject($request);
+
+        if ($csrfResponse instanceof Response) {
+            return $csrfResponse;
+        }
+
+        try {
+            $app->siteAssets()->remove($slot);
+        } catch (SiteAssetException|SettingsException|\PDOException) {
+            return $renderAssetFailure($user, $slot, "{$label} could not be removed.", 503);
+        }
+
+        return Response::redirect($settingsPath . '?asset=' . $slot . '-removed');
+    });
+};
+
+$registerAssetUpload('logo', 'Logo', $logoUploadPath);
+$registerAssetRemoval('logo', 'Logo', $logoRemovePath);
+$registerAssetUpload('favicon', 'Favicon', $faviconUploadPath);
+$registerAssetRemoval('favicon', 'Favicon', $faviconRemovePath);

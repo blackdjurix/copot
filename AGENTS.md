@@ -32,8 +32,8 @@ Current work:
 * M2.3 Batch 1 documentation, repository audit, architecture, and contract lock are complete.
 * M2.3 Batch 2 Localization and Formatting Foundation is implemented, reviewed, and approved.
 * M2.3 Batch 3 Core Branding Settings Contract is implemented, reviewed, committed, and pushed.
-* M2.3 Batch 4 Minimal Local Asset/Upload Foundation is implemented in the working package; canonical local verification and approval are pending.
-* Do not begin M2.3 Batch 5 Admin/Theme Integration until Batch 4 passes the approved focused and regression tests.
+* M2.3 Batch 4 Minimal Local Asset/Upload Foundation is implemented, verified, committed, and pushed.
+* M2.3 Batch 5 Logo and Favicon Integration is implemented in the working package; canonical local verification and approval are pending.
 
 Latest release: v0.10.0.
 
@@ -614,8 +614,9 @@ The next checkpoint is to:
 * keep production events deferred until a consumer milestone proves one real caller/listener pair;
 * preserve the completed M2.3 Batch 1 contract and Batch 2 formatting boundary;
 * preserve the completed M2.3 Batch 3 descriptor and read-only Site Branding contract;
-* audit and approve the M2.3 Batch 4 Minimal Local Asset/Upload implementation plan before coding;
-* keep Admin UI integration and Theme integration out until Batch 5;
+* preserve the completed M2.3 Batch 4 storage and controlled-delivery foundation;
+* verify the M2.3 Batch 5 Admin upload/removal and active-Theme branding integration;
+* keep final regression/completion work in Batch 6;
 * keep M2.4 Platform Hardening as a separate milestone;
 * avoid recalling deferred capabilities without a concrete dependency and approval.
 

@@ -6,7 +6,7 @@ M2.3 completes the smallest site-level capability layer needed before Core Modul
 
 M2.3 extends existing Settings and Theme boundaries. It does not create a multilingual system, Media Library, generic upload platform, or visual Branding Manager.
 
-Status: Batches 1–3 are implemented and approved. Batch 4 Minimal Local Asset/Upload Foundation is implemented; canonical local verification and approval are pending. Batch 5 has not started.
+Status: Batches 1–4 are implemented and approved. Batch 5 Logo and Favicon Integration is implemented; canonical local verification and approval are pending. Batch 6 has not started.
 
 ---
 
@@ -345,9 +345,11 @@ Implemented validated optional Logo/Favicon descriptor definitions and the read-
 
 ### Batch 4 — Minimal Local Asset/Upload Foundation
 
-Implemented in the working package; canonical local verification and approval are pending. Adds only the request-scoped two-slot `SiteAssetStorage`, content MIME/image/size validation, safe generated names, containment and symlink guards, replacement/removal behavior, stable controlled delivery, Application/branding availability wiring, and focused failure tests. No Admin upload UI or Theme integration is included. The focused storage service accepts controlled local fixture paths; the real PHP upload adapter remains Batch 5.
+Complete and approved. Adds only the request-scoped two-slot `SiteAssetStorage`, content MIME/image/size validation, safe generated names, containment and symlink guards, replacement/removal behavior, stable controlled delivery, Application/branding availability wiring, and focused failure tests. No generic upload surface was added.
 
 ### Batch 5 — Logo and Favicon Integration
+
+Implemented in the working package; canonical local verification and approval are pending. Adds fixed Admin upload/removal controls protected by existing permission and CSRF boundaries, a controlled PHP upload adapter through `Request`, active-Theme consumption of `SiteBranding`, Logo/Favicon preview and fallback rendering, and focused integration coverage. It does not add arbitrary uploads, Media Library behavior, image processing, or a new management module.
 
 Extend the existing Admin Settings page with narrow Logo/Favicon upload/remove controls backed by dedicated configured-path POST actions, and integrate the read-only branding contract into the default public Theme. Preserve Admin UI independence and the existing six-field Settings transaction/security behavior.
 

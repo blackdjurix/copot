@@ -8,7 +8,8 @@ class Request
         private string $method,
         private string $path,
         private array $query = [],
-        private array $input = []
+        private array $input = [],
+        private array $files = []
     ) {
     }
 
@@ -22,7 +23,8 @@ class Request
             $method,
             self::normalizePath(self::stripBasePath($path)),
             $_GET,
-            $_POST
+            $_POST,
+            $_FILES
         );
     }
 
@@ -44,6 +46,23 @@ class Request
     public function post(string $key, mixed $default = null): mixed
     {
         return $this->input[$key] ?? $default;
+    }
+
+    public function file(string $key): ?array
+    {
+        $file = $this->files[$key] ?? null;
+
+        if (!is_array($file)) {
+            return null;
+        }
+
+        foreach (['name', 'type', 'tmp_name', 'error', 'size'] as $field) {
+            if (!array_key_exists($field, $file) || is_array($file[$field])) {
+                return null;
+            }
+        }
+
+        return $file;
     }
 
     public function all(): array

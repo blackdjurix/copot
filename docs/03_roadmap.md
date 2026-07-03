@@ -348,9 +348,9 @@ The separate Core four-color palette and semantic-mapping proposal in `docs/11_b
 1. Scope, audit, architecture, and contract lock — complete.
 2. Localization and formatting foundation — implemented.
 3. Core Branding settings contract — implemented.
-4. Minimal local asset/upload foundation — active planning checkpoint.
-5. Logo and Favicon integration.
-6. Regression, manual verification, and completion.
+4. Minimal local asset/upload foundation — complete.
+5. Logo and Favicon integration — implemented; canonical verification pending.
+6. Regression, manual verification, and completion — pending.
 
 #### M2.4 Platform Hardening
 

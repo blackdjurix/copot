@@ -10,7 +10,7 @@ $app->router()->get('/', function () use ($app): Response {
             $app->viewResolver()->resolve('core::home'),
             [],
             null,
-            $app->config()->get('app.name', 'Copot')
+            $app->branding()->name()
         ));
     } catch (ThemeException|ViewException|\Throwable) {
         return Response::html('<h1>Theme rendering error.</h1>', 500);

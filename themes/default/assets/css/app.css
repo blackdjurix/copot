@@ -10,6 +10,45 @@ body {
     font-family: Arial, sans-serif;
 }
 
+
+.site-header {
+    border-bottom: 1px solid #d9e2e8;
+    background: #ffffff;
+}
+
+.site-header__inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: min(760px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 18px 0;
+}
+
+.site-header__logo {
+    display: block;
+    width: auto;
+    max-width: 180px;
+    height: 48px;
+    object-fit: contain;
+}
+
+.site-header__name,
+.site-header__tagline {
+    margin: 0;
+}
+
+.site-header__name {
+    color: #17202a;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.site-header__tagline {
+    margin-top: 2px;
+    font-size: 14px;
+}
+
 .page-shell {
     width: min(760px, calc(100% - 32px));
     margin: 0 auto;
