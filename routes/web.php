@@ -24,3 +24,27 @@ $app->router()->get('/theme-assets/{themeId}/{assetPath}', function ($request, a
         return Response::content('404 Not Found', 404, ['Content-Type' => 'text/plain; charset=UTF-8']);
     }
 });
+
+$app->router()->get('/site-assets/logo', function () use ($app): Response {
+    try {
+        return $app->siteAssets()->serve('logo');
+    } catch (\Throwable) {
+        return Response::content('404 Not Found', 404, [
+            'Content-Type' => 'text/plain; charset=UTF-8',
+            'Cache-Control' => 'no-store',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+});
+
+$app->router()->get('/site-assets/favicon', function () use ($app): Response {
+    try {
+        return $app->siteAssets()->serve('favicon');
+    } catch (\Throwable) {
+        return Response::content('404 Not Found', 404, [
+            'Content-Type' => 'text/plain; charset=UTF-8',
+            'Cache-Control' => 'no-store',
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
+    }
+});

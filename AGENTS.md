@@ -31,8 +31,9 @@ Current work:
 * First Production Consumer Integration is deferred to the first milestone with one real caller/listener pair and is not part of the M2.2 release.
 * M2.3 Batch 1 documentation, repository audit, architecture, and contract lock are complete.
 * M2.3 Batch 2 Localization and Formatting Foundation is implemented, reviewed, and approved.
-* M2.3 Batch 3 Core Branding Settings Contract is implemented and automated verification passes.
-* Do not begin M2.3 Batch 4 upload/storage work until Batch 3 is reviewed and approved.
+* M2.3 Batch 3 Core Branding Settings Contract is implemented, reviewed, committed, and pushed.
+* M2.3 Batch 4 Minimal Local Asset/Upload Foundation is implemented in the working package; canonical local verification and approval are pending.
+* Do not begin M2.3 Batch 5 Admin/Theme Integration until Batch 4 passes the approved focused and regression tests.
 
 Latest release: v0.10.0.
 
@@ -64,6 +65,9 @@ M2.2 is complete and released as v0.10.0.
 * Git and GitHub operations are user-owned.
 * The agent must not create or delete branches, commit, push, merge, tag, create releases, or perform repository-history operations unless the user explicitly requests an exception.
 * Documentation and instruction files that guide Codex execution are maintained manually by the user.
+* Codex instructions must be usage-friendly: rely on repository documentation as source of truth and include only the target, required preparation, scope limits, reporting, testing, and explicit Git permission.
+* Before coding, testing, or Git operations, Codex must verify the repository root, target branch, current HEAD, and worktree status. If they do not match the instruction or contain unknown changes, stop and report instead of improvising.
+* Planning and implementation are separate approval gates when requested; an audit-only task must stop after reporting its plan.
 * The assistant prepares documentation material as targeted replacements, copy-ready sections, patches, or full files when requested.
 * Codex must not edit documentation or instruction source-of-truth files unless the user explicitly requests an exception.
 * Codex may perform read-only documentation audits, terminology searches, reference checks, and validation when requested.
@@ -610,8 +614,8 @@ The next checkpoint is to:
 * keep production events deferred until a consumer milestone proves one real caller/listener pair;
 * preserve the completed M2.3 Batch 1 contract and Batch 2 formatting boundary;
 * preserve the completed M2.3 Batch 3 descriptor and read-only Site Branding contract;
-* review Batch 3 before separately approving M2.3 Batch 4 upload/storage work;
-* keep delivery routes, Admin UI integration, and Theme integration out until their approved batches;
+* audit and approve the M2.3 Batch 4 Minimal Local Asset/Upload implementation plan before coding;
+* keep Admin UI integration and Theme integration out until Batch 5;
 * keep M2.4 Platform Hardening as a separate milestone;
 * avoid recalling deferred capabilities without a concrete dependency and approval.
 

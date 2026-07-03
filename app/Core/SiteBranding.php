@@ -10,7 +10,12 @@ final class SiteBranding
 
     private string $name;
 
-    public function __construct(string $name, private string $tagline)
+    public function __construct(
+        string $name,
+        private string $tagline,
+        private ?string $logoUrl = null,
+        private ?string $faviconUrl = null
+    )
     {
         $this->name = trim($name) === '' ? self::DEFAULT_NAME : $name;
     }
@@ -27,11 +32,11 @@ final class SiteBranding
 
     public function logoUrl(): ?string
     {
-        return null;
+        return $this->logoUrl;
     }
 
     public function faviconUrl(): ?string
     {
-        return null;
+        return $this->faviconUrl;
     }
 }

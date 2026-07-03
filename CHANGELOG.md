@@ -14,10 +14,13 @@
 - Added strict internal JSON definitions for optional `site.logo` and `site.favicon` descriptors.
 - Added request-scoped read-only `SiteBranding` with Site Name and Tagline fallbacks while Logo/Favicon URLs remain unavailable.
 - Added focused M2.3 Batch 3 descriptor, fallback, isolation, and scope-guard coverage.
+- Added request-scoped `SiteAssetStorage` for fixed Logo/Favicon slots with content MIME, image structure, dimension, size, generated-name, containment, and symlink validation.
+- Added safe descriptor persistence, replacement/removal cleanup, stable `/site-assets/logo` and `/site-assets/favicon` delivery, and focused Batch 4 failure coverage.
 
 ### Changed
 
-- Completed M2.3 Batch 1 documentation and contract lock and implemented the Batch 2 Localization and Formatting Foundation.
+- Completed M2.3 Batch 1 documentation and contract lock, Batch 2 Localization and Formatting Foundation, and Batch 3 Core Branding Settings Contract.
+- Implemented the narrow Batch 4 two-slot local asset/storage and controlled delivery foundation; canonical local verification remains pending.
 - Kept Media Library, multilingual capability, image processing, arbitrary uploads, external storage, and the separate Core color-palette proposal deferred.
 
 ### Verification
@@ -29,7 +32,8 @@
 
 - M2.3 Batch 2 is implemented without a database migration, dependency, production event, or presentation-call-site migration.
 - M2.3 Batch 3 adds no upload, storage, URL delivery, Admin UI, Theme integration, database change, or production event.
-- M2.3 is not complete; asset/upload and presentation-integration batches remain deferred to their approved sequence.
+- M2.3 Batch 4 runtime is implemented without Admin upload controls or Theme integration; canonical local verification and approval remain pending.
+- M2.3 is not complete; asset/upload, presentation integration, and final verification remain in their approved sequence.
 
 <details open>
 <summary>v0.10.0 - M2.2 Extensibility Foundation</summary>

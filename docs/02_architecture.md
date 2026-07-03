@@ -148,7 +148,7 @@ Settings Manager
 Theme Manager
 ```
 
-M2.3 Minimal Site Capabilities defines only the site-level formatting boundary and the Core site-identity contract for Site Name, optional Tagline, optional Logo, and optional Favicon. The existing Admin Settings surface persists registered values, but it does not become the future M3 Settings Manager. Themes consume a controlled read-only branding value and retain presentation ownership without direct Settings or database access.
+M2.3 Minimal Site Capabilities defines only the site-level formatting boundary and the Core site-identity contract for Site Name, optional Tagline, optional Logo, and optional Favicon. The existing Admin Settings surface persists registered values, but it does not become the future M3 Settings Manager. Themes consume a controlled read-only branding value and retain presentation ownership without direct Settings or database access. Batches 1–3 are approved. Batch 4 implements the fixed Logo/Favicon local asset storage and controlled delivery foundation; canonical verification is pending. Admin UI and Theme consumption remain Batch 5.
 
 The separate Core four-color palette and semantic-mapping proposal in `docs/11_branding_foundation.md` remains deferred. Advanced theme colors and Custom CSS remain future Theme Manager concerns.
 
@@ -214,7 +214,9 @@ The formatter uses an explicit configured `DateTimeZone` and deterministic `en_U
 
 M2.3 Batch 2 implements `SiteFormatter` as one request-scoped object owned by `Application`. It formats presentation dates, times, date-times, integers, and decimals, falls back from unsupported locales to `en_US`, and leaves database, lock, and protocol timestamps on their existing machine contracts.
 
-M2.3 Batch 3 registers optional strictly validated `site.logo` and `site.favicon` JSON descriptors and adds one request-scoped `SiteBranding` snapshot. The snapshot exposes effective Site Name and Tagline while Logo/Favicon URLs remain `null`; descriptors, filenames, Settings, and database access are not exposed to branding consumers.
+M2.3 Batch 3 registers optional strictly validated `site.logo` and `site.favicon` JSON descriptors and adds one request-scoped `SiteBranding` snapshot. The snapshot exposes effective Site Name and Tagline without exposing descriptors, filenames, Settings, or database access.
+
+M2.3 Batch 4 adds request-scoped `SiteAssetStorage` for the fixed Logo and Favicon slots. It validates content MIME, image structure, dimensions, size, generated filenames, containment, and symlink boundaries; persists active descriptors through `SettingsService`; provides safe replacement/removal ordering; and serves only `/site-assets/logo` and `/site-assets/favicon` with controlled headers. `SiteBranding` receives only the stable URL when the active descriptor resolves to an available safe file. HTTP upload controls remain Batch 5.
 
 Complete M2.3 ownership, security, storage, batch, and acceptance contracts are defined in `docs/13_minimal_site_capabilities.md`.
 

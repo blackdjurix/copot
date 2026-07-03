@@ -281,11 +281,7 @@ try {
     $routesSource = (string) file_get_contents($basePath . '/routes/web.php');
     $assert(!str_contains($brandingSource, 'filename'), 'SiteBranding exposes descriptor filename data.');
     $assert(!str_contains($brandingSource, 'mime_type'), 'SiteBranding exposes descriptor MIME data.');
-    $assert(!str_contains($brandingSource, 'site-assets'), 'SiteBranding forms an asset URL before Batch 4.');
     $assert(!str_contains($brandingSource, 'SettingsService'), 'SiteBranding exposes or retains SettingsService.');
-    $assert(!str_contains($applicationSource, "'site', 'logo'"), 'Application resolves a Logo descriptor before Batch 4.');
-    $assert(!str_contains($applicationSource, "'site', 'favicon'"), 'Application resolves a Favicon descriptor before Batch 4.');
-    $assert(!str_contains($routesSource, 'site-assets'), 'A site-asset delivery route was added in Batch 3.');
     $assert(!str_contains($brandingSource, 'dispatch('), 'SiteBranding dispatches a production event.');
 
     echo "M2.3 Batch 3 branding smoke tests passed ({$assertions} assertions)." . PHP_EOL;

@@ -20,6 +20,7 @@ class Application
     private string $locale;
     private SiteFormatter $formatter;
     private SiteBranding $branding;
+    private SiteAssetStorage $siteAssets;
     private Session $session;
     private Csrf $csrf;
     private Auth $auth;
@@ -48,6 +49,7 @@ class Application
             $settingsRegistry,
             new SettingsRepository($this->database)
         );
+        $this->siteAssets = new SiteAssetStorage($this->path('storage/site-assets'), $this->settings);
         $this->initializeRuntimeSettings($settingsRegistry);
         $this->session = new Session($this->config);
         $this->csrf = new Csrf($this->session);
@@ -154,6 +156,11 @@ class Application
         return $this->branding;
     }
 
+    public function siteAssets(): SiteAssetStorage
+    {
+        return $this->siteAssets;
+    }
+
     public function session(): Session
     {
         return $this->session;
@@ -246,7 +253,12 @@ class Application
             $dateFormat,
             $timeFormat
         );
-        $this->branding = new SiteBranding($this->siteName, $siteTagline);
+        $this->branding = new SiteBranding(
+            $this->siteName,
+            $siteTagline,
+            $this->siteAssets->url('logo'),
+            $this->siteAssets->url('favicon')
+        );
     }
 
     private function runtimeSetting(SettingsRegistry $registry, string $namespace, string $key): string
