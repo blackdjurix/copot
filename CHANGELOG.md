@@ -5,16 +5,26 @@
 ### Added
 
 - Added the M2.4 Platform Hardening Batch 1 repository audit, architecture, scope lock, error taxonomy, sanitized rendering policy, Admin in-shell error rule, logging/redaction contract, storage/filesystem boundary, runtime/deployment checklist, batch plan, acceptance criteria, and risk register.
+- Added request-scoped `Diagnostics` with append-locked local JSON-line records, opaque error references returned only after successful writes, controlled summaries, project-relative source locations, and fixed allowlisted context.
+- Added focused M2.4 Batch 2 diagnostics coverage for formatting, uniqueness, redaction, invalid events, unavailable sinks, symlink/unwritable behavior, Application ownership, scope guards, and repository-log isolation.
 
 ### Changed
 
 - Made M2.4 Platform Hardening the active phase.
 - Recorded M2.3 Minimal Site Capabilities as complete and released as v0.11.0.
+- Completed M2.4 Batch 2 Minimal Diagnostics Baseline without adding a global error boundary or changing response behavior.
+
+### Verification
+
+- M2.4 Batch 2 focused diagnostics smoke coverage passes on the canonical PHP 8.5 runtime.
+- The complete M2.3 regression gate continues to pass.
+- PHP syntax checks and repository-log isolation checks pass.
 
 ### Notes
 
-- M2.4 Batch 1 is documentation-only and adds no runtime implementation, database change, dependency, Admin redesign, logger, queue, worker, scheduler, global rate limiter, observability platform, external service, or Media Library behavior.
-- Batch 2 Minimal Diagnostics Baseline and all later M2.4 implementation batches require separate approval.
+- Batch 2 does not store raw `Throwable::getMessage()` output, does not return a dead error reference after append failure, and does not add a secondary sink.
+- Batch 2 adds no global error boundary, response integration, database/config change, dependency, Admin redesign, queue, worker, scheduler, rotation service, observability platform, external service, or Media Library behavior.
+- Batch 3 Application Error Boundary and all later M2.4 implementation batches require separate approval.
 
 <details open>
 <summary>v0.11.0 - M2.3 Minimal Site Capabilities</summary>

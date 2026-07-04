@@ -423,7 +423,7 @@ Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON des
 
 ## M2.4 Platform Hardening
 
-M2.4 is the current phase. Batch 1 is complete as a documentation-only audit, architecture, and scope lock. No runtime hardening implementation has started, and Batch 2 requires separate approval.
+M2.4 is the current phase. Batch 1 documentation and contract lock are complete. Batch 2 Minimal Diagnostics Baseline is implemented and focused verification passes. Batch 3 Application Error Boundary has not started and requires separate approval.
 
 The locked scope covers:
 
@@ -436,6 +436,8 @@ The locked scope covers:
 * a production/shared-hosting checklist and one regression gate across M1 and lean M2.
 
 M2.4 does not add a database change, dependency, Admin redesign, logging framework, observability platform, external service, queue, worker, scheduler, global rate limiter, generic storage abstraction, Media Library, arbitrary uploads, or background cleanup.
+
+Batch 2 adds one request-scoped `Diagnostics` instance per `Application`. It writes append-locked JSON lines only to `storage/logs/copot.log`, omits raw exception messages, keeps source locations project-relative, accepts only fixed scalar context, returns an opaque `ERR-` reference only after a successful append, and returns `null`/`false` without a secondary sink when logging is unavailable. It does not register a global handler or change public/Admin rendering.
 
 Production release-readiness requires `public/` as the document root, `display_errors=Off`, private writable storage/logs, HTTPS-capable Secure session cookies, the existing PHP 8.2+ contract, and no daemon or build process.
 

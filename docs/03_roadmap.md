@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening is the current phase; Batch 1 documentation and contract lock are complete without runtime implementation.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening is the current phase; Batch 1 documentation/contract lock and Batch 2 Minimal Diagnostics Baseline are complete.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -354,7 +354,7 @@ The separate Core four-color palette and semantic-mapping proposal in `docs/11_b
 
 #### M2.4 Platform Hardening
 
-Status: Current. Batch 1 documentation and contract lock are complete. No runtime implementation has started.
+Status: Current. Batch 1 documentation and contract lock plus Batch 2 Minimal Diagnostics Baseline are complete. Batch 3 has not started.
 
 Target release: To be assigned after implementation and release-readiness verification.
 
@@ -399,13 +399,15 @@ M2.4 does not add:
 ##### Batch plan
 
 1. Audit, architecture, documentation, and contract lock — complete; documentation only.
-2. Minimal Diagnostics Baseline — planned.
+2. Minimal Diagnostics Baseline — complete.
 3. Application Error Boundary and Rendering Safety — planned.
 4. Admin In-Shell Errors — planned.
 5. Runtime, Security, Storage, and Deployment Hardening — planned.
 6. Unified Regression and Release Readiness — planned.
 
-Batch 2 and all later runtime implementation require separate approval.
+Batch 2 provides request-scoped synchronous local diagnostics, controlled JSON-line records, opaque references returned only after successful append, strict context filtering, no raw exception messages, and no-throw unavailable-sink behavior. It adds no global handler or response integration.
+
+Batch 3 and all later runtime implementation require separate approval.
 
 ##### Acceptance direction
 

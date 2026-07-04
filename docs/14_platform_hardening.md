@@ -6,9 +6,11 @@ Current phase.
 
 Batch 1 documentation, repository audit, architecture, scope lock, non-goals, batch plan, acceptance criteria, and risk register are complete.
 
+Batch 2 Minimal Diagnostics Baseline is implemented and focused verification passes.
+
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-No M2.4 runtime implementation has started. Batch 2 and all later implementation batches require a separate implementation approval.
+Batch 3 Application Error Boundary and all later implementation batches require a separate implementation approval.
 
 ---
 
@@ -218,7 +220,17 @@ Guest Admin login errors and failures before the conditions above are met remain
 
 ## 8. Logging and Redaction Contract
 
-The logging baseline is local, synchronous, small, and framework-owned. It is not a general logging framework.
+The Batch 2 logging baseline is local, synchronous, small, and framework-owned. It is not a general logging framework.
+
+`Application` owns one request-scoped `Diagnostics` instance. Its constructor is side-effect free. It does not create the log directory, open a file, register a handler, or require working database/config/runtime services.
+
+The fixed sink is:
+
+```text
+storage/logs/copot.log
+```
+
+Each record is one append-locked JSON object followed by a newline. The service does not buffer across requests and does not use a secondary sink.
 
 ### 8.1 Minimum record
 
@@ -229,12 +241,14 @@ A diagnostic record may contain only the fields needed for diagnosis:
 * stable event name;
 * safe error reference when present;
 * exception class;
-* sanitized and length-limited message;
+* controlled and length-limited summary;
 * request method and normalized path when safely available;
 * project-relative source location when safely derivable;
 * explicit scalar context from a fixed allowlist.
 
-The exact line format and file name are Batch 2 implementation details, but records must remain append-safe and readable on shared hosting.
+Unexpected reports never read or store raw `Throwable::getMessage()` output. They record only the exception class, the fixed `Unexpected application failure.` summary, and a project-relative source location when it can be derived safely. Warning summaries are caller-owned controlled text and pass through control-character normalization, length limits, and sensitive-value redaction.
+
+Context accepts only the scalar keys `component`, `operation`, `method`, `path`, `status`, and `slot`. Unknown keys and non-scalar values are dropped. Methods, identifiers, statuses, and paths receive key-specific validation; query strings and fragments are removed from paths.
 
 ### 8.2 Forbidden log data
 
@@ -251,7 +265,7 @@ Logs must not contain:
 * stack arguments;
 * unredacted absolute paths.
 
-Exception messages must be sanitized and truncated before storage. Context is opt-in and allowlisted; dumping arbitrary arrays or objects is forbidden.
+Raw exception messages are omitted rather than heuristically redacted. Context is opt-in and allowlisted; dumping arbitrary arrays or objects is forbidden.
 
 ### 8.3 Failure behavior
 
@@ -261,6 +275,10 @@ Logging is best-effort. A missing or unwritable log destination must not:
 * replace the intended HTTP response;
 * cause recursive logging;
 * create a second uncaught failure.
+
+Missing directories are not created automatically. A missing, non-directory, symlinked, or unwritable log location; an invalid event; an encoding, random-source, open, lock, write, or flush failure; or any internal `Throwable` returns `null` from `report()` or `false` from `warning()`. The diagnostics service emits no response output and does not call PHP `error_log()` or any other fallback.
+
+`report()` generates `ERR-` followed by 24 uppercase hexadecimal characters from 12 random bytes. It returns the reference only after the matching line is appended and flushed successfully. `warning()` never creates a reference and returns only a boolean result.
 
 Normal validation, `403`, `404`, and `419` responses are not error-log events unless a separate unexpected failure caused them.
 
@@ -327,11 +345,14 @@ Status: Complete. Documentation only.
 
 ### Batch 2 — Minimal Diagnostics Baseline
 
-Status: Planned.
+Status: Complete.
 
-* implement the smallest local diagnostic sink and safe error reference;
-* implement redaction and non-recursive logging failure behavior;
-* add focused logging tests.
+* implemented one request-scoped `Diagnostics` instance per `Application`;
+* implemented the fixed local append-locked JSON-line sink at `storage/logs/copot.log`;
+* implemented safe error references returned only after successful append;
+* omitted raw exception messages and restricted records to controlled summaries, relative source locations, and fixed scalar context;
+* implemented non-throwing, non-recursive unavailable-sink behavior without a secondary sink;
+* added focused temporary-directory smoke coverage and repository-log isolation guards.
 
 ### Batch 3 — Application Error Boundary and Rendering Safety
 
@@ -370,7 +391,7 @@ Status: Planned.
 * complete manual public, Admin, runtime, and deployment verification;
 * finalize milestone and release-readiness documentation.
 
-Batch 2 must not begin as part of Batch 1 documentation work.
+Batch 3 must not begin without separate implementation approval.
 
 ---
 
@@ -394,6 +415,9 @@ M2.4 is complete only when all applicable criteria pass.
 * Secret, token, credential, request-body, SQL, client-filename, and absolute-path fixtures are absent from logs.
 * Log write failure is non-recursive and does not change the sanitized response.
 * Expected validation and ordinary authorization outcomes are not logged as server errors.
+* Raw `Throwable::getMessage()` output is never read or stored by Diagnostics.
+* A reference is returned only after its matching local record is appended successfully.
+* Warning records contain no reference.
 
 ### Storage and filesystem
 
@@ -438,7 +462,7 @@ Known risks are:
 * early bootstrap failures cannot safely depend on the full application or Admin renderer;
 * a global boundary must not swallow controlled status responses or weaken fail-fast extension behavior inside the application;
 * duplicated route-local renderers may require narrow cleanup without a broad View-system rewrite;
-* redaction that is too weak leaks secrets, while redaction that is too aggressive removes diagnostic value;
+* controlled summaries and strict context filtering intentionally trade raw exception detail for stronger secret containment;
 * a local log can grow without bound unless operators apply manual retention because automated rotation is outside scope;
 * logging and storage may fail at the same time, so diagnostics must remain best-effort;
 * Windows development checks do not prove Linux shared-hosting permission, rename, symlink, and `flock()` behavior;
@@ -446,7 +470,7 @@ Known risks are:
 * changing plain Admin errors to in-shell pages requires regression updates without changing authorization semantics;
 * storage cleanup remains non-atomic with database persistence and may leave unreachable orphans by design.
 
-No Batch 1 blocker remains after M2.3 v0.11.0 release status is recorded consistently. Implementation decisions that exceed this contract require a new scope approval before Batch 2 or later work proceeds.
+No Batch 2 blocker remains. Windows did not permit symlink creation during focused verification, so the implemented symlink rejection remains covered by source assertions and requires confirmation on a symlink-capable Linux/shared-hosting environment. Implementation decisions that exceed this contract require a new scope approval before Batch 3 or later work proceeds.
 
 ---
 

@@ -226,7 +226,7 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ## Platform Hardening Boundary
 
-M2.4 Platform Hardening is the current phase. Batch 1 locks the architecture and documentation only; it adds no runtime implementation.
+M2.4 Platform Hardening is the current phase. Batch 1 locks the architecture and documentation. Batch 2 implements the minimal diagnostics baseline without adding an application error boundary or changing response rendering.
 
 The planned hardening direction is:
 
@@ -254,7 +254,11 @@ Plain values remain escaped for their output context. The existing Admin and The
 
 Authenticated Admin errors render through the existing Admin Shell only when Application construction, session/authentication state, current-user resolution, and `AdminPageRenderer` remain safely available. The original status is preserved. Earlier failures use a standalone sanitized response. This rule does not weaken permission checks or redesign Admin.
 
-The planned logging baseline is one small local request-synchronous diagnostic boundary outside `public/`. It accepts explicit allowlisted scalar context, sanitizes and limits exception messages, may include a project-relative source location, and correlates unexpected server responses through a safe error reference. It must not log credentials, DSNs, SQL, passwords, hashes, CSRF/session/auth values, cookies, environment contents, request bodies, arbitrary query values, client filenames, full server arrays, stack arguments, or unredacted absolute paths. Logging failure is best-effort and non-recursive.
+Batch 2 adds one request-scoped `Diagnostics` instance per `Application`. The service is side-effect free during construction and writes synchronous append-locked JSON lines only to `storage/logs/copot.log`. Unexpected reports use a controlled summary, exception class, project-relative source location when available, and explicit allowlisted scalar context. Raw `Throwable::getMessage()` output is never read or stored. A random opaque `ERR-` reference is returned only after its record is appended successfully; warnings return only success/failure and receive no reference.
+
+Diagnostics must not log credentials, DSNs, SQL, passwords, hashes, CSRF/session/auth values, cookies, environment contents, request bodies, arbitrary query values, client filenames, full server arrays, stack arguments, or unredacted absolute paths. Missing, unsafe, symlinked, or unwritable destinations return `null`/`false` without throwing, emitting output, creating the directory, calling a secondary sink, or recursively logging the logging failure.
+
+Batch 2 does not register an exception/error/shutdown handler and does not modify `public/index.php`, Router, Admin rendering, routes, or response behavior. Application and early-runtime boundary integration remains Batch 3.
 
 Filesystem ownership remains capability-specific. M2.4 does not add a generic storage abstraction. Missing, unreadable, unwritable, symlinked, partial-write, rename, read, and cleanup failures must remain controlled and must not emit warnings into responses. The existing Site Asset ordering remains authoritative: failed replacement preserves the previous active asset, while cleanup after a persisted replacement/removal is best-effort and may leave an unreachable orphan without adding a worker.
 

@@ -9,6 +9,7 @@ use Copot\Core\Admin\AdminUrl;
 class Application
 {
     private string $basePath;
+    private Diagnostics $diagnostics;
     private Config $config;
     private Router $router;
     private EventDispatcher $events;
@@ -39,6 +40,7 @@ class Application
     public function __construct(string $basePath)
     {
         $this->basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
+        $this->diagnostics = new Diagnostics($this->basePath);
         $this->config = new Config($this->path('config'));
         $this->router = new Router();
         $this->events = new SynchronousEventDispatcher();
@@ -104,6 +106,11 @@ class Application
     public function config(): Config
     {
         return $this->config;
+    }
+
+    public function diagnostics(): Diagnostics
+    {
+        return $this->diagnostics;
     }
 
     public function router(): Router

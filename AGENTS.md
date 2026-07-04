@@ -28,8 +28,8 @@ Current work:
 * M2.2 Extensibility Foundation is complete and released as v0.10.0.
 * M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 * M2.4 Batch 1 repository audit, architecture, documentation, scope lock, non-goals, batch plan, acceptance criteria, and risk register are complete.
-* M2.4 Batch 1 is documentation-only and contains no runtime implementation.
-* Batch 2 Minimal Diagnostics Baseline and all later implementation batches remain planned and require separate approval.
+* M2.4 Batch 2 Minimal Diagnostics Baseline is implemented with request-scoped local JSON-line diagnostics, safe error references, strict context filtering, no raw exception messages, and no-throw sink failure behavior.
+* Batch 3 Application Error Boundary and all later implementation batches remain planned and require separate approval.
 * M2.4 must preserve completed M1 and lean-M2 behavior while adding narrow error, logging, rendering, storage, runtime, deployment, and regression hardening.
 
 Latest release: v0.11.0.
@@ -254,6 +254,8 @@ M2.3 is complete and released as v0.11.0.
 * Early bootstrap, login, or renderer failures must use a minimal standalone sanitized response rather than recursively rebuilding the failed Admin path.
 * Logging must remain a small local request-synchronous diagnostic boundary outside the public document root.
 * Logging context must be explicit and allowlisted. Arbitrary request, environment, server, exception, object, or array dumps are forbidden.
+* Raw `Throwable::getMessage()` output must not be stored. Diagnostics records use controlled summaries, exception class, and project-relative source location only.
+* Error references use random opaque values and may be returned only after the corresponding local append succeeds. Warnings do not receive references.
 * Logging failure must be best-effort, non-recursive, and must not replace the intended sanitized response.
 * Storage and filesystem failures must fail closed, suppress response leakage, preserve existing active state where the capability contract requires it, and record only redacted diagnostics where useful.
 * Site Asset cleanup may remain best-effort and may leave an unreachable orphan; do not add a cleanup worker, queue, scheduler, or Media Library.
@@ -630,7 +632,7 @@ M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-The current checkpoint is M2.4 Platform Hardening Batch 1 documentation and contract lock.
+The current checkpoint is completion of M2.4 Platform Hardening Batch 2 Minimal Diagnostics Baseline.
 
 The next checkpoint is to:
 
@@ -638,7 +640,8 @@ The next checkpoint is to:
 * keep production events deferred until a consumer milestone proves one real caller/listener pair;
 * preserve the completed M2.3 formatting, branding, two-slot storage, controlled delivery, Admin integration, and Theme integration contracts;
 * keep M2.4 within the locked error, sanitized rendering, Admin error, logging, storage/filesystem, runtime, deployment, and regression scope;
-* keep Batch 1 documentation-only and obtain separate approval before Batch 2 runtime implementation;
+* preserve the completed request-scoped, synchronous, local, no-throw Batch 2 diagnostics contract;
+* obtain separate approval before Batch 3 application error-boundary implementation;
 * preserve shared-hosting operation without a new dependency, service process, or database change;
 * avoid recalling deferred capabilities without a concrete dependency and approval.
 
