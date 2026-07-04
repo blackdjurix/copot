@@ -4,6 +4,23 @@
 
 ### Added
 
+- Added the M2.4 Platform Hardening Batch 1 repository audit, architecture, scope lock, error taxonomy, sanitized rendering policy, Admin in-shell error rule, logging/redaction contract, storage/filesystem boundary, runtime/deployment checklist, batch plan, acceptance criteria, and risk register.
+
+### Changed
+
+- Made M2.4 Platform Hardening the active phase.
+- Recorded M2.3 Minimal Site Capabilities as complete and released as v0.11.0.
+
+### Notes
+
+- M2.4 Batch 1 is documentation-only and adds no runtime implementation, database change, dependency, Admin redesign, logger, queue, worker, scheduler, global rate limiter, observability platform, external service, or Media Library behavior.
+- Batch 2 Minimal Diagnostics Baseline and all later M2.4 implementation batches require separate approval.
+
+<details open>
+<summary>v0.11.0 - M2.3 Minimal Site Capabilities</summary>
+
+### Added
+
 - Added the M2.3 Minimal Site Capabilities scope, repository audit, architecture, batch plan, and acceptance contract.
 - Defined the deterministic site-level localization and formatting boundary.
 - Added the request-scoped `SiteFormatter` with explicit site-Timezone conversion.
@@ -41,7 +58,9 @@
 - M2.3 Batch 3 adds no upload, storage, URL delivery, Admin UI, Theme integration, database change, or production event.
 - M2.3 Batch 4 is verified and committed without widening into generic uploads or Media Library behavior.
 - M2.3 Batch 5 keeps upload handling limited to the two fixed site-identity slots and adds no generic file API, Media Library, or image editor.
-- M2.3 implementation and verification are complete and ready for merge and release preparation.
+- M2.3 implementation and verification are complete and released as v0.11.0.
+
+</details>
 
 <details open>
 <summary>v0.10.0 - M2.2 Extensibility Foundation</summary>
@@ -69,7 +88,7 @@
 
 - M2.2 implementation and verification are complete and released as v0.10.0.
 - Temporary fixture event names are test-only and do not establish production API.
-- M2.4 Platform Hardening remains a separate planned milestone.
+- At the v0.10.0 release, M2.4 Platform Hardening was still a separate future milestone.
 
 </details>
 

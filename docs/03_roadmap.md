@@ -203,9 +203,9 @@ The Post-M1 Roadmap Review is complete.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-M2.2 Extensibility Foundation is complete.
+M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities implementation and verification are complete and ready for merge and release preparation. M2.4 Platform Hardening remains the next planned milestone.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening is the current phase; Batch 1 documentation and contract lock are complete without runtime implementation.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -311,7 +311,7 @@ Production lifecycle events without a real consumer are also deferred. M2.2 must
 
 #### M2.3 Minimal Site Capabilities
 
-Status: Complete. Implementation, unified regression, and manual verification pass; merge and release preparation remain.
+Status: Complete and released as v0.11.0. Implementation, unified regression, and manual verification pass.
 
 ##### Minimum scope
 
@@ -354,19 +354,68 @@ The separate Core four-color palette and semantic-mapping proposal in `docs/11_b
 
 #### M2.4 Platform Hardening
 
-Status: Planned.
+Status: Current. Batch 1 documentation and contract lock are complete. No runtime implementation has started.
+
+Target release: To be assigned after implementation and release-readiness verification.
+
+##### Objective
+
+Harden the existing M1 and lean-M2 platform through narrow failure containment, sanitized rendering, minimal private diagnostics, controlled storage/filesystem failures, production runtime checks, and one release regression gate without adding a new product capability.
 
 ##### Minimum scope
 
 * consistent application error boundaries;
-* internal logging baseline without exposing sensitive details;
-* security and escaping review;
+* sanitized public and Admin rendering without raw exception, warning, trace, path, SQL, credential, environment, request-body, token, cookie, or client-filename leakage;
+* authenticated Admin errors rendered inside the existing shell only when application, authentication, user, and renderer state remain safely available;
+* small local request-synchronous logging baseline with safe error references, allowlisted context, redaction, and non-recursive failure behavior;
+* security, session-cookie, and escaping review;
 * authentication, permission, CSRF, upload, and storage review;
+* controlled missing, unreadable, unwritable, symlinked, partial-write, rename, read, and cleanup filesystem paths;
 * regression gate across M1 and lean M2;
-* shared-hosting operational checks;
+* shared-hosting runtime and deployment checklist;
 * documentation and release-readiness review.
 
 M2.4 is a release gate, not an invitation to build enterprise observability before the framework has managers to observe.
+
+##### Error taxonomy
+
+* Expected request and authorization outcomes retain controlled `403`, `404`, `419`, `422`, and related statuses and are not server-error logs by default.
+* Controlled dependency or storage availability failures normally use sanitized `503` responses and an operational diagnostic when useful.
+* Unexpected application failures use a sanitized `500`, one safe error reference, and one best-effort internal record.
+* Failures before normal Application/Admin services are available use a minimal standalone response.
+
+##### Non-goals
+
+M2.4 does not add:
+
+* a database/schema change or new dependency;
+* an Admin redesign or new UI system;
+* an enterprise logging framework, log viewer, metrics, tracing, observability platform, or external service;
+* a queue, worker, scheduler, daemon, retry service, or global rate limiter;
+* a generic storage abstraction, cloud adapter, Media Library, arbitrary uploads, or background cleanup;
+* raw public diagnostics through `APP_DEBUG`;
+* a broad Router, Module, Theme, Settings, Content, Taxonomy, or service-container rewrite.
+
+##### Batch plan
+
+1. Audit, architecture, documentation, and contract lock — complete; documentation only.
+2. Minimal Diagnostics Baseline — planned.
+3. Application Error Boundary and Rendering Safety — planned.
+4. Admin In-Shell Errors — planned.
+5. Runtime, Security, Storage, and Deployment Hardening — planned.
+6. Unified Regression and Release Readiness — planned.
+
+Batch 2 and all later runtime implementation require separate approval.
+
+##### Acceptance direction
+
+M2.4 completion requires sanitized early and normal failure responses, no partial render leakage, safe Admin in-shell errors, redacted and failure-safe diagnostics, covered storage/filesystem failures, production/shared-hosting checks, focused security regression, and one M2.4 gate that includes the existing complete M2.3 regression chain.
+
+Detailed scope, architecture, error taxonomy, sanitization/logging contract, storage boundary, runtime/deployment checklist, batches, acceptance criteria, and risks are defined in:
+
+```text
+docs/14_platform_hardening.md
+```
 
 ### M2 Exclusions and Deferred Capabilities
 

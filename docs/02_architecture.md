@@ -148,7 +148,7 @@ Settings Manager
 Theme Manager
 ```
 
-M2.3 Minimal Site Capabilities defines only the site-level formatting boundary and the Core site-identity contract for Site Name, optional Tagline, optional Logo, and optional Favicon. The existing Admin Settings surface persists registered values, but it does not become the future M3 Settings Manager. Themes consume a controlled read-only branding value and retain presentation ownership without direct Settings or database access. Batches 1–4 are approved. Batch 5 implements permission- and CSRF-protected Admin upload/removal controls and active-Theme consumption of the controlled branding value; canonical verification is pending. Final regression and completion remain Batch 6.
+M2.3 Minimal Site Capabilities defines only the site-level formatting boundary and the Core site-identity contract for Site Name, optional Tagline, optional Logo, and optional Favicon. The existing Admin Settings surface persists registered values, but it does not become the future M3 Settings Manager. Themes consume a controlled read-only branding value and retain presentation ownership without direct Settings or database access. Batches 1–6 are complete, the unified regression and manual verification pass, and M2.3 is released as v0.11.0.
 
 The separate Core four-color palette and semantic-mapping proposal in `docs/11_branding_foundation.md` remains deferred. Advanced theme colors and Custom CSS remain future Theme Manager concerns.
 
@@ -216,11 +216,49 @@ M2.3 Batch 2 implements `SiteFormatter` as one request-scoped object owned by `A
 
 M2.3 Batch 3 registers optional strictly validated `site.logo` and `site.favicon` JSON descriptors and adds one request-scoped `SiteBranding` snapshot. The snapshot exposes effective Site Name and Tagline without exposing descriptors, filenames, Settings, or database access.
 
-M2.3 Batch 4 adds request-scoped `SiteAssetStorage` for the fixed Logo and Favicon slots. It validates content MIME, image structure, dimensions, size, generated filenames, containment, and symlink boundaries; persists active descriptors through `SettingsService`; provides safe replacement/removal ordering; and serves only `/site-assets/logo` and `/site-assets/favicon` with controlled headers. `SiteBranding` receives only the stable URL when the active descriptor resolves to an available safe file. HTTP upload controls remain Batch 5.
+M2.3 Batch 4 adds request-scoped `SiteAssetStorage` for the fixed Logo and Favicon slots. It validates content MIME, image structure, dimensions, size, generated filenames, containment, and symlink boundaries; persists active descriptors through `SettingsService`; provides safe replacement/removal ordering; and serves only `/site-assets/logo` and `/site-assets/favicon` with controlled headers. `SiteBranding` receives only the stable URL when the active descriptor resolves to an available safe file. Batch 5 completed the permission- and CSRF-protected HTTP upload/removal controls and active-Theme integration.
 
 Complete M2.3 ownership, security, storage, batch, and acceptance contracts are defined in `docs/13_minimal_site_capabilities.md`.
 
 Feature routes should use these services instead of repeating security-sensitive logic manually.
+
+---
+
+## Platform Hardening Boundary
+
+M2.4 Platform Hardening is the current phase. Batch 1 locks the architecture and documentation only; it adds no runtime implementation.
+
+The planned hardening direction is:
+
+```text
+Request entry
+-> early installation/bootstrap decision
+-> normal Application bootstrap
+-> route/contribution registration
+-> request dispatch and rendering
+-> controlled Response
+```
+
+Unexpected failures that escape capability-specific handling must terminate at the smallest available boundary. A normal application boundary may use application-owned services that were constructed successfully. An early bootstrap boundary must remain standalone and must not rebuild dependencies that already failed.
+
+The error taxonomy distinguishes:
+
+* expected request, authorization, missing-resource, CSRF, and validation outcomes (`403`, `404`, `419`, `422`, and related controlled statuses);
+* controlled availability failures such as unavailable required storage or database access (`503`);
+* unexpected application failures (`500` with a safe reference and best-effort diagnostic record);
+* failures before the normal Application and Admin services are available (standalone sanitized response).
+
+The response boundary is always sanitized. `APP_DEBUG` does not authorize raw exception rendering. Responses exclude raw exceptions, warnings, traces, paths, SQL, credentials, environment data, request bodies, tokens, cookies, uploaded client filenames, and partial failed-template output.
+
+Plain values remain escaped for their output context. The existing Admin and Theme page-content slots are trusted rendered fragments owned only by controlled internal renderers; they are not general string escape bypasses.
+
+Authenticated Admin errors render through the existing Admin Shell only when Application construction, session/authentication state, current-user resolution, and `AdminPageRenderer` remain safely available. The original status is preserved. Earlier failures use a standalone sanitized response. This rule does not weaken permission checks or redesign Admin.
+
+The planned logging baseline is one small local request-synchronous diagnostic boundary outside `public/`. It accepts explicit allowlisted scalar context, sanitizes and limits exception messages, may include a project-relative source location, and correlates unexpected server responses through a safe error reference. It must not log credentials, DSNs, SQL, passwords, hashes, CSRF/session/auth values, cookies, environment contents, request bodies, arbitrary query values, client filenames, full server arrays, stack arguments, or unredacted absolute paths. Logging failure is best-effort and non-recursive.
+
+Filesystem ownership remains capability-specific. M2.4 does not add a generic storage abstraction. Missing, unreadable, unwritable, symlinked, partial-write, rename, read, and cleanup failures must remain controlled and must not emit warnings into responses. The existing Site Asset ordering remains authoritative: failed replacement preserves the previous active asset, while cleanup after a persisted replacement/removal is best-effort and may leave an unreachable orphan without adding a worker.
+
+Complete M2.4 scope, non-goals, error and redaction contracts, batch plan, acceptance criteria, deployment checklist, and risks are defined in `docs/14_platform_hardening.md`.
 
 ---
 
@@ -620,6 +658,18 @@ Secondary Target:
 
 All architectural decisions should consider compatibility with the primary deployment target first.
 
+M2.4 release-readiness requires:
+
+* `public/` as the web document root;
+* private `.env`, source, schema, storage, and log paths;
+* production `display_errors=Off` with host-level logging for failures before userland handling;
+* minimum necessary PHP-user write access for existing storage and the private diagnostic destination;
+* HTTPS-capable Secure session cookies with the existing HttpOnly and approved SameSite behavior;
+* PHP 8.2+ and the existing extension contract;
+* fail-closed Fileinfo-dependent uploads;
+* the configured Admin path and shared-hosting routing remaining authoritative;
+* no Node process, daemon, queue, worker, scheduler, external service, or advanced server module.
+
 ---
 
 ## Future Expansion Areas
@@ -640,6 +690,7 @@ M2 may introduce:
 * Admin UI Foundation
 * Extensibility Foundation
 * Minimal Site Capabilities
+* Platform Hardening
 * Editor Framework
 * Media Foundation
 * Image Service

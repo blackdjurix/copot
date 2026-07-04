@@ -1,0 +1,459 @@
+# M2.4 Platform Hardening
+
+## Status
+
+Current phase.
+
+Batch 1 documentation, repository audit, architecture, scope lock, non-goals, batch plan, acceptance criteria, and risk register are complete.
+
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
+
+No M2.4 runtime implementation has started. Batch 2 and all later implementation batches require a separate implementation approval.
+
+---
+
+## 1. Objective
+
+M2.4 is the final lean-M2 release gate. It hardens the existing copot runtime without widening the product surface or replacing the framework's lightweight shared-hosting architecture.
+
+The milestone establishes:
+
+* consistent application error boundaries;
+* sanitized public and Admin error rendering;
+* a minimal internal logging and redaction contract;
+* controlled storage and filesystem failure behavior;
+* focused authentication, permission, CSRF, upload, and escaping review;
+* explicit runtime and deployment checks;
+* one regression gate across M1 and lean M2.
+
+M2.4 improves failure containment and diagnosability. It does not add a new end-user capability.
+
+---
+
+## 2. Audit Baseline
+
+The Batch 1 audit found that existing capability-specific boundaries already provide useful foundations:
+
+* frontend Theme failures use a generic response;
+* Installer failures use controlled messages and avoid public credentials, SQL, paths, and traces;
+* Admin and public templates generally escape plain text with `htmlspecialchars()`;
+* Site Asset storage validates MIME, image structure, size, dimensions, generated names, containment, and symlink boundaries;
+* Settings reads have controlled definition-default fallback;
+* M2.1–M2.3 provide chained regression gates.
+
+The audit also found the gaps owned by M2.4:
+
+* no application-wide boundary covers normal bootstrap, route registration, module loading, dispatch, rendering, and response delivery;
+* caught failures are frequently discarded because no internal logging baseline exists;
+* several authenticated Admin `403`, `404`, `419`, `500`, and `503` paths render outside the Admin Shell;
+* output-buffer cleanup and trusted rendered-fragment ownership are not consistent across renderers;
+* storage cleanup failures are best-effort but not observable;
+* production runtime, cookie, error-display, logging, and document-root expectations are not one explicit release checklist;
+* the existing M2.3 regression chain does not yet cover the complete M2.4 failure matrix.
+
+---
+
+## 3. Scope Lock
+
+M2.4 includes only the following hardening work.
+
+### 3.1 Error boundaries
+
+* Add one minimal early/normal application failure boundary covering failures that currently escape route-local handling.
+* Preserve controlled route and domain validation behavior when the failure is expected.
+* Produce stable generic public responses for unexpected failures.
+* Preserve meaningful HTTP status codes without exposing the underlying exception.
+* Remove partial rendered output when rendering fails.
+
+### 3.2 Sanitized rendering
+
+* Audit public, Installer, authentication, Admin, module, and Theme rendering contexts.
+* Keep plain text escaped for its HTML context.
+* Define the existing page-content slot as a trusted rendered fragment owned only by controlled internal renderers.
+* Prevent raw exception messages, warnings, paths, SQL, credentials, environment data, request payloads, stack traces, and client filenames from reaching responses.
+* Keep production responses sanitized regardless of `APP_DEBUG`.
+
+### 3.3 Admin in-shell errors
+
+* Render authenticated Admin errors inside the existing Admin Shell when `Application`, authentication, the current user, and `AdminPageRenderer` remain safely available.
+* Preserve the original error status.
+* Use the existing Admin alert, panel, and action patterns without redesigning Admin.
+* Use a standalone sanitized response when bootstrap, session, authentication, or Admin rendering is unavailable.
+
+### 3.4 Internal logging baseline
+
+* Add one small request-synchronous local diagnostic boundary outside the public document root.
+* Record unexpected server failures and material degraded storage/runtime failures.
+* Correlate a safe response error reference with its internal record where a server error is rendered.
+* Fail safely when logging itself is unavailable.
+
+### 3.5 Storage and filesystem failures
+
+* Cover missing, unreadable, unwritable, symlinked, partially written, rename-failed, and delete-failed local paths used by existing runtime capabilities.
+* Preserve the M2.3 rule that failed Logo/Favicon replacement does not deactivate the previous valid asset.
+* Keep cleanup best-effort and observable without adding background cleanup.
+* Ensure filesystem warnings do not become response content.
+
+### 3.6 Runtime, security, and deployment review
+
+* Review existing authentication, permission, CSRF, upload, session-cookie, and escaping boundaries for regressions.
+* Lock production requirements for document root, error display, HTTPS/session cookies, private writable storage, and required PHP capabilities.
+* Preserve PHP 8.2+ and ordinary PHP/MySQL shared-hosting operation.
+
+### 3.7 Regression and release readiness
+
+* Add focused failure-injection coverage.
+* Add one M2.4 gate that includes the existing M2.3, M2.2, and M2.1 regression chain.
+* Complete manual public, Admin, runtime, and representative shared-hosting verification before release readiness.
+
+---
+
+## 4. Non-Goals
+
+M2.4 does not include:
+
+* a database or schema change;
+* a new dependency or package manager requirement;
+* an Admin redesign, Admin theme system, or new component library;
+* a general exception hierarchy rewrite;
+* an enterprise logging framework, log viewer, metrics system, tracing system, or observability platform;
+* an external logging, alerting, monitoring, or storage service;
+* a queue, worker, scheduler, daemon, retry service, or global rate limiter;
+* automated log rotation or retention infrastructure;
+* a generic storage abstraction, cloud adapter, CDN, FTP, or SFTP fallback;
+* a Media Library, media picker, arbitrary uploads, generic file management, or orphan browser;
+* automatic background cleanup of stale site assets;
+* broad Content, Taxonomy, Settings, Theme, Module, Router, or service-container redesign;
+* public raw exception details in local or debug mode;
+* a promise to catch PHP startup or parse failures that occur before the entrypoint can execute.
+
+---
+
+## 5. Error Taxonomy
+
+M2.4 uses four operational categories.
+
+### 5.1 Expected request and authorization outcomes
+
+Examples include invalid input, authentication failure, permission denial, missing resources, and invalid CSRF tokens.
+
+Expected statuses include `400`, `401` where applicable, `403`, `404`, `419`, and `422`.
+
+These outcomes:
+
+* use controlled messages;
+* preserve the appropriate status;
+* do not expose exception details;
+* are not logged as unexpected server failures by default.
+
+### 5.2 Controlled availability failures
+
+Examples include an unavailable database, unavailable required storage, or an operation that cannot safely continue.
+
+These outcomes normally use `503`, a controlled retry-safe message, and a warning/error diagnostic record when the failure is operationally useful.
+
+### 5.3 Unexpected application failures
+
+Unhandled `Throwable` instances from bootstrap, contribution loading, dispatch, rendering, or response preparation are unexpected failures.
+
+They use:
+
+* a generic `500` response unless a safer controlled status is already known;
+* no raw exception content;
+* one safe error reference;
+* one best-effort internal diagnostic record.
+
+### 5.4 Early runtime failures
+
+Failures before normal `Application` and Admin services are available use a minimal standalone sanitized response. The boundary must not attempt to construct dependencies that already failed.
+
+PHP startup, engine, web-server, and parse failures that happen before userland entrypoint execution remain the hosting environment's responsibility and must be handled by production PHP/web-server logging with `display_errors=Off`.
+
+---
+
+## 6. Sanitized Rendering Policy
+
+The response boundary is stricter than the internal diagnostic boundary.
+
+Responses must never contain:
+
+* raw exception or PHP warning text;
+* stack traces;
+* absolute filesystem paths;
+* SQL, DSNs, database credentials, or environment contents;
+* passwords, CSRF tokens, session identifiers, cookies, or authorization values;
+* request bodies or uploaded client filenames;
+* arbitrary module contribution diagnostics;
+* partially rendered template output from a failed render.
+
+Plain values must be escaped for their output context. URL, attribute, and text output must not be treated as interchangeable contexts.
+
+The Admin and Theme layout `$content` slot is a trusted rendered fragment, not a generic string escape bypass. Only controlled internal view rendering may create that fragment. Request data, setting values, exception messages, and module metadata must be escaped before entering it.
+
+`APP_DEBUG` must not enable raw exception rendering. Local diagnostics belong in the internal log or test output, not in an HTTP response.
+
+---
+
+## 7. Admin In-Shell Error Boundary
+
+An Admin error may render inside the existing shell only when all of the following are true:
+
+* normal `Application` construction succeeded;
+* the request resolves under the configured Admin path;
+* session and authentication state can be read safely;
+* the current authenticated user is available;
+* the Admin renderer can run without repeating the failed operation.
+
+The in-shell page must:
+
+* preserve `403`, `404`, `419`, `500`, or `503` as applicable;
+* use a generic title and existing Admin UI patterns;
+* avoid echoing the thrown exception;
+* show a safe error reference only for unexpected server failures;
+* avoid retry actions that repeat a state-changing request automatically.
+
+Guest Admin login errors and failures before the conditions above are met remain sanitized standalone or login-page responses. M2.4 does not weaken permission checks in order to render a nicer error page.
+
+---
+
+## 8. Logging and Redaction Contract
+
+The logging baseline is local, synchronous, small, and framework-owned. It is not a general logging framework.
+
+### 8.1 Minimum record
+
+A diagnostic record may contain only the fields needed for diagnosis:
+
+* ISO-8601 timestamp;
+* severity;
+* stable event name;
+* safe error reference when present;
+* exception class;
+* sanitized and length-limited message;
+* request method and normalized path when safely available;
+* project-relative source location when safely derivable;
+* explicit scalar context from a fixed allowlist.
+
+The exact line format and file name are Batch 2 implementation details, but records must remain append-safe and readable on shared hosting.
+
+### 8.2 Forbidden log data
+
+Logs must not contain:
+
+* passwords or password hashes;
+* database credentials, DSNs, or connection strings;
+* CSRF tokens, session IDs, cookies, or authorization headers;
+* `.env` contents;
+* request bodies or arbitrary query values;
+* SQL statements or bound values;
+* raw uploaded client filenames or file contents;
+* full server arrays;
+* stack arguments;
+* unredacted absolute paths.
+
+Exception messages must be sanitized and truncated before storage. Context is opt-in and allowlisted; dumping arbitrary arrays or objects is forbidden.
+
+### 8.3 Failure behavior
+
+Logging is best-effort. A missing or unwritable log destination must not:
+
+* expose the original exception;
+* replace the intended HTTP response;
+* cause recursive logging;
+* create a second uncaught failure.
+
+Normal validation, `403`, `404`, and `419` responses are not error-log events unless a separate unexpected failure caused them.
+
+---
+
+## 9. Storage and Filesystem Failure Boundary
+
+Existing capability ownership remains unchanged:
+
+* Installer owns `.env`, mutex, schema-source, and installation-marker operations;
+* Site Asset storage owns only fixed Logo and Favicon slots;
+* the logging baseline owns only its private diagnostic destination;
+* no generic storage service is introduced.
+
+Each owned operation must distinguish successful completion from missing, unreadable, unwritable, unsafe, partially written, rename-failed, and cleanup-failed states.
+
+Failure rules:
+
+* no warning text reaches HTTP output;
+* unsafe or symlinked paths fail closed;
+* a failed write or rename does not activate incomplete state;
+* a failed Site Asset persistence step leaves the previous descriptor active;
+* a failed cleanup may leave an unreachable orphan, but must not restore a removed descriptor or require a worker;
+* material cleanup failure is eligible for a redacted diagnostic record;
+* logging failure never changes the storage operation's public contract.
+
+M2.4 does not make filesystem and database operations globally atomic. Existing operation-specific ordering and transaction boundaries remain authoritative.
+
+---
+
+## 10. Runtime and Deployment Checklist
+
+Release-readiness verification must confirm:
+
+* the web document root points to `public/`, never the repository root;
+* `.env`, `storage/`, application code, logs, and database schema are not directly web-accessible;
+* production PHP uses `display_errors=Off` and host-level error logging for failures before userland handling;
+* `storage/` and the private log destination have the minimum required PHP-user permissions without broad public write access;
+* `storage/installed.lock` is valid before normal bootstrap;
+* PHP 8.2+ and the existing required extensions remain supported;
+* Fileinfo-dependent upload operations fail closed when Fileinfo is unavailable;
+* HTTPS deployments enable the Secure session-cookie setting while retaining HttpOnly and the approved SameSite policy;
+* session and CSRF behavior survives controlled `419` paths without exposing tokens;
+* the configured Admin path remains authoritative;
+* local Theme, module, and Site Asset paths preserve containment and symlink rejection;
+* no Node process, build daemon, queue, worker, scheduler, external service, or advanced server module is required;
+* representative Apache/shared-hosting routing and static Admin asset delivery still work;
+* backup, retention, and rotation of private logs remain an explicit operator responsibility in M2.4.
+
+---
+
+## 11. Batch Plan
+
+### Batch 1 — Audit, Architecture, and Contract Lock
+
+Status: Complete. Documentation only.
+
+* record M2.3 v0.11.0 completion;
+* make M2.4 the active phase;
+* lock scope and non-goals;
+* define error, sanitization, Admin, logging, filesystem, runtime, and deployment contracts;
+* define batches, acceptance criteria, and risks;
+* add no runtime implementation.
+
+### Batch 2 — Minimal Diagnostics Baseline
+
+Status: Planned.
+
+* implement the smallest local diagnostic sink and safe error reference;
+* implement redaction and non-recursive logging failure behavior;
+* add focused logging tests.
+
+### Batch 3 — Application Error Boundary and Rendering Safety
+
+Status: Planned.
+
+* contain early and normal application failures;
+* provide sanitized generic responses;
+* clean failed rendering buffers;
+* lock trusted rendered-fragment ownership;
+* add failure-injection tests.
+
+### Batch 4 — Admin In-Shell Errors
+
+Status: Planned.
+
+* centralize eligible authenticated Admin error presentation;
+* migrate plain Admin error responses where safe;
+* preserve permission, CSRF, status, and configured Admin-path behavior;
+* add focused Admin tests and manual accessibility checks.
+
+### Batch 5 — Runtime, Security, Storage, and Deployment Hardening
+
+Status: Planned.
+
+* complete focused auth, permission, CSRF, upload, and escaping review;
+* harden proven storage/filesystem warning and cleanup gaps;
+* lock environment/session deployment configuration;
+* complete shared-hosting operational checks.
+
+### Batch 6 — Unified Regression and Release Readiness
+
+Status: Planned.
+
+* add the M2.4 regression gate across M1 and lean M2;
+* run automated failure and redaction coverage;
+* complete manual public, Admin, runtime, and deployment verification;
+* finalize milestone and release-readiness documentation.
+
+Batch 2 must not begin as part of Batch 1 documentation work.
+
+---
+
+## 12. Acceptance Criteria
+
+M2.4 is complete only when all applicable criteria pass.
+
+### Error containment and rendering
+
+* Unexpected failures from normal bootstrap, route/contribution registration, dispatch, and rendering return a sanitized controlled response.
+* Public response bodies contain no exception detail, warning, trace, path, SQL, credential, environment content, client filename, or partial template output.
+* Expected `403`, `404`, `419`, and `422` outcomes retain their status and controlled behavior.
+* Authenticated Admin failures render in-shell when the boundary prerequisites are available.
+* Early and unsafe-to-render failures use a standalone sanitized response.
+* `APP_DEBUG` does not expose raw HTTP diagnostics.
+
+### Logging
+
+* Each unexpected server failure has at most one safe response reference and one corresponding diagnostic record.
+* Records contain only the approved minimum fields and allowlisted context.
+* Secret, token, credential, request-body, SQL, client-filename, and absolute-path fixtures are absent from logs.
+* Log write failure is non-recursive and does not change the sanitized response.
+* Expected validation and ordinary authorization outcomes are not logged as server errors.
+
+### Storage and filesystem
+
+* Missing, unreadable, unwritable, symlinked, partial-write, rename, read, and cleanup failures are covered where applicable.
+* Failed Site Asset replacement preserves the previously active valid asset.
+* Failed removal cleanup leaves no active descriptor and requires no queue or worker.
+* Filesystem warnings do not reach response content.
+
+### Runtime, security, and deployment
+
+* Authentication, permission, CSRF, session, upload, and escaping regression coverage passes.
+* HTTPS deployments can enable Secure cookies without a code patch.
+* Production documentation requires `public/` document root and `display_errors=Off`.
+* PHP 8.2+ and supported shared-hosting operation remain intact without a new dependency or service process.
+* Manual verification covers public and Admin error states, error references, inaccessible private files, unwritable logging/storage behavior, keyboard flow, responsive Admin shell, and representative shared-hosting delivery.
+
+### Regression and scope
+
+* The M2.4 gate includes all focused M2.4 tests and the complete existing M2.3 regression chain.
+* No database/schema change is introduced.
+* No dependency, external service, queue, worker, scheduler, global rate limiter, observability platform, or Media Library is introduced.
+* Documentation and changelog match the implemented milestone state.
+
+### Batch 1 acceptance
+
+Batch 1 is accepted when:
+
+* M2.3 is consistently recorded as complete and released as v0.11.0;
+* M2.4 is consistently recorded as the active phase;
+* this contract is linked from architecture, roadmap, governance, README, and changelog status;
+* stale wording that blocks M2.4 after the M2.3 release is removed;
+* repository consistency searches and `git diff --check` pass;
+* only documentation/status files change;
+* no runtime implementation exists in the Batch 1 diff.
+
+---
+
+## 13. Risks and Blockers
+
+Known risks are:
+
+* early bootstrap failures cannot safely depend on the full application or Admin renderer;
+* a global boundary must not swallow controlled status responses or weaken fail-fast extension behavior inside the application;
+* duplicated route-local renderers may require narrow cleanup without a broad View-system rewrite;
+* redaction that is too weak leaks secrets, while redaction that is too aggressive removes diagnostic value;
+* a local log can grow without bound unless operators apply manual retention because automated rotation is outside scope;
+* logging and storage may fail at the same time, so diagnostics must remain best-effort;
+* Windows development checks do not prove Linux shared-hosting permission, rename, symlink, and `flock()` behavior;
+* failures before PHP userland execution remain outside the application boundary;
+* changing plain Admin errors to in-shell pages requires regression updates without changing authorization semantics;
+* storage cleanup remains non-atomic with database persistence and may leave unreachable orphans by design.
+
+No Batch 1 blocker remains after M2.3 v0.11.0 release status is recorded consistently. Implementation decisions that exceed this contract require a new scope approval before Batch 2 or later work proceeds.
+
+---
+
+## 14. Explicit Batch 1 Boundary
+
+Batch 1 changes documentation and milestone status only.
+
+It does not modify `app/`, `bootstrap/`, `config/`, `database/`, `modules/`, `public/`, `resources/`, `routes/`, `storage/`, `tests/`, or `themes/`.
+
+It adds no logger, error handler, route behavior, Admin markup, filesystem operation, configuration key, test, dependency, or database change.
