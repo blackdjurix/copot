@@ -1,8 +1,6 @@
 <?php
 
 use Copot\Core\Response;
-use Copot\Core\ThemeException;
-use Copot\Core\ViewException;
 use Copot\Core\ModuleRepository;
 
 require_once __DIR__ . '/Services/Content.php';
@@ -74,10 +72,37 @@ $contentRenderView = function (string $view, array $data = []) use ($contentAdmi
 
     extract($data, EXTR_SKIP);
 
-    ob_start();
-    require $file;
+    $initialOutputLevel = ob_get_level();
 
-    return (string) ob_get_clean();
+    if (!@ob_start()) {
+        throw new RuntimeException('Content admin view output buffer is unavailable.');
+    }
+
+    try {
+        require $file;
+
+        if (ob_get_level() !== $initialOutputLevel + 1) {
+            throw new RuntimeException('Content admin view output buffer state is invalid.');
+        }
+
+        $rendered = @ob_get_clean();
+
+        if (!is_string($rendered)) {
+            throw new RuntimeException('Content admin view output buffer could not be read.');
+        }
+
+        return $rendered;
+    } catch (Throwable $exception) {
+        while (ob_get_level() > $initialOutputLevel) {
+            $level = ob_get_level();
+
+            if (!@ob_end_clean() || ob_get_level() >= $level) {
+                break;
+            }
+        }
+
+        throw $exception;
+    }
 };
 
 $contentUserCanAny = function ($user, array $permissions): bool {
@@ -356,16 +381,12 @@ $app->router()->get('/content/{slug}', function ($request, array $params) use ($
         return Response::html('404 Not Found', 404);
     }
 
-    try {
-        return Response::html($app->viewRenderer()->renderFile(
-            $app->viewResolver()->resolve('content::show'),
-            ['content' => $entry],
-            null,
-            $entry->title()
-        ));
-    } catch (ThemeException|ViewException|\Throwable) {
-        return Response::html('<h1>Theme rendering error.</h1>', 500);
-    }
+    return Response::html($app->viewRenderer()->renderFile(
+        $app->viewResolver()->resolve('content::show'),
+        ['content' => $entry],
+        null,
+        $entry->title()
+    ));
 });
 
 $app->router()->get($app->adminUrl()->childUrl('content/create'), function ($request) use (

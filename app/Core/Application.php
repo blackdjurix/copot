@@ -5,6 +5,8 @@ namespace Copot\Core;
 use Copot\Core\Admin\AdminDashboardRegistry;
 use Copot\Core\Admin\AdminPageRenderer;
 use Copot\Core\Admin\AdminUrl;
+use RuntimeException;
+use Throwable;
 
 class Application
 {
@@ -240,7 +242,66 @@ class Application
 
     public function run(Request $request): Response
     {
-        return $this->router->dispatch($request);
+        $initialOutputLevel = ob_get_level();
+
+        if (!@ob_start()) {
+            return ServerErrorResponse::fromThrowable(
+                new RuntimeException('Application dispatch output buffer is unavailable.'),
+                $this->diagnostics,
+                'application.dispatch.failure',
+                $this->failureContext($request)
+            );
+        }
+
+        try {
+            $response = $this->router->dispatch($request);
+
+            if (ob_get_level() !== $initialOutputLevel + 1) {
+                throw new RuntimeException('Application dispatch output buffer state is invalid.');
+            }
+
+            $unexpectedOutput = @ob_get_clean();
+
+            if (!is_string($unexpectedOutput)) {
+                throw new RuntimeException('Application dispatch output buffer could not be read.');
+            }
+
+            if ($unexpectedOutput !== '') {
+                throw new RuntimeException('Application route emitted direct output.');
+            }
+
+            return $response;
+        } catch (Throwable $exception) {
+            $this->discardOutputBuffersTo($initialOutputLevel);
+
+            return ServerErrorResponse::fromThrowable(
+                $exception,
+                $this->diagnostics,
+                'application.dispatch.failure',
+                $this->failureContext($request)
+            );
+        }
+    }
+
+    private function failureContext(Request $request): array
+    {
+        return [
+            'component' => 'application',
+            'operation' => 'dispatch',
+            'method' => $request->method(),
+            'path' => $request->path(),
+        ];
+    }
+
+    private function discardOutputBuffersTo(int $initialLevel): void
+    {
+        while (ob_get_level() > $initialLevel) {
+            $level = ob_get_level();
+
+            if (!@ob_end_clean() || ob_get_level() >= $level) {
+                break;
+            }
+        }
     }
 
     private function initializeRuntimeSettings(SettingsRegistry $registry): void

@@ -69,10 +69,37 @@ $taxonomyRenderView = function (string $view, array $data = []) use ($taxonomyAd
 
     extract($data, EXTR_SKIP);
 
-    ob_start();
-    require $file;
+    $initialOutputLevel = ob_get_level();
 
-    return (string) ob_get_clean();
+    if (!@ob_start()) {
+        throw new RuntimeException('Taxonomy admin view output buffer is unavailable.');
+    }
+
+    try {
+        require $file;
+
+        if (ob_get_level() !== $initialOutputLevel + 1) {
+            throw new RuntimeException('Taxonomy admin view output buffer state is invalid.');
+        }
+
+        $rendered = @ob_get_clean();
+
+        if (!is_string($rendered)) {
+            throw new RuntimeException('Taxonomy admin view output buffer could not be read.');
+        }
+
+        return $rendered;
+    } catch (Throwable $exception) {
+        while (ob_get_level() > $initialOutputLevel) {
+            $level = ob_get_level();
+
+            if (!@ob_end_clean() || ob_get_level() >= $level) {
+                break;
+            }
+        }
+
+        throw $exception;
+    }
 };
 
 $taxonomyRenderAdmin = function (

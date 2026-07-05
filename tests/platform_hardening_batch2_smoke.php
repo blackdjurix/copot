@@ -373,7 +373,6 @@ try {
         str_contains($diagnosticsSource, 'is_link($this->logPath)'),
         'Diagnostics no longer rejects a symlinked log file.'
     );
-    $assert(!str_contains($indexSource, 'Diagnostics'), 'Batch 2 modified the public entrypoint for diagnostics.');
     $assert(!str_contains($indexSource, 'set_exception_handler'), 'Batch 2 added a global exception handler.');
     $assert(!str_contains($indexSource, 'set_error_handler'), 'Batch 2 added a global error handler.');
     $assert(!str_contains($routerSource, 'Diagnostics'), 'Batch 2 changed Router diagnostics behavior.');

@@ -7,16 +7,20 @@
 - Added the M2.4 Platform Hardening Batch 1 repository audit, architecture, scope lock, error taxonomy, sanitized rendering policy, Admin in-shell error rule, logging/redaction contract, storage/filesystem boundary, runtime/deployment checklist, batch plan, acceptance criteria, and risk register.
 - Added request-scoped `Diagnostics` with append-locked local JSON-line records, opaque error references returned only after successful writes, controlled summaries, project-relative source locations, and fixed allowlisted context.
 - Added focused M2.4 Batch 2 diagnostics coverage for formatting, uniqueness, redaction, invalid events, unavailable sinks, symlink/unwritable behavior, Application ownership, scope guards, and repository-log isolation.
+- Added sanitized pre-autoload emergency, post-autoload bootstrap, and request-scoped dispatch failure boundaries with optional Diagnostics references.
+- Added standalone `ServerErrorResponse`, exact owned-buffer cleanup, partial-output rejection, and focused Batch 3 failure-path coverage.
 
 ### Changed
 
 - Made M2.4 Platform Hardening the active phase.
 - Recorded M2.3 Minimal Site Capabilities as complete and released as v0.11.0.
 - Completed M2.4 Batch 2 Minimal Diagnostics Baseline without adding a global error boundary or changing response behavior.
+- Completed M2.4 Batch 3 Application Error Boundary and Rendering Safety without changing Router, Response, Admin in-shell rendering, or the Batch 2 Diagnostics contract.
 
 ### Verification
 
 - M2.4 Batch 2 focused diagnostics smoke coverage passes on the canonical PHP 8.5 runtime.
+- M2.4 Batch 3 focused boundary/rendering smoke coverage passes with `display_errors=1`.
 - The complete M2.3 regression gate continues to pass.
 - PHP syntax checks and repository-log isolation checks pass.
 
@@ -24,7 +28,9 @@
 
 - Batch 2 does not store raw `Throwable::getMessage()` output, does not return a dead error reference after append failure, and does not add a secondary sink.
 - Batch 2 adds no global error boundary, response integration, database/config change, dependency, Admin redesign, queue, worker, scheduler, rotation service, observability platform, external service, or Media Library behavior.
-- Batch 3 Application Error Boundary and all later M2.4 implementation batches require separate approval.
+- Batch 3 defaults unexpected failures to `500`; `503` requires an explicit positively identified availability condition and is not inferred from every `PDOException`.
+- Batch 3 preserves trusted internal raw-HTML fragments without introducing a `SafeHtml` abstraction.
+- Batch 4 Admin In-Shell Errors and all later M2.4 implementation batches require separate approval.
 
 <details open>
 <summary>v0.11.0 - M2.3 Minimal Site Capabilities</summary>

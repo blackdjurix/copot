@@ -2,6 +2,9 @@
 
 namespace Copot\Core;
 
+use RuntimeException;
+use Throwable;
+
 class View
 {
     public function __construct(private string $viewPath)
@@ -31,9 +34,41 @@ class View
 
         extract($data, EXTR_SKIP);
 
-        ob_start();
-        require $resolvedFile;
+        $initialOutputLevel = ob_get_level();
 
-        return (string) ob_get_clean();
+        if (!@ob_start()) {
+            throw new RuntimeException('View output buffer is unavailable.');
+        }
+
+        try {
+            require $resolvedFile;
+
+            if (ob_get_level() !== $initialOutputLevel + 1) {
+                throw new RuntimeException('View output buffer state is invalid.');
+            }
+
+            $content = @ob_get_clean();
+
+            if (!is_string($content)) {
+                throw new RuntimeException('View output buffer could not be read.');
+            }
+
+            return $content;
+        } catch (Throwable $exception) {
+            $this->discardOutputBuffersTo($initialOutputLevel);
+
+            throw $exception;
+        }
+    }
+
+    private function discardOutputBuffersTo(int $initialLevel): void
+    {
+        while (ob_get_level() > $initialLevel) {
+            $level = ob_get_level();
+
+            if (!@ob_end_clean() || ob_get_level() >= $level) {
+                break;
+            }
+        }
     }
 }

@@ -423,7 +423,7 @@ Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON des
 
 ## M2.4 Platform Hardening
 
-M2.4 is the current phase. Batch 1 documentation and contract lock are complete. Batch 2 Minimal Diagnostics Baseline is implemented and focused verification passes. Batch 3 Application Error Boundary has not started and requires separate approval.
+M2.4 is the current phase. Batch 1 documentation/contract lock, Batch 2 Minimal Diagnostics Baseline, and Batch 3 Application Error Boundary and Rendering Safety are complete. Batch 4 Admin In-Shell Errors has not started and requires separate approval.
 
 The locked scope covers:
 
@@ -438,6 +438,8 @@ The locked scope covers:
 M2.4 does not add a database change, dependency, Admin redesign, logging framework, observability platform, external service, queue, worker, scheduler, global rate limiter, generic storage abstraction, Media Library, arbitrary uploads, or background cleanup.
 
 Batch 2 adds one request-scoped `Diagnostics` instance per `Application`. It writes append-locked JSON lines only to `storage/logs/copot.log`, omits raw exception messages, keeps source locations project-relative, accepts only fixed scalar context, returns an opaque `ERR-` reference only after a successful append, and returns `null`/`false` without a secondary sink when logging is unavailable. It does not register a global handler or change public/Admin rendering.
+
+Batch 3 adds a fixed pre-autoload emergency `500`, a post-autoload bootstrap boundary, and an `Application::run()` dispatch boundary without changing Router or Response. Unexpected failures default to sanitized standalone `500` responses and include an opaque reference only when Diagnostics writes successfully. `503` remains an explicit status for positively identified availability failures; `PDOException` is not implicitly mapped. Boundary and renderer-owned buffers are cleaned back to their exact caller level, direct/partial output is rejected, and public Theme rendering failures now reach the centralized dispatch boundary. Admin in-shell presentation remains Batch 4.
 
 Production release-readiness requires `public/` as the document root, `display_errors=Off`, private writable storage/logs, HTTPS-capable Secure session cookies, the existing PHP 8.2+ contract, and no daemon or build process.
 

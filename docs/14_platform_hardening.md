@@ -8,9 +8,11 @@ Batch 1 documentation, repository audit, architecture, scope lock, non-goals, ba
 
 Batch 2 Minimal Diagnostics Baseline is implemented and focused verification passes.
 
+Batch 3 Application Error Boundary and Rendering Safety is implemented and focused verification passes.
+
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-Batch 3 Application Error Boundary and all later implementation batches require a separate implementation approval.
+Batch 4 Admin In-Shell Errors and all later implementation batches require a separate implementation approval.
 
 ---
 
@@ -165,11 +167,15 @@ They use:
 * one safe error reference;
 * one best-effort internal diagnostic record.
 
+Batch 3 defaults all unexpected failures to `500`. `503` may be selected only through an explicit controlled status when the caller positively knows the failure is availability-related. Exception class alone, including `PDOException`, and raw exception-message parsing are not sufficient classification.
+
 ### 5.4 Early runtime failures
 
 Failures before normal `Application` and Admin services are available use a minimal standalone sanitized response. The boundary must not attempt to construct dependencies that already failed.
 
 PHP startup, engine, web-server, and parse failures that happen before userland entrypoint execution remain the hosting environment's responsibility and must be handled by production PHP/web-server logging with `display_errors=Off`.
+
+Batch 3 adds a fixed pre-autoload emergency boundary for failures while loading the Core autoloader. It has no Diagnostics dependency, exposes no reference, and emits only a fixed `500` document. After autoload succeeds, the bootstrap boundary may use standalone local Diagnostics. Application dispatch uses the request-scoped Diagnostics instance owned by `Application`.
 
 ---
 
@@ -191,6 +197,10 @@ Responses must never contain:
 Plain values must be escaped for their output context. URL, attribute, and text output must not be treated as interchangeable contexts.
 
 The Admin and Theme layout `$content` slot is a trusted rendered fragment, not a generic string escape bypass. Only controlled internal view rendering may create that fragment. Request data, setting values, exception messages, and module metadata must be escaped before entering it.
+
+Batch 3 does not introduce a `SafeHtml` type. `Response::html()`, Router scalar HTML returns, Theme `$content`, and Admin `$content` remain trusted internal contracts. This trust does not sanitize their inputs; each renderer remains responsible for contextual escaping before constructing the fragment.
+
+Every Batch 3 bootstrap, dispatch, and PHP-view rendering boundary records its caller output-buffer level. On failure it removes all buffers it owns back to that exact level, without closing caller-owned buffers. Unbalanced nested buffers and direct output outside returned responses are treated as unexpected failures. `Response::send()` remains outside recovery because already-sent output cannot be replaced reliably.
 
 `APP_DEBUG` must not enable raw exception rendering. Local diagnostics belong in the internal log or test output, not in an HTTP response.
 
@@ -356,13 +366,17 @@ Status: Complete.
 
 ### Batch 3 — Application Error Boundary and Rendering Safety
 
-Status: Planned.
+Status: Complete.
 
-* contain early and normal application failures;
-* provide sanitized generic responses;
-* clean failed rendering buffers;
-* lock trusted rendered-fragment ownership;
-* add failure-injection tests.
+* added a fixed pre-autoload emergency `500` boundary;
+* added a post-autoload request/installation/bootstrap boundary using standalone Diagnostics;
+* added an `Application::run()` dispatch boundary using request-scoped Diagnostics;
+* added standalone sanitized `ServerErrorResponse` output with optional successful-log references;
+* kept unexpected failures at `500` unless an explicit positive availability classification selects `503`;
+* removed public route-local rendering catches that swallowed unexpected Theme/View failures;
+* cleaned View, ViewRenderer, Content, Taxonomy, Example, bootstrap, and dispatch-owned buffers back to exact caller levels;
+* preserved trusted internal HTML fragments without a new abstraction;
+* added focused `display_errors=1`, leak, partial-output, bootstrap, dispatch, rendering, and repository-log-isolation coverage.
 
 ### Batch 4 — Admin In-Shell Errors
 
@@ -391,7 +405,7 @@ Status: Planned.
 * complete manual public, Admin, runtime, and deployment verification;
 * finalize milestone and release-readiness documentation.
 
-Batch 3 must not begin without separate implementation approval.
+Batch 4 must not begin without separate implementation approval.
 
 ---
 
@@ -407,6 +421,10 @@ M2.4 is complete only when all applicable criteria pass.
 * Authenticated Admin failures render in-shell when the boundary prerequisites are available.
 * Early and unsafe-to-render failures use a standalone sanitized response.
 * `APP_DEBUG` does not expose raw HTTP diagnostics.
+* Pre-autoload failures use a fixed generic `500` without Diagnostics or a reference.
+* Post-autoload bootstrap and dispatch failures use a reference only when their diagnostic append succeeds.
+* Unexpected `PDOException` instances remain `500` unless a caller explicitly and positively classifies an availability failure.
+* Boundary and renderer failures restore the exact caller output-buffer level and expose no partial output.
 
 ### Logging
 
@@ -470,7 +488,7 @@ Known risks are:
 * changing plain Admin errors to in-shell pages requires regression updates without changing authorization semantics;
 * storage cleanup remains non-atomic with database persistence and may leave unreachable orphans by design.
 
-No Batch 2 blocker remains. Windows did not permit symlink creation during focused verification, so the implemented symlink rejection remains covered by source assertions and requires confirmation on a symlink-capable Linux/shared-hosting environment. Implementation decisions that exceed this contract require a new scope approval before Batch 3 or later work proceeds.
+No Batch 3 blocker remains. Windows did not permit symlink creation during Batch 2 focused verification, so the implemented Diagnostics symlink rejection still requires confirmation on a symlink-capable Linux/shared-hosting environment. Failures in `public/index.php` itself, PHP/web-server startup, hard process termination, memory exhaustion, and response transport after bytes are sent remain outside reliable userland recovery. Implementation decisions that exceed this contract require a new scope approval before Batch 4 or later work proceeds.
 
 ---
 

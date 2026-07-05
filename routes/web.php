@@ -1,20 +1,14 @@
 <?php
 
 use Copot\Core\Response;
-use Copot\Core\ThemeException;
-use Copot\Core\ViewException;
 
 $app->router()->get('/', function () use ($app): Response {
-    try {
-        return Response::html($app->viewRenderer()->renderFile(
-            $app->viewResolver()->resolve('core::home'),
-            [],
-            null,
-            $app->branding()->name()
-        ));
-    } catch (ThemeException|ViewException|\Throwable) {
-        return Response::html('<h1>Theme rendering error.</h1>', 500);
-    }
+    return Response::html($app->viewRenderer()->renderFile(
+        $app->viewResolver()->resolve('core::home'),
+        [],
+        null,
+        $app->branding()->name()
+    ));
 });
 
 $app->router()->get('/theme-assets/{themeId}/{assetPath}', function ($request, array $params) use ($app): Response {

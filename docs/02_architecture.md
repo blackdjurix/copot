@@ -226,7 +226,7 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ## Platform Hardening Boundary
 
-M2.4 Platform Hardening is the current phase. Batch 1 locks the architecture and documentation. Batch 2 implements the minimal diagnostics baseline without adding an application error boundary or changing response rendering.
+M2.4 Platform Hardening is the current phase. Batch 1 locks the architecture and documentation. Batch 2 implements the minimal diagnostics baseline. Batch 3 implements sanitized application boundaries and exact owned-buffer cleanup without changing Router, Response, or Admin in-shell rendering.
 
 The planned hardening direction is:
 
@@ -241,6 +241,14 @@ Request entry
 
 Unexpected failures that escape capability-specific handling must terminate at the smallest available boundary. A normal application boundary may use application-owned services that were constructed successfully. An early bootstrap boundary must remain standalone and must not rebuild dependencies that already failed.
 
+Batch 3 uses three narrow boundaries:
+
+* a fixed pre-autoload emergency boundary that can return only a generic `500` without Diagnostics or a reference;
+* a post-autoload boundary around request capture, installation routing, Installer/normal bootstrap, route/module registration, and response preparation, using a standalone local Diagnostics instance;
+* an `Application::run()` dispatch boundary using the request-scoped Application Diagnostics instance.
+
+No global exception, error, or shutdown-handler framework is registered. `Response::send()` remains outside recovery because a second response cannot safely replace bytes already sent.
+
 The error taxonomy distinguishes:
 
 * expected request, authorization, missing-resource, CSRF, and validation outcomes (`403`, `404`, `419`, `422`, and related controlled statuses);
@@ -248,9 +256,13 @@ The error taxonomy distinguishes:
 * unexpected application failures (`500` with a safe reference and best-effort diagnostic record);
 * failures before the normal Application and Admin services are available (standalone sanitized response).
 
+Unexpected failures default to `500`. `503` is available only when a caller positively identifies an availability failure through an explicit controlled status. Batch 3 does not infer availability by parsing exception messages and does not map every `PDOException` to `503`.
+
 The response boundary is always sanitized. `APP_DEBUG` does not authorize raw exception rendering. Responses exclude raw exceptions, warnings, traces, paths, SQL, credentials, environment data, request bodies, tokens, cookies, uploaded client filenames, and partial failed-template output.
 
 Plain values remain escaped for their output context. The existing Admin and Theme page-content slots are trusted rendered fragments owned only by controlled internal renderers; they are not general string escape bypasses.
+
+`View`, `ViewRenderer`, Content, Taxonomy, Example, bootstrap, and dispatch rendering paths record their caller output-buffer level. They must close every owned buffer back to that exact level on failure, reject unbalanced nested buffers, and reject direct output outside the returned response. They must not close a caller-owned buffer. Existing module renderers retain their focused local structure rather than being refactored into a new abstraction.
 
 Authenticated Admin errors render through the existing Admin Shell only when Application construction, session/authentication state, current-user resolution, and `AdminPageRenderer` remain safely available. The original status is preserved. Earlier failures use a standalone sanitized response. This rule does not weaken permission checks or redesign Admin.
 
@@ -258,7 +270,7 @@ Batch 2 adds one request-scoped `Diagnostics` instance per `Application`. The se
 
 Diagnostics must not log credentials, DSNs, SQL, passwords, hashes, CSRF/session/auth values, cookies, environment contents, request bodies, arbitrary query values, client filenames, full server arrays, stack arguments, or unredacted absolute paths. Missing, unsafe, symlinked, or unwritable destinations return `null`/`false` without throwing, emitting output, creating the directory, calling a secondary sink, or recursively logging the logging failure.
 
-Batch 2 does not register an exception/error/shutdown handler and does not modify `public/index.php`, Router, Admin rendering, routes, or response behavior. Application and early-runtime boundary integration remains Batch 3.
+Batch 2 does not register an exception/error/shutdown handler. Batch 3 integrates Diagnostics at the post-autoload bootstrap and Application dispatch boundaries while preserving the Batch 2 sink, reference, redaction, and failure contracts.
 
 Filesystem ownership remains capability-specific. M2.4 does not add a generic storage abstraction. Missing, unreadable, unwritable, symlinked, partial-write, rename, read, and cleanup failures must remain controlled and must not emit warnings into responses. The existing Site Asset ordering remains authoritative: failed replacement preserves the previous active asset, while cleanup after a persisted replacement/removal is best-effort and may leave an unreachable orphan without adding a worker.
 

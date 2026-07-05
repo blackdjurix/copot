@@ -29,7 +29,8 @@ Current work:
 * M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 * M2.4 Batch 1 repository audit, architecture, documentation, scope lock, non-goals, batch plan, acceptance criteria, and risk register are complete.
 * M2.4 Batch 2 Minimal Diagnostics Baseline is implemented with request-scoped local JSON-line diagnostics, safe error references, strict context filtering, no raw exception messages, and no-throw sink failure behavior.
-* Batch 3 Application Error Boundary and all later implementation batches remain planned and require separate approval.
+* M2.4 Batch 3 Application Error Boundary and Rendering Safety is implemented with sanitized pre-autoload, bootstrap, and dispatch boundaries plus exact owned-buffer cleanup.
+* Batch 4 Admin In-Shell Errors and all later implementation batches remain planned and require separate approval.
 * M2.4 must preserve completed M1 and lean-M2 behavior while adding narrow error, logging, rendering, storage, runtime, deployment, and regression hardening.
 
 Latest release: v0.11.0.
@@ -252,6 +253,9 @@ M2.3 is complete and released as v0.11.0.
 * `APP_DEBUG` must not enable raw exception rendering in HTTP responses.
 * Authenticated Admin errors should render inside the existing Admin Shell only when normal application, session, authentication, user, and renderer state remain safely available.
 * Early bootstrap, login, or renderer failures must use a minimal standalone sanitized response rather than recursively rebuilding the failed Admin path.
+* Pre-autoload failures use a fixed emergency `500` without Diagnostics. Post-autoload bootstrap and dispatch failures use Diagnostics and expose a reference only after logging succeeds.
+* Unexpected failures default to `500`. `503` requires an explicit positively identified availability condition and must not be inferred by parsing raw exception messages or by broadly classifying every `PDOException`.
+* Application and renderer boundaries must clean every buffer they own back to the exact caller level and reject direct or unbalanced output.
 * Logging must remain a small local request-synchronous diagnostic boundary outside the public document root.
 * Logging context must be explicit and allowlisted. Arbitrary request, environment, server, exception, object, or array dumps are forbidden.
 * Raw `Throwable::getMessage()` output must not be stored. Diagnostics records use controlled summaries, exception class, and project-relative source location only.
@@ -632,7 +636,7 @@ M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-The current checkpoint is completion of M2.4 Platform Hardening Batch 2 Minimal Diagnostics Baseline.
+The current checkpoint is completion of M2.4 Platform Hardening Batch 3 Application Error Boundary and Rendering Safety.
 
 The next checkpoint is to:
 
@@ -641,7 +645,8 @@ The next checkpoint is to:
 * preserve the completed M2.3 formatting, branding, two-slot storage, controlled delivery, Admin integration, and Theme integration contracts;
 * keep M2.4 within the locked error, sanitized rendering, Admin error, logging, storage/filesystem, runtime, deployment, and regression scope;
 * preserve the completed request-scoped, synchronous, local, no-throw Batch 2 diagnostics contract;
-* obtain separate approval before Batch 3 application error-boundary implementation;
+* preserve the completed sanitized bootstrap/dispatch boundaries, standalone server errors, trusted-fragment contract, and exact owned-buffer cleanup;
+* obtain separate approval before Batch 4 Admin in-shell error implementation;
 * preserve shared-hosting operation without a new dependency, service process, or database change;
 * avoid recalling deferred capabilities without a concrete dependency and approval.
 
