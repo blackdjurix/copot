@@ -2,7 +2,7 @@
 
 ## Status
 
-Current phase.
+Implementation complete. Ready for merge, tag, and release preparation.
 
 Batch 1 documentation, repository audit, architecture, scope lock, non-goals, batch plan, acceptance criteria, and risk register are complete.
 
@@ -14,7 +14,11 @@ Batch 4 Admin In-Shell Errors is implemented and focused verification passes. El
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-Batch 5 Runtime, Security, Storage, and Deployment Hardening is implemented and focused verification passes. Batch 6 Unified Regression and Release Readiness requires separate implementation approval.
+Batch 5 Runtime, Security, Storage, and Deployment Hardening is implemented and focused verification passes.
+
+Batch 6 Unified Regression and Release Readiness is implemented. The chained M2.4 regression gate covers all focused M2.4 tests plus the complete M2.3 regression chain, applicable local/manual verification passes, runtime Site Asset output is ignored by Git, and deployment-only checks remain explicitly recorded for real HTTPS/production environments.
+
+M2.4 implementation is complete. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
 
 ---
 
@@ -409,14 +413,34 @@ Batch 5:
 
 ### Batch 6 — Unified Regression and Release Readiness
 
-Status: Planned.
+Status: Implemented.
 
-* add the M2.4 regression gate across M1 and lean M2;
-* run automated failure and redaction coverage;
-* complete manual public, Admin, runtime, and deployment verification;
-* finalize milestone and release-readiness documentation.
+* adds `tests/platform_hardening_m2_4_regression.php` as the single M2.4 gate;
+* runs focused M2.4 Batches 2–5 and then the complete M2.3 regression chain, which already includes M2.2 and M2.1;
+* records passed applicable local/manual public, Admin, session, CSRF, Site Asset lifecycle, controlled-missing-asset, leak, and diagnostics checks;
+* ignores runtime `storage/site-assets/` output so manual uploads do not pollute Git status;
+* records live HTTPS Secure-cookie verification and production `public/` document-root isolation as deployment-environment checks rather than claiming unperformed live verification;
+* finalizes milestone and release-readiness documentation without changing runtime architecture or adding product capability.
 
-Batch 6 must not begin without separate implementation approval.
+M2.4 implementation is complete and ready for merge, tag, and release preparation.
+
+### Batch 6 verification record
+
+Applicable local/runtime verification:
+
+* `SESSION_SECURE=false` on local HTTP produces a session cookie with `HttpOnly` and `SameSite=Lax` and without `Secure`;
+* login, logout, CSRF, Logo/Favicon upload, replacement, removal, and delivery pass;
+* missing Site Asset behavior fails in a controlled way;
+* response checks expose no PHP warning, absolute path, internal filename, stack trace, SQL, or exception detail;
+* Diagnostics inspection contains only controlled safe context for the exercised warning paths.
+
+Deployment-environment verification remains:
+
+* confirm `SESSION_SECURE=true` emits a Secure session cookie on a real HTTPS environment;
+* confirm the production virtual host/document root points to `public/` and direct requests cannot expose `.env`, `storage/`, `app/`, `config/`, or other repository-private paths;
+* confirm symlink rejection and host-specific filesystem semantics on a symlink-capable Linux/shared-hosting environment where applicable.
+
+These environment-dependent checks do not hide an unresolved local implementation failure, but they remain explicit deployment responsibilities.
 
 ---
 

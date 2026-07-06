@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening is the current phase; Batches 1–3 are complete.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening implementation is complete through Batch 6 and is ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -354,9 +354,9 @@ The separate Core four-color palette and semantic-mapping proposal in `docs/11_b
 
 #### M2.4 Platform Hardening
 
-Status: Current. Batches 1–5 are complete. Batch 6 Unified Regression and Release Readiness is next.
+Status: Implementation complete. Batches 1–6 are complete; unified regression and applicable local/manual verification pass. Ready for merge, tag, and release preparation.
 
-Target release: To be assigned after implementation and release-readiness verification.
+Target release: To be assigned during release preparation.
 
 ##### Objective
 
@@ -401,15 +401,15 @@ M2.4 does not add:
 1. Audit, architecture, documentation, and contract lock — complete; documentation only.
 2. Minimal Diagnostics Baseline — complete.
 3. Application Error Boundary and Rendering Safety — complete.
-4. Admin In-Shell Errors — planned.
-5. Runtime, Security, Storage, and Deployment Hardening — planned.
-6. Unified Regression and Release Readiness — planned.
+4. Admin In-Shell Errors — complete.
+5. Runtime, Security, Storage, and Deployment Hardening — complete.
+6. Unified Regression and Release Readiness — complete.
 
 Batch 2 provides request-scoped synchronous local diagnostics, controlled JSON-line records, opaque references returned only after successful append, strict context filtering, no raw exception messages, and no-throw unavailable-sink behavior. It adds no global handler or response integration.
 
 Batch 3 provides sanitized pre-autoload, post-autoload bootstrap, and Application dispatch failure boundaries; standalone server-error responses with references only after successful diagnostics; exact owned-buffer cleanup; and centralized unexpected public rendering failures. Unexpected failures default to `500`; `503` requires an explicit positively identified availability condition.
 
-Batch 6 unified regression and release-readiness work requires separate approval.
+Batch 6 adds the unified M2.4 regression gate, final scope/status consistency, runtime-artifact ignore coverage, and explicit separation between passed local verification and deployment-environment checks. M2.4 implementation is complete and ready for release preparation.
 
 ##### Acceptance direction
 

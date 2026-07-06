@@ -11,6 +11,8 @@
 - Added standalone `ServerErrorResponse`, exact owned-buffer cleanup, partial-output rejection, and focused Batch 3 failure-path coverage.
 - Added shared Admin in-shell error rendering and focused Batch 4 failure-path coverage.
 - Added environment-configurable Secure session cookies and observable site-asset read/cleanup degradation with focused Batch 5 runtime/storage coverage.
+- Added the unified M2.4 regression gate covering focused Batches 2–5 plus the complete chained M2.3 → M2.2 → M2.1 regression path.
+- Added Git ignore coverage for runtime `storage/site-assets/` output created by Site Asset upload and manual verification flows.
 
 ### Changed
 
@@ -20,6 +22,8 @@
 - Completed M2.4 Batch 3 Application Error Boundary and Rendering Safety without changing Router, Response, Admin in-shell rendering, or the Batch 2 Diagnostics contract.
 - Completed M2.4 Batch 4 Admin In-Shell Errors without changing auth, permission, CSRF, session, Router, Response, or Diagnostics contracts.
 - Completed M2.4 Batch 5 Runtime, Security, Storage, and Deployment Hardening without adding dependencies, services, generic storage, or background cleanup.
+- Completed M2.4 Batch 6 Unified Regression and Release Readiness without runtime architecture changes or new product capability.
+- Recorded M2.4 implementation as complete and ready for merge, tag, and release preparation, closing the lean M2 Platform Capabilities implementation phase while leaving M3 unstarted.
 
 ### Verification
 
@@ -28,6 +32,9 @@
 - M2.4 Batch 4 Admin in-shell error smoke coverage passes.
 - M2.4 Batch 5 runtime/storage hardening smoke coverage passes.
 - The complete M2.3 regression gate continues to pass.
+- The unified M2.4 regression gate covers focused M2.4 Batches 2–5 and the complete M2.3 → M2.2 → M2.1 chain.
+- Applicable local/manual Admin, session, CSRF, Site Asset lifecycle, controlled failure, leak, and Diagnostics checks pass.
+- Live HTTPS Secure-cookie and production document-root isolation checks remain explicit deployment-environment verification items.
 - PHP syntax checks and repository-log isolation checks pass.
 
 ### Notes
@@ -39,7 +46,7 @@
 - Batch 4 adds shared Admin in-shell error rendering for eligible authenticated Admin requests while keeping guest, base-permission denial, early-bootstrap, and unsafe-recovery failures standalone.
 - Batch 4 preserves `403`, `404`, `419`, controlled `503`, and unexpected `500` status semantics, reuses the original diagnostics reference for unexpected Admin failures, and avoids secondary recovery logging.
 - Batch 4 registers configured Admin catch-all GET/POST routes only after Core and module routes so existing route precedence remains intact.
-- Batch 6 Unified Regression and Release Readiness remains separate and requires approval.
+- Batch 6 records live HTTPS Secure-cookie verification, production `public/` document-root isolation, and symlink-capable host checks as deployment-environment responsibilities rather than claiming unperformed live verification.
 
 <details open>
 <summary>v0.11.0 - M2.3 Minimal Site Capabilities</summary>

@@ -226,7 +226,7 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ## Platform Hardening Boundary
 
-M2.4 Platform Hardening is the current phase. Batches 1–5 are implemented. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, and Batch 5 hardens session deployment configuration plus Site Asset filesystem observability without changing Router, Response, auth, permission, CSRF, or storage ownership.
+M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
 
 The planned hardening direction is:
 

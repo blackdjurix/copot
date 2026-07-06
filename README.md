@@ -12,13 +12,15 @@ M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
+M2.4 Platform Hardening implementation is complete and ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; the latest published release remains v0.11.0 until the M2.4 release is created.
+
 The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
 New deployments can be configured through `/install` before normal application bootstrap is allowed.
 
 ## Current Phase
 
-M2.4 Platform Hardening
+M2.4 Platform Hardening — release preparation.
 
 The Post-M1 Roadmap Review is complete.
 
@@ -28,11 +30,13 @@ M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-The active lean M2 capability is:
+Lean M2 implementation is complete through:
 
 ```text
 M2.4 Platform Hardening
 ```
+
+The current checkpoint is merge, tag, and release preparation. M3 Core Modules has not started.
 
 M2.2 completion record:
 
@@ -423,7 +427,7 @@ Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON des
 
 ## M2.4 Platform Hardening
 
-M2.4 is the current phase. Batches 1–5 are complete. Batch 6 Unified Regression and Release Readiness is next and requires separate approval.
+M2.4 implementation is complete. Batches 1–6 are complete, the unified regression gate is included, applicable local/manual verification passes, and the milestone is ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
 
 The locked scope covers:
 

@@ -10,17 +10,17 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is released as v0.10.0. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening is the current phase.
+The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is released as v0.10.0. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening implementation is complete and in release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
 
 ---
 
 ## Current Phase
 
-### M2.4 Platform Hardening
+### M2.4 Platform Hardening — Release Preparation
 
 Primary goal:
 
-Complete the M2.4 documentation-first hardening milestone without widening it into new product capabilities or enterprise infrastructure.
+Preserve the completed M2.4 hardening contract through final regression evidence, merge, tag, and release preparation without widening it into new product capabilities or starting M3 early.
 
 Current work:
 
@@ -32,8 +32,8 @@ Current work:
 * M2.4 Batch 3 Application Error Boundary and Rendering Safety is implemented with sanitized pre-autoload, bootstrap, and dispatch boundaries plus exact owned-buffer cleanup.
 * M2.4 Batch 4 Admin In-Shell Errors is implemented with safe-shell eligibility, standalone fallback, preserved status codes, single-reference unexpected failure recovery, and final-order Admin catch-all routes.
 * M2.4 Batch 5 Runtime, Security, Storage, and Deployment Hardening is implemented with environment-configurable Secure cookies, observable site-asset degradation, warning-safe filesystem operations, and focused security/deployment verification.
-* Batch 6 Unified Regression and Release Readiness remains planned and requires separate approval.
-* M2.4 must preserve completed M1 and lean-M2 behavior while adding narrow error, logging, rendering, storage, runtime, deployment, and regression hardening.
+* M2.4 Batch 6 Unified Regression and Release Readiness is implemented with one chained M2.4 gate, final scope/status consistency, runtime-artifact ignore coverage, and explicit deployment-only verification records.
+* M2.4 implementation is complete and closes the lean M2 Platform Capabilities implementation phase. The current checkpoint is merge/tag/release preparation; M3 work must not begin until separately approved.
 
 Latest release: v0.11.0.
 
