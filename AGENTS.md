@@ -30,7 +30,8 @@ Current work:
 * M2.4 Batch 1 repository audit, architecture, documentation, scope lock, non-goals, batch plan, acceptance criteria, and risk register are complete.
 * M2.4 Batch 2 Minimal Diagnostics Baseline is implemented with request-scoped local JSON-line diagnostics, safe error references, strict context filtering, no raw exception messages, and no-throw sink failure behavior.
 * M2.4 Batch 3 Application Error Boundary and Rendering Safety is implemented with sanitized pre-autoload, bootstrap, and dispatch boundaries plus exact owned-buffer cleanup.
-* Batch 4 Admin In-Shell Errors and all later implementation batches remain planned and require separate approval.
+* M2.4 Batch 4 Admin In-Shell Errors is implemented with safe-shell eligibility, standalone fallback, preserved status codes, single-reference unexpected failure recovery, and final-order Admin catch-all routes.
+* Batch 5 Runtime, Security, Storage, and Filesystem Hardening and later completion work remain planned and require separate approval.
 * M2.4 must preserve completed M1 and lean-M2 behavior while adding narrow error, logging, rendering, storage, runtime, deployment, and regression hardening.
 
 Latest release: v0.11.0.

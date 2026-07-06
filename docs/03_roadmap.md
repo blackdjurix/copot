@@ -354,7 +354,7 @@ The separate Core four-color palette and semantic-mapping proposal in `docs/11_b
 
 #### M2.4 Platform Hardening
 
-Status: Current. Batch 1 documentation/contract lock, Batch 2 Minimal Diagnostics Baseline, and Batch 3 Application Error Boundary and Rendering Safety are complete. Batch 4 has not started.
+Status: Current. Batch 1 documentation/contract lock, Batch 2 Minimal Diagnostics Baseline, Batch 3 Application Error Boundary and Rendering Safety, and Batch 4 Admin In-Shell Errors are complete. Batch 5 Runtime, Security, Storage, and Filesystem Hardening is next.
 
 Target release: To be assigned after implementation and release-readiness verification.
 

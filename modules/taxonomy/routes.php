@@ -44,7 +44,7 @@ $taxonomyUserCanAny = function ($user, array $permissions): bool {
     return false;
 };
 
-$taxonomyRequireAdmin = function (array $permissions) use ($app, $taxonomyAdminBase, $taxonomyUserCanAny) {
+$taxonomyRequireAdmin = function ($request, array $permissions) use ($app, $taxonomyAdminBase, $taxonomyUserCanAny) {
     if (!$app->auth()->check()) {
         return Response::redirect($taxonomyAdminBase);
     }
@@ -52,7 +52,7 @@ $taxonomyRequireAdmin = function (array $permissions) use ($app, $taxonomyAdminB
     $user = $app->auth()->user();
 
     if (!$user?->can('admin.access') || !$taxonomyUserCanAny($user, $permissions)) {
-        return Response::html('403 Forbidden', 403);
+        return $app->adminErrors()->response($request, 403);
     }
 
     return $user;
@@ -203,7 +203,11 @@ $taxonomyReadFormData = function ($request, TaxonomyType $type, ?TaxonomyTerm $e
 };
 
 $taxonomyValidateCsrf = function ($request) use ($app): ?Response {
-    return $app->csrf()->validateOrReject($request);
+    $csrfResponse = $app->csrf()->validateOrReject($request);
+
+    return $csrfResponse instanceof Response
+        ? $app->adminErrors()->response($request, 419)
+        : null;
 };
 
 $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/edit'), function ($request, array $params) use (
@@ -215,7 +219,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/edit')
     $taxonomyResolveTerm,
     $taxonomyToFormData
 ): Response {
-    $user = $taxonomyRequireAdmin(['taxonomy.update']);
+    $user = $taxonomyRequireAdmin($request, ['taxonomy.update']);
 
     if ($user instanceof Response) {
         return $user;
@@ -224,7 +228,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/edit')
     [$type, $term] = $taxonomyResolveTerm((string) ($params['type'] ?? ''), (int) ($params['term_id'] ?? 0));
 
     if (!$type || !$term) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     $content = $taxonomyRenderView('form', [
@@ -250,7 +254,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/create'), functi
     $taxonomyResolveType,
     $taxonomyToFormData
 ): Response {
-    $user = $taxonomyRequireAdmin(['taxonomy.create']);
+    $user = $taxonomyRequireAdmin($request, ['taxonomy.create']);
 
     if ($user instanceof Response) {
         return $user;
@@ -259,7 +263,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/create'), functi
     $type = $taxonomyResolveType((string) ($params['type'] ?? ''));
 
     if (!$type) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     $content = $taxonomyRenderView('form', [
@@ -285,7 +289,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy'), function ($request) 
     $taxonomyRenderView,
     $taxonomyAdminBase
 ): Response {
-    $user = $taxonomyRequireAdmin($taxonomyPermissions);
+    $user = $taxonomyRequireAdmin($request, $taxonomyPermissions);
 
     if ($user instanceof Response) {
         return $user;
@@ -318,7 +322,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}'), function ($re
     $taxonomyResolveType,
     $taxonomyAdminBase
 ): Response {
-    $user = $taxonomyRequireAdmin($taxonomyPermissions);
+    $user = $taxonomyRequireAdmin($request, $taxonomyPermissions);
 
     if ($user instanceof Response) {
         return $user;
@@ -327,7 +331,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}'), function ($re
     $type = $taxonomyResolveType((string) ($params['type'] ?? ''));
 
     if (!$type) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     $terms = $taxonomyRepository->termsByType($type->slug());
@@ -369,7 +373,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/delet
         return $csrfResponse;
     }
 
-    $user = $taxonomyRequireAdmin(['taxonomy.delete']);
+    $user = $taxonomyRequireAdmin($request, ['taxonomy.delete']);
 
     if ($user instanceof Response) {
         return $user;
@@ -378,7 +382,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/delet
     [$type, $term] = $taxonomyResolveTerm((string) ($params['type'] ?? ''), (int) ($params['term_id'] ?? 0));
 
     if (!$type || !$term) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     try {
@@ -427,7 +431,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}'), fu
         return $csrfResponse;
     }
 
-    $user = $taxonomyRequireAdmin(['taxonomy.update']);
+    $user = $taxonomyRequireAdmin($request, ['taxonomy.update']);
 
     if ($user instanceof Response) {
         return $user;
@@ -436,7 +440,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}'), fu
     [$type, $term] = $taxonomyResolveTerm((string) ($params['type'] ?? ''), (int) ($params['term_id'] ?? 0));
 
     if (!$type || !$term) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     [$data, $errors] = $taxonomyReadFormData($request, $type, $term);
@@ -494,7 +498,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}'), function ($r
         return $csrfResponse;
     }
 
-    $user = $taxonomyRequireAdmin(['taxonomy.create']);
+    $user = $taxonomyRequireAdmin($request, ['taxonomy.create']);
 
     if ($user instanceof Response) {
         return $user;
@@ -503,7 +507,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}'), function ($r
     $type = $taxonomyResolveType((string) ($params['type'] ?? ''));
 
     if (!$type) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     [$data, $errors] = $taxonomyReadFormData($request, $type);

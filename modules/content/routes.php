@@ -116,10 +116,14 @@ $contentUserCanAny = function ($user, array $permissions): bool {
 };
 
 $contentValidateCsrf = function ($request) use ($app): ?Response {
-    return $app->csrf()->validateOrReject($request);
+    $csrfResponse = $app->csrf()->validateOrReject($request);
+
+    return $csrfResponse instanceof Response
+        ? $app->adminErrors()->response($request, 419)
+        : null;
 };
 
-$contentRequireAdmin = function (array $permissions) use ($app, $contentAdminBase, $contentUserCanAny) {
+$contentRequireAdmin = function ($request, array $permissions) use ($app, $contentAdminBase, $contentUserCanAny) {
     if (!$app->auth()->check()) {
         return Response::redirect($contentAdminBase);
     }
@@ -127,7 +131,7 @@ $contentRequireAdmin = function (array $permissions) use ($app, $contentAdminBas
     $user = $app->auth()->user();
 
     if (!$user?->can('admin.access') || !$contentUserCanAny($user, $permissions)) {
-        return Response::html('403 Forbidden', 403);
+        return $app->adminErrors()->response($request, 403);
     }
 
     return $user;
@@ -341,7 +345,7 @@ $app->router()->get($app->adminUrl()->childUrl('content'), function ($request) u
     $contentTaxonomyEnabled,
     $contentAdminBase
 ): Response {
-    $user = $contentRequireAdmin([
+    $user = $contentRequireAdmin($request, [
         'content.create',
         'content.update',
         'content.delete',
@@ -372,13 +376,13 @@ $app->router()->get('/content/{slug}', function ($request, array $params) use ($
     $slug = trim((string) ($params['slug'] ?? ''));
 
     if ($slug === '') {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     $entry = $contentRepository->findPublishedBySlug($slug);
 
     if (!$entry) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     return Response::html($app->viewRenderer()->renderFile(
@@ -399,7 +403,7 @@ $app->router()->get($app->adminUrl()->childUrl('content/create'), function ($req
     $contentToFormData,
     $contentAdminBase
 ): Response {
-    $user = $contentRequireAdmin(['content.create']);
+    $user = $contentRequireAdmin($request, ['content.create']);
 
     if ($user instanceof Response) {
         return $user;
@@ -433,7 +437,7 @@ $app->router()->get($app->adminUrl()->childUrl('content/{id}/edit'), function ($
     $contentToFormData,
     $contentAdminBase
 ): Response {
-    $user = $contentRequireAdmin(['content.update']);
+    $user = $contentRequireAdmin($request, ['content.update']);
 
     if ($user instanceof Response) {
         return $user;
@@ -443,7 +447,7 @@ $app->router()->get($app->adminUrl()->childUrl('content/{id}/edit'), function ($
     $entry = $id > 0 ? $contentRepository->findById($id) : null;
 
     if (!$entry) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     $content = $contentRenderView('form', [
@@ -483,7 +487,7 @@ $app->router()->post($app->adminUrl()->childUrl('content'), function ($request) 
         return $csrfResponse;
     }
 
-    $user = $contentRequireAdmin(['content.create']);
+    $user = $contentRequireAdmin($request, ['content.create']);
 
     if ($user instanceof Response) {
         return $user;
@@ -546,7 +550,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/publish'), functio
         return $csrfResponse;
     }
 
-    $user = $contentRequireAdmin(['content.publish']);
+    $user = $contentRequireAdmin($request, ['content.publish']);
 
     if ($user instanceof Response) {
         return $user;
@@ -555,7 +559,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/publish'), functio
     $id = (int) ($params['id'] ?? 0);
 
     if ($id <= 0 || !$contentRepository->findById($id)) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     $contentRepository->publish($id);
@@ -575,7 +579,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/draft'), function 
         return $csrfResponse;
     }
 
-    $user = $contentRequireAdmin(['content.publish']);
+    $user = $contentRequireAdmin($request, ['content.publish']);
 
     if ($user instanceof Response) {
         return $user;
@@ -584,7 +588,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/draft'), function 
     $id = (int) ($params['id'] ?? 0);
 
     if ($id <= 0 || !$contentRepository->findById($id)) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     $contentRepository->draft($id);
@@ -604,7 +608,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/archive'), functio
         return $csrfResponse;
     }
 
-    $user = $contentRequireAdmin(['content.delete']);
+    $user = $contentRequireAdmin($request, ['content.delete']);
 
     if ($user instanceof Response) {
         return $user;
@@ -613,7 +617,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/archive'), functio
     $id = (int) ($params['id'] ?? 0);
 
     if ($id <= 0 || !$contentRepository->findById($id)) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     $contentRepository->archive($id);
@@ -641,7 +645,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}'), function ($requ
         return $csrfResponse;
     }
 
-    $user = $contentRequireAdmin(['content.update']);
+    $user = $contentRequireAdmin($request, ['content.update']);
 
     if ($user instanceof Response) {
         return $user;
@@ -651,7 +655,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}'), function ($requ
     $entry = $id > 0 ? $contentRepository->findById($id) : null;
 
     if (!$entry) {
-        return Response::html('404 Not Found', 404);
+        return $app->adminErrors()->response($request, 404);
     }
 
     [$data, $errors] = $contentReadFormData($request, $user, $entry);

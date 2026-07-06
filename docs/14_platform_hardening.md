@@ -10,9 +10,11 @@ Batch 2 Minimal Diagnostics Baseline is implemented and focused verification pas
 
 Batch 3 Application Error Boundary and Rendering Safety is implemented and focused verification passes.
 
+Batch 4 Admin In-Shell Errors is implemented and focused verification passes. Eligible authenticated Admin errors now render inside the existing shell while unsafe recovery conditions fall back to standalone sanitized responses without duplicate diagnostics logging.
+
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-Batch 4 Admin In-Shell Errors and all later implementation batches require a separate implementation approval.
+Batch 5 Runtime, Security, Storage, and Filesystem Hardening and later completion work require separate implementation approval.
 
 ---
 
@@ -380,12 +382,15 @@ Status: Complete.
 
 ### Batch 4 — Admin In-Shell Errors
 
-Status: Planned.
+Status: Complete.
 
-* centralize eligible authenticated Admin error presentation;
-* migrate plain Admin error responses where safe;
-* preserve permission, CSRF, status, and configured Admin-path behavior;
-* add focused Admin tests and manual accessibility checks.
+* added one small `AdminErrorRenderer` recovery boundary and shared Admin error view;
+* render eligible authenticated `403`, `404`, `419`, unexpected `500`, and controlled `503` responses inside the existing Admin Shell;
+* keep guest, login, base-permission denial, early-bootstrap, and unsafe-recovery paths on standalone sanitized responses;
+* reuse the original unexpected-failure diagnostics reference without a second log record;
+* preserve existing `422` validation flows and permission, CSRF, status, and configured Admin-path behavior;
+* register configured Admin GET/POST catch-all routes only after Core and module route registration;
+* added focused status, shell eligibility, fallback, reference, leak, output-buffer, and route-order smoke coverage.
 
 ### Batch 5 — Runtime, Security, Storage, and Deployment Hardening
 

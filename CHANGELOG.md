@@ -30,7 +30,10 @@
 - Batch 2 adds no global error boundary, response integration, database/config change, dependency, Admin redesign, queue, worker, scheduler, rotation service, observability platform, external service, or Media Library behavior.
 - Batch 3 defaults unexpected failures to `500`; `503` requires an explicit positively identified availability condition and is not inferred from every `PDOException`.
 - Batch 3 preserves trusted internal raw-HTML fragments without introducing a `SafeHtml` abstraction.
-- Batch 4 Admin In-Shell Errors and all later M2.4 implementation batches require separate approval.
+- Batch 4 adds shared Admin in-shell error rendering for eligible authenticated Admin requests while keeping guest, base-permission denial, early-bootstrap, and unsafe-recovery failures standalone.
+- Batch 4 preserves `403`, `404`, `419`, controlled `503`, and unexpected `500` status semantics, reuses the original diagnostics reference for unexpected Admin failures, and avoids secondary recovery logging.
+- Batch 4 registers configured Admin catch-all GET/POST routes only after Core and module routes so existing route precedence remains intact.
+- Batch 5 Runtime, Security, Storage, and Filesystem Hardening and later completion work require separate approval.
 
 <details open>
 <summary>v0.11.0 - M2.3 Minimal Site Capabilities</summary>

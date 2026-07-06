@@ -226,7 +226,7 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ## Platform Hardening Boundary
 
-M2.4 Platform Hardening is the current phase. Batch 1 locks the architecture and documentation. Batch 2 implements the minimal diagnostics baseline. Batch 3 implements sanitized application boundaries and exact owned-buffer cleanup without changing Router, Response, or Admin in-shell rendering.
+M2.4 Platform Hardening is the current phase. Batch 1 locks the architecture and documentation. Batch 2 implements the minimal diagnostics baseline. Batch 3 implements sanitized application boundaries and exact owned-buffer cleanup without changing Router or Response. Batch 4 adds a narrow Admin recovery renderer that uses the existing Admin shell only when the configured Admin path, active session, authenticated active user, base Admin permission, navigation, CSRF token, shared error view, and layout remain safely available; otherwise the response falls back to standalone sanitized rendering.
 
 The planned hardening direction is:
 

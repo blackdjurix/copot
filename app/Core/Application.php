@@ -3,6 +3,7 @@
 namespace Copot\Core;
 
 use Copot\Core\Admin\AdminDashboardRegistry;
+use Copot\Core\Admin\AdminErrorRenderer;
 use Copot\Core\Admin\AdminPageRenderer;
 use Copot\Core\Admin\AdminUrl;
 use RuntimeException;
@@ -38,6 +39,7 @@ class Application
     private AdminDashboardRegistry $adminDashboard;
     private AdminUrl $adminUrl;
     private AdminPageRenderer $adminPageRenderer;
+    private AdminErrorRenderer $adminErrors;
 
     public function __construct(string $basePath)
     {
@@ -91,6 +93,20 @@ class Application
             (string) $this->config->get('app.name', 'Copot'),
             $this->siteName,
             $this->locale
+        );
+        $adminPermission = $this->config->get('admin.permission', 'admin.access');
+
+        if (!is_string($adminPermission) || trim($adminPermission) === '') {
+            throw new RuntimeException('Invalid admin permission configuration.');
+        }
+
+        $this->adminErrors = new AdminErrorRenderer(
+            $this->view,
+            $this->adminPageRenderer,
+            $this->adminUrl,
+            $this->auth,
+            $this->csrf,
+            trim($adminPermission)
         );
     }
 
@@ -240,16 +256,19 @@ class Application
         return $this->adminPageRenderer;
     }
 
+    public function adminErrors(): AdminErrorRenderer
+    {
+        return $this->adminErrors;
+    }
+
     public function run(Request $request): Response
     {
         $initialOutputLevel = ob_get_level();
 
         if (!@ob_start()) {
-            return ServerErrorResponse::fromThrowable(
+            return $this->unexpectedFailureResponse(
                 new RuntimeException('Application dispatch output buffer is unavailable.'),
-                $this->diagnostics,
-                'application.dispatch.failure',
-                $this->failureContext($request)
+                $request
             );
         }
 
@@ -274,13 +293,19 @@ class Application
         } catch (Throwable $exception) {
             $this->discardOutputBuffersTo($initialOutputLevel);
 
-            return ServerErrorResponse::fromThrowable(
-                $exception,
-                $this->diagnostics,
-                'application.dispatch.failure',
-                $this->failureContext($request)
-            );
+            return $this->unexpectedFailureResponse($exception, $request);
         }
+    }
+
+    private function unexpectedFailureResponse(Throwable $exception, Request $request): Response
+    {
+        $reference = $this->diagnostics->report(
+            'application.dispatch.failure',
+            $exception,
+            $this->failureContext($request)
+        );
+
+        return $this->adminErrors->response($request, 500, $reference);
     }
 
     private function failureContext(Request $request): array

@@ -74,7 +74,7 @@ $settingsErrorMessages = [
     'localization_time_format' => 'Unsupported time format.',
 ];
 
-$settingsRequireUser = function () use ($app, $adminBase, $adminPermission) {
+$settingsRequireUser = function ($request) use ($app, $adminBase, $adminPermission) {
     if (!$app->auth()->check()) {
         return Response::redirect($adminBase);
     }
@@ -82,7 +82,7 @@ $settingsRequireUser = function () use ($app, $adminBase, $adminPermission) {
     $user = $app->auth()->user();
 
     if (!$user?->can($adminPermission) || !$user->can('settings.update')) {
-        return Response::html('403 Forbidden', 403);
+        return $app->adminErrors()->response($request, 403);
     }
 
     return $user;
@@ -163,7 +163,7 @@ $app->router()->get($adminBase, function ($request) use ($app, $adminPermission,
     $user = $app->auth()->user();
 
     if (!$user?->can($adminPermission)) {
-        return Response::html('403 Forbidden', 403);
+        return $app->adminErrors()->response($request, 403);
     }
 
     return Response::html($renderAdminDashboard($request->path(), $user));
@@ -202,7 +202,7 @@ $app->router()->get($settingsPath, function ($request) use (
     $settingsEffectiveValues,
     $renderSettings
 ): Response {
-    $user = $settingsRequireUser();
+    $user = $settingsRequireUser($request);
 
     if ($user instanceof Response) {
         return $user;
@@ -211,7 +211,7 @@ $app->router()->get($settingsPath, function ($request) use (
     try {
         $values = $settingsEffectiveValues();
     } catch (\PDOException) {
-        return Response::html('Settings storage is unavailable.', 503);
+        return $app->adminErrors()->response($request, 503);
     }
 
     $assetNotice = match ($request->input('asset')) {
@@ -242,7 +242,7 @@ $app->router()->post($settingsPath, function ($request) use (
     $renderSettings,
     $settingsPath
 ): Response {
-    $user = $settingsRequireUser();
+    $user = $settingsRequireUser($request);
 
     if ($user instanceof Response) {
         return $user;
@@ -251,7 +251,7 @@ $app->router()->post($settingsPath, function ($request) use (
     $csrfResponse = $app->csrf()->validateOrReject($request);
 
     if ($csrfResponse instanceof Response) {
-        return $csrfResponse;
+        return $app->adminErrors()->response($request, 419);
     }
 
     $values = [];
@@ -288,7 +288,7 @@ $app->router()->post($settingsPath, function ($request) use (
             $connection->rollBack();
         }
 
-        return Response::html('Settings storage is unavailable.', 503);
+        return $app->adminErrors()->response($request, 503);
     } catch (\Throwable $exception) {
         if ($connection?->inTransaction()) {
             $connection->rollBack();
@@ -301,15 +301,16 @@ $app->router()->post($settingsPath, function ($request) use (
 });
 
 $renderAssetFailure = function (
+    $request,
     $user,
     string $slot,
     string $message,
     int $status = 422
-) use ($settingsEffectiveValues, $renderSettings, $settingsPath): Response {
+) use ($app, $settingsEffectiveValues, $renderSettings, $settingsPath): Response {
     try {
         $values = $settingsEffectiveValues();
     } catch (\PDOException) {
-        return Response::html('Settings storage is unavailable.', 503);
+        return $app->adminErrors()->response($request, 503);
     }
 
     return $renderSettings(
@@ -341,7 +342,7 @@ $registerAssetUpload = function (
         $renderAssetFailure,
         $settingsPath
     ): Response {
-        $user = $settingsRequireUser();
+        $user = $settingsRequireUser($request);
 
         if ($user instanceof Response) {
             return $user;
@@ -350,13 +351,13 @@ $registerAssetUpload = function (
         $csrfResponse = $app->csrf()->validateOrReject($request);
 
         if ($csrfResponse instanceof Response) {
-            return $csrfResponse;
+            return $app->adminErrors()->response($request, 419);
         }
 
         $upload = $request->file('site_asset');
 
         if ($upload === null) {
-            return $renderAssetFailure($user, $slot, "Choose a {$label} file to upload.");
+            return $renderAssetFailure($request, $user, $slot, "Choose a {$label} file to upload.");
         }
 
         $error = $upload['error'];
@@ -366,25 +367,26 @@ $registerAssetUpload = function (
                 ? "Choose a {$label} file to upload."
                 : "{$label} upload did not complete.";
 
-            return $renderAssetFailure($user, $slot, $message);
+            return $renderAssetFailure($request, $user, $slot, $message);
         }
 
         $temporaryPath = $upload['tmp_name'];
 
         if (!is_string($temporaryPath) || $temporaryPath === '' || !is_uploaded_file($temporaryPath)) {
-            return $renderAssetFailure($user, $slot, "{$label} upload source is invalid.");
+            return $renderAssetFailure($request, $user, $slot, "{$label} upload source is invalid.");
         }
 
         try {
             $app->siteAssets()->store($slot, $temporaryPath);
         } catch (SiteAssetException) {
             return $renderAssetFailure(
+                $request,
                 $user,
                 $slot,
                 "{$label} could not be uploaded. Check the file type, dimensions, and size."
             );
         } catch (SettingsException|\PDOException) {
-            return $renderAssetFailure($user, $slot, 'Site asset storage is unavailable.', 503);
+            return $renderAssetFailure($request, $user, $slot, 'Site asset storage is unavailable.', 503);
         }
 
         return Response::redirect($settingsPath . '?asset=' . $slot . '-uploaded');
@@ -409,7 +411,7 @@ $registerAssetRemoval = function (
         $renderAssetFailure,
         $settingsPath
     ): Response {
-        $user = $settingsRequireUser();
+        $user = $settingsRequireUser($request);
 
         if ($user instanceof Response) {
             return $user;
@@ -418,13 +420,13 @@ $registerAssetRemoval = function (
         $csrfResponse = $app->csrf()->validateOrReject($request);
 
         if ($csrfResponse instanceof Response) {
-            return $csrfResponse;
+            return $app->adminErrors()->response($request, 419);
         }
 
         try {
             $app->siteAssets()->remove($slot);
         } catch (SiteAssetException|SettingsException|\PDOException) {
-            return $renderAssetFailure($user, $slot, "{$label} could not be removed.", 503);
+            return $renderAssetFailure($request, $user, $slot, "{$label} could not be removed.", 503);
         }
 
         return Response::redirect($settingsPath . '?asset=' . $slot . '-removed');
