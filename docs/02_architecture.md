@@ -226,7 +226,7 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ## Platform Hardening Boundary
 
-M2.4 Platform Hardening is the current phase. Batch 1 locks the architecture and documentation. Batch 2 implements the minimal diagnostics baseline. Batch 3 implements sanitized application boundaries and exact owned-buffer cleanup without changing Router or Response. Batch 4 adds a narrow Admin recovery renderer that uses the existing Admin shell only when the configured Admin path, active session, authenticated active user, base Admin permission, navigation, CSRF token, shared error view, and layout remain safely available; otherwise the response falls back to standalone sanitized rendering.
+M2.4 Platform Hardening is the current phase. Batches 1–5 are implemented. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, and Batch 5 hardens session deployment configuration plus Site Asset filesystem observability without changing Router, Response, auth, permission, CSRF, or storage ownership.
 
 The planned hardening direction is:
 
@@ -272,7 +272,7 @@ Diagnostics must not log credentials, DSNs, SQL, passwords, hashes, CSRF/session
 
 Batch 2 does not register an exception/error/shutdown handler. Batch 3 integrates Diagnostics at the post-autoload bootstrap and Application dispatch boundaries while preserving the Batch 2 sink, reference, redaction, and failure contracts.
 
-Filesystem ownership remains capability-specific. M2.4 does not add a generic storage abstraction. Missing, unreadable, unwritable, symlinked, partial-write, rename, read, and cleanup failures must remain controlled and must not emit warnings into responses. The existing Site Asset ordering remains authoritative: failed replacement preserves the previous active asset, while cleanup after a persisted replacement/removal is best-effort and may leave an unreachable orphan without adding a worker.
+Filesystem ownership remains capability-specific. M2.4 does not add a generic storage abstraction. Missing, unreadable, unwritable, symlinked, partial-write, rename, read, and cleanup failures remain controlled and do not emit warnings into responses. Batch 5 passes the existing request-scoped Diagnostics instance into `SiteAssetStorage`, records material read/cleanup degradation as warning records without references or raw paths, and suppresses filesystem warnings at the capability boundary. The existing Site Asset ordering remains authoritative: failed replacement preserves the previous active asset, while cleanup after a persisted replacement/removal is best-effort and may leave an unreachable orphan without adding a worker. HTTPS deployments enable the existing Secure session cookie via `SESSION_SECURE=true`; HttpOnly and the approved SameSite baseline remain unchanged.
 
 Complete M2.4 scope, non-goals, error and redaction contracts, batch plan, acceptance criteria, deployment checklist, and risks are defined in `docs/14_platform_hardening.md`.
 

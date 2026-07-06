@@ -55,7 +55,11 @@ class Application
             $settingsRegistry,
             new SettingsRepository($this->database)
         );
-        $this->siteAssets = new SiteAssetStorage($this->path('storage/site-assets'), $this->settings);
+        $this->siteAssets = new SiteAssetStorage(
+            $this->path('storage/site-assets'),
+            $this->settings,
+            $this->diagnostics
+        );
         $this->initializeRuntimeSettings($settingsRegistry);
         $this->session = new Session($this->config);
         $this->csrf = new Csrf($this->session);

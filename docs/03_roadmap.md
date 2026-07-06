@@ -354,7 +354,7 @@ The separate Core four-color palette and semantic-mapping proposal in `docs/11_b
 
 #### M2.4 Platform Hardening
 
-Status: Current. Batch 1 documentation/contract lock, Batch 2 Minimal Diagnostics Baseline, Batch 3 Application Error Boundary and Rendering Safety, and Batch 4 Admin In-Shell Errors are complete. Batch 5 Runtime, Security, Storage, and Filesystem Hardening is next.
+Status: Current. Batches 1–5 are complete. Batch 6 Unified Regression and Release Readiness is next.
 
 Target release: To be assigned after implementation and release-readiness verification.
 
@@ -409,7 +409,7 @@ Batch 2 provides request-scoped synchronous local diagnostics, controlled JSON-l
 
 Batch 3 provides sanitized pre-autoload, post-autoload bootstrap, and Application dispatch failure boundaries; standalone server-error responses with references only after successful diagnostics; exact owned-buffer cleanup; and centralized unexpected public rendering failures. Unexpected failures default to `500`; `503` requires an explicit positively identified availability condition.
 
-Batch 4 and all later runtime implementation require separate approval.
+Batch 6 unified regression and release-readiness work requires separate approval.
 
 ##### Acceptance direction
 

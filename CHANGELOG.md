@@ -9,6 +9,8 @@
 - Added focused M2.4 Batch 2 diagnostics coverage for formatting, uniqueness, redaction, invalid events, unavailable sinks, symlink/unwritable behavior, Application ownership, scope guards, and repository-log isolation.
 - Added sanitized pre-autoload emergency, post-autoload bootstrap, and request-scoped dispatch failure boundaries with optional Diagnostics references.
 - Added standalone `ServerErrorResponse`, exact owned-buffer cleanup, partial-output rejection, and focused Batch 3 failure-path coverage.
+- Added shared Admin in-shell error rendering and focused Batch 4 failure-path coverage.
+- Added environment-configurable Secure session cookies and observable site-asset read/cleanup degradation with focused Batch 5 runtime/storage coverage.
 
 ### Changed
 
@@ -16,11 +18,15 @@
 - Recorded M2.3 Minimal Site Capabilities as complete and released as v0.11.0.
 - Completed M2.4 Batch 2 Minimal Diagnostics Baseline without adding a global error boundary or changing response behavior.
 - Completed M2.4 Batch 3 Application Error Boundary and Rendering Safety without changing Router, Response, Admin in-shell rendering, or the Batch 2 Diagnostics contract.
+- Completed M2.4 Batch 4 Admin In-Shell Errors without changing auth, permission, CSRF, session, Router, Response, or Diagnostics contracts.
+- Completed M2.4 Batch 5 Runtime, Security, Storage, and Deployment Hardening without adding dependencies, services, generic storage, or background cleanup.
 
 ### Verification
 
 - M2.4 Batch 2 focused diagnostics smoke coverage passes on the canonical PHP 8.5 runtime.
 - M2.4 Batch 3 focused boundary/rendering smoke coverage passes with `display_errors=1`.
+- M2.4 Batch 4 Admin in-shell error smoke coverage passes.
+- M2.4 Batch 5 runtime/storage hardening smoke coverage passes.
 - The complete M2.3 regression gate continues to pass.
 - PHP syntax checks and repository-log isolation checks pass.
 
@@ -33,7 +39,7 @@
 - Batch 4 adds shared Admin in-shell error rendering for eligible authenticated Admin requests while keeping guest, base-permission denial, early-bootstrap, and unsafe-recovery failures standalone.
 - Batch 4 preserves `403`, `404`, `419`, controlled `503`, and unexpected `500` status semantics, reuses the original diagnostics reference for unexpected Admin failures, and avoids secondary recovery logging.
 - Batch 4 registers configured Admin catch-all GET/POST routes only after Core and module routes so existing route precedence remains intact.
-- Batch 5 Runtime, Security, Storage, and Filesystem Hardening and later completion work require separate approval.
+- Batch 6 Unified Regression and Release Readiness remains separate and requires approval.
 
 <details open>
 <summary>v0.11.0 - M2.3 Minimal Site Capabilities</summary>

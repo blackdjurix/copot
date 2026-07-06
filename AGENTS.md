@@ -31,7 +31,8 @@ Current work:
 * M2.4 Batch 2 Minimal Diagnostics Baseline is implemented with request-scoped local JSON-line diagnostics, safe error references, strict context filtering, no raw exception messages, and no-throw sink failure behavior.
 * M2.4 Batch 3 Application Error Boundary and Rendering Safety is implemented with sanitized pre-autoload, bootstrap, and dispatch boundaries plus exact owned-buffer cleanup.
 * M2.4 Batch 4 Admin In-Shell Errors is implemented with safe-shell eligibility, standalone fallback, preserved status codes, single-reference unexpected failure recovery, and final-order Admin catch-all routes.
-* Batch 5 Runtime, Security, Storage, and Filesystem Hardening and later completion work remain planned and require separate approval.
+* M2.4 Batch 5 Runtime, Security, Storage, and Deployment Hardening is implemented with environment-configurable Secure cookies, observable site-asset degradation, warning-safe filesystem operations, and focused security/deployment verification.
+* Batch 6 Unified Regression and Release Readiness remains planned and requires separate approval.
 * M2.4 must preserve completed M1 and lean-M2 behavior while adding narrow error, logging, rendering, storage, runtime, deployment, and regression hardening.
 
 Latest release: v0.11.0.
@@ -637,7 +638,7 @@ M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-The current checkpoint is completion of M2.4 Platform Hardening Batch 3 Application Error Boundary and Rendering Safety.
+The current checkpoint is completion of M2.4 Platform Hardening Batch 5 Runtime, Security, Storage, and Deployment Hardening.
 
 The next checkpoint is to:
 
@@ -647,7 +648,9 @@ The next checkpoint is to:
 * keep M2.4 within the locked error, sanitized rendering, Admin error, logging, storage/filesystem, runtime, deployment, and regression scope;
 * preserve the completed request-scoped, synchronous, local, no-throw Batch 2 diagnostics contract;
 * preserve the completed sanitized bootstrap/dispatch boundaries, standalone server errors, trusted-fragment contract, and exact owned-buffer cleanup;
-* obtain separate approval before Batch 4 Admin in-shell error implementation;
+* preserve the completed Admin in-shell error contract and final-order Admin catch-all routing;
+* preserve the completed Batch 5 runtime/session and storage observability hardening;
+* obtain separate approval before Batch 6 unified regression and release-readiness work;
 * preserve shared-hosting operation without a new dependency, service process, or database change;
 * avoid recalling deferred capabilities without a concrete dependency and approval.
 

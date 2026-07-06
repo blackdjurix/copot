@@ -14,7 +14,7 @@ Batch 4 Admin In-Shell Errors is implemented and focused verification passes. El
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-Batch 5 Runtime, Security, Storage, and Filesystem Hardening and later completion work require separate implementation approval.
+Batch 5 Runtime, Security, Storage, and Deployment Hardening is implemented and focused verification passes. Batch 6 Unified Regression and Release Readiness requires separate implementation approval.
 
 ---
 
@@ -394,12 +394,18 @@ Status: Complete.
 
 ### Batch 5 — Runtime, Security, Storage, and Deployment Hardening
 
-Status: Planned.
+Status: Implemented and focused verification passes.
 
-* complete focused auth, permission, CSRF, upload, and escaping review;
-* harden proven storage/filesystem warning and cleanup gaps;
-* lock environment/session deployment configuration;
-* complete shared-hosting operational checks.
+Batch 5:
+
+* preserves existing auth, permission, CSRF, upload provenance, and escaping contracts while adding focused regression guards;
+* makes Secure session cookies configurable through `SESSION_SECURE=true` without a code patch;
+* keeps HttpOnly enabled and SameSite at the approved `Lax` baseline;
+* passes the existing request-scoped Diagnostics instance into Site Asset storage;
+* records material site-asset read and cleanup degradation as controlled warning records without references, paths, or filenames;
+* suppresses filesystem warnings from rename, size/MIME probing, stream copy, flush, and cleanup operations so warnings cannot enter responses;
+* keeps failed replacement/removal ordering intact and adds no worker, orphan browser, generic storage abstraction, or external sink;
+* documents the production/shared-hosting contract for `public/` document root, `display_errors=Off`, private storage/logs, HTTPS Secure cookies, PHP 8.2+, and no daemon/build process.
 
 ### Batch 6 — Unified Regression and Release Readiness
 
@@ -410,7 +416,7 @@ Status: Planned.
 * complete manual public, Admin, runtime, and deployment verification;
 * finalize milestone and release-readiness documentation.
 
-Batch 4 must not begin without separate implementation approval.
+Batch 6 must not begin without separate implementation approval.
 
 ---
 
