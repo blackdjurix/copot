@@ -10,17 +10,17 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is released as v0.10.0. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening implementation is complete and in release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is released as v0.10.0. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening implementation is complete and the lean M2 Platform Capabilities implementation phase is closed. Post-M2 Distribution & Release Preparation is active; M3 has not started.
 
 ---
 
 ## Current Phase
 
-### M2.4 Platform Hardening — Release Preparation
+### Post-M2 Distribution & Release Preparation
 
 Primary goal:
 
-Preserve the completed M2.4 hardening contract through final regression evidence, merge, tag, and release preparation without widening it into new product capabilities or starting M3 early.
+Turn the completed M2 implementation into a deterministic, clean-installable release artifact without widening Webcore capability or starting M3 early.
 
 Current work:
 
@@ -33,7 +33,9 @@ Current work:
 * M2.4 Batch 4 Admin In-Shell Errors is implemented with safe-shell eligibility, standalone fallback, preserved status codes, single-reference unexpected failure recovery, and final-order Admin catch-all routes.
 * M2.4 Batch 5 Runtime, Security, Storage, and Deployment Hardening is implemented with environment-configurable Secure cookies, observable site-asset degradation, warning-safe filesystem operations, and focused security/deployment verification.
 * M2.4 Batch 6 Unified Regression and Release Readiness is implemented with one chained M2.4 gate, final scope/status consistency, runtime-artifact ignore coverage, and explicit deployment-only verification records.
-* M2.4 implementation is complete and closes the lean M2 Platform Capabilities implementation phase. The current checkpoint is merge/tag/release preparation; M3 work must not begin until separately approved.
+* M2.4 implementation is complete and closes the lean M2 Platform Capabilities implementation phase.
+* Post-M2 distribution work owns repository cleanup, framework version single-source-of-truth, package include/exclude policy, deterministic package preparation, clean-install verification, release-candidate validation, and final M2 release.
+* M3 work must not begin until the Post-M2 distribution phase is closed and separately approved.
 
 Latest release: v0.11.0.
 

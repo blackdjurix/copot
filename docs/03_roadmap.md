@@ -464,6 +464,31 @@ Physical or business asset management belongs to M4 as a domain-specific Busines
 
 ---
 
+## Post-M2 Distribution & Release Preparation
+
+Status: Active after M2.4 implementation completion.
+
+Purpose:
+
+Convert the completed lean M2 Webcore implementation into a deterministic, installable, clean-verified release artifact before M3 module development begins. This is a release-preparation phase, not a new capability milestone.
+
+Work sequence:
+
+1. Distribution Contract & Version Foundation — active.
+2. Repository Cleanup & Package Manifest — planned.
+3. Deterministic Package Builder — planned.
+4. Clean Install Verification — planned.
+5. Release Candidate Audit — planned.
+6. Merge, tag, GitHub Release, and M2 final package publication — planned.
+
+Rules:
+
+* Webcore capability work remains closed unless a separately approved maintenance, security, compatibility, performance, or architecture correction is required.
+* `.env`, runtime locks, logs, caches, Site Assets, tests, Example module fixtures, repository metadata, and local development state must not enter the installable package.
+* The installable artifact must be built from an explicit include/exclude contract, not by archiving the working directory.
+* A clean-install verification from the built artifact is required before the M2 final release.
+* M3 Core Modules does not start until this phase is closed.
+
 ## M3 Core Modules
 
 ### Objective

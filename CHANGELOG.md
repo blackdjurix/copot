@@ -4,6 +4,10 @@
 
 ### Added
 
+- Added `Copot\Core\Version` as the single source of truth for the framework release version and installer marker version.
+- Added `INSTALL.md` and `docs/15_distribution_and_packaging.md` to define fresh-install requirements, environment responsibilities, package boundaries, and clean-install acceptance.
+- Added a focused Post-M2 distribution cleanup smoke test for version, environment, ignore, and distribution-contract guards.
+
 - Added the M2.4 Platform Hardening Batch 1 repository audit, architecture, scope lock, error taxonomy, sanitized rendering policy, Admin in-shell error rule, logging/redaction contract, storage/filesystem boundary, runtime/deployment checklist, batch plan, acceptance criteria, and risk register.
 - Added request-scoped `Diagnostics` with append-locked local JSON-line records, opaque error references returned only after successful writes, controlled summaries, project-relative source locations, and fixed allowlisted context.
 - Added focused M2.4 Batch 2 diagnostics coverage for formatting, uniqueness, redaction, invalid events, unavailable sinks, symlink/unwritable behavior, Application ownership, scope guards, and repository-log isolation.
@@ -15,6 +19,11 @@
 - Added Git ignore coverage for runtime `storage/site-assets/` output created by Site Asset upload and manual verification flows.
 
 ### Changed
+
+- Started Post-M2 Distribution & Release Preparation after M2 implementation completion without starting M3.
+- Replaced the installer finalizer's stale hardcoded `0.8.0` marker version with the framework version source of truth.
+- Clarified `.env.example` as a configuration reference while installer-generated `.env` remains minimum operational database configuration.
+- Cleaned `.gitignore` down to copot-relevant local, runtime, build, and tooling exclusions and added `dist/` release-output isolation.
 
 - Made M2.4 Platform Hardening the active phase.
 - Recorded M2.3 Minimal Site Capabilities as complete and released as v0.11.0.

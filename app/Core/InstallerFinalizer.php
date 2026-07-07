@@ -4,7 +4,6 @@ namespace Copot\Core;
 
 class InstallerFinalizer
 {
-    private const VERSION = '0.8.0';
     private const REQUIRED_SETTINGS = [
         ['site', 'name'],
         ['site', 'tagline'],
@@ -47,10 +46,10 @@ class InstallerFinalizer
             $this->validateInitialSettings();
             $this->activateDefaultTheme();
             $this->enableBaselineModules();
-            $this->installationState->createMarker(self::VERSION);
+            $this->installationState->createMarker(Version::CURRENT);
 
             return [
-                'version' => self::VERSION,
+                'version' => Version::CURRENT,
                 'theme' => 'default',
                 'modules' => self::BASELINE_MODULES,
             ];
