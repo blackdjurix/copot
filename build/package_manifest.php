@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'include' => [
+        'app',
+        'bootstrap',
+        'config',
+        'database',
+        'modules/content',
+        'modules/taxonomy',
+        'public',
+        'resources',
+        'routes',
+        'storage/cache/.gitkeep',
+        'storage/logs/.gitkeep',
+        'themes/default',
+        '.env.example',
+        'CHANGELOG.md',
+        'INSTALL.md',
+        'LICENSE',
+        'README.md',
+    ],
+    'exclude' => [
+        '.env',
+        '.git',
+        '.github',
+        '.idea',
+        '.vscode',
+        'AGENTS.md',
+        'build',
+        'dist',
+        'docs',
+        'modules/example',
+        'storage/.install.lock',
+        'storage/installed.lock',
+        'storage/cache/*',
+        'storage/logs/*',
+        'storage/site-assets',
+        'tests',
+        'Thumbs.db',
+        '.DS_Store',
+    ],
+];

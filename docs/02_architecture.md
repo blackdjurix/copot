@@ -730,3 +730,12 @@ The architecture distinguishes:
 * Media Foundation for uploaded files, metadata, storage, references, variants, and delivery;
 * future Digital Asset Management for advanced collections, ownership, approval, and lifecycle use cases;
 * physical or business asset management as an M4 Business/Application domain.
+## Distribution Boundary
+
+The source repository and the installable release package are distinct artifacts. Release packages must be assembled from an explicit include/exclude contract and must never be raw archives of a developer working directory.
+
+`Copot\Core\Version::CURRENT` is the framework release-version source of truth. Installer finalization writes that value into `storage/installed.lock`; future package/release tooling must consume the same source instead of duplicating a version literal.
+
+`.env` is environment-specific runtime state and is excluded from source and release artifacts. `.env.example` is the documented configuration reference; installer output is intentionally a minimum operational `.env` containing database connection keys, with optional runtime overrides added according to the deployment environment.
+
+The package boundary, include/exclude policy, writable runtime paths, and clean-install acceptance contract are defined in `docs/15_distribution_and_packaging.md`.

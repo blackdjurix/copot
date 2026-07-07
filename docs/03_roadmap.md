@@ -464,6 +464,39 @@ Physical or business asset management belongs to M4 as a domain-specific Busines
 
 ---
 
+## Post-M2 Distribution & Release Preparation
+
+Status: Active after M2.4 implementation completion. Release Candidate Audit is the current closure step; D1-D4 are complete and D6 remains pending.
+
+Purpose:
+
+Convert the completed lean M2 Webcore implementation into a deterministic, installable, clean-verified release artifact before M3 module development begins. This is a release-preparation phase, not a new capability milestone.
+
+Work sequence:
+
+1. Distribution Contract & Version Foundation — complete.
+2. Repository Cleanup & Package Manifest — complete.
+3. Deterministic Package Builder — complete.
+4. Clean Install Verification — complete.
+5. Release Candidate Audit — current; documentation closure and final GO/NO-GO confirmation in progress.
+6. Merge, tag, GitHub Release, and M2 final package publication — pending.
+
+Rules:
+
+* Webcore capability work remains closed unless a separately approved maintenance, security, compatibility, performance, or architecture correction is required.
+* `.env`, runtime locks, logs, caches, Site Assets, tests, Example module fixtures, repository metadata, and local development state must not enter the installable package.
+* The installable artifact must be built from an explicit include/exclude contract, not by archiving the working directory.
+* A clean-install verification from the built artifact is required before the M2 final release.
+* M3 Core Modules does not start until this phase is closed.
+
+Completed release-preparation evidence:
+
+* `Copot\Core\Version::CURRENT` is the single release-version source for installer markers and package naming.
+* The deterministic package builder produces `dist/copot-v0.12.0.zip` from a build-time package manifest.
+* Package reproducibility, external extraction compatibility, package-content guards, and clean installation from the extracted artifact pass locally.
+* Clean-install verification uses an isolated target and a dedicated guarded D4 test database.
+* Deployment-environment checks for real HTTPS Secure cookies, production document-root isolation, and symlink-capable host filesystem behavior remain pending environment-specific verification items.
+
 ## M3 Core Modules
 
 ### Objective

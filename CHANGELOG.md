@@ -4,6 +4,14 @@
 
 ### Added
 
+- Added `Copot\Core\Version` as the single source of truth for the framework release version and installer marker version.
+- Added `INSTALL.md` and `docs/15_distribution_and_packaging.md` to define fresh-install requirements, environment responsibilities, package boundaries, and clean-install acceptance.
+- Added a focused Post-M2 distribution cleanup smoke test for version, environment, ignore, and distribution-contract guards.
+- Added a deterministic CLI package builder that produces `dist/copot-v0.12.0.zip` from `Copot\Core\Version::CURRENT`.
+- Added an explicit build-time package manifest for release package include/exclude policy.
+- Added package-content smoke coverage for required runtime/install files, forbidden source-only and local-only files, `.env` exclusion, runtime-state exclusion, and package self-exclusion.
+- Added package-based clean-install verification using an isolated extracted artifact, a dedicated guarded D4 test database, installed-version validation, and minimal public, Admin, Settings, and Site Asset behavior checks.
+
 - Added the M2.4 Platform Hardening Batch 1 repository audit, architecture, scope lock, error taxonomy, sanitized rendering policy, Admin in-shell error rule, logging/redaction contract, storage/filesystem boundary, runtime/deployment checklist, batch plan, acceptance criteria, and risk register.
 - Added request-scoped `Diagnostics` with append-locked local JSON-line records, opaque error references returned only after successful writes, controlled summaries, project-relative source locations, and fixed allowlisted context.
 - Added focused M2.4 Batch 2 diagnostics coverage for formatting, uniqueness, redaction, invalid events, unavailable sinks, symlink/unwritable behavior, Application ownership, scope guards, and repository-log isolation.
@@ -15,6 +23,12 @@
 - Added Git ignore coverage for runtime `storage/site-assets/` output created by Site Asset upload and manual verification flows.
 
 ### Changed
+
+- Started Post-M2 Distribution & Release Preparation after M2 implementation completion without starting M3.
+- Replaced the installer finalizer's stale hardcoded `0.8.0` marker version with the framework version source of truth.
+- Clarified `.env.example` as a configuration reference while installer-generated `.env` remains minimum operational database configuration.
+- Cleaned `.gitignore` down to copot-relevant local, runtime, build, and tooling exclusions and added `dist/` release-output isolation.
+- Verified deterministic package rebuilds produce identical v0.12.0 ZIP output and that the archive extracts successfully with external tooling.
 
 - Made M2.4 Platform Hardening the active phase.
 - Recorded M2.3 Minimal Site Capabilities as complete and released as v0.11.0.
@@ -36,6 +50,7 @@
 - Applicable local/manual Admin, session, CSRF, Site Asset lifecycle, controlled failure, leak, and Diagnostics checks pass.
 - Live HTTPS Secure-cookie and production document-root isolation checks remain explicit deployment-environment verification items.
 - PHP syntax checks and repository-log isolation checks pass.
+- Post-M2 package reproducibility, package-content audit, and clean-install verification from the built artifact pass locally.
 
 ### Notes
 

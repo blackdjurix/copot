@@ -1,38 +1,29 @@
 /vendor/
-node_modules/
-npm-debug.log
-yarn-error.log
+/node_modules/
 
-# Laravel 4 specific
-bootstrap/compiled.php
-app/storage/
-
-# Laravel 5 & Lumen specific
-public/storage
-public/hot
-
-# Laravel 5 & Lumen specific with changed public path
-public_html/storage
-public_html/hot
-
-storage/*.key
+# Local environment and credentials
 .env
-storage/cache/*
-storage/logs/*
+.env.backup
+.env.production
+auth.json
+
+# Runtime state and generated data
+/storage/cache/*
+/storage/logs/*
 /storage/site-assets/
-!storage/cache/.gitkeep
-!storage/logs/.gitkeep
 /storage/installed.lock
 /storage/.install.lock
 /storage/.installed-*
-Homestead.yaml
-Homestead.json
-/.vagrant
-.phpunit.result.cache
+/storage/*.key
 
-/public/build
-/storage/pail
-.env.backup
-.env.production
+!/storage/cache/.gitkeep
+!/storage/logs/.gitkeep
+
+# Build and tooling output
+/dist/
+/public/build/
+/public/hot
+npm-debug.log
+yarn-error.log
+.phpunit.result.cache
 .phpactor.json
-auth.json

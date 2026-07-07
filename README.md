@@ -12,15 +12,17 @@ M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-M2.4 Platform Hardening implementation is complete and ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; the latest published release remains v0.11.0 until the M2.4 release is created.
+M2.4 Platform Hardening implementation is complete and the lean M2 Platform Capabilities implementation phase is closed. Post-M2 Distribution & Release Preparation is now active; the latest published release remains v0.11.0 until the clean installable M2 final package is verified and released.
 
 The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
 New deployments can be configured through `/install` before normal application bootstrap is allowed.
 
+Installation and production deployment guidance is in `INSTALL.md`. Source/package boundaries and release-artifact rules are defined in `docs/15_distribution_and_packaging.md`.
+
 ## Current Phase
 
-M2.4 Platform Hardening — release preparation.
+Post-M2 Distribution & Release Preparation.
 
 The Post-M1 Roadmap Review is complete.
 
@@ -36,7 +38,7 @@ Lean M2 implementation is complete through:
 M2.4 Platform Hardening
 ```
 
-The current checkpoint is merge, tag, and release preparation. M3 Core Modules has not started.
+The current checkpoint is distribution cleanup, package-contract lock, deterministic package preparation, clean-install verification, and M2 final release. M3 Core Modules has not started.
 
 M2.2 completion record:
 

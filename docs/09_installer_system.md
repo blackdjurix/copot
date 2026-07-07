@@ -128,7 +128,7 @@ After the first administrator and initial Settings exist, the installer presents
 
 Finalization registers and activates the discovered `default` frontend theme through `ThemeManager`, then installs and enables Content and Taxonomy through `ModuleManager`. Existing registry rows and already-enabled modules are reused so a retry after a partial failure does not create duplicate registry rows. Theme and module operations are not claimed to be fully transactional; a failure leaves no installation marker and a later retry resumes through the same idempotent lifecycle checks.
 
-`storage/installed.lock` is created atomically as the final operation only. Its version is `0.8.0`. Once present and valid, `/install` is blocked by the pre-bootstrap gate and normal application requests proceed. Successful finalization redirects to the configured admin path rather than a hardcoded `/admin` URL.
+`storage/installed.lock` is created atomically as the final operation only. Its version comes from the framework release source of truth, `Copot\Core\Version::CURRENT`. Once present and valid, `/install` is blocked by the pre-bootstrap gate and normal application requests proceed. Successful finalization redirects to the configured admin path rather than a hardcoded `/admin` URL.
 
 ## Installer Presentation and Flow
 
@@ -184,7 +184,7 @@ It is outside `public` and contains exactly this JSON contract:
 ```json
 {
   "installed_at": "2026-06-27T14:00:00+00:00",
-  "version": "0.8.0"
+  "version": "0.12.0"
 }
 ```
 
