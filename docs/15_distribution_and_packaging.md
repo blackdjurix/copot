@@ -12,6 +12,20 @@ The source repository contains development and maintenance material that is not 
 
 The package builder must use an explicit allowlist and explicit exclusions.
 
+The official deterministic builder is:
+
+```text
+build/package.php
+```
+
+It consumes the build-time manifest at:
+
+```text
+build/package_manifest.php
+```
+
+The manifest is a build concern only. It is not runtime configuration and must not create a second version source of truth.
+
 ## Version Source of Truth
 
 The framework release version is defined by:
@@ -26,6 +40,12 @@ Current M2 final release candidate version:
 
 ```text
 0.12.0
+```
+
+The official package output for this release candidate is:
+
+```text
+dist/copot-v0.12.0.zip
 ```
 
 ## Environment Contract
@@ -61,6 +81,8 @@ README.md
 ```
 
 This list is the release-preparation contract. The package builder implementation may encode it in a manifest, but must not broaden it implicitly by archiving the working directory.
+
+The current builder encodes this contract as an explicit build-time include list with explicit exclusions. It creates `dist/` when needed and replaces an existing same-name ZIP deterministically.
 
 ## Package Exclude Policy
 
@@ -101,6 +123,26 @@ storage/logs/
 
 Site Asset storage is created by runtime behavior as needed and must remain excluded from source and release artifacts.
 
+## Deterministic Package Builder
+
+The deterministic package builder is implemented and produces:
+
+```text
+dist/copot-v0.12.0.zip
+```
+
+Builder behavior:
+
+* runs as CLI PHP;
+* reads the release version from `Copot\Core\Version::CURRENT`;
+* uses the build-time package manifest as the package allowlist/exclusion contract;
+* creates `dist/` when it does not exist;
+* replaces an existing same-name ZIP deterministically;
+* does not modify source files;
+* excludes runtime-local state, source-only files, local tooling state, and generated package output.
+
+Release-candidate audit verified that two builds from the same source state produced identical SHA-256 hashes. External archive compatibility was also verified with PowerShell `Expand-Archive`, with an additional independent `tar -tf` listing check where available.
+
 ## Clean-Install Verification
 
 A release candidate is not accepted until the built artifact is tested from a clean state with:
@@ -131,14 +173,16 @@ Verification must cover:
 12. controlled error behavior and no sensitive-detail leakage;
 13. final package contents against the include/exclude contract.
 
+The current release candidate has passed automated clean-install verification from the built package ZIP. Verification extracts `dist/copot-v0.12.0.zip` into an isolated temporary target, uses a dedicated guarded D4 database, runs the installer service flow from the extracted artifact, validates the installed marker version as `0.12.0`, boots the installed application, and checks minimal public, Admin, Settings, and controlled Site Asset behavior.
+
+The verification proves the package does not depend on the source repository `.env`, source runtime locks, source logs, source cache content, local Site Asset data, `tests/`, `build/`, or `docs/`.
+
+Deployment-environment verification remains separate and pending for real deployment targets, including HTTPS Secure-cookie behavior, production `public/` document-root isolation, direct-access blocking for private paths, and symlink-capable host filesystem semantics.
+
 ## Deferred Distribution Work
 
 The following work belongs to later Post-M2 release-preparation steps:
 
-- deterministic package builder implementation;
-- generated package manifest enforcement;
-- clean-install automation where practical;
-- release candidate build and verification;
 - GitHub Release artifact attachment.
 
-This cleanup step does not add patch distribution, remote updates, package repositories, signing, delta updates, or multi-version maintenance infrastructure.
+This release-preparation phase does not add patch distribution, remote updates, package repositories, signing, delta updates, or multi-version maintenance infrastructure.
