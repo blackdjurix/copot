@@ -36,7 +36,8 @@ final class SiteAssetStorage
 
     public function __construct(
         string $storageRoot,
-        private SettingsService $settings
+        private SettingsService $settings,
+        private ?Diagnostics $diagnostics = null
     ) {
         $this->storageRoot = rtrim($storageRoot, '/\\');
     }
@@ -64,7 +65,7 @@ final class SiteAssetStorage
                 throw new SiteAssetException('Site asset changed during validation.');
             }
 
-            if (!rename($temporary, $destination)) {
+            if (!@rename($temporary, $destination)) {
                 throw new SiteAssetException('Site asset could not be activated.');
             }
 
@@ -83,11 +84,11 @@ final class SiteAssetStorage
             return $descriptor;
         } catch (Throwable $exception) {
             if (is_file($temporary) || is_link($temporary)) {
-                @unlink($temporary);
+                $this->deletePath($temporary, $slot, 'rollback-temporary');
             }
 
             if ($activated && (is_file($destination) || is_link($destination))) {
-                @unlink($destination);
+                $this->deletePath($destination, $slot, 'rollback-activated');
             }
 
             if ($exception instanceof SiteAssetException || $exception instanceof SettingsException) {
@@ -132,6 +133,12 @@ final class SiteAssetStorage
         $content = @file_get_contents($active['path']);
 
         if (!is_string($content)) {
+            $this->warn('storage.siteasset.read', 'Site asset read failed.', [
+                'component' => 'site-assets',
+                'operation' => 'read',
+                'slot' => $slot,
+            ]);
+
             return $this->notFound();
         }
 
@@ -158,7 +165,7 @@ final class SiteAssetStorage
             throw new SiteAssetException('Site asset source is invalid.');
         }
 
-        $size = filesize($path);
+        $size = @filesize($path);
 
         if (!is_int($size) || $size < 1 || $size > $rules['maximum_size']) {
             throw new SiteAssetException('Site asset size is invalid.');
@@ -169,7 +176,7 @@ final class SiteAssetStorage
         }
 
         $detector = new finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $detector->file($path);
+        $mimeType = @$detector->file($path);
 
         if (!is_string($mimeType) || !isset($rules['mime_extensions'][$mimeType])) {
             throw new SiteAssetException('Site asset type is not allowed.');
@@ -276,9 +283,9 @@ final class SiteAssetStorage
         }
 
         try {
-            $copied = stream_copy_to_stream($input, $output);
+            $copied = @stream_copy_to_stream($input, $output);
 
-            if (!is_int($copied) || $copied < 1 || !fflush($output)) {
+            if (!is_int($copied) || $copied < 1 || !@fflush($output)) {
                 throw new SiteAssetException('Site asset could not be written.');
             }
         } finally {
@@ -382,6 +389,12 @@ final class SiteAssetStorage
         $slotDirectory = $this->existingSlotDirectory($slot);
 
         if ($slotDirectory === null) {
+            $this->warn('storage.siteasset.cleanup', 'Site asset cleanup could not resolve storage.', [
+                'component' => 'site-assets',
+                'operation' => 'cleanup',
+                'slot' => $slot,
+            ]);
+
             return;
         }
 
@@ -392,8 +405,26 @@ final class SiteAssetStorage
         }
 
         if ((is_file($path) || is_link($path)) && !is_dir($path)) {
-            @unlink($path);
+            $this->deletePath($path, $slot, 'cleanup');
         }
+    }
+
+    private function deletePath(string $path, string $slot, string $operation): void
+    {
+        if (@unlink($path)) {
+            return;
+        }
+
+        $this->warn('storage.siteasset.cleanup', 'Site asset cleanup failed.', [
+            'component' => 'site-assets',
+            'operation' => $operation,
+            'slot' => $slot,
+        ]);
+    }
+
+    private function warn(string $event, string $summary, array $context): void
+    {
+        $this->diagnostics?->warning($event, $summary, $context);
     }
 
     private function isInside(string $path, string $directory): bool

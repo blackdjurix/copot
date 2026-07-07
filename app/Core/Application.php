@@ -3,12 +3,16 @@
 namespace Copot\Core;
 
 use Copot\Core\Admin\AdminDashboardRegistry;
+use Copot\Core\Admin\AdminErrorRenderer;
 use Copot\Core\Admin\AdminPageRenderer;
 use Copot\Core\Admin\AdminUrl;
+use RuntimeException;
+use Throwable;
 
 class Application
 {
     private string $basePath;
+    private Diagnostics $diagnostics;
     private Config $config;
     private Router $router;
     private EventDispatcher $events;
@@ -35,10 +39,12 @@ class Application
     private AdminDashboardRegistry $adminDashboard;
     private AdminUrl $adminUrl;
     private AdminPageRenderer $adminPageRenderer;
+    private AdminErrorRenderer $adminErrors;
 
     public function __construct(string $basePath)
     {
         $this->basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
+        $this->diagnostics = new Diagnostics($this->basePath);
         $this->config = new Config($this->path('config'));
         $this->router = new Router();
         $this->events = new SynchronousEventDispatcher();
@@ -49,7 +55,11 @@ class Application
             $settingsRegistry,
             new SettingsRepository($this->database)
         );
-        $this->siteAssets = new SiteAssetStorage($this->path('storage/site-assets'), $this->settings);
+        $this->siteAssets = new SiteAssetStorage(
+            $this->path('storage/site-assets'),
+            $this->settings,
+            $this->diagnostics
+        );
         $this->initializeRuntimeSettings($settingsRegistry);
         $this->session = new Session($this->config);
         $this->csrf = new Csrf($this->session);
@@ -88,6 +98,20 @@ class Application
             $this->siteName,
             $this->locale
         );
+        $adminPermission = $this->config->get('admin.permission', 'admin.access');
+
+        if (!is_string($adminPermission) || trim($adminPermission) === '') {
+            throw new RuntimeException('Invalid admin permission configuration.');
+        }
+
+        $this->adminErrors = new AdminErrorRenderer(
+            $this->view,
+            $this->adminPageRenderer,
+            $this->adminUrl,
+            $this->auth,
+            $this->csrf,
+            trim($adminPermission)
+        );
     }
 
     public function path(string $path = ''): string
@@ -104,6 +128,11 @@ class Application
     public function config(): Config
     {
         return $this->config;
+    }
+
+    public function diagnostics(): Diagnostics
+    {
+        return $this->diagnostics;
     }
 
     public function router(): Router
@@ -231,9 +260,77 @@ class Application
         return $this->adminPageRenderer;
     }
 
+    public function adminErrors(): AdminErrorRenderer
+    {
+        return $this->adminErrors;
+    }
+
     public function run(Request $request): Response
     {
-        return $this->router->dispatch($request);
+        $initialOutputLevel = ob_get_level();
+
+        if (!@ob_start()) {
+            return $this->unexpectedFailureResponse(
+                new RuntimeException('Application dispatch output buffer is unavailable.'),
+                $request
+            );
+        }
+
+        try {
+            $response = $this->router->dispatch($request);
+
+            if (ob_get_level() !== $initialOutputLevel + 1) {
+                throw new RuntimeException('Application dispatch output buffer state is invalid.');
+            }
+
+            $unexpectedOutput = @ob_get_clean();
+
+            if (!is_string($unexpectedOutput)) {
+                throw new RuntimeException('Application dispatch output buffer could not be read.');
+            }
+
+            if ($unexpectedOutput !== '') {
+                throw new RuntimeException('Application route emitted direct output.');
+            }
+
+            return $response;
+        } catch (Throwable $exception) {
+            $this->discardOutputBuffersTo($initialOutputLevel);
+
+            return $this->unexpectedFailureResponse($exception, $request);
+        }
+    }
+
+    private function unexpectedFailureResponse(Throwable $exception, Request $request): Response
+    {
+        $reference = $this->diagnostics->report(
+            'application.dispatch.failure',
+            $exception,
+            $this->failureContext($request)
+        );
+
+        return $this->adminErrors->response($request, 500, $reference);
+    }
+
+    private function failureContext(Request $request): array
+    {
+        return [
+            'component' => 'application',
+            'operation' => 'dispatch',
+            'method' => $request->method(),
+            'path' => $request->path(),
+        ];
+    }
+
+    private function discardOutputBuffersTo(int $initialLevel): void
+    {
+        while (ob_get_level() > $initialLevel) {
+            $level = ob_get_level();
+
+            if (!@ob_end_clean() || ob_get_level() >= $level) {
+                break;
+            }
+        }
     }
 
     private function initializeRuntimeSettings(SettingsRegistry $registry): void

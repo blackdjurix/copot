@@ -10,40 +10,40 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is released as v0.10.0. M2.3 Minimal Site Capabilities implementation and verification are complete and ready for merge and release preparation.
+The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is released as v0.10.0. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening implementation is complete and in release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
 
 ---
 
 ## Current Phase
 
-### M2.3 Minimal Site Capabilities
+### M2.4 Platform Hardening — Release Preparation
 
 Primary goal:
 
-Finish M2.3 merge and release preparation without expanding the completed capability scope or starting M2.4 early.
+Preserve the completed M2.4 hardening contract through final regression evidence, merge, tag, and release preparation without widening it into new product capabilities or starting M3 early.
 
 Current work:
 
-* M2.1 Admin UI Foundation implementation and verification are complete.
-* All six M2.1 batches are complete.
-* M2.2 Extensibility Foundation implementation and verification are complete.
-* Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, unified regression, automated-assisted runtime verification, and manual browser verification pass.
-* First Production Consumer Integration is deferred to the first milestone with one real caller/listener pair and is not part of the M2.2 release.
-* M2.3 Batch 1 documentation, repository audit, architecture, and contract lock are complete.
-* M2.3 Batch 2 Localization and Formatting Foundation is implemented, reviewed, and approved.
-* M2.3 Batch 3 Core Branding Settings Contract is implemented, reviewed, committed, and pushed.
-* M2.3 Batch 4 Minimal Local Asset/Upload Foundation is implemented, verified, committed, and pushed.
-* M2.3 Batch 5 Logo and Favicon Integration is implemented, verified, approved, committed, and pushed.
-* M2.3 Batch 6 unified regression, manual verification record, and completion documentation are complete.
-* M2.3 is ready for merge and release preparation; do not begin M2.4 before the M2.3 release is finished.
+* M2.1 Admin UI Foundation is complete and released as v0.9.0.
+* M2.2 Extensibility Foundation is complete and released as v0.10.0.
+* M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
+* M2.4 Batch 1 repository audit, architecture, documentation, scope lock, non-goals, batch plan, acceptance criteria, and risk register are complete.
+* M2.4 Batch 2 Minimal Diagnostics Baseline is implemented with request-scoped local JSON-line diagnostics, safe error references, strict context filtering, no raw exception messages, and no-throw sink failure behavior.
+* M2.4 Batch 3 Application Error Boundary and Rendering Safety is implemented with sanitized pre-autoload, bootstrap, and dispatch boundaries plus exact owned-buffer cleanup.
+* M2.4 Batch 4 Admin In-Shell Errors is implemented with safe-shell eligibility, standalone fallback, preserved status codes, single-reference unexpected failure recovery, and final-order Admin catch-all routes.
+* M2.4 Batch 5 Runtime, Security, Storage, and Deployment Hardening is implemented with environment-configurable Secure cookies, observable site-asset degradation, warning-safe filesystem operations, and focused security/deployment verification.
+* M2.4 Batch 6 Unified Regression and Release Readiness is implemented with one chained M2.4 gate, final scope/status consistency, runtime-artifact ignore coverage, and explicit deployment-only verification records.
+* M2.4 implementation is complete and closes the lean M2 Platform Capabilities implementation phase. The current checkpoint is merge/tag/release preparation; M3 work must not begin until separately approved.
 
-Latest release: v0.10.0.
+Latest release: v0.11.0.
 
 The Post-M1 Roadmap Review is complete.
 
 M2.1 is complete and released as v0.9.0.
 
 M2.2 is complete and released as v0.10.0.
+
+M2.3 is complete and released as v0.11.0.
 
 ---
 
@@ -243,6 +243,32 @@ M2.2 is complete and released as v0.10.0.
 * Do not rewrite Settings, Theme, Router, Module Manager, or the service architecture for M2.3.
 * Do not create a production event merely to exercise the M2.2 dispatcher. Record a candidate only when a real caller and listener both exist.
 * Detailed scope, architecture, batches, and acceptance criteria are defined in `docs/13_minimal_site_capabilities.md`.
+
+---
+
+## M2.4 Platform Hardening Rules
+
+* M2.4 is a hardening and release-readiness milestone, not a new user-facing manager or product capability.
+* Batch 1 is documentation-only. Do not add runtime implementation until Batch 2 is separately approved.
+* Unexpected bootstrap, dispatch, and rendering failures must end at a controlled sanitized application boundary.
+* Public and Admin responses must not expose raw exception messages, warnings, stack traces, absolute paths, SQL, credentials, environment data, request bodies, tokens, cookies, or uploaded client filenames.
+* `APP_DEBUG` must not enable raw exception rendering in HTTP responses.
+* Authenticated Admin errors should render inside the existing Admin Shell only when normal application, session, authentication, user, and renderer state remain safely available.
+* Early bootstrap, login, or renderer failures must use a minimal standalone sanitized response rather than recursively rebuilding the failed Admin path.
+* Pre-autoload failures use a fixed emergency `500` without Diagnostics. Post-autoload bootstrap and dispatch failures use Diagnostics and expose a reference only after logging succeeds.
+* Unexpected failures default to `500`. `503` requires an explicit positively identified availability condition and must not be inferred by parsing raw exception messages or by broadly classifying every `PDOException`.
+* Application and renderer boundaries must clean every buffer they own back to the exact caller level and reject direct or unbalanced output.
+* Logging must remain a small local request-synchronous diagnostic boundary outside the public document root.
+* Logging context must be explicit and allowlisted. Arbitrary request, environment, server, exception, object, or array dumps are forbidden.
+* Raw `Throwable::getMessage()` output must not be stored. Diagnostics records use controlled summaries, exception class, and project-relative source location only.
+* Error references use random opaque values and may be returned only after the corresponding local append succeeds. Warnings do not receive references.
+* Logging failure must be best-effort, non-recursive, and must not replace the intended sanitized response.
+* Storage and filesystem failures must fail closed, suppress response leakage, preserve existing active state where the capability contract requires it, and record only redacted diagnostics where useful.
+* Site Asset cleanup may remain best-effort and may leave an unreachable orphan; do not add a cleanup worker, queue, scheduler, or Media Library.
+* Production deployment must retain `public/` as the document root, `display_errors=Off`, private writable storage/logs, and HTTPS-capable Secure session cookies.
+* M2.4 must not add a database change, dependency, Admin redesign, logging framework, observability platform, external service, queue, worker, scheduler, global rate limiter, storage abstraction, or Media Library.
+* M2.4 completion requires a unified regression gate across focused M2.4 coverage and the existing M2.3/M2.2/M2.1 chain.
+* Detailed scope, architecture, error taxonomy, redaction rules, batches, risks, and acceptance criteria are defined in `docs/14_platform_hardening.md`.
 
 ---
 
@@ -610,16 +636,26 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
+
+The current checkpoint is completion of M2.4 Platform Hardening Batch 5 Runtime, Security, Storage, and Deployment Hardening.
+
 The next checkpoint is to:
 
 * preserve the completed M2.2 synchronous event and listener contract;
 * keep production events deferred until a consumer milestone proves one real caller/listener pair;
 * preserve the completed M2.3 formatting, branding, two-slot storage, controlled delivery, Admin integration, and Theme integration contracts;
-* run the unified M2.3 regression gate before merge and again from the release branch;
-* finish M2.3 merge, tag, and release preparation without beginning M2.4 work;
-* keep M2.4 Platform Hardening as a separate milestone;
+* keep M2.4 within the locked error, sanitized rendering, Admin error, logging, storage/filesystem, runtime, deployment, and regression scope;
+* preserve the completed request-scoped, synchronous, local, no-throw Batch 2 diagnostics contract;
+* preserve the completed sanitized bootstrap/dispatch boundaries, standalone server errors, trusted-fragment contract, and exact owned-buffer cleanup;
+* preserve the completed Admin in-shell error contract and final-order Admin catch-all routing;
+* preserve the completed Batch 5 runtime/session and storage observability hardening;
+* obtain separate approval before Batch 6 unified regression and release-readiness work;
+* preserve shared-hosting operation without a new dependency, service process, or database change;
 * avoid recalling deferred capabilities without a concrete dependency and approval.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
 
 M2.3 scope and architecture are defined in `docs/13_minimal_site_capabilities.md`.
+
+M2.4 scope and architecture are defined in `docs/14_platform_hardening.md`.

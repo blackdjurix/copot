@@ -10,23 +10,33 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
+
+M2.4 Platform Hardening implementation is complete and ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; the latest published release remains v0.11.0 until the M2.4 release is created.
+
 The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
 New deployments can be configured through `/install` before normal application bootstrap is allowed.
 
 ## Current Phase
 
-M2.3 Minimal Site Capabilities
+M2.4 Platform Hardening — release preparation.
 
 The Post-M1 Roadmap Review is complete.
 
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
-The active lean M2 capability is:
+M2.2 Extensibility Foundation is complete and released as v0.10.0.
+
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
+
+Lean M2 implementation is complete through:
 
 ```text
-M2.3 Minimal Site Capabilities
+M2.4 Platform Hardening
 ```
+
+The current checkpoint is merge, tag, and release preparation. M3 Core Modules has not started.
 
 M2.2 completion record:
 
@@ -38,7 +48,7 @@ M2.2 completion record:
 * fixture-based end-to-end proof, unified regression, automated-assisted runtime verification, and manual browser verification passing;
 * no production lifecycle event; the first production integration remains deferred to its real consumer milestone.
 
-M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 Minimal Site Capabilities implementation and verification are complete and ready for merge and release preparation.
+M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Batch 1 locks the hardening scope and architecture without runtime implementation.
 
 ## Implemented Foundation
 
@@ -391,7 +401,7 @@ docs/12_extensibility_foundation.md
 
 ## M2.3 Minimal Site Capabilities
 
-M2.3 Batches 1–6 are complete. The unified regression gate and manual browser verification pass, and the milestone is ready for merge and release preparation.
+M2.3 Batches 1–6 are complete. The unified regression gate and manual browser verification pass, and the milestone is released as v0.11.0.
 
 The locked lean scope is:
 
@@ -414,6 +424,42 @@ docs/13_minimal_site_capabilities.md
 Batch 2 provides one request-scoped `SiteFormatter` per `Application`, explicit configured-Timezone conversion, deterministic date/time/date-time output, and locale-aware integer/decimal separators for `en_US` and `id_ID`. Unsupported locales fall back to `en_US`. Output does not depend on the server timezone, OS locale, or `ext-intl`.
 
 Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON descriptors plus one request-scoped read-only `SiteBranding` value. Batch 4 adds the two-slot storage, validation, replacement/removal, controlled delivery, and focused failure coverage. Batch 5 adds permission- and CSRF-protected Admin upload/removal controls plus active-Theme consumption of the controlled branding value. Batch 6 adds the unified M2.3 regression gate and records completed manual verification.
+
+## M2.4 Platform Hardening
+
+M2.4 implementation is complete. Batches 1–6 are complete, the unified regression gate is included, applicable local/manual verification passes, and the milestone is ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+
+The locked scope covers:
+
+* consistent early and normal application error boundaries;
+* sanitized public and Admin rendering without raw exceptions, warnings, traces, paths, SQL, credentials, environment data, tokens, request bodies, or client filenames;
+* authenticated Admin errors rendered inside the existing shell only when the application, session, authentication, user, and renderer remain safely available;
+* one small local request-synchronous logging baseline with allowlisted context, redaction, safe error references, and non-recursive failure behavior;
+* controlled missing, unreadable, unwritable, unsafe, partial-write, rename, read, and cleanup failure paths for existing storage/filesystem ownership;
+* focused authentication, permission, CSRF, upload, session-cookie, and escaping review;
+* a production/shared-hosting checklist and one regression gate across M1 and lean M2.
+
+M2.4 does not add a database change, dependency, Admin redesign, logging framework, observability platform, external service, queue, worker, scheduler, global rate limiter, generic storage abstraction, Media Library, arbitrary uploads, or background cleanup.
+
+Batch 2 adds one request-scoped `Diagnostics` instance per `Application`. It writes append-locked JSON lines only to `storage/logs/copot.log`, omits raw exception messages, keeps source locations project-relative, accepts only fixed scalar context, returns an opaque `ERR-` reference only after a successful append, and returns `null`/`false` without a secondary sink when logging is unavailable. It does not register a global handler or change public/Admin rendering.
+
+Batch 3 adds a fixed pre-autoload emergency `500`, a post-autoload bootstrap boundary, and an `Application::run()` dispatch boundary without changing Router or Response. Unexpected failures default to sanitized standalone `500` responses and include an opaque reference only when Diagnostics writes successfully. `503` remains an explicit status for positively identified availability failures; `PDOException` is not implicitly mapped. Boundary and renderer-owned buffers are cleaned back to their exact caller level, direct/partial output is rejected, and public Theme rendering failures now reach the centralized dispatch boundary. Batch 4 renders eligible authenticated Admin errors inside the existing shell and preserves standalone fallbacks when recovery is unsafe. Batch 5 makes Secure session cookies environment-configurable and records material site-asset read/cleanup degradation through the existing no-throw Diagnostics boundary without exposing paths or filenames.
+
+Production release-readiness requires `public/` as the document root, `display_errors=Off`, private writable storage/logs, HTTPS-capable Secure session cookies, the existing PHP 8.2+ contract, and no daemon or build process.
+
+For HTTPS production deployments, set:
+
+```text
+SESSION_SECURE=true
+```
+
+Keep `HttpOnly` enabled and the approved `SameSite=Lax` policy. The production web server must point its `DocumentRoot` to `<repo>/public`, keep `.env` and `storage/` outside direct web access, keep `display_errors=Off`, and leave PHP/web-server error logging enabled at the host level.
+
+The error taxonomy, sanitization and redaction policy, storage/filesystem boundary, batch plan, acceptance criteria, and risks are defined in:
+
+```text
+docs/14_platform_hardening.md
+```
 
 ## Content Module
 

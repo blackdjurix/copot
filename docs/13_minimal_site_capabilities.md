@@ -6,7 +6,7 @@ M2.3 completes the smallest site-level capability layer needed before Core Modul
 
 M2.3 extends existing Settings and Theme boundaries. It does not create a multilingual system, Media Library, generic upload platform, or visual Branding Manager.
 
-Status: Complete. Batches 1–6 are implemented and approved. Focused tests, the unified M2.3 regression gate, and manual browser/runtime verification pass. The milestone is ready for merge and release preparation.
+Status: Complete and released as v0.11.0. Batches 1–6 are implemented and approved. Focused tests, the unified M2.3 regression gate, and manual browser/runtime verification pass.
 
 ---
 
@@ -418,7 +418,7 @@ Manual verification:
 * Admin keyboard flow, focus behavior, responsive layout, and browser rendering remain usable;
 * public and Admin error presentation remains sanitized for the tested capability paths.
 
-M2.3 implementation and verification are complete. Merge, tag, and release operations are repository finishing steps rather than remaining capability work.
+M2.3 implementation and verification are complete and released as v0.11.0.
 
 ---
 

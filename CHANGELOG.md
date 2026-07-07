@@ -4,6 +4,55 @@
 
 ### Added
 
+- Added the M2.4 Platform Hardening Batch 1 repository audit, architecture, scope lock, error taxonomy, sanitized rendering policy, Admin in-shell error rule, logging/redaction contract, storage/filesystem boundary, runtime/deployment checklist, batch plan, acceptance criteria, and risk register.
+- Added request-scoped `Diagnostics` with append-locked local JSON-line records, opaque error references returned only after successful writes, controlled summaries, project-relative source locations, and fixed allowlisted context.
+- Added focused M2.4 Batch 2 diagnostics coverage for formatting, uniqueness, redaction, invalid events, unavailable sinks, symlink/unwritable behavior, Application ownership, scope guards, and repository-log isolation.
+- Added sanitized pre-autoload emergency, post-autoload bootstrap, and request-scoped dispatch failure boundaries with optional Diagnostics references.
+- Added standalone `ServerErrorResponse`, exact owned-buffer cleanup, partial-output rejection, and focused Batch 3 failure-path coverage.
+- Added shared Admin in-shell error rendering and focused Batch 4 failure-path coverage.
+- Added environment-configurable Secure session cookies and observable site-asset read/cleanup degradation with focused Batch 5 runtime/storage coverage.
+- Added the unified M2.4 regression gate covering focused Batches 2–5 plus the complete chained M2.3 → M2.2 → M2.1 regression path.
+- Added Git ignore coverage for runtime `storage/site-assets/` output created by Site Asset upload and manual verification flows.
+
+### Changed
+
+- Made M2.4 Platform Hardening the active phase.
+- Recorded M2.3 Minimal Site Capabilities as complete and released as v0.11.0.
+- Completed M2.4 Batch 2 Minimal Diagnostics Baseline without adding a global error boundary or changing response behavior.
+- Completed M2.4 Batch 3 Application Error Boundary and Rendering Safety without changing Router, Response, Admin in-shell rendering, or the Batch 2 Diagnostics contract.
+- Completed M2.4 Batch 4 Admin In-Shell Errors without changing auth, permission, CSRF, session, Router, Response, or Diagnostics contracts.
+- Completed M2.4 Batch 5 Runtime, Security, Storage, and Deployment Hardening without adding dependencies, services, generic storage, or background cleanup.
+- Completed M2.4 Batch 6 Unified Regression and Release Readiness without runtime architecture changes or new product capability.
+- Recorded M2.4 implementation as complete and ready for merge, tag, and release preparation, closing the lean M2 Platform Capabilities implementation phase while leaving M3 unstarted.
+
+### Verification
+
+- M2.4 Batch 2 focused diagnostics smoke coverage passes on the canonical PHP 8.5 runtime.
+- M2.4 Batch 3 focused boundary/rendering smoke coverage passes with `display_errors=1`.
+- M2.4 Batch 4 Admin in-shell error smoke coverage passes.
+- M2.4 Batch 5 runtime/storage hardening smoke coverage passes.
+- The complete M2.3 regression gate continues to pass.
+- The unified M2.4 regression gate covers focused M2.4 Batches 2–5 and the complete M2.3 → M2.2 → M2.1 chain.
+- Applicable local/manual Admin, session, CSRF, Site Asset lifecycle, controlled failure, leak, and Diagnostics checks pass.
+- Live HTTPS Secure-cookie and production document-root isolation checks remain explicit deployment-environment verification items.
+- PHP syntax checks and repository-log isolation checks pass.
+
+### Notes
+
+- Batch 2 does not store raw `Throwable::getMessage()` output, does not return a dead error reference after append failure, and does not add a secondary sink.
+- Batch 2 adds no global error boundary, response integration, database/config change, dependency, Admin redesign, queue, worker, scheduler, rotation service, observability platform, external service, or Media Library behavior.
+- Batch 3 defaults unexpected failures to `500`; `503` requires an explicit positively identified availability condition and is not inferred from every `PDOException`.
+- Batch 3 preserves trusted internal raw-HTML fragments without introducing a `SafeHtml` abstraction.
+- Batch 4 adds shared Admin in-shell error rendering for eligible authenticated Admin requests while keeping guest, base-permission denial, early-bootstrap, and unsafe-recovery failures standalone.
+- Batch 4 preserves `403`, `404`, `419`, controlled `503`, and unexpected `500` status semantics, reuses the original diagnostics reference for unexpected Admin failures, and avoids secondary recovery logging.
+- Batch 4 registers configured Admin catch-all GET/POST routes only after Core and module routes so existing route precedence remains intact.
+- Batch 6 records live HTTPS Secure-cookie verification, production `public/` document-root isolation, and symlink-capable host checks as deployment-environment responsibilities rather than claiming unperformed live verification.
+
+<details open>
+<summary>v0.11.0 - M2.3 Minimal Site Capabilities</summary>
+
+### Added
+
 - Added the M2.3 Minimal Site Capabilities scope, repository audit, architecture, batch plan, and acceptance contract.
 - Defined the deterministic site-level localization and formatting boundary.
 - Added the request-scoped `SiteFormatter` with explicit site-Timezone conversion.
@@ -41,7 +90,9 @@
 - M2.3 Batch 3 adds no upload, storage, URL delivery, Admin UI, Theme integration, database change, or production event.
 - M2.3 Batch 4 is verified and committed without widening into generic uploads or Media Library behavior.
 - M2.3 Batch 5 keeps upload handling limited to the two fixed site-identity slots and adds no generic file API, Media Library, or image editor.
-- M2.3 implementation and verification are complete and ready for merge and release preparation.
+- M2.3 implementation and verification are complete and released as v0.11.0.
+
+</details>
 
 <details open>
 <summary>v0.10.0 - M2.2 Extensibility Foundation</summary>
@@ -69,7 +120,7 @@
 
 - M2.2 implementation and verification are complete and released as v0.10.0.
 - Temporary fixture event names are test-only and do not establish production API.
-- M2.4 Platform Hardening remains a separate planned milestone.
+- At the v0.10.0 release, M2.4 Platform Hardening was still a separate future milestone.
 
 </details>
 

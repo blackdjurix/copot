@@ -19,6 +19,7 @@ storage/*.key
 .env
 storage/cache/*
 storage/logs/*
+/storage/site-assets/
 !storage/cache/.gitkeep
 !storage/logs/.gitkeep
 /storage/installed.lock

@@ -148,7 +148,7 @@ Settings Manager
 Theme Manager
 ```
 
-M2.3 Minimal Site Capabilities defines only the site-level formatting boundary and the Core site-identity contract for Site Name, optional Tagline, optional Logo, and optional Favicon. The existing Admin Settings surface persists registered values, but it does not become the future M3 Settings Manager. Themes consume a controlled read-only branding value and retain presentation ownership without direct Settings or database access. Batches 1–4 are approved. Batch 5 implements permission- and CSRF-protected Admin upload/removal controls and active-Theme consumption of the controlled branding value; canonical verification is pending. Final regression and completion remain Batch 6.
+M2.3 Minimal Site Capabilities defines only the site-level formatting boundary and the Core site-identity contract for Site Name, optional Tagline, optional Logo, and optional Favicon. The existing Admin Settings surface persists registered values, but it does not become the future M3 Settings Manager. Themes consume a controlled read-only branding value and retain presentation ownership without direct Settings or database access. Batches 1–6 are complete, the unified regression and manual verification pass, and M2.3 is released as v0.11.0.
 
 The separate Core four-color palette and semantic-mapping proposal in `docs/11_branding_foundation.md` remains deferred. Advanced theme colors and Custom CSS remain future Theme Manager concerns.
 
@@ -216,11 +216,65 @@ M2.3 Batch 2 implements `SiteFormatter` as one request-scoped object owned by `A
 
 M2.3 Batch 3 registers optional strictly validated `site.logo` and `site.favicon` JSON descriptors and adds one request-scoped `SiteBranding` snapshot. The snapshot exposes effective Site Name and Tagline without exposing descriptors, filenames, Settings, or database access.
 
-M2.3 Batch 4 adds request-scoped `SiteAssetStorage` for the fixed Logo and Favicon slots. It validates content MIME, image structure, dimensions, size, generated filenames, containment, and symlink boundaries; persists active descriptors through `SettingsService`; provides safe replacement/removal ordering; and serves only `/site-assets/logo` and `/site-assets/favicon` with controlled headers. `SiteBranding` receives only the stable URL when the active descriptor resolves to an available safe file. HTTP upload controls remain Batch 5.
+M2.3 Batch 4 adds request-scoped `SiteAssetStorage` for the fixed Logo and Favicon slots. It validates content MIME, image structure, dimensions, size, generated filenames, containment, and symlink boundaries; persists active descriptors through `SettingsService`; provides safe replacement/removal ordering; and serves only `/site-assets/logo` and `/site-assets/favicon` with controlled headers. `SiteBranding` receives only the stable URL when the active descriptor resolves to an available safe file. Batch 5 completed the permission- and CSRF-protected HTTP upload/removal controls and active-Theme integration.
 
 Complete M2.3 ownership, security, storage, batch, and acceptance contracts are defined in `docs/13_minimal_site_capabilities.md`.
 
 Feature routes should use these services instead of repeating security-sensitive logic manually.
+
+---
+
+## Platform Hardening Boundary
+
+M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+
+The planned hardening direction is:
+
+```text
+Request entry
+-> early installation/bootstrap decision
+-> normal Application bootstrap
+-> route/contribution registration
+-> request dispatch and rendering
+-> controlled Response
+```
+
+Unexpected failures that escape capability-specific handling must terminate at the smallest available boundary. A normal application boundary may use application-owned services that were constructed successfully. An early bootstrap boundary must remain standalone and must not rebuild dependencies that already failed.
+
+Batch 3 uses three narrow boundaries:
+
+* a fixed pre-autoload emergency boundary that can return only a generic `500` without Diagnostics or a reference;
+* a post-autoload boundary around request capture, installation routing, Installer/normal bootstrap, route/module registration, and response preparation, using a standalone local Diagnostics instance;
+* an `Application::run()` dispatch boundary using the request-scoped Application Diagnostics instance.
+
+No global exception, error, or shutdown-handler framework is registered. `Response::send()` remains outside recovery because a second response cannot safely replace bytes already sent.
+
+The error taxonomy distinguishes:
+
+* expected request, authorization, missing-resource, CSRF, and validation outcomes (`403`, `404`, `419`, `422`, and related controlled statuses);
+* controlled availability failures such as unavailable required storage or database access (`503`);
+* unexpected application failures (`500` with a safe reference and best-effort diagnostic record);
+* failures before the normal Application and Admin services are available (standalone sanitized response).
+
+Unexpected failures default to `500`. `503` is available only when a caller positively identifies an availability failure through an explicit controlled status. Batch 3 does not infer availability by parsing exception messages and does not map every `PDOException` to `503`.
+
+The response boundary is always sanitized. `APP_DEBUG` does not authorize raw exception rendering. Responses exclude raw exceptions, warnings, traces, paths, SQL, credentials, environment data, request bodies, tokens, cookies, uploaded client filenames, and partial failed-template output.
+
+Plain values remain escaped for their output context. The existing Admin and Theme page-content slots are trusted rendered fragments owned only by controlled internal renderers; they are not general string escape bypasses.
+
+`View`, `ViewRenderer`, Content, Taxonomy, Example, bootstrap, and dispatch rendering paths record their caller output-buffer level. They must close every owned buffer back to that exact level on failure, reject unbalanced nested buffers, and reject direct output outside the returned response. They must not close a caller-owned buffer. Existing module renderers retain their focused local structure rather than being refactored into a new abstraction.
+
+Authenticated Admin errors render through the existing Admin Shell only when Application construction, session/authentication state, current-user resolution, and `AdminPageRenderer` remain safely available. The original status is preserved. Earlier failures use a standalone sanitized response. This rule does not weaken permission checks or redesign Admin.
+
+Batch 2 adds one request-scoped `Diagnostics` instance per `Application`. The service is side-effect free during construction and writes synchronous append-locked JSON lines only to `storage/logs/copot.log`. Unexpected reports use a controlled summary, exception class, project-relative source location when available, and explicit allowlisted scalar context. Raw `Throwable::getMessage()` output is never read or stored. A random opaque `ERR-` reference is returned only after its record is appended successfully; warnings return only success/failure and receive no reference.
+
+Diagnostics must not log credentials, DSNs, SQL, passwords, hashes, CSRF/session/auth values, cookies, environment contents, request bodies, arbitrary query values, client filenames, full server arrays, stack arguments, or unredacted absolute paths. Missing, unsafe, symlinked, or unwritable destinations return `null`/`false` without throwing, emitting output, creating the directory, calling a secondary sink, or recursively logging the logging failure.
+
+Batch 2 does not register an exception/error/shutdown handler. Batch 3 integrates Diagnostics at the post-autoload bootstrap and Application dispatch boundaries while preserving the Batch 2 sink, reference, redaction, and failure contracts.
+
+Filesystem ownership remains capability-specific. M2.4 does not add a generic storage abstraction. Missing, unreadable, unwritable, symlinked, partial-write, rename, read, and cleanup failures remain controlled and do not emit warnings into responses. Batch 5 passes the existing request-scoped Diagnostics instance into `SiteAssetStorage`, records material read/cleanup degradation as warning records without references or raw paths, and suppresses filesystem warnings at the capability boundary. The existing Site Asset ordering remains authoritative: failed replacement preserves the previous active asset, while cleanup after a persisted replacement/removal is best-effort and may leave an unreachable orphan without adding a worker. HTTPS deployments enable the existing Secure session cookie via `SESSION_SECURE=true`; HttpOnly and the approved SameSite baseline remain unchanged.
+
+Complete M2.4 scope, non-goals, error and redaction contracts, batch plan, acceptance criteria, deployment checklist, and risks are defined in `docs/14_platform_hardening.md`.
 
 ---
 
@@ -620,6 +674,18 @@ Secondary Target:
 
 All architectural decisions should consider compatibility with the primary deployment target first.
 
+M2.4 release-readiness requires:
+
+* `public/` as the web document root;
+* private `.env`, source, schema, storage, and log paths;
+* production `display_errors=Off` with host-level logging for failures before userland handling;
+* minimum necessary PHP-user write access for existing storage and the private diagnostic destination;
+* HTTPS-capable Secure session cookies with the existing HttpOnly and approved SameSite behavior;
+* PHP 8.2+ and the existing extension contract;
+* fail-closed Fileinfo-dependent uploads;
+* the configured Admin path and shared-hosting routing remaining authoritative;
+* no Node process, daemon, queue, worker, scheduler, external service, or advanced server module.
+
 ---
 
 ## Future Expansion Areas
@@ -640,6 +706,7 @@ M2 may introduce:
 * Admin UI Foundation
 * Extensibility Foundation
 * Minimal Site Capabilities
+* Platform Hardening
 * Editor Framework
 * Media Foundation
 * Image Service

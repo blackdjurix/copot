@@ -18,5 +18,6 @@ require $basePath . '/routes/admin.php';
 
 $app->moduleLoader()->loadListeners($app);
 $app->moduleLoader()->loadRoutes($app);
+require $basePath . '/routes/admin_fallback.php';
 
 return $app;
