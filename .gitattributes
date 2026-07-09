@@ -1,0 +1,2 @@
+# Keep text materialization stable for deterministic package builds.
+* text=auto eol=lf

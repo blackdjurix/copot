@@ -82,6 +82,231 @@ function readZipEntries(string $zipPath): array
     return $entries;
 }
 
+function removeDirectory(string $path): void
+{
+    if (!is_dir($path)) {
+        return;
+    }
+
+    $iterator = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS),
+        RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($iterator as $item) {
+        if ($item->isDir() && !$item->isLink()) {
+            @chmod($item->getPathname(), 0777);
+            rmdir($item->getPathname());
+            continue;
+        }
+
+        @chmod($item->getPathname(), 0666);
+        unlink($item->getPathname());
+    }
+
+    @chmod($path, 0777);
+    rmdir($path);
+}
+
+function removeTrackedWorkingFiles(string $targetPath): void
+{
+    $command = 'git -C ' . escapeshellarg($targetPath) . ' ls-files -z';
+    $output = shell_exec($command);
+
+    if (!is_string($output)) {
+        throw new RuntimeException('Unable to list tracked files for isolated checkout rematerialization.');
+    }
+
+    foreach (explode("\0", $output) as $relativePath) {
+        if ($relativePath === '') {
+            continue;
+        }
+
+        $path = $targetPath . '/' . str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+
+        if (is_file($path) || is_link($path)) {
+            @chmod($path, 0666);
+            unlink($path);
+        }
+    }
+}
+
+/**
+ * @return array{tree: string, hash: string, output: list<string>, eol: list<string>}
+ */
+function buildFromIsolatedCheckout(string $sourcePath, string $targetPath, string $autocrlf): array
+{
+    $cloneCommand = 'git clone --quiet --no-hardlinks '
+        . escapeshellarg($sourcePath)
+        . ' '
+        . escapeshellarg($targetPath)
+        . ' 2>&1';
+    $cloneOutput = [];
+    $cloneExitCode = 0;
+    exec($cloneCommand, $cloneOutput, $cloneExitCode);
+
+    if ($cloneExitCode !== 0) {
+        throw new RuntimeException('Unable to clone isolated checkout: ' . implode("\n", $cloneOutput));
+    }
+
+    $resetCommand = 'git -C '
+        . escapeshellarg($targetPath)
+        . ' -c core.autocrlf='
+        . escapeshellarg($autocrlf)
+        . ' reset --hard HEAD 2>&1';
+    $resetOutput = [];
+    $resetExitCode = 0;
+    exec($resetCommand, $resetOutput, $resetExitCode);
+
+    if ($resetExitCode !== 0) {
+        throw new RuntimeException('Unable to rematerialize isolated checkout: ' . implode("\n", $resetOutput));
+    }
+
+    $attributesSource = $sourcePath . '/.gitattributes';
+    $attributesTarget = $targetPath . '/.gitattributes';
+
+    if (is_file($attributesSource) && !is_file($attributesTarget)) {
+        if (!copy($attributesSource, $attributesTarget)) {
+            throw new RuntimeException('Unable to copy working .gitattributes into isolated checkout.');
+        }
+    }
+
+    if (is_file($attributesTarget)) {
+        $attributesAddCommand = 'git -C '
+            . escapeshellarg($targetPath)
+            . ' add -- '
+            . escapeshellarg('.gitattributes')
+            . ' 2>&1';
+        $attributesAddOutput = [];
+        $attributesAddExitCode = 0;
+        exec($attributesAddCommand, $attributesAddOutput, $attributesAddExitCode);
+
+        if ($attributesAddExitCode !== 0) {
+            throw new RuntimeException('Unable to prepare isolated checkout attributes: ' . implode("\n", $attributesAddOutput));
+        }
+
+        $attributesTrackedCommand = 'git -C '
+            . escapeshellarg($targetPath)
+            . ' cat-file -e '
+            . escapeshellarg('HEAD:.gitattributes')
+            . ' 2>&1';
+        $attributesTrackedOutput = [];
+        $attributesTrackedExitCode = 0;
+        exec($attributesTrackedCommand, $attributesTrackedOutput, $attributesTrackedExitCode);
+
+        if ($attributesTrackedExitCode !== 0) {
+            $attributesCommitCommand = 'git -C '
+                . escapeshellarg($targetPath)
+                . ' -c user.name='
+                . escapeshellarg('Copot Package Smoke')
+                . ' -c user.email='
+                . escapeshellarg('copot-package-smoke@example.invalid')
+                . ' commit --quiet -m '
+                . escapeshellarg('Add checkout attributes for reproducibility smoke')
+                . ' -- '
+                . escapeshellarg('.gitattributes')
+                . ' 2>&1';
+            $attributesCommitOutput = [];
+            $attributesCommitExitCode = 0;
+            exec($attributesCommitCommand, $attributesCommitOutput, $attributesCommitExitCode);
+
+            if ($attributesCommitExitCode !== 0) {
+                throw new RuntimeException('Unable to commit isolated checkout attributes: ' . implode("\n", $attributesCommitOutput));
+            }
+        }
+    }
+
+    removeTrackedWorkingFiles($targetPath);
+
+    $attributeResetCommand = 'git -C '
+        . escapeshellarg($targetPath)
+        . ' -c core.autocrlf='
+        . escapeshellarg($autocrlf)
+        . ' reset --hard HEAD 2>&1';
+    $attributeResetOutput = [];
+    $attributeResetExitCode = 0;
+    exec($attributeResetCommand, $attributeResetOutput, $attributeResetExitCode);
+
+    if ($attributeResetExitCode !== 0) {
+        throw new RuntimeException('Unable to rematerialize isolated checkout with attributes: ' . implode("\n", $attributeResetOutput));
+    }
+
+    $renormalizeCommand = 'git -C '
+        . escapeshellarg($targetPath)
+        . ' add --renormalize . 2>&1';
+    $renormalizeOutput = [];
+    $renormalizeExitCode = 0;
+    exec($renormalizeCommand, $renormalizeOutput, $renormalizeExitCode);
+
+    if ($renormalizeExitCode !== 0) {
+        throw new RuntimeException('Unable to renormalize isolated checkout index: ' . implode("\n", $renormalizeOutput));
+    }
+
+    $checkoutCommand = 'git -C '
+        . escapeshellarg($targetPath)
+        . ' -c core.autocrlf='
+        . escapeshellarg($autocrlf)
+        . ' checkout --force -- . 2>&1';
+    $checkoutOutput = [];
+    $checkoutExitCode = 0;
+    exec($checkoutCommand, $checkoutOutput, $checkoutExitCode);
+
+    if ($checkoutExitCode !== 0) {
+        throw new RuntimeException('Unable to checkout isolated files after renormalization: ' . implode("\n", $checkoutOutput));
+    }
+
+    $treeCommand = 'git -C ' . escapeshellarg($targetPath) . ' rev-parse ' . escapeshellarg('HEAD^{tree}') . ' 2>&1';
+    $treeOutput = [];
+    $treeExitCode = 0;
+    exec($treeCommand, $treeOutput, $treeExitCode);
+
+    if ($treeExitCode !== 0 || ($treeOutput[0] ?? '') === '') {
+        throw new RuntimeException('Unable to resolve isolated checkout tree hash: ' . implode("\n", $treeOutput));
+    }
+
+    $eolCommand = 'git -C '
+        . escapeshellarg($targetPath)
+        . ' ls-files --eol .env.example README.md app/Core/Version.php 2>&1';
+    $eolOutput = [];
+    $eolExitCode = 0;
+    exec($eolCommand, $eolOutput, $eolExitCode);
+
+    if ($eolExitCode !== 0) {
+        throw new RuntimeException('Unable to inspect isolated checkout EOL state: ' . implode("\n", $eolOutput));
+    }
+
+    $buildCommand = escapeshellarg(PHP_BINARY)
+        . ' '
+        . escapeshellarg($targetPath . '/build/package.php')
+        . ' 2>&1';
+    $buildOutput = [];
+    $buildExitCode = 0;
+    exec($buildCommand, $buildOutput, $buildExitCode);
+
+    if ($buildExitCode !== 0) {
+        throw new RuntimeException('Isolated package build failed: ' . implode("\n", $buildOutput));
+    }
+
+    $zipPath = $targetPath . '/dist/copot-v' . Version::CURRENT . '.zip';
+
+    if (!is_file($zipPath)) {
+        throw new RuntimeException('Isolated package build did not create expected ZIP.');
+    }
+
+    $hash = hash_file('sha256', $zipPath);
+
+    if (!is_string($hash) || $hash === '') {
+        throw new RuntimeException('Unable to hash isolated package ZIP.');
+    }
+
+    return [
+        'tree' => trim($treeOutput[0]),
+        'hash' => strtoupper($hash),
+        'output' => $buildOutput,
+        'eol' => $eolOutput,
+    ];
+}
+
 $packagePath = $basePath . '/dist/copot-v' . Version::CURRENT . '.zip';
 
 if (is_file($packagePath) && !unlink($packagePath)) {
@@ -181,6 +406,49 @@ foreach ($entries as $entry) {
     $assert(!str_contains($entry, '\\'), 'Package entry paths must use forward slashes: ' . $entry);
     $assert(!str_starts_with($entry, '/'), 'Package entry paths must be relative: ' . $entry);
     $assert(!str_contains($entry, '/../') && !str_starts_with($entry, '../'), 'Package entry paths must not escape root: ' . $entry);
+}
+
+$sourceTreeOutput = [];
+$sourceTreeExitCode = 0;
+exec('git -C ' . escapeshellarg($basePath) . ' rev-parse ' . escapeshellarg('HEAD^{tree}') . ' 2>&1', $sourceTreeOutput, $sourceTreeExitCode);
+
+$assert($sourceTreeExitCode === 0 && ($sourceTreeOutput[0] ?? '') !== '', 'Source Git tree hash must be resolvable.');
+$sourceAttributesOutput = [];
+$sourceAttributesExitCode = 0;
+exec('git -C ' . escapeshellarg($basePath) . ' cat-file -e ' . escapeshellarg('HEAD:.gitattributes') . ' 2>&1', $sourceAttributesOutput, $sourceAttributesExitCode);
+
+if ($sourceTreeExitCode === 0 && ($sourceTreeOutput[0] ?? '') !== '') {
+    $tempRoot = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-package-builder-smoke-' . bin2hex(random_bytes(8));
+    $checkoutA = $tempRoot . DIRECTORY_SEPARATOR . 'checkout-a';
+    $checkoutB = $tempRoot . DIRECTORY_SEPARATOR . 'checkout-b';
+
+    try {
+        if (!mkdir($tempRoot, 0775, true) && !is_dir($tempRoot)) {
+            throw new RuntimeException('Unable to create isolated checkout root.');
+        }
+
+        $isolatedA = buildFromIsolatedCheckout($basePath, $checkoutA, 'true');
+        $isolatedB = buildFromIsolatedCheckout($basePath, $checkoutB, 'false');
+        $sourceTree = trim($sourceTreeOutput[0]);
+
+        if ($sourceAttributesExitCode === 0) {
+            $assert($isolatedA['tree'] === $sourceTree, 'Isolated checkout A must use the same Git tree as source.');
+            $assert($isolatedB['tree'] === $sourceTree, 'Isolated checkout B must use the same Git tree as source.');
+        }
+
+        $assert($isolatedA['tree'] === $isolatedB['tree'], 'Isolated checkouts must use the same Git tree.');
+        $assert($isolatedA['hash'] === $isolatedB['hash'], 'Isolated clean checkouts must produce identical package hashes.');
+
+        foreach ([$isolatedA['eol'], $isolatedB['eol']] as $index => $eolLines) {
+            foreach ($eolLines as $line) {
+                $assert(str_contains($line, 'w/lf'), 'Isolated checkout ' . ($index + 1) . ' must materialize relevant text files as LF: ' . $line);
+            }
+        }
+    } catch (Throwable $throwable) {
+        $assert(false, 'Isolated checkout reproducibility check must pass: ' . $throwable->getMessage());
+    } finally {
+        removeDirectory($tempRoot);
+    }
 }
 
 if ($failures !== []) {
