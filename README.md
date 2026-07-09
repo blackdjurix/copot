@@ -12,7 +12,7 @@ M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-M2.4 Platform Hardening implementation is complete and the lean M2 Platform Capabilities implementation phase is closed. Post-M2 Distribution & Release Preparation is now active; the latest published release remains v0.11.0 until the clean installable M2 final package is verified and released.
+M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the reproducibility blocker fix are complete. Copot v0.12.0 is the current stable Webcore baseline and installable release.
 
 The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
@@ -22,23 +22,25 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-Post-M2 Distribution & Release Preparation.
+M3 Preparation.
 
-The Post-M1 Roadmap Review is complete.
+The active checkpoint is Stage 1: Governance + Architecture Lock.
 
-M2.1 Admin UI Foundation is complete and released as v0.9.0.
+M2 Platform Capabilities are complete. Copot v0.12.0 is released as the stable Webcore baseline. M3 runtime implementation has not started.
 
-M2.2 Extensibility Foundation is complete and released as v0.10.0.
+Stage 1 locks:
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
+* Webcore maintenance-only policy;
+* Core-change escalation rules;
+* module ownership boundaries;
+* dependency direction;
+* Theme/Module boundaries;
+* Navigation ownership direction;
+* Media ownership direction;
+* official and external module repository strategy;
+* M3 entry criteria and explicit non-goals.
 
-Lean M2 implementation is complete through:
-
-```text
-M2.4 Platform Hardening
-```
-
-The current checkpoint is distribution cleanup, package-contract lock, deterministic package preparation, clean-install verification, and M2 final release. M3 Core Modules has not started.
+Stage 2 will lock M3 milestone sequencing. Stage 3 will perform the final documentation review and M3 entry audit.
 
 M2.2 completion record:
 
@@ -50,7 +52,7 @@ M2.2 completion record:
 * fixture-based end-to-end proof, unified regression, automated-assisted runtime verification, and manual browser verification passing;
 * no production lifecycle event; the first production integration remains deferred to its real consumer milestone.
 
-M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Batch 1 locks the hardening scope and architecture without runtime implementation.
+M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening and Post-M2 Distribution & Release Preparation are complete in v0.12.0. M3 Prep governance and architecture rules are defined in `docs/16_m3_core_freeze_and_module_contract.md`.
 
 ## Implemented Foundation
 
@@ -771,4 +773,8 @@ docs/03_roadmap.md
 docs/10_admin_ui_foundation.md
 docs/11_branding_foundation.md
 docs/12_extensibility_foundation.md
+docs/13_minimal_site_capabilities.md
+docs/14_platform_hardening.md
+docs/15_distribution_and_packaging.md
+docs/16_m3_core_freeze_and_module_contract.md
 ```

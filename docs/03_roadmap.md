@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening implementation is complete through Batch 6 and is ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 runtime implementation has not started; M3 Prep is active.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -466,36 +466,79 @@ Physical or business asset management belongs to M4 as a domain-specific Busines
 
 ## Post-M2 Distribution & Release Preparation
 
-Status: Active after M2.4 implementation completion. Release Candidate Audit is the current closure step; D1-D4 are complete and D6 remains pending.
+Status: Complete and released as v0.12.0.
 
 Purpose:
 
 Convert the completed lean M2 Webcore implementation into a deterministic, installable, clean-verified release artifact before M3 module development begins. This is a release-preparation phase, not a new capability milestone.
 
-Work sequence:
+Completed work sequence:
 
 1. Distribution Contract & Version Foundation — complete.
 2. Repository Cleanup & Package Manifest — complete.
 3. Deterministic Package Builder — complete.
 4. Clean Install Verification — complete.
-5. Release Candidate Audit — current; documentation closure and final GO/NO-GO confirmation in progress.
-6. Merge, tag, GitHub Release, and M2 final package publication — pending.
+5. Release Candidate Audit — complete.
+6. Reproducibility blocker correction, final merge, tag, GitHub Release, and package publication — complete.
 
-Rules:
-
-* Webcore capability work remains closed unless a separately approved maintenance, security, compatibility, performance, or architecture correction is required.
-* `.env`, runtime locks, logs, caches, Site Assets, tests, Example module fixtures, repository metadata, and local development state must not enter the installable package.
-* The installable artifact must be built from an explicit include/exclude contract, not by archiving the working directory.
-* A clean-install verification from the built artifact is required before the M2 final release.
-* M3 Core Modules does not start until this phase is closed.
-
-Completed release-preparation evidence:
+Release evidence:
 
 * `Copot\Core\Version::CURRENT` is the single release-version source for installer markers and package naming.
-* The deterministic package builder produces `dist/copot-v0.12.0.zip` from a build-time package manifest.
-* Package reproducibility, external extraction compatibility, package-content guards, and clean installation from the extracted artifact pass locally.
-* Clean-install verification uses an isolated target and a dedicated guarded D4 test database.
-* Deployment-environment checks for real HTTPS Secure cookies, production document-root isolation, and symlink-capable host filesystem behavior remain pending environment-specific verification items.
+* The official package builder produces `dist/copot-v0.12.0.zip` from the explicit package manifest.
+* Repository text materialization is locked to LF for deterministic package builds.
+* Cross-checkout package reproducibility, external extraction compatibility, package-content guards, and clean installation from the extracted artifact pass.
+* Clean-install verification uses an isolated target and a dedicated guarded test database.
+* Deployment-environment checks for real HTTPS Secure cookies, production document-root isolation, and symlink-capable host filesystem behavior remain environment-specific responsibilities.
+
+The released v0.12.0 Webcore is now the stable baseline for M3 Prep.
+
+## M3 Preparation
+
+Status: Active.
+
+M3 Prep has three stages:
+
+1. Governance + Architecture Lock — active.
+2. M3 Sequencing Lock — pending.
+3. Final Review + Entry Audit — pending.
+
+### Stage 1 — Governance + Architecture Lock
+
+Stage 1 is documentation and architecture work only. It does not implement M3 runtime behavior.
+
+Stage 1 locks:
+
+* post-v0.12.0 Webcore maintenance-only policy;
+* Core-change escalation rules;
+* module ownership boundaries;
+* cross-module interaction rules;
+* dependency direction;
+* Theme/Module boundaries;
+* Navigation ownership direction;
+* Media Library ownership direction;
+* official-module and external-module repository strategy;
+* M3 entry criteria and explicit non-goals.
+
+The Stage 1 architecture direction is:
+
+* solve module requirements module-first;
+* keep module-specific business logic, schema, UI, workflow, storage, and private implementation out of Webcore;
+* allow Core changes only for approved maintenance, correction, compatibility, security, performance, runtime, extension-point, or proven generic platform needs;
+* keep Navigation module-owned unless a concrete reusable platform contract is proven necessary;
+* keep Media Library module-owned and preserve `SiteAssetStorage` as a branding-specific fixed-slot capability;
+* keep Theme presentation separate from module business logic and storage;
+* keep official first-party modules in the monorepo during early M3 while designing them for later independent packaging;
+* target external, community, client-specific, and non-core modules at independent repositories.
+
+Detailed rules are defined in:
+
+```text
+docs/16_m3_core_freeze_and_module_contract.md
+```
+
+Stage 2 will determine the final M3 milestone sequence from real dependencies. Stage 3 will audit document consistency, unresolved architecture blockers, M3.1 scope, test strategy, branch strategy, forbidden Core touchpoints, and acceptance criteria before implementation starts.
+
+---
 
 ## M3 Core Modules
 
@@ -528,11 +571,11 @@ Core Modules:
 10. Redirect Manager
 11. Form Manager
 
-This order represents the current lean priority and dependency direction, not an immutable M3.x sequence.
+This order is a candidate priority list only. M3 Prep Stage 2 must audit real dependencies and lock the final M3.x sequence before M3.1 implementation begins.
 
-Navigation data belongs to Core/Navigation Manager, while themes declare locations and control rendering. Theme Manager follows Navigation Manager so the first basic theme can consume a stable menu contract.
+Navigation data is module-owned by the future Navigation boundary. Themes declare locations and control rendering through a documented consumption contract; Stage 2 determines where Navigation Manager belongs in the final sequence.
 
-Content and Taxonomy already have Webcore foundations. Media Library may follow them because M2.3 provides only the minimal asset/upload boundary needed for logo, favicon, theme, and early content use cases. If a concrete Content Manager requirement makes a reusable media picker mandatory, Media Library may move earlier.
+Content and Taxonomy already have Webcore-era module foundations. Media Library remains module-owned and separate from the branding-specific Site Asset boundary. Stage 2 may move Media Library earlier only when a concrete M3 dependency proves that ordering is necessary.
 
 ### Existing Module Evolution
 
@@ -581,14 +624,14 @@ Settings Manager provides administrator-facing settings management.
 For Branding Foundation, Settings Manager edits only the four Core palette values. Theme Manager reads theme capabilities and manages active-theme-scoped palette or semantic-mapping overrides plus advanced theme color settings. Custom CSS is deferred to a later Theme Manager enhancement. Neither manager changes the locked Core semantic mapping.
 
 ```text
-Media Foundation + Image Service
+Branding-specific Site Asset capability
 !=
 Media Library
 ```
 
-Media Foundation and Image Service provide infrastructure.
+The existing Site Asset boundary owns only fixed Logo/Favicon lifecycle behavior.
 
-Media Library provides management and selection UI.
+Media Library is module-owned and provides general media management and selection behavior. Any future generic media or image-processing infrastructure must be justified by concrete reusable consumers before entering Webcore.
 
 ---
 
@@ -697,23 +740,21 @@ Module integration
 ```
 
 ```text
-Media Foundation + Image Service
-->
 Media Library
 ->
-Theme Manager and Content Manager media fields
+Theme Manager and Content Manager media-field integration through explicit contracts
 ```
 
 ```text
-Editor Framework
+Editor capability, only if proven necessary
 ->
 Content Manager / Workspace
 ```
 
 ```text
-Navigation Foundation
-->
 Navigation Manager
+->
+Theme location consumption through an explicit contract
 ```
 
 ```text
