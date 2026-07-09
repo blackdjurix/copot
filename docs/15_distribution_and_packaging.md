@@ -143,6 +143,12 @@ Builder behavior:
 
 Release-candidate audit verified that two builds from the same source state produced identical SHA-256 hashes. External archive compatibility was also verified with PowerShell `Expand-Archive`, with an additional independent `tar -tf` listing check where available.
 
+### Line-Ending Reproducibility
+
+The package builder reads file bytes from the checked-out filesystem. It does not read canonical blobs directly from Git.
+
+The repository therefore owns a checkout materialization contract through `.gitattributes`: tracked text content is materialized with LF line endings, while binary content must not be transformed as text. Package reproducibility must be verified across clean isolated checkouts or worktrees from the same Git tree, not only by rebuilding twice inside one existing working tree.
+
 ## Clean-Install Verification
 
 A release candidate is not accepted until the built artifact is tested from a clean state with:
