@@ -133,18 +133,14 @@ A Platform Capability may provide:
 
 A Platform Capability does not need a standalone management UI and must not represent a business-specific domain.
 
-Planned M2 Platform Capabilities are:
+The completed lean-M2 Platform Capabilities are:
 
-* Admin UI Foundation
-* Extensibility Foundation
-* Minimal Site Capabilities
-* Editor Framework
-* Media Foundation
-* Image Service
-* Navigation Foundation
-* Search Foundation
-* Notification Foundation
-* Workflow / Automation Foundation
+* Admin UI Foundation;
+* Extensibility Foundation;
+* Minimal Site Capabilities;
+* Platform Hardening.
+
+Earlier architecture exploration also identified Editor, Media, Image, Navigation, Search, Notification, and Workflow/Automation capability concepts. They are not active M2 milestones. Any future generic platform capability must be justified by concrete reusable consumers and must follow the post-v0.12.0 Webcore policy and Core-change escalation rules rather than being revived as assumed roadmap commitments.
 
 Dependency direction:
 
@@ -272,7 +268,7 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ## Platform Hardening Boundary
 
-M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closed the lean M2 Platform Capabilities implementation phase. M3 runtime implementation has not started; M3 Preparation is active.
 
 The planned hardening direction is:
 

@@ -16,35 +16,22 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ## Current Phase
 
-### M3 Prep Stage 2 — M3 Sequencing Lock
+### M3 Prep Stage 3 — Final Review + Entry Audit
 
 Primary goal:
 
-Lock the approved M3 milestone order, dependency direction, planning batch envelopes, risk boundaries, sequencing-change rules, and M3.1 entry target before the final M3 entry audit.
+Complete the final authoritative-document consistency review, lock the M3.1 Users & Access entry contract, verify Core touchpoint boundaries, testing and branch strategy, and confirm repository readiness before any M3 runtime implementation begins.
 
 Current work:
 
 * M3 Prep Stage 1 Governance + Architecture Lock is complete.
+* M3 Prep Stage 2 M3 Sequencing Lock is complete.
 * The v0.12.0 Webcore baseline remains maintenance-only and M3 development remains module-first.
-* The approved M3 sequence is:
-  1. M3.1 Users & Access;
-  2. M3.2 Settings Manager;
-  3. M3.3 Module Manager;
-  4. M3.4 Content Manager;
-  5. M3.5 Taxonomy Manager;
-  6. M3.6 Navigation Manager;
-  7. M3.7 Theme Manager;
-  8. M3.8 Media Library;
-  9. M3.9 Internal Dashboard;
-  10. M3.10 Redirect Manager;
-  11. M3.11 Form Manager.
-* The planning envelope is 59 batches across M3.1-M3.11. This is a planning boundary, not an immutable implementation count.
-* Exact batch breakdown is locked just-in-time before each milestone begins, using current repository evidence and completed prior milestones.
-* Milestone order may change only through documented dependency, security, migration, integration, or architecture evidence. Silent reordering is prohibited.
-* M3 milestones are sequential by default. Parallel execution requires explicit approval and proof of no unresolved dependency, overlapping schema ownership, shared mutable contract, or overlapping Core touchpoint.
-* M3.1 entry target is Users & Access.
-* Stage 2 remains documentation and planning work only. No M3 runtime implementation, schema change, Core refactor, new module, or dependency addition is allowed.
-* Stage 3 Final Review + Entry Audit remains required before M3.1 implementation begins.
+* The approved M3.1-M3.11 sequence, 59-batch planning envelope, risk labels, Sequence Change Rule, Parallelization Rule, and Just-in-Time Batch Lock Rule remain locked.
+* M3.1 entry target remains Users & Access.
+* Stage 3 is documentation, audit, and entry-contract work only. No M3 runtime implementation, schema change, Core refactor, new module, or dependency addition is allowed.
+* Stage 3 must reconcile stale current-state wording, confirm no unresolved architecture blocker, and lock M3.1 scope, Core touchpoints, test strategy, branch strategy, entry criteria, and acceptance criteria.
+* M3.1 implementation must not begin until Stage 3 remediation is complete, final verification passes, and M3 Prep is closed through the user-owned Git workflow.
 
 Latest release: v0.12.0.
 
@@ -138,7 +125,7 @@ M2.4 Platform Hardening and Post-M2 Distribution & Release Preparation are compl
 * Solve module requirements inside the module first.
 * Before proposing a Core change, verify in order whether the need can be solved by module-local design, an existing public service, a registry, an event/listener pair with a real consumer, or an existing extension point.
 * A remaining Core change proposal must be generic, reusable, justified by a concrete dependency, and handled as explicit Core maintenance or platform-capability work rather than hidden inside a module milestone.
-* Do not implement Navigation, Media, or other M3 capability work during M3 Prep Stage 1.
+* Do not implement Navigation, Media, or other M3 capability work during M3 Prep before the approved M3 implementation entry has passed.
 
 ---
 
@@ -669,21 +656,22 @@ Copot v0.12.0 is released and is the current stable Webcore baseline.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
-The active checkpoint is M3 Prep Stage 2: M3 Sequencing Lock.
+M3 Prep Stage 2 M3 Sequencing Lock is complete.
+
+The active checkpoint is M3 Prep Stage 3: Final Review + Entry Audit.
 
 The immediate goal is to:
 
 * preserve the released v0.12.0 runtime and distribution contracts;
 * preserve the Stage 1 Webcore freeze, module ownership, dependency, Theme/Module, Navigation, Media, and repository boundaries;
-* lock the approved M3.1-M3.11 implementation sequence;
-* record dependency rationale and risk level for each milestone;
-* record the planning batch envelope for each milestone without treating batch counts as immutable;
-* require focused just-in-time batch locking before each milestone starts;
-* require documented change control for any future milestone reordering;
-* keep M3 milestones sequential by default and allow parallelization only after explicit dependency and ownership review;
-* confirm Users & Access as the M3.1 entry target;
-* prepare the Stage 3 Final Review + Entry Audit handoff;
-* avoid runtime code changes, schema changes, Core refactors, module implementation, and dependency additions during Stage 2.
+* preserve the Stage 2 approved sequence, planning envelopes, risk labels, and sequencing governance;
+* reconcile stale current-state wording in authoritative documentation;
+* confirm no unresolved architecture blocker remains;
+* lock the M3.1 Users & Access scope and exact batch structure;
+* lock allowed and forbidden M3.1 Core touchpoints;
+* lock the M3.1 test strategy, branch strategy, entry criteria, and acceptance criteria;
+* verify repository and local worktree readiness before implementation;
+* avoid runtime code changes, schema changes, Core refactors, module implementation, and dependency additions during Stage 3.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
 

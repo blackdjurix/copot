@@ -26,7 +26,9 @@ M3 Preparation.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
-The active checkpoint is Stage 2: M3 Sequencing Lock.
+M3 Prep Stage 2 M3 Sequencing Lock is complete.
+
+The active checkpoint is Stage 3: Final Review + Entry Audit.
 
 M2 Platform Capabilities are complete. Copot v0.12.0 is released as the stable Webcore baseline. M3 runtime implementation has not started.
 
@@ -50,7 +52,7 @@ The sequence is governed by real dependency evidence, risk, and architecture bou
 
 M3.1 target: Users & Access.
 
-Stage 3 will perform the final documentation review and M3 entry audit before implementation begins.
+Stage 3 is performing the final authoritative-document review and M3.1 entry-contract audit. M3.1 runtime implementation has not started and must not begin until Stage 3 passes.
 
 M2.2 completion record:
 
@@ -441,7 +443,7 @@ Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON des
 
 ## M2.4 Platform Hardening
 
-M2.4 implementation is complete. Batches 1–6 are complete, the unified regression gate is included, applicable local/manual verification passes, and the milestone is ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+M2.4 implementation is complete and released in v0.12.0. Batches 1–6 are complete, the unified regression gate is included, and applicable local/manual verification passes. This closed the lean M2 Platform Capabilities implementation phase; M3 runtime implementation has not started and M3 Preparation is active.
 
 The locked scope covers:
 

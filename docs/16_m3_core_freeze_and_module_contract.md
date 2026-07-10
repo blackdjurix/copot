@@ -288,7 +288,7 @@ The Theme/Navigation integration must use an explicit documented consumption con
 
 A generic Webcore Navigation capability may be proposed only when a concrete reusable need cannot be solved through module ownership and existing extension points.
 
-M3 Prep Stage 2 determines the final sequence position of Navigation Manager. Stage 1 does not implement Navigation runtime behavior.
+M3 Prep Stage 2 determined the final sequence position of Navigation Manager as M3.6. Stage 1 did not implement Navigation runtime behavior.
 
 ---
 
@@ -310,9 +310,9 @@ Media Library may own:
 
 Generic media or image-processing infrastructure may enter Webcore only when multiple concrete consumers prove a reusable platform requirement.
 
-Possible future generic infrastructure may include storage contracts, image processing, delivery abstraction, or variants, but none of these become active Webcore commitments during M3 Prep Stage 1.
+Possible future generic infrastructure may include storage contracts, image processing, delivery abstraction, or variants, but none of these become active Webcore commitments without separate Core-change approval, the existing Core-change escalation process, and concrete reusable consumer evidence.
 
-M3 Prep Stage 2 determines the final sequence position of Media Library.
+M3 Prep Stage 2 determined the final sequence position of Media Library as M3.8.
 
 ---
 
@@ -487,9 +487,9 @@ When one of these milestones discovers a possible Core requirement, module imple
 
 ---
 
-## Stage 3 Handoff
+## Stage 3 Final Review + Entry Audit
 
-Stage 3 owns Final Review + Entry Audit.
+Stage 3 is active and owns the final authoritative-document review, remediation, and M3.1 entry-contract lock.
 
 It must verify:
 
@@ -508,6 +508,168 @@ It must verify:
 * repository and worktree are ready.
 
 M3.1 implementation must not start until Stage 3 passes.
+
+### Stage 3 Audit Result
+
+The Stage 3 audit found no unresolved architecture blocker requiring Stage 1 or Stage 2 to reopen. The Stage 1 governance contract and Stage 2 sequencing governance remain valid.
+
+Stage 3 remediation must complete before entry:
+
+* authoritative current-state wording must point to Stage 3;
+* stale M2 merge/release-candidate wording must be converted to historical completion/release wording where it could misrepresent current state;
+* M3.1 scope and exact batch structure must be explicit;
+* allowed and forbidden Core touchpoints must be explicit;
+* test strategy and branch strategy must be explicit;
+* M3.1 entry and acceptance criteria must be explicit;
+* remote repository state must remain consistent with the M3 Prep branch history;
+* local branch, HEAD, tracking state, and worktree cleanliness must be verified before implementation work.
+
+### M3.1 Users & Access Scope Lock
+
+M3.1 evolves the existing user, role, and permission foundation into an administrator-facing Users & Access management capability. It must reuse the single existing authentication and authorization system rather than creating module-specific role or permission systems.
+
+Minimum scope:
+
+* Admin user listing and controlled user detail/edit workflows;
+* controlled user creation;
+* account-status management using existing active-account semantics;
+* role listing and role management within the existing role/permission model;
+* controlled user-role assignment and removal;
+* controlled role-permission assignment and removal;
+* administrator-managed password creation/change behavior only where required by the approved user-management workflow;
+* administrator lockout prevention and explicit self-demotion protection;
+* permission-aware Admin navigation and route access;
+* compatibility with existing login, session, active-user resolution, Admin guards, and existing Content, Taxonomy, and Settings permission behavior.
+
+Explicit non-goals:
+
+* password-reset delivery;
+* email verification;
+* OAuth or external identity providers;
+* two-factor authentication;
+* organization, team, tenant, or multitenancy hierarchy;
+* workflow approval hierarchy;
+* generic audit-log platform;
+* notification delivery;
+* public identity API;
+* authentication or session redesign;
+* separate module role or permission systems;
+* speculative event production without a real caller and consumer.
+
+### M3.1 Exact Batch Structure
+
+The M3.1 planning envelope remains five batches and is locked as:
+
+1. Contract lock, repository audit, ownership review, and focused test baseline.
+2. Users administration foundation: module structure, permissions, repositories/services, listing, create/edit, and account-status controls.
+3. Roles and assignments: role management, user-role assignment, role-permission assignment, and lockout/self-protection rules.
+4. Security and integration hardening: CSRF, permission guards, configured Admin path, inactive-user behavior, sanitization, Admin in-shell errors, and compatibility regression.
+5. Unified M3.1 regression, manual Admin verification, documentation sync, and completion audit.
+
+The five-batch lock is subject to the existing Just-in-Time Batch Lock governance: batch internals may be refined by repository evidence, but scope must not silently widen and the milestone count may change only when documented evidence justifies it.
+
+### M3.1 Core Touchpoint Boundary
+
+Allowed by default:
+
+* consume existing public `Auth` behavior and authenticated-user state;
+* consume existing `User` identity and authorization behavior;
+* consume existing permission checks;
+* consume existing Admin URL, Admin Shell, CSRF, and Admin error-rendering contracts;
+* add M3.1-owned routes, permissions, services, repositories, Admin views, module assets, and tests;
+* use the existing user/role/permission data model through clearly owned M3.1 services and repositories;
+* propose schema changes only through the normal approval gate and explicit ownership/migration review.
+
+Requires concrete blocker proof and separate Core review:
+
+* changes to `Auth`;
+* changes to `User`;
+* changes to `UserProvider`;
+* changes to `PermissionChecker`;
+* changes to Application service wiring;
+* changes to shared Admin guard semantics;
+* changes to shared role or permission semantics.
+
+Forbidden by default:
+
+* authentication redesign;
+* session redesign;
+* unrelated login-route redesign;
+* service-container rewrite;
+* Router rewrite;
+* a separate role system;
+* a separate permission system;
+* hardcoded role hierarchy for workflow behavior;
+* speculative generic identity abstractions;
+* speculative production events;
+* future capabilities outside the approved M3.1 scope.
+
+### M3.1 Test Strategy
+
+M3.1 verification must contain four automated layers plus manual verification.
+
+Focused domain coverage must verify user listing/read, creation, update, account status, role management, user-role assignment/removal, role-permission assignment/removal, duplicate-email rejection, normalization, and invalid assignment rejection.
+
+Security coverage must verify unauthenticated access, missing Admin access, missing M3.1 permissions, CSRF rejection, privilege-escalation attempts, self-demotion policy, final-administrator protection, inactive-user behavior, password-hash non-disclosure, and sanitized failure responses.
+
+Integration coverage must verify existing login compatibility, inactive-account login rejection, existing permission checks, Content/Taxonomy/Settings access compatibility, permission-aware Admin navigation, configured Admin path handling, and eligible Admin in-shell error behavior.
+
+The completion gate must run the focused M3.1 suite and the complete existing platform regression chain. Manual browser verification must cover all approved M3.1 Admin flows after automated tests pass.
+
+### M3.1 Branch Strategy
+
+M3 Prep remains on `feature/m3-prep` through Stage 3 remediation and final verification. Git operations remain user-owned.
+
+After Stage 3 passes:
+
+```text
+feature/m3-prep
+-> user-owned commit and push
+-> user-owned merge into main
+-> feature/m3.1-users-access created from updated main
+```
+
+M3.1 implementation must not begin directly on `feature/m3-prep`.
+
+### M3.1 Entry Criteria
+
+M3.1 may begin only when:
+
+* Stage 3 remediation is complete;
+* authoritative docs consistently identify the current Stage 3 state;
+* stale current-state and release-candidate wording is corrected where required;
+* M3.1 scope and five-batch structure are locked;
+* Core touchpoint boundaries are explicit;
+* schema/migration ownership is explicit for any proposed schema change;
+* test strategy is explicit;
+* branch strategy is explicit;
+* acceptance criteria are explicit;
+* final Stage 3 re-audit passes;
+* local branch, HEAD, tracking, and worktree state are verified clean and expected;
+* M3 Prep is closed through the user-owned Git workflow;
+* `feature/m3.1-users-access` starts from the updated `main`.
+
+### M3.1 Acceptance Criteria
+
+M3.1 is complete only when:
+
+* approved user-management Admin workflows are implemented;
+* approved role-management and assignment workflows are implemented;
+* permission assignment behavior remains controlled and compatible with the single existing permission system;
+* existing authentication behavior remains compatible;
+* inactive-account behavior remains secure;
+* administrator lockout and self-demotion protections are implemented and tested;
+* every write route uses CSRF protection;
+* every management route uses explicit permission guards;
+* configured Admin path handling is preserved;
+* errors remain sanitized and eligible authenticated Admin errors remain in-shell;
+* no separate role or permission system is introduced;
+* no speculative Core abstraction or unrelated future capability is added;
+* focused M3.1 domain, security, and integration tests pass;
+* the complete platform regression chain passes;
+* manual Admin verification passes;
+* documentation matches the implemented contract;
+* no unresolved architecture or Core-boundary blocker remains.
 
 ---
 
