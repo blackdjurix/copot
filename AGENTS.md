@@ -10,34 +10,30 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2.1 Admin UI Foundation is released as v0.9.0. M2.2 Extensibility Foundation is released as v0.10.0. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening implementation is complete and the lean M2 Platform Capabilities implementation phase is closed. Post-M2 Distribution & Release Preparation is active; M3 has not started.
+The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Distribution & Release Preparation are complete. Copot v0.12.0 is the current stable Webcore baseline. M3 Core Modules implementation has not started; the active phase is Pre-M3 Preparation.
 
 ---
 
 ## Current Phase
 
-### Post-M2 Distribution & Release Preparation
+### M3 Prep Stage 3 — Final Review + Entry Audit
 
 Primary goal:
 
-Turn the completed M2 implementation into a deterministic, clean-installable release artifact without widening Webcore capability or starting M3 early.
+Complete the final authoritative-document consistency review, lock the M3.1 Users & Access entry contract, verify Core touchpoint boundaries, testing and branch strategy, and confirm repository readiness before any M3 runtime implementation begins.
 
 Current work:
 
-* M2.1 Admin UI Foundation is complete and released as v0.9.0.
-* M2.2 Extensibility Foundation is complete and released as v0.10.0.
-* M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
-* M2.4 Batch 1 repository audit, architecture, documentation, scope lock, non-goals, batch plan, acceptance criteria, and risk register are complete.
-* M2.4 Batch 2 Minimal Diagnostics Baseline is implemented with request-scoped local JSON-line diagnostics, safe error references, strict context filtering, no raw exception messages, and no-throw sink failure behavior.
-* M2.4 Batch 3 Application Error Boundary and Rendering Safety is implemented with sanitized pre-autoload, bootstrap, and dispatch boundaries plus exact owned-buffer cleanup.
-* M2.4 Batch 4 Admin In-Shell Errors is implemented with safe-shell eligibility, standalone fallback, preserved status codes, single-reference unexpected failure recovery, and final-order Admin catch-all routes.
-* M2.4 Batch 5 Runtime, Security, Storage, and Deployment Hardening is implemented with environment-configurable Secure cookies, observable site-asset degradation, warning-safe filesystem operations, and focused security/deployment verification.
-* M2.4 Batch 6 Unified Regression and Release Readiness is implemented with one chained M2.4 gate, final scope/status consistency, runtime-artifact ignore coverage, and explicit deployment-only verification records.
-* M2.4 implementation is complete and closes the lean M2 Platform Capabilities implementation phase.
-* Post-M2 distribution work owns repository cleanup, framework version single-source-of-truth, package include/exclude policy, deterministic package preparation, clean-install verification, release-candidate validation, and final M2 release.
-* M3 work must not begin until the Post-M2 distribution phase is closed and separately approved.
+* M3 Prep Stage 1 Governance + Architecture Lock is complete.
+* M3 Prep Stage 2 M3 Sequencing Lock is complete.
+* The v0.12.0 Webcore baseline remains maintenance-only and M3 development remains module-first.
+* The approved M3.1-M3.11 sequence, 59-batch planning envelope, risk labels, Sequence Change Rule, Parallelization Rule, and Just-in-Time Batch Lock Rule remain locked.
+* M3.1 entry target remains Users & Access.
+* Stage 3 is documentation, audit, and entry-contract work only. No M3 runtime implementation, schema change, Core refactor, new module, or dependency addition is allowed.
+* Stage 3 must reconcile stale current-state wording, confirm no unresolved architecture blocker, and lock M3.1 scope, Core touchpoints, test strategy, branch strategy, entry criteria, and acceptance criteria.
+* M3.1 implementation must not begin until Stage 3 remediation is complete, final verification passes, and M3 Prep is closed through the user-owned Git workflow.
 
-Latest release: v0.11.0.
+Latest release: v0.12.0.
 
 The Post-M1 Roadmap Review is complete.
 
@@ -46,6 +42,8 @@ M2.1 is complete and released as v0.9.0.
 M2.2 is complete and released as v0.10.0.
 
 M2.3 is complete and released as v0.11.0.
+
+M2.4 Platform Hardening and Post-M2 Distribution & Release Preparation are complete and released in v0.12.0.
 
 ---
 
@@ -118,6 +116,16 @@ M2.3 is complete and released as v0.11.0.
 * Do not add dependencies to solve problems that do not yet exist.
 * Focus only on the active milestone.
 * If a future feature appears necessary, propose it first and wait for approval.
+
+### Post-v0.12.0 Webcore Freeze Rules
+
+* Treat the v0.12.0 Webcore as a stable baseline.
+* Webcore changes are allowed only for bug fixes, security fixes, compatibility work, runtime upgrades, performance improvements, extension-point corrections, architectural corrections, or explicitly approved generic platform capabilities.
+* Do not add module-specific business logic, module-specific schema, module-specific UI, module-specific workflow, or single-module storage behavior to Webcore.
+* Solve module requirements inside the module first.
+* Before proposing a Core change, verify in order whether the need can be solved by module-local design, an existing public service, a registry, an event/listener pair with a real consumer, or an existing extension point.
+* A remaining Core change proposal must be generic, reusable, justified by a concrete dependency, and handled as explicit Core maintenance or platform-capability work rather than hidden inside a module milestone.
+* Do not implement Navigation, Media, or other M3 capability work during M3 Prep before the approved M3 implementation entry has passed.
 
 ---
 
@@ -463,7 +471,21 @@ assets/
 
 Each module should define its own metadata in `module.json`.
 
+Module ownership should remain local where applicable:
+
+* routes;
+* permissions;
+* services;
+* repositories;
+* migrations and schema ownership;
+* Admin views;
+* module assets;
+* module tests;
+* module version and changelog metadata where an independent lifecycle is introduced.
+
 Modules should not assume another module exists unless dependency rules are documented.
+
+Cross-module integration must use an explicit public service contract, event/listener boundary, registry contribution, documented module API, or declared dependency. A module must not read another module's private files, depend on its filesystem path, or write directly into schema owned by another module without an approved shared contract.
 
 Modules may be classified as Core Modules or Business/Application Modules.
 
@@ -630,34 +652,33 @@ Commit messages should remain clear and milestone-aware.
 
 ## Current Immediate Goal
 
-M1 Framework Foundation is complete and released as v0.8.0.
+Copot v0.12.0 is released and is the current stable Webcore baseline.
 
-The Post-M1 Roadmap Review is complete.
+M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
-M2.1 Admin UI Foundation is complete and released as v0.9.0.
+M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-M2.2 Extensibility Foundation is complete and released as v0.10.0.
+The active checkpoint is M3 Prep Stage 3: Final Review + Entry Audit.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
+The immediate goal is to:
 
-The current checkpoint is completion of M2.4 Platform Hardening Batch 5 Runtime, Security, Storage, and Deployment Hardening.
-
-The next checkpoint is to:
-
-* preserve the completed M2.2 synchronous event and listener contract;
-* keep production events deferred until a consumer milestone proves one real caller/listener pair;
-* preserve the completed M2.3 formatting, branding, two-slot storage, controlled delivery, Admin integration, and Theme integration contracts;
-* keep M2.4 within the locked error, sanitized rendering, Admin error, logging, storage/filesystem, runtime, deployment, and regression scope;
-* preserve the completed request-scoped, synchronous, local, no-throw Batch 2 diagnostics contract;
-* preserve the completed sanitized bootstrap/dispatch boundaries, standalone server errors, trusted-fragment contract, and exact owned-buffer cleanup;
-* preserve the completed Admin in-shell error contract and final-order Admin catch-all routing;
-* preserve the completed Batch 5 runtime/session and storage observability hardening;
-* obtain separate approval before Batch 6 unified regression and release-readiness work;
-* preserve shared-hosting operation without a new dependency, service process, or database change;
-* avoid recalling deferred capabilities without a concrete dependency and approval.
+* preserve the released v0.12.0 runtime and distribution contracts;
+* preserve the Stage 1 Webcore freeze, module ownership, dependency, Theme/Module, Navigation, Media, and repository boundaries;
+* preserve the Stage 2 approved sequence, planning envelopes, risk labels, and sequencing governance;
+* reconcile stale current-state wording in authoritative documentation;
+* confirm no unresolved architecture blocker remains;
+* lock the M3.1 Users & Access scope and exact batch structure;
+* lock allowed and forbidden M3.1 Core touchpoints;
+* lock the M3.1 test strategy, branch strategy, entry criteria, and acceptance criteria;
+* verify repository and local worktree readiness before implementation;
+* avoid runtime code changes, schema changes, Core refactors, module implementation, and dependency additions during Stage 3.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
 
 M2.3 scope and architecture are defined in `docs/13_minimal_site_capabilities.md`.
 
 M2.4 scope and architecture are defined in `docs/14_platform_hardening.md`.
+
+Distribution and packaging rules are defined in `docs/15_distribution_and_packaging.md`.
+
+M3 governance, Core freeze, module ownership, dependency, sequencing, and entry contracts are defined in `docs/16_m3_core_freeze_and_module_contract.md`.

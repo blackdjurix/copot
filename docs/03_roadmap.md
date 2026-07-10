@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening implementation is complete through Batch 6 and is ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 runtime implementation has not started; M3 Prep is active.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -354,9 +354,9 @@ The separate Core four-color palette and semantic-mapping proposal in `docs/11_b
 
 #### M2.4 Platform Hardening
 
-Status: Implementation complete. Batches 1–6 are complete; unified regression and applicable local/manual verification pass. Ready for merge, tag, and release preparation.
+Status: Complete and released in v0.12.0. Batches 1–6 are complete; unified regression and applicable local/manual verification pass.
 
-Target release: To be assigned during release preparation.
+Release: v0.12.0.
 
 ##### Objective
 
@@ -409,7 +409,7 @@ Batch 2 provides request-scoped synchronous local diagnostics, controlled JSON-l
 
 Batch 3 provides sanitized pre-autoload, post-autoload bootstrap, and Application dispatch failure boundaries; standalone server-error responses with references only after successful diagnostics; exact owned-buffer cleanup; and centralized unexpected public rendering failures. Unexpected failures default to `500`; `503` requires an explicit positively identified availability condition.
 
-Batch 6 adds the unified M2.4 regression gate, final scope/status consistency, runtime-artifact ignore coverage, and explicit separation between passed local verification and deployment-environment checks. M2.4 implementation is complete and ready for release preparation.
+Batch 6 added the unified M2.4 regression gate, final scope/status consistency, runtime-artifact ignore coverage, and explicit separation between passed local verification and deployment-environment checks. M2.4 implementation is complete and was released as part of Copot v0.12.0.
 
 ##### Acceptance direction
 
@@ -466,36 +466,242 @@ Physical or business asset management belongs to M4 as a domain-specific Busines
 
 ## Post-M2 Distribution & Release Preparation
 
-Status: Active after M2.4 implementation completion. Release Candidate Audit is the current closure step; D1-D4 are complete and D6 remains pending.
+Status: Complete and released as v0.12.0.
 
 Purpose:
 
 Convert the completed lean M2 Webcore implementation into a deterministic, installable, clean-verified release artifact before M3 module development begins. This is a release-preparation phase, not a new capability milestone.
 
-Work sequence:
+Completed work sequence:
 
 1. Distribution Contract & Version Foundation — complete.
 2. Repository Cleanup & Package Manifest — complete.
 3. Deterministic Package Builder — complete.
 4. Clean Install Verification — complete.
-5. Release Candidate Audit — current; documentation closure and final GO/NO-GO confirmation in progress.
-6. Merge, tag, GitHub Release, and M2 final package publication — pending.
+5. Release Candidate Audit — complete.
+6. Reproducibility blocker correction, final merge, tag, GitHub Release, and package publication — complete.
 
-Rules:
-
-* Webcore capability work remains closed unless a separately approved maintenance, security, compatibility, performance, or architecture correction is required.
-* `.env`, runtime locks, logs, caches, Site Assets, tests, Example module fixtures, repository metadata, and local development state must not enter the installable package.
-* The installable artifact must be built from an explicit include/exclude contract, not by archiving the working directory.
-* A clean-install verification from the built artifact is required before the M2 final release.
-* M3 Core Modules does not start until this phase is closed.
-
-Completed release-preparation evidence:
+Release evidence:
 
 * `Copot\Core\Version::CURRENT` is the single release-version source for installer markers and package naming.
-* The deterministic package builder produces `dist/copot-v0.12.0.zip` from a build-time package manifest.
-* Package reproducibility, external extraction compatibility, package-content guards, and clean installation from the extracted artifact pass locally.
-* Clean-install verification uses an isolated target and a dedicated guarded D4 test database.
-* Deployment-environment checks for real HTTPS Secure cookies, production document-root isolation, and symlink-capable host filesystem behavior remain pending environment-specific verification items.
+* The official package builder produces `dist/copot-v0.12.0.zip` from the explicit package manifest.
+* Repository text materialization is locked to LF for deterministic package builds.
+* Cross-checkout package reproducibility, external extraction compatibility, package-content guards, and clean installation from the extracted artifact pass.
+* Clean-install verification uses an isolated target and a dedicated guarded test database.
+* Deployment-environment checks for real HTTPS Secure cookies, production document-root isolation, and symlink-capable host filesystem behavior remain environment-specific responsibilities.
+
+The released v0.12.0 Webcore is now the stable baseline for M3 Prep.
+
+## M3 Preparation
+
+Status: Active. Stage 1 and Stage 2 are complete. Stage 3 Final Review + Entry Audit is active.
+
+M3 Prep has three stages:
+
+1. Governance + Architecture Lock — complete.
+2. M3 Sequencing Lock — complete.
+3. Final Review + Entry Audit — active.
+
+### Stage 1 — Governance + Architecture Lock
+
+Stage 1 is complete.
+
+It locked:
+
+* post-v0.12.0 Webcore maintenance-only policy;
+* Core-change escalation rules;
+* module ownership boundaries;
+* cross-module interaction rules;
+* dependency direction;
+* Theme/Module boundaries;
+* Navigation ownership direction;
+* Media Library ownership direction;
+* official-module and external-module repository strategy;
+* M3 entry criteria and explicit non-goals.
+
+Detailed rules are defined in:
+
+```text
+docs/16_m3_core_freeze_and_module_contract.md
+```
+
+### Stage 2 — M3 Sequencing Lock
+
+Stage 2 is complete. It was documentation and planning work only and did not implement M3 runtime behavior.
+
+The approved implementation sequence is:
+
+| Milestone | Capability | Planning Batch Envelope | Risk |
+|---|---|---:|---|
+| M3.1 | Users & Access | 5 | High |
+| M3.2 | Settings Manager | 4 | Medium |
+| M3.3 | Module Manager | 5 | High |
+| M3.4 | Content Manager | 6 | High |
+| M3.5 | Taxonomy Manager | 5 | Medium-High |
+| M3.6 | Navigation Manager | 6 | High |
+| M3.7 | Theme Manager | 6 | High |
+| M3.8 | Media Library | 7 | Very High |
+| M3.9 | Internal Dashboard | 4 | Medium |
+| M3.10 | Redirect Manager | 4 | Medium |
+| M3.11 | Form Manager | 7 | Very High |
+
+Total planning envelope: 59 batches.
+
+The batch envelope is a planning boundary, not an immutable implementation count. Before each milestone begins, a focused milestone preparation step must audit the current repository state, completed dependencies, newly proven consumers, and active risks, then lock the exact batch breakdown for that milestone.
+
+The sequencing rationale is:
+
+```text
+Users & Access
+->
+Settings Manager
+->
+Module Manager
+```
+
+establishes the initial management foundation before broader module evolution.
+
+```text
+Content Manager
+->
+Taxonomy Manager
+```
+
+matures existing domain modules and provides real target domains before Navigation target-resolution integration is proven.
+
+```text
+Content + Taxonomy
+->
+Navigation Manager
+->
+Theme Manager
+```
+
+lets Navigation prove explicit target resolver contributions against real domain owners, then lets Theme Manager consume stable Navigation and module-provided render contracts.
+
+```text
+Content + Theme + other proven consumers
+->
+Media Library
+```
+
+keeps Media module-owned and delays generic media infrastructure until reusable consumer need is concrete.
+
+```text
+Internal Dashboard
+->
+Redirect Manager
+->
+Form Manager
+```
+
+places aggregation and operational capabilities after the major management, domain, presentation, and media surfaces are established. Form Manager remains last because its public input, validation, persistence, notification, upload, spam, privacy, and security surface creates the broadest late-M3 operational risk.
+
+#### Sequence Change Rule
+
+The approved sequence may change only when concrete evidence proves one or more of the following:
+
+* a hidden hard dependency;
+* a reusable consumer requirement;
+* an architecture prerequisite;
+* a security prerequisite;
+* a migration constraint;
+* a concrete integration dependency.
+
+A sequence change must:
+
+1. document the reason;
+2. identify affected milestones;
+3. review dependency and risk impact;
+4. update the roadmap;
+5. update the active target in `AGENTS.md`;
+6. avoid silent reordering.
+
+Milestones must not be reordered merely because another feature appears more attractive, easier, or convenient to implement.
+
+#### Parallelization Rule
+
+M3 milestones are sequential by default.
+
+Parallel execution requires explicit approval and proof that there is:
+
+* no unresolved dependency;
+* no shared mutable contract;
+* no overlapping schema ownership;
+* no overlapping Core touchpoint;
+* a regression strategy capable of validating parallel integration.
+
+Early M3 remains serial through at least M3.1-M3.3. Parallelization may be reconsidered later using actual milestone evidence.
+
+#### Just-in-Time Batch Lock Rule
+
+Stage 2 locks milestone order and planning envelopes.
+
+Exact batch detail is locked immediately before each milestone starts. This allows evidence from completed milestones to refine batch structure without silently widening scope.
+
+### Stage 3 — Final Review + Entry Audit
+
+Stage 3 is active and remains documentation, audit, and entry-contract work only.
+
+Stage 3 must audit and lock:
+
+* documentation consistency and stale current-state wording cleanup;
+* Stage 1 governance and architecture boundaries;
+* the approved Stage 2 sequence and change-control rules;
+* unresolved architecture blockers;
+* M3.1 Users & Access scope and exact batch structure;
+* allowed and forbidden Core touchpoints;
+* schema and migration ownership boundaries;
+* test strategy;
+* branch strategy;
+* M3.1 entry criteria;
+* M3.1 acceptance criteria;
+* repository and worktree readiness.
+
+M3.1 implementation must not start until Stage 3 passes and M3 Prep is closed through the user-owned Git workflow.
+
+#### M3.1 Users & Access Entry Contract
+
+M3.1 evolves the existing authentication and authorization foundation into administrator-facing Users & Access management without redesigning authentication or introducing a second role or permission system.
+
+Minimum M3.1 scope:
+
+* administrator-facing user listing and user detail/edit workflows;
+* controlled user creation and account-status management;
+* role listing and role management within the existing permission model;
+* controlled user-role assignment and removal;
+* controlled role-permission assignment and removal;
+* password creation/change behavior only where explicitly required for administrator-managed users;
+* protection against accidental administrator lockout and unsafe self-demotion;
+* permission-aware Admin navigation and routes;
+* compatibility with the existing login, active-account, session, Admin guard, Content, Taxonomy, and Settings permission behavior.
+
+M3.1 does not include password reset delivery, email verification, OAuth, 2FA, organization/team hierarchy, multitenancy, approval workflow, audit-log platform, notification delivery, public identity API, or a new authentication/session architecture.
+
+The exact five-batch structure is:
+
+1. M3.1 contract lock, repository audit, data ownership review, and focused test baseline.
+2. Users administration foundation: module structure, permissions, repositories/services, listing, create/edit, and account-status controls.
+3. Roles and assignments: role management, user-role assignment, role-permission assignment, and lockout/self-protection rules.
+4. Security and integration hardening: CSRF, permission guards, configured Admin path, inactive-user behavior, sanitization, Admin in-shell errors, and compatibility regression.
+5. Unified M3.1 regression, manual Admin verification, documentation sync, and completion audit.
+
+Allowed Core touchpoints by default are consumption of existing public authentication, user, permission, Admin URL, Admin Shell, CSRF, error-rendering, and application service contracts. Changes to `Auth`, `User`, `UserProvider`, `PermissionChecker`, Application service wiring, shared Admin guard semantics, or shared permission semantics require a concrete blocker, separate review, and the Stage 1 Core-change escalation process.
+
+Forbidden default scope includes authentication redesign, session redesign, unrelated login-route redesign, service-container rewrite, Router rewrite, separate role/permission systems, hardcoded role hierarchy, speculative identity abstractions, speculative production events, and future capabilities not listed in the approved M3.1 scope.
+
+M3.1 testing must include focused domain tests, security tests, compatibility/integration tests, the complete existing platform regression chain, and manual browser verification of approved Admin flows.
+
+Branch strategy:
+
+```text
+feature/m3-prep
+-> Stage 3 remediation and verification
+-> user-owned commit/push/merge to main
+-> feature/m3.1-users-access from updated main
+```
+
+---
 
 ## M3 Core Modules
 
@@ -511,28 +717,25 @@ Core Modules:
 * may become dependencies of other modules;
 * remain modular even when distributed with copot.
 
-### Essential Candidates
+### Approved M3 Sequence
 
-1. Users & Access
-2. Settings Manager
-3. Module Manager
-4. Navigation Manager
-5. Theme Manager
-6. Content Manager / Workspace
-7. Taxonomy Manager
-8. Media Library
+1. M3.1 Users & Access
+2. M3.2 Settings Manager
+3. M3.3 Module Manager
+4. M3.4 Content Manager
+5. M3.5 Taxonomy Manager
+6. M3.6 Navigation Manager
+7. M3.7 Theme Manager
+8. M3.8 Media Library
+9. M3.9 Internal Dashboard
+10. M3.10 Redirect Manager
+11. M3.11 Form Manager
 
-### Supporting Candidates
+This sequence is approved by M3 Prep Stage 2 and remains subject to the documented evidence-based Sequence Change Rule. It is not silently reordered.
 
-9. Internal Dashboard
-10. Redirect Manager
-11. Form Manager
+Navigation data remains module-owned by the future Navigation boundary. Themes declare locations and control rendering through a documented consumption contract. Domain-owned target resolution is contributed through explicit contracts, registries, or resolvers.
 
-This order represents the current lean priority and dependency direction, not an immutable M3.x sequence.
-
-Navigation data belongs to Core/Navigation Manager, while themes declare locations and control rendering. Theme Manager follows Navigation Manager so the first basic theme can consume a stable menu contract.
-
-Content and Taxonomy already have Webcore foundations. Media Library may follow them because M2.3 provides only the minimal asset/upload boundary needed for logo, favicon, theme, and early content use cases. If a concrete Content Manager requirement makes a reusable media picker mandatory, Media Library may move earlier.
+Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
 ### Existing Module Evolution
 
@@ -541,7 +744,7 @@ The existing Content and Taxonomy modules remain the same modules.
 ```text
 Content Module
 ->
-Content Manager / Workspace
+Content Manager
 ```
 
 describes future evolution of its administrative and editorial experience.
@@ -581,14 +784,14 @@ Settings Manager provides administrator-facing settings management.
 For Branding Foundation, Settings Manager edits only the four Core palette values. Theme Manager reads theme capabilities and manages active-theme-scoped palette or semantic-mapping overrides plus advanced theme color settings. Custom CSS is deferred to a later Theme Manager enhancement. Neither manager changes the locked Core semantic mapping.
 
 ```text
-Media Foundation + Image Service
+Branding-specific Site Asset capability
 !=
 Media Library
 ```
 
-Media Foundation and Image Service provide infrastructure.
+The existing Site Asset boundary owns only fixed Logo/Favicon lifecycle behavior.
 
-Media Library provides management and selection UI.
+Media Library is module-owned and provides general media management and selection behavior. Any future generic media or image-processing infrastructure must be justified by concrete reusable consumers before entering Webcore.
 
 ---
 
@@ -697,23 +900,21 @@ Module integration
 ```
 
 ```text
-Media Foundation + Image Service
-->
 Media Library
 ->
-Theme Manager and Content Manager media fields
+post-M3.8 Theme Manager and Content Manager media-field integration through explicit contracts
 ```
 
 ```text
-Editor Framework
+Editor capability, only if proven necessary
 ->
-Content Manager / Workspace
+Content Manager editor integration
 ```
 
 ```text
-Navigation Foundation
-->
 Navigation Manager
+->
+Theme location consumption through an explicit contract
 ```
 
 ```text

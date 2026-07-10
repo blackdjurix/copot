@@ -12,7 +12,7 @@ M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
-M2.4 Platform Hardening implementation is complete and the lean M2 Platform Capabilities implementation phase is closed. Post-M2 Distribution & Release Preparation is now active; the latest published release remains v0.11.0 until the clean installable M2 final package is verified and released.
+M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the reproducibility blocker fix are complete. Copot v0.12.0 is the current stable Webcore baseline and installable release.
 
 The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
 
@@ -22,23 +22,37 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-Post-M2 Distribution & Release Preparation.
+M3 Preparation.
 
-The Post-M1 Roadmap Review is complete.
+M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
-M2.1 Admin UI Foundation is complete and released as v0.9.0.
+M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-M2.2 Extensibility Foundation is complete and released as v0.10.0.
+The active checkpoint is Stage 3: Final Review + Entry Audit.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
+M2 Platform Capabilities are complete. Copot v0.12.0 is released as the stable Webcore baseline. M3 runtime implementation has not started.
 
-Lean M2 implementation is complete through:
+The approved M3 sequence is:
 
 ```text
-M2.4 Platform Hardening
+M3.1  Users & Access
+M3.2  Settings Manager
+M3.3  Module Manager
+M3.4  Content Manager
+M3.5  Taxonomy Manager
+M3.6  Navigation Manager
+M3.7  Theme Manager
+M3.8  Media Library
+M3.9  Internal Dashboard
+M3.10 Redirect Manager
+M3.11 Form Manager
 ```
 
-The current checkpoint is distribution cleanup, package-contract lock, deterministic package preparation, clean-install verification, and M2 final release. M3 Core Modules has not started.
+The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
+
+M3.1 target: Users & Access.
+
+Stage 3 is performing the final authoritative-document review and M3.1 entry-contract audit. M3.1 runtime implementation has not started and must not begin until Stage 3 passes.
 
 M2.2 completion record:
 
@@ -50,7 +64,7 @@ M2.2 completion record:
 * fixture-based end-to-end proof, unified regression, automated-assisted runtime verification, and manual browser verification passing;
 * no production lifecycle event; the first production integration remains deferred to its real consumer milestone.
 
-M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Batch 1 locks the hardening scope and architecture without runtime implementation.
+M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening and Post-M2 Distribution & Release Preparation are complete in v0.12.0. M3 Prep governance, architecture, and sequencing rules are defined in `docs/16_m3_core_freeze_and_module_contract.md`.
 
 ## Implemented Foundation
 
@@ -429,7 +443,7 @@ Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON des
 
 ## M2.4 Platform Hardening
 
-M2.4 implementation is complete. Batches 1–6 are complete, the unified regression gate is included, applicable local/manual verification passes, and the milestone is ready for merge and release preparation. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+M2.4 implementation is complete and released in v0.12.0. Batches 1–6 are complete, the unified regression gate is included, and applicable local/manual verification passes. This closed the lean M2 Platform Capabilities implementation phase; M3 runtime implementation has not started and M3 Preparation is active.
 
 The locked scope covers:
 
@@ -771,4 +785,8 @@ docs/03_roadmap.md
 docs/10_admin_ui_foundation.md
 docs/11_branding_foundation.md
 docs/12_extensibility_foundation.md
+docs/13_minimal_site_capabilities.md
+docs/14_platform_hardening.md
+docs/15_distribution_and_packaging.md
+docs/16_m3_core_freeze_and_module_contract.md
 ```

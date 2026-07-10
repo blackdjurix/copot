@@ -4,7 +4,7 @@
 
 This document defines the boundary between the copot source repository and an installable release package.
 
-M2 implementation is complete. Post-M2 release preparation must produce a deterministic installable artifact, verify it from a clean state, and avoid distributing local development state.
+M2 implementation and Post-M2 release preparation are complete. Copot v0.12.0 is the released stable Webcore baseline. Future release work must preserve the deterministic installable-artifact, clean-state verification, and local-state exclusion contracts defined here.
 
 ## Source Repository vs Release Package
 
@@ -36,13 +36,13 @@ Copot\Core\Version::CURRENT
 
 Installer finalization uses that value when writing `storage/installed.lock`. Package and release tooling must consume the same version source instead of duplicating release numbers.
 
-Current M2 final release candidate version:
+Current released stable Webcore version:
 
 ```text
 0.12.0
 ```
 
-The official package output for this release candidate is:
+The official package output for this release is:
 
 ```text
 dist/copot-v0.12.0.zip
@@ -141,7 +141,7 @@ Builder behavior:
 * does not modify source files;
 * excludes runtime-local state, source-only files, local tooling state, and generated package output.
 
-Release-candidate audit verified that two builds from the same source state produced identical SHA-256 hashes. External archive compatibility was also verified with PowerShell `Expand-Archive`, with an additional independent `tar -tf` listing check where available.
+The v0.12.0 release audit verified that two builds from the same source state produced identical SHA-256 hashes. External archive compatibility was also verified with PowerShell `Expand-Archive`, with an additional independent `tar -tf` listing check where available.
 
 ### Line-Ending Reproducibility
 
@@ -151,7 +151,7 @@ The repository therefore owns a checkout materialization contract through `.gita
 
 ## Clean-Install Verification
 
-A release candidate is not accepted until the built artifact is tested from a clean state with:
+A release artifact is not accepted until the built artifact is tested from a clean state with:
 
 ```text
 fresh extracted package
@@ -179,7 +179,7 @@ Verification must cover:
 12. controlled error behavior and no sensitive-detail leakage;
 13. final package contents against the include/exclude contract.
 
-The current release candidate has passed automated clean-install verification from the built package ZIP. Verification extracts `dist/copot-v0.12.0.zip` into an isolated temporary target, uses a dedicated guarded D4 database, runs the installer service flow from the extracted artifact, validates the installed marker version as `0.12.0`, boots the installed application, and checks minimal public, Admin, Settings, and controlled Site Asset behavior.
+The released v0.12.0 package passed automated clean-install verification from the built package ZIP. Verification extracts `dist/copot-v0.12.0.zip` into an isolated temporary target, uses a dedicated guarded D4 database, runs the installer service flow from the extracted artifact, validates the installed marker version as `0.12.0`, boots the installed application, and checks minimal public, Admin, Settings, and controlled Site Asset behavior.
 
 The verification proves the package does not depend on the source repository `.env`, source runtime locks, source logs, source cache content, local Site Asset data, `tests/`, `build/`, or `docs/`.
 
@@ -187,8 +187,6 @@ Deployment-environment verification remains separate and pending for real deploy
 
 ## Deferred Distribution Work
 
-The following work belongs to later Post-M2 release-preparation steps:
+The v0.12.0 release artifact has been published through the completed release workflow.
 
-- GitHub Release artifact attachment.
-
-This release-preparation phase does not add patch distribution, remote updates, package repositories, signing, delta updates, or multi-version maintenance infrastructure.
+Patch distribution, remote updates, package repositories, signing, delta updates, and multi-version maintenance infrastructure remain deferred beyond the v0.12.0 distribution contract.

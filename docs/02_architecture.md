@@ -32,6 +32,10 @@ Core Modules are reusable first-party management modules.
 
 Business/Application Modules implement specific domains or use cases.
 
+Module ownership remains local wherever applicable: routes, permissions, services, repositories, migrations/schema, Admin views, assets, tests, and lifecycle/version metadata.
+
+Cross-module integration must use explicit boundaries such as public service contracts, registry contributions, event/listener integration, documented module APIs, or declared dependencies. Modules must not reach into another module's private files, depend on another module's filesystem layout, or write directly into schema owned by another module without an approved shared contract.
+
 ---
 
 ## Core Layer
@@ -68,6 +72,48 @@ View
 Response
 ```
 
+### Post-v0.12.0 Webcore Policy
+
+Copot v0.12.0 is the stable Webcore baseline. After this release, Webcore is maintenance-only by default.
+
+Allowed Webcore changes are limited to:
+
+* bug fixes;
+* security fixes;
+* compatibility fixes;
+* runtime upgrades;
+* performance improvements;
+* extension-point corrections;
+* architectural corrections;
+* explicitly approved generic platform capabilities backed by a concrete dependency.
+
+Webcore must not absorb:
+
+* module-specific business logic;
+* module-specific schema;
+* module-specific UI;
+* module-specific workflow;
+* storage behavior needed by only one module;
+* shortcuts that bypass module boundaries for implementation convenience.
+
+A module requirement must be evaluated in this order:
+
+```text
+Module-local design
+->
+Existing public Core service
+->
+Registry contribution
+->
+Event/listener pair with a real consumer
+->
+Existing extension point
+->
+Explicit Core-change proposal
+```
+
+Any remaining Core-change proposal must be generic, reusable, justified by a concrete dependency, and handled as explicit maintenance or platform-capability work rather than hidden inside a module milestone.
+
 ---
 
 ## Platform Capability Layer
@@ -87,18 +133,14 @@ A Platform Capability may provide:
 
 A Platform Capability does not need a standalone management UI and must not represent a business-specific domain.
 
-Planned M2 Platform Capabilities are:
+The completed lean-M2 Platform Capabilities are:
 
-* Admin UI Foundation
-* Extensibility Foundation
-* Minimal Site Capabilities
-* Editor Framework
-* Media Foundation
-* Image Service
-* Navigation Foundation
-* Search Foundation
-* Notification Foundation
-* Workflow / Automation Foundation
+* Admin UI Foundation;
+* Extensibility Foundation;
+* Minimal Site Capabilities;
+* Platform Hardening.
+
+Earlier architecture exploration also identified Editor, Media, Image, Navigation, Search, Notification, and Workflow/Automation capability concepts. They are not active M2 milestones. Any future generic platform capability must be justified by concrete reusable consumers and must follow the post-v0.12.0 Webcore policy and Core-change escalation rules rather than being revived as assumed roadmap commitments.
 
 Dependency direction:
 
@@ -226,7 +268,7 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ## Platform Hardening Boundary
 
-M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closed the lean M2 Platform Capabilities implementation phase. M3 runtime implementation has not started; M3 Preparation is active.
 
 The planned hardening direction is:
 
@@ -688,6 +730,24 @@ M2.4 release-readiness requires:
 
 ---
 
+## Pre-M3 Architecture Lock
+
+M3 Prep runs before any M3 Core Module runtime implementation.
+
+The Stage 1 architecture direction is:
+
+* Webcore remains maintenance-only by default.
+* M3 development is module-first.
+* Theme presentation remains separate from module business logic and storage.
+* Themes consume controlled platform contracts and module-provided render data; they do not reach into module repositories or databases.
+* Navigation is module-owned unless a concrete reusable platform contract is proven necessary. Themes declare locations and control rendering; the Navigation boundary owns menu structures, menu locations, menu-item references, ordering, and navigation visibility metadata. Resolution of domain-owned targets may be delegated through explicit public contracts, registries, or resolvers contributed by the modules that own those targets.
+* Media Library is module-owned. The existing `SiteAssetStorage` remains a branding-specific fixed-slot capability and must not be silently widened into a generic media engine.
+* Generic media infrastructure may enter Webcore only when multiple real consumers prove a reusable need.
+* Official first-party modules remain in the monorepo during early M3 but should be structured for later independent packaging.
+* External, community, client-specific, and non-core modules should target independent repositories.
+
+Detailed governance, escalation, ownership, dependency, repository, and M3 entry rules are defined in `docs/16_m3_core_freeze_and_module_contract.md`.
+
 ## Future Expansion Areas
 
 Future phases are organized as:
@@ -701,19 +761,14 @@ M5 = Commerce
 M6 = Ecosystem
 ```
 
-M2 may introduce:
+The completed lean M2 baseline includes:
 
-* Admin UI Foundation
-* Extensibility Foundation
-* Minimal Site Capabilities
-* Platform Hardening
-* Editor Framework
-* Media Foundation
-* Image Service
-* Navigation Foundation
-* Search Foundation
-* Notification Foundation
-* Workflow / Automation Foundation
+* Admin UI Foundation;
+* Extensibility Foundation;
+* Minimal Site Capabilities;
+* Platform Hardening.
+
+Earlier candidate capability directions such as Editor Framework, Media Foundation, Image Service, Navigation Foundation, Search Foundation, Notification Foundation, and Workflow / Automation Foundation are not considered active Webcore commitments. They may be recalled only when a concrete dependency proves that a reusable platform capability is required.
 
 The following are explicitly deferred until a concrete requirement exists:
 

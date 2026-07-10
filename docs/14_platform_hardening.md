@@ -2,7 +2,7 @@
 
 ## Status
 
-Implementation complete. Ready for merge, tag, and release preparation.
+Complete and released as part of Copot v0.12.0, the current stable Webcore baseline.
 
 Batch 1 documentation, repository audit, architecture, scope lock, non-goals, batch plan, acceptance criteria, and risk register are complete.
 
@@ -18,7 +18,7 @@ Batch 5 Runtime, Security, Storage, and Deployment Hardening is implemented and 
 
 Batch 6 Unified Regression and Release Readiness is implemented. The chained M2.4 regression gate covers all focused M2.4 tests plus the complete M2.3 regression chain, applicable local/manual verification passes, runtime Site Asset output is ignored by Git, and deployment-only checks remain explicitly recorded for real HTTPS/production environments.
 
-M2.4 implementation is complete. This closes the lean M2 Platform Capabilities implementation phase; M3 has not started.
+M2.4 implementation is complete and released in v0.12.0. This closed the lean M2 Platform Capabilities implementation phase. M3 runtime implementation has not started; M3 Preparation is active.
 
 ---
 
@@ -422,7 +422,7 @@ Status: Implemented.
 * records live HTTPS Secure-cookie verification and production `public/` document-root isolation as deployment-environment checks rather than claiming unperformed live verification;
 * finalizes milestone and release-readiness documentation without changing runtime architecture or adding product capability.
 
-M2.4 implementation is complete and ready for merge, tag, and release preparation.
+M2.4 implementation is complete and was released as part of Copot v0.12.0.
 
 ### Batch 6 verification record
 

@@ -2,17 +2,11 @@
 
 ## Status
 
-Complete. Ready for merge and release preparation.
+Complete and released as v0.10.0.
 
-Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, the unified Batch 5 regression gate, automated-assisted runtime verification, and manual browser verification are complete. First Production Consumer Integration is deferred to the first milestone that requires it and is not part of this release.
+Batch 1 contract lock, Batch 2 Core Dispatcher, Batch 3 enabled-module listener wiring, the unified regression gate, automated-assisted runtime verification, and manual browser verification are complete. First Production Consumer Integration remains deferred to the first milestone that proves a real caller/listener pair and is not part of the v0.10.0 foundation contract.
 
-Latest completed release:
-
-```text
-v0.9.0 — M2.1 Admin UI Foundation
-```
-
-The milestone is ready for user-owned merge and release preparation. No release version is assigned by this document.
+Copot v0.12.0 is the current stable Webcore baseline. This document remains the authoritative historical contract for M2.2 Extensibility Foundation behavior and boundaries.
 
 ---
 
