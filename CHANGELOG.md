@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added the approved M3.1-M3.11 sequencing lock with milestone dependency rationale, planning batch envelopes, risk levels, just-in-time batch locking, parallelization guardrails, and explicit sequence change control.
 - Added the Pre-M3 Core Freeze and Module Contract to lock post-v0.12.0 Webcore maintenance rules, module ownership boundaries, dependency direction, Navigation/Media architecture decisions, repository strategy, and M3 entry criteria.
 - Added `Copot\Core\Version` as the single source of truth for the framework release version and installer marker version.
 - Added `INSTALL.md` and `docs/15_distribution_and_packaging.md` to define fresh-install requirements, environment responsibilities, package boundaries, and clean-install acceptance.
@@ -25,6 +26,7 @@
 
 ### Changed
 
+- Advanced M3 Prep to Stage 2 M3 Sequencing Lock and confirmed Users & Access as the M3.1 entry target without starting runtime implementation.
 - Started M3 Prep Stage 1 Governance + Architecture Lock without starting M3 runtime implementation.
 - Marked v0.12.0 as the completed M2 Webcore baseline and moved Webcore into maintenance-only mode for future module-first development.
 - Started Post-M2 Distribution & Release Preparation after M2 implementation completion without starting M3.
@@ -44,6 +46,7 @@
 
 ### Verification
 
+- M3 Prep Stage 2 changes remain documentation-only and preserve the Stage 1 architecture contract while locking sequencing governance.
 - M3 Prep Stage 1 changes are documentation-only and introduce no runtime code, schema, dependency, or module implementation change.
 - M2.4 Batch 2 focused diagnostics smoke coverage passes on the canonical PHP 8.5 runtime.
 - M2.4 Batch 3 focused boundary/rendering smoke coverage passes with `display_errors=1`.

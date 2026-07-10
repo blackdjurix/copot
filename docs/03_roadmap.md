@@ -494,19 +494,19 @@ The released v0.12.0 Webcore is now the stable baseline for M3 Prep.
 
 ## M3 Preparation
 
-Status: Active.
+Status: Active. Stage 1 is complete. Stage 2 M3 Sequencing Lock is active.
 
 M3 Prep has three stages:
 
-1. Governance + Architecture Lock — active.
-2. M3 Sequencing Lock — pending.
+1. Governance + Architecture Lock — complete.
+2. M3 Sequencing Lock — active.
 3. Final Review + Entry Audit — pending.
 
 ### Stage 1 — Governance + Architecture Lock
 
-Stage 1 is documentation and architecture work only. It does not implement M3 runtime behavior.
+Stage 1 is complete.
 
-Stage 1 locks:
+It locked:
 
 * post-v0.12.0 Webcore maintenance-only policy;
 * Core-change escalation rules;
@@ -519,24 +519,142 @@ Stage 1 locks:
 * official-module and external-module repository strategy;
 * M3 entry criteria and explicit non-goals.
 
-The Stage 1 architecture direction is:
-
-* solve module requirements module-first;
-* keep module-specific business logic, schema, UI, workflow, storage, and private implementation out of Webcore;
-* allow Core changes only for approved maintenance, correction, compatibility, security, performance, runtime, extension-point, or proven generic platform needs;
-* keep Navigation module-owned unless a concrete reusable platform contract is proven necessary;
-* keep Media Library module-owned and preserve `SiteAssetStorage` as a branding-specific fixed-slot capability;
-* keep Theme presentation separate from module business logic and storage;
-* keep official first-party modules in the monorepo during early M3 while designing them for later independent packaging;
-* target external, community, client-specific, and non-core modules at independent repositories.
-
 Detailed rules are defined in:
 
 ```text
 docs/16_m3_core_freeze_and_module_contract.md
 ```
 
-Stage 2 will determine the final M3 milestone sequence from real dependencies. Stage 3 will audit document consistency, unresolved architecture blockers, M3.1 scope, test strategy, branch strategy, forbidden Core touchpoints, and acceptance criteria before implementation starts.
+### Stage 2 — M3 Sequencing Lock
+
+Stage 2 is documentation and planning work only. It does not implement M3 runtime behavior.
+
+The approved implementation sequence is:
+
+| Milestone | Capability | Planning Batch Envelope | Risk |
+|---|---|---:|---|
+| M3.1 | Users & Access | 5 | High |
+| M3.2 | Settings Manager | 4 | Medium |
+| M3.3 | Module Manager | 5 | High |
+| M3.4 | Content Manager | 6 | High |
+| M3.5 | Taxonomy Manager | 5 | Medium-High |
+| M3.6 | Navigation Manager | 6 | High |
+| M3.7 | Theme Manager | 6 | High |
+| M3.8 | Media Library | 7 | Very High |
+| M3.9 | Internal Dashboard | 4 | Medium |
+| M3.10 | Redirect Manager | 4 | Medium |
+| M3.11 | Form Manager | 7 | Very High |
+
+Total planning envelope: 59 batches.
+
+The batch envelope is a planning boundary, not an immutable implementation count. Before each milestone begins, a focused milestone preparation step must audit the current repository state, completed dependencies, newly proven consumers, and active risks, then lock the exact batch breakdown for that milestone.
+
+The sequencing rationale is:
+
+```text
+Users & Access
+->
+Settings Manager
+->
+Module Manager
+```
+
+establishes the initial management foundation before broader module evolution.
+
+```text
+Content Manager
+->
+Taxonomy Manager
+```
+
+matures existing domain modules and provides real target domains before Navigation target-resolution integration is proven.
+
+```text
+Content + Taxonomy
+->
+Navigation Manager
+->
+Theme Manager
+```
+
+lets Navigation prove explicit target resolver contributions against real domain owners, then lets Theme Manager consume stable Navigation and module-provided render contracts.
+
+```text
+Content + Theme + other proven consumers
+->
+Media Library
+```
+
+keeps Media module-owned and delays generic media infrastructure until reusable consumer need is concrete.
+
+```text
+Internal Dashboard
+->
+Redirect Manager
+->
+Form Manager
+```
+
+places aggregation and operational capabilities after the major management, domain, presentation, and media surfaces are established. Form Manager remains last because its public input, validation, persistence, notification, upload, spam, privacy, and security surface creates the broadest late-M3 operational risk.
+
+#### Sequence Change Rule
+
+The approved sequence may change only when concrete evidence proves one or more of the following:
+
+* a hidden hard dependency;
+* a reusable consumer requirement;
+* an architecture prerequisite;
+* a security prerequisite;
+* a migration constraint;
+* a concrete integration dependency.
+
+A sequence change must:
+
+1. document the reason;
+2. identify affected milestones;
+3. review dependency and risk impact;
+4. update the roadmap;
+5. update the active target in `AGENTS.md`;
+6. avoid silent reordering.
+
+Milestones must not be reordered merely because another feature appears more attractive, easier, or convenient to implement.
+
+#### Parallelization Rule
+
+M3 milestones are sequential by default.
+
+Parallel execution requires explicit approval and proof that there is:
+
+* no unresolved dependency;
+* no shared mutable contract;
+* no overlapping schema ownership;
+* no overlapping Core touchpoint;
+* a regression strategy capable of validating parallel integration.
+
+Early M3 remains serial through at least M3.1-M3.3. Parallelization may be reconsidered later using actual milestone evidence.
+
+#### Just-in-Time Batch Lock Rule
+
+Stage 2 locks milestone order and planning envelopes.
+
+Exact batch detail is locked immediately before each milestone starts. This allows evidence from completed milestones to refine batch structure without silently widening scope.
+
+### Stage 3 — Final Review + Entry Audit
+
+Stage 3 must audit:
+
+* documentation consistency;
+* Stage 1 governance and architecture boundaries;
+* the approved Stage 2 sequence and change-control rules;
+* unresolved architecture blockers;
+* M3.1 Users & Access scope;
+* allowed and forbidden Core touchpoints;
+* test strategy;
+* branch strategy;
+* acceptance criteria;
+* repository and worktree readiness.
+
+M3.1 implementation must not start until Stage 3 passes.
 
 ---
 
@@ -554,28 +672,25 @@ Core Modules:
 * may become dependencies of other modules;
 * remain modular even when distributed with copot.
 
-### Essential Candidates
+### Approved M3 Sequence
 
-1. Users & Access
-2. Settings Manager
-3. Module Manager
-4. Navigation Manager
-5. Theme Manager
-6. Content Manager / Workspace
-7. Taxonomy Manager
-8. Media Library
+1. M3.1 Users & Access
+2. M3.2 Settings Manager
+3. M3.3 Module Manager
+4. M3.4 Content Manager
+5. M3.5 Taxonomy Manager
+6. M3.6 Navigation Manager
+7. M3.7 Theme Manager
+8. M3.8 Media Library
+9. M3.9 Internal Dashboard
+10. M3.10 Redirect Manager
+11. M3.11 Form Manager
 
-### Supporting Candidates
+This sequence is approved by M3 Prep Stage 2 and remains subject to the documented evidence-based Sequence Change Rule. It is not silently reordered.
 
-9. Internal Dashboard
-10. Redirect Manager
-11. Form Manager
+Navigation data remains module-owned by the future Navigation boundary. Themes declare locations and control rendering through a documented consumption contract. Domain-owned target resolution is contributed through explicit contracts, registries, or resolvers.
 
-This order is a candidate priority list only. M3 Prep Stage 2 must audit real dependencies and lock the final M3.x sequence before M3.1 implementation begins.
-
-Navigation data is module-owned by the future Navigation boundary. Themes declare locations and control rendering through a documented consumption contract; Stage 2 determines where Navigation Manager belongs in the final sequence.
-
-Content and Taxonomy already have Webcore-era module foundations. Media Library remains module-owned and separate from the branding-specific Site Asset boundary. Stage 2 may move Media Library earlier only when a concrete M3 dependency proves that ordering is necessary.
+Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
 ### Existing Module Evolution
 
@@ -584,7 +699,7 @@ The existing Content and Taxonomy modules remain the same modules.
 ```text
 Content Module
 ->
-Content Manager / Workspace
+Content Manager
 ```
 
 describes future evolution of its administrative and editorial experience.
@@ -742,13 +857,13 @@ Module integration
 ```text
 Media Library
 ->
-Theme Manager and Content Manager media-field integration through explicit contracts
+post-M3.8 Theme Manager and Content Manager media-field integration through explicit contracts
 ```
 
 ```text
 Editor capability, only if proven necessary
 ->
-Content Manager / Workspace
+Content Manager editor integration
 ```
 
 ```text

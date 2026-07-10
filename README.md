@@ -24,23 +24,33 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 M3 Preparation.
 
-The active checkpoint is Stage 1: Governance + Architecture Lock.
+M3 Prep Stage 1 Governance + Architecture Lock is complete.
+
+The active checkpoint is Stage 2: M3 Sequencing Lock.
 
 M2 Platform Capabilities are complete. Copot v0.12.0 is released as the stable Webcore baseline. M3 runtime implementation has not started.
 
-Stage 1 locks:
+The approved M3 sequence is:
 
-* Webcore maintenance-only policy;
-* Core-change escalation rules;
-* module ownership boundaries;
-* dependency direction;
-* Theme/Module boundaries;
-* Navigation ownership direction;
-* Media ownership direction;
-* official and external module repository strategy;
-* M3 entry criteria and explicit non-goals.
+```text
+M3.1  Users & Access
+M3.2  Settings Manager
+M3.3  Module Manager
+M3.4  Content Manager
+M3.5  Taxonomy Manager
+M3.6  Navigation Manager
+M3.7  Theme Manager
+M3.8  Media Library
+M3.9  Internal Dashboard
+M3.10 Redirect Manager
+M3.11 Form Manager
+```
 
-Stage 2 will lock M3 milestone sequencing. Stage 3 will perform the final documentation review and M3 entry audit.
+The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
+
+M3.1 target: Users & Access.
+
+Stage 3 will perform the final documentation review and M3 entry audit before implementation begins.
 
 M2.2 completion record:
 
@@ -52,7 +62,7 @@ M2.2 completion record:
 * fixture-based end-to-end proof, unified regression, automated-assisted runtime verification, and manual browser verification passing;
 * no production lifecycle event; the first production integration remains deferred to its real consumer milestone.
 
-M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening and Post-M2 Distribution & Release Preparation are complete in v0.12.0. M3 Prep governance and architecture rules are defined in `docs/16_m3_core_freeze_and_module_contract.md`.
+M2.2 scope, architecture, and completion evidence are defined in `docs/12_extensibility_foundation.md`. M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening and Post-M2 Distribution & Release Preparation are complete in v0.12.0. M3 Prep governance, architecture, and sequencing rules are defined in `docs/16_m3_core_freeze_and_module_contract.md`.
 
 ## Implemented Foundation
 

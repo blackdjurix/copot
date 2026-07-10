@@ -370,21 +370,120 @@ If Stage 1 reveals a required runtime or Core change, document the decision and 
 
 ---
 
-## Stage 2 Handoff
+## Stage 2 Sequencing Lock
 
-Stage 2 owns M3 Sequencing Lock.
+Stage 2 owns M3 Sequencing Lock and is documentation and planning work only.
 
-It must audit candidate modules and determine:
+The approved sequence is:
 
-* real dependency order;
-* foundation vs consumer relationships;
-* serial vs parallel work;
-* Core-change risk;
-* architecture prerequisites;
-* the actual M3.1 target;
-* milestone entry and exit criteria.
+| Milestone | Capability | Planning Batch Envelope | Risk |
+|---|---|---:|---|
+| M3.1 | Users & Access | 5 | High |
+| M3.2 | Settings Manager | 4 | Medium |
+| M3.3 | Module Manager | 5 | High |
+| M3.4 | Content Manager | 6 | High |
+| M3.5 | Taxonomy Manager | 5 | Medium-High |
+| M3.6 | Navigation Manager | 6 | High |
+| M3.7 | Theme Manager | 6 | High |
+| M3.8 | Media Library | 7 | Very High |
+| M3.9 | Internal Dashboard | 4 | Medium |
+| M3.10 | Redirect Manager | 4 | Medium |
+| M3.11 | Form Manager | 7 | Very High |
 
-Candidate module order in the roadmap remains provisional until Stage 2 completes.
+Total planning envelope: 59 batches.
+
+The planning envelope is not an immutable implementation count. Exact batch structure is locked just-in-time before each milestone begins.
+
+### Sequencing Rationale
+
+The initial management foundation is:
+
+```text
+Users & Access
+->
+Settings Manager
+->
+Module Manager
+```
+
+The domain and presentation progression is:
+
+```text
+Content Manager
+->
+Taxonomy Manager
+->
+Navigation Manager
+->
+Theme Manager
+```
+
+Content and Taxonomy provide real domain owners. Navigation can then prove target resolver contributions through explicit boundaries, and Theme Manager can consume stable Navigation plus module-provided render contracts.
+
+Media Library follows Content, Navigation, and Theme progression so general media behavior is driven by proven consumers instead of hypothetical Core expansion.
+
+Internal Dashboard follows the major management surfaces so it aggregates real data. Redirect Manager remains an operational capability after core content and routing consumers are mature. Form Manager remains last because public input, validation, submission persistence, notification, uploads, spam, privacy, and security create the broadest late-M3 operational surface.
+
+### Sequence Change Rule
+
+The approved order may change only when concrete evidence proves:
+
+* a hidden hard dependency;
+* a reusable consumer requirement;
+* an architecture prerequisite;
+* a security prerequisite;
+* a migration constraint;
+* a concrete integration dependency.
+
+A sequence change must:
+
+1. document the reason;
+2. identify affected milestones;
+3. review dependency and risk impact;
+4. update `docs/03_roadmap.md`;
+5. update the active target in `AGENTS.md`;
+6. avoid silent reordering.
+
+Milestones must not be reordered merely because another feature appears more attractive, easier, or convenient.
+
+### Parallelization Rule
+
+M3 milestones are sequential by default.
+
+Parallel execution requires explicit approval and proof of:
+
+* no unresolved dependency;
+* no shared mutable contract;
+* no overlapping schema ownership;
+* no overlapping Core touchpoint;
+* regression coverage capable of validating parallel integration.
+
+Early M3 remains serial through at least M3.1-M3.3. Later parallelization may be reconsidered using actual milestone evidence.
+
+### Just-in-Time Batch Lock Rule
+
+Before each milestone begins:
+
+1. audit current repository state;
+2. review completed dependency evidence;
+3. identify newly proven consumers and integration requirements;
+4. reassess Core-change and migration risk;
+5. lock exact batch breakdown and milestone acceptance criteria.
+
+This rule allows batch details to evolve without silently widening milestone scope.
+
+### High Core-Risk Milestones
+
+The following milestones require heightened Core-boundary review:
+
+* M3.1 Users & Access;
+* M3.3 Module Manager;
+* M3.6 Navigation Manager;
+* M3.7 Theme Manager;
+* M3.8 Media Library;
+* M3.11 Form Manager.
+
+When one of these milestones discovers a possible Core requirement, module implementation must pause at that boundary and use the Stage 1 Core-Change Escalation Rule. The Core change must be reviewed separately before module work resumes.
 
 ---
 
@@ -395,14 +494,18 @@ Stage 3 owns Final Review + Entry Audit.
 It must verify:
 
 * documentation consistency;
-* no stale active-M2 wording in authoritative docs;
+* no stale active-M2 or active-Stage-1 wording in authoritative docs;
+* Stage 1 governance and architecture rules remain consistent;
+* Stage 2 approved sequence is consistent across authoritative docs;
+* batch envelopes and risk labels are consistent;
+* Sequence Change, Parallelization, and Just-in-Time Batch Lock rules are consistent;
 * no unresolved architecture blocker;
-* M3.1 target and scope;
-* allowed and forbidden Core touchpoints;
-* test strategy;
-* branch strategy;
-* acceptance criteria;
-* repository and worktree readiness.
+* M3.1 target is Users & Access;
+* M3.1 scope and acceptance criteria are explicit;
+* allowed and forbidden Core touchpoints are explicit;
+* test strategy is explicit;
+* branch strategy is explicit;
+* repository and worktree are ready.
 
 M3.1 implementation must not start until Stage 3 passes.
 
@@ -420,10 +523,36 @@ M3 implementation may begin only when:
 * Media ownership direction is documented;
 * Theme/Module boundary is documented;
 * repository strategy is documented;
-* Stage 2 sequencing is complete;
+* Stage 2 approved sequence is documented;
+* Stage 2 sequence change control is documented;
+* M3.1 target is confirmed as Users & Access;
 * Stage 3 final review passes;
 * M3.1 scope and acceptance criteria are explicit;
 * no unresolved architecture blocker remains.
+
+---
+
+## Stage 2 Acceptance Criteria
+
+Stage 2 is complete when:
+
+* final M3.1-M3.11 milestone order is documented;
+* dependency rationale is documented;
+* planning batch envelope is documented;
+* risk level is documented;
+* Sequence Change Rule is documented;
+* Parallelization Rule is documented;
+* Just-in-Time Batch Lock Rule is documented;
+* high Core-risk milestones are identified;
+* Users & Access is confirmed as M3.1;
+* Stage 3 audit targets are updated;
+* no runtime code is changed;
+* no schema is changed;
+* no dependency is added;
+* documentation remains internally consistent;
+* `git diff --check` passes.
+
+Stage 2 does not authorize M3 implementation.
 
 ---
 

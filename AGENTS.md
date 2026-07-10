@@ -16,24 +16,35 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ## Current Phase
 
-### M3 Prep — Governance + Architecture Lock
+### M3 Prep Stage 2 — M3 Sequencing Lock
 
 Primary goal:
 
-Lock the post-v0.12.0 Webcore maintenance policy, module ownership boundaries, dependency direction, Navigation and Media ownership decisions, and M3 entry rules before any M3 module implementation begins.
+Lock the approved M3 milestone order, dependency direction, planning batch envelopes, risk boundaries, sequencing-change rules, and M3.1 entry target before the final M3 entry audit.
 
 Current work:
 
-* v0.12.0 is released as the completed M2 Webcore baseline and installable distribution release.
-* Webcore is treated as maintenance-only unless a separately approved generic platform correction is proven necessary.
-* M3 development must be module-first: module-specific business logic, schema, UI, workflow, and storage concerns must remain module-owned.
-* A module requirement must first be tested against module-local design, existing public Core services, registries, events/listeners, and existing extension points before a Core change is proposed.
-* Cross-module dependencies must be explicit and contract-based; modules must not reach into another module's private files, schema ownership, or internal services.
-* Theme presentation remains separate from module business logic. Themes may consume controlled platform contracts and module-provided render data, but must not become application service containers.
-* Navigation ownership and the Theme/Navigation consumption boundary must be decided before Navigation implementation.
-* Media Library ownership and its relationship with the existing branding-specific `SiteAssetStorage` boundary must be decided before Media implementation.
-* Stage 1 is documentation and architecture work only. No runtime implementation, schema change, Core refactor, new module, or new dependency is allowed.
-* M3 sequencing and final entry audit remain separate later stages of M3 Prep.
+* M3 Prep Stage 1 Governance + Architecture Lock is complete.
+* The v0.12.0 Webcore baseline remains maintenance-only and M3 development remains module-first.
+* The approved M3 sequence is:
+  1. M3.1 Users & Access;
+  2. M3.2 Settings Manager;
+  3. M3.3 Module Manager;
+  4. M3.4 Content Manager;
+  5. M3.5 Taxonomy Manager;
+  6. M3.6 Navigation Manager;
+  7. M3.7 Theme Manager;
+  8. M3.8 Media Library;
+  9. M3.9 Internal Dashboard;
+  10. M3.10 Redirect Manager;
+  11. M3.11 Form Manager.
+* The planning envelope is 59 batches across M3.1-M3.11. This is a planning boundary, not an immutable implementation count.
+* Exact batch breakdown is locked just-in-time before each milestone begins, using current repository evidence and completed prior milestones.
+* Milestone order may change only through documented dependency, security, migration, integration, or architecture evidence. Silent reordering is prohibited.
+* M3 milestones are sequential by default. Parallel execution requires explicit approval and proof of no unresolved dependency, overlapping schema ownership, shared mutable contract, or overlapping Core touchpoint.
+* M3.1 entry target is Users & Access.
+* Stage 2 remains documentation and planning work only. No M3 runtime implementation, schema change, Core refactor, new module, or dependency addition is allowed.
+* Stage 3 Final Review + Entry Audit remains required before M3.1 implementation begins.
 
 Latest release: v0.12.0.
 
@@ -656,21 +667,23 @@ Commit messages should remain clear and milestone-aware.
 
 Copot v0.12.0 is released and is the current stable Webcore baseline.
 
-The active checkpoint is M3 Prep Stage 1: Governance + Architecture Lock.
+M3 Prep Stage 1 Governance + Architecture Lock is complete.
+
+The active checkpoint is M3 Prep Stage 2: M3 Sequencing Lock.
 
 The immediate goal is to:
 
 * preserve the released v0.12.0 runtime and distribution contracts;
-* formalize Webcore maintenance-only rules;
-* lock module ownership and cross-module interaction boundaries;
-* lock dependency direction among Webcore, modules, themes, and future business modules;
-* decide Navigation ownership and Theme consumption boundaries before implementation;
-* decide Media Library ownership and its relationship to the branding-specific Site Asset boundary before implementation;
-* define official-module and external-module repository direction without splitting repositories during Stage 1;
-* keep M3 Prep Stage 1 documentation-only;
-* defer M3 milestone sequencing to Stage 2;
-* defer final documentation consistency review and M3 entry audit to Stage 3;
-* avoid runtime code changes, schema changes, Core refactors, new modules, and new dependencies during Stage 1.
+* preserve the Stage 1 Webcore freeze, module ownership, dependency, Theme/Module, Navigation, Media, and repository boundaries;
+* lock the approved M3.1-M3.11 implementation sequence;
+* record dependency rationale and risk level for each milestone;
+* record the planning batch envelope for each milestone without treating batch counts as immutable;
+* require focused just-in-time batch locking before each milestone starts;
+* require documented change control for any future milestone reordering;
+* keep M3 milestones sequential by default and allow parallelization only after explicit dependency and ownership review;
+* confirm Users & Access as the M3.1 entry target;
+* prepare the Stage 3 Final Review + Entry Audit handoff;
+* avoid runtime code changes, schema changes, Core refactors, module implementation, and dependency additions during Stage 2.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
 
@@ -680,4 +693,4 @@ M2.4 scope and architecture are defined in `docs/14_platform_hardening.md`.
 
 Distribution and packaging rules are defined in `docs/15_distribution_and_packaging.md`.
 
-M3 governance, Core freeze, module ownership, dependency, and entry contracts are defined in `docs/16_m3_core_freeze_and_module_contract.md`.
+M3 governance, Core freeze, module ownership, dependency, sequencing, and entry contracts are defined in `docs/16_m3_core_freeze_and_module_contract.md`.
