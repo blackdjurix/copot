@@ -1,0 +1,49 @@
+{
+  "name": "users-access",
+  "title": "Users & Access",
+  "description": "Administrator-facing user, role, and permission management for Copot.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "routes": "routes.php",
+  "requires": {
+    "modules": []
+  },
+  "permissions": [
+    {
+      "slug": "users.read",
+      "name": "Read users"
+    },
+    {
+      "slug": "users.create",
+      "name": "Create users"
+    },
+    {
+      "slug": "users.update",
+      "name": "Update users"
+    },
+    {
+      "slug": "users.password.manage",
+      "name": "Manage user passwords"
+    },
+    {
+      "slug": "users.status.manage",
+      "name": "Manage user status"
+    },
+    {
+      "slug": "roles.read",
+      "name": "Read roles and permissions"
+    },
+    {
+      "slug": "roles.manage",
+      "name": "Manage roles"
+    },
+    {
+      "slug": "users.roles.manage",
+      "name": "Manage user roles"
+    },
+    {
+      "slug": "roles.permissions.manage",
+      "name": "Manage role permissions"
+    }
+  ]
+}
