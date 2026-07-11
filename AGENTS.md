@@ -10,28 +10,33 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Distribution & Release Preparation are complete. Copot v0.12.0 is the current stable Webcore baseline. M3 Core Modules implementation has not started; the active phase is Pre-M3 Preparation.
+The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Distribution & Release Preparation are complete. Copot v0.12.0 is the current stable Webcore baseline. M3 Preparation is complete and M3 Core Modules is the active phase.
 
 ---
 
 ## Current Phase
 
-### M3 Prep Stage 3 — Final Review + Entry Audit
+### M3 Core Modules
+
+Current milestone: M3.1 Users & Access.
+
+Current work: M3.1 Batch 1 closure.
 
 Primary goal:
 
-Complete the final authoritative-document consistency review, lock the M3.1 Users & Access entry contract, verify Core touchpoint boundaries, testing and branch strategy, and confirm repository readiness before any M3 runtime implementation begins.
+Complete the M3.1 Batch 1 documentation closure, verify contract consistency, and clear the Batch 1 gate without starting Batch 2 before separate approval.
 
-Current work:
+Current state:
 
 * M3 Prep Stage 1 Governance + Architecture Lock is complete.
 * M3 Prep Stage 2 M3 Sequencing Lock is complete.
+* M3 Prep Stage 3 Final Review + Entry Audit is complete, and M3 Prep is closed.
 * The v0.12.0 Webcore baseline remains maintenance-only and M3 development remains module-first.
 * The approved M3.1-M3.11 sequence, 59-batch planning envelope, risk labels, Sequence Change Rule, Parallelization Rule, and Just-in-Time Batch Lock Rule remain locked.
-* M3.1 entry target remains Users & Access.
-* Stage 3 is documentation, audit, and entry-contract work only. No M3 runtime implementation, schema change, Core refactor, new module, or dependency addition is allowed.
-* Stage 3 must reconcile stale current-state wording, confirm no unresolved architecture blocker, and lock M3.1 scope, Core touchpoints, test strategy, branch strategy, entry criteria, and acceptance criteria.
-* M3.1 implementation must not begin until Stage 3 remediation is complete, final verification passes, and M3 Prep is closed through the user-owned Git workflow.
+* M3.1 Users & Access is active on its approved milestone branch.
+* M3.1 retains the exact five-batch structure locked during M3 Prep.
+* Batch 1 is contract, ownership, baseline-test, and documentation closure work only.
+* Batch 2 runtime implementation must not begin before Batch 1 passes its final gate and separate approval is given.
 
 Latest release: v0.12.0.
 
@@ -654,24 +659,20 @@ Commit messages should remain clear and milestone-aware.
 
 Copot v0.12.0 is released and is the current stable Webcore baseline.
 
-M3 Prep Stage 1 Governance + Architecture Lock is complete.
+M3 Preparation is complete and closed. M3.1 Users & Access is the active milestone.
 
-M3 Prep Stage 2 M3 Sequencing Lock is complete.
-
-The active checkpoint is M3 Prep Stage 3: Final Review + Entry Audit.
+The active checkpoint is M3.1 Batch 1 documentation closure and final gate review.
 
 The immediate goal is to:
 
 * preserve the released v0.12.0 runtime and distribution contracts;
 * preserve the Stage 1 Webcore freeze, module ownership, dependency, Theme/Module, Navigation, Media, and repository boundaries;
 * preserve the Stage 2 approved sequence, planning envelopes, risk labels, and sequencing governance;
-* reconcile stale current-state wording in authoritative documentation;
-* confirm no unresolved architecture blocker remains;
-* lock the M3.1 Users & Access scope and exact batch structure;
-* lock allowed and forbidden M3.1 Core touchpoints;
-* lock the M3.1 test strategy, branch strategy, entry criteria, and acceptance criteria;
-* verify repository and local worktree readiness before implementation;
-* avoid runtime code changes, schema changes, Core refactors, module implementation, and dependency additions during Stage 3.
+* complete the M3.1 Batch 1 documentation closure;
+* verify the permission, administrator-protection, role-lifecycle, provisioning, and test-baseline contracts remain consistent;
+* close the M3.1 Batch 1 gate through review and the user-owned Git workflow;
+* avoid runtime code, schema, Core, module, provisioning, or dependency changes during documentation closure;
+* do not start M3.1 Batch 2 before separate approval.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
 
