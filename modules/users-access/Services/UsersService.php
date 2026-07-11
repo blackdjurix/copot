@@ -2,14 +2,15 @@
 
 use Copot\Core\Database;
 use Copot\Core\PasswordHasher;
-use Copot\Core\PermissionChecker;
 
 class UsersService
 {
+    private const SAVEPOINT = 'users_service_status_mutation';
+
     public function __construct(
         private UsersRepository $users,
         private PasswordHasher $passwords,
-        private PermissionChecker $permissions,
+        private AccessInvariantGuard $invariant,
         private Database $database
     ) {
     }
@@ -107,9 +108,12 @@ class UsersService
 
         if ($ownsTransaction) {
             $connection->beginTransaction();
+        } else {
+            $connection->exec('SAVEPOINT ' . self::SAVEPOINT);
         }
 
         try {
+            $this->invariant->lockInvariantMutex();
             $target = $this->users->findByIdForUpdate($targetId);
 
             if (!$target instanceof ManagedUser) {
@@ -120,20 +124,32 @@ class UsersService
                 throw new UsersValidationException(['status' => 'You cannot deactivate your own account.']);
             }
 
-            if ($status === 'inactive' && $this->permissions->userCan($targetId, 'admin.access')) {
+            $actorWasCapable = $this->invariant->isAdministratorCapable($actorId);
+            $this->users->updateStatus($targetId, $status);
+
+            if ($actorWasCapable && !$this->invariant->isAdministratorCapable($actorId)) {
                 throw new UsersValidationException([
-                    'status' => 'Users with Admin access cannot be deactivated until administrator protection is available.',
+                    'status' => 'You cannot remove your own administrator recovery access.',
                 ]);
             }
 
-            $this->users->updateStatus($targetId, $status);
+            if (!$this->invariant->hasActiveAdministratorCapableUser()) {
+                throw new UsersValidationException([
+                    'status' => 'At least one active administrator-capable user is required.',
+                ]);
+            }
 
             if ($ownsTransaction) {
                 $connection->commit();
+            } else {
+                $connection->exec('RELEASE SAVEPOINT ' . self::SAVEPOINT);
             }
         } catch (Throwable $exception) {
             if ($ownsTransaction && $connection->inTransaction()) {
                 $connection->rollBack();
+            } elseif ($connection->inTransaction()) {
+                $connection->exec('ROLLBACK TO SAVEPOINT ' . self::SAVEPOINT);
+                $connection->exec('RELEASE SAVEPOINT ' . self::SAVEPOINT);
             }
 
             throw $exception;

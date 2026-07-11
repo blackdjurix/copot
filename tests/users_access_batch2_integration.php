@@ -68,6 +68,10 @@ $permissionNames = [
     'users.update' => 'Update users',
     'users.password.manage' => 'Manage user passwords',
     'users.status.manage' => 'Manage user status',
+    'roles.read' => 'Read roles and permissions',
+    'roles.manage' => 'Manage roles',
+    'users.roles.manage' => 'Manage user roles',
+    'roles.permissions.manage' => 'Manage role permissions',
 ];
 $permissionIds = [];
 
@@ -481,8 +485,11 @@ $csrfInput = static fn (array $input = []): array => ['_token' => $app->session(
     $adminTargetDeactivation = $request('POST', $app->adminUrl()->childUrl('users/' . $actors['read'] . '/status'), $csrfInput([
         'status' => 'inactive',
     ]));
-    $assert($statusOf($adminTargetDeactivation) === 422,
-        'Effective admin.access target deactivation was not rejected.');
+    $assert($statusOf($adminTargetDeactivation) === 302,
+        'Safe admin.access-only target deactivation was rejected.');
+    $assert((string) $connection->query(
+        'SELECT status FROM users WHERE id = ' . (int) $actors['read']
+    )->fetchColumn() === 'inactive', 'Safe admin.access-only target deactivation was not persisted.');
 
     echo "M3.1 Batch 2 integration tests passed ({$assertions} assertions)." . PHP_EOL;
 } finally {

@@ -6,13 +6,15 @@ use Copot\Core\Config;
 use Copot\Core\Database;
 use Copot\Core\Env;
 use Copot\Core\PasswordHasher;
-use Copot\Core\PermissionChecker;
 
 $basePath = dirname(__DIR__);
 
 require $basePath . '/bootstrap/autoload.php';
 require $basePath . '/modules/users-access/Services/ManagedUser.php';
+require $basePath . '/modules/users-access/Services/ManagedRole.php';
 require $basePath . '/modules/users-access/Services/UsersRepository.php';
+require $basePath . '/modules/users-access/Services/RolesRepository.php';
+require $basePath . '/modules/users-access/Services/AccessInvariantGuard.php';
 require $basePath . '/modules/users-access/Services/UsersValidationException.php';
 require $basePath . '/modules/users-access/Services/UsersService.php';
 
@@ -43,7 +45,9 @@ $config = new Config($basePath . '/config');
 $database = new Database($config);
 $passwords = new PasswordHasher();
 $repository = new UsersRepository($database);
-$service = new UsersService($repository, $passwords, new PermissionChecker($database), $database);
+$roles = new RolesRepository($database);
+$invariant = new AccessInvariantGuard($roles, $repository);
+$service = new UsersService($repository, $passwords, $invariant, $database);
 $connection = $database->connection();
 $connection->beginTransaction();
 
@@ -94,6 +98,42 @@ try {
     ], true);
     $assert($repository->findById($activeId)?->isActive() === true, 'Authorized active creation failed.');
 
+    $recoveryPermissions = [
+        'admin.access' => 'Access admin shell',
+        'users.read' => 'Read users',
+        'users.status.manage' => 'Manage user status',
+        'roles.read' => 'Read roles and permissions',
+        'roles.manage' => 'Manage roles',
+        'users.roles.manage' => 'Manage user roles',
+        'roles.permissions.manage' => 'Manage role permissions',
+    ];
+    $insertRecoveryPermission = $connection->prepare(
+        'INSERT INTO permissions (name, slug, created_at, updated_at)
+        SELECT :name, :slug, NOW(), NOW()
+        WHERE NOT EXISTS (SELECT 1 FROM permissions WHERE slug = :existing_slug)'
+    );
+
+    foreach ($recoveryPermissions as $slug => $name) {
+        $insertRecoveryPermission->execute(['name' => $name, 'slug' => $slug, 'existing_slug' => $slug]);
+    }
+
+    $connection->prepare(
+        'INSERT INTO roles (name, slug, created_at, updated_at) VALUES (:name, :slug, NOW(), NOW())'
+    )->execute(['name' => 'Domain Recovery Anchor', 'slug' => "domain-recovery-anchor-{$suffix}"]);
+    $recoveryRoleId = (int) $connection->lastInsertId();
+    $connection->prepare(
+        'INSERT INTO role_permissions (role_id, permission_id)
+        SELECT :role_id, id FROM permissions WHERE slug IN (
+            \'admin.access\', \'users.read\', \'users.status.manage\', \'roles.read\',
+            \'roles.manage\', \'users.roles.manage\', \'roles.permissions.manage\'
+        )'
+    )->execute(['role_id' => $recoveryRoleId]);
+    $connection->prepare(
+        'INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)'
+    )->execute(['user_id' => $activeId, 'role_id' => $recoveryRoleId]);
+    $assert($invariant->isAdministratorCapable($activeId),
+        'Recovery anchor did not produce an administrator-capable actor.');
+
     $unauthorizedActiveErrors = $validationErrors(fn () => $service->create([
         'name' => 'Unauthorized Active',
         'email' => "unauthorized-active-{$suffix}@example.test",
@@ -117,7 +157,12 @@ try {
             return false;
         }
     };
-    $raceService = new UsersService($raceRepository, $passwords, new PermissionChecker($database), $database);
+    $raceService = new UsersService(
+        $raceRepository,
+        $passwords,
+        new AccessInvariantGuard($roles, $raceRepository),
+        $database
+    );
     $raceErrors = $validationErrors(fn () => $raceService->create([
         'name' => 'Duplicate Race User',
         'email' => "domain-{$suffix}@example.test",
@@ -210,19 +255,29 @@ try {
         "SELECT id FROM permissions WHERE slug = 'admin.access' LIMIT 1"
     )->fetchColumn();
     $assert(is_numeric($adminAccessPermission), 'Canonical admin.access permission is unavailable.');
+    $adminAccessOnlyId = $service->create([
+        'name' => 'Admin Access Only',
+        'email' => "admin-access-only-{$suffix}@example.test",
+        'password' => $password,
+        'password_confirmation' => $password,
+        'status' => 'active',
+    ], true);
     $connection->prepare(
         'INSERT INTO roles (name, slug, created_at, updated_at) VALUES (:name, :slug, NOW(), NOW())'
-    )->execute(['name' => 'Domain Admin Access', 'slug' => "domain-admin-access-{$suffix}"]);
-    $adminRoleId = (int) $connection->lastInsertId();
+    )->execute(['name' => 'Domain Admin Access Only', 'slug' => "domain-admin-access-only-{$suffix}"]);
+    $adminAccessRoleId = (int) $connection->lastInsertId();
     $connection->prepare(
         'INSERT INTO role_permissions (role_id, permission_id) VALUES (:role_id, :permission_id)'
-    )->execute(['role_id' => $adminRoleId, 'permission_id' => (int) $adminAccessPermission]);
+    )->execute(['role_id' => $adminAccessRoleId, 'permission_id' => (int) $adminAccessPermission]);
     $connection->prepare(
         'INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)'
-    )->execute(['user_id' => $activeId, 'role_id' => $adminRoleId]);
+    )->execute(['user_id' => $adminAccessOnlyId, 'role_id' => $adminAccessRoleId]);
+    $assert(!$invariant->isAdministratorCapable($adminAccessOnlyId),
+        'admin.access alone was treated as administrator-capable.');
 
-    $adminDeactivation = $validationErrors(fn () => $service->changeStatus($activeId, 'inactive', $createdId));
-    $assert(isset($adminDeactivation['status']), 'User with effective admin.access was deactivated.');
+    $service->changeStatus($adminAccessOnlyId, 'inactive', $activeId);
+    $assert($repository->findById($adminAccessOnlyId)?->status() === 'inactive',
+        'admin.access-only target was incorrectly protected as administrator-capable.');
 
     echo "M3.1 Batch 2 domain tests passed ({$assertions} assertions)." . PHP_EOL;
 } finally {

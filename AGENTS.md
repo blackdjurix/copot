@@ -20,11 +20,11 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 Current milestone: M3.1 Users & Access.
 
-Current work: M3.1 Batch 2 — Users administration foundation.
+Current work: M3.1 Batch 3 — Roles & Assignments.
 
 Primary goal:
 
-Implement the approved Users module foundation, permission provisioning, repository/service workflows, user list/create/edit/status foundation, and focused Batch 2 tests without entering Batch 3 scope.
+Implement the approved role-management, assignment, administrator-capability, invariant-locking, and focused Batch 3 foundations without entering Batch 4 or Batch 5 scope.
 
 Current state:
 
@@ -36,9 +36,10 @@ Current state:
 * M3.1 Users & Access is active on its approved milestone branch.
 * M3.1 retains the exact five-batch structure locked during M3 Prep.
 * M3.1 Batch 1 is complete, committed, and pushed.
-* M3.1 Batch 2 is active following separate implementation approval.
-* Batch 2 remains limited to the Users administration foundation and its focused tests.
-* Batch 3 role management, user-role assignment, role-permission assignment, and the full administrator invariant remain forbidden.
+* M3.1 Batch 2 is complete, committed, and pushed.
+* M3.1 Batch 3 is active after its planning gate and focused planning review passed.
+* Batch 3 remains limited to role management, assignments, capability-based lockout protection, and focused tests.
+* M3.1 Batch 4 and Batch 5 are not active.
 * The post-v0.12.0 Core freeze remains in force.
 
 Latest release: v0.12.0.
@@ -664,18 +665,19 @@ Copot v0.12.0 is released and is the current stable Webcore baseline.
 
 M3 Preparation is complete and closed. M3.1 Users & Access is the active milestone.
 
-The active checkpoint is M3.1 Batch 2 Users administration foundation implementation.
+The active checkpoint is M3.1 Batch 3 Roles & Assignments implementation.
 
 The immediate goal is to:
 
 * preserve the released v0.12.0 runtime and distribution contracts;
 * preserve the Stage 1 Webcore freeze, module ownership, dependency, Theme/Module, Navigation, Media, and repository boundaries;
 * preserve the Stage 2 approved sequence, planning envelopes, risk labels, and sequencing governance;
-* implement the approved Users module foundation and permission provisioning;
-* implement module-owned user repository/service workflows for list, create, identity edit, password change, and conservative account-status control;
-* add focused Batch 2 domain and provisioning tests;
+* implement role-management foundations and controlled user-role and role-permission assignment workflows;
+* implement capability-based lockout protection and the final active administrator-capable invariant;
+* preserve explicit transaction and locking discipline for invariant-affecting mutations;
+* add focused Batch 3 tests;
 * preserve the single runtime authorization model and existing Core services;
-* avoid routes, Admin views, navigation, role management, assignments, and the full Batch 3 administrator invariant during Pass 1.
+* avoid Batch 4 hardening and Batch 5 completion work before their separate gates.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
 
