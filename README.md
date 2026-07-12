@@ -22,13 +22,13 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is the active milestone. Its Batch 1 ownership foundation and Batch 2 Manager Domain & Field Contract are complete. Batch 3 has not started.
+M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager remains the active milestone. Its Batches 1–3 are complete, and Batch 4 plus Batch 5 have not started.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is M3.2 Batch 2 — Manager Domain & Field Contract completion review after its focused implementation and remediation gates passed.
+The active checkpoint is M3.2 Batch 3 — Admin Routes and Presentation completion documentation and Git checkpoint.
 
 M2 Platform Capabilities are complete. Copot v0.12.0 remains the stable released Webcore baseline. M3.1 is merged but is not yet included in a new release.
 
@@ -50,7 +50,7 @@ M3.11 Form Manager
 
 The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
 
-M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Batch 1 is complete at `31d540a`: `settings-manager` owns Admin Settings routes, navigation, fixed compatibility presentation, and fixed Site Asset controls; `SettingsService` provides deterministic registered-only read-only definition discovery. Batch 2 now adds a module-local editability/presentation policy, reusable deterministic section and typed scalar field contracts, controlled validation aggregation, optional-field semantics, and atomic root/nested save orchestration. Its 94 focused assertions pass. Generic JSON and Logo/Favicon descriptors remain excluded, and Batch 3 dynamic Settings presentation has not started.
+M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Batch 1 established lifecycle-owned configured-path Admin Settings routes, navigation, and specialized Site Asset controls; Batch 2 added the module-local editability/presentation policy, reusable deterministic typed field contracts, validation aggregation, and atomic save orchestration. Batch 3 now renders grouped dynamic Settings sections and delegates nested identifier payloads to the same Settings Manager domain while preserving configured Admin paths, Admin shell behavior, and separate Logo/Favicon workflows. Generic JSON and Site Asset descriptors remain excluded. Batches 1–3 provide 221 focused assertions; Batch 4 and Batch 5 have not started.
 
 M2.2 completion record:
 
@@ -142,9 +142,11 @@ Included so far:
 - Module-local Settings Manager editability/presentation policy with deterministic section and typed scalar field contracts
 - Aggregated Settings validation with optional-field omission and validation-before-write
 - Atomic Settings Manager candidate persistence through root transactions or caller-safe nested savepoints
+- Grouped dynamic Settings Manager Admin presentation with text, number, checkbox, and select fields
+- Nested identifier-based Settings submission with safe validation redisplay and configured-path PRG behavior
 - Namespaced settings overrides with code-defined defaults
 - Lifecycle-owned `settings-manager` Admin Settings routes and navigation under the configured Admin path
-- Fixed Settings compatibility presentation and fixed Site Asset controls owned by `settings-manager`
+- Dynamic scalar Settings presentation and specialized fixed Site Asset controls owned by `settings-manager`
 - `settings.update` permission for viewing and saving settings
 - Transactional, CSRF-protected Settings form
 - Runtime timezone application and active locale foundation

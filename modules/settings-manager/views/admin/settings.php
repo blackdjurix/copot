@@ -1,3 +1,29 @@
+<?php
+$settingsSelectComparableValue = static function (SettingsField $field, mixed $value): array {
+    return match ($field->valueType()) {
+        'string' => [is_string($value), $value],
+        'integer' => match (true) {
+            is_int($value) => [true, $value],
+            is_string($value) && preg_match('/^[+-]?[0-9]+$/', $value) === 1 => (static function () use ($value): array {
+                $negative = str_starts_with($value, '-');
+                $digits = ltrim(ltrim($value, '+-'), '0');
+                $canonical = ($negative && $digits !== '' ? '-' : '') . ($digits === '' ? '0' : $digits);
+                $integer = filter_var($canonical, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+
+                return [is_int($integer), $integer];
+            })(),
+            default => [false, null],
+        },
+        'float' => match (true) {
+            is_float($value) && is_finite($value) => [true, $value],
+            is_int($value) => [true, (float) $value],
+            is_string($value) && is_numeric($value) && is_finite((float) $value) => [true, (float) $value],
+            default => [false, null],
+        },
+        default => [false, null],
+    };
+};
+?>
 <section class="admin-panel" aria-describedby="settings-description">
     <header class="admin-panel__header">
         <div class="admin-panel__heading">
@@ -10,11 +36,11 @@
             <div class="admin-alert admin-alert--success" role="status">Settings saved successfully.</div>
         <?php endif; ?>
 
-        <?php if (!empty($errors)): ?>
+        <?php if (!empty($formErrors)): ?>
             <div class="admin-alert admin-alert--danger" role="alert" aria-labelledby="settings-error-title">
                 <strong class="admin-alert__title" id="settings-error-title">Settings could not be saved.</strong>
                 <ul class="admin-alert__list">
-                    <?php foreach ($errors as $error): ?>
+                    <?php foreach ($formErrors as $error): ?>
                         <li><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></li>
                     <?php endforeach; ?>
                 </ul>
@@ -24,136 +50,91 @@
         <form class="admin-form" method="post" action="<?= htmlspecialchars($formAction ?? '', ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
-            <fieldset class="admin-fieldset">
-                <legend class="admin-fieldset__legend">General</legend>
-
-                <div class="admin-field">
-                    <label class="admin-field__label" for="site_name">
-                        Site Name
-                        <span class="admin-field__required" aria-hidden="true">*</span>
-                        <span class="admin-visually-hidden">required</span>
-                    </label>
-                    <input
-                        id="site_name"
-                        name="site_name"
-                        type="text"
-                        maxlength="150"
-                        value="<?= htmlspecialchars($values['site_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                        aria-describedby="site_name-help<?= isset($errors['site_name']) ? ' site_name-error' : '' ?>"
-                        <?= isset($errors['site_name']) ? 'aria-invalid="true"' : '' ?>
-                        required
-                    >
-                    <p class="admin-field__help" id="site_name-help">Used as the public site name.</p>
-                    <?php if (isset($errors['site_name'])): ?>
-                        <p class="admin-field__error" id="site_name-error"><?= htmlspecialchars($errors['site_name'], ENT_QUOTES, 'UTF-8') ?></p>
+            <?php foreach (($sections ?? []) as $section): ?>
+                <fieldset class="admin-fieldset">
+                    <legend class="admin-fieldset__legend"><?= htmlspecialchars($section->label(), ENT_QUOTES, 'UTF-8') ?></legend>
+                    <?php if ($section->description() !== null): ?>
+                        <p class="admin-field__help"><?= htmlspecialchars($section->description(), ENT_QUOTES, 'UTF-8') ?></p>
                     <?php endif; ?>
-                </div>
 
-                <div class="admin-field">
-                    <label class="admin-field__label" for="site_tagline">Site Tagline</label>
-                    <input
-                        id="site_tagline"
-                        name="site_tagline"
-                        type="text"
-                        maxlength="255"
-                        value="<?= htmlspecialchars($values['site_tagline'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                        aria-describedby="site_tagline-help<?= isset($errors['site_tagline']) ? ' site_tagline-error' : '' ?>"
-                        <?= isset($errors['site_tagline']) ? 'aria-invalid="true"' : '' ?>
-                    >
-                    <p class="admin-field__help" id="site_tagline-help">Optional short description of the site.</p>
-                    <?php if (isset($errors['site_tagline'])): ?>
-                        <p class="admin-field__error" id="site_tagline-error"><?= htmlspecialchars($errors['site_tagline'], ENT_QUOTES, 'UTF-8') ?></p>
-                    <?php endif; ?>
-                </div>
-            </fieldset>
+                    <?php foreach ($section->fields() as $field): ?>
+                        <?php
+                        $identifier = $field->identifier();
+                        $fieldId = 'setting-' . bin2hex($identifier);
+                        $helpId = $fieldId . '-help';
+                        $errorId = $fieldId . '-error';
+                        $errorsForField = $fieldErrors[$identifier] ?? [];
+                        $describedBy = [];
+                        if ($field->description() !== null) {
+                            $describedBy[] = $helpId;
+                        }
+                        if ($errorsForField !== []) {
+                            $describedBy[] = $errorId;
+                        }
+                        $value = $values[$identifier] ?? $field->defaultValue();
+                        [$hasComparableValue, $comparableValue] = $field->fieldType() === 'select'
+                            ? $settingsSelectComparableValue($field, $value)
+                            : [false, null];
+                        $hasSelectedOption = $hasComparableValue
+                            && in_array($comparableValue, $field->options(), true);
+                        $showInvalidOption = $field->fieldType() === 'select'
+                            && $errorsForField !== []
+                            && !$hasSelectedOption
+                            && (is_string($value) || is_int($value) || (is_float($value) && is_finite($value)));
+                        ?>
+                        <div class="admin-field">
+                            <label class="admin-field__label" for="<?= htmlspecialchars($fieldId, ENT_QUOTES, 'UTF-8') ?>">
+                                <?= htmlspecialchars($field->label(), ENT_QUOTES, 'UTF-8') ?>
+                                <?php if ($field->required()): ?>
+                                    <span class="admin-field__required" aria-hidden="true">*</span>
+                                    <span class="admin-visually-hidden">required</span>
+                                <?php endif; ?>
+                            </label>
 
-            <fieldset class="admin-fieldset">
-                <legend class="admin-fieldset__legend">Localization</legend>
+                            <?php if ($field->fieldType() === 'select'): ?>
+                                <select
+                                    id="<?= htmlspecialchars($fieldId, ENT_QUOTES, 'UTF-8') ?>"
+                                    name="settings[<?= htmlspecialchars($identifier, ENT_QUOTES, 'UTF-8') ?>]"
+                                    <?= $describedBy !== [] ? 'aria-describedby="' . htmlspecialchars(implode(' ', $describedBy), ENT_QUOTES, 'UTF-8') . '"' : '' ?>
+                                    <?= $errorsForField !== [] ? 'aria-invalid="true"' : '' ?>
+                                    <?= $field->required() ? 'required' : '' ?>
+                                >
+                                    <?php if ($showInvalidOption): ?>
+                                        <option value="<?= htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') ?>" selected><?= htmlspecialchars((string) $value . ' (invalid)', ENT_QUOTES, 'UTF-8') ?></option>
+                                    <?php endif; ?>
+                                    <?php foreach ($field->options() as $option): ?>
+                                        <option value="<?= htmlspecialchars((string) $option, ENT_QUOTES, 'UTF-8') ?>" <?= ($hasComparableValue && $comparableValue === $option) ? 'selected' : '' ?>><?= htmlspecialchars((string) $option, ENT_QUOTES, 'UTF-8') ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            <?php else: ?>
+                                <input
+                                    id="<?= htmlspecialchars($fieldId, ENT_QUOTES, 'UTF-8') ?>"
+                                    name="settings[<?= htmlspecialchars($identifier, ENT_QUOTES, 'UTF-8') ?>]"
+                                    type="<?= $field->fieldType() === 'checkbox' ? 'checkbox' : htmlspecialchars($field->fieldType(), ENT_QUOTES, 'UTF-8') ?>"
+                                    <?= $field->fieldType() === 'checkbox' ? 'value="1"' : 'value="' . htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8') . '"' ?>
+                                    <?= $field->fieldType() === 'checkbox' && (bool) $value ? 'checked' : '' ?>
+                                    <?= $field->fieldType() === 'number' ? 'step="' . ($field->valueType() === 'integer' ? '1' : 'any') . '"' : '' ?>
+                                    <?= $field->maximumLength() !== null ? 'maxlength="' . $field->maximumLength() . '"' : '' ?>
+                                    <?= $describedBy !== [] ? 'aria-describedby="' . htmlspecialchars(implode(' ', $describedBy), ENT_QUOTES, 'UTF-8') . '"' : '' ?>
+                                    <?= $errorsForField !== [] ? 'aria-invalid="true"' : '' ?>
+                                    <?= $field->required() ? 'required' : '' ?>
+                                >
+                            <?php endif; ?>
 
-                <div class="admin-field">
-                    <label class="admin-field__label" for="localization_timezone">Timezone</label>
-                    <select
-                        id="localization_timezone"
-                        name="localization_timezone"
-                        aria-describedby="localization_timezone-help<?= isset($errors['localization_timezone']) ? ' localization_timezone-error' : '' ?>"
-                        <?= isset($errors['localization_timezone']) ? 'aria-invalid="true"' : '' ?>
-                    >
-                        <?php foreach (($timezones ?? []) as $timezone): ?>
-                            <option
-                                value="<?= htmlspecialchars($timezone, ENT_QUOTES, 'UTF-8') ?>"
-                                <?= (($values['localization_timezone'] ?? 'UTC') === $timezone) ? 'selected' : '' ?>
-                            ><?= htmlspecialchars($timezone, ENT_QUOTES, 'UTF-8') ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <p class="admin-field__help" id="localization_timezone-help">Controls the default application timezone.</p>
-                    <?php if (isset($errors['localization_timezone'])): ?>
-                        <p class="admin-field__error" id="localization_timezone-error"><?= htmlspecialchars($errors['localization_timezone'], ENT_QUOTES, 'UTF-8') ?></p>
-                    <?php endif; ?>
-                </div>
-
-                <div class="admin-field">
-                    <label class="admin-field__label" for="localization_locale">Locale</label>
-                    <select
-                        id="localization_locale"
-                        name="localization_locale"
-                        aria-describedby="localization_locale-help<?= isset($errors['localization_locale']) ? ' localization_locale-error' : '' ?>"
-                        <?= isset($errors['localization_locale']) ? 'aria-invalid="true"' : '' ?>
-                    >
-                        <?php foreach (($locales ?? []) as $locale): ?>
-                            <option
-                                value="<?= htmlspecialchars($locale, ENT_QUOTES, 'UTF-8') ?>"
-                                <?= (($values['localization_locale'] ?? 'en_US') === $locale) ? 'selected' : '' ?>
-                            ><?= htmlspecialchars($locale, ENT_QUOTES, 'UTF-8') ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <p class="admin-field__help" id="localization_locale-help">Controls the configured runtime locale.</p>
-                    <?php if (isset($errors['localization_locale'])): ?>
-                        <p class="admin-field__error" id="localization_locale-error"><?= htmlspecialchars($errors['localization_locale'], ENT_QUOTES, 'UTF-8') ?></p>
-                    <?php endif; ?>
-                </div>
-
-                <div class="admin-field">
-                    <label class="admin-field__label" for="localization_date_format">Date Format</label>
-                    <select
-                        id="localization_date_format"
-                        name="localization_date_format"
-                        aria-describedby="localization_date_format-help<?= isset($errors['localization_date_format']) ? ' localization_date_format-error' : '' ?>"
-                        <?= isset($errors['localization_date_format']) ? 'aria-invalid="true"' : '' ?>
-                    >
-                        <?php foreach (($dateFormats ?? []) as $dateFormat): ?>
-                            <option
-                                value="<?= htmlspecialchars($dateFormat, ENT_QUOTES, 'UTF-8') ?>"
-                                <?= (($values['localization_date_format'] ?? 'Y-m-d') === $dateFormat) ? 'selected' : '' ?>
-                            ><?= htmlspecialchars($dateFormat, ENT_QUOTES, 'UTF-8') ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <p class="admin-field__help" id="localization_date_format-help">Controls the configured default date display format.</p>
-                    <?php if (isset($errors['localization_date_format'])): ?>
-                        <p class="admin-field__error" id="localization_date_format-error"><?= htmlspecialchars($errors['localization_date_format'], ENT_QUOTES, 'UTF-8') ?></p>
-                    <?php endif; ?>
-                </div>
-
-                <div class="admin-field">
-                    <label class="admin-field__label" for="localization_time_format">Time Format</label>
-                    <select
-                        id="localization_time_format"
-                        name="localization_time_format"
-                        aria-describedby="localization_time_format-help<?= isset($errors['localization_time_format']) ? ' localization_time_format-error' : '' ?>"
-                        <?= isset($errors['localization_time_format']) ? 'aria-invalid="true"' : '' ?>
-                    >
-                        <?php foreach (($timeFormats ?? []) as $timeFormat): ?>
-                            <option
-                                value="<?= htmlspecialchars($timeFormat, ENT_QUOTES, 'UTF-8') ?>"
-                                <?= (($values['localization_time_format'] ?? 'H:i') === $timeFormat) ? 'selected' : '' ?>
-                            ><?= htmlspecialchars($timeFormat, ENT_QUOTES, 'UTF-8') ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    <p class="admin-field__help" id="localization_time_format-help">Controls the configured default time display format.</p>
-                    <?php if (isset($errors['localization_time_format'])): ?>
-                        <p class="admin-field__error" id="localization_time_format-error"><?= htmlspecialchars($errors['localization_time_format'], ENT_QUOTES, 'UTF-8') ?></p>
-                    <?php endif; ?>
-                </div>
-            </fieldset>
+                            <?php if ($field->description() !== null): ?>
+                                <p class="admin-field__help" id="<?= htmlspecialchars($helpId, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($field->description(), ENT_QUOTES, 'UTF-8') ?></p>
+                            <?php endif; ?>
+                            <?php if ($errorsForField !== []): ?>
+                                <div class="admin-field__error" id="<?= htmlspecialchars($errorId, ENT_QUOTES, 'UTF-8') ?>">
+                                    <?php foreach ($errorsForField as $error): ?>
+                                        <p><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </fieldset>
+            <?php endforeach; ?>
 
             <div class="admin-actions admin-form__actions">
                 <button class="admin-button admin-button--primary" type="submit">Save Settings</button>

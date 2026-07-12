@@ -4,6 +4,13 @@ use Copot\Core\Response;
 use Copot\Core\SettingsException;
 use Copot\Core\SiteAssetException;
 
+require_once __DIR__ . '/Services/SettingsManagerPolicy.php';
+require_once __DIR__ . '/Services/SettingsField.php';
+require_once __DIR__ . '/Services/SettingsSection.php';
+require_once __DIR__ . '/Services/SettingsFieldMapper.php';
+require_once __DIR__ . '/Services/SettingsValidationException.php';
+require_once __DIR__ . '/Services/SettingsManager.php';
+
 $adminUrl = $app->adminUrl();
 $adminPermission = $app->config()->get('admin.permission', 'admin.access');
 
@@ -19,6 +26,11 @@ $logoRemovePath = $adminUrl->childUrl('settings/site-assets/logo/remove');
 $faviconUploadPath = $adminUrl->childUrl('settings/site-assets/favicon');
 $faviconRemovePath = $adminUrl->childUrl('settings/site-assets/favicon/remove');
 $app->adminNavigation()->add('Settings', $settingsPath, 'settings.update');
+$settingsManager = new SettingsManager(
+    $app->settings(),
+    new SettingsFieldMapper(SettingsManagerPolicy::defaults()),
+    $app->database()
+);
 
 $settingsRenderView = static function (array $data): string {
     $file = __DIR__ . '/views/admin/settings.php';
@@ -61,24 +73,6 @@ $settingsRenderView = static function (array $data): string {
     }
 };
 
-$settingsFields = [
-    'site_name' => ['site', 'name'],
-    'site_tagline' => ['site', 'tagline'],
-    'localization_timezone' => ['localization', 'timezone'],
-    'localization_locale' => ['localization', 'locale'],
-    'localization_date_format' => ['localization', 'date_format'],
-    'localization_time_format' => ['localization', 'time_format'],
-];
-
-$settingsErrorMessages = [
-    'site_name' => 'Site Name is required and must not exceed 150 characters.',
-    'site_tagline' => 'Site Tagline must not exceed 255 characters.',
-    'localization_timezone' => 'Invalid timezone.',
-    'localization_locale' => 'Unsupported locale.',
-    'localization_date_format' => 'Unsupported date format.',
-    'localization_time_format' => 'Unsupported time format.',
-];
-
 $settingsRequireUser = function ($request) use ($app, $adminBase, $adminPermission) {
     if (!$app->auth()->check()) {
         return Response::redirect($adminBase);
@@ -93,24 +87,24 @@ $settingsRequireUser = function ($request) use ($app, $adminBase, $adminPermissi
     return $user;
 };
 
-$settingsEffectiveValues = function () use ($app): array {
-    $site = $app->settings()->all('site');
-    $localization = $app->settings()->all('localization');
+$settingsEffectiveValues = function (array $sections) use ($app): array {
+    $values = [];
 
-    return [
-        'site_name' => $site['name'],
-        'site_tagline' => $site['tagline'],
-        'localization_timezone' => $localization['timezone'],
-        'localization_locale' => $localization['locale'],
-        'localization_date_format' => $localization['date_format'],
-        'localization_time_format' => $localization['time_format'],
-    ];
+    foreach ($sections as $section) {
+        foreach ($section->fields() as $field) {
+            $values[$field->identifier()] = $app->settings()->get($field->namespace(), $field->key());
+        }
+    }
+
+    return $values;
 };
 
 $renderSettings = function (
     $user,
+    array $sections,
     array $values,
-    array $errors = [],
+    array $fieldErrors = [],
+    array $formErrors = [],
     bool $saved = false,
     string $currentPath = '',
     int $status = 200,
@@ -125,23 +119,14 @@ $renderSettings = function (
     $faviconRemovePath,
     $settingsRenderView
 ): Response {
-    $timezones = array_values(array_filter(
-        timezone_identifiers_list(),
-        static fn (string $timezone): bool => $timezone !== 'UTC'
-    ));
-    sort($timezones, SORT_STRING);
-    array_unshift($timezones, 'UTC');
-
     $content = $settingsRenderView([
         'formAction' => $settingsPath,
         'csrfToken' => $app->csrf()->token(),
+        'sections' => $sections,
         'values' => $values,
-        'errors' => $errors,
+        'fieldErrors' => $fieldErrors,
+        'formErrors' => $formErrors,
         'saved' => $saved,
-        'timezones' => $timezones,
-        'locales' => ['en_US', 'id_ID'],
-        'dateFormats' => ['Y-m-d', 'd/m/Y', 'm/d/Y', 'd M Y'],
-        'timeFormats' => ['H:i', 'h:i A'],
         'assetErrors' => $assetErrors,
         'assetNotice' => $assetNotice,
         'logoUrl' => $app->siteAssets()->url('logo'),
@@ -163,6 +148,7 @@ $renderSettings = function (
 
 $app->router()->get($settingsPath, function ($request) use (
     $app,
+    $settingsManager,
     $settingsRequireUser,
     $settingsEffectiveValues,
     $renderSettings
@@ -174,7 +160,8 @@ $app->router()->get($settingsPath, function ($request) use (
     }
 
     try {
-        $values = $settingsEffectiveValues();
+        $sections = $settingsManager->sections();
+        $values = $settingsEffectiveValues($sections);
     } catch (\PDOException) {
         return $app->adminErrors()->response($request, 503);
     }
@@ -189,7 +176,9 @@ $app->router()->get($settingsPath, function ($request) use (
 
     return $renderSettings(
         $user,
+        $sections,
         $values,
+        [],
         [],
         $request->input('saved') === '1',
         $request->path(),
@@ -201,9 +190,9 @@ $app->router()->get($settingsPath, function ($request) use (
 
 $app->router()->post($settingsPath, function ($request) use (
     $app,
-    $settingsFields,
-    $settingsErrorMessages,
+    $settingsManager,
     $settingsRequireUser,
+    $settingsEffectiveValues,
     $renderSettings,
     $settingsPath
 ): Response {
@@ -219,47 +208,48 @@ $app->router()->post($settingsPath, function ($request) use (
         return $app->adminErrors()->response($request, 419);
     }
 
-    $values = [];
-    $errors = [];
-
-    foreach ($settingsFields as $field => [$namespace, $key]) {
-        $value = $request->post($field, '');
-        $values[$field] = is_string($value) ? $value : '';
-
-        try {
-            $app->settings()->validate($namespace, $key, $values[$field]);
-        } catch (SettingsException) {
-            $errors[$field] = $settingsErrorMessages[$field];
-        }
-    }
-
-    if ($errors !== []) {
-        return $renderSettings($user, $values, $errors, false, $request->path(), 422);
-    }
-
-    $connection = null;
-
     try {
-        $connection = $app->database()->connection();
-        $connection->beginTransaction();
+        $sections = $settingsManager->sections();
+        $submitted = $request->post('settings');
 
-        foreach ($settingsFields as $field => [$namespace, $key]) {
-            $app->settings()->set($namespace, $key, $values[$field]);
+        if (!is_array($submitted)) {
+            $values = $settingsEffectiveValues($sections);
+
+            return $renderSettings(
+                $user,
+                $sections,
+                $values,
+                [],
+                ['The submitted settings payload is invalid.'],
+                false,
+                $request->path(),
+                422
+            );
         }
 
-        $connection->commit();
-    } catch (\PDOException) {
-        if ($connection?->inTransaction()) {
-            $connection->rollBack();
+        $settingsManager->save($submitted);
+    } catch (SettingsValidationException $exception) {
+        try {
+            $values = array_replace(
+                $settingsEffectiveValues($sections),
+                $exception->submittedValues()
+            );
+        } catch (SettingsException|\PDOException) {
+            return $app->adminErrors()->response($request, 503);
         }
 
+        return $renderSettings(
+            $user,
+            $sections,
+            $values,
+            $exception->fieldErrors(),
+            $exception->formErrors(),
+            false,
+            $request->path(),
+            422
+        );
+    } catch (SettingsException|\PDOException) {
         return $app->adminErrors()->response($request, 503);
-    } catch (\Throwable $exception) {
-        if ($connection?->inTransaction()) {
-            $connection->rollBack();
-        }
-
-        throw $exception;
     }
 
     return Response::redirect($settingsPath . '?saved=1');
@@ -271,16 +261,19 @@ $renderAssetFailure = function (
     string $slot,
     string $message,
     int $status = 422
-) use ($app, $settingsEffectiveValues, $renderSettings, $settingsPath): Response {
+) use ($app, $settingsManager, $settingsEffectiveValues, $renderSettings, $settingsPath): Response {
     try {
-        $values = $settingsEffectiveValues();
+        $sections = $settingsManager->sections();
+        $values = $settingsEffectiveValues($sections);
     } catch (\PDOException) {
         return $app->adminErrors()->response($request, 503);
     }
 
     return $renderSettings(
         $user,
+        $sections,
         $values,
+        [],
         [],
         false,
         $settingsPath,

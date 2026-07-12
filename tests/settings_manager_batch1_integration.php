@@ -180,8 +180,10 @@ try {
     $originalTagline = (string) $app->settings()->get('site', 'tagline');
     $invalidCsrf = $app->run(new Request('POST', $settingsPath, [], [
         '_token' => 'invalid-token',
-        'site_name' => 'Batch 1',
-        'site_tagline' => 'blocked',
+        'settings' => [
+            'site.name' => 'Batch 1',
+            'site.tagline' => 'blocked',
+        ],
     ]));
     $assert($statusOf($invalidCsrf) === 419, 'Invalid Settings CSRF was not rejected.');
     $assert(
@@ -191,12 +193,14 @@ try {
 
     $invalid = $app->run(new Request('POST', $settingsPath, [], [
         '_token' => $app->session()->csrfToken(),
-        'site_name' => '',
-        'site_tagline' => 'must-not-persist',
-        'localization_timezone' => 'UTC',
-        'localization_locale' => 'en_US',
-        'localization_date_format' => 'Y-m-d',
-        'localization_time_format' => 'H:i',
+        'settings' => [
+            'site.name' => '',
+            'site.tagline' => 'must-not-persist',
+            'localization.timezone' => 'UTC',
+            'localization.locale' => 'en_US',
+            'localization.date_format' => 'Y-m-d',
+            'localization.time_format' => 'H:i',
+        ],
     ]));
     $assert($statusOf($invalid) === 422, 'Invalid Settings values did not return 422.');
     $assert(str_contains($contentOf($invalid), 'admin-shell'), 'Settings validation left the Admin shell.');
@@ -208,12 +212,14 @@ try {
     $savedTagline = 'Batch 1 saved ' . bin2hex(random_bytes(4));
     $valid = $app->run(new Request('POST', $settingsPath, [], [
         '_token' => $app->session()->csrfToken(),
-        'site_name' => 'Copot Batch 1',
-        'site_tagline' => $savedTagline,
-        'localization_timezone' => 'UTC',
-        'localization_locale' => 'en_US',
-        'localization_date_format' => 'Y-m-d',
-        'localization_time_format' => 'H:i',
+        'settings' => [
+            'site.name' => 'Copot Batch 1',
+            'site.tagline' => $savedTagline,
+            'localization.timezone' => 'UTC',
+            'localization.locale' => 'en_US',
+            'localization.date_format' => 'Y-m-d',
+            'localization.time_format' => 'H:i',
+        ],
     ]));
     $assert(
         $statusOf($valid) === 302,

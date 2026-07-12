@@ -2,7 +2,7 @@
 
 ## Status
 
-M3.2 Settings Manager preparation and Batches 1–2 are complete. Batch 1 is committed and pushed at baseline commit `31d540a` and reached its implementation No-Return Point with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 Manager Domain & Field Contract passes its focused implementation, adversarial review, remediation, and completion gates with 94 assertions. Batch 3 has not started.
+M3.2 Settings Manager preparation and Batches 1–3 are complete. Batch 1 is committed and pushed at baseline commit `31d540a` and reached its implementation No-Return Point with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 Manager Domain & Field Contract passes its focused implementation, adversarial review, remediation, and completion gates with 94 assertions. Batch 3 Admin Routes and Presentation passes implementation, three focused remediation cycles, final completion review, and relevant regressions with 85 focused assertions. M3.2 remains in progress; Batch 4 and Batch 5 have not started.
 
 The exact five-batch structure refines the Stage 2 four-batch planning envelope using current repository evidence. The additional boundary separates approval of existing Core Settings route/definition ownership from domain behavior, Admin integration, hardening, and completion; it does not change the approved M3 sequence.
 
@@ -23,17 +23,14 @@ Reusable capability already present:
 * `SettingsRepository` owns PDO-backed override lookup, namespace listing, upsert, existence checks, and deletion in the existing `settings` table.
 * `SettingsService` owns effective fallback, typed serialization/deserialization for string/integer/boolean/float/JSON, validation, set/delete, and controlled storage degradation.
 * `Application::settings()` exposes the service; runtime consumers already use effective values.
-* The `settings-manager` module now owns configured-path Settings GET/POST, explicit field allowlisting, transactional validation-before-write, CSRF, Admin shell rendering, sanitized errors, and fixed Logo/Favicon controls.
+* The `settings-manager` module owns configured-path Settings GET/POST, grouped dynamic scalar presentation, manager-domain validation and atomic persistence, CSRF, Admin shell rendering, sanitized errors, and fixed Logo/Favicon controls.
 * `SettingsService::definitions()` and `definitionGroups()` provide stable identifier ordering, namespace filtering/grouping, and registered-only `SettingDefinition` discovery without storage mutation.
 * `settings.update` is seeded, mapped to the seeded administrator role, used by manager navigation/routes, and covered by existing Admin and compatibility tests.
 
 Current gaps:
 
-* only six scalar fields are wired into the grouped form, plus fixed Site Asset controls;
-* field presentation is not derived from a controlled manager-facing definition contract;
-* no module contribution contract exists for registered settings sections;
-* manager-specific domain behavior and dynamic field presentation remain for later batches;
-* the full authorization, configured-path, failure, and completion regression gates remain for Batches 3–5.
+* full security and compatibility hardening, including the complete permission/failure/security matrix, remains for Batch 4;
+* final unified M3.2 completion validation, manual Admin verification, and documentation closure remain for Batch 5.
 
 ## Settings Boundary
 
@@ -109,7 +106,7 @@ Non-goals: new fields, UI redesign, schema changes, migration runner, Admin UX r
 
 Core touchpoint: definition discovery and route ownership only if separately approved.
 
-Batch 1 result: complete, committed, and pushed at baseline commit `31d540a`. The module manifest, lifecycle-owned routes/view, deterministic registered-only discovery APIs, focused 42-assertion baseline, relevant platform compatibility, package-content coverage, and isolated clean-install verification pass. The fixed form remains intentionally compatible; dynamic manager field presentation belongs to Batch 3. The No-Return Point is reached. Batch 2 is complete, and Batch 3 has not started.
+Batch 1 result: complete, committed, and pushed at baseline commit `31d540a`. The module manifest, lifecycle-owned routes/view, deterministic registered-only discovery APIs, focused 42-assertion baseline, relevant platform compatibility, package-content coverage, and isolated clean-install verification pass. The fixed compatibility form established the route/view transition baseline later replaced by Batch 3 dynamic presentation. The No-Return Point is reached, and Batches 2–3 are complete.
 
 ### Batch 2 — Manager Domain and Field Contract
 
@@ -125,7 +122,7 @@ Non-goals: routes/views, module-contributed sections, secrets, import/export.
 
 Core touchpoint: none expected beyond the approved Batch 1 contract.
 
-Batch 2 result: complete and pass. A validated module-local policy owns editability and presentation metadata for the six approved scalar definitions. Reusable deterministic section and field contracts map string, integer, float, and boolean types while generic JSON plus specialized Logo/Favicon descriptors remain excluded. The manager aggregates controlled validation errors, distinguishes optional omission from explicit empty input, validates all submitted/normalized candidates before persistence, and writes only valid deterministic candidates through a root transaction or caller-safe nested savepoint. Validation or persistence failure preserves prior stored values. Focused domain and integration coverage passes 94 assertions; Batch 1 Settings and directly relevant Branding, Settings, and Site Asset regressions pass. No Core, route, view, schema, SQL, runtime permission, or dependency change was introduced, and no Batch 3 UI wiring is present.
+Batch 2 result: complete and pass. A validated module-local policy owns editability and presentation metadata for the six approved scalar definitions. Reusable deterministic section and field contracts map string, integer, float, and boolean types while generic JSON plus specialized Logo/Favicon descriptors remain excluded. The manager aggregates controlled validation errors, distinguishes optional omission from explicit empty input, validates all submitted/normalized candidates before persistence, and writes only valid deterministic candidates through a root transaction or caller-safe nested savepoint. Validation or persistence failure preserves prior stored values. Focused domain and integration coverage passes 94 assertions; Batch 1 Settings and directly relevant Branding, Settings, and Site Asset regressions pass. No Core, route, view, schema, SQL, runtime permission, or dependency change was introduced. Batch 3 now consumes this domain contract.
 
 ### Batch 3 — Admin Routes and Presentation
 
@@ -140,6 +137,8 @@ Validation: focused route/view integration, configured Admin path fixture, escap
 Non-goals: Admin UX Refinement 1, Theme Customizer, public API.
 
 Core touchpoint: execute only the previously approved route/view ownership transition.
+
+Batch 3 result: complete and pass. The lifecycle-owned configured-path route/view now renders grouped dynamic text, number, checkbox, and select fields from `SettingsManager::sections()` and accepts nested `settings[domain.identifier]` payloads delegated to `SettingsManager::save()`. Validation failures preserve effective and submitted values, expose field/form errors in the Admin shell, retain escaped invalid select values as controlled invalid-current options, use collision-safe deterministic HTML IDs, and return controlled Admin-shell `503` responses for validation-redisplay storage failure. Configured-path GET, save redirect, scalar and Site Asset actions have executable coverage with no default `/admin` duplicate. Generic JSON and Logo/Favicon descriptors remain outside scalar rendering, and specialized Logo/Favicon workflows remain unchanged. Batch 3 integration passes 46 assertions and presentation coverage passes 39 assertions, for 85 focused assertions and 221 cumulative focused M3.2 assertions through Batch 3. Relevant M2.1 Admin UI, M2.3 Branding/Site Asset, and M2.3 unified regressions pass. No Core, schema, SQL, runtime permission, dependency, or Batch 2 domain change was introduced. Batch 4 and Batch 5 have not started.
 
 ### Batch 4 — Security and Compatibility Hardening
 

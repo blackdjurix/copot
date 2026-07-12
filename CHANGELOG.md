@@ -8,6 +8,8 @@
 - Added deterministic registered-only Settings definition discovery through the existing `SettingsService`, plus 42 focused contract and integration assertions.
 - Added M3.2 Batch 2 module-local manager policy plus reusable deterministic section and typed scalar field contracts, with registered-only editability and generic JSON/Site Asset descriptor exclusion.
 - Added aggregated validation and atomic multi-field save orchestration with optional-field omission, validation-before-write, root transactions, caller-safe nested savepoints, and prior-value preservation on failure.
+- Added M3.2 Batch 3 grouped dynamic Admin Settings presentation for text, number, checkbox, and select fields derived from the manager domain contract.
+- Added nested `settings[domain.identifier]` request handling delegated to `SettingsManager`, with inline/form validation redisplay, controlled invalid-select preservation, collision-safe field IDs, and controlled Admin-shell `503` handling.
 - Added the Post-M3.1 Roadmap Sync and M3.2 Settings Manager preparation contract, including scope, batches, permission reuse, Core approval points, and manual verification gates.
 - Locked the planned Database Upgrade / Migration System concept and the post-M3.3 Admin UX Refinement 1 checkpoint without starting either implementation.
 
@@ -38,7 +40,8 @@
 
 ### Changed
 
-- Completed M3.2 Batch 2 Manager Domain & Field Contract with 94 focused assertions passing; Batch 3 UI wiring has not started.
+- Completed M3.2 Batch 3 Admin Routes and Presentation while preserving configured Admin paths, `admin.access`, `settings.update`, CSRF, PRG, the Admin shell, and specialized Logo/Favicon workflows.
+- Preserved the singular Settings domain and excluded generic JSON plus Logo/Favicon descriptors from dynamic scalar rendering without Core, schema, permission, dependency, or Batch 2 domain changes.
 - Moved the existing fixed Admin Settings route/view ownership from Core to `settings-manager` without changing URLs, `settings.update`, CSRF, validation-before-write, transactions, Admin shell errors, or Logo/Favicon behavior.
 - Added `settings-manager` to fresh-install baseline module enablement and the release package; existing installations continue to use explicit ModuleManager install/enable lifecycle operations.
 - Recorded M3.1 Users & Access as merged to `main` through `5c4cf8c` and activated M3.2 preparation without starting Batch 1 runtime work.
@@ -68,6 +71,8 @@
 
 ### Verification
 
+- M3.2 Batch 3 integration and presentation suites pass 85 focused assertions (46 integration and 39 presentation); focused M3.2 coverage through Batches 1–3 totals 221 assertions.
+- Relevant M2.1 Admin UI, M2.3 Branding/Site Asset, and M2.3 unified regressions pass after Batch 3.
 - M3.2 Batch 2 domain and integration suites pass 94 focused assertions; Batch 1 Settings suites and directly relevant Branding, Settings, and Site Asset regressions pass.
 - M3.2 Batch 1 definition and integration suites pass 42 focused assertions; relevant Admin UI, Settings, Site Asset, M3.1 compatibility, package-content, and isolated clean-install verification pass.
 - M3.1 Batches 1–4 pass 487 focused assertions; the access-denied recovery regression adds 17 assertions for 504 focused assertions total.
