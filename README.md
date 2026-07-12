@@ -22,15 +22,15 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-M3 Core Modules. M3.1 Users & Access is complete on its milestone branch and awaits the user-owned commit, push, and merge workflow.
+M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is in preparation and runtime implementation has not started.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is M3.1 Batch 5 completion audit. M3.2 is not active; Post-M3.1 Roadmap Sync is the next checkpoint after M3.1 is merged to `main`.
+The active checkpoint is the completed Post-M3.1 Roadmap Sync and M3.2 Settings Manager scope/batch lock.
 
-M2 Platform Capabilities are complete. Copot v0.12.0 remains the stable released Webcore baseline. M3.1 is implemented but is not yet merged to `main` or included in a new release.
+M2 Platform Capabilities are complete. Copot v0.12.0 remains the stable released Webcore baseline. M3.1 is merged but is not yet included in a new release.
 
 The approved M3 sequence is:
 
@@ -50,7 +50,7 @@ M3.11 Form Manager
 
 The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
 
-M3.1 Users & Access completed its five approved batches. Post-M3.1 Roadmap Sync remains a separate checkpoint before M3.2 preparation or batch locking.
+M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 implementation remains gated by its preparation contract in `docs/17_m3_2_settings_manager_contract.md`.
 
 M2.2 completion record:
 

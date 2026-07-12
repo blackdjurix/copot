@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation is complete, and M3.1 Users & Access completed its five batches on the milestone branch pending the user-owned Git workflow.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync is complete, and M3.2 Settings Manager is in preparation.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -694,7 +694,7 @@ M3.1 testing must include focused domain tests, security tests, compatibility/in
 
 #### M3.1 Completion Record
 
-M3.1 Users & Access completed all five approved batches on `feature/m3.1-users-access`. It is not yet merged to `main` or included in a new release, and M3.2 is not active.
+M3.1 Users & Access completed all five approved batches and merged to `main` through `5c4cf8c`. Local XAMPP runtime-mirror workflow commit `35863e9` followed on `main`. M3.1 is not yet included in a new release.
 
 The locked M3.1 permission slugs are `users.read`, `users.create`, `users.update`, `users.password.manage`, `users.status.manage`, `roles.read`, `roles.manage`, `users.roles.manage`, and `roles.permissions.manage`.
 
@@ -712,7 +712,23 @@ Focused M3.1 Batches 1–4 pass 487 assertions. The recovery regression adds 17 
 
 Non-blocking Admin UX improvements remain deferred: normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical slugs from the default UI, add global floating notifications while retaining inline field errors, explain effective permissions for multi-role users, and provide reusable dashboard block spacing. Gather patterns from M3.2 and M3.3, then schedule Admin UX Refinement 1 after M3.3 and before M3.4.
 
-After the user-owned M3.1 commit, push, and merge to `main`, the next separate checkpoint is Post-M3.1 Roadmap Sync. It must occur before M3.2 preparation or batch locking; it is not part of this Batch 5 closure.
+Post-M3.1 Roadmap Sync is complete. It preserves the approved M3 sequence, locks the planned Database Upgrade / Migration System concept, and activates M3.2 preparation without starting runtime implementation.
+
+#### Database Upgrade / Migration System Checkpoint
+
+Status: planned. Concept: locked. Implementation: not started and excluded from M3.2.
+
+Fresh installs use the canonical `database/schema.sql`; existing installations currently use ordered SQL artifacts in `database/upgrades/`. The planned system will own ordered execution, migration history, idempotency, explicit failure behavior, supported transaction boundaries, and clear Core/module migration ownership. Implement it before a milestone introduces the second cross-module upgrade dependency or before a third independently ordered upgrade artifact is accepted, whichever comes first.
+
+#### Admin UX Refinement 1
+
+Status: planned; implementation not started; non-blocking for M3.1.
+
+M3.2 and M3.3 collect management-UI patterns. After M3.3 and before M3.4, Admin UX Refinement 1 will normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical permission slugs by default, add floating global notifications while preserving inline validation, clarify effective permissions for multi-role users, and establish reusable dashboard block spacing.
+
+#### M3.2 Settings Manager Preparation
+
+M3.2 Settings Manager is the next milestone in the approved sequence. Preparation, scope, permission reuse, Core approval points, five-batch plan, acceptance criteria, and manual verification are locked in `docs/17_m3_2_settings_manager_contract.md`. The exact five-batch lock refines the earlier four-batch planning envelope because the existing Core route/definition ownership transition needs its own approval and baseline gate before domain, UI, hardening, and closure work. The approved milestone sequence is unchanged, and Batch 1 implementation has not started.
 
 Branch strategy:
 
@@ -744,6 +760,7 @@ Core Modules:
 1. M3.1 Users & Access
 2. M3.2 Settings Manager
 3. M3.3 Module Manager
+   * Admin UX Refinement 1 checkpoint follows M3.3 and precedes M3.4.
 4. M3.4 Content Manager
 5. M3.5 Taxonomy Manager
 6. M3.6 Navigation Manager

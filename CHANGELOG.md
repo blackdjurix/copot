@@ -4,6 +4,9 @@
 
 ### Added
 
+- Added the Post-M3.1 Roadmap Sync and M3.2 Settings Manager preparation contract, including scope, batches, permission reuse, Core approval points, and manual verification gates.
+- Locked the planned Database Upgrade / Migration System concept and the post-M3.3 Admin UX Refinement 1 checkpoint without starting either implementation.
+
 - Added M3.1 Users & Access administrator workflows for Users, Roles, user-role assignments, role-permission assignments, active/inactive status, and administrator-managed passwords using the existing authorization model.
 - Added nine M3.1 runtime permissions, canonical fresh-install provisioning, and the controlled idempotent existing-installation upgrade artifact.
 - Added configured-Admin-path, CSRF, escaping, compatibility, administrator-invariant, and access-denied logout recovery coverage.
@@ -30,6 +33,8 @@
 - Added Git ignore coverage for runtime `storage/site-assets/` output created by Site Asset upload and manual verification flows.
 
 ### Changed
+
+- Recorded M3.1 Users & Access as merged to `main` through `5c4cf8c` and activated M3.2 preparation without starting Batch 1 runtime work.
 
 - Completed all five M3.1 batches on the milestone branch without activating M3.2 or creating a new release.
 - Preserved standalone `403` denial for authenticated users without `admin.access` while adding a CSRF-protected POST Sign out recovery action; guest standalone errors remain unchanged.
