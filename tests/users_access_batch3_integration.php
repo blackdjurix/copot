@@ -581,6 +581,20 @@ try {
 
     $inactiveCapableId = $createActor('InactiveCapable', $required);
     $db->prepare("UPDATE users SET status='inactive' WHERE id=?")->execute([$inactiveCapableId]);
+    $existingCapableStatement = $db->prepare("SELECT users.id FROM users
+        JOIN user_roles ON user_roles.user_id=users.id
+        JOIN role_permissions ON role_permissions.role_id=user_roles.role_id
+        JOIN permissions ON permissions.id=role_permissions.permission_id
+        WHERE users.status='active' AND users.id<>? AND permissions.slug IN ({$recoveryPlaceholders})
+        GROUP BY users.id
+        HAVING COUNT(DISTINCT permissions.slug)=?");
+    $existingCapableStatement->execute([$actors['full'], ...$recovery, count($recovery)]);
+    $existingCapableIds = array_map('intval', $existingCapableStatement->fetchAll(PDO::FETCH_COLUMN));
+    if ($existingCapableIds !== []) {
+        $placeholders = implode(',', array_fill(0, count($existingCapableIds), '?'));
+        $db->prepare("UPDATE users SET status='inactive' WHERE id IN ({$placeholders})")
+            ->execute($existingCapableIds);
+    }
     $switch($actors['user_roles']);
     $finalInvariant = $request('POST', $url('users/' . $actors['full'] . '/roles'), $csrf(['role_ids_present' => '1']));
     $assert($status($finalInvariant) === 422
@@ -588,6 +602,10 @@ try {
         'Inactive capable candidate incorrectly satisfied final active administrator invariant.');
     $assert($userRoleSet($actors['full']) === $fullUserRolesBefore,
         'Final active administrator invariant failure changed persisted roles.');
+    if ($existingCapableIds !== []) {
+        $db->prepare("UPDATE users SET status='active' WHERE id IN ({$placeholders})")
+            ->execute($existingCapableIds);
+    }
 
     $recoveryIds = array_map(static fn (string $permission) => $permissionIds[$permission], $recovery);
     $split = intdiv(count($recoveryIds), 2);

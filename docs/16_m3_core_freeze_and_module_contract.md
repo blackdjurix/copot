@@ -643,11 +643,11 @@ These workflow permissions supplement, rather than replace, the configured base 
 
 ### Permission Provisioning Boundary
 
-For fresh installations, the canonical fresh-install schema must seed all nine M3.1 runtime permissions and the initial mappings from the seeded `admin` role to all nine permissions. This Batch 1 documentation closure does not modify the schema.
+For fresh installations, the canonical `database/schema.sql` seeds all nine M3.1 runtime permissions and the initial mappings from the seeded `admin` role to all nine permissions.
 
-Existing installations must use an explicit, controlled, idempotent, operator-run SQL upgrade step delivered as an M3.1 upgrade artifact when runtime implementation requires provisioning. The artifact must be duplicate-safe and rerunnable, add missing runtime permission rows, add missing initial `admin` role mappings, and expose failure rather than silently claiming success.
+Existing installations use the explicit, controlled, idempotent, operator-run `database/upgrades/m3_1_users_access_permissions.sql`. The artifact is duplicate-safe and rerunnable, adds missing runtime permission rows and initial `admin` role mappings, and exposes failure rather than silently claiming success.
 
-Provisioning must not run automatically during request bootstrap, module discovery, module installation, or module enablement. It must not expand the fresh-install-only Installer, add a generic migration runner, or change `ModuleManager` or `ModuleRepository`. No SQL upgrade artifact is created during Batch 1 documentation closure.
+The SQL artifact does not install or enable `users-access`. Those lifecycle operations remain owned by the existing `ModuleManager` flow. Provisioning must not run automatically during request bootstrap, module discovery, module installation, or module enablement, and it does not expand the fresh-install-only Installer or add a generic migration runner.
 
 ### Administrator Capability and Lockout Invariant
 
@@ -697,7 +697,17 @@ The completion gate must run the focused M3.1 suite and the complete existing pl
 
 `tests/platform_hardening_m2_4_regression.php` also passes. Its unified chain continues to cover M2.4 -> M2.3 -> M2.2 -> M2.1.
 
-This evidence validates consumption of the existing Auth, User, UserProvider, PasswordHasher, PermissionChecker, Application wiring, Admin guard, and shared role/permission semantics without an approved Core change or structural schema change. Batch 1 remains at its closure gate; Batch 2 requires separate approval.
+This evidence validates consumption of the existing Auth, User, UserProvider, PasswordHasher, PermissionChecker, Application wiring, Admin guard, and shared role/permission semantics without a structural schema change.
+
+### M3.1 Completion Evidence
+
+All five M3.1 batches are complete on the milestone branch. Focused Batches 1–4 pass 487 assertions, and the authenticated access-denied logout recovery regression adds 17 assertions for 504 focused assertions total. The complete M2.4 unified platform chain and manual Admin verification pass.
+
+The only approved Core touchpoint added during completion is recovery from base Admin permission denial: an authenticated user without `admin.access` still receives a standalone `403`, with a CSRF-protected POST Sign out action using the configured Admin path. Guest standalone errors remain without authenticated recovery actions. Batch 3's final-administrator integration fixture is transactionally isolated from active administrator-capable users already present in the database; runtime capability and invariant semantics are unchanged.
+
+M3.1 remains unmerged and unreleased until the user-owned Git workflow completes. M3.2 is not active. Post-M3.1 Roadmap Sync is the next separate checkpoint after merge and before M3.2 preparation or batch locking.
+
+Deferred non-blocking Admin UX work includes permission checkbox sizing/alignment, permission grouping, hiding technical slugs by default, global floating notifications while preserving inline field errors, effective-permission explanation for multi-role users, and reusable dashboard block spacing. Gather M3.2/M3.3 patterns and schedule Admin UX Refinement 1 after M3.3 and before M3.4.
 
 ### M3.1 Branch Strategy
 

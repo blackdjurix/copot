@@ -22,15 +22,15 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-M3 Preparation.
+M3 Core Modules. M3.1 Users & Access is complete on its milestone branch and awaits the user-owned commit, push, and merge workflow.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is Stage 3: Final Review + Entry Audit.
+The active checkpoint is M3.1 Batch 5 completion audit. M3.2 is not active; Post-M3.1 Roadmap Sync is the next checkpoint after M3.1 is merged to `main`.
 
-M2 Platform Capabilities are complete. Copot v0.12.0 is released as the stable Webcore baseline. M3 runtime implementation has not started.
+M2 Platform Capabilities are complete. Copot v0.12.0 remains the stable released Webcore baseline. M3.1 is implemented but is not yet merged to `main` or included in a new release.
 
 The approved M3 sequence is:
 
@@ -50,9 +50,7 @@ M3.11 Form Manager
 
 The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
 
-M3.1 target: Users & Access.
-
-Stage 3 is performing the final authoritative-document review and M3.1 entry-contract audit. M3.1 runtime implementation has not started and must not begin until Stage 3 passes.
+M3.1 Users & Access completed its five approved batches. Post-M3.1 Roadmap Sync remains a separate checkpoint before M3.2 preparation or batch locking.
 
 M2.2 completion record:
 
@@ -85,6 +83,12 @@ Included so far:
 - Password hashing with PHP `PASSWORD_DEFAULT`
 - Basic user object and provider
 - Basic roles and permissions foundation
+- Administrator-facing Users and Roles management
+- User creation, identity editing, administrator-managed password changes, and active/inactive status controls
+- User-role and role-permission desired-final-set assignments with multi-role effective permission unions
+- Self-lockout and final active administrator-capable protections
+- Permission-aware Users & Access routes and Admin navigation on the configured Admin path
+- Users & Access CSRF, escaping, Admin error, and Content/Taxonomy/Settings compatibility hardening
 - Login and logout routes
 - Protected milestone test route
 - Local module discovery through `modules/*/module.json`
@@ -154,7 +158,6 @@ Included so far:
 
 Not included yet:
 
-- User management UI
 - Module management UI
 - Marketplace
 - Password reset
@@ -173,7 +176,6 @@ Not included yet:
 - Theme settings UI
 - Full admin theme or skin system
 - Admin navigation manager
-- Role/permission UI
 - Analytics
 - Full Internal Dashboard
 - Database-backed dashboard customization
@@ -250,7 +252,7 @@ The schema creates:
 - `taxonomy_assignments`
 - `settings`
 
-The schema seeds the `admin` and `user` roles plus the `protected.access`, `admin.access`, basic content permissions, basic taxonomy permissions, and `settings.update`. It does not seed a default admin user or default setting rows.
+The schema seeds the `admin` and `user` roles plus the `protected.access`, `admin.access`, basic content permissions, basic taxonomy permissions, `settings.update`, and the nine M3.1 Users & Access permissions with initial `admin` role mappings. It does not seed a default admin user or default setting rows.
 
 ## Manual Default Theme
 
@@ -325,6 +327,14 @@ For an existing local database created before M1.5, apply the `content` table an
 For an existing local database created before M1.6, apply the taxonomy table, seed, permission, and admin role mapping statements from `database/schema.sql`, or recreate the local database from the full schema if that is acceptable for your test data.
 
 For an existing local database created before M1.7, apply the `settings` table plus the `settings.update` permission and admin role mapping statements from `database/schema.sql`. The table stores overrides only; defaults remain in Core definitions.
+
+For an existing installation entering M3.1, run the controlled idempotent operator upgrade:
+
+```text
+database/upgrades/m3_1_users_access_permissions.sql
+```
+
+The upgrade provisions the nine runtime permissions and seeded `admin` role mappings. It does not register or enable the module. Install and enable `users-access` separately through the existing `ModuleManager` lifecycle flow. Runtime authorization continues to use `permissions`, `role_permissions`, and `user_roles`; module metadata does not create a second authorization system.
 
 ## Admin Shell and M2.1 Direction
 
@@ -443,7 +453,7 @@ Batch 3 adds strictly validated internal `site.logo` and `site.favicon` JSON des
 
 ## M2.4 Platform Hardening
 
-M2.4 implementation is complete and released in v0.12.0. Batches 1–6 are complete, the unified regression gate is included, and applicable local/manual verification passes. This closed the lean M2 Platform Capabilities implementation phase; M3 runtime implementation has not started and M3 Preparation is active.
+M2.4 implementation is complete and released in v0.12.0. Batches 1–6 are complete, the unified regression gate is included, and applicable local/manual verification passes. This closed the lean M2 Platform Capabilities implementation phase; M3 Preparation subsequently completed, and M3.1 Users & Access is now complete on its milestone branch.
 
 The locked scope covers:
 

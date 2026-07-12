@@ -49,7 +49,11 @@ final class AdminErrorRenderer
             if (!$user?->can($this->basePermission)) {
                 $this->discardOutputBuffersTo($initialOutputLevel);
 
-                return $this->standalone($status, $reference);
+                return $this->standalone(
+                    $status,
+                    $reference,
+                    $status === 403 && $user !== null ? $this->csrf->token() : null
+                );
             }
 
             $contract = $this->contract($status);
@@ -95,13 +99,23 @@ final class AdminErrorRenderer
         return $path === $base || str_starts_with($path, $base . '/');
     }
 
-    private function standalone(int $status, ?string $reference): Response
+    private function standalone(int $status, ?string $reference, ?string $logoutToken = null): Response
     {
         if ($status === 500 || $status === 503) {
             return ServerErrorResponse::response($status, $reference);
         }
 
         $contract = $this->contract($status);
+        $logoutForm = '';
+
+        if ($status === 403 && $logoutToken !== null) {
+            $logoutForm = '<form method="post" action="'
+                . htmlspecialchars($this->adminUrl->childUrl('logout'), ENT_QUOTES, 'UTF-8')
+                . '"><input type="hidden" name="_token" value="'
+                . htmlspecialchars($logoutToken, ENT_QUOTES, 'UTF-8')
+                . '"><button type="submit">Sign out</button></form>';
+        }
+
         $html = '<!doctype html><html lang="en"><head><meta charset="utf-8">'
             . '<meta name="viewport" content="width=device-width, initial-scale=1">'
             . '<title>' . htmlspecialchars($contract['title'], ENT_QUOTES, 'UTF-8') . '</title>'
@@ -109,7 +123,7 @@ final class AdminErrorRenderer
             . htmlspecialchars($contract['heading'], ENT_QUOTES, 'UTF-8')
             . '</h1><p>'
             . htmlspecialchars($contract['message'], ENT_QUOTES, 'UTF-8')
-            . '</p></main></body></html>';
+            . '</p>' . $logoutForm . '</main></body></html>';
 
         return Response::content($html, $status, [
             'Content-Type' => 'text/html; charset=UTF-8',

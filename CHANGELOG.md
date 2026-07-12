@@ -4,6 +4,10 @@
 
 ### Added
 
+- Added M3.1 Users & Access administrator workflows for Users, Roles, user-role assignments, role-permission assignments, active/inactive status, and administrator-managed passwords using the existing authorization model.
+- Added nine M3.1 runtime permissions, canonical fresh-install provisioning, and the controlled idempotent existing-installation upgrade artifact.
+- Added configured-Admin-path, CSRF, escaping, compatibility, administrator-invariant, and access-denied logout recovery coverage.
+
 - Added the M3 Prep Stage 3 Final Review + Entry Audit remediation contract, including authoritative-document cleanup targets, M3.1 Users & Access scope boundaries, Core touchpoint rules, test strategy, branch strategy, entry criteria, and acceptance criteria.
 - Added the approved M3.1-M3.11 sequencing lock with milestone dependency rationale, planning batch envelopes, risk levels, just-in-time batch locking, parallelization guardrails, and explicit sequence change control.
 - Added the Pre-M3 Core Freeze and Module Contract to lock post-v0.12.0 Webcore maintenance rules, module ownership boundaries, dependency direction, Navigation/Media architecture decisions, repository strategy, and M3 entry criteria.
@@ -27,6 +31,10 @@
 
 ### Changed
 
+- Completed all five M3.1 batches on the milestone branch without activating M3.2 or creating a new release.
+- Preserved standalone `403` denial for authenticated users without `admin.access` while adding a CSRF-protected POST Sign out recovery action; guest standalone errors remain unchanged.
+- Isolated the Batch 3 final-administrator integration fixture from existing active administrator-capable database users without changing runtime invariant semantics.
+
 - Advanced M3 Prep to Stage 3 Final Review + Entry Audit after completing the Stage 2 sequencing lock, without starting M3 runtime implementation.
 - Advanced M3 Prep to Stage 2 M3 Sequencing Lock and confirmed Users & Access as the M3.1 entry target without starting runtime implementation.
 - Started M3 Prep Stage 1 Governance + Architecture Lock without starting M3 runtime implementation.
@@ -47,6 +55,9 @@
 - Recorded M2.4 implementation as complete and ready for merge, tag, and release preparation, closing the lean M2 Platform Capabilities implementation phase while leaving M3 unstarted.
 
 ### Verification
+
+- M3.1 Batches 1–4 pass 487 focused assertions; the access-denied recovery regression adds 17 assertions for 504 focused assertions total.
+- The complete M2.4 unified platform regression chain and M3.1 manual Admin verification pass.
 
 - M3 Prep Stage 3 remediation remains documentation-only and preserves the released v0.12.0 runtime, Stage 1 architecture contract, and Stage 2 sequencing governance.
 - M3 Prep Stage 2 changes remain documentation-only and preserve the Stage 1 architecture contract while locking sequencing governance.
