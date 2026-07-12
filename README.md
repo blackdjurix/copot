@@ -209,11 +209,24 @@ DocumentRoot: <repo>/public
 URL: http://copot.test
 ```
 
-Example local path:
+Example local Git clone:
 
 ```text
-DocumentRoot: K:\My Drive\GitHub\copot\public
+C:\Git\copot
 ```
+
+For XAMPP development, keep the Git clone on local storage and use a separate
+one-way runtime mirror such as `C:\xampp\htdocs\copot.test`. Synchronize with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools\sync-local-xampp.ps1
+```
+
+Use `-DryRun` to preview the copy. Edit and commit only in the local Git clone;
+never edit or commit from the htdocs mirror. GitHub is the source of truth
+between machines, and each machine should use its own local clone. The sync
+preserves destination-local `.env`/`.env.*`, `auth.json`, and runtime state in
+`storage` while excluding Git metadata; it never copies the mirror back.
 
 Expected public output:
 

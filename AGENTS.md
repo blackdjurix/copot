@@ -71,6 +71,14 @@ M2.4 Platform Hardening and Post-M2 Distribution & Release Preparation are compl
 
 ## Execution Workflow Rules
 
+### Local Runtime Mirror
+
+* Codex and developers work only in a local Git clone; a local path such as `C:\Git\copot` is an example, not a project architecture requirement.
+* A XAMPP htdocs copy is a runtime mirror, not an active Git worktree.
+* Synchronization is one-way from the Git clone to the runtime mirror through `tools/sync-local-xampp.ps1`.
+* Never edit source, run commits, or copy changes back from the runtime mirror.
+* GitHub remains the source of truth between machines, and every machine uses its own local clone.
+
 * Use one Codex session per minor milestone by default.
 * If a batch becomes unusually large or its working context becomes too heavy, stop at a stable checkpoint and consider continuing in a new Codex session.
 * Git and GitHub operations are user-owned.
