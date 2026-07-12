@@ -2,7 +2,7 @@
 
 ## Status
 
-M3.2 Settings Manager preparation and Batch 1 are complete. Batch 1 reached its implementation no-return gate with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 is not active.
+M3.2 Settings Manager preparation and Batches 1–2 are complete. Batch 1 is committed and pushed at baseline commit `31d540a` and reached its implementation No-Return Point with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 Manager Domain & Field Contract passes its focused implementation, adversarial review, remediation, and completion gates with 94 assertions. Batch 3 has not started.
 
 The exact five-batch structure refines the Stage 2 four-batch planning envelope using current repository evidence. The additional boundary separates approval of existing Core Settings route/definition ownership from domain behavior, Admin integration, hardening, and completion; it does not change the approved M3 sequence.
 
@@ -109,7 +109,7 @@ Non-goals: new fields, UI redesign, schema changes, migration runner, Admin UX r
 
 Core touchpoint: definition discovery and route ownership only if separately approved.
 
-Batch 1 result: complete. The module manifest, lifecycle-owned routes/view, deterministic registered-only discovery APIs, focused 42-assertion baseline, relevant platform compatibility, package-content coverage, and isolated clean-install verification pass. The fixed form remains intentionally compatible; dynamic manager field mapping belongs to later batches. The no-return gate is reached, and Batch 2 remains inactive.
+Batch 1 result: complete, committed, and pushed at baseline commit `31d540a`. The module manifest, lifecycle-owned routes/view, deterministic registered-only discovery APIs, focused 42-assertion baseline, relevant platform compatibility, package-content coverage, and isolated clean-install verification pass. The fixed form remains intentionally compatible; dynamic manager field presentation belongs to Batch 3. The No-Return Point is reached. Batch 2 is complete, and Batch 3 has not started.
 
 ### Batch 2 — Manager Domain and Field Contract
 
@@ -124,6 +124,8 @@ Validation: domain tests for grouping, type mapping, validation, unknown definit
 Non-goals: routes/views, module-contributed sections, secrets, import/export.
 
 Core touchpoint: none expected beyond the approved Batch 1 contract.
+
+Batch 2 result: complete and pass. A validated module-local policy owns editability and presentation metadata for the six approved scalar definitions. Reusable deterministic section and field contracts map string, integer, float, and boolean types while generic JSON plus specialized Logo/Favicon descriptors remain excluded. The manager aggregates controlled validation errors, distinguishes optional omission from explicit empty input, validates all submitted/normalized candidates before persistence, and writes only valid deterministic candidates through a root transaction or caller-safe nested savepoint. Validation or persistence failure preserves prior stored values. Focused domain and integration coverage passes 94 assertions; Batch 1 Settings and directly relevant Branding, Settings, and Site Asset regressions pass. No Core, route, view, schema, SQL, runtime permission, or dependency change was introduced, and no Batch 3 UI wiring is present.
 
 ### Batch 3 — Admin Routes and Presentation
 

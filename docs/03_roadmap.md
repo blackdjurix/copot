@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and M3.2 preparation are complete. M3.2 Batch 1 reached its ownership-foundation no-return gate; Batch 2 is not active.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and M3.2 preparation are complete. M3.2 Batches 1 and 2 are complete; Batch 3 has not started.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -728,7 +728,7 @@ M3.2 and M3.3 collect management-UI patterns. After M3.3 and before M3.4, Admin 
 
 #### M3.2 Settings Manager
 
-M3.2 Settings Manager is the active milestone in the approved sequence. Preparation, scope, permission reuse, Core approval points, five-batch plan, acceptance criteria, and manual verification are locked in `docs/17_m3_2_settings_manager_contract.md`. The exact five-batch lock refines the earlier four-batch planning envelope because the existing Core route/definition ownership transition needed its own approval and baseline gate before domain, UI, hardening, and closure work. Batch 1 is complete: the manager owns the existing configured-path Admin Settings route/view boundary, `SettingsService` exposes registered-only deterministic read-only discovery, focused coverage passes 42 assertions, and relevant compatibility plus clean-install gates pass. Batch 2 is not active.
+M3.2 Settings Manager is the active milestone in the approved sequence. Exact scope, permission reuse, Core approval points, five-batch plan, acceptance criteria, and manual verification remain authoritative in `docs/17_m3_2_settings_manager_contract.md`. The exact five-batch lock refines the earlier four-batch planning envelope because the existing Core route/definition ownership transition needed its own approval and baseline gate before domain, UI, hardening, and closure work. Batch 1 is complete and its no-return gate is reached: the manager owns the existing configured-path Admin Settings route/view boundary, `SettingsService` exposes registered-only deterministic read-only discovery, focused coverage passes 42 assertions, and relevant compatibility plus clean-install gates pass. Batch 2 Manager Domain & Field Contract is complete: module-local policy and reusable deterministic section/typed-field contracts expose only approved registered scalar definitions, exclude generic JSON and Site Asset descriptors, aggregate validation before writes, preserve optional omissions, and provide atomic root/nested save behavior. Its 94 focused assertions and directly relevant regressions pass. Batch 3 has not started; the approved M3 sequence is unchanged, no new Core touchpoint is approved, and M3.3 has not started.
 
 Branch strategy:
 

@@ -20,11 +20,11 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 Current milestone: M3.2 Settings Manager.
 
-Current work: M3.2 Batch 1 — Settings Manager Contract and Ownership Foundation completion review.
+Current work: M3.2 Batch 2 — Manager Domain & Field Contract completion review.
 
 Primary goal:
 
-Close the Batch 1 no-return gate after establishing manager-owned Settings routes/views and generic read-only definition discovery, without starting Batch 2.
+Close the Batch 2 completion gate after verifying the manager-local policy, reusable section/field contracts, typed scalar mapping, validation aggregation, and atomic multi-field save orchestration without starting Batch 3.
 
 Current state:
 
@@ -41,7 +41,12 @@ Current state:
 * The complete M2.4 unified platform regression chain passes.
 * Post-M3.1 Roadmap Sync is complete through this preparation checkpoint.
 * M3.2 Settings Manager preparation is complete.
-* M3.2 Batch 1 implementation is complete pending its user-owned Git checkpoint; Batch 2 is not active.
+* M3.2 Batch 1 is complete, committed, and pushed at baseline commit `31d540a`.
+* The M3.2 Batch 1 No-Return Point is reached.
+* M3.2 Batch 2 — Manager Domain & Field Contract is complete and passes its focused completion review; Batch 3 has not started.
+* The module-local manager policy exposes only six registered scalar definitions, maps reusable deterministic section/field contracts, and excludes generic JSON plus specialized Logo/Favicon definitions.
+* Batch 2 aggregates controlled validation errors, preserves optional-field omission semantics, validates every candidate before writing, and saves deterministic candidates through a root transaction or caller-safe nested savepoint.
+* Batch 2 focused domain and integration coverage passes 94 assertions; Batch 1 Settings contract/integration and directly relevant Branding, Settings, and Site Asset regressions also pass.
 * `SettingsService::definitions()` and `definitionGroups()` expose deterministic, registered-only, read-only definition discovery without exposing the registry or database.
 * Admin Settings navigation, GET/POST, fixed Logo/Favicon routes, and the fixed compatibility view are owned by the lifecycle-enabled `settings-manager` module; `routes/admin.php` and Core views no longer duplicate that ownership.
 * Fresh installation enables `settings-manager` with the existing baseline ModuleManager flow. Existing installations install and enable it through the same ModuleManager lifecycle; no schema change or upgrade SQL is required.
@@ -49,6 +54,7 @@ Current state:
 * The Database Upgrade / Migration System concept is locked as planned but remains unimplemented and excluded from M3.2.
 * Admin UX Refinement 1 remains planned after M3.3 and before M3.4.
 * The post-v0.12.0 Core freeze remains in force.
+* M3.2 Batch 2 adds no Core, route, view, schema, SQL, migration runner, runtime permission, or dependency change and does not wire the dynamic Settings UI.
 
 Latest release: v0.12.0.
 
