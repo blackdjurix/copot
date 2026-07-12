@@ -101,8 +101,8 @@ $assert(!str_contains($emptyHtml, 'rel="icon"'), 'Unset Favicon still rendered a
 $assert(!str_contains($emptyHtml, 'site-header__logo'), 'Unset Logo still rendered an image.');
 $assert(str_contains($emptyHtml, 'Default frontend theme rendering is active.'), 'Empty Tagline fallback is missing.');
 
-$adminRoutes = (string) file_get_contents($basePath . '/routes/admin.php');
-$settingsView = (string) file_get_contents($basePath . '/resources/views/admin/settings.php');
+$adminRoutes = (string) file_get_contents($basePath . '/modules/settings-manager/routes.php');
+$settingsView = (string) file_get_contents($basePath . '/modules/settings-manager/views/admin/settings.php');
 $requestSource = (string) file_get_contents($basePath . '/app/Core/Request.php');
 $rendererSource = (string) file_get_contents($basePath . '/app/Core/ViewRenderer.php');
 $applicationSource = (string) file_get_contents($basePath . '/app/Core/Application.php');

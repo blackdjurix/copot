@@ -706,11 +706,11 @@ All five M3.1 batches are complete on the milestone branch. Focused Batches 1–
 
 The only approved Core touchpoint added during completion is recovery from base Admin permission denial: an authenticated user without `admin.access` still receives a standalone `403`, with a CSRF-protected POST Sign out action using the configured Admin path. Guest standalone errors remain without authenticated recovery actions. Batch 3's final-administrator integration fixture is transactionally isolated from active administrator-capable users already present in the database; runtime capability and invariant semantics are unchanged.
 
-M3.1 merged to `main` through `5c4cf8c` and remains unreleased. Post-M3.1 Roadmap Sync is complete. M3.2 Settings Manager preparation is active, while Batch 1 runtime implementation remains unstarted.
+M3.1 merged to `main` through `5c4cf8c` and remains unreleased. Post-M3.1 Roadmap Sync and M3.2 preparation are complete. M3.2 Batch 1 reached its no-return gate; Batch 2 is not active.
 
 Deferred non-blocking Admin UX work includes permission checkbox sizing/alignment, permission grouping, hiding technical slugs by default, global floating notifications while preserving inline field errors, effective-permission explanation for multi-role users, and reusable dashboard block spacing. Gather M3.2/M3.3 patterns and schedule Admin UX Refinement 1 after M3.3 and before M3.4.
 
-M3.2-specific scope, existing Settings foundation evidence, permission reuse, Core approval points, batch gates, and manual verification are authoritative in `docs/17_m3_2_settings_manager_contract.md`. The Core freeze remains active: preparation does not approve implementation changes to `Application`, `SettingsService`, `SettingsRegistry`, or Core Admin route ownership.
+M3.2-specific scope, existing Settings foundation evidence, permission reuse, Core approval points, batch gates, and manual verification are authoritative in `docs/17_m3_2_settings_manager_contract.md`. The Core freeze remains active. Batch 1 approved only deterministic registered-definition discovery through `SettingsService`, the Settings route/view ownership transition into `settings-manager`, and the required fresh-install/package lifecycle wiring. `Application`, `SettingsRegistry`, schema, runtime permissions, and generic module-loading semantics remain unchanged.
 
 ### M3.1 Branch Strategy
 

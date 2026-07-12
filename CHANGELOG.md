@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added the M3.2 Batch 1 Settings Manager module boundary with lifecycle-owned Admin Settings routes, navigation, fixed compatibility presentation, and Site Asset controls.
+- Added deterministic registered-only Settings definition discovery through the existing `SettingsService`, plus 42 focused contract and integration assertions.
 - Added the Post-M3.1 Roadmap Sync and M3.2 Settings Manager preparation contract, including scope, batches, permission reuse, Core approval points, and manual verification gates.
 - Locked the planned Database Upgrade / Migration System concept and the post-M3.3 Admin UX Refinement 1 checkpoint without starting either implementation.
 
@@ -34,6 +36,8 @@
 
 ### Changed
 
+- Moved the existing fixed Admin Settings route/view ownership from Core to `settings-manager` without changing URLs, `settings.update`, CSRF, validation-before-write, transactions, Admin shell errors, or Logo/Favicon behavior.
+- Added `settings-manager` to fresh-install baseline module enablement and the release package; existing installations continue to use explicit ModuleManager install/enable lifecycle operations.
 - Recorded M3.1 Users & Access as merged to `main` through `5c4cf8c` and activated M3.2 preparation without starting Batch 1 runtime work.
 
 - Completed all five M3.1 batches on the milestone branch without activating M3.2 or creating a new release.
@@ -61,6 +65,7 @@
 
 ### Verification
 
+- M3.2 Batch 1 definition and integration suites pass 42 focused assertions; relevant Admin UI, Settings, Site Asset, M3.1 compatibility, package-content, and isolated clean-install verification pass.
 - M3.1 Batches 1–4 pass 487 focused assertions; the access-denied recovery regression adds 17 assertions for 504 focused assertions total.
 - The complete M2.4 unified platform regression chain and M3.1 manual Admin verification pass.
 

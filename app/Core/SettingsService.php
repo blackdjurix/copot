@@ -77,6 +77,41 @@ class SettingsService
         return $this->registry->has($namespace, $key);
     }
 
+    /**
+     * @return list<SettingDefinition>
+     */
+    public function definitions(?string $namespace = null): array
+    {
+        $definitions = $namespace === null
+            ? array_merge(...array_map(
+                fn (string $registeredNamespace): array => $this->registry->all($registeredNamespace),
+                $this->registry->namespaces()
+            ))
+            : $this->registry->all($namespace);
+
+        usort(
+            $definitions,
+            static fn (SettingDefinition $left, SettingDefinition $right): int =>
+                $left->identifier() <=> $right->identifier()
+        );
+
+        return $definitions;
+    }
+
+    /**
+     * @return array<string, list<SettingDefinition>>
+     */
+    public function definitionGroups(): array
+    {
+        $groups = [];
+
+        foreach ($this->definitions() as $definition) {
+            $groups[$definition->namespace()][] = $definition;
+        }
+
+        return $groups;
+    }
+
     public function all(string $namespace): array
     {
         $values = [];

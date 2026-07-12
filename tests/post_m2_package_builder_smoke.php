@@ -354,6 +354,7 @@ foreach ([
     'config/app.php',
     'database/schema.sql',
     'modules/content/module.json',
+    'modules/settings-manager/module.json',
     'modules/taxonomy/module.json',
     'public/.htaccess',
     'public/index.php',

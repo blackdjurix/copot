@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync is complete, and M3.2 Settings Manager is in preparation.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and M3.2 preparation are complete. M3.2 Batch 1 reached its ownership-foundation no-return gate; Batch 2 is not active.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -712,7 +712,7 @@ Focused M3.1 Batches 1–4 pass 487 assertions. The recovery regression adds 17 
 
 Non-blocking Admin UX improvements remain deferred: normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical slugs from the default UI, add global floating notifications while retaining inline field errors, explain effective permissions for multi-role users, and provide reusable dashboard block spacing. Gather patterns from M3.2 and M3.3, then schedule Admin UX Refinement 1 after M3.3 and before M3.4.
 
-Post-M3.1 Roadmap Sync is complete. It preserves the approved M3 sequence, locks the planned Database Upgrade / Migration System concept, and activates M3.2 preparation without starting runtime implementation.
+Post-M3.1 Roadmap Sync is complete. It preserves the approved M3 sequence, locks the planned Database Upgrade / Migration System concept, and completed M3.2 preparation before Batch 1 began.
 
 #### Database Upgrade / Migration System Checkpoint
 
@@ -726,9 +726,9 @@ Status: planned; implementation not started; non-blocking for M3.1.
 
 M3.2 and M3.3 collect management-UI patterns. After M3.3 and before M3.4, Admin UX Refinement 1 will normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical permission slugs by default, add floating global notifications while preserving inline validation, clarify effective permissions for multi-role users, and establish reusable dashboard block spacing.
 
-#### M3.2 Settings Manager Preparation
+#### M3.2 Settings Manager
 
-M3.2 Settings Manager is the next milestone in the approved sequence. Preparation, scope, permission reuse, Core approval points, five-batch plan, acceptance criteria, and manual verification are locked in `docs/17_m3_2_settings_manager_contract.md`. The exact five-batch lock refines the earlier four-batch planning envelope because the existing Core route/definition ownership transition needs its own approval and baseline gate before domain, UI, hardening, and closure work. The approved milestone sequence is unchanged, and Batch 1 implementation has not started.
+M3.2 Settings Manager is the active milestone in the approved sequence. Preparation, scope, permission reuse, Core approval points, five-batch plan, acceptance criteria, and manual verification are locked in `docs/17_m3_2_settings_manager_contract.md`. The exact five-batch lock refines the earlier four-batch planning envelope because the existing Core route/definition ownership transition needed its own approval and baseline gate before domain, UI, hardening, and closure work. Batch 1 is complete: the manager owns the existing configured-path Admin Settings route/view boundary, `SettingsService` exposes registered-only deterministic read-only discovery, focused coverage passes 42 assertions, and relevant compatibility plus clean-install gates pass. Batch 2 is not active.
 
 Branch strategy:
 

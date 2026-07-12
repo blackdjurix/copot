@@ -126,7 +126,7 @@ The database form uses one stable-width action button. A successful asynchronous
 
 After the first administrator and initial Settings exist, the installer presents one explicit finalization action. A dedicated finalizer acquires the installer mutex and rechecks the canonical schema, exactly one active administrator assigned to the built-in `admin` role, and valid persisted overrides for Site Name, Site Tagline, Timezone, and Locale.
 
-Finalization registers and activates the discovered `default` frontend theme through `ThemeManager`, then installs and enables Content and Taxonomy through `ModuleManager`. Existing registry rows and already-enabled modules are reused so a retry after a partial failure does not create duplicate registry rows. Theme and module operations are not claimed to be fully transactional; a failure leaves no installation marker and a later retry resumes through the same idempotent lifecycle checks.
+Finalization registers and activates the discovered `default` frontend theme through `ThemeManager`, then installs and enables Content, Settings Manager, and Taxonomy through `ModuleManager`. Existing registry rows and already-enabled modules are reused so a retry after a partial failure does not create duplicate registry rows. Theme and module operations are not claimed to be fully transactional; a failure leaves no installation marker and a later retry resumes through the same idempotent lifecycle checks.
 
 `storage/installed.lock` is created atomically as the final operation only. Its version comes from the framework release source of truth, `Copot\Core\Version::CURRENT`. Once present and valid, `/install` is blocked by the pre-bootstrap gate and normal application requests proceed. Successful finalization redirects to the configured admin path rather than a hardcoded `/admin` URL.
 
@@ -167,7 +167,7 @@ The installer collects Site Name, optional Site Tagline, Timezone, and Locale on
 
 The default theme is local trusted project code. Installation must use `ThemeDiscovery`, `ThemeManager::register()`, and `ThemeManager::activate('default')` so registry metadata, relative path storage, layout validation, and single-active-theme rules remain centralized.
 
-Content and Taxonomy are local modules. Installation must use `ModuleManager::install()` followed by `enable()` for each module. M1.8 does not enable the Example module and does not add module selection UI.
+Content, Settings Manager, and Taxonomy are local baseline modules. Installation must use `ModuleManager::install()` followed by `enable()` for each module. M1.8 does not enable the Example module and does not add module selection UI.
 
 The finalizer verifies `default`, `content`, and `taxonomy` through existing discovery services before it creates the final marker. Missing or invalid local project metadata stops finalization without claiming installation success.
 

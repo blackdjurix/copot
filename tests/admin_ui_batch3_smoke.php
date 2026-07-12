@@ -26,11 +26,11 @@ $readFile = static function (string $path) use ($assert): string {
 };
 
 $cssFile = $basePath . '/public/admin-assets/css/admin.css';
-$settingsFile = $basePath . '/resources/views/admin/settings.php';
+$settingsFile = $basePath . '/modules/settings-manager/views/admin/settings.php';
 $dashboardFile = $basePath . '/resources/views/admin/dashboard.php';
 $loginFile = $basePath . '/resources/views/admin/login.php';
 $layoutFile = $basePath . '/resources/views/admin/layout.php';
-$routesFile = $basePath . '/routes/admin.php';
+$routesFile = $basePath . '/modules/settings-manager/routes.php';
 
 $css = $readFile($cssFile);
 $settingsSource = $readFile($settingsFile);
@@ -39,6 +39,7 @@ $loginSource = $readFile($loginFile);
 $layoutSource = $readFile($layoutFile);
 $routesSource = $readFile($routesFile);
 $view = new View($basePath . '/resources/views');
+$settingsView = new View($basePath . '/modules/settings-manager/views');
 
 $settingsData = [
     'formAction' => '/dapur/settings',
@@ -59,8 +60,8 @@ $settingsData = [
     'timeFormats' => ['H:i', 'h:i A'],
 ];
 
-$settingsSuccess = $view->render('admin/settings', $settingsData);
-$settingsError = $view->render('admin/settings', array_replace($settingsData, [
+$settingsSuccess = $settingsView->render('admin/settings', $settingsData);
+$settingsError = $settingsView->render('admin/settings', array_replace($settingsData, [
     'errors' => [
         'site_name' => 'Site Name is required.',
         'localization_timezone' => 'Invalid timezone.',
@@ -139,7 +140,8 @@ $assert(str_contains($login, 'method="post" action="/dapur"'), 'Admin login rout
 $assert(str_contains($login, 'name="_token" value="csrf-token"'), 'Admin login CSRF token rendering regressed.');
 $assert(str_contains($routesSource, "'settings.update'"), 'Settings permission guard is missing.');
 $assert(str_contains($routesSource, 'validateOrReject($request)'), 'Settings CSRF validation guard is missing.');
-$assert(str_contains($routesSource, 'validateCsrf('), 'Admin authentication CSRF validation guard is missing.');
+$adminRoutesSource = $readFile($basePath . '/routes/admin.php');
+$assert(str_contains($adminRoutesSource, 'validateCsrf('), 'Admin authentication CSRF validation guard is missing.');
 
 // Scope and dependency guards.
 $assert(!str_contains($settingsSource, '<style>'), 'Settings retains a page-local stylesheet instead of shared Admin patterns.');

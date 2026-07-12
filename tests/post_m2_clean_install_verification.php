@@ -299,7 +299,7 @@ try {
         $connection = $database->connection();
         $assert((int) $connection->query('SELECT COUNT(*) FROM users')->fetchColumn() === 1, 'Installed database must have one first administrator.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM themes WHERE theme_id = 'default' AND is_active = 1")->fetchColumn() === 1, 'Default theme must be active.');
-        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name IN ('content', 'taxonomy') AND status = 'enabled'")->fetchColumn() === 2, 'Content and Taxonomy modules must be enabled.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name IN ('content', 'settings-manager', 'taxonomy') AND status = 'enabled'")->fetchColumn() === 3, 'Content, Settings Manager, and Taxonomy modules must be enabled.');
         $assert($settings->get('site', 'name') === 'Copot D4 Clean Install', 'Initial site name must be persisted.');
 
         $app = require $installTarget . '/bootstrap/app.php';

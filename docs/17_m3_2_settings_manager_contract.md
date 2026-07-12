@@ -2,7 +2,7 @@
 
 ## Status
 
-M3.2 Settings Manager is in preparation. Scope and batch structure are locked by this document. Runtime implementation has not started.
+M3.2 Settings Manager preparation and Batch 1 are complete. Batch 1 reached its implementation no-return gate with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 is not active.
 
 The exact five-batch structure refines the Stage 2 four-batch planning envelope using current repository evidence. The additional boundary separates approval of existing Core Settings route/definition ownership from domain behavior, Admin integration, hardening, and completion; it does not change the approved M3 sequence.
 
@@ -23,17 +23,17 @@ Reusable capability already present:
 * `SettingsRepository` owns PDO-backed override lookup, namespace listing, upsert, existence checks, and deletion in the existing `settings` table.
 * `SettingsService` owns effective fallback, typed serialization/deserialization for string/integer/boolean/float/JSON, validation, set/delete, and controlled storage degradation.
 * `Application::settings()` exposes the service; runtime consumers already use effective values.
-* Core Admin routes provide configured-path Settings GET/POST, explicit field allowlisting, transactional validation-before-write, CSRF, Admin shell rendering, sanitized errors, and fixed Logo/Favicon controls.
-* `settings.update` is seeded, mapped to the seeded administrator role, used by navigation/routes, and covered by existing Admin and compatibility tests.
+* The `settings-manager` module now owns configured-path Settings GET/POST, explicit field allowlisting, transactional validation-before-write, CSRF, Admin shell rendering, sanitized errors, and fixed Logo/Favicon controls.
+* `SettingsService::definitions()` and `definitionGroups()` provide stable identifier ordering, namespace filtering/grouping, and registered-only `SettingDefinition` discovery without storage mutation.
+* `settings.update` is seeded, mapped to the seeded administrator role, used by manager navigation/routes, and covered by existing Admin and compatibility tests.
 
 Current gaps:
 
-* the Admin surface is a fixed Core route/view rather than a manager-owned contribution;
 * only six scalar fields are wired into the grouped form, plus fixed Site Asset controls;
 * field presentation is not derived from a controlled manager-facing definition contract;
 * no module contribution contract exists for registered settings sections;
-* manager-specific domain, authorization, configured-path, failure, and integration regression is not isolated as an M3.2 suite;
-* ownership transition from the existing Core Settings page is not yet approved.
+* manager-specific domain behavior and dynamic field presentation remain for later batches;
+* the full authorization, configured-path, failure, and completion regression gates remain for Batches 3–5.
 
 ## Settings Boundary
 
@@ -86,12 +86,12 @@ An existing-install upgrade artifact may enter a later implementation batch only
 
 ## Core Freeze and Approval Points
 
-Module-local design and existing public services must be exhausted first. Two potential Core touchpoints require separate approval before implementation:
+Module-local design and existing public services must be exhausted first. Batch 1 approved and executed exactly two Core touchpoints:
 
-1. Manager-facing read-only definition discovery. `SettingsService` does not currently expose definition metadata or namespaces, while the registry is constructed privately inside `Application`. The preferred minimal proposal is a generic read-only Settings service contract; exposing the container or database is forbidden.
-2. Route/view ownership transition. Existing `/settings` routes and `resources/views/admin/settings.php` are Core-owned. A manager module cannot register a colliding route. The transition must preserve configured Admin paths, permission/CSRF/error behavior, Site Asset controls, and compatibility without leaving duplicate routes.
+1. Manager-facing read-only definition discovery. `SettingsService::definitions(?string $namespace)` returns deterministically ordered registered `SettingDefinition` objects, and `definitionGroups()` groups the same approved set by namespace. Neither API queries arbitrary stored rows, mutates storage, or exposes the registry/container/database.
+2. Route/view ownership transition. Settings navigation, configured-path GET/POST, fixed Site Asset mutations, and the fixed compatibility view moved from `routes/admin.php` and `resources/views/admin/settings.php` to `modules/settings-manager/`. Core retains generic primitives, Admin shell/error/URL services, settings persistence, and Site Asset storage.
 
-These are approval points, not implementation authorization. No Core source changes occur during preparation.
+Fresh installation enables `settings-manager` through the existing installer-owned ModuleManager baseline. Existing installations explicitly install and enable the module through the existing ModuleManager lifecycle. No schema, runtime permission, or upgrade SQL change is required. Duplicate Core route/view ownership is absent.
 
 ## Batch Plan
 
@@ -108,6 +108,8 @@ Validation: focused baseline plus existing Settings/Admin regression.
 Non-goals: new fields, UI redesign, schema changes, migration runner, Admin UX refinement.
 
 Core touchpoint: definition discovery and route ownership only if separately approved.
+
+Batch 1 result: complete. The module manifest, lifecycle-owned routes/view, deterministic registered-only discovery APIs, focused 42-assertion baseline, relevant platform compatibility, package-content coverage, and isolated clean-install verification pass. The fixed form remains intentionally compatible; dynamic manager field mapping belongs to later batches. The no-return gate is reached, and Batch 2 remains inactive.
 
 ### Batch 2 — Manager Domain and Field Contract
 

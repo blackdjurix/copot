@@ -198,6 +198,7 @@ PHP
     $directShellRenderFiles = [
         'routes/admin.php',
         'modules/content/routes.php',
+        'modules/settings-manager/routes.php',
         'modules/taxonomy/routes.php',
     ];
 
@@ -211,6 +212,7 @@ PHP
     $applicationSource = (string) file_get_contents($basePath . '/app/Core/Application.php');
     $installerSource = (string) file_get_contents($basePath . '/bootstrap/installer.php');
     $adminRoutes = (string) file_get_contents($basePath . '/routes/admin.php');
+    $settingsRoutes = (string) file_get_contents($basePath . '/modules/settings-manager/routes.php');
     $contentRoutes = (string) file_get_contents($basePath . '/modules/content/routes.php');
     $taxonomyRoutes = (string) file_get_contents($basePath . '/modules/taxonomy/routes.php');
 
@@ -219,7 +221,7 @@ PHP
     $assert(str_contains($adminRoutes, '$app->auth()->check()'), 'Admin authentication guard was removed.');
     $assert(str_contains($adminRoutes, '$user?->can($adminPermission)'), 'Admin permission guard was removed.');
     $assert(str_contains($adminRoutes, 'validateCsrf'), 'Admin login/logout CSRF validation was removed.');
-    $assert(str_contains($adminRoutes, "'settings.update'"), 'Settings permission guard was removed.');
+    $assert(str_contains($settingsRoutes, "'settings.update'"), 'Settings permission guard was removed.');
     $assert(str_contains($adminRoutes, 'Response::redirect($adminBase)'), 'Admin redirect behavior no longer uses the centralized base URL.');
     $assert(str_contains($contentRoutes, "'content.create'"), 'Content permission behavior was removed.');
     $assert(str_contains($contentRoutes, 'validateOrReject'), 'Content CSRF behavior was removed.');

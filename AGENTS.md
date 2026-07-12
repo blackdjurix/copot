@@ -18,13 +18,13 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone: M3.2 Settings Manager preparation.
+Current milestone: M3.2 Settings Manager.
 
-Current work: Post-M3.1 Roadmap Sync + M3.2 scope and batch lock.
+Current work: M3.2 Batch 1 — Settings Manager Contract and Ownership Foundation completion review.
 
 Primary goal:
 
-Complete the Post-M3.1 Roadmap Sync and lock the M3.2 Settings Manager contract without starting Batch 1 implementation.
+Close the Batch 1 no-return gate after establishing manager-owned Settings routes/views and generic read-only definition discovery, without starting Batch 2.
 
 Current state:
 
@@ -40,7 +40,12 @@ Current state:
 * Focused M3.1 Batches 1–4 provide 487 assertions; the access-denied recovery regression adds 17 assertions, for 504 focused assertions total.
 * The complete M2.4 unified platform regression chain passes.
 * Post-M3.1 Roadmap Sync is complete through this preparation checkpoint.
-* M3.2 Settings Manager is the active preparation milestone; runtime implementation has not started.
+* M3.2 Settings Manager preparation is complete.
+* M3.2 Batch 1 implementation is complete pending its user-owned Git checkpoint; Batch 2 is not active.
+* `SettingsService::definitions()` and `definitionGroups()` expose deterministic, registered-only, read-only definition discovery without exposing the registry or database.
+* Admin Settings navigation, GET/POST, fixed Logo/Favicon routes, and the fixed compatibility view are owned by the lifecycle-enabled `settings-manager` module; `routes/admin.php` and Core views no longer duplicate that ownership.
+* Fresh installation enables `settings-manager` with the existing baseline ModuleManager flow. Existing installations install and enable it through the same ModuleManager lifecycle; no schema change or upgrade SQL is required.
+* Batch 1 focused contract and integration coverage passes 42 assertions, with relevant Admin, Settings, Site Asset, packaging, and isolated clean-install compatibility passing.
 * The Database Upgrade / Migration System concept is locked as planned but remains unimplemented and excluded from M3.2.
 * Admin UX Refinement 1 remains planned after M3.3 and before M3.4.
 * The post-v0.12.0 Core freeze remains in force.

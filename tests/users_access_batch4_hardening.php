@@ -41,6 +41,7 @@ require $basePath . '/routes/web.php';
 require $basePath . '/routes/auth.php';
 require $basePath . '/routes/admin.php';
 require $basePath . '/modules/content/routes.php';
+require $basePath . '/modules/settings-manager/routes.php';
 require $basePath . '/modules/taxonomy/routes.php';
 require $basePath . '/modules/users-access/routes.php';
 require $basePath . '/routes/admin_fallback.php';
