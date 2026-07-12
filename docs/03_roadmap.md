@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 runtime implementation has not started; M3 Prep is active.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation is complete, and M3.1 Users & Access completed its five batches on the milestone branch pending the user-owned Git workflow.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -490,17 +490,17 @@ Release evidence:
 * Clean-install verification uses an isolated target and a dedicated guarded test database.
 * Deployment-environment checks for real HTTPS Secure cookies, production document-root isolation, and symlink-capable host filesystem behavior remain environment-specific responsibilities.
 
-The released v0.12.0 Webcore is now the stable baseline for M3 Prep.
+The released v0.12.0 Webcore is the stable baseline for M3.
 
 ## M3 Preparation
 
-Status: Active. Stage 1 and Stage 2 are complete. Stage 3 Final Review + Entry Audit is active.
+Status: Complete. Stages 1-3 are complete and M3 Prep is closed.
 
 M3 Prep has three stages:
 
 1. Governance + Architecture Lock — complete.
 2. M3 Sequencing Lock — complete.
-3. Final Review + Entry Audit — active.
+3. Final Review + Entry Audit — complete.
 
 ### Stage 1 — Governance + Architecture Lock
 
@@ -641,9 +641,9 @@ Exact batch detail is locked immediately before each milestone starts. This allo
 
 ### Stage 3 — Final Review + Entry Audit
 
-Stage 3 is active and remains documentation, audit, and entry-contract work only.
+Stage 3 is complete. It remained documentation, audit, and entry-contract work only.
 
-Stage 3 must audit and lock:
+Stage 3 audited and locked:
 
 * documentation consistency and stale current-state wording cleanup;
 * Stage 1 governance and architecture boundaries;
@@ -658,7 +658,7 @@ Stage 3 must audit and lock:
 * M3.1 acceptance criteria;
 * repository and worktree readiness.
 
-M3.1 implementation must not start until Stage 3 passes and M3 Prep is closed through the user-owned Git workflow.
+Stage 3 passed, M3 Prep closed through the user-owned Git workflow, and M3.1 began on `feature/m3.1-users-access` from the updated `main` baseline.
 
 #### M3.1 Users & Access Entry Contract
 
@@ -691,6 +691,28 @@ Allowed Core touchpoints by default are consumption of existing public authentic
 Forbidden default scope includes authentication redesign, session redesign, unrelated login-route redesign, service-container rewrite, Router rewrite, separate role/permission systems, hardcoded role hierarchy, speculative identity abstractions, speculative production events, and future capabilities not listed in the approved M3.1 scope.
 
 M3.1 testing must include focused domain tests, security tests, compatibility/integration tests, the complete existing platform regression chain, and manual browser verification of approved Admin flows.
+
+#### M3.1 Completion Record
+
+M3.1 Users & Access completed all five approved batches on `feature/m3.1-users-access`. It is not yet merged to `main` or included in a new release, and M3.2 is not active.
+
+The locked M3.1 permission slugs are `users.read`, `users.create`, `users.update`, `users.password.manage`, `users.status.manage`, `roles.read`, `roles.manage`, `users.roles.manage`, and `roles.permissions.manage`.
+
+Module manifest permissions and `module_permissions` are metadata declarations and installed-module metadata. Runtime authorization remains the single existing `permissions` + `role_permissions` + `user_roles` model. M3.1 adds no Module Manager auto-sync and no second permission system.
+
+Fresh installations receive the nine runtime permissions and their initial seeded `admin` role mappings through `database/schema.sql`. Existing installations use the explicit, controlled, idempotent, operator-run `database/upgrades/m3_1_users_access_permissions.sql`. The SQL artifact does not register or enable `users-access`; those lifecycle steps use the existing `ModuleManager` flow. Provisioning is never an implicit bootstrap, discovery, install, or enable side effect, and the Installer remains fresh-install only.
+
+Administrator protection is based on an active user's resulting effective permission union, not role membership alone. The required recovery permissions, protected `admin` role behavior, multi-role contribution, self-protection, final-administrator invariant, atomicity requirement, and role lifecycle rules are authoritative in `docs/16_m3_core_freeze_and_module_contract.md`.
+
+The completed implementation provides administrator-facing Users and Roles management, user creation and identity editing, administrator-managed password changes, active/inactive controls, user-role and role-permission assignment, multi-role effective permission unions, final-administrator and self-lockout protection, permission-aware routes/navigation, configured Admin path support, and CSRF, escaping, error, and compatibility hardening.
+
+Batch 5 also closes the concrete access-denied recovery blocker: an authenticated user without `admin.access` remains on a standalone `403` but receives a CSRF-protected POST Sign out action using the configured Admin path. Guest standalone errors do not receive that authenticated recovery action. Batch 3 integration fixtures are isolated from administrator-capable users already present in the local database without weakening the runtime invariant.
+
+Focused M3.1 Batches 1–4 pass 487 assertions. The recovery regression adds 17 assertions, producing 504 focused M3.1 plus recovery assertions. The complete M2.4 unified platform regression chain and manual Admin verification also pass.
+
+Non-blocking Admin UX improvements remain deferred: normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical slugs from the default UI, add global floating notifications while retaining inline field errors, explain effective permissions for multi-role users, and provide reusable dashboard block spacing. Gather patterns from M3.2 and M3.3, then schedule Admin UX Refinement 1 after M3.3 and before M3.4.
+
+After the user-owned M3.1 commit, push, and merge to `main`, the next separate checkpoint is Post-M3.1 Roadmap Sync. It must occur before M3.2 preparation or batch locking; it is not part of this Batch 5 closure.
 
 Branch strategy:
 

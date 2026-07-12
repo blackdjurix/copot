@@ -2,9 +2,9 @@
 
 ## Purpose
 
-This document defines the governance and architecture boundary for Copot after the v0.12.0 Webcore release and before M3 Core Module implementation begins.
+This document defines the governance and architecture boundary established after the v0.12.0 Webcore release for M3 Core Module implementation.
 
-M3 Prep exists to prevent module development from silently widening Webcore responsibilities. The default development direction after v0.12.0 is module-first.
+M3 Prep established these rules to prevent module development from silently widening Webcore responsibilities. The continuing development direction after v0.12.0 is module-first.
 
 This document owns:
 
@@ -17,7 +17,8 @@ This document owns:
 * Navigation ownership direction;
 * Media ownership direction;
 * official and external module repository strategy;
-* M3 Prep entry and exit rules.
+* M3 Prep entry and exit rules;
+* authoritative M3.1 entry and Batch 1 contracts.
 
 M3 Prep has three stages:
 
@@ -489,9 +490,9 @@ When one of these milestones discovers a possible Core requirement, module imple
 
 ## Stage 3 Final Review + Entry Audit
 
-Stage 3 is active and owns the final authoritative-document review, remediation, and M3.1 entry-contract lock.
+Stage 3 is complete. It owned the final authoritative-document review, remediation, and M3.1 entry-contract lock.
 
-It must verify:
+It verified:
 
 * documentation consistency;
 * no stale active-M2 or active-Stage-1 wording in authoritative docs;
@@ -507,22 +508,22 @@ It must verify:
 * branch strategy is explicit;
 * repository and worktree are ready.
 
-M3.1 implementation must not start until Stage 3 passes.
+Stage 3 passed and M3 Prep closed before M3.1 began.
 
 ### Stage 3 Audit Result
 
 The Stage 3 audit found no unresolved architecture blocker requiring Stage 1 or Stage 2 to reopen. The Stage 1 governance contract and Stage 2 sequencing governance remain valid.
 
-Stage 3 remediation must complete before entry:
+Stage 3 remediation completed before entry:
 
-* authoritative current-state wording must point to Stage 3;
-* stale M2 merge/release-candidate wording must be converted to historical completion/release wording where it could misrepresent current state;
-* M3.1 scope and exact batch structure must be explicit;
-* allowed and forbidden Core touchpoints must be explicit;
-* test strategy and branch strategy must be explicit;
-* M3.1 entry and acceptance criteria must be explicit;
-* remote repository state must remain consistent with the M3 Prep branch history;
-* local branch, HEAD, tracking state, and worktree cleanliness must be verified before implementation work.
+* authoritative current-state wording was aligned;
+* stale M2 merge/release-candidate wording was converted to historical completion/release wording where it could misrepresent current state;
+* M3.1 scope and exact batch structure were made explicit;
+* allowed and forbidden Core touchpoints were made explicit;
+* test strategy and branch strategy were made explicit;
+* M3.1 entry and acceptance criteria were made explicit;
+* remote repository state remained consistent with the M3 Prep branch history;
+* local branch, HEAD, tracking state, and worktree cleanliness were verified before M3.1 work.
 
 ### M3.1 Users & Access Scope Lock
 
@@ -604,6 +605,80 @@ Forbidden by default:
 * speculative production events;
 * future capabilities outside the approved M3.1 scope.
 
+### Permission Ownership Contract
+
+M3.1 preserves one authorization system with two distinct metadata/runtime responsibilities:
+
+```text
+module.json permissions
+-> module permission metadata declaration
+-> module_permissions installed-module permission metadata registry
+
+permissions + role_permissions + user_roles
+-> runtime authorization source of truth
+-> PermissionChecker effective permission resolution
+```
+
+Manifest discovery, module registration, module installation, and module enablement do not automatically create runtime permission rows or role mappings. `module_permissions` does not grant access.
+
+M3.1 must not add runtime permission auto-sync to `ModuleManager`, `ModuleRepository`, or `PermissionChecker`. It must not introduce a second permission table, checker, role model, or authorization path.
+
+### M3.1 Permission Matrix
+
+The M3.1 permission matrix is locked as:
+
+| Permission | Authorized workflow |
+|---|---|
+| `users.read` | User list and detail |
+| `users.create` | Create user |
+| `users.update` | Edit user name and email |
+| `users.password.manage` | Administrator-managed password change |
+| `users.status.manage` | Activate and deactivate users |
+| `roles.read` | Role and permission list and detail |
+| `roles.manage` | Create, update, and delete custom roles |
+| `users.roles.manage` | Assign and remove user roles |
+| `roles.permissions.manage` | Assign and remove role permissions |
+
+These workflow permissions supplement, rather than replace, the configured base `admin.access` guard for Admin routes.
+
+### Permission Provisioning Boundary
+
+For fresh installations, the canonical `database/schema.sql` seeds all nine M3.1 runtime permissions and the initial mappings from the seeded `admin` role to all nine permissions.
+
+Existing installations use the explicit, controlled, idempotent, operator-run `database/upgrades/m3_1_users_access_permissions.sql`. The artifact is duplicate-safe and rerunnable, adds missing runtime permission rows and initial `admin` role mappings, and exposes failure rather than silently claiming success.
+
+The SQL artifact does not install or enable `users-access`. Those lifecycle operations remain owned by the existing `ModuleManager` flow. Provisioning must not run automatically during request bootstrap, module discovery, module installation, or module enablement, and it does not expand the fresh-install-only Installer or add a generic migration runner.
+
+### Administrator Capability and Lockout Invariant
+
+An administrator-capable user is an active user whose effective permission union contains every permission in this recovery set:
+
+```text
+admin.access
+users.read
+users.status.manage
+roles.read
+roles.manage
+users.roles.manage
+roles.permissions.manage
+```
+
+Effective permissions are the union contributed by all roles assigned to the user. Membership in the seeded `admin` role is not required; custom roles may contribute some or all recovery permissions.
+
+The seeded `admin` role is a protected system role: it cannot be deleted and its `admin` slug is immutable. Its permission bundle is not automatically frozen, but every role-permission mutation must evaluate the resulting effective state.
+
+Self-deactivation must be rejected. Any mutation that would make the acting user no longer administrator-capable must be rejected. A separate final-administrator invariant must ensure that at least one active administrator-capable user remains after every relevant mutation.
+
+The invariant applies to user status mutation, user-role assignment or removal, role-permission assignment or removal, and role deletion. Invariant evaluation and its mutation must be atomic against concurrent mutation. The exact transaction and locking implementation remains a Batch 3 concern, but atomicity is required by this contract.
+
+### Role Lifecycle Contract
+
+Custom role creation is allowed. A role's display name may be updated, but its slug is immutable after creation.
+
+The seeded `admin` and `user` roles are protected system roles: neither may be deleted and both slugs are immutable. An assigned custom role must be rejected explicitly at deletion time; `ON DELETE CASCADE` is not a valid business-policy substitute. An unassigned custom role may be deleted.
+
+Role-permission mutation is allowed only when the resulting administrator-capable and final-administrator invariants remain valid.
+
 ### M3.1 Test Strategy
 
 M3.1 verification must contain four automated layers plus manual verification.
@@ -616,9 +691,27 @@ Integration coverage must verify existing login compatibility, inactive-account 
 
 The completion gate must run the focused M3.1 suite and the complete existing platform regression chain. Manual browser verification must cover all approved M3.1 Admin flows after automated tests pass.
 
+### Batch 1 Baseline Result
+
+`tests/users_access_batch1_baseline.php` passes 18 assertions covering active authentication, inactive-login rejection, next-boundary inactive-session invalidation, email normalization, password-hash non-disclosure, role lookup, permission lookup, multi-role effective permission union, missing-permission denial, and `PasswordHasher` compatibility.
+
+`tests/platform_hardening_m2_4_regression.php` also passes. Its unified chain continues to cover M2.4 -> M2.3 -> M2.2 -> M2.1.
+
+This evidence validates consumption of the existing Auth, User, UserProvider, PasswordHasher, PermissionChecker, Application wiring, Admin guard, and shared role/permission semantics without a structural schema change.
+
+### M3.1 Completion Evidence
+
+All five M3.1 batches are complete on the milestone branch. Focused Batches 1–4 pass 487 assertions, and the authenticated access-denied logout recovery regression adds 17 assertions for 504 focused assertions total. The complete M2.4 unified platform chain and manual Admin verification pass.
+
+The only approved Core touchpoint added during completion is recovery from base Admin permission denial: an authenticated user without `admin.access` still receives a standalone `403`, with a CSRF-protected POST Sign out action using the configured Admin path. Guest standalone errors remain without authenticated recovery actions. Batch 3's final-administrator integration fixture is transactionally isolated from active administrator-capable users already present in the database; runtime capability and invariant semantics are unchanged.
+
+M3.1 remains unmerged and unreleased until the user-owned Git workflow completes. M3.2 is not active. Post-M3.1 Roadmap Sync is the next separate checkpoint after merge and before M3.2 preparation or batch locking.
+
+Deferred non-blocking Admin UX work includes permission checkbox sizing/alignment, permission grouping, hiding technical slugs by default, global floating notifications while preserving inline field errors, effective-permission explanation for multi-role users, and reusable dashboard block spacing. Gather M3.2/M3.3 patterns and schedule Admin UX Refinement 1 after M3.3 and before M3.4.
+
 ### M3.1 Branch Strategy
 
-M3 Prep remains on `feature/m3-prep` through Stage 3 remediation and final verification. Git operations remain user-owned.
+M3 Prep remained on `feature/m3-prep` through Stage 3 remediation and final verification. Git operations remain user-owned.
 
 After Stage 3 passes:
 
@@ -633,10 +726,10 @@ M3.1 implementation must not begin directly on `feature/m3-prep`.
 
 ### M3.1 Entry Criteria
 
-M3.1 may begin only when:
+M3.1 entry was permitted only when:
 
 * Stage 3 remediation is complete;
-* authoritative docs consistently identify the current Stage 3 state;
+* authoritative docs consistently identified the completed Stage 3 state;
 * stale current-state and release-candidate wording is corrected where required;
 * M3.1 scope and five-batch structure are locked;
 * Core touchpoint boundaries are explicit;

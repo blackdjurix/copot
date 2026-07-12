@@ -268,7 +268,7 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ## Platform Hardening Boundary
 
-M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closed the lean M2 Platform Capabilities implementation phase. M3 runtime implementation has not started; M3 Preparation is active.
+M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closed the lean M2 Platform Capabilities implementation phase. M3 Preparation is complete and M3.1 Users & Access is active at its Batch 1 closure gate.
 
 The planned hardening direction is:
 
@@ -361,6 +361,12 @@ Current capabilities:
 * Basic role and permission checks
 * Manual database schema for auth tables
 * Protected milestone test route
+
+Runtime authorization has one source of truth. `PermissionChecker` resolves effective permissions through `user_roles`, `role_permissions`, and `permissions`, including the union of permissions contributed by all roles assigned to a user.
+
+Module permission declarations have a separate metadata purpose. A module's `module.json` `permissions` entries declare module permission metadata, and installed declarations are recorded in `module_permissions`. Neither manifest discovery nor registration grants a runtime permission or creates rows in `permissions` or `role_permissions`.
+
+M3.1 preserves this single runtime authorization model. It does not add permission auto-sync to `ModuleManager`, `ModuleRepository`, or `PermissionChecker`, and it does not introduce a second role or permission system.
 
 Current limits:
 
@@ -503,7 +509,9 @@ Current goals:
 * Enable and disable modules
 * Uninstall module registrations without deleting module files
 * Load routes from enabled modules
-* Store module permission metadata separately from core permissions
+* Store module permission metadata separately from runtime permissions
+
+The `module_permissions` registry is informational installed-module metadata. Runtime authorization continues to use `user_roles`, `role_permissions`, and `permissions`; module install and enable operations do not auto-sync or grant runtime permissions.
 
 Current limits:
 
@@ -732,7 +740,7 @@ M2.4 release-readiness requires:
 
 ## Pre-M3 Architecture Lock
 
-M3 Prep runs before any M3 Core Module runtime implementation.
+M3 Prep completed before M3 Core Module runtime implementation and established the following continuing architecture lock.
 
 The Stage 1 architecture direction is:
 

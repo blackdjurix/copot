@@ -63,7 +63,16 @@ INSERT INTO permissions (name, slug, created_at, updated_at) VALUES
     ('Create taxonomy terms', 'taxonomy.create', NOW(), NOW()),
     ('Update taxonomy terms', 'taxonomy.update', NOW(), NOW()),
     ('Delete unused taxonomy terms', 'taxonomy.delete', NOW(), NOW()),
-    ('Update site settings', 'settings.update', NOW(), NOW());
+    ('Update site settings', 'settings.update', NOW(), NOW()),
+    ('Read users', 'users.read', NOW(), NOW()),
+    ('Create users', 'users.create', NOW(), NOW()),
+    ('Update users', 'users.update', NOW(), NOW()),
+    ('Manage user passwords', 'users.password.manage', NOW(), NOW()),
+    ('Manage user status', 'users.status.manage', NOW(), NOW()),
+    ('Read roles and permissions', 'roles.read', NOW(), NOW()),
+    ('Manage roles', 'roles.manage', NOW(), NOW()),
+    ('Manage user roles', 'users.roles.manage', NOW(), NOW()),
+    ('Manage role permissions', 'roles.permissions.manage', NOW(), NOW());
 
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
@@ -102,6 +111,22 @@ INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
 FROM roles
 INNER JOIN permissions ON permissions.slug = 'settings.update'
+WHERE roles.slug = 'admin';
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT roles.id, permissions.id
+FROM roles
+INNER JOIN permissions ON permissions.slug IN (
+    'users.read',
+    'users.create',
+    'users.update',
+    'users.password.manage',
+    'users.status.manage',
+    'roles.read',
+    'roles.manage',
+    'users.roles.manage',
+    'roles.permissions.manage'
+)
 WHERE roles.slug = 'admin';
 
 CREATE TABLE settings (
