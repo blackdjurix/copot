@@ -44,8 +44,8 @@
 ### Changed
 
 - Completed M3.2 Batch 3 Admin Routes and Presentation while preserving configured Admin paths, `admin.access`, `settings.update`, CSRF, PRG, the Admin shell, and specialized Logo/Favicon workflows.
-- Completed M3.2 Batch 4 Security and Compatibility Hardening as tests-only work without runtime, Core, schema, SQL, permission, manifest, dependency, route, view, or production behavior changes; M3.2 remains in progress and Batch 5 has not started.
-- Completed M3.2 Batch 5 Completion and Manual Verification and the Settings Manager milestone on its feature branch. Batch 5 is validation and documentation closure only; it introduces no production/runtime, schema, or Core change, and M3.3 has not started.
+- Completed M3.2 Batch 4 Security and Compatibility Hardening as tests-only work without runtime, Core, schema, SQL, permission, manifest, dependency, route, view, or production behavior changes; at that historical checkpoint, M3.2 remained in progress and Batch 5 had not started.
+- Completed M3.2 Batch 5 Completion and Manual Verification on its feature branch as the historical completion step, then merged the complete, validated Settings Manager milestone to `main` through `afd82f0`. Batch 5 introduced no production/runtime, schema, or Core change, and M3.3 has not started.
 - Preserved the singular Settings domain and excluded generic JSON plus Logo/Favicon descriptors from dynamic scalar rendering without Core, schema, permission, dependency, or Batch 2 domain changes.
 - Moved the existing fixed Admin Settings route/view ownership from Core to `settings-manager` without changing URLs, `settings.update`, CSRF, validation-before-write, transactions, Admin shell errors, or Logo/Favicon behavior.
 - Added `settings-manager` to fresh-install baseline module enablement and the release package; existing installations continue to use explicit ModuleManager install/enable lifecycle operations.

@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and M3.2 Settings Manager are complete. M3.2 completed all five batches on its feature branch; M3.3 has not started.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. The current checkpoint is the Post-M3.2 / Pre-M3.3 transition for authoritative-state sync and M3.3 entry preparation. M3.3 has not started.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -728,7 +728,7 @@ M3.2 and M3.3 collect management-UI patterns. After M3.3 and before M3.4, Admin 
 
 #### M3.2 Settings Manager
 
-M3.2 Settings Manager is complete in the approved sequence. Exact scope, permission reuse, approved Core touchpoints, five-batch plan, acceptance criteria, and completion evidence remain authoritative in `docs/17_m3_2_settings_manager_contract.md`. All five batches pass their gates. Final automated validation passes 366 focused M3.2 assertions, required M2.1 Admin UI, M2.3 Branding/Site Asset and unified, plus M3.1 permission/access regressions; PHP lint, repository, and boundary checks pass. The final manual matrix passes, with permission-denial and configured non-default Admin-path cases verified automated-assisted and the remaining Admin workflows verified manually. No unresolved Core, schema, runtime, or security blocker remains. M3.3 has not started, the approved M3 sequence is unchanged, and no new Core touchpoint was introduced.
+M3.2 Settings Manager is complete in the approved sequence and merged to `main` through `afd82f0`. Exact scope, permission reuse, approved Core touchpoints, five-batch plan, acceptance criteria, and completion evidence remain authoritative in `docs/17_m3_2_settings_manager_contract.md`. All five batches pass their gates. Final automated validation passes 366 focused M3.2 assertions, required M2.1 Admin UI, M2.3 Branding/Site Asset and unified, plus M3.1 permission/access regressions; PHP lint, repository, and boundary checks pass. The final manual matrix passes, with permission-denial and configured non-default Admin-path cases verified automated-assisted and the remaining Admin workflows verified manually. No unresolved Core, schema, runtime, or security blocker remains. The Post-M3.2 / Pre-M3.3 transition is the current checkpoint. M3.3 has not started, the approved M3 sequence and five-batch M3.3 planning envelope are unchanged, focused preparation remains required by the Just-in-Time Batch Lock before M3.3 begins, and no exact M3.3 batch breakdown is locked by this transition.
 
 Branch strategy:
 
