@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. The M3.3 Module Manager entry contract is now approved and documented; implementation has not started.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–2 are complete on `feature/m3.3-module-manager` at `57f68be`; Batch 3 has not started and M3.3 is not merged to `main`.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -732,13 +732,17 @@ M3.2 Settings Manager is complete in the approved sequence and merged to `main` 
 
 #### M3.3 Module Manager Entry Contract
 
-Status: Contract approved and documented. Implementation has not started. M3.3 remains a high-Core-risk milestone with a five-batch planning envelope and the existing Just-in-Time Batch Lock governance.
+Status: Batches 1–2 complete; Batch 3 has not started. M3.3 remains a high-Core-risk milestone with a five-batch planning envelope and the existing Just-in-Time Batch Lock governance. Current checkpoint: Post-Batch 2 / Pre-Batch 3 Activation. Current work: activation policy, package inclusion, authoritative-state sync, and Batch 3 entry preparation.
 
-The Module Manager module owns Admin inventory, metadata and discovery-error presentation, navigation, configured-path routes, and controlled lifecycle workflows. It consumes the existing Core discovery, repository, lifecycle, Admin URL, Admin Shell, CSRF, navigation, and sanitized-error contracts. No confirmed Core blocker exists; any Core change requires separate approval and executable evidence.
+The Module Manager module owns Admin inventory, metadata and discovery-error presentation, navigation, configured-path routes, and controlled lifecycle workflows. It consumes the existing Core discovery, repository, lifecycle, Admin URL, Admin Shell, CSRF, navigation, and sanitized-error contracts. The activation gate approves only the narrowly scoped `InstallerFinalizer::BASELINE_MODULES` addition; no other confirmed Core blocker exists, and any further Core change requires separate approval and executable evidence.
 
 Authorization is locked to both the configured base permission `admin.access` and the dedicated runtime permission `modules.manage` (`Manage modules`). One dedicated permission covers inventory plus install, enable, disable, and uninstall. Fresh installations will provision `modules.manage` and map it to the seeded `admin` role through `database/schema.sql`. Existing installations will use the controlled, idempotent, operator-run `database/upgrades/m3_3_module_manager_permission.sql`; it may add only the permission and missing seeded-admin mapping, must not run automatically or install/enable modules, and must not introduce permission synchronization. `module_permissions` remains metadata only and grants no runtime access.
 
 The proposed M3.3 artifact is the second independent upgrade artifact. The Database Upgrade / Migration System trigger is not currently reached, and a generic migration runner remains out of scope.
+
+The approved activation policy adds `module-manager` to `InstallerFinalizer::BASELINE_MODULES`, so fresh installations install and enable it through the existing generic ModuleManager lifecycle. This is the sole approved activation Core touchpoint; no new activation framework, bootstrap synchronization, or automatic module reconciliation is introduced. Existing installations apply `database/upgrades/m3_3_module_manager_permission.sql`, then explicitly install and enable `module-manager` through ModuleManager before its routes are available on the next request through the enabled-module loader.
+
+`modules/module-manager` must be included in `build/package_manifest.php` in the same activation gate as fresh-install baseline activation. Clean-install and package-smoke evidence are required before Batch 3 Admin integration. The Batch 3 Admin workflow must deny disabling or uninstalling `module-manager` itself while keeping those actions visibly disabled with stable denial reasons. No additional schema change, upgrade SQL artifact, migration runner, or automatic permission synchronization is approved.
 
 Lifecycle rules are:
 
@@ -771,7 +775,7 @@ The exact five-batch plan is:
 
 Explicit non-goals include marketplace or remote installation, package download or ZIP upload, signing, automatic updates, rollback, generic version solving, Composer-style dependency resolution, automatic permission or role synchronization, a second authorization system, a generic migration framework, Theme Manager, Media Library, module settings UI, module code editor, Admin UX Refinement 1, M3.4, release, tagging, and package publication.
 
-The M3.3 preparation No-Return Point is reached only after documentation review, commit, push, merge, and synchronized clean `main`. This preparation branch has not reached that point.
+The M3.3 preparation No-Return Point was reached when the approved contract documentation was merged to synchronized `main`. The next activation No-Return Point requires the approved baseline/package changes, clean-install and package-smoke evidence, documentation sync, and synchronized clean `main`; Batch 3 Admin implementation must not begin before that gate.
 
 Branch strategy:
 

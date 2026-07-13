@@ -706,7 +706,7 @@ All five M3.1 batches are complete on the milestone branch. Focused Batches 1–
 
 The only approved Core touchpoint added during completion is recovery from base Admin permission denial: an authenticated user without `admin.access` still receives a standalone `403`, with a CSRF-protected POST Sign out action using the configured Admin path. Guest standalone errors remain without authenticated recovery actions. Batch 3's final-administrator integration fixture is transactionally isolated from active administrator-capable users already present in the database; runtime capability and invariant semantics are unchanged.
 
-M3.1 merged to `main` through `5c4cf8c` and remains unreleased. Post-M3.1 Roadmap Sync is complete. M3.2 preparation and Batches 1–5 are complete, and M3.2 merged to `main` through `afd82f0`; M3.1 and M3.2 remain unreleased. The M3.3 Module Manager entry contract is approved and documented, but implementation has not started. The Just-in-Time Batch Lock continues to govern implementation entry, and the preparation No-Return Point requires documentation review, commit, push, merge, and synchronized clean `main`.
+M3.1 merged to `main` through `5c4cf8c` and remains unreleased. Post-M3.1 Roadmap Sync is complete. M3.2 preparation and Batches 1–5 are complete, and M3.2 merged to `main` through `afd82f0`; M3.1 and M3.2 remain unreleased. M3.3 Batches 1–2 are complete on `feature/m3.3-module-manager` at `57f68be`; Batch 3 has not started and M3.3 is not merged to `main`. The Just-in-Time Batch Lock continues to govern Batch 3 entry, and the next activation gate requires documentation review, approved baseline/package changes, clean-install and package-smoke evidence, and synchronized clean `main`.
 
 Deferred non-blocking Admin UX work includes permission checkbox sizing/alignment, permission grouping, hiding technical slugs by default, global floating notifications while preserving inline field errors, effective-permission explanation for multi-role users, and reusable dashboard block spacing. Gather M3.2/M3.3 patterns and schedule Admin UX Refinement 1 after M3.3 and before M3.4.
 
@@ -714,13 +714,17 @@ M3.2-specific scope, existing Settings foundation evidence, permission reuse, Co
 
 ## M3.3 Module Manager Entry Contract
 
-Status: approved for documentation lock; implementation has not started.
+Status: Batches 1–2 complete on `feature/m3.3-module-manager` at `57f68be`; Batch 3 has not started. Current checkpoint: Post-Batch 2 / Pre-Batch 3 Activation.
 
-The M3.3 Module Manager module owns Admin inventory, metadata and discovery-error presentation, navigation, configured-path routes, and controlled lifecycle workflows. It consumes existing public Core discovery, repository, lifecycle, Admin URL, Admin Shell, CSRF, navigation, and sanitized-error contracts. No confirmed Core blocker exists. Any Core change requires separate approval and executable evidence under the Core-change escalation rule.
+The M3.3 Module Manager module owns Admin inventory, metadata and discovery-error presentation, navigation, configured-path routes, and controlled lifecycle workflows. It consumes existing public Core discovery, repository, lifecycle, Admin URL, Admin Shell, CSRF, navigation, and sanitized-error contracts. The activation gate approves only the narrowly scoped `InstallerFinalizer::BASELINE_MODULES` addition; no other confirmed Core blocker exists. Any further Core change requires separate approval and executable evidence under the Core-change escalation rule.
 
 Authorization requires both `admin.access` and dedicated runtime permission `modules.manage`, displayed as `Manage modules`. One dedicated permission covers inventory plus install, enable, disable, and uninstall. Fresh installations will provision `modules.manage` and map it to the seeded `admin` role in `database/schema.sql`. Existing installations will use one controlled, idempotent, operator-run artifact, `database/upgrades/m3_3_module_manager_permission.sql`, which may add only the permission and missing seeded-admin mapping. It must not run automatically, install or enable modules, or introduce permission synchronization. `module_permissions` remains metadata only and grants no runtime access.
 
 The proposed artifact is the second independent upgrade artifact. The Database Upgrade / Migration System trigger is not currently reached; a generic migration runner remains out of scope.
+
+The approved activation policy adds `module-manager` to `InstallerFinalizer::BASELINE_MODULES`, so fresh installations install and enable it through the existing generic ModuleManager lifecycle. This narrowly scoped InstallerFinalizer addition is the sole approved activation Core touchpoint; no new activation framework, bootstrap synchronization, or automatic module reconciliation is introduced. Existing installations apply `database/upgrades/m3_3_module_manager_permission.sql`, then explicitly install and enable `module-manager` through ModuleManager before its routes are available on the next request through the enabled-module loader.
+
+`modules/module-manager` must be included in `build/package_manifest.php` in the same activation gate as fresh-install baseline activation. Clean-install and package-smoke evidence are required before Batch 3 Admin integration. The Batch 3 Admin workflow must deny disabling or uninstalling `module-manager` itself while keeping those actions visibly disabled with stable denial reasons. No other Core change, schema change, upgrade SQL artifact, migration runner, or automatic module synchronization is approved.
 
 ### Approved Lifecycle Contract
 
@@ -751,9 +755,9 @@ The proposed artifact is the second independent upgrade artifact. The Database U
 4. Security, lifecycle failure, dependency, and compatibility hardening.
 5. Unified regression, manual verification, documentation closure, and completion audit.
 
-M3.3 implementation, schema changes, SQL creation, package changes, release work, and tagging remain behind separate approval gates. Admin UX Refinement 1 remains after M3.3 and before M3.4. M3.4 is out of scope.
+Batch 3 implementation, package inclusion, release work, and tagging remain behind separate approval gates. Admin UX Refinement 1 remains after M3.3 and before M3.4. M3.4 is out of scope.
 
-The M3.3 preparation No-Return Point is reached only after documentation review, commit, push, merge, and synchronized clean `main`; this preparation branch has not reached it.
+The M3.3 preparation No-Return Point was reached when the approved contract documentation was merged to synchronized `main`. The next activation No-Return Point requires the approved baseline/package changes, clean-install and package-smoke evidence, documentation sync, and synchronized clean `main`; Batch 3 Admin implementation must not begin before that gate.
 
 ### M3.1 Branch Strategy
 

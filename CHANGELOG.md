@@ -4,6 +4,7 @@
 
 ### Added
 
+- Added the M3.3 Batch 1 focused Module Manager baseline and Batch 2 module-local inventory/action-policy domain on `feature/m3.3-module-manager` through `57f68be`; Batch 3 Admin implementation has not started.
 - Added the M3.2 Batch 1 Settings Manager module boundary with lifecycle-owned Admin Settings routes, navigation, fixed compatibility presentation, and Site Asset controls.
 - Added deterministic registered-only Settings definition discovery through the existing `SettingsService`, plus 42 focused contract and integration assertions.
 - Added M3.2 Batch 2 module-local manager policy plus reusable deterministic section and typed scalar field contracts, with registered-only editability and generic JSON/Site Asset descriptor exclusion.
@@ -43,10 +44,12 @@
 
 ### Changed
 
-- Locked the approved M3.3 Module Manager entry contract: `admin.access` plus dedicated runtime permission `modules.manage` (`Manage modules`), atomic lifecycle safety, fail-closed dependency/file checks, drift visibility without auto-sync, the exact five-batch plan, migration decision, Core boundary, and separate approval gates. M3.3 implementation has not started; no runtime, schema, SQL, package, release, or tag change was made.
+- Synchronized the M3.3 post-Batch 2 state: the current checkpoint is Post-Batch 2 / Pre-Batch 3 Activation, with activation policy, package inclusion, authoritative-state sync, and Batch 3 entry preparation as current work. Batch 3 Admin implementation has not started, M3.3 is not merged to `main`, and `v0.12.0` remains the latest stable release.
+- Locked the approved M3.3 activation policy: fresh installations will add `module-manager` to `InstallerFinalizer::BASELINE_MODULES` and enable it through the existing ModuleManager lifecycle; existing installations apply `database/upgrades/m3_3_module_manager_permission.sql` and explicitly install and enable the module. Package inclusion in `build/package_manifest.php` belongs to the same activation gate, clean-install and package-smoke evidence are required before Batch 3, and the Batch 3 Admin workflow must deny self-disable and self-uninstall.
+- Preserved the M3.3 boundaries: the InstallerFinalizer baseline addition is the sole approved activation Core touchpoint; no other Core change, schema change, upgrade artifact, migration runner, automatic module synchronization, package publication, release, or tag is approved.
 - Completed M3.2 Batch 3 Admin Routes and Presentation while preserving configured Admin paths, `admin.access`, `settings.update`, CSRF, PRG, the Admin shell, and specialized Logo/Favicon workflows.
 - Completed M3.2 Batch 4 Security and Compatibility Hardening as tests-only work without runtime, Core, schema, SQL, permission, manifest, dependency, route, view, or production behavior changes; at that historical checkpoint, M3.2 remained in progress and Batch 5 had not started.
-- Completed M3.2 Batch 5 Completion and Manual Verification on its feature branch as the historical completion step, then merged the complete, validated Settings Manager milestone to `main` through `afd82f0`. Batch 5 introduced no production/runtime, schema, or Core change, and M3.3 has not started.
+- Completed M3.2 Batch 5 Completion and Manual Verification on its feature branch as the historical completion step, then merged the complete, validated Settings Manager milestone to `main` through `afd82f0`. Batch 5 introduced no production/runtime, schema, or Core change; M3.3 work began later with Batches 1–2 on its active feature branch, while Batch 3 remains not started.
 - Preserved the singular Settings domain and excluded generic JSON plus Logo/Favicon descriptors from dynamic scalar rendering without Core, schema, permission, dependency, or Batch 2 domain changes.
 - Moved the existing fixed Admin Settings route/view ownership from Core to `settings-manager` without changing URLs, `settings.update`, CSRF, validation-before-write, transactions, Admin shell errors, or Logo/Favicon behavior.
 - Added `settings-manager` to fresh-install baseline module enablement and the release package; existing installations continue to use explicit ModuleManager install/enable lifecycle operations.

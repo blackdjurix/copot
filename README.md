@@ -14,7 +14,7 @@ M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
 M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the reproducibility blocker fix are complete. Copot v0.12.0 is the current stable Webcore baseline and installable release.
 
-The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content, Taxonomy, and Settings Manager modules, Core Settings, and a fresh-install web installer.
+The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content, Taxonomy, Settings Manager, and Module Manager modules, Core Settings, and a fresh-install web installer.
 
 New deployments can be configured through `/install` before normal application bootstrap is allowed.
 
@@ -22,15 +22,15 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. The M3.3 Module Manager contract is approved, but implementation has not started.
+M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–2 are complete on `feature/m3.3-module-manager` at `57f68be`; Batch 3 has not started and M3.3 is not merged to `main`.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is M3.3 Module Manager Contract Preparation. Current work locks the approved contract and entry gates; implementation has not started.
+The active checkpoint is Post-Batch 2 / Pre-Batch 3 Activation. Current work covers activation policy, package inclusion, authoritative-state sync, and Batch 3 entry preparation.
 
-M2 Platform Capabilities are complete. Copot v0.12.0 remains the latest stable released Webcore baseline. M3.1 and M3.2 are merged but are not yet included in a new release. M3.3 remains unreleased and unimplemented.
+M2 Platform Capabilities are complete. Copot v0.12.0 remains the latest stable released Webcore baseline. M3.1 and M3.2 are merged but are not yet included in a new release. M3.3 remains unreleased; Batches 1–2 are complete and Batch 3 remains unimplemented.
 
 The approved M3 sequence is:
 
@@ -50,9 +50,19 @@ M3.11 Form Manager
 
 The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
 
-M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Settings Manager completed its five approved batches and merged to `main` through `afd82f0`: lifecycle-owned configured-path Admin routes, registered scalar management with validation-before-write and atomic persistence, specialized Logo/Favicon workflows, and tests-only security/compatibility hardening. Generic JSON and Site Asset descriptors remain excluded. Final focused M3.2 coverage is 366 assertions, required M2.1/M2.3/M3.1 compatibility regressions and manual verification pass, and M3.3 has not started. M3.2 is merged but not released.
+M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Settings Manager completed its five approved batches and merged to `main` through `afd82f0`: lifecycle-owned configured-path Admin routes, registered scalar management with validation-before-write and atomic persistence, specialized Logo/Favicon workflows, and tests-only security/compatibility hardening. Generic JSON and Site Asset descriptors remain excluded. Final focused M3.2 coverage is 366 assertions, required M2.1/M2.3/M3.1 compatibility regressions and manual verification pass. M3.3 Batches 1–2 are complete on the active feature branch; Batch 3 has not started. M3.2 is merged but not released.
 
-The approved M3.3 Module Manager contract requires both `admin.access` and dedicated runtime permission `modules.manage` (`Manage modules`) for inventory and install, enable, disable, and uninstall. Fresh-install provisioning belongs in the canonical schema; existing-install provisioning belongs in the controlled operator-run `database/upgrades/m3_3_module_manager_permission.sql`. The proposed artifact is the second independent upgrade artifact, but the Database Upgrade / Migration System trigger is not currently reached. M3.3 implementation, schema/SQL creation, package changes, release work, and tagging remain behind separate approval gates.
+The approved M3.3 Module Manager contract requires both `admin.access` and dedicated runtime permission `modules.manage` (`Manage modules`) for inventory and install, enable, disable, and uninstall. Fresh-install provisioning is present in the canonical schema; existing-install provisioning is present in the controlled operator-run `database/upgrades/m3_3_module_manager_permission.sql`. The artifact is the second independent upgrade artifact, but the Database Upgrade / Migration System trigger is not currently reached. Batch 3 activation and Admin implementation remain behind their approval gates.
+
+The approved activation policy adds `module-manager` to `InstallerFinalizer::BASELINE_MODULES`, so fresh installations install and enable it through the existing generic ModuleManager lifecycle. No new activation framework, bootstrap synchronization, or automatic module reconciliation is introduced. For existing installations, apply `database/upgrades/m3_3_module_manager_permission.sql`, then explicitly install and enable `module-manager` through ModuleManager; its routes become available on the next request through the enabled-module loader. The project’s existing PHP/XAMPP command style is the supported operator path.
+
+For an existing installation after applying the permission artifact, run:
+
+```powershell
+& "C:\xampp\php\php.exe" -r "chdir('C:/Git/copot'); `$app = require 'bootstrap/app.php'; `$app->modules()->install('module-manager'); `$app->modules()->enable('module-manager'); echo 'module-manager enabled';"
+```
+
+`modules/module-manager` must be included in `build/package_manifest.php` in the same activation gate as fresh-install baseline activation. Clean-install and package-smoke evidence are required before Batch 3 Admin integration. The Batch 3 Admin workflow may display Module Manager itself, but must deny disabling or uninstalling `module-manager` with visibly disabled actions and stable denial reasons. No additional schema, upgrade artifact, migration runner, or automatic permission synchronization is required.
 
 M2.2 completion record:
 
@@ -161,7 +171,7 @@ Included so far:
 - Canonical `database/schema.sql` installation
 - First administrator and initial site/localization setup
 - Automatic default-theme activation
-- Automatic Content, Taxonomy, and Settings Manager module enablement
+- Automatic Content, Taxonomy, Settings Manager, and Module Manager module enablement
 - Atomic final installation marker at `storage/installed.lock`
 - Installer denial after successful installation
 
@@ -517,7 +527,7 @@ M1.5 adds a basic local Content Module at:
 modules/content
 ```
 
-For an existing or manually prepared installation, install and enable the Content Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, and Settings Manager automatically as baseline modules.
+For an existing or manually prepared installation, install and enable the Content Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, Settings Manager, and Module Manager automatically as baseline modules.
 
 Install and enable the Content Module:
 
@@ -564,7 +574,7 @@ M1.6 adds a reusable local Taxonomy Foundation module at:
 modules/taxonomy
 ```
 
-For an existing or manually prepared installation, install and enable the Taxonomy Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, and Settings Manager automatically as baseline modules.
+For an existing or manually prepared installation, install and enable the Taxonomy Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, Settings Manager, and Module Manager automatically as baseline modules.
 
 Install and enable the Taxonomy Module:
 
@@ -634,7 +644,7 @@ M1.8 provides a fresh-install web flow at:
 /install
 ```
 
-When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The installer checks the environment, tests a dedicated empty database, persists the five `DB_*` connection values in the root `.env`, installs the canonical schema, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables Content, Taxonomy, and Settings Manager. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
+When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The installer checks the environment, tests a dedicated empty database, persists the five `DB_*` connection values in the root `.env`, installs the canonical schema, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables Content, Taxonomy, Settings Manager, and Module Manager. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
 
 Requirements:
 
@@ -652,7 +662,7 @@ For a fresh manual check:
 1. Ensure `storage/installed.lock` is absent and select an empty disposable database.
 2. Open `/install` and complete Requirements, Database, Administrator & Site, and Finalize.
 3. Confirm the final redirect uses the configured admin path.
-4. Confirm `/install` returns `404`, the default theme is active, and Content, Taxonomy, and Settings Manager are enabled.
+4. Confirm `/install` returns `404`, the default theme is active, and Content, Taxonomy, Settings Manager, and Module Manager are enabled.
 5. If schema execution fails partially, use a new clean database; M1.8 has no destructive repair/reset flow.
 
 ## Manual Settings Test Checklist
