@@ -1,0 +1,17 @@
+{
+  "name": "settings-manager",
+  "title": "Settings Manager",
+  "description": "Administrator-facing management for registered Copot settings.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "routes": "routes.php",
+  "requires": {
+    "modules": []
+  },
+  "permissions": [
+    {
+      "slug": "settings.update",
+      "name": "Update settings"
+    }
+  ]
+}

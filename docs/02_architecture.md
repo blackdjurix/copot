@@ -268,7 +268,7 @@ Feature routes should use these services instead of repeating security-sensitive
 
 ## Platform Hardening Boundary
 
-M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closed the lean M2 Platform Capabilities implementation phase. M3 Preparation is complete and M3.1 Users & Access is active at its Batch 1 closure gate.
+M2.4 Platform Hardening implementation is complete. Batch 2 establishes minimal diagnostics, Batch 3 adds sanitized application boundaries and exact owned-buffer cleanup, Batch 4 adds eligible Admin in-shell recovery, Batch 5 hardens session deployment configuration plus Site Asset filesystem observability, and Batch 6 adds the chained M2.4 regression gate plus final release-readiness evidence without changing Router, Response, auth, permission, CSRF, or storage ownership. This closed the lean M2 Platform Capabilities implementation phase. M3.1 Users & Access is complete and merged; M3.2 Settings Manager preparation and Batch 1 ownership foundation are complete, while Batch 2 is not active.
 
 The planned hardening direction is:
 
@@ -333,7 +333,7 @@ Installer responsibilities are divided across focused Core components:
 * `InstallerEnvironmentWriter` persists only the approved database keys through same-directory atomic replacement.
 * `InstallerSchemaRunner` executes only the controlled statement format in canonical `database/schema.sql`.
 * `InstallerAdministratorSetup` creates the first active administrator, assigns the seeded admin role, and saves initial Settings in one database transaction.
-* `InstallerFinalizer` rechecks live state, activates the default theme, enables Content and Taxonomy, and creates the final marker last.
+* `InstallerFinalizer` rechecks live state, activates the default theme, enables Content, Settings Manager, and Taxonomy, and creates the final marker last.
 * `InstallationMutex` serializes state-changing workflows with exclusive non-blocking `flock()`.
 
 The installer bootstrap reuses Request, Response, Session/CSRF, Database, Settings, Theme, and Module primitives without constructing the complete normal `Application` prematurely. It provides no upgrade, migration, repair, reset, table-prefix, or destructive cleanup path.
@@ -692,6 +692,16 @@ Initial versions should not include:
 * Repository Framework
 
 These may be evaluated in future milestones.
+
+### Database Upgrade / Migration System
+
+Status: planned. Concept: locked. Implementation: not started.
+
+Fresh installations continue to use `database/schema.sql` as the canonical final database state. Existing installations currently use ordered, explicit SQL artifacts in `database/upgrades/`; module installation and enablement remain separate `ModuleManager` lifecycle operations.
+
+The planned Database Upgrade / Migration System must provide deterministic ordered execution, persistent migration history, idempotent behavior, explicit failure reporting, transaction boundaries where the target database and operation support them, and clear Core-versus-module migration ownership. A failed migration must never be recorded or reported as successful, and existing installations must not depend on operator-run SQL indefinitely.
+
+Implementation is excluded from M3.2. It becomes mandatory before the milestone that would introduce the second cross-module upgrade dependency, or before a third independently ordered upgrade artifact is accepted—whichever trigger occurs first. That checkpoint may be scheduled without silently reordering the approved M3 manager sequence.
 
 ---
 

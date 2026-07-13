@@ -7,6 +7,8 @@ use Copot\Core\View;
 $basePath = dirname(__DIR__);
 
 require $basePath . '/bootstrap/autoload.php';
+require $basePath . '/modules/settings-manager/Services/SettingsField.php';
+require $basePath . '/modules/settings-manager/Services/SettingsSection.php';
 
 $assertions = 0;
 
@@ -26,11 +28,11 @@ $readFile = static function (string $path) use ($assert): string {
 };
 
 $cssFile = $basePath . '/public/admin-assets/css/admin.css';
-$settingsFile = $basePath . '/resources/views/admin/settings.php';
+$settingsFile = $basePath . '/modules/settings-manager/views/admin/settings.php';
 $dashboardFile = $basePath . '/resources/views/admin/dashboard.php';
 $loginFile = $basePath . '/resources/views/admin/login.php';
 $layoutFile = $basePath . '/resources/views/admin/layout.php';
-$routesFile = $basePath . '/routes/admin.php';
+$routesFile = $basePath . '/modules/settings-manager/routes.php';
 
 $css = $readFile($cssFile);
 $settingsSource = $readFile($settingsFile);
@@ -39,32 +41,43 @@ $loginSource = $readFile($loginFile);
 $layoutSource = $readFile($layoutFile);
 $routesSource = $readFile($routesFile);
 $view = new View($basePath . '/resources/views');
+$settingsView = new View($basePath . '/modules/settings-manager/views');
+$settingsSections = [new SettingsSection('site', 'General', 'Manage global site settings.', [
+    new SettingsField(
+        'site.name', 'site', 'name', 'string', 'text', 'Site Name',
+        'Used as the public site name.', true, 150, [], 'Copot'
+    ),
+]), new SettingsSection('localization', 'Localization', 'Manage site-wide localization settings.', [
+    new SettingsField(
+        'localization.timezone', 'localization', 'timezone', 'string', 'select', 'Timezone',
+        'Controls the default application timezone.', true, null, ['UTC', 'Asia/Jakarta'], 'UTC'
+    ),
+])];
 
 $settingsData = [
     'formAction' => '/dapur/settings',
     'csrfToken' => 'csrf-token',
     'values' => [
-        'site_name' => 'copot',
-        'site_tagline' => 'Framework',
-        'localization_timezone' => 'UTC',
-        'localization_locale' => 'id_ID',
-        'localization_date_format' => 'Y-m-d',
-        'localization_time_format' => 'H:i',
+        'site.name' => 'copot',
+        'localization.timezone' => 'UTC',
     ],
-    'errors' => [],
+    'sections' => $settingsSections,
+    'fieldErrors' => [],
+    'formErrors' => [],
     'saved' => true,
-    'timezones' => ['UTC', 'Asia/Jakarta'],
-    'locales' => ['en_US', 'id_ID'],
-    'dateFormats' => ['Y-m-d', 'd/m/Y'],
-    'timeFormats' => ['H:i', 'h:i A'],
+    'logoUploadAction' => '/dapur/settings/site-assets/logo',
+    'logoRemoveAction' => '/dapur/settings/site-assets/logo/remove',
+    'faviconUploadAction' => '/dapur/settings/site-assets/favicon',
+    'faviconRemoveAction' => '/dapur/settings/site-assets/favicon/remove',
 ];
 
-$settingsSuccess = $view->render('admin/settings', $settingsData);
-$settingsError = $view->render('admin/settings', array_replace($settingsData, [
-    'errors' => [
-        'site_name' => 'Site Name is required.',
-        'localization_timezone' => 'Invalid timezone.',
+$settingsSuccess = $settingsView->render('admin/settings', $settingsData);
+$settingsError = $settingsView->render('admin/settings', array_replace($settingsData, [
+    'fieldErrors' => [
+        'site.name' => ['Site Name is required.'],
+        'localization.timezone' => ['Invalid timezone.'],
     ],
+    'formErrors' => ['Settings contain invalid values.'],
     'saved' => false,
 ]));
 $dashboard = $view->render('admin/dashboard', [
@@ -103,13 +116,17 @@ $assert(str_contains($login, 'class="admin-alert admin-alert--danger"'), 'Admin 
 $assert(str_contains($login, 'role="alert"'), 'Admin login error lacks alert semantics.');
 
 // Field pattern: label association, help/error references, invalid state, and required state.
-$assert(str_contains($settingsError, '<label class="admin-field__label" for="site_name">'), 'Settings label is not associated with Site Name.');
-$assert(str_contains($settingsError, 'aria-describedby="site_name-help site_name-error"'), 'Settings field does not reference help and error text.');
+$siteNameId = 'setting-' . bin2hex('site.name');
+$assert(str_contains($settingsError, '<label class="admin-field__label" for="' . $siteNameId . '">'), 'Dynamic Settings label is not associated with Site Name.');
+$assert(str_contains($settingsError, 'name="settings[site.name]"'), 'Settings field does not use the identifier-preserving nested boundary.');
+$assert(str_contains($settingsError, 'aria-describedby="' . $siteNameId . '-help ' . $siteNameId . '-error"'), 'Settings field does not reference help and error text.');
 $assert(str_contains($settingsError, 'aria-invalid="true"'), 'Invalid Settings field lacks aria-invalid.');
-$assert(str_contains($settingsError, 'class="admin-field__error" id="site_name-error"'), 'Settings field error contract is missing.');
-$assert(str_contains($settingsSuccess, 'class="admin-field__help" id="site_name-help"'), 'Settings help-text contract is missing.');
+$assert(str_contains($settingsError, 'class="admin-field__error" id="' . $siteNameId . '-error"'), 'Settings field error contract is missing.');
+$assert(str_contains($settingsSuccess, 'class="admin-field__help" id="' . $siteNameId . '-help"'), 'Settings help-text contract is missing.');
 $assert(str_contains($settingsSuccess, '<span class="admin-visually-hidden">required</span>'), 'Required field lacks accessible required text.');
 $assert(str_contains($settingsSuccess, '<select'), 'Settings select rendering regressed.');
+$assert(str_contains($settingsSuccess, '<legend class="admin-fieldset__legend">General</legend>'), 'Grouped dynamic Settings section regressed.');
+$assert(str_contains($settingsSuccess, 'Upload Logo') && str_contains($settingsSuccess, 'Upload Favicon'), 'Specialized Site Asset controls regressed.');
 $assert(str_contains($css, '.admin-field textarea'), 'Textarea field pattern is missing.');
 
 // Action variants preserve native element roles while sharing presentation classes.
@@ -139,7 +156,8 @@ $assert(str_contains($login, 'method="post" action="/dapur"'), 'Admin login rout
 $assert(str_contains($login, 'name="_token" value="csrf-token"'), 'Admin login CSRF token rendering regressed.');
 $assert(str_contains($routesSource, "'settings.update'"), 'Settings permission guard is missing.');
 $assert(str_contains($routesSource, 'validateOrReject($request)'), 'Settings CSRF validation guard is missing.');
-$assert(str_contains($routesSource, 'validateCsrf('), 'Admin authentication CSRF validation guard is missing.');
+$adminRoutesSource = $readFile($basePath . '/routes/admin.php');
+$assert(str_contains($adminRoutesSource, 'validateCsrf('), 'Admin authentication CSRF validation guard is missing.');
 
 // Scope and dependency guards.
 $assert(!str_contains($settingsSource, '<style>'), 'Settings retains a page-local stylesheet instead of shared Admin patterns.');

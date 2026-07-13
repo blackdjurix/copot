@@ -18,13 +18,13 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone: M3.1 Users & Access.
+Current milestone: M3.2 Settings Manager.
 
-Current work: M3.1 Batch 5 — Documentation Sync + Completion Audit.
+Current work: M3.2 Batch 5 — Completion and Manual Verification documentation and Git checkpoint.
 
 Primary goal:
 
-Close M3.1 after its five approved batches without entering M3.2 or running the separate Post-M3.1 Roadmap Sync checkpoint.
+Close M3.2 after final automated regression, manual verification, completion audit, and documentation sync without starting M3.3.
 
 Current state:
 
@@ -33,14 +33,34 @@ Current state:
 * M3 Prep Stage 3 Final Review + Entry Audit is complete, and M3 Prep is closed.
 * The v0.12.0 Webcore baseline remains maintenance-only and M3 development remains module-first.
 * The approved M3.1-M3.11 sequence, 59-batch planning envelope, risk labels, Sequence Change Rule, Parallelization Rule, and Just-in-Time Batch Lock Rule remain locked.
-* M3.1 Users & Access is complete on its approved milestone branch, pending the user-owned commit, push, and merge workflow.
+* M3.1 Users & Access is complete and merged to `main` at merge commit `5c4cf8c`.
 * M3.1 retains the exact five-batch structure locked during M3 Prep.
 * M3.1 Batches 1–5 are complete.
 * Users, Roles, user-role assignments, role-permission assignments, security/integration hardening, manual Admin verification, and completion validation pass.
 * Focused M3.1 Batches 1–4 provide 487 assertions; the access-denied recovery regression adds 17 assertions, for 504 focused assertions total.
 * The complete M2.4 unified platform regression chain passes.
-* M3.2 is not active. Post-M3.1 Roadmap Sync is the next checkpoint after M3.1 is committed, pushed, and merged to `main`.
+* Post-M3.1 Roadmap Sync is complete through this preparation checkpoint.
+* M3.2 Settings Manager preparation is complete.
+* M3.2 Batch 1 is complete, committed, and pushed at baseline commit `31d540a`.
+* The M3.2 Batch 1 No-Return Point is reached.
+* M3.2 preparation and Batches 1–5 are complete. Settings Manager is complete on its feature branch with 366 focused M3.2 assertions; M3.3 has not started.
+* The module-local manager policy exposes only six registered scalar definitions, maps reusable deterministic section/field contracts, and excludes generic JSON plus specialized Logo/Favicon definitions.
+* Batch 2 aggregates controlled validation errors, preserves optional-field omission semantics, validates every candidate before writing, and saves deterministic candidates through a root transaction or caller-safe nested savepoint.
+* Batch 2 focused domain and integration coverage passes 94 assertions.
+* Batch 3 replaces fixed scalar wiring with grouped dynamic Admin sections derived from `SettingsManager::sections()` and a nested `settings[domain.identifier]` request boundary delegated to `SettingsManager::save()`.
+* Batch 3 preserves configured Admin paths, Admin shell, authorization, CSRF, PRG, and specialized Logo/Favicon workflows while excluding generic JSON and Site Asset descriptors from scalar rendering.
+* Batch 3 validation redisplay preserves submitted/effective values, controlled invalid select values, collision-safe identifiers, and controlled Admin-shell `503` behavior.
+* Batch 3 integration and presentation coverage passes 85 focused assertions.
+* Batch 4 is tests-only and passes 145 focused assertions: 126 security assertions plus 19 compatibility assertions. Coverage proves the two-permission matrix and authorization ordering, request-sensitive missing/invalid CSRF containment, secret-like and uneditable scalar exclusion, mid-write rollback with controlled sanitized Admin-shell `503`, and continued configured-path and specialized Logo/Favicon compatibility.
+* Cumulative focused M3.2 coverage is 366 assertions. Required M2.1 Admin UI, M2.3 Branding/Site Asset and unified, plus M3.1 permission/access regressions pass; the final manual matrix passes, with permission-denial and configured-path cases evidenced automated-assisted.
+* `SettingsService::definitions()` and `definitionGroups()` expose deterministic, registered-only, read-only definition discovery without exposing the registry or database.
+* Admin Settings navigation, GET/POST, grouped dynamic scalar view, and fixed Logo/Favicon routes are owned by the lifecycle-enabled `settings-manager` module; `routes/admin.php` and Core views no longer duplicate that ownership.
+* Fresh installation enables `settings-manager` with the existing baseline ModuleManager flow. Existing installations install and enable it through the same ModuleManager lifecycle; no schema change or upgrade SQL is required.
+* Batch 1 focused contract and integration coverage passes 42 assertions, with relevant Admin, Settings, Site Asset, packaging, and isolated clean-install compatibility passing.
+* The Database Upgrade / Migration System concept is locked as planned but remains unimplemented and excluded from M3.2.
+* Admin UX Refinement 1 remains planned after M3.3 and before M3.4.
 * The post-v0.12.0 Core freeze remains in force.
+* Batch 5 is validation, manual verification, and documentation closure only; it adds no runtime, Core, schema, SQL, migration runner, permission, manifest, dependency, route, view, or production behavior change. No unresolved runtime, schema, security, or Core blocker remains.
 
 Latest release: v0.12.0.
 
@@ -671,20 +691,21 @@ Commit messages should remain clear and milestone-aware.
 
 Copot v0.12.0 is released and is the current stable Webcore baseline.
 
-M3 Preparation is complete and closed. M3.1 Users & Access is the active milestone.
+M3 Preparation is complete and closed. M3.1 Users & Access is complete and merged.
 
-The active checkpoint is M3.1 Batch 5 documentation sync and completion audit.
+The active checkpoint is M3.2 completion documentation and Git checkpoint.
 
 The immediate goal is to:
 
 * preserve the released v0.12.0 runtime and distribution contracts;
 * preserve the Stage 1 Webcore freeze, module ownership, dependency, Theme/Module, Navigation, Media, and repository boundaries;
 * preserve the Stage 2 approved sequence, planning envelopes, risk labels, and sequencing governance;
-* record the completed five-batch M3.1 implementation and verification evidence;
-* preserve the single runtime authorization model and completed administrator lockout protections;
-* keep deferred Admin UX refinements non-blocking and outside M3.1 closure;
-* keep M3.2 inactive;
-* defer Post-M3.1 Roadmap Sync until after the user-owned commit, push, and merge workflow.
+* preserve the completed M3.1 implementation and its 504 focused assertions, unified platform regression, and manual verification evidence;
+* preserve the completed M3.2 Settings Manager milestone and its 366 focused assertions;
+* preserve the existing Settings definitions, typed service, persistence, permission, Admin URL, CSRF, Admin Shell, and specialized Site Asset contracts;
+* close the M3.2 documentation and Git checkpoint without starting M3.3;
+* keep environment/runtime secrets outside editable Settings;
+* keep Database Upgrade / Migration System implementation and Admin UX Refinement 1 outside M3.2.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
 
@@ -695,3 +716,5 @@ M2.4 scope and architecture are defined in `docs/14_platform_hardening.md`.
 Distribution and packaging rules are defined in `docs/15_distribution_and_packaging.md`.
 
 M3 governance, Core freeze, module ownership, dependency, sequencing, and entry contracts are defined in `docs/16_m3_core_freeze_and_module_contract.md`.
+
+M3.2 Settings Manager preparation, scope, batches, and acceptance criteria are defined in `docs/17_m3_2_settings_manager_contract.md`.

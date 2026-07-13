@@ -139,7 +139,7 @@ try {
     $readme = (string) file_get_contents($basePath . '/README.md');
     $hardeningDoc = (string) file_get_contents($basePath . '/docs/14_platform_hardening.md');
     $authRoutes = (string) file_get_contents($basePath . '/routes/auth.php');
-    $adminRoutes = (string) file_get_contents($basePath . '/routes/admin.php');
+    $adminRoutes = (string) file_get_contents($basePath . '/modules/settings-manager/routes.php');
 
     $assert(str_contains($applicationSource, '$this->diagnostics'), 'Application does not pass Diagnostics into site-asset storage.');
     $assert(str_contains($assetSource, 'storage.siteasset.cleanup'), 'Site-asset cleanup failure is not observable.');

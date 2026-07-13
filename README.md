@@ -14,7 +14,7 @@ M2.3 Minimal Site Capabilities is complete and released as v0.11.0.
 
 M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the reproducibility blocker fix are complete. Copot v0.12.0 is the current stable Webcore baseline and installable release.
 
-The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content and Taxonomy modules, Core Settings, and a fresh-install web installer.
+The framework is runnable as a lightweight PHP foundation with authentication, authorization, local module and theme systems, a minimal core admin shell, Content, Taxonomy, and Settings Manager modules, Core Settings, and a fresh-install web installer.
 
 New deployments can be configured through `/install` before normal application bootstrap is allowed.
 
@@ -22,15 +22,15 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-M3 Core Modules. M3.1 Users & Access is complete on its milestone branch and awaits the user-owned commit, push, and merge workflow.
+M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete on its feature branch. M3.3 Module Manager has not started.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is M3.1 Batch 5 completion audit. M3.2 is not active; Post-M3.1 Roadmap Sync is the next checkpoint after M3.1 is merged to `main`.
+The active checkpoint is M3.2 completion documentation and Git checkpoint.
 
-M2 Platform Capabilities are complete. Copot v0.12.0 remains the stable released Webcore baseline. M3.1 is implemented but is not yet merged to `main` or included in a new release.
+M2 Platform Capabilities are complete. Copot v0.12.0 remains the stable released Webcore baseline. M3.1 is merged but is not yet included in a new release.
 
 The approved M3 sequence is:
 
@@ -50,7 +50,7 @@ M3.11 Form Manager
 
 The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
 
-M3.1 Users & Access completed its five approved batches. Post-M3.1 Roadmap Sync remains a separate checkpoint before M3.2 preparation or batch locking.
+M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Settings Manager completed its five approved batches on this feature branch: lifecycle-owned configured-path Admin routes, registered scalar management with validation-before-write and atomic persistence, specialized Logo/Favicon workflows, and tests-only security/compatibility hardening. Generic JSON and Site Asset descriptors remain excluded. Final focused M3.2 coverage is 366 assertions, required M2.1/M2.3/M3.1 compatibility regressions and manual verification pass, and M3.3 has not started. M3.2 is completed but not released.
 
 M2.2 completion record:
 
@@ -138,8 +138,15 @@ Included so far:
 - Content admin category/tag selection when Taxonomy module is enabled
 - Content admin fallback when Taxonomy module is disabled
 - Core Settings definitions, registry, repository, and typed service
+- Deterministic registered-only read-only Settings definition discovery through `SettingsService`
+- Module-local Settings Manager editability/presentation policy with deterministic section and typed scalar field contracts
+- Aggregated Settings validation with optional-field omission and validation-before-write
+- Atomic Settings Manager candidate persistence through root transactions or caller-safe nested savepoints
+- Grouped dynamic Settings Manager Admin presentation with text, number, checkbox, and select fields
+- Nested identifier-based Settings submission with safe validation redisplay and configured-path PRG behavior
 - Namespaced settings overrides with code-defined defaults
-- Configurable Admin Settings route under `/{admin_path}/settings`
+- Lifecycle-owned `settings-manager` Admin Settings routes and navigation under the configured Admin path
+- Dynamic scalar Settings presentation and specialized fixed Site Asset controls owned by `settings-manager`
 - `settings.update` permission for viewing and saving settings
 - Transactional, CSRF-protected Settings form
 - Runtime timezone application and active locale foundation
@@ -152,7 +159,7 @@ Included so far:
 - Canonical `database/schema.sql` installation
 - First administrator and initial site/localization setup
 - Automatic default-theme activation
-- Automatic Content and Taxonomy module enablement
+- Automatic Content, Taxonomy, and Settings Manager module enablement
 - Atomic final installation marker at `storage/installed.lock`
 - Installer denial after successful installation
 
@@ -508,7 +515,7 @@ M1.5 adds a basic local Content Module at:
 modules/content
 ```
 
-For an existing or manually prepared installation, install and enable the Content Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content and Taxonomy automatically as baseline modules.
+For an existing or manually prepared installation, install and enable the Content Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, and Settings Manager automatically as baseline modules.
 
 Install and enable the Content Module:
 
@@ -555,7 +562,7 @@ M1.6 adds a reusable local Taxonomy Foundation module at:
 modules/taxonomy
 ```
 
-For an existing or manually prepared installation, install and enable the Taxonomy Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content and Taxonomy automatically as baseline modules.
+For an existing or manually prepared installation, install and enable the Taxonomy Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, and Settings Manager automatically as baseline modules.
 
 Install and enable the Taxonomy Module:
 
@@ -625,7 +632,7 @@ M1.8 provides a fresh-install web flow at:
 /install
 ```
 
-When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The installer checks the environment, tests a dedicated empty database, persists the five `DB_*` connection values in the root `.env`, installs the canonical schema, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables Content and Taxonomy. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
+When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The installer checks the environment, tests a dedicated empty database, persists the five `DB_*` connection values in the root `.env`, installs the canonical schema, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables Content, Taxonomy, and Settings Manager. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
 
 Requirements:
 
@@ -643,7 +650,7 @@ For a fresh manual check:
 1. Ensure `storage/installed.lock` is absent and select an empty disposable database.
 2. Open `/install` and complete Requirements, Database, Administrator & Site, and Finalize.
 3. Confirm the final redirect uses the configured admin path.
-4. Confirm `/install` returns `404`, the default theme is active, and Content and Taxonomy are enabled.
+4. Confirm `/install` returns `404`, the default theme is active, and Content, Taxonomy, and Settings Manager are enabled.
 5. If schema execution fails partially, use a new clean database; M1.8 has no destructive repair/reset flow.
 
 ## Manual Settings Test Checklist

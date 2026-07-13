@@ -4,6 +4,18 @@
 
 ### Added
 
+- Added the M3.2 Batch 1 Settings Manager module boundary with lifecycle-owned Admin Settings routes, navigation, fixed compatibility presentation, and Site Asset controls.
+- Added deterministic registered-only Settings definition discovery through the existing `SettingsService`, plus 42 focused contract and integration assertions.
+- Added M3.2 Batch 2 module-local manager policy plus reusable deterministic section and typed scalar field contracts, with registered-only editability and generic JSON/Site Asset descriptor exclusion.
+- Added aggregated validation and atomic multi-field save orchestration with optional-field omission, validation-before-write, root transactions, caller-safe nested savepoints, and prior-value preservation on failure.
+- Added M3.2 Batch 3 grouped dynamic Admin Settings presentation for text, number, checkbox, and select fields derived from the manager domain contract.
+- Added nested `settings[domain.identifier]` request handling delegated to `SettingsManager`, with inline/form validation redisplay, controlled invalid-select preservation, collision-safe field IDs, and controlled Admin-shell `503` handling.
+- Added M3.2 Batch 4 tests-only security and compatibility suites covering the `admin.access` plus `settings.update` permission matrix, authorization-before-CSRF/lookup/mutation ordering, request-sensitive missing/invalid CSRF containment, and unknown, uneditable, secret-like, Logo, and Favicon scalar rejection.
+- Added route-level mid-write storage-failure coverage proving rollback, prior-value preservation, transaction closure, sanitized Admin-shell `503` responses, and absence of raw PDO, SQLSTATE, exception, stack-trace, or credential-like detail.
+- Added M3.2 Batch 5 completion evidence: final automated validation, runtime prerequisite checks, manual and automated-assisted Admin verification, and documentation closure.
+- Added the Post-M3.1 Roadmap Sync and M3.2 Settings Manager preparation contract, including scope, batches, permission reuse, Core approval points, and manual verification gates.
+- Locked the planned Database Upgrade / Migration System concept and the post-M3.3 Admin UX Refinement 1 checkpoint without starting either implementation.
+
 - Added M3.1 Users & Access administrator workflows for Users, Roles, user-role assignments, role-permission assignments, active/inactive status, and administrator-managed passwords using the existing authorization model.
 - Added nine M3.1 runtime permissions, canonical fresh-install provisioning, and the controlled idempotent existing-installation upgrade artifact.
 - Added configured-Admin-path, CSRF, escaping, compatibility, administrator-invariant, and access-denied logout recovery coverage.
@@ -31,6 +43,14 @@
 
 ### Changed
 
+- Completed M3.2 Batch 3 Admin Routes and Presentation while preserving configured Admin paths, `admin.access`, `settings.update`, CSRF, PRG, the Admin shell, and specialized Logo/Favicon workflows.
+- Completed M3.2 Batch 4 Security and Compatibility Hardening as tests-only work without runtime, Core, schema, SQL, permission, manifest, dependency, route, view, or production behavior changes; M3.2 remains in progress and Batch 5 has not started.
+- Completed M3.2 Batch 5 Completion and Manual Verification and the Settings Manager milestone on its feature branch. Batch 5 is validation and documentation closure only; it introduces no production/runtime, schema, or Core change, and M3.3 has not started.
+- Preserved the singular Settings domain and excluded generic JSON plus Logo/Favicon descriptors from dynamic scalar rendering without Core, schema, permission, dependency, or Batch 2 domain changes.
+- Moved the existing fixed Admin Settings route/view ownership from Core to `settings-manager` without changing URLs, `settings.update`, CSRF, validation-before-write, transactions, Admin shell errors, or Logo/Favicon behavior.
+- Added `settings-manager` to fresh-install baseline module enablement and the release package; existing installations continue to use explicit ModuleManager install/enable lifecycle operations.
+- Recorded M3.1 Users & Access as merged to `main` through `5c4cf8c` and activated M3.2 preparation without starting Batch 1 runtime work.
+
 - Completed all five M3.1 batches on the milestone branch without activating M3.2 or creating a new release.
 - Preserved standalone `403` denial for authenticated users without `admin.access` while adding a CSRF-protected POST Sign out recovery action; guest standalone errors remain unchanged.
 - Isolated the Batch 3 final-administrator integration fixture from existing active administrator-capable database users without changing runtime invariant semantics.
@@ -56,6 +76,13 @@
 
 ### Verification
 
+- M3.2 Batch 4 security and compatibility suites pass 145 focused assertions (126 security and 19 compatibility); cumulative focused M3.2 coverage through Batches 1–4 totals 366 assertions.
+- Relevant M2.1 Admin UI, M2.3 Branding/Site Asset and unified, and M3.1 permission/access regressions pass after Batch 4.
+- All five M3.2 batches pass their gates. Final automated validation confirms 366 focused assertions, required compatibility regressions, PHP lint, repository and boundary checks; the manual matrix passes, with permission-denial and configured-path cases verified automated-assisted.
+- M3.2 Batch 3 integration and presentation suites pass 85 focused assertions (46 integration and 39 presentation); focused M3.2 coverage through Batches 1–3 totals 221 assertions.
+- Relevant M2.1 Admin UI, M2.3 Branding/Site Asset, and M2.3 unified regressions pass after Batch 3.
+- M3.2 Batch 2 domain and integration suites pass 94 focused assertions; Batch 1 Settings suites and directly relevant Branding, Settings, and Site Asset regressions pass.
+- M3.2 Batch 1 definition and integration suites pass 42 focused assertions; relevant Admin UI, Settings, Site Asset, M3.1 compatibility, package-content, and isolated clean-install verification pass.
 - M3.1 Batches 1–4 pass 487 focused assertions; the access-denied recovery regression adds 17 assertions for 504 focused assertions total.
 - The complete M2.4 unified platform regression chain and M3.1 manual Admin verification pass.
 

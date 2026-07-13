@@ -207,7 +207,7 @@ try {
     $assert(!str_contains($login, '<html lang="en">'), 'Admin login view retains a hardcoded document-language contract.');
 
     foreach ([
-        'resources/views/admin/settings.php',
+        'modules/settings-manager/views/admin/settings.php',
         'modules/content/views/admin/list.php',
         'modules/content/views/admin/form.php',
         'modules/taxonomy/views/admin/types.php',
