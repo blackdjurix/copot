@@ -9,6 +9,7 @@ return [
         'config',
         'database',
         'modules/content',
+        'modules/module-manager',
         'modules/settings-manager',
         'modules/taxonomy',
         'public',

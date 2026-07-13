@@ -299,7 +299,14 @@ try {
         $connection = $database->connection();
         $assert((int) $connection->query('SELECT COUNT(*) FROM users')->fetchColumn() === 1, 'Installed database must have one first administrator.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM themes WHERE theme_id = 'default' AND is_active = 1")->fetchColumn() === 1, 'Default theme must be active.');
-        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name IN ('content', 'settings-manager', 'taxonomy') AND status = 'enabled'")->fetchColumn() === 3, 'Content, Settings Manager, and Taxonomy modules must be enabled.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name IN ('content', 'settings-manager', 'taxonomy', 'module-manager') AND status = 'enabled'")->fetchColumn() === 4, 'All four approved baseline modules must be enabled.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name = 'module-manager'")->fetchColumn() === 1, 'Module Manager must be installed exactly once.');
+        $assert((string) $connection->query("SELECT status FROM modules WHERE name = 'module-manager'")->fetchColumn() === 'enabled', 'Module Manager must be enabled after fresh installation.');
+        $assert((int) $connection->query("SELECT COUNT(*)
+            FROM module_permissions
+            INNER JOIN modules ON modules.name = module_permissions.module_name
+            WHERE modules.name = 'module-manager' AND module_permissions.permission_slug = 'modules.manage'")->fetchColumn() === 1, 'Module Manager permission metadata must be registered from its manifest.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE status = 'enabled' AND name NOT IN ('content', 'settings-manager', 'taxonomy', 'module-manager')")->fetchColumn() === 0, 'Fresh installation must not enable an unrelated module.');
         $assert($settings->get('site', 'name') === 'Copot D4 Clean Install', 'Initial site name must be persisted.');
 
         $app = require $installTarget . '/bootstrap/app.php';
