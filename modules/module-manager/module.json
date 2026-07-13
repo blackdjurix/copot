@@ -1,0 +1,16 @@
+{
+  "name": "module-manager",
+  "title": "Module Manager",
+  "description": "Administrator-facing inventory and lifecycle eligibility for Copot modules.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "requires": {
+    "modules": []
+  },
+  "permissions": [
+    {
+      "slug": "modules.manage",
+      "name": "Manage modules"
+    }
+  ]
+}
