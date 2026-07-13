@@ -2,7 +2,7 @@
 
 ## Status
 
-M3.2 Settings Manager preparation and Batches 1–3 are complete. Batch 1 is committed and pushed at baseline commit `31d540a` and reached its implementation No-Return Point with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 Manager Domain & Field Contract passes its focused implementation, adversarial review, remediation, and completion gates with 94 assertions. Batch 3 Admin Routes and Presentation passes implementation, three focused remediation cycles, final completion review, and relevant regressions with 85 focused assertions. M3.2 remains in progress; Batch 4 and Batch 5 have not started.
+M3.2 Settings Manager preparation and Batches 1–4 are complete. Batch 1 is committed and pushed at baseline commit `31d540a` and reached its implementation No-Return Point with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 Manager Domain & Field Contract passes its focused implementation, adversarial review, remediation, and completion gates with 94 assertions. Batch 3 Admin Routes and Presentation passes implementation, three focused remediation cycles, final completion review, and relevant regressions with 85 focused assertions. Batch 4 Security and Compatibility Hardening passes tests-only implementation, focused remediation, completion review, and relevant regressions with 145 focused assertions. Cumulative focused M3.2 coverage through Batch 4 is 366 assertions. M3.2 remains in progress; Batch 5 has not started.
 
 The exact five-batch structure refines the Stage 2 four-batch planning envelope using current repository evidence. The additional boundary separates approval of existing Core Settings route/definition ownership from domain behavior, Admin integration, hardening, and completion; it does not change the approved M3 sequence.
 
@@ -29,8 +29,7 @@ Reusable capability already present:
 
 Current gaps:
 
-* full security and compatibility hardening, including the complete permission/failure/security matrix, remains for Batch 4;
-* final unified M3.2 completion validation, manual Admin verification, and documentation closure remain for Batch 5.
+* final unified M3.2 completion validation, manual Admin verification, and milestone documentation closure remain for Batch 5.
 
 ## Settings Boundary
 
@@ -153,6 +152,8 @@ Validation: security/integration tests and relevant M2/M3 compatibility chain.
 Non-goals: new permission split, migration system, infrastructure editor.
 
 Core touchpoint: none expected.
+
+Batch 4 result: complete and pass. The work is tests-only: `tests/settings_manager_batch4_security.php` passes 126 assertions and `tests/settings_manager_batch4_compatibility.php` passes 19 assertions, for 145 focused Batch 4 assertions and 366 cumulative focused M3.2 assertions through Batches 1–4. Executable coverage proves that `admin.access` and `settings.update` are both required; authorization precedes CSRF, definition discovery, effective-value lookup, scalar validation/persistence, and Logo/Favicon mutation; missing and invalid CSRF return controlled Admin-shell `419` responses without downstream work or state mutation; and unknown, uneditable, secret-like, Logo, and Favicon scalar identifiers are rejected without partial persistence. A route-level failure on the second scalar write proves rollback of the first write, restoration of all prior effective values, transaction closure, controlled Admin-shell `503`, and suppression of raw PDO, SQLSTATE, exception, stack-trace, and credential-like detail. Batch 3 configured-path/default-path exclusion remains executable, Logo/Favicon remain specialized, no `settings.read` or other permission was introduced, and relevant M2.1 Admin UI, M2.3 Branding/Site Asset and unified, plus M3.1 permission regressions pass. No runtime, Core, schema, SQL, permission, manifest, dependency, route, view, or production behavior change was introduced. Direct executable injection for rollback/savepoint cleanup-failure branches remains deferred and non-blocking. Batch 5 has not started.
 
 ### Batch 5 — Completion and Manual Verification
 

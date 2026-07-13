@@ -10,6 +10,8 @@
 - Added aggregated validation and atomic multi-field save orchestration with optional-field omission, validation-before-write, root transactions, caller-safe nested savepoints, and prior-value preservation on failure.
 - Added M3.2 Batch 3 grouped dynamic Admin Settings presentation for text, number, checkbox, and select fields derived from the manager domain contract.
 - Added nested `settings[domain.identifier]` request handling delegated to `SettingsManager`, with inline/form validation redisplay, controlled invalid-select preservation, collision-safe field IDs, and controlled Admin-shell `503` handling.
+- Added M3.2 Batch 4 tests-only security and compatibility suites covering the `admin.access` plus `settings.update` permission matrix, authorization-before-CSRF/lookup/mutation ordering, request-sensitive missing/invalid CSRF containment, and unknown, uneditable, secret-like, Logo, and Favicon scalar rejection.
+- Added route-level mid-write storage-failure coverage proving rollback, prior-value preservation, transaction closure, sanitized Admin-shell `503` responses, and absence of raw PDO, SQLSTATE, exception, stack-trace, or credential-like detail.
 - Added the Post-M3.1 Roadmap Sync and M3.2 Settings Manager preparation contract, including scope, batches, permission reuse, Core approval points, and manual verification gates.
 - Locked the planned Database Upgrade / Migration System concept and the post-M3.3 Admin UX Refinement 1 checkpoint without starting either implementation.
 
@@ -41,6 +43,7 @@
 ### Changed
 
 - Completed M3.2 Batch 3 Admin Routes and Presentation while preserving configured Admin paths, `admin.access`, `settings.update`, CSRF, PRG, the Admin shell, and specialized Logo/Favicon workflows.
+- Completed M3.2 Batch 4 Security and Compatibility Hardening as tests-only work without runtime, Core, schema, SQL, permission, manifest, dependency, route, view, or production behavior changes; M3.2 remains in progress and Batch 5 has not started.
 - Preserved the singular Settings domain and excluded generic JSON plus Logo/Favicon descriptors from dynamic scalar rendering without Core, schema, permission, dependency, or Batch 2 domain changes.
 - Moved the existing fixed Admin Settings route/view ownership from Core to `settings-manager` without changing URLs, `settings.update`, CSRF, validation-before-write, transactions, Admin shell errors, or Logo/Favicon behavior.
 - Added `settings-manager` to fresh-install baseline module enablement and the release package; existing installations continue to use explicit ModuleManager install/enable lifecycle operations.
@@ -71,6 +74,8 @@
 
 ### Verification
 
+- M3.2 Batch 4 security and compatibility suites pass 145 focused assertions (126 security and 19 compatibility); cumulative focused M3.2 coverage through Batches 1–4 totals 366 assertions.
+- Relevant M2.1 Admin UI, M2.3 Branding/Site Asset and unified, and M3.1 permission/access regressions pass after Batch 4.
 - M3.2 Batch 3 integration and presentation suites pass 85 focused assertions (46 integration and 39 presentation); focused M3.2 coverage through Batches 1–3 totals 221 assertions.
 - Relevant M2.1 Admin UI, M2.3 Branding/Site Asset, and M2.3 unified regressions pass after Batch 3.
 - M3.2 Batch 2 domain and integration suites pass 94 focused assertions; Batch 1 Settings suites and directly relevant Branding, Settings, and Site Asset regressions pass.
