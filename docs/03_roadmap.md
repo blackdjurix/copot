@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. The current checkpoint is the Post-M3.2 / Pre-M3.3 transition for authoritative-state sync and M3.3 entry preparation. M3.3 has not started.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. The M3.3 Module Manager entry contract is now approved and documented; implementation has not started.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -722,13 +722,56 @@ Fresh installs use the canonical `database/schema.sql`; existing installations c
 
 #### Admin UX Refinement 1
 
-Status: planned; implementation not started; non-blocking for M3.1.
+Status: planned; implementation not started; non-blocking for M3.3 and scheduled after M3.3 before M3.4.
 
 M3.2 and M3.3 collect management-UI patterns. After M3.3 and before M3.4, Admin UX Refinement 1 will normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical permission slugs by default, add floating global notifications while preserving inline validation, clarify effective permissions for multi-role users, and establish reusable dashboard block spacing.
 
 #### M3.2 Settings Manager
 
-M3.2 Settings Manager is complete in the approved sequence and merged to `main` through `afd82f0`. Exact scope, permission reuse, approved Core touchpoints, five-batch plan, acceptance criteria, and completion evidence remain authoritative in `docs/17_m3_2_settings_manager_contract.md`. All five batches pass their gates. Final automated validation passes 366 focused M3.2 assertions, required M2.1 Admin UI, M2.3 Branding/Site Asset and unified, plus M3.1 permission/access regressions; PHP lint, repository, and boundary checks pass. The final manual matrix passes, with permission-denial and configured non-default Admin-path cases verified automated-assisted and the remaining Admin workflows verified manually. No unresolved Core, schema, runtime, or security blocker remains. The Post-M3.2 / Pre-M3.3 transition is the current checkpoint. M3.3 has not started, the approved M3 sequence and five-batch M3.3 planning envelope are unchanged, focused preparation remains required by the Just-in-Time Batch Lock before M3.3 begins, and no exact M3.3 batch breakdown is locked by this transition.
+M3.2 Settings Manager is complete in the approved sequence and merged to `main` through `afd82f0`. Exact scope, permission reuse, approved Core touchpoints, five-batch plan, acceptance criteria, and completion evidence remain authoritative in `docs/17_m3_2_settings_manager_contract.md`. All five batches pass their gates. Final automated validation passes 366 focused M3.2 assertions, required M2.1 Admin UI, M2.3 Branding/Site Asset and unified, plus M3.1 permission/access regressions; PHP lint, repository, and boundary checks pass. The final manual matrix passes, with permission-denial and configured non-default Admin-path cases verified automated-assisted and the remaining Admin workflows verified manually. No unresolved Core, schema, runtime, or security blocker remains.
+
+#### M3.3 Module Manager Entry Contract
+
+Status: Contract approved and documented. Implementation has not started. M3.3 remains a high-Core-risk milestone with a five-batch planning envelope and the existing Just-in-Time Batch Lock governance.
+
+The Module Manager module owns Admin inventory, metadata and discovery-error presentation, navigation, configured-path routes, and controlled lifecycle workflows. It consumes the existing Core discovery, repository, lifecycle, Admin URL, Admin Shell, CSRF, navigation, and sanitized-error contracts. No confirmed Core blocker exists; any Core change requires separate approval and executable evidence.
+
+Authorization is locked to both the configured base permission `admin.access` and the dedicated runtime permission `modules.manage` (`Manage modules`). One dedicated permission covers inventory plus install, enable, disable, and uninstall. Fresh installations will provision `modules.manage` and map it to the seeded `admin` role through `database/schema.sql`. Existing installations will use the controlled, idempotent, operator-run `database/upgrades/m3_3_module_manager_permission.sql`; it may add only the permission and missing seeded-admin mapping, must not run automatically or install/enable modules, and must not introduce permission synchronization. `module_permissions` remains metadata only and grants no runtime access.
+
+The proposed M3.3 artifact is the second independent upgrade artifact. The Database Upgrade / Migration System trigger is not currently reached, and a generic migration runner remains out of scope.
+
+Lifecycle rules are:
+
+1. Install accepts only a valid discovered and uninstalled module and produces a disabled installation.
+2. Module-row insertion and `module_permissions` replacement are atomic through existing transaction or caller-safe savepoint capability.
+3. Failure restores prior persistent state, leaves no open transaction, and returns a sanitized controlled error.
+4. Enable accepts only an installed disabled module with valid discoverable files, valid declared route/listener files, and satisfied dependencies.
+5. Disable accepts only an installed enabled module with no enabled dependent.
+6. Uninstall accepts only an installed disabled module with no enabled dependent.
+7. An enabled module must be disabled successfully before uninstall.
+8. Repeated or unsupported transitions fail without mutation.
+9. Missing target files block enablement but do not block recovery disablement or later uninstall after normal checks.
+10. If an enabled potential dependent is missing or invalid on disk, target disable/uninstall fails closed.
+11. Self-dependencies and duplicate dependency declarations are invalid.
+12. Name-graph dependency cycles are detected and block enablement.
+13. M3.3 supports name-only dependencies; version-constraint resolution is out of scope.
+14. Stored title, version, and path drift is detected and displayed, but not automatically synchronized.
+15. Declared route and listener files pass preflight before enablement.
+16. Existing runtime loader compatibility may remain: missing routes may still be skipped and missing listeners may remain fail-closed.
+17. Module files are never deleted.
+18. The contract locks required behavior and transaction outcomes, not a specific orchestration layer.
+
+The exact five-batch plan is:
+
+1. Contract lock, ownership, permission/migration decision, and focused baseline.
+2. Manager domain and lifecycle presentation contract.
+3. Admin routes, views, navigation, and controlled mutations.
+4. Security, lifecycle failure, dependency, and compatibility hardening.
+5. Unified regression, manual verification, documentation closure, and completion audit.
+
+Explicit non-goals include marketplace or remote installation, package download or ZIP upload, signing, automatic updates, rollback, generic version solving, Composer-style dependency resolution, automatic permission or role synchronization, a second authorization system, a generic migration framework, Theme Manager, Media Library, module settings UI, module code editor, Admin UX Refinement 1, M3.4, release, tagging, and package publication.
+
+The M3.3 preparation No-Return Point is reached only after documentation review, commit, push, merge, and synchronized clean `main`. This preparation branch has not reached that point.
 
 Branch strategy:
 

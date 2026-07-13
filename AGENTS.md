@@ -18,13 +18,13 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone / checkpoint: Post-M3.2 / Pre-M3.3 Transition.
+Current milestone / checkpoint: M3.3 Module Manager Contract Preparation.
 
-Current work: authoritative-state sync and M3.3 entry preparation.
+Current work: approved M3.3 contract documentation and entry-gate lock; implementation has not started.
 
 Primary goal:
 
-Synchronize the authoritative documentation after the M3.2 merge and prepare the repository baseline for a later focused M3.3 entry step without starting M3.3 contract design or implementation.
+Lock the approved M3.3 Module Manager contract and entry gates without starting M3.3 implementation, schema changes, SQL creation, package changes, release work, or tagging.
 
 Current state:
 
@@ -45,7 +45,12 @@ Current state:
 * The M3.2 Batch 1 No-Return Point is reached.
 * M3.2 preparation and Batches 1–5 are complete with 366 focused M3.2 assertions.
 * M3.2 Settings Manager is validated, merged to `main` through merge commit `afd82f0`, pushed, and its feature-branch lifecycle is closed.
-* M3.3 Module Manager has not started; the current work is limited to the Post-M3.2 / Pre-M3.3 transition and M3.3 entry preparation.
+* M3.3 Module Manager implementation has not started.
+* The approved M3.3 authorization contract requires base `admin.access` plus dedicated runtime permission `modules.manage` (`Manage modules`) for inventory and all lifecycle actions.
+* The approved M3.3 lifecycle contract requires atomic installation metadata replacement, fail-closed dependency and file checks, disabled-before-uninstall, drift visibility without auto-sync, name-only dependencies, and no module-file deletion.
+* Fresh-install provisioning for `modules.manage` belongs in `database/schema.sql`; existing-install provisioning belongs in the controlled operator-run `database/upgrades/m3_3_module_manager_permission.sql`. Neither artifact is created or modified in this preparation.
+* The proposed M3.3 artifact is the second independent upgrade artifact; the Database Upgrade / Migration System trigger is not currently reached, and a generic migration runner remains out of scope.
+* No confirmed Core blocker exists. Any Core change requires separate approval and executable evidence.
 * The module-local manager policy exposes only six registered scalar definitions, maps reusable deterministic section/field contracts, and excludes generic JSON plus specialized Logo/Favicon definitions.
 * Batch 2 aggregates controlled validation errors, preserves optional-field omission semantics, validates every candidate before writing, and saves deterministic candidates through a root transaction or caller-safe nested savepoint.
 * Batch 2 focused domain and integration coverage passes 94 assertions.
@@ -695,7 +700,7 @@ Copot v0.12.0 is released and is the current stable Webcore baseline.
 
 M3 Preparation is complete and closed. M3.1 Users & Access and M3.2 Settings Manager are complete and merged but remain unreleased.
 
-The active checkpoint is the Post-M3.2 / Pre-M3.3 Transition.
+The active checkpoint is M3.3 Module Manager Contract Preparation.
 
 The immediate goal is to:
 
@@ -705,8 +710,8 @@ The immediate goal is to:
 * preserve the completed M3.1 implementation and its 504 focused assertions, unified platform regression, and manual verification evidence;
 * preserve the completed M3.2 Settings Manager milestone and its 366 focused assertions;
 * preserve the existing Settings definitions, typed service, persistence, permission, Admin URL, CSRF, Admin Shell, and specialized Site Asset contracts;
-* synchronize authoritative state after M3.2 merged to `main` through `afd82f0`, was pushed, and closed its feature-branch lifecycle;
-* prepare the repository baseline for a later focused M3.3 entry step without starting M3.3 contract design or implementation;
+* preserve the approved M3.3 Module Manager contract and five-batch entry plan without starting implementation;
+* keep schema changes, SQL creation, package changes, release work, tagging, and Core changes behind separate approval gates;
 * keep environment/runtime secrets outside editable Settings;
 * keep Database Upgrade / Migration System implementation and Admin UX Refinement 1 outside M3.2.
 
