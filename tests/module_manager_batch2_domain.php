@@ -175,7 +175,14 @@ try {
     $assert(in_array('dependency_missing', $byName['dependency-missing']['denial_reasons']['enable'], true), 'Missing dependency did not block enablement.');
     $assert(in_array('dependency_disabled', $byName['dependency-disabled']['denial_reasons']['enable'], true), 'Disabled dependency did not block enablement.');
     $assert(in_array('unsupported_version_constraint', $byName['version-constrained']['denial_reasons']['enable'], true), 'Version constraint did not block enablement.');
-    $assert($byName['version-constrained']['denial_reasons']['enable'][0] === 'route_file_missing', 'Primary denial ordering is not deterministic.');
+    $assert(
+        $byName['version-constrained']['denial_reasons']['enable'] === [
+            'route_file_missing',
+            'unsupported_version_constraint',
+            'dependency_missing',
+        ],
+        'Complete primary denial ordering is not deterministic.'
+    );
     $assert(in_array('self_dependency', $byName['self-dependency']['denial_reasons']['enable'], true), 'Self-dependency did not block enablement.');
     $assert(in_array('duplicate_dependency', $byName['duplicate-dependency']['denial_reasons']['enable'], true), 'Duplicate dependency did not block enablement.');
     $assert(in_array('dependency_cycle', $byName['cycle-a']['denial_reasons']['enable'], true), 'Dependency cycle did not block enablement.');
@@ -193,6 +200,9 @@ try {
         $unknownByName[$item['name']] = $item;
     }
     $assert(in_array('dependent_safety_unknown', $unknownByName['unknown-target']['denial_reasons']['disable'], true), 'Unknown dependent safety did not fail closed.');
+    $assert($unknownByName['unknown-target']['denial_reasons']['disable'] === ['dependent_safety_unknown'], 'Evidence-linked dependent blocker ordering is not exact.');
+    $assert($unknownByName['ghost-dependent']['available_actions']['disable']['enabled'] === true, 'Unresolved dependent warning became a disable blocker.');
+    $assert($unknownByName['ghost-dependent']['denial_reasons']['disable'] === [], 'Unresolved dependent warning appeared in denial reasons.');
     $assert($unknownByName['gamma']['available_actions']['disable']['enabled'] === true, 'Unrelated target was globally blocked by unknown dependent safety.');
     $assert(in_array('dependent_safety_unknown', array_column($unknownByName['ghost-dependent']['diagnostics'], 'code'), true), 'Unresolved dependent safety limitation was not represented.');
     $assert($byName['invalid-status']['stored_status'] === 'invalid', 'Invalid stored status was not normalized safely.');

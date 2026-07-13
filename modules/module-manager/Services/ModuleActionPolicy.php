@@ -100,7 +100,7 @@ final class ModuleActionPolicy
         }
 
         if ($lifecycle === 'installed_enabled') {
-            $disableBlockers = $this->dependentBlockers($diagnosticCodes);
+            $disableBlockers = $this->dependentBlockers($diagnostics, 'disable');
 
             if ($disableBlockers === []) {
                 $actions['disable']['enabled'] = true;
@@ -114,7 +114,7 @@ final class ModuleActionPolicy
         }
 
         if ($lifecycle === 'installed_disabled') {
-            $uninstallBlockers = $this->dependentBlockers($diagnosticCodes);
+            $uninstallBlockers = $this->dependentBlockers($diagnostics, 'uninstall');
 
             if ($uninstallBlockers === []) {
                 $actions['uninstall']['enabled'] = true;
@@ -154,16 +154,26 @@ final class ModuleActionPolicy
         return $blockers;
     }
 
-    private function dependentBlockers(array $diagnosticCodes): array
+    private function dependentBlockers(array $diagnostics, string $action): array
     {
         $blockers = [];
 
-        foreach (['enabled_dependent', 'dependent_safety_unknown'] as $code) {
-            if (in_array($code, $diagnosticCodes, true)) {
+        foreach ($diagnostics as $diagnostic) {
+            $code = (string) ($diagnostic['code'] ?? '');
+            $severity = (string) ($diagnostic['severity'] ?? '');
+            $blockedActions = is_array($diagnostic['blocked_actions'] ?? null)
+                ? $diagnostic['blocked_actions']
+                : [];
+
+            if (
+                in_array($code, ['enabled_dependent', 'dependent_safety_unknown'], true)
+                && $severity === 'error'
+                && in_array($action, $blockedActions, true)
+            ) {
                 $blockers[] = $code;
             }
         }
 
-        return $blockers;
+        return array_values(array_unique($blockers));
     }
 }
