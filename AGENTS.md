@@ -20,11 +20,11 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 Current milestone: M3.2 Settings Manager.
 
-Current work: M3.2 Batch 4 — Security and Compatibility Hardening documentation and Git checkpoint.
+Current work: M3.2 Batch 5 — Completion and Manual Verification documentation and Git checkpoint.
 
 Primary goal:
 
-Close the Batch 4 documentation and Git checkpoint after completing tests-only security and compatibility hardening without starting Batch 5.
+Close M3.2 after final automated regression, manual verification, completion audit, and documentation sync without starting M3.3.
 
 Current state:
 
@@ -43,7 +43,7 @@ Current state:
 * M3.2 Settings Manager preparation is complete.
 * M3.2 Batch 1 is complete, committed, and pushed at baseline commit `31d540a`.
 * The M3.2 Batch 1 No-Return Point is reached.
-* M3.2 Batches 1–4 are complete and pass their focused completion gates; M3.2 remains in progress and Batch 5 has not started.
+* M3.2 preparation and Batches 1–5 are complete. Settings Manager is complete on its feature branch with 366 focused M3.2 assertions; M3.3 has not started.
 * The module-local manager policy exposes only six registered scalar definitions, maps reusable deterministic section/field contracts, and excludes generic JSON plus specialized Logo/Favicon definitions.
 * Batch 2 aggregates controlled validation errors, preserves optional-field omission semantics, validates every candidate before writing, and saves deterministic candidates through a root transaction or caller-safe nested savepoint.
 * Batch 2 focused domain and integration coverage passes 94 assertions.
@@ -52,7 +52,7 @@ Current state:
 * Batch 3 validation redisplay preserves submitted/effective values, controlled invalid select values, collision-safe identifiers, and controlled Admin-shell `503` behavior.
 * Batch 3 integration and presentation coverage passes 85 focused assertions.
 * Batch 4 is tests-only and passes 145 focused assertions: 126 security assertions plus 19 compatibility assertions. Coverage proves the two-permission matrix and authorization ordering, request-sensitive missing/invalid CSRF containment, secret-like and uneditable scalar exclusion, mid-write rollback with controlled sanitized Admin-shell `503`, and continued configured-path and specialized Logo/Favicon compatibility.
-* Cumulative focused M3.2 coverage through Batch 4 is 366 assertions, and relevant M2.1 Admin UI, M2.3 Branding/Site Asset and unified, plus M3.1 permission regressions pass.
+* Cumulative focused M3.2 coverage is 366 assertions. Required M2.1 Admin UI, M2.3 Branding/Site Asset and unified, plus M3.1 permission/access regressions pass; the final manual matrix passes, with permission-denial and configured-path cases evidenced automated-assisted.
 * `SettingsService::definitions()` and `definitionGroups()` expose deterministic, registered-only, read-only definition discovery without exposing the registry or database.
 * Admin Settings navigation, GET/POST, grouped dynamic scalar view, and fixed Logo/Favicon routes are owned by the lifecycle-enabled `settings-manager` module; `routes/admin.php` and Core views no longer duplicate that ownership.
 * Fresh installation enables `settings-manager` with the existing baseline ModuleManager flow. Existing installations install and enable it through the same ModuleManager lifecycle; no schema change or upgrade SQL is required.
@@ -60,7 +60,7 @@ Current state:
 * The Database Upgrade / Migration System concept is locked as planned but remains unimplemented and excluded from M3.2.
 * Admin UX Refinement 1 remains planned after M3.3 and before M3.4.
 * The post-v0.12.0 Core freeze remains in force.
-* M3.2 Batch 4 adds no runtime, Core, schema, SQL, migration runner, permission, manifest, dependency, route, view, or production behavior change. Batch 5 has not started.
+* Batch 5 is validation, manual verification, and documentation closure only; it adds no runtime, Core, schema, SQL, migration runner, permission, manifest, dependency, route, view, or production behavior change. No unresolved runtime, schema, security, or Core blocker remains.
 
 Latest release: v0.12.0.
 
@@ -693,7 +693,7 @@ Copot v0.12.0 is released and is the current stable Webcore baseline.
 
 M3 Preparation is complete and closed. M3.1 Users & Access is complete and merged.
 
-The active checkpoint is M3.2 Batch 3 — Admin Routes and Presentation completion documentation and Git checkpoint.
+The active checkpoint is M3.2 completion documentation and Git checkpoint.
 
 The immediate goal is to:
 
@@ -701,9 +701,9 @@ The immediate goal is to:
 * preserve the Stage 1 Webcore freeze, module ownership, dependency, Theme/Module, Navigation, Media, and repository boundaries;
 * preserve the Stage 2 approved sequence, planning envelopes, risk labels, and sequencing governance;
 * preserve the completed M3.1 implementation and its 504 focused assertions, unified platform regression, and manual verification evidence;
-* preserve the completed M3.2 Batches 1–4 and their 366 focused assertions;
+* preserve the completed M3.2 Settings Manager milestone and its 366 focused assertions;
 * preserve the existing Settings definitions, typed service, persistence, permission, Admin URL, CSRF, Admin Shell, and specialized Site Asset contracts;
-* close the Batch 4 documentation and Git checkpoint without starting Batch 5 or M3.3;
+* close the M3.2 documentation and Git checkpoint without starting M3.3;
 * keep environment/runtime secrets outside editable Settings;
 * keep Database Upgrade / Migration System implementation and Admin UX Refinement 1 outside M3.2.
 

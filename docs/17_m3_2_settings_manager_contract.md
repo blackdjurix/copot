@@ -2,7 +2,7 @@
 
 ## Status
 
-M3.2 Settings Manager preparation and Batches 1–4 are complete. Batch 1 is committed and pushed at baseline commit `31d540a` and reached its implementation No-Return Point with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 Manager Domain & Field Contract passes its focused implementation, adversarial review, remediation, and completion gates with 94 assertions. Batch 3 Admin Routes and Presentation passes implementation, three focused remediation cycles, final completion review, and relevant regressions with 85 focused assertions. Batch 4 Security and Compatibility Hardening passes tests-only implementation, focused remediation, completion review, and relevant regressions with 145 focused assertions. Cumulative focused M3.2 coverage through Batch 4 is 366 assertions. M3.2 remains in progress; Batch 5 has not started.
+M3.2 Settings Manager preparation and Batches 1–5 are complete. Batch 1 is committed and pushed at baseline commit `31d540a` and reached its implementation No-Return Point with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 Manager Domain & Field Contract passes its focused implementation, adversarial review, remediation, and completion gates with 94 assertions. Batch 3 Admin Routes and Presentation passes implementation, three focused remediation cycles, final completion review, and relevant regressions with 85 focused assertions. Batch 4 Security and Compatibility Hardening passes tests-only implementation, focused remediation, completion review, and relevant regressions with 145 focused assertions. Batch 5 Completion and Manual Verification passes final automated validation, manual and automated-assisted verification, completion audit, and documentation closure. Cumulative focused M3.2 coverage is 366 assertions. M3.2 is complete on its feature branch; M3.3 has not started.
 
 The exact five-batch structure refines the Stage 2 four-batch planning envelope using current repository evidence. The additional boundary separates approval of existing Core Settings route/definition ownership from domain behavior, Admin integration, hardening, and completion; it does not change the approved M3 sequence.
 
@@ -29,7 +29,7 @@ Reusable capability already present:
 
 Current gaps:
 
-* final unified M3.2 completion validation, manual Admin verification, and milestone documentation closure remain for Batch 5.
+* no M3.2 implementation or completion gap remains; Git checkpoint and subsequent milestone planning are separate user-owned steps.
 
 ## Settings Boundary
 
@@ -169,6 +169,8 @@ Non-goals: release, M3.3 implementation, deferred UX work.
 
 Core touchpoint: none.
 
+Batch 5 result: complete and pass. Batch 5 is validation, manual verification, and documentation closure only; it introduces no code, test, runtime, Core, schema, SQL, permission, manifest, dependency, route, view, or production behavior change. Final automated completion validation passes all eight focused suites for 366 assertions: Batch 1 contract/integration 13/29, Batch 2 domain/integration 62/32, Batch 3 integration/presentation 46/39, and Batch 4 compatibility/security 19/126. Required M2.1 Admin UI; M2.3 Branding, Site Asset, Logo/Favicon integration, and unified; plus M3.1 permission/access hardening regressions pass; PHP lint, repository checks, and boundary audit pass. The manual matrix passes: authorized access, scalar and localization save/reload/restoration, invalid containment, CSRF rejection, Logo/Favicon workflows, escaping/secret exclusion, and runtime-consumer sanity were manually verified; missing `admin.access`, missing `settings.update`, and configured non-default Admin path were verified automated-assisted, while storage-failure handling passes automated/runtime-assisted. Localization values persist and restore correctly; the existing Content Updated and Users Last Login/Updated views still render raw `Y-m-d H:i:s` timestamps because they do not yet consume Localization Settings, which is not an M3.2 blocker or Batch 5 scope. No code or test gap, environment blocker, or unresolved Core/schema/runtime/security blocker remains. Documentation closure is complete, M3.3 has not started, and direct executable injection for rollback/savepoint cleanup-failure branches remains deferred and non-blocking.
+
 ## Manual Verification Plan
 
 * an administrator with `admin.access` and `settings.update` can open Settings;
@@ -184,4 +186,4 @@ Core touchpoint: none.
 
 ## Completion Gate
 
-M3.2 is complete only when all five batches pass their gates, approved Core touchpoints are minimal and reviewed, the existing Settings system remains singular, automated and manual verification pass, documentation matches runtime behavior, and M3.3 has not begun early.
+M3.2 completion gate: met. All five batches pass their gates; approved Core touchpoints remain minimal and reviewed; the existing Settings system remains singular; registered-only scalar fields, generic JSON and secret/environment exclusion, specialized Logo/Favicon workflows, configured Admin paths, controlled Admin-shell errors, validation-before-write, and atomic save behavior remain preserved. Automated and manual verification pass, documentation matches runtime behavior, and M3.3 has not begun early.

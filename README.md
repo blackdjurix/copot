@@ -22,13 +22,13 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager remains the active milestone and is still in progress. Its Batches 1–4 are complete, and Batch 5 has not started.
+M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete on its feature branch. M3.3 Module Manager has not started.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is M3.2 Batch 4 — Security and Compatibility Hardening documentation and Git checkpoint.
+The active checkpoint is M3.2 completion documentation and Git checkpoint.
 
 M2 Platform Capabilities are complete. Copot v0.12.0 remains the stable released Webcore baseline. M3.1 is merged but is not yet included in a new release.
 
@@ -50,7 +50,7 @@ M3.11 Form Manager
 
 The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
 
-M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Batch 1 established lifecycle-owned configured-path Admin Settings routes, navigation, and specialized Site Asset controls; Batch 2 added the module-local editability/presentation policy, reusable deterministic typed field contracts, validation aggregation, and atomic save orchestration. Batch 3 renders grouped dynamic Settings sections and delegates nested identifier payloads to the same Settings Manager domain while preserving configured Admin paths, Admin shell behavior, and separate Logo/Favicon workflows. Batch 4 adds tests-only executable hardening for the permission matrix and ordering, CSRF and validation containment, secret/uneditable exclusion, sanitized atomic storage failure, and configured-path plus Logo/Favicon compatibility. Generic JSON and Site Asset descriptors remain excluded. Batches 1–4 provide 366 focused assertions; Batch 5 has not started.
+M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Settings Manager completed its five approved batches on this feature branch: lifecycle-owned configured-path Admin routes, registered scalar management with validation-before-write and atomic persistence, specialized Logo/Favicon workflows, and tests-only security/compatibility hardening. Generic JSON and Site Asset descriptors remain excluded. Final focused M3.2 coverage is 366 assertions, required M2.1/M2.3/M3.1 compatibility regressions and manual verification pass, and M3.3 has not started. M3.2 is completed but not released.
 
 M2.2 completion record:
 
