@@ -49,6 +49,30 @@ final class ModuleInventoryBuilder
             $item = $this->baseItem($name, $definition, $stored, $discoveryState);
             $diagnostics = [];
 
+            if (is_array($stored) && !in_array(($stored['status'] ?? null), ['enabled', 'disabled'], true)) {
+                $diagnostics[] = [
+                    'code' => 'invalid_stored_status',
+                    'severity' => 'error',
+                    'message_key' => 'module.stored_status.invalid',
+                    'safe_parameters' => ['status' => 'invalid'],
+                    'blocked_actions' => ['enable', 'disable', 'uninstall'],
+                ];
+            }
+
+            if (
+                is_array($stored)
+                && ($stored['status'] ?? null) === 'enabled'
+                && !$definition instanceof ModuleDefinition
+            ) {
+                $diagnostics[] = [
+                    'code' => 'dependent_safety_unknown',
+                    'severity' => 'warning',
+                    'message_key' => 'module.dependent_safety.unresolved',
+                    'safe_parameters' => ['scope' => 'unresolved'],
+                    'blocked_actions' => [],
+                ];
+            }
+
             foreach ($errorsByName[$name] ?? [] as $error) {
                 $diagnostics[] = [
                     'code' => $this->discoveryErrorCode((string) ($error['error'] ?? '')),
@@ -127,6 +151,11 @@ final class ModuleInventoryBuilder
             'version' => $definition?->version() ?? (string) ($stored['version'] ?? ''),
             'discovered_version' => $definition?->version(),
             'stored_version' => is_array($stored) ? (string) ($stored['version'] ?? '') : null,
+            'stored_status' => is_array($stored)
+                ? (in_array(($stored['status'] ?? null), ['enabled', 'disabled'], true)
+                    ? (string) $stored['status']
+                    : 'invalid')
+                : null,
             'lifecycle_state' => $lifecycle,
             'discovery_state' => $discoveryState,
             'dependencies' => [],
@@ -206,7 +235,7 @@ final class ModuleInventoryBuilder
                 'severity' => 'warning',
                 'message_key' => 'module.path.unavailable',
                 'safe_parameters' => [],
-                'blocked_actions' => ['enable'],
+                'blocked_actions' => [],
             ];
         }
     }
@@ -312,7 +341,12 @@ final class ModuleInventoryBuilder
             }
 
             if (!isset($definitions[$enabledName])) {
-                $diagnostics[] = $this->diagnostic('dependent_safety_unknown', 'error', ['disable', 'uninstall']);
+                $evidence = $this->storedDependencyNames($row);
+
+                if ($evidence !== null && in_array($name, $evidence, true)) {
+                    $diagnostics[] = $this->diagnostic('dependent_safety_unknown', 'error', ['disable', 'uninstall']);
+                }
+
                 continue;
             }
 
@@ -325,6 +359,31 @@ final class ModuleInventoryBuilder
                 }
             }
         }
+    }
+
+    private function storedDependencyNames(array $row): ?array
+    {
+        if (!array_key_exists('requires', $row)) {
+            return null;
+        }
+
+        if (!is_array($row['requires'])) {
+            return [];
+        }
+
+        $names = [];
+
+        foreach ($row['requires'] as $dependency) {
+            $dependencyName = is_array($dependency)
+                ? (string) ($dependency['name'] ?? '')
+                : (string) $dependency;
+
+            if ($dependencyName !== '') {
+                $names[] = $dependencyName;
+            }
+        }
+
+        return array_values(array_unique($names));
     }
 
     private function hasCycle(string $name, array $graph, array $visiting, array $visited): bool
@@ -401,6 +460,7 @@ final class ModuleInventoryBuilder
             'malformed_discovery' => 10,
             'invalid_metadata' => 10,
             'discovery_missing' => 10,
+            'invalid_stored_status' => 15,
             'metadata_drift' => 20,
             'stored_path_unavailable' => 20,
             'route_file_missing' => 30,

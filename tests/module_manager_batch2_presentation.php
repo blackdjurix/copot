@@ -102,6 +102,12 @@ try {
                 'version' => '0.9.0',
                 'path' => $temporaryRoot . DIRECTORY_SEPARATOR . 'old-alpha',
                 'status' => 'disabled',
+            ], [
+                'name' => 'beta',
+                'title' => 'Beta',
+                'version' => '1.0.0',
+                'path' => $temporaryRoot . DIRECTORY_SEPARATOR . 'old-beta',
+                'status' => 'disabled',
             ]],
             ['alpha' => [['permission_slug' => 'alpha.read', 'permission_name' => 'Read alpha']]]
         )
@@ -164,6 +170,14 @@ try {
         'slug' => 'alpha.read',
         'name' => 'Read alpha',
     ]], 'Permission metadata summary is not normalized safely.');
+    $betaItem = $inventory[1];
+    $assert($betaItem['available_actions']['enable']['enabled'] === true, 'Stored path drift alone blocked enablement.');
+    $pathDiagnostic = array_values(array_filter(
+        $betaItem['diagnostics'],
+        static fn (array $diagnostic): bool => $diagnostic['code'] === 'stored_path_unavailable'
+    ));
+    $assert(count($pathDiagnostic) === 1 && $pathDiagnostic[0]['blocked_actions'] === [],
+        'Stored path unavailability is not warning-only.');
 
     echo "M3.3 Batch 2 presentation contract passed ({$assertions} assertions)." . PHP_EOL;
 } finally {

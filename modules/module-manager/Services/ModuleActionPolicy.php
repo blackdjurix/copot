@@ -50,6 +50,17 @@ final class ModuleActionPolicy
             $denialReasons['install'] = ['already_installed'];
         }
 
+        if (in_array('invalid_stored_status', $diagnosticCodes, true)) {
+            $denialReasons['enable'] = ['invalid_stored_status'];
+            $denialReasons['disable'] = ['invalid_stored_status'];
+            $denialReasons['uninstall'] = ['invalid_stored_status'];
+
+            return [
+                'available_actions' => $actions,
+                'denial_reasons' => $denialReasons,
+            ];
+        }
+
         if ($lifecycle === 'installed_disabled') {
             $enableBlockers = [];
 
@@ -63,12 +74,12 @@ final class ModuleActionPolicy
             foreach ([
                 'route_file_missing',
                 'listener_file_missing',
-                'dependency_missing',
-                'dependency_disabled',
-                'dependency_cycle',
                 'self_dependency',
                 'duplicate_dependency',
                 'unsupported_version_constraint',
+                'dependency_missing',
+                'dependency_disabled',
+                'dependency_cycle',
             ] as $code) {
                 if (in_array($code, $diagnosticCodes, true)) {
                     $enableBlockers[] = $code;

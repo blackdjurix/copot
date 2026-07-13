@@ -103,6 +103,7 @@ try {
         $makeDefinition('listener-missing', 'Listener Missing', '1.0.0', [], null, 'listeners.php'),
         $makeDefinition('dependency-missing', 'Dependency Missing', '1.0.0', ['not-installed']),
         $makeDefinition('dependency-disabled', 'Dependency Disabled', '1.0.0', ['disabled-base']),
+        $makeDefinition('version-constrained', 'Version Constrained', '1.0.0', [['name' => 'not-installed', 'version' => '>=1.0']], 'routes.php'),
         $makeDefinition('self-dependency', 'Self Dependency', '1.0.0', ['self-dependency']),
         $makeDefinition('duplicate-dependency', 'Duplicate Dependency', '1.0.0', ['gamma', 'gamma']),
         $makeDefinition('cycle-a', 'Cycle A', '1.0.0', ['cycle-b']),
@@ -126,6 +127,7 @@ try {
         ['name' => 'listener-missing', 'title' => 'Listener Missing', 'version' => '1.0.0', 'path' => $definitionsByName['listener-missing']->path(), 'status' => 'disabled'],
         ['name' => 'dependency-missing', 'title' => 'Dependency Missing', 'version' => '1.0.0', 'path' => $definitionsByName['dependency-missing']->path(), 'status' => 'disabled'],
         ['name' => 'dependency-disabled', 'title' => 'Dependency Disabled', 'version' => '1.0.0', 'path' => $definitionsByName['dependency-disabled']->path(), 'status' => 'disabled'],
+        ['name' => 'version-constrained', 'title' => 'Version Constrained', 'version' => '1.0.0', 'path' => $definitionsByName['version-constrained']->path(), 'status' => 'disabled'],
         ['name' => 'disabled-base', 'title' => 'Disabled Base', 'version' => '1.0.0', 'path' => $temporaryRoot . DIRECTORY_SEPARATOR . 'disabled-base', 'status' => 'disabled'],
         ['name' => 'self-dependency', 'title' => 'Self Dependency', 'version' => '1.0.0', 'path' => $definitionsByName['self-dependency']->path(), 'status' => 'disabled'],
         ['name' => 'duplicate-dependency', 'title' => 'Duplicate Dependency', 'version' => '1.0.0', 'path' => $definitionsByName['duplicate-dependency']->path(), 'status' => 'disabled'],
@@ -133,11 +135,13 @@ try {
         ['name' => 'cycle-b', 'title' => 'Cycle B', 'version' => '1.0.0', 'path' => $definitionsByName['cycle-b']->path(), 'status' => 'disabled'],
         ['name' => 'target', 'title' => 'Target', 'version' => '1.0.0', 'path' => $definitionsByName['target']->path(), 'status' => 'enabled'],
         ['name' => 'dependent', 'title' => 'Dependent', 'version' => '1.0.0', 'path' => $definitionsByName['dependent']->path(), 'status' => 'enabled'],
+        ['name' => 'invalid-status', 'title' => 'Invalid Status', 'version' => '1.0.0', 'path' => $temporaryRoot . DIRECTORY_SEPARATOR . 'invalid-status', 'status' => 'pending'],
         ['name' => 'drift', 'title' => 'Stored Drift', 'version' => '1.0.0', 'path' => $temporaryRoot . DIRECTORY_SEPARATOR . 'old-drift', 'status' => 'disabled'],
     ];
     $errors = [
         ['module' => 'malformed', 'error' => 'module.json must contain valid JSON object metadata.'],
         ['module' => 'invalid', 'error' => 'Missing required field [version].'],
+        ['module' => 'ghost-dependent', 'error' => 'Missing required field [title].'],
     ];
     $permissions = [
         'beta' => [['permission_slug' => 'beta.read', 'permission_name' => 'Read old beta']],
@@ -170,13 +174,15 @@ try {
     $assert(in_array('listener_file_missing', $byName['listener-missing']['denial_reasons']['enable'], true), 'Missing listener file did not block enablement.');
     $assert(in_array('dependency_missing', $byName['dependency-missing']['denial_reasons']['enable'], true), 'Missing dependency did not block enablement.');
     $assert(in_array('dependency_disabled', $byName['dependency-disabled']['denial_reasons']['enable'], true), 'Disabled dependency did not block enablement.');
+    $assert(in_array('unsupported_version_constraint', $byName['version-constrained']['denial_reasons']['enable'], true), 'Version constraint did not block enablement.');
+    $assert($byName['version-constrained']['denial_reasons']['enable'][0] === 'route_file_missing', 'Primary denial ordering is not deterministic.');
     $assert(in_array('self_dependency', $byName['self-dependency']['denial_reasons']['enable'], true), 'Self-dependency did not block enablement.');
     $assert(in_array('duplicate_dependency', $byName['duplicate-dependency']['denial_reasons']['enable'], true), 'Duplicate dependency did not block enablement.');
     $assert(in_array('dependency_cycle', $byName['cycle-a']['denial_reasons']['enable'], true), 'Dependency cycle did not block enablement.');
     $assert(in_array('enabled_dependent', $byName['target']['denial_reasons']['disable'], true), 'Enabled dependent did not block disablement.');
     $unknownRows = array_merge($rows, [
         ['name' => 'unknown-target', 'title' => 'Unknown Target', 'version' => '1.0.0', 'path' => $temporaryRoot . DIRECTORY_SEPARATOR . 'unknown-target', 'status' => 'enabled'],
-        ['name' => 'ghost-dependent', 'title' => 'Ghost', 'version' => '1.0.0', 'path' => $temporaryRoot . DIRECTORY_SEPARATOR . 'ghost', 'status' => 'enabled'],
+        ['name' => 'ghost-dependent', 'title' => 'Ghost', 'version' => '1.0.0', 'path' => $temporaryRoot . DIRECTORY_SEPARATOR . 'ghost', 'status' => 'enabled', 'requires' => ['unknown-target']],
     ]);
     $unknownInventory = (new ModuleInventoryBuilder(
         new Batch2FixtureDiscovery($definitions, $errors),
@@ -187,6 +193,14 @@ try {
         $unknownByName[$item['name']] = $item;
     }
     $assert(in_array('dependent_safety_unknown', $unknownByName['unknown-target']['denial_reasons']['disable'], true), 'Unknown dependent safety did not fail closed.');
+    $assert($unknownByName['gamma']['available_actions']['disable']['enabled'] === true, 'Unrelated target was globally blocked by unknown dependent safety.');
+    $assert(in_array('dependent_safety_unknown', array_column($unknownByName['ghost-dependent']['diagnostics'], 'code'), true), 'Unresolved dependent safety limitation was not represented.');
+    $assert($byName['invalid-status']['stored_status'] === 'invalid', 'Invalid stored status was not normalized safely.');
+    $assert($byName['invalid-status']['lifecycle_state'] === 'installed_disabled', 'Invalid stored status changed the approved lifecycle taxonomy.');
+    foreach (['enable', 'disable', 'uninstall'] as $action) {
+        $assert($byName['invalid-status']['available_actions'][$action]['enabled'] === false, "Invalid stored status did not quarantine {$action}.");
+        $assert($byName['invalid-status']['denial_reasons'][$action] === ['invalid_stored_status'], "Invalid stored status denial for {$action} is not primary.");
+    }
     $assert(in_array('metadata_drift', array_column($byName['drift']['diagnostics'], 'code'), true), 'Metadata drift was not detected.');
     $assert($byName['drift']['available_actions']['enable']['enabled'] === true, 'Metadata drift alone blocked an otherwise valid action.');
     $assert(count($byName['beta']['permission_metadata_summary']) === 1, 'Permission metadata summary was not normalized.');
