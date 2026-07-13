@@ -43,6 +43,7 @@
 
 ### Changed
 
+- Locked the approved M3.3 Module Manager entry contract: `admin.access` plus dedicated runtime permission `modules.manage` (`Manage modules`), atomic lifecycle safety, fail-closed dependency/file checks, drift visibility without auto-sync, the exact five-batch plan, migration decision, Core boundary, and separate approval gates. M3.3 implementation has not started; no runtime, schema, SQL, package, release, or tag change was made.
 - Completed M3.2 Batch 3 Admin Routes and Presentation while preserving configured Admin paths, `admin.access`, `settings.update`, CSRF, PRG, the Admin shell, and specialized Logo/Favicon workflows.
 - Completed M3.2 Batch 4 Security and Compatibility Hardening as tests-only work without runtime, Core, schema, SQL, permission, manifest, dependency, route, view, or production behavior changes; at that historical checkpoint, M3.2 remained in progress and Batch 5 had not started.
 - Completed M3.2 Batch 5 Completion and Manual Verification on its feature branch as the historical completion step, then merged the complete, validated Settings Manager milestone to `main` through `afd82f0`. Batch 5 introduced no production/runtime, schema, or Core change, and M3.3 has not started.
