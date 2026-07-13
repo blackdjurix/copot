@@ -2,7 +2,7 @@
 
 ## Status
 
-M3.2 Settings Manager preparation and Batches 1–5 are complete. Batch 1 is committed and pushed at baseline commit `31d540a` and reached its implementation No-Return Point with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 Manager Domain & Field Contract passes its focused implementation, adversarial review, remediation, and completion gates with 94 assertions. Batch 3 Admin Routes and Presentation passes implementation, three focused remediation cycles, final completion review, and relevant regressions with 85 focused assertions. Batch 4 Security and Compatibility Hardening passes tests-only implementation, focused remediation, completion review, and relevant regressions with 145 focused assertions. Batch 5 Completion and Manual Verification passes final automated validation, manual and automated-assisted verification, completion audit, and documentation closure. Cumulative focused M3.2 coverage is 366 assertions. M3.2 is complete on its feature branch; M3.3 has not started.
+M3.2 Settings Manager preparation and Batches 1–5 are complete. Batch 1 is committed and pushed at baseline commit `31d540a` and reached its implementation No-Return Point with manager route/view ownership, generic read-only definition discovery, and compatibility coverage active. Batch 2 Manager Domain & Field Contract passes its focused implementation, adversarial review, remediation, and completion gates with 94 assertions. Batch 3 Admin Routes and Presentation passes implementation, three focused remediation cycles, final completion review, and relevant regressions with 85 focused assertions. Batch 4 Security and Compatibility Hardening passes tests-only implementation, focused remediation, completion review, and relevant regressions with 145 focused assertions. Batch 5 Completion and Manual Verification passes final automated validation, manual and automated-assisted verification, completion audit, and documentation closure. Cumulative focused M3.2 coverage is 366 assertions. M3.2 is complete, validated, merged to `main` through `afd82f0`, and pushed; its feature-branch lifecycle is closed. M3.3 has not started.
 
 The exact five-batch structure refines the Stage 2 four-batch planning envelope using current repository evidence. The additional boundary separates approval of existing Core Settings route/definition ownership from domain behavior, Admin integration, hardening, and completion; it does not change the approved M3 sequence.
 
@@ -29,7 +29,7 @@ Reusable capability already present:
 
 Current gaps:
 
-* no M3.2 implementation or completion gap remains; Git checkpoint and subsequent milestone planning are separate user-owned steps.
+* no M3.2 implementation, completion, merge, or branch-lifecycle gap remains; the current checkpoint is the Post-M3.2 / Pre-M3.3 transition, and exact M3.3 contract work has not started.
 
 ## Settings Boundary
 
@@ -186,4 +186,4 @@ Batch 5 result: complete and pass. Batch 5 is validation, manual verification, a
 
 ## Completion Gate
 
-M3.2 completion gate: met. All five batches pass their gates; approved Core touchpoints remain minimal and reviewed; the existing Settings system remains singular; registered-only scalar fields, generic JSON and secret/environment exclusion, specialized Logo/Favicon workflows, configured Admin paths, controlled Admin-shell errors, validation-before-write, and atomic save behavior remain preserved. Automated and manual verification pass, documentation matches runtime behavior, and M3.3 has not begun early.
+M3.2 completion gate: met. All five batches pass their gates; approved Core touchpoints remain minimal and reviewed; the existing Settings system remains singular; registered-only scalar fields, generic JSON and secret/environment exclusion, specialized Logo/Favicon workflows, configured Admin paths, controlled Admin-shell errors, validation-before-write, and atomic save behavior remain preserved. Automated and manual verification pass. M3.2 merged to `main` through `afd82f0`, was pushed, and closed its feature-branch lifecycle; M3.3 has not begun early.

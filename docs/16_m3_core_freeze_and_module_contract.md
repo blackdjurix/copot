@@ -706,7 +706,7 @@ All five M3.1 batches are complete on the milestone branch. Focused Batches 1–
 
 The only approved Core touchpoint added during completion is recovery from base Admin permission denial: an authenticated user without `admin.access` still receives a standalone `403`, with a CSRF-protected POST Sign out action using the configured Admin path. Guest standalone errors remain without authenticated recovery actions. Batch 3's final-administrator integration fixture is transactionally isolated from active administrator-capable users already present in the database; runtime capability and invariant semantics are unchanged.
 
-M3.1 merged to `main` through `5c4cf8c` and remains unreleased. Post-M3.1 Roadmap Sync and M3.2 preparation are complete. M3.2 Batch 1 reached its no-return gate; Batch 2 is not active.
+M3.1 merged to `main` through `5c4cf8c` and remains unreleased. Post-M3.1 Roadmap Sync is complete. M3.2 preparation and Batches 1–5 are complete, and M3.2 merged to `main` through `afd82f0`; M3.1 and M3.2 remain unreleased. M3.3 has not started. The Post-M3.2 / Pre-M3.3 transition and focused M3.3 entry preparation are next, and the Just-in-Time Batch Lock still requires a current repository audit before any exact M3.3 contract or batch detail is approved.
 
 Deferred non-blocking Admin UX work includes permission checkbox sizing/alignment, permission grouping, hiding technical slugs by default, global floating notifications while preserving inline field errors, effective-permission explanation for multi-role users, and reusable dashboard block spacing. Gather M3.2/M3.3 patterns and schedule Admin UX Refinement 1 after M3.3 and before M3.4.
 

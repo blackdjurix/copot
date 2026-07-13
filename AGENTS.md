@@ -18,13 +18,13 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone: M3.2 Settings Manager.
+Current milestone / checkpoint: Post-M3.2 / Pre-M3.3 Transition.
 
-Current work: M3.2 Batch 5 — Completion and Manual Verification documentation and Git checkpoint.
+Current work: authoritative-state sync and M3.3 entry preparation.
 
 Primary goal:
 
-Close M3.2 after final automated regression, manual verification, completion audit, and documentation sync without starting M3.3.
+Synchronize the authoritative documentation after the M3.2 merge and prepare the repository baseline for a later focused M3.3 entry step without starting M3.3 contract design or implementation.
 
 Current state:
 
@@ -43,7 +43,9 @@ Current state:
 * M3.2 Settings Manager preparation is complete.
 * M3.2 Batch 1 is complete, committed, and pushed at baseline commit `31d540a`.
 * The M3.2 Batch 1 No-Return Point is reached.
-* M3.2 preparation and Batches 1–5 are complete. Settings Manager is complete on its feature branch with 366 focused M3.2 assertions; M3.3 has not started.
+* M3.2 preparation and Batches 1–5 are complete with 366 focused M3.2 assertions.
+* M3.2 Settings Manager is validated, merged to `main` through merge commit `afd82f0`, pushed, and its feature-branch lifecycle is closed.
+* M3.3 Module Manager has not started; the current work is limited to the Post-M3.2 / Pre-M3.3 transition and M3.3 entry preparation.
 * The module-local manager policy exposes only six registered scalar definitions, maps reusable deterministic section/field contracts, and excludes generic JSON plus specialized Logo/Favicon definitions.
 * Batch 2 aggregates controlled validation errors, preserves optional-field omission semantics, validates every candidate before writing, and saves deterministic candidates through a root transaction or caller-safe nested savepoint.
 * Batch 2 focused domain and integration coverage passes 94 assertions.
@@ -60,7 +62,7 @@ Current state:
 * The Database Upgrade / Migration System concept is locked as planned but remains unimplemented and excluded from M3.2.
 * Admin UX Refinement 1 remains planned after M3.3 and before M3.4.
 * The post-v0.12.0 Core freeze remains in force.
-* Batch 5 is validation, manual verification, and documentation closure only; it adds no runtime, Core, schema, SQL, migration runner, permission, manifest, dependency, route, view, or production behavior change. No unresolved runtime, schema, security, or Core blocker remains.
+* M3.2 Batch 5 was validation, manual verification, and documentation closure only; it added no runtime, Core, schema, SQL, migration runner, permission, manifest, dependency, route, view, or production behavior change. No unresolved runtime, schema, security, or Core blocker remains.
 
 Latest release: v0.12.0.
 
@@ -691,9 +693,9 @@ Commit messages should remain clear and milestone-aware.
 
 Copot v0.12.0 is released and is the current stable Webcore baseline.
 
-M3 Preparation is complete and closed. M3.1 Users & Access is complete and merged.
+M3 Preparation is complete and closed. M3.1 Users & Access and M3.2 Settings Manager are complete and merged but remain unreleased.
 
-The active checkpoint is M3.2 completion documentation and Git checkpoint.
+The active checkpoint is the Post-M3.2 / Pre-M3.3 Transition.
 
 The immediate goal is to:
 
@@ -703,7 +705,8 @@ The immediate goal is to:
 * preserve the completed M3.1 implementation and its 504 focused assertions, unified platform regression, and manual verification evidence;
 * preserve the completed M3.2 Settings Manager milestone and its 366 focused assertions;
 * preserve the existing Settings definitions, typed service, persistence, permission, Admin URL, CSRF, Admin Shell, and specialized Site Asset contracts;
-* close the M3.2 documentation and Git checkpoint without starting M3.3;
+* synchronize authoritative state after M3.2 merged to `main` through `afd82f0`, was pushed, and closed its feature-branch lifecycle;
+* prepare the repository baseline for a later focused M3.3 entry step without starting M3.3 contract design or implementation;
 * keep environment/runtime secrets outside editable Settings;
 * keep Database Upgrade / Migration System implementation and Admin UX Refinement 1 outside M3.2.
 
