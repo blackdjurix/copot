@@ -18,13 +18,13 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone / checkpoint: Post-Batch 2 / Pre-Batch 3 Activation.
+Current milestone / checkpoint: M3.3 Batch 5 closure evidence complete; documentation synchronization and final focused review are complete.
 
-Current work: activation policy, package inclusion, authoritative-state sync, and Batch 3 entry preparation.
+Current work: user-owned Git closure gates.
 
 Primary goal:
 
-Synchronize the completed M3.3 Batch 1–2 state and lock the approved Batch 3 activation gate without starting Batch 3 runtime implementation, package publication, release work, or tagging.
+Maintain the completed M3.3 Batch 1–5 implementation, validation, documentation synchronization, and focused review state without declaring the milestone merged, released, tagged, published, or closed before user-owned Git closure.
 
 Current state:
 
@@ -45,18 +45,21 @@ Current state:
 * The M3.2 Batch 1 No-Return Point is reached.
 * M3.2 preparation and Batches 1–5 are complete with 366 focused M3.2 assertions.
 * M3.2 Settings Manager is validated, merged to `main` through merge commit `afd82f0`, pushed, and its feature-branch lifecycle is closed.
-* M3.3 Batch 1 focused baseline and Batch 2 module-local inventory/action-policy domain are complete on active feature branch `feature/m3.3-module-manager` at `57f68be`.
-* M3.3 Batch 3 Admin implementation has not started, and M3.3 is not merged to `main`.
-* The current checkpoint is Post-Batch 2 / Pre-Batch 3 Activation.
+* M3.3 Module Manager Batches 1–5 implementation and validation are complete on active feature branch `feature/m3.3-module-manager`.
+* M3.3 is not merged or released; user-owned commit/push, clean synchronized branch verification, and merge-readiness assessment remain pending.
+* Baseline automated validation passes 816 assertions: 272 focused regression, 58 clean-install, and 486 package builder smoke assertions.
+* Patch-focused reruns pass 130 assertions: 35 Batch 3 integration, 41 Batch 3 security, and 54 Batch 4 lifecycle assertions. Cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
+* Manual Admin verification passes in a disposable official-package installation, including lifecycle, self-management protection, human-readable denial messaging, raw-key absence, module-file preservation, and leak checks; disposable resources were fully cleaned.
+* The current denial-message correction is module-local: stable denial codes remain internal and Admin output uses human-readable messages with a controlled fallback.
 * Fresh installations will add `module-manager` to `InstallerFinalizer::BASELINE_MODULES` and install and enable it through the existing generic ModuleManager lifecycle; this is the sole approved activation Core touchpoint.
 * Existing installations will apply `database/upgrades/m3_3_module_manager_permission.sql`, then explicitly install and enable `module-manager` through ModuleManager before accessing its routes on the next request.
-* `modules/module-manager` must be added to `build/package_manifest.php` in the same activation gate; clean-install and package-smoke evidence are required before Batch 3.
+* `modules/module-manager` is included in `build/package_manifest.php` and fresh-install baseline activation; package, clean-install, focused regression, and manual Admin evidence pass.
 * The Batch 3 Admin workflow must deny disabling or uninstalling `module-manager` itself while keeping those actions visibly disabled with stable denial reasons.
 * The approved M3.3 authorization contract requires base `admin.access` plus dedicated runtime permission `modules.manage` (`Manage modules`) for inventory and all lifecycle actions.
 * The approved M3.3 lifecycle contract requires atomic installation metadata replacement, fail-closed dependency and file checks, disabled-before-uninstall, drift visibility without auto-sync, name-only dependencies, and no module-file deletion.
 * Fresh-install provisioning for `modules.manage` is present in `database/schema.sql`; existing-install provisioning is present in the controlled operator-run `database/upgrades/m3_3_module_manager_permission.sql`. Neither artifact installs or enables modules.
 * The proposed M3.3 artifact is the second independent upgrade artifact; the Database Upgrade / Migration System trigger is not currently reached, and a generic migration runner remains out of scope.
-* No other Core change is approved. Any further Core change requires separate approval and executable evidence.
+* The Core freeze remains active. The approved `InstallerFinalizer::BASELINE_MODULES` addition remains the sole M3.3 Core touchpoint; Batch 5 and the presentation correction required no additional Core changes.
 * The module-local manager policy exposes only six registered scalar definitions, maps reusable deterministic section/field contracts, and excludes generic JSON plus specialized Logo/Favicon definitions.
 * Batch 2 aggregates controlled validation errors, preserves optional-field omission semantics, validates every candidate before writing, and saves deterministic candidates through a root transaction or caller-safe nested savepoint.
 * Batch 2 focused domain and integration coverage passes 94 assertions.
@@ -706,7 +709,7 @@ Copot v0.12.0 is released and is the current stable Webcore baseline.
 
 M3 Preparation is complete and closed. M3.1 Users & Access and M3.2 Settings Manager are complete and merged but remain unreleased.
 
-The active checkpoint is Post-Batch 2 / Pre-Batch 3 Activation.
+The active checkpoint is M3.3 Batch 5 closure evidence complete, with documentation synchronization and final focused review complete.
 
 The immediate goal is to:
 
@@ -716,9 +719,9 @@ The immediate goal is to:
 * preserve the completed M3.1 implementation and its 504 focused assertions, unified platform regression, and manual verification evidence;
 * preserve the completed M3.2 Settings Manager milestone and its 366 focused assertions;
 * preserve the existing Settings definitions, typed service, persistence, permission, Admin URL, CSRF, Admin Shell, and specialized Site Asset contracts;
-* record M3.3 Batches 1–2 as complete while keeping Batch 3 Admin implementation not started;
-* preserve the approved M3.3 Module Manager contract, activation policy, and five-batch entry plan;
-* keep package publication, release work, tagging, and any Core change beyond the approved InstallerFinalizer touchpoint behind separate approval gates;
+* record M3.3 Batches 1–5 implementation, validation, documentation synchronization, and focused review as complete while keeping user-owned commit/push and merge-readiness gates open;
+* preserve the approved M3.3 Module Manager contract, activation policy, and five-batch closure evidence;
+* keep package publication, release work, tagging, merge, and any Core change beyond the approved InstallerFinalizer touchpoint behind separate approval gates;
 * keep environment/runtime secrets outside editable Settings;
 * keep Database Upgrade / Migration System implementation and Admin UX Refinement 1 outside M3.2.
 

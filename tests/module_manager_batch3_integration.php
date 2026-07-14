@@ -162,8 +162,10 @@ try {
         }
     }
     $assert($selfRow !== '', 'Module Manager inventory row was not rendered.');
-    $assert(substr_count($selfRow, 'module_manager_self_management_denied') === 2,
-        'Self-management denial reason was not rendered for both protected actions.');
+    $assert(substr_count($selfRow, 'Module Manager cannot disable or uninstall itself.') === 2,
+        'Self-management denial message was not rendered for both protected actions.');
+    $assert(!str_contains($selfRow, 'module_manager_self_management_denied'),
+        'Raw self-management denial code leaked into inventory output.');
     $assert(substr_count($selfRow, ' disabled') >= 2,
         'Self-management disable and uninstall controls were not visibly disabled.');
 

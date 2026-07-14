@@ -104,7 +104,7 @@ final class ModuleManagerAdmin
         int $status = 200
     ): Response {
         try {
-            $items = $this->inventory();
+            $items = $this->presentDenialReasons($this->inventory());
             $view = __DIR__ . '/../views/admin/modules.php';
 
             if (!is_file($view)) {
@@ -135,6 +135,45 @@ final class ModuleManagerAdmin
         } catch (Throwable) {
             return $this->app->adminErrors()->response($request, 503);
         }
+    }
+
+    private function presentDenialReasons(array $items): array
+    {
+        foreach ($items as &$item) {
+            $reasons = is_array($item['denial_reasons'] ?? null)
+                ? $item['denial_reasons']
+                : [];
+
+            foreach ($reasons as $action => $codes) {
+                if (!is_array($codes)) {
+                    $reasons[$action] = [$this->denialMessage($codes)];
+                    continue;
+                }
+
+                $reasons[$action] = array_map(
+                    fn (mixed $code): string => $this->denialMessage($code),
+                    $codes
+                );
+            }
+
+            $item['denial_reasons'] = $reasons;
+        }
+        unset($item);
+
+        return $items;
+    }
+
+    private function denialMessage(mixed $code): string
+    {
+        if (is_string($code)) {
+            $message = $this->messageFor($code);
+
+            if ($message !== null) {
+                return $message;
+            }
+        }
+
+        return 'This module action is not currently allowed.';
     }
 
     private function inventory(): array

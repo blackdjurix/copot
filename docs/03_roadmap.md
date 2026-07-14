@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–2 are complete on `feature/m3.3-module-manager` at `57f68be`; Batch 3 has not started and M3.3 is not merged to `main`.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are implemented and validated on `feature/m3.3-module-manager`; documentation synchronization and final focused review are complete, while M3.3 is not merged or released and user-owned commit/push, clean synchronized branch verification, and merge-readiness assessment remain pending.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -732,7 +732,7 @@ M3.2 Settings Manager is complete in the approved sequence and merged to `main` 
 
 #### M3.3 Module Manager Entry Contract
 
-Status: Batches 1–2 complete; Batch 3 has not started. M3.3 remains a high-Core-risk milestone with a five-batch planning envelope and the existing Just-in-Time Batch Lock governance. Current checkpoint: Post-Batch 2 / Pre-Batch 3 Activation. Current work: activation policy, package inclusion, authoritative-state sync, and Batch 3 entry preparation.
+Status: Batches 1–5 complete on `feature/m3.3-module-manager`. Batch 5 validation, manual Admin verification, documentation synchronization, and final focused review are complete.
 
 The Module Manager module owns Admin inventory, metadata and discovery-error presentation, navigation, configured-path routes, and controlled lifecycle workflows. It consumes the existing Core discovery, repository, lifecycle, Admin URL, Admin Shell, CSRF, navigation, and sanitized-error contracts. The activation gate approves only the narrowly scoped `InstallerFinalizer::BASELINE_MODULES` addition; no other confirmed Core blocker exists, and any further Core change requires separate approval and executable evidence.
 
@@ -742,7 +742,9 @@ The proposed M3.3 artifact is the second independent upgrade artifact. The Datab
 
 The approved activation policy adds `module-manager` to `InstallerFinalizer::BASELINE_MODULES`, so fresh installations install and enable it through the existing generic ModuleManager lifecycle. This is the sole approved activation Core touchpoint; no new activation framework, bootstrap synchronization, or automatic module reconciliation is introduced. Existing installations apply `database/upgrades/m3_3_module_manager_permission.sql`, then explicitly install and enable `module-manager` through ModuleManager before its routes are available on the next request through the enabled-module loader.
 
-`modules/module-manager` must be included in `build/package_manifest.php` in the same activation gate as fresh-install baseline activation. Clean-install and package-smoke evidence are required before Batch 3 Admin integration. The Batch 3 Admin workflow must deny disabling or uninstalling `module-manager` itself while keeping those actions visibly disabled with stable denial reasons. No additional schema change, upgrade SQL artifact, migration runner, or automatic permission synchronization is approved.
+`modules/module-manager` is included in `build/package_manifest.php` and fresh-install baseline activation. Package, clean-install, focused regression, and manual Admin evidence pass. The Admin workflow denies self-disable and self-uninstall with visibly disabled controls and human-readable denial text; stable denial codes remain internal. No additional schema change, upgrade SQL artifact, migration runner, or automatic permission synchronization is approved.
+
+Baseline automated validation passes 816 assertions: 272 focused regression, 58 clean-install, and 486 package builder smoke assertions. Patch-focused reruns pass 130 assertions: 35 Batch 3 integration, 41 Batch 3 security, and 54 Batch 4 lifecycle assertions. Cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total. Disposable manual-verification resources were fully cleaned.
 
 Lifecycle rules are:
 
@@ -771,19 +773,18 @@ The exact five-batch plan is:
 2. Manager domain and lifecycle presentation contract.
 3. Admin routes, views, navigation, and controlled mutations.
 4. Security, lifecycle failure, dependency, and compatibility hardening.
-5. Unified regression, manual verification, documentation closure, and completion audit.
+5. Unified regression, manual verification, documentation closure, and completion audit — validation, manual verification, documentation synchronization, and final focused review complete.
 
 Explicit non-goals include marketplace or remote installation, package download or ZIP upload, signing, automatic updates, rollback, generic version solving, Composer-style dependency resolution, automatic permission or role synchronization, a second authorization system, a generic migration framework, Theme Manager, Media Library, module settings UI, module code editor, Admin UX Refinement 1, M3.4, release, tagging, and package publication.
 
-The M3.3 preparation No-Return Point was reached when the approved contract documentation was merged to synchronized `main`. The next activation No-Return Point requires the approved baseline/package changes, clean-install and package-smoke evidence, documentation sync, and synchronized clean `main`; Batch 3 Admin implementation must not begin before that gate.
+The M3.3 implementation, validation, documentation synchronization, and final focused review gates are complete. Remaining gates are user-owned commit/push, clean synchronized branch verification, and merge-readiness assessment. M3.3 remains unmerged, unreleased, untagged, and unpublished.
 
 Branch strategy:
 
 ```text
-feature/m3-prep
--> Stage 3 remediation and verification
--> user-owned commit/push/merge to main
--> feature/m3.1-users-access from updated main
+feature/m3.3-module-manager
+-> user-owned commit and push
+-> clean synchronized branch verification and merge-readiness assessment
 ```
 
 ---

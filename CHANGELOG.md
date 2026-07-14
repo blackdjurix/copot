@@ -4,7 +4,7 @@
 
 ### Added
 
-- Added the M3.3 Batch 1 focused Module Manager baseline and Batch 2 module-local inventory/action-policy domain on `feature/m3.3-module-manager` through `57f68be`; Batch 3 Admin implementation has not started.
+- Added the M3.3 Module Manager implementation through Batches 1–5 on `feature/m3.3-module-manager`, including lifecycle, security, package, clean-install, Admin verification, and focused review evidence; documentation synchronization and final focused review are complete, with user-owned Git closure remaining.
 - Added the M3.2 Batch 1 Settings Manager module boundary with lifecycle-owned Admin Settings routes, navigation, fixed compatibility presentation, and Site Asset controls.
 - Added deterministic registered-only Settings definition discovery through the existing `SettingsService`, plus 42 focused contract and integration assertions.
 - Added M3.2 Batch 2 module-local manager policy plus reusable deterministic section and typed scalar field contracts, with registered-only editability and generic JSON/Site Asset descriptor exclusion.
@@ -44,12 +44,12 @@
 
 ### Changed
 
-- Synchronized the M3.3 post-Batch 2 state: the current checkpoint is Post-Batch 2 / Pre-Batch 3 Activation, with activation policy, package inclusion, authoritative-state sync, and Batch 3 entry preparation as current work. Batch 3 Admin implementation has not started, M3.3 is not merged to `main`, and `v0.12.0` remains the latest stable release.
-- Locked the approved M3.3 activation policy: fresh installations will add `module-manager` to `InstallerFinalizer::BASELINE_MODULES` and enable it through the existing ModuleManager lifecycle; existing installations apply `database/upgrades/m3_3_module_manager_permission.sql` and explicitly install and enable the module. Package inclusion in `build/package_manifest.php` belongs to the same activation gate, clean-install and package-smoke evidence are required before Batch 3, and the Batch 3 Admin workflow must deny self-disable and self-uninstall.
-- Preserved the M3.3 boundaries: the InstallerFinalizer baseline addition is the sole approved activation Core touchpoint; no other Core change, schema change, upgrade artifact, migration runner, automatic module synchronization, package publication, release, or tag is approved.
+- Completed M3.3 Batch 5 validation and manual Admin verification on the feature branch. Baseline automated validation passes 816 assertions; patch-focused reruns pass 130 assertions; cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
+- Corrected Module Manager Admin presentation so stable denial codes remain internal and known codes render as human-readable messages with a controlled fallback. Lifecycle, authorization, CSRF, database, filesystem, and policy contracts are unchanged.
+- Preserved the M3.3 boundaries: the `InstallerFinalizer::BASELINE_MODULES` addition remains the sole approved Core touchpoint; no additional Core change, package publication, release, tag, or merge is approved by this closure synchronization.
 - Completed M3.2 Batch 3 Admin Routes and Presentation while preserving configured Admin paths, `admin.access`, `settings.update`, CSRF, PRG, the Admin shell, and specialized Logo/Favicon workflows.
 - Completed M3.2 Batch 4 Security and Compatibility Hardening as tests-only work without runtime, Core, schema, SQL, permission, manifest, dependency, route, view, or production behavior changes; at that historical checkpoint, M3.2 remained in progress and Batch 5 had not started.
-- Completed M3.2 Batch 5 Completion and Manual Verification on its feature branch as the historical completion step, then merged the complete, validated Settings Manager milestone to `main` through `afd82f0`. Batch 5 introduced no production/runtime, schema, or Core change; M3.3 work began later with Batches 1–2 on its active feature branch, while Batch 3 remains not started.
+- Completed M3.2 Batch 5 Completion and Manual Verification on its feature branch as the historical completion step, then merged the complete, validated Settings Manager milestone to `main` through `afd82f0`. Batch 5 introduced no production/runtime, schema, or Core change; M3.3 implementation and validation subsequently advanced through Batches 1–5, with documentation synchronization and final focused review complete and user-owned commit/push, clean synchronized branch verification, and merge-readiness still pending.
 - Preserved the singular Settings domain and excluded generic JSON plus Logo/Favicon descriptors from dynamic scalar rendering without Core, schema, permission, dependency, or Batch 2 domain changes.
 - Moved the existing fixed Admin Settings route/view ownership from Core to `settings-manager` without changing URLs, `settings.update`, CSRF, validation-before-write, transactions, Admin shell errors, or Logo/Favicon behavior.
 - Added `settings-manager` to fresh-install baseline module enablement and the release package; existing installations continue to use explicit ModuleManager install/enable lifecycle operations.
@@ -79,6 +79,10 @@
 - Recorded M2.4 implementation as complete and ready for merge, tag, and release preparation, closing the lean M2 Platform Capabilities implementation phase while leaving M3 unstarted.
 
 ### Verification
+
+- M3.3 baseline automated validation passes 816 assertions: 272 focused regression, 58 clean-install, and 486 package builder smoke assertions.
+- M3.3 patch-focused reruns pass 130 assertions: 35 Batch 3 integration, 41 Batch 3 security, and 54 Batch 4 lifecycle assertions. Cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
+- Manual Admin verification passes in a disposable official-package installation, including inventory, self-management protection, human-readable denial messaging, fixture lifecycle, module-file preservation, and leak checks; disposable resources were fully cleaned.
 
 - M3.2 Batch 4 security and compatibility suites pass 145 focused assertions (126 security and 19 compatibility); cumulative focused M3.2 coverage through Batches 1–4 totals 366 assertions.
 - Relevant M2.1 Admin UI, M2.3 Branding/Site Asset and unified, and M3.1 permission/access regressions pass after Batch 4.

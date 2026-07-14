@@ -22,15 +22,15 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–2 are complete on `feature/m3.3-module-manager` at `57f68be`; Batch 3 has not started and M3.3 is not merged to `main`.
+M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are implemented and validated on `feature/m3.3-module-manager`; documentation synchronization and final focused review are complete, while M3.3 is not merged or released and user-owned Git closure remains pending.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is Post-Batch 2 / Pre-Batch 3 Activation. Current work covers activation policy, package inclusion, authoritative-state sync, and Batch 3 entry preparation.
+The active checkpoint is M3.3 Batch 5 closure evidence complete, with documentation synchronization and final focused review complete. Remaining gates are user-owned commit/push, clean synchronized branch verification, and merge-readiness assessment.
 
-M2 Platform Capabilities are complete. Copot v0.12.0 remains the latest stable released Webcore baseline. M3.1 and M3.2 are merged but are not yet included in a new release. M3.3 remains unreleased; Batches 1–2 are complete and Batch 3 remains unimplemented.
+M2 Platform Capabilities are complete. Copot v0.12.0 remains the latest stable released Webcore baseline. M3.1 and M3.2 are merged but are not yet included in a new release. M3.3 remains unmerged and unreleased; Batches 1–5 implementation, validation, and manual Admin verification are complete.
 
 The approved M3 sequence is:
 
@@ -50,19 +50,21 @@ M3.11 Form Manager
 
 The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
 
-M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Settings Manager completed its five approved batches and merged to `main` through `afd82f0`: lifecycle-owned configured-path Admin routes, registered scalar management with validation-before-write and atomic persistence, specialized Logo/Favicon workflows, and tests-only security/compatibility hardening. Generic JSON and Site Asset descriptors remain excluded. Final focused M3.2 coverage is 366 assertions, required M2.1/M2.3/M3.1 compatibility regressions and manual verification pass. M3.3 Batches 1–2 are complete on the active feature branch; Batch 3 has not started. M3.2 is merged but not released.
+M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Settings Manager completed its five approved batches and merged to `main` through `afd82f0`: lifecycle-owned configured-path Admin routes, registered scalar management with validation-before-write and atomic persistence, specialized Logo/Favicon workflows, and tests-only security/compatibility hardening. Generic JSON and Site Asset descriptors remain excluded. Final focused M3.2 coverage is 366 assertions, required M2.1/M2.3/M3.1 compatibility regressions and manual verification pass. M3.3 implementation and validation are complete on the active feature branch; documentation synchronization and final focused review are complete, while user-owned commit/push and merge-readiness remain pending. M3.2 is merged but not released.
 
-The approved M3.3 Module Manager contract requires both `admin.access` and dedicated runtime permission `modules.manage` (`Manage modules`) for inventory and install, enable, disable, and uninstall. Fresh-install provisioning is present in the canonical schema; existing-install provisioning is present in the controlled operator-run `database/upgrades/m3_3_module_manager_permission.sql`. The artifact is the second independent upgrade artifact, but the Database Upgrade / Migration System trigger is not currently reached. Batch 3 activation and Admin implementation remain behind their approval gates.
+The approved M3.3 Module Manager contract requires both `admin.access` and dedicated runtime permission `modules.manage` (`Manage modules`) for inventory and install, enable, disable, and uninstall. Fresh-install provisioning is present in the canonical schema; existing-install provisioning is present in the controlled operator-run `database/upgrades/m3_3_module_manager_permission.sql`. The artifact is the second independent upgrade artifact, but the Database Upgrade / Migration System trigger is not currently reached. Batch 3 activation and Admin implementation are complete; documentation synchronization and final focused review are complete, while user-owned commit/push and merge-readiness remain behind their respective gates.
 
 The approved activation policy adds `module-manager` to `InstallerFinalizer::BASELINE_MODULES`, so fresh installations install and enable it through the existing generic ModuleManager lifecycle. No new activation framework, bootstrap synchronization, or automatic module reconciliation is introduced. For existing installations, apply `database/upgrades/m3_3_module_manager_permission.sql`, then explicitly install and enable `module-manager` through ModuleManager; its routes become available on the next request through the enabled-module loader. The project’s existing PHP/XAMPP command style is the supported operator path.
 
 For an existing installation after applying the permission artifact, run:
 
 ```powershell
-& "C:\xampp\php\php.exe" -r "chdir('C:/Git/copot'); `$app = require 'bootstrap/app.php'; `$app->modules()->install('module-manager'); `$app->modules()->enable('module-manager'); echo 'module-manager enabled';"
+& "C:\xampp\php-8.5.7\php.exe" -r "chdir('C:/Git/copot'); `$app = require 'bootstrap/app.php'; `$app->modules()->install('module-manager'); `$app->modules()->enable('module-manager'); echo 'module-manager enabled';"
 ```
 
-`modules/module-manager` must be included in `build/package_manifest.php` in the same activation gate as fresh-install baseline activation. Clean-install and package-smoke evidence are required before Batch 3 Admin integration. The Batch 3 Admin workflow may display Module Manager itself, but must deny disabling or uninstalling `module-manager` with visibly disabled actions and stable denial reasons. No additional schema, upgrade artifact, migration runner, or automatic permission synchronization is required.
+`modules/module-manager` is included in `build/package_manifest.php` and fresh-install baseline activation. M3.3 Batch 5 package, clean-install, focused regression, and manual Admin evidence pass. The Module Manager denies self-disable and self-uninstall with visibly disabled controls and human-readable denial text; stable denial codes remain internal. No additional schema, upgrade artifact, migration runner, or automatic permission synchronization is required.
+
+Validation evidence is stated separately: baseline automated validation passes 816 assertions; patch-focused reruns pass 130 assertions; cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
 
 M2.2 completion record:
 
