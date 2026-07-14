@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are implemented and validated on `feature/m3.3-module-manager`; documentation synchronization, final focused review, user-owned commit, push, and merge-readiness assessment are complete, while M3.3 is not merged or released and fast-forward merge into `main` plus clean synchronized `main` verification remain.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; local and remote `feature/m3.3-module-manager` branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -722,9 +722,13 @@ Fresh installs use the canonical `database/schema.sql`; existing installations c
 
 #### Admin UX Refinement 1
 
-Status: planned; implementation not started; non-blocking for M3.3 and scheduled after M3.3 before M3.4.
+Status: active Post-M3 target; implementation branch `feature/admin-ux-refinement-1` has not yet been created. It follows M3.3 and precedes reserved M3.4 Content Manager.
 
-M3.2 and M3.3 collect management-UI patterns. After M3.3 and before M3.4, Admin UX Refinement 1 will normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical permission slugs by default, add floating global notifications while preserving inline validation, clarify effective permissions for multi-role users, and establish reusable dashboard block spacing.
+M3.2 and M3.3 collect management-UI patterns. Admin UX Refinement 1 will normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical permission slugs by default, add floating global notifications while preserving inline validation, clarify effective permissions for multi-role users, and establish reusable dashboard block spacing.
+
+The approved Copot Admin Shell image is the canonical visual authority, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior. WordPress and other Admin interfaces are supporting references only.
+
+Authenticated Public Toolbar is not part of Webcore or Admin UX Refinement 1. It remains Theme-owned future scope; Webcore may expose existing authentication, current-user, or permission facts, or a minimal hook if later proven necessary, but must not render or own the toolbar UI contract.
 
 #### M3.2 Settings Manager
 
@@ -732,7 +736,7 @@ M3.2 Settings Manager is complete in the approved sequence and merged to `main` 
 
 #### M3.3 Module Manager Entry Contract
 
-Status: Batches 1–5 complete on `feature/m3.3-module-manager`. Batch 5 validation, manual Admin verification, documentation synchronization, and final focused review are complete.
+Status: Batches 1–5 complete, fast-forward merged into synchronized `main`, and closed with the feature branch deleted. Batch 5 validation, manual Admin verification, documentation synchronization, and final focused review are complete.
 
 The Module Manager module owns Admin inventory, metadata and discovery-error presentation, navigation, configured-path routes, and controlled lifecycle workflows. It consumes the existing Core discovery, repository, lifecycle, Admin URL, Admin Shell, CSRF, navigation, and sanitized-error contracts. The activation gate approves only the narrowly scoped `InstallerFinalizer::BASELINE_MODULES` addition; no other confirmed Core blocker exists, and any further Core change requires separate approval and executable evidence.
 
@@ -777,14 +781,16 @@ The exact five-batch plan is:
 
 Explicit non-goals include marketplace or remote installation, package download or ZIP upload, signing, automatic updates, rollback, generic version solving, Composer-style dependency resolution, automatic permission or role synchronization, a second authorization system, a generic migration framework, Theme Manager, Media Library, module settings UI, module code editor, Admin UX Refinement 1, M3.4, release, tagging, and package publication.
 
-The M3.3 implementation, validation, documentation synchronization, final focused review, commit, push, and merge-readiness assessment gates are complete. The only remaining closure gate is fast-forward merge into `main` followed by clean synchronized `main` verification. M3.3 remains unmerged, unreleased, untagged, and unpublished.
+The M3.3 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification are complete. M3.3 reached its No-Return Point and branch lifecycle closure; it remains unreleased, untagged, and unpublished.
 
 Branch strategy:
 
 ```text
-feature/m3.3-module-manager
--> fast-forward merge into main
--> clean synchronized main verification; branch deletion requires explicit user authorization
+main at `020f2b2`
+-> Post-M3 documentation synchronization on `docs/post-m3-documentation-sync`
+-> `feature/admin-ux-refinement-1` creation from synchronized `main`
+-> Admin UX Refinement 1
+-> reserved M3.4 Content Manager
 ```
 
 ---

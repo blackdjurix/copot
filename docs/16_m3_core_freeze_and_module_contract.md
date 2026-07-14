@@ -706,7 +706,7 @@ All five M3.1 batches are complete on the milestone branch. Focused Batches 1–
 
 The only approved Core touchpoint added during completion is recovery from base Admin permission denial: an authenticated user without `admin.access` still receives a standalone `403`, with a CSRF-protected POST Sign out action using the configured Admin path. Guest standalone errors remain without authenticated recovery actions. Batch 3's final-administrator integration fixture is transactionally isolated from active administrator-capable users already present in the database; runtime capability and invariant semantics are unchanged.
 
-M3.1 merged to `main` through `5c4cf8c` and remains unreleased. Post-M3.1 Roadmap Sync is complete. M3.2 preparation and Batches 1–5 are complete, and M3.2 merged to `main` through `afd82f0`; M3.1 and M3.2 remain unreleased. M3.3 implementation and validation are now complete on `feature/m3.3-module-manager`; documentation synchronization, final focused review, user-owned commit, push, and merge-readiness assessment are complete, while fast-forward merge into `main` and clean synchronized `main` verification remain, and M3.3 is not merged or released.
+M3.1 merged to `main` through `5c4cf8c` and remains unreleased. Post-M3.1 Roadmap Sync is complete. M3.2 preparation and Batches 1–5 are complete, and M3.2 merged to `main` through `afd82f0`; M3.1 and M3.2 remain unreleased. M3.3 implementation and validation are complete and were fast-forward merged into `main` at `020f2b2`; local and remote `feature/m3.3-module-manager` branches are deleted. M3.3 reached its No-Return Point and remains unreleased, untagged, and unpublished.
 
 Deferred non-blocking Admin UX work includes permission checkbox sizing/alignment, permission grouping, hiding technical slugs by default, global floating notifications while preserving inline field errors, effective-permission explanation for multi-role users, and reusable dashboard block spacing. Gather M3.2/M3.3 patterns and schedule Admin UX Refinement 1 after M3.3 and before M3.4.
 
@@ -714,7 +714,7 @@ M3.2-specific scope, existing Settings foundation evidence, permission reuse, Co
 
 ## M3.3 Module Manager Entry Contract
 
-Status: Batches 1–5 implementation and validation complete on `feature/m3.3-module-manager`. Manual Admin verification, documentation synchronization, and final focused review are complete.
+Status: Batches 1–5 implementation and validation complete; manual Admin verification, documentation synchronization, final focused review, fast-forward merge, and branch lifecycle closure are complete. M3.3 remains unreleased, untagged, and unpublished.
 
 The M3.3 Module Manager module owns Admin inventory, metadata and discovery-error presentation, navigation, configured-path routes, and controlled lifecycle workflows. It consumes existing public Core discovery, repository, lifecycle, Admin URL, Admin Shell, CSRF, navigation, and sanitized-error contracts. The activation gate approves only the narrowly scoped `InstallerFinalizer::BASELINE_MODULES` addition; no other confirmed Core blocker exists. Any further Core change requires separate approval and executable evidence under the Core-change escalation rule.
 
@@ -757,9 +757,13 @@ Baseline automated validation passes 816 assertions: 272 focused regression, 58 
 4. Security, lifecycle failure, dependency, and compatibility hardening.
 5. Unified regression, manual verification, documentation closure, and completion audit — validation, manual verification, documentation synchronization, and final focused review complete.
 
-M3.3 implementation, package inclusion, validation, manual verification, documentation synchronization, final focused review, user-owned commit, push, and merge-readiness assessment are complete. Fast-forward merge into `main` and clean synchronized `main` verification remain. Admin UX Refinement 1 remains after M3.3 and before M3.4. M3.4, release, tagging, publication, and merge are out of scope for this closure action.
+M3.3 implementation, package inclusion, validation, manual verification, documentation synchronization, final focused review, user-owned commit, push, fast-forward merge, clean synchronized `main` verification, and merge-readiness assessment are complete. Admin UX Refinement 1 is the active Post-M3 target after M3.3 and before reserved M3.4 Content Manager; its implementation branch `feature/admin-ux-refinement-1` has not yet been created. M3.4, release, tagging, and publication remain outside the current Admin UX action.
 
-The M3.3 implementation, validation, documentation synchronization, final focused review, commit, push, and merge-readiness assessment gates are complete. The only remaining closure gate is fast-forward merge into `main` followed by clean synchronized `main` verification. The Core freeze remains active; the approved `InstallerFinalizer::BASELINE_MODULES` addition is the sole M3.3 Core touchpoint, and the current denial-message correction is module-local.
+The M3.3 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification are complete. The Core freeze remains active; the approved `InstallerFinalizer::BASELINE_MODULES` addition is the sole M3.3 Core touchpoint, and the current denial-message correction is module-local.
+
+The approved Copot Admin Shell image is the canonical visual authority, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior. WordPress and other Admin interfaces are supporting references only.
+
+Authenticated Public Toolbar is not part of Webcore or Admin UX Refinement 1. It remains Theme-owned future scope; Webcore may expose existing authentication, current-user, or permission facts, or a minimal hook if later proven necessary, but must not render or own the toolbar UI contract.
 
 ### M3.1 Branch Strategy
 

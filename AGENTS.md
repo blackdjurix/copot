@@ -18,13 +18,13 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone / checkpoint: M3.3 Batch 5 closure evidence complete; documentation synchronization and final focused review are complete.
+Current milestone / checkpoint: Post-M3 preparation for Admin UX Refinement 1; M3.3 is merged and its branch lifecycle is closed.
 
-Current work: fast-forward merge into `main` and clean synchronized `main` verification; branch deletion remains a post-merge, explicitly authorized action.
+Current work: Post-M3 documentation synchronization on `docs/post-m3-documentation-sync`; `feature/admin-ux-refinement-1` has not yet been created.
 
 Primary goal:
 
-Maintain the completed M3.3 Batch 1–5 implementation, validation, documentation synchronization, focused review, commit, and push state without declaring the milestone merged, released, tagged, published, or closed before the fast-forward merge and clean synchronized `main` verification.
+Maintain the completed M3.3 Batch 1–5 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` state while keeping M3.3 unreleased, untagged, unpublished, and distinct from the reserved M3.4 Content Manager scope.
 
 Current state:
 
@@ -45,8 +45,9 @@ Current state:
 * The M3.2 Batch 1 No-Return Point is reached.
 * M3.2 preparation and Batches 1–5 are complete with 366 focused M3.2 assertions.
 * M3.2 Settings Manager is validated, merged to `main` through merge commit `afd82f0`, pushed, and its feature-branch lifecycle is closed.
-* M3.3 Module Manager Batches 1–5 implementation and validation are complete on active feature branch `feature/m3.3-module-manager`.
-* M3.3 is not merged or released; user-owned commit and push are complete, merge-readiness assessment is complete, and the only remaining closure gate is fast-forward merge into `main` followed by clean synchronized `main` verification.
+* M3.3 Module Manager Batches 1–5 implementation and validation are complete and were fast-forward merged into `main` at `020f2b2`.
+* `main` and `origin/main` were clean and synchronized at `020f2b2`; local and remote `feature/m3.3-module-manager` branches were deleted, and its branch lifecycle is closed.
+* M3.3 reached its No-Return Point and remains unreleased, untagged, and unpublished.
 * Baseline automated validation passes 816 assertions: 272 focused regression, 58 clean-install, and 486 package builder smoke assertions.
 * Patch-focused reruns pass 130 assertions: 35 Batch 3 integration, 41 Batch 3 security, and 54 Batch 4 lifecycle assertions. Cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
 * Manual Admin verification passes in a disposable official-package installation, including lifecycle, self-management protection, human-readable denial messaging, raw-key absence, module-file preservation, and leak checks; disposable resources were fully cleaned.
@@ -74,7 +75,9 @@ Current state:
 * Fresh installation enables `settings-manager` with the existing baseline ModuleManager flow. Existing installations install and enable it through the same ModuleManager lifecycle; no schema change or upgrade SQL is required.
 * Batch 1 focused contract and integration coverage passes 42 assertions, with relevant Admin, Settings, Site Asset, packaging, and isolated clean-install compatibility passing.
 * The Database Upgrade / Migration System concept is locked as planned but remains unimplemented and excluded from M3.2.
-* Admin UX Refinement 1 remains planned after M3.3 and before M3.4.
+* Admin UX Refinement 1 is the active Post-M3 target after M3.3 and before reserved M3.4 Content Manager; `feature/admin-ux-refinement-1` has not yet been created.
+* The approved Copot Admin Shell image is the canonical visual authority for Admin UX Refinement 1, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior.
+* Authenticated Public Toolbar is not Webcore or Admin UX Refinement 1 scope; it remains Theme-owned future scope, with Webcore limited to existing authentication, current-user, permission facts, or a later minimal hook if proven necessary.
 * The post-v0.12.0 Core freeze remains in force.
 * M3.2 Batch 5 was validation, manual verification, and documentation closure only; it added no runtime, Core, schema, SQL, migration runner, permission, manifest, dependency, route, view, or production behavior change. No unresolved runtime, schema, security, or Core blocker remains.
 
@@ -709,7 +712,7 @@ Copot v0.12.0 is released and is the current stable Webcore baseline.
 
 M3 Preparation is complete and closed. M3.1 Users & Access and M3.2 Settings Manager are complete and merged but remain unreleased.
 
-The active checkpoint is M3.3 Batch 5 closure evidence complete, with documentation synchronization and final focused review complete.
+The active checkpoint is Post-M3 preparation for Admin UX Refinement 1. M3.3 is merged, synchronized, and branch-closed; the Admin UX branch has not yet been created.
 
 The immediate goal is to:
 
@@ -719,11 +722,11 @@ The immediate goal is to:
 * preserve the completed M3.1 implementation and its 504 focused assertions, unified platform regression, and manual verification evidence;
 * preserve the completed M3.2 Settings Manager milestone and its 366 focused assertions;
 * preserve the existing Settings definitions, typed service, persistence, permission, Admin URL, CSRF, Admin Shell, and specialized Site Asset contracts;
-* record M3.3 Batches 1–5 implementation, validation, documentation synchronization, focused review, commit, and push as complete while keeping the fast-forward merge and clean synchronized `main` verification gate open;
+* record M3.3 Batches 1–5 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification as complete;
 * preserve the approved M3.3 Module Manager contract, activation policy, and five-batch closure evidence;
-* keep package publication, release work, tagging, merge, and any Core change beyond the approved InstallerFinalizer touchpoint behind separate approval gates;
+* keep package publication, release work, tagging, and any Core change beyond the approved InstallerFinalizer touchpoint behind separate approval gates;
 * keep environment/runtime secrets outside editable Settings;
-* keep Database Upgrade / Migration System implementation and Admin UX Refinement 1 outside M3.2.
+* keep Database Upgrade / Migration System implementation outside M3.2 and keep Admin UX Refinement 1 presentation-only, module-local, and after M3.3 before M3.4.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
 
