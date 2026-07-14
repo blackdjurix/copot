@@ -4,6 +4,8 @@ namespace Copot\Core;
 
 class ModuleRepository
 {
+    private static int $savepointCounter = 0;
+
     public function __construct(private Database $database)
     {
     }
@@ -137,6 +139,54 @@ class ModuleRepository
         );
 
         $statement->execute(['module_name' => $moduleName]);
+    }
+
+    public function atomic(callable $operation): mixed
+    {
+        $connection = $this->database->connection();
+        $ownsTransaction = !$connection->inTransaction();
+        $savepoint = null;
+
+        if ($ownsTransaction) {
+            $connection->beginTransaction();
+        } else {
+            $savepoint = $this->nextSavepoint();
+            $connection->exec('SAVEPOINT ' . $savepoint);
+        }
+
+        try {
+            $result = $operation();
+
+            if ($ownsTransaction) {
+                $connection->commit();
+            } else {
+                $connection->exec('RELEASE SAVEPOINT ' . $savepoint);
+            }
+
+            return $result;
+        } catch (\Throwable $failure) {
+            try {
+                if ($ownsTransaction) {
+                    if ($connection->inTransaction()) {
+                        $connection->rollBack();
+                    }
+                } elseif ($connection->inTransaction()) {
+                    $connection->exec('ROLLBACK TO SAVEPOINT ' . $savepoint);
+                    $connection->exec('RELEASE SAVEPOINT ' . $savepoint);
+                }
+            } catch (\Throwable $cleanupFailure) {
+                throw new \RuntimeException('Module lifecycle transaction cleanup failed.', 0, $cleanupFailure);
+            }
+
+            throw $failure;
+        }
+    }
+
+    private function nextSavepoint(): string
+    {
+        self::$savepointCounter++;
+
+        return 'module_manager_' . self::$savepointCounter . '_' . bin2hex(random_bytes(6));
     }
 
     private function createPermission(string $moduleName, string $slug, string $name): void

@@ -235,6 +235,9 @@ PHP,
     ], [
         'listeners.php' => "<?php\nthrow new RuntimeException('Merely installed module listener file was loaded.');\n",
     ]);
+    $createModule($modulesPath, 'missing-route', [
+        'routes' => 'routes.php',
+    ]);
 
     $discovery = new ModuleDiscovery($modulesPath);
     $discovered = $discovery->discover();
@@ -248,11 +251,13 @@ PHP,
     $enabledRepository = new Batch3ModuleRepository([
         ['name' => 'alpha', 'status' => 'enabled'],
         ['name' => 'zeta', 'status' => 'enabled'],
+        ['name' => 'missing-route', 'status' => 'enabled'],
     ]);
     $loader = new ModuleLoader($discovery, $enabledRepository);
     $loader->loadListeners($app);
 
     $listenersProperty = new ReflectionProperty($app->events(), 'listeners');
+    $listenersProperty->setAccessible(true);
     $registeredListeners = $listenersProperty->getValue($app->events());
     $assert(
         array_keys($registeredListeners) === ['fixture.order.checked', 'fixture.map.second'],
@@ -271,8 +276,15 @@ PHP,
 
     $loader->loadRoutes($app);
     $routeResponse = $app->run(new Request('GET', '/fixture-alpha'));
-    $responseContent = (new ReflectionProperty($routeResponse, 'content'))->getValue($routeResponse);
+    $routeContentProperty = new ReflectionProperty($routeResponse, 'content');
+    $routeContentProperty->setAccessible(true);
+    $responseContent = $routeContentProperty->getValue($routeResponse);
     $assert($responseContent === 'fixture route loaded', 'Existing enabled-module route loading behavior regressed.');
+    $missingRouteResponse = $app->run(new Request('GET', '/missing-route'));
+    $missingRouteStatusProperty = new ReflectionProperty($missingRouteResponse, 'status');
+    $missingRouteStatusProperty->setAccessible(true);
+    $missingRouteStatus = $missingRouteStatusProperty->getValue($missingRouteResponse);
+    $assert($missingRouteStatus === 404, 'Missing declared route files must remain skipped by ModuleLoader.');
 
     $unsafeModulesPath = $temporaryDirectory('unsafe-metadata');
     $createModule($unsafeModulesPath, 'traversal', ['listeners' => '../outside.php']);

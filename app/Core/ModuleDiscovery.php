@@ -89,7 +89,7 @@ class ModuleDiscovery
     private function validateMetadata(string $folderName, array $metadata): ?string
     {
         foreach (['name', 'title', 'version'] as $field) {
-            if (!isset($metadata[$field]) || trim((string) $metadata[$field]) === '') {
+            if (!isset($metadata[$field]) || !is_string($metadata[$field]) || trim($metadata[$field]) === '') {
                 return "Missing required field [{$field}].";
             }
         }
@@ -104,7 +104,7 @@ class ModuleDiscovery
             return "Module folder [{$folderName}] must match module name [{$name}].";
         }
 
-        if (isset($metadata['routes']) && !$this->isSafeRelativePath((string) $metadata['routes'])) {
+        if (isset($metadata['routes']) && (!is_string($metadata['routes']) || !$this->isSafeRelativePath($metadata['routes']))) {
             return 'Module routes path must be a safe relative path inside the module folder.';
         }
 
@@ -118,6 +118,41 @@ class ModuleDiscovery
             }
         }
 
+        if (array_key_exists('requires', $metadata)) {
+            if (!is_array($metadata['requires'])) {
+                return 'Module requires metadata must be an object.';
+            }
+
+            if (!array_key_exists('modules', $metadata['requires'])) {
+                return 'Module requires.modules metadata is required.';
+            }
+
+            if (!is_array($metadata['requires']['modules'])) {
+                return 'Module requires.modules metadata must be an array.';
+            }
+
+            if (array_diff(array_keys($metadata['requires']), ['modules']) !== []) {
+                return 'Module requires metadata contains unsupported keys.';
+            }
+        }
+
+        if (array_key_exists('permissions', $metadata)) {
+            if (!is_array($metadata['permissions'])) {
+                return 'Module permissions metadata must be an array.';
+            }
+
+            foreach ($metadata['permissions'] as $permission) {
+                if (!is_array($permission)
+                    || !isset($permission['slug'], $permission['name'])
+                    || !is_string($permission['slug'])
+                    || !is_string($permission['name'])
+                    || trim($permission['slug']) === ''
+                    || trim($permission['name']) === '') {
+                    return 'Module permission metadata must contain string slug and name values.';
+                }
+            }
+        }
+
         return null;
     }
 
@@ -125,11 +160,22 @@ class ModuleDiscovery
     {
         $path = str_replace('\\', '/', $path);
 
-        return $path !== ''
-            && !str_starts_with($path, '/')
-            && !str_contains($path, '../')
-            && !str_contains($path, '..\\')
-            && $path !== '..';
+        if (
+            str_contains($path, "\0")
+            || str_starts_with($path, '/')
+            || str_starts_with($path, '\\')
+            || preg_match('/^[A-Za-z]:[\\\\\/]/', $path) === 1
+        ) {
+            return false;
+        }
+
+        foreach (explode('/', $path) as $segment) {
+            if ($segment === '' || $segment === '.' || $segment === '..') {
+                return false;
+            }
+        }
+
+        return $path !== '';
     }
 
     private function isSafeListenerPath(string $path): bool
