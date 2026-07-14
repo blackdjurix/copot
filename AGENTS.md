@@ -20,11 +20,11 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 Current milestone / checkpoint: M3.3 Batch 5 closure evidence complete; documentation synchronization and final focused review are complete.
 
-Current work: user-owned Git closure gates.
+Current work: fast-forward merge into `main` and clean synchronized `main` verification; branch deletion remains a post-merge, explicitly authorized action.
 
 Primary goal:
 
-Maintain the completed M3.3 Batch 1–5 implementation, validation, documentation synchronization, and focused review state without declaring the milestone merged, released, tagged, published, or closed before user-owned Git closure.
+Maintain the completed M3.3 Batch 1–5 implementation, validation, documentation synchronization, focused review, commit, and push state without declaring the milestone merged, released, tagged, published, or closed before the fast-forward merge and clean synchronized `main` verification.
 
 Current state:
 
@@ -46,7 +46,7 @@ Current state:
 * M3.2 preparation and Batches 1–5 are complete with 366 focused M3.2 assertions.
 * M3.2 Settings Manager is validated, merged to `main` through merge commit `afd82f0`, pushed, and its feature-branch lifecycle is closed.
 * M3.3 Module Manager Batches 1–5 implementation and validation are complete on active feature branch `feature/m3.3-module-manager`.
-* M3.3 is not merged or released; user-owned commit/push, clean synchronized branch verification, and merge-readiness assessment remain pending.
+* M3.3 is not merged or released; user-owned commit and push are complete, merge-readiness assessment is complete, and the only remaining closure gate is fast-forward merge into `main` followed by clean synchronized `main` verification.
 * Baseline automated validation passes 816 assertions: 272 focused regression, 58 clean-install, and 486 package builder smoke assertions.
 * Patch-focused reruns pass 130 assertions: 35 Batch 3 integration, 41 Batch 3 security, and 54 Batch 4 lifecycle assertions. Cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
 * Manual Admin verification passes in a disposable official-package installation, including lifecycle, self-management protection, human-readable denial messaging, raw-key absence, module-file preservation, and leak checks; disposable resources were fully cleaned.
@@ -719,7 +719,7 @@ The immediate goal is to:
 * preserve the completed M3.1 implementation and its 504 focused assertions, unified platform regression, and manual verification evidence;
 * preserve the completed M3.2 Settings Manager milestone and its 366 focused assertions;
 * preserve the existing Settings definitions, typed service, persistence, permission, Admin URL, CSRF, Admin Shell, and specialized Site Asset contracts;
-* record M3.3 Batches 1–5 implementation, validation, documentation synchronization, and focused review as complete while keeping user-owned commit/push and merge-readiness gates open;
+* record M3.3 Batches 1–5 implementation, validation, documentation synchronization, focused review, commit, and push as complete while keeping the fast-forward merge and clean synchronized `main` verification gate open;
 * preserve the approved M3.3 Module Manager contract, activation policy, and five-batch closure evidence;
 * keep package publication, release work, tagging, merge, and any Core change beyond the approved InstallerFinalizer touchpoint behind separate approval gates;
 * keep environment/runtime secrets outside editable Settings;

@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are implemented and validated on `feature/m3.3-module-manager`; documentation synchronization and final focused review are complete, while M3.3 is not merged or released and user-owned commit/push, clean synchronized branch verification, and merge-readiness assessment remain pending.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are implemented and validated on `feature/m3.3-module-manager`; documentation synchronization, final focused review, user-owned commit, push, and merge-readiness assessment are complete, while M3.3 is not merged or released and fast-forward merge into `main` plus clean synchronized `main` verification remain.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -777,14 +777,14 @@ The exact five-batch plan is:
 
 Explicit non-goals include marketplace or remote installation, package download or ZIP upload, signing, automatic updates, rollback, generic version solving, Composer-style dependency resolution, automatic permission or role synchronization, a second authorization system, a generic migration framework, Theme Manager, Media Library, module settings UI, module code editor, Admin UX Refinement 1, M3.4, release, tagging, and package publication.
 
-The M3.3 implementation, validation, documentation synchronization, and final focused review gates are complete. Remaining gates are user-owned commit/push, clean synchronized branch verification, and merge-readiness assessment. M3.3 remains unmerged, unreleased, untagged, and unpublished.
+The M3.3 implementation, validation, documentation synchronization, final focused review, commit, push, and merge-readiness assessment gates are complete. The only remaining closure gate is fast-forward merge into `main` followed by clean synchronized `main` verification. M3.3 remains unmerged, unreleased, untagged, and unpublished.
 
 Branch strategy:
 
 ```text
 feature/m3.3-module-manager
--> user-owned commit and push
--> clean synchronized branch verification and merge-readiness assessment
+-> fast-forward merge into main
+-> clean synchronized main verification; branch deletion requires explicit user authorization
 ```
 
 ---
