@@ -26,9 +26,9 @@
                     <tbody>
                         <?php foreach (($types ?? []) as $type): ?>
                             <tr>
-                                <td><?= htmlspecialchars($type->name(), ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($type->description() ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= $type->isHierarchical() ? 'Prepared' : 'Flat' ?></td>
+                                <td><strong class="admin-table-primary"><?= htmlspecialchars($type->name(), ENT_QUOTES, 'UTF-8') ?></strong></td>
+                                <td><span class="admin-table-meta admin-table-wrap-anywhere"><?= htmlspecialchars($type->description() ?? '', ENT_QUOTES, 'UTF-8') ?></span></td>
+                                <td><span class="admin-badge <?= $type->isHierarchical() ? 'admin-badge--info' : '' ?>"><?= $type->isHierarchical() ? 'Hierarchical' : 'Flat' ?></span></td>
                                 <td>
                                     <a class="admin-button admin-button--link" href="<?= htmlspecialchars($adminUrl('taxonomy/' . $type->slug()), ENT_QUOTES, 'UTF-8') ?>">Open</a>
                                 </td>

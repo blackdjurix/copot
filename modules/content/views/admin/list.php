@@ -46,28 +46,36 @@
                             $assigned = ($taxonomyTerms ?? [])[$item->id()] ?? ['categories' => [], 'tags' => []];
                             $categoryNames = array_map(fn ($term): string => $term->name(), $assigned['categories'] ?? []);
                             $tagNames = array_map(fn ($term): string => $term->name(), $assigned['tags'] ?? []);
+                            $statusBadgeClass = match ($item->status()) {
+                                'published' => 'admin-badge--success',
+                                'draft' => 'admin-badge--warning',
+                                'archived' => 'admin-badge--info',
+                                default => '',
+                            };
                             ?>
                             <tr>
-                                <td><?= htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($item->type(), ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($item->slug(), ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><strong class="admin-table-primary"><?= htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') ?></strong></td>
+                                <td><span class="admin-table-meta"><?= htmlspecialchars($item->type(), ENT_QUOTES, 'UTF-8') ?></span></td>
+                                <td><span class="admin-table-meta admin-table-wrap-anywhere"><?= htmlspecialchars($item->slug(), ENT_QUOTES, 'UTF-8') ?></span></td>
                                 <?php if (!empty($taxonomyAvailable)): ?>
                                     <td>
-                                        <?php if ($categoryNames !== []): ?>
-                                            <strong>Categories:</strong> <?= htmlspecialchars(implode(', ', $categoryNames), ENT_QUOTES, 'UTF-8') ?><br>
-                                        <?php endif; ?>
+                                        <div class="admin-content-taxonomy">
+                                            <?php if ($categoryNames !== []): ?>
+                                                <span><strong>Categories:</strong> <?= htmlspecialchars(implode(', ', $categoryNames), ENT_QUOTES, 'UTF-8') ?></span>
+                                            <?php endif; ?>
 
-                                        <?php if ($tagNames !== []): ?>
-                                            <strong>Tags:</strong> <?= htmlspecialchars(implode(', ', $tagNames), ENT_QUOTES, 'UTF-8') ?>
-                                        <?php endif; ?>
+                                            <?php if ($tagNames !== []): ?>
+                                                <span><strong>Tags:</strong> <?= htmlspecialchars(implode(', ', $tagNames), ENT_QUOTES, 'UTF-8') ?></span>
+                                            <?php endif; ?>
 
-                                        <?php if ($categoryNames === [] && $tagNames === []): ?>
-                                            <span class="admin-text-muted">None</span>
-                                        <?php endif; ?>
+                                            <?php if ($categoryNames === [] && $tagNames === []): ?>
+                                                <span class="admin-text-muted">None</span>
+                                            <?php endif; ?>
+                                        </div>
                                     </td>
                                 <?php endif; ?>
-                                <td><?= htmlspecialchars($item->status(), ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($item->updatedAt(), ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><span class="admin-badge <?= htmlspecialchars($statusBadgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($item->status(), ENT_QUOTES, 'UTF-8') ?></span></td>
+                                <td><span class="admin-table-meta admin-table-wrap-anywhere"><?= htmlspecialchars($item->updatedAt(), ENT_QUOTES, 'UTF-8') ?></span></td>
                                 <td>
                                     <div class="admin-row-actions">
                                         <?php if (!empty($canUpdate)): ?>

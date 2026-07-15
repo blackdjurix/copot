@@ -48,26 +48,36 @@
                     </thead>
                     <tbody>
                         <?php foreach (($terms ?? []) as $term): ?>
-                            <?php $usageCount = (int) (($usageCounts ?? [])[$term->id()] ?? 0); ?>
+                            <?php
+                            $usageCountsForTerms = isset($usageCounts) && is_array($usageCounts) ? $usageCounts : [];
+                            $usageAvailable = array_key_exists($term->id(), $usageCountsForTerms);
+                            $usageCount = $usageAvailable ? (int) $usageCountsForTerms[$term->id()] : null;
+                            ?>
                             <tr>
-                                <td><?= htmlspecialchars($term->name(), ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($term->slug(), ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars($term->description() ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars((string) $term->sortOrder(), ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars((string) $usageCount, ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><strong class="admin-table-primary"><?= htmlspecialchars($term->name(), ENT_QUOTES, 'UTF-8') ?></strong></td>
+                                <td><span class="admin-table-meta admin-table-wrap-anywhere"><?= htmlspecialchars($term->slug(), ENT_QUOTES, 'UTF-8') ?></span></td>
+                                <td><span class="admin-table-meta admin-table-wrap-anywhere"><?= htmlspecialchars($term->description() ?? '', ENT_QUOTES, 'UTF-8') ?></span></td>
+                                <td><span class="admin-table-meta"><?= htmlspecialchars((string) $term->sortOrder(), ENT_QUOTES, 'UTF-8') ?></span></td>
+                                <td>
+                                    <?php if ($usageAvailable): ?>
+                                        <span class="admin-badge admin-badge--info"><?= htmlspecialchars((string) $usageCount, ENT_QUOTES, 'UTF-8') ?></span>
+                                    <?php else: ?>
+                                        <span class="admin-badge">Usage unavailable</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td>
                                     <div class="admin-row-actions">
                                         <?php if (!empty($canUpdate)): ?>
                                             <a class="admin-button admin-button--link" href="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/' . $term->id() . '/edit'), ENT_QUOTES, 'UTF-8') ?>">Edit</a>
                                         <?php endif; ?>
 
-                                        <?php if (!empty($canDelete) && $usageCount === 0): ?>
+                                        <?php if (!empty($canDelete) && $usageAvailable && $usageCount === 0): ?>
                                             <form class="admin-inline-form" method="post" action="<?= htmlspecialchars($adminUrl('taxonomy/' . ($type?->slug() ?? '') . '/' . $term->id() . '/delete'), ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                                 <button class="admin-button admin-button--link admin-action-danger" type="submit">Delete</button>
                                             </form>
-                                        <?php elseif (!empty($canDelete)): ?>
-                                            <span class="admin-text-muted">In use</span>
+                                        <?php elseif (!empty($canDelete) && $usageAvailable && $usageCount > 0): ?>
+                                            <span class="admin-badge admin-badge--warning">In use</span>
                                         <?php endif; ?>
                                     </div>
                                 </td>

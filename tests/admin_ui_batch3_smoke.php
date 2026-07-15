@@ -125,7 +125,9 @@ $assert(str_contains($settingsError, 'class="admin-field__error" id="' . $siteNa
 $assert(str_contains($settingsSuccess, 'class="admin-field__help" id="' . $siteNameId . '-help"'), 'Settings help-text contract is missing.');
 $assert(str_contains($settingsSuccess, '<span class="admin-visually-hidden">required</span>'), 'Required field lacks accessible required text.');
 $assert(str_contains($settingsSuccess, '<select'), 'Settings select rendering regressed.');
-$assert(str_contains($settingsSuccess, '<legend class="admin-fieldset__legend">General</legend>'), 'Grouped dynamic Settings section regressed.');
+$assert(preg_match('/<legend\b[^>]*>General<\/legend>/', $settingsSuccess) === 1, 'Grouped dynamic Settings legend element or text regressed.');
+$assert(preg_match('/<legend\b[^>]*class="admin-fieldset__legend"[^>]*>General<\/legend>/', $settingsSuccess) === 1, 'Grouped dynamic Settings legend class regressed.');
+$assert(preg_match('/<legend\b[^>]*id="settings-general-title"[^>]*>General<\/legend>/', $settingsSuccess) === 1, 'Grouped dynamic Settings legend id regressed.');
 $assert(str_contains($settingsSuccess, 'Upload Logo') && str_contains($settingsSuccess, 'Upload Favicon'), 'Specialized Site Asset controls regressed.');
 $assert(str_contains($css, '.admin-field textarea'), 'Textarea field pattern is missing.');
 

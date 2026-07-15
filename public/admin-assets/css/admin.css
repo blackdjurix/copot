@@ -1090,3 +1090,43 @@ dd {
         padding: var(--admin-space-4);
     }
 }
+
+section[aria-labelledby="content-list-title"] .admin-table td,
+section[aria-labelledby="taxonomy-types-title"] .admin-table td,
+section[aria-labelledby="taxonomy-terms-title"] .admin-table td {
+    overflow-wrap: anywhere;
+}
+
+section[aria-labelledby="content-list-title"] .admin-table-primary,
+section[aria-labelledby="content-list-title"] .admin-table-meta,
+section[aria-labelledby="taxonomy-types-title"] .admin-table-primary,
+section[aria-labelledby="taxonomy-types-title"] .admin-table-meta,
+section[aria-labelledby="taxonomy-terms-title"] .admin-table-primary,
+section[aria-labelledby="taxonomy-terms-title"] .admin-table-meta {
+    display: inline-block;
+    max-width: 100%;
+}
+
+section[aria-labelledby="content-list-title"] .admin-table-meta,
+section[aria-labelledby="taxonomy-types-title"] .admin-table-meta,
+section[aria-labelledby="taxonomy-terms-title"] .admin-table-meta {
+    color: var(--admin-color-muted);
+}
+
+section[aria-labelledby="content-list-title"] .admin-table-wrap-anywhere,
+section[aria-labelledby="taxonomy-types-title"] .admin-table-wrap-anywhere,
+section[aria-labelledby="taxonomy-terms-title"] .admin-table-wrap-anywhere {
+    overflow-wrap: anywhere;
+}
+
+section[aria-labelledby="content-list-title"] .admin-content-taxonomy {
+    display: grid;
+    gap: var(--admin-space-1);
+    min-width: 0;
+}
+
+section[aria-labelledby="content-list-title"] .admin-table .admin-badge,
+section[aria-labelledby="taxonomy-types-title"] .admin-table .admin-badge,
+section[aria-labelledby="taxonomy-terms-title"] .admin-table .admin-badge {
+    vertical-align: top;
+}
