@@ -24,14 +24,21 @@ $settingsSelectComparableValue = static function (SettingsField $field, mixed $v
     };
 };
 ?>
-<section class="admin-panel" aria-describedby="settings-description">
+<section class="admin-panel admin-settings-page" aria-labelledby="settings-title" aria-describedby="settings-description">
     <header class="admin-panel__header">
         <div class="admin-panel__heading">
+            <h2 class="admin-panel__title" id="settings-title">Site and localization settings</h2>
             <p class="admin-panel__description" id="settings-description">Manage global site and localization settings.</p>
         </div>
     </header>
 
     <div class="admin-panel__body">
+        <nav class="admin-settings-navigation" aria-label="Settings sections">
+            <a href="#settings-general">General</a>
+            <a href="#settings-localization">Localization</a>
+            <a href="#settings-branding">Branding</a>
+        </nav>
+
         <?php if (!empty($saved)): ?>
             <div class="admin-alert admin-alert--success" role="status">Settings saved successfully.</div>
         <?php endif; ?>
@@ -47,17 +54,23 @@ $settingsSelectComparableValue = static function (SettingsField $field, mixed $v
             </div>
         <?php endif; ?>
 
-        <form class="admin-form" method="post" action="<?= htmlspecialchars($formAction ?? '', ENT_QUOTES, 'UTF-8') ?>">
+        <form class="admin-form admin-settings-form" method="post" action="<?= htmlspecialchars($formAction ?? '', ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
             <?php foreach (($sections ?? []) as $section): ?>
-                <fieldset class="admin-fieldset">
-                    <legend class="admin-fieldset__legend"><?= htmlspecialchars($section->label(), ENT_QUOTES, 'UTF-8') ?></legend>
-                    <?php if ($section->description() !== null): ?>
-                        <p class="admin-field__help"><?= htmlspecialchars($section->description(), ENT_QUOTES, 'UTF-8') ?></p>
-                    <?php endif; ?>
+                <?php $sectionAnchor = match ($section->identifier()) {
+                    'site' => 'settings-general',
+                    'localization' => 'settings-localization',
+                    default => 'settings-section-' . $section->identifier(),
+                }; ?>
+                <section class="admin-settings-section" id="<?= htmlspecialchars($sectionAnchor, ENT_QUOTES, 'UTF-8') ?>" aria-labelledby="<?= htmlspecialchars($sectionAnchor, ENT_QUOTES, 'UTF-8') ?>-title">
+                    <fieldset class="admin-fieldset">
+                        <legend class="admin-fieldset__legend" id="<?= htmlspecialchars($sectionAnchor, ENT_QUOTES, 'UTF-8') ?>-title"><?= htmlspecialchars($section->label(), ENT_QUOTES, 'UTF-8') ?></legend>
+                        <?php if ($section->description() !== null): ?>
+                            <p class="admin-field__help"><?= htmlspecialchars($section->description(), ENT_QUOTES, 'UTF-8') ?></p>
+                        <?php endif; ?>
 
-                    <?php foreach ($section->fields() as $field): ?>
+                        <?php foreach ($section->fields() as $field): ?>
                         <?php
                         $identifier = $field->identifier();
                         $fieldId = 'setting-' . bin2hex($identifier);
@@ -82,7 +95,7 @@ $settingsSelectComparableValue = static function (SettingsField $field, mixed $v
                             && !$hasSelectedOption
                             && (is_string($value) || is_int($value) || (is_float($value) && is_finite($value)));
                         ?>
-                        <div class="admin-field">
+                            <div class="admin-field">
                             <label class="admin-field__label" for="<?= htmlspecialchars($fieldId, ENT_QUOTES, 'UTF-8') ?>">
                                 <?= htmlspecialchars($field->label(), ENT_QUOTES, 'UTF-8') ?>
                                 <?php if ($field->required()): ?>
@@ -131,9 +144,10 @@ $settingsSelectComparableValue = static function (SettingsField $field, mixed $v
                                     <?php endforeach; ?>
                                 </div>
                             <?php endif; ?>
-                        </div>
-                    <?php endforeach; ?>
-                </fieldset>
+                            </div>
+                        <?php endforeach; ?>
+                    </fieldset>
+                </section>
             <?php endforeach; ?>
 
             <div class="admin-actions admin-form__actions">
@@ -141,7 +155,7 @@ $settingsSelectComparableValue = static function (SettingsField $field, mixed $v
             </div>
         </form>
 
-        <section class="admin-settings-section" aria-labelledby="site-branding-title">
+        <section class="admin-settings-section" id="settings-branding" aria-labelledby="site-branding-title">
             <div class="admin-settings-section__header">
                 <h3 id="site-branding-title">Site Branding</h3>
                 <p>Upload the public Logo and Favicon used by the active frontend theme.</p>
