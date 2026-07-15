@@ -1,37 +1,44 @@
-<section class="admin-panel" aria-labelledby="framework-status-title">
-    <header class="admin-panel__header">
-        <div class="admin-panel__heading">
-            <h2 class="admin-panel__title" id="framework-status-title">Framework status</h2>
-            <p class="admin-panel__description">Copot Admin Shell foundation is running.</p>
+<div class="admin-dashboard">
+    <p class="admin-dashboard__description">Overview of your Copot Admin workspace.</p>
+
+    <section class="admin-panel" aria-labelledby="framework-status-title">
+        <header class="admin-panel__header">
+            <div class="admin-panel__heading">
+                <h2 class="admin-panel__title" id="framework-status-title">System overview</h2>
+                <p class="admin-panel__description">Your current Admin environment at a glance.</p>
+            </div>
+        </header>
+
+        <div class="admin-panel__body">
+            <div class="admin-dashboard-overview__grid">
+                <dl>
+                    <dt>Application</dt>
+                    <dd><?= htmlspecialchars($appName ?? 'Copot', ENT_QUOTES, 'UTF-8') ?></dd>
+
+                    <dt>Admin path</dt>
+                    <dd><?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?></dd>
+
+                    <dt>User</dt>
+                    <dd>
+                        <?= htmlspecialchars($userName ?? 'User', ENT_QUOTES, 'UTF-8') ?>
+                        &lt;<?= htmlspecialchars($userEmail ?? '', ENT_QUOTES, 'UTF-8') ?>&gt;
+                    </dd>
+                </dl>
+
+                <aside class="admin-dashboard-status" aria-labelledby="framework-status-label">
+                    <span class="admin-dashboard-status__label" id="framework-status-label">Framework status</span>
+                    <strong>Post-M3 · Admin UX Refinement 1</strong>
+                    <p>Copot Admin is ready for use.</p>
+                </aside>
+            </div>
         </div>
-    </header>
+    </section>
 
-    <div class="admin-panel__body">
-        <dl>
-            <dt>Application</dt>
-            <dd><?= htmlspecialchars($appName ?? 'Copot', ENT_QUOTES, 'UTF-8') ?></dd>
-
-            <dt>Framework status</dt>
-            <dd><?= htmlspecialchars($frameworkStatus ?? 'M1.4.1 Admin Shell', ENT_QUOTES, 'UTF-8') ?></dd>
-
-            <dt>Admin path</dt>
-            <dd><?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?></dd>
-
-            <dt>User</dt>
-            <dd>
-                <?= htmlspecialchars($userName ?? 'User', ENT_QUOTES, 'UTF-8') ?>
-                &lt;<?= htmlspecialchars($userEmail ?? '', ENT_QUOTES, 'UTF-8') ?>&gt;
-            </dd>
-        </dl>
-    </div>
-</section>
-
-
-<section aria-labelledby="module-overview-title">
-    <div class="admin-page-section-heading">
-        <h2 id="module-overview-title">Module overview</h2>
-        <p>Quick access to enabled modules available to your account.</p>
-    </div>
+    <section aria-labelledby="module-overview-title">
+        <div class="admin-page-section-heading">
+            <h2 id="module-overview-title">Quick access</h2>
+            <p>Open enabled modules available to your account.</p>
+        </div>
 
     <?php if (($widgets ?? []) === []): ?>
         <div class="admin-empty-state">
@@ -63,4 +70,5 @@
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
-</section>
+    </section>
+</div>
