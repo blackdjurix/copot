@@ -722,7 +722,7 @@ Fresh installs use the canonical `database/schema.sql`; existing installations c
 
 #### Admin UX Refinement 1
 
-Status: active Post-M3 target; implementation branch `feature/admin-ux-refinement-1` has not yet been created. It follows M3.3 and precedes reserved M3.4 Content Manager.
+Status: active Post-M3 implementation on `feature/admin-ux-refinement-1`. It follows M3.3 and precedes reserved M3.4 Content Manager.
 
 M3.2 and M3.3 collect management-UI patterns. Admin UX Refinement 1 will normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical permission slugs by default, add floating global notifications while preserving inline validation, clarify effective permissions for multi-role users, and establish reusable dashboard block spacing.
 
@@ -783,12 +783,11 @@ Explicit non-goals include marketplace or remote installation, package download 
 
 The M3.3 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification are complete. M3.3 reached its No-Return Point and branch lifecycle closure; it remains unreleased, untagged, and unpublished.
 
-Branch strategy:
+Current branch strategy:
 
 ```text
-main at `020f2b2`
--> Post-M3 documentation synchronization on `docs/post-m3-documentation-sync`
--> `feature/admin-ux-refinement-1` creation from synchronized `main`
+main at synchronized Post-M3 anchor
+-> `feature/admin-ux-refinement-1` from synchronized `main`
 -> Admin UX Refinement 1
 -> reserved M3.4 Content Manager
 ```

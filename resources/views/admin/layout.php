@@ -1,3 +1,14 @@
+<?php
+$rawUserName = $userName ?? null;
+$identityName = is_scalar($rawUserName) ? trim((string) $rawUserName) : '';
+$identityName = $identityName !== '' ? $identityName : 'User';
+$rawUserEmail = $userEmail ?? null;
+$identityEmail = is_scalar($rawUserEmail) ? trim((string) $rawUserEmail) : '';
+$identityParts = preg_split('/\s+/', $identityName) ?: [];
+$identityInitials = count($identityParts) > 1
+    ? strtoupper(substr((string) $identityParts[0], 0, 1) . substr((string) end($identityParts), 0, 1))
+    : strtoupper(substr($identityName, 0, 2));
+?>
 <!doctype html>
 <html lang="<?= htmlspecialchars($documentLocale ?? 'en', ENT_QUOTES, 'UTF-8') ?>">
 <head>
@@ -31,8 +42,13 @@
 
             <div class="admin-sidebar-footer">
                 <div class="admin-user">
-                    <span class="admin-user-name"><?= htmlspecialchars($userName ?? 'User', ENT_QUOTES, 'UTF-8') ?></span>
-                    <span><?= htmlspecialchars($userEmail ?? '', ENT_QUOTES, 'UTF-8') ?></span>
+                    <div class="admin-user__identity">
+                        <span class="admin-user__avatar" aria-hidden="true"><?= htmlspecialchars($identityInitials, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="admin-user__details">
+                            <span class="admin-user-name"><?= htmlspecialchars($identityName, ENT_QUOTES, 'UTF-8') ?></span>
+                            <span><?= htmlspecialchars($identityEmail, ENT_QUOTES, 'UTF-8') ?></span>
+                        </span>
+                    </div>
                 </div>
 
                 <form method="post" action="<?= htmlspecialchars($adminLogoutUrl, ENT_QUOTES, 'UTF-8') ?>">

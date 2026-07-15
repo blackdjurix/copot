@@ -1,18 +1,21 @@
 :root {
-    --admin-color-bg: #f4f6f8;
+    --admin-color-bg: #f7f9fc;
     --admin-color-surface: #ffffff;
-    --admin-color-navigation: #111827;
+    --admin-color-navigation: #10233f;
     --admin-color-navigation-foreground: #f8fafc;
     --admin-color-navigation-foreground-strong: #ffffff;
     --admin-color-navigation-link: #e5e7eb;
     --admin-color-navigation-muted: #cbd5e1;
-    --admin-color-navigation-active: #1f2937;
-    --admin-color-navigation-hover: rgb(255 255 255 / 0.08);
+    --admin-color-navigation-active: #1d3557;
+    --admin-color-navigation-hover: rgb(255 255 255 / 0.1);
+    --admin-color-navigation-accent: #5ca7ff;
+    --admin-color-navigation-avatar-border: rgb(255 255 255 / 0.18);
+    --admin-color-navigation-avatar-surface: rgb(255 255 255 / 0.12);
     --admin-color-navigation-control-surface: #ffffff;
-    --admin-color-text: #172033;
+    --admin-color-text: #16243a;
     --admin-color-muted: #64748b;
-    --admin-color-border: #d8dee8;
-    --admin-color-primary: #2563eb;
+    --admin-color-border: #dfe5ee;
+    --admin-color-primary: #1769e0;
     --admin-color-primary-contrast: #ffffff;
     --admin-color-success: #15803d;
     --admin-color-success-border: rgb(21 128 61 / 0.18);
@@ -35,16 +38,17 @@
     --admin-space-6: 24px;
     --admin-space-8: 32px;
     --admin-space-10: 40px;
-    --admin-radius-sm: 8px;
-    --admin-radius-md: 12px;
-    --admin-radius-lg: 18px;
-    --admin-shadow-sm: 0 1px 2px rgb(15 23 42 / 0.06);
-    --admin-shadow-md: 0 16px 40px rgb(15 23 42 / 0.08);
+    --admin-radius-sm: 7px;
+    --admin-radius-md: 10px;
+    --admin-radius-lg: 14px;
+    --admin-shadow-sm: 0 1px 3px rgb(15 23 42 / 0.06);
+    --admin-shadow-md: 0 12px 32px rgb(15 23 42 / 0.08);
     --admin-control-height: 42px;
     --admin-focus-ring: 0 0 0 3px rgb(37 99 235 / 0.28);
     --admin-focus-ring-inverse: 0 0 0 3px var(--admin-color-navigation-foreground-strong), 0 0 0 6px var(--admin-color-primary);
-    --admin-shell-sidebar-width: 260px;
-    --admin-shell-content-max: 1160px;
+    --admin-shell-sidebar-width: 232px;
+    --admin-shell-content-max: 1240px;
+    --admin-font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 *,
@@ -62,8 +66,8 @@ body {
     margin: 0;
     color: var(--admin-color-text);
     background: var(--admin-color-bg);
-    font-family: Arial, sans-serif;
-    line-height: 1.5;
+    font-family: var(--admin-font-sans);
+    line-height: 1.45;
 }
 
 a {
@@ -165,6 +169,8 @@ table {
 .admin-table-wrap {
     width: 100%;
     max-width: 100%;
+    border: 1px solid var(--admin-color-border);
+    border-radius: var(--admin-radius-md);
     overflow-x: auto;
     overscroll-behavior-inline: contain;
 }
@@ -187,7 +193,7 @@ table {
 
 th,
 td {
-    padding: 10px 12px;
+    padding: 12px 14px;
     border-bottom: 1px solid var(--admin-color-border);
     text-align: left;
     vertical-align: top;
@@ -195,7 +201,38 @@ td {
 
 th {
     color: var(--admin-color-muted);
-    font-size: 13px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+
+.admin-badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    color: var(--admin-color-muted);
+    background: var(--admin-color-bg);
+    font-size: 12px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.admin-badge--success {
+    color: var(--admin-color-success);
+    background: var(--admin-color-success-soft);
+}
+
+.admin-badge--info {
+    color: var(--admin-color-info);
+    background: var(--admin-color-info-soft);
+}
+
+.admin-badge--warning {
+    color: var(--admin-color-warning);
+    background: var(--admin-color-warning-soft);
 }
 
 dl {
@@ -241,11 +278,11 @@ dd {
     top: 0;
     display: flex;
     flex-direction: column;
-    gap: var(--admin-space-6);
+    gap: var(--admin-space-5);
     height: 100vh;
     min-width: 0;
     overflow-y: auto;
-    padding: var(--admin-space-6);
+    padding: var(--admin-space-5) var(--admin-space-4);
     color: var(--admin-color-navigation-foreground);
     background: var(--admin-color-navigation);
 }
@@ -257,7 +294,7 @@ dd {
 .admin-brand-title {
     margin: 0;
     color: var(--admin-color-navigation-foreground-strong);
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 800;
 }
 
@@ -276,10 +313,12 @@ dd {
 .admin-nav-link {
     display: flex;
     align-items: center;
-    min-height: 44px;
-    padding: 10px 12px;
-    border-radius: var(--admin-radius-md);
+    min-width: 0;
+    min-height: 40px;
+    padding: 9px 12px;
+    border-radius: var(--admin-radius-sm);
     color: var(--admin-color-navigation-link);
+    overflow-wrap: anywhere;
     text-decoration: none;
     font-weight: 700;
 }
@@ -292,7 +331,7 @@ dd {
 .admin-nav-link[aria-current="page"] {
     color: var(--admin-color-navigation-foreground-strong);
     background: var(--admin-color-navigation-active);
-    box-shadow: inset 3px 0 0 var(--admin-color-primary);
+    box-shadow: inset 3px 0 0 var(--admin-color-navigation-accent);
 }
 
 .admin-sidebar-footer {
@@ -305,6 +344,30 @@ dd {
     color: var(--admin-color-navigation-muted);
     font-size: 13px;
     overflow-wrap: anywhere;
+}
+
+.admin-user__identity {
+    display: flex;
+    align-items: center;
+    gap: var(--admin-space-3);
+}
+
+.admin-user__avatar {
+    display: inline-grid;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: 1px solid var(--admin-color-navigation-avatar-border);
+    border-radius: 50%;
+    color: var(--admin-color-navigation-foreground-strong);
+    background: var(--admin-color-navigation-avatar-surface);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.admin-user__details {
+    min-width: 0;
 }
 
 .admin-user-name {
@@ -326,7 +389,7 @@ dd {
 .admin-main-shell {
     width: 100%;
     min-width: 0;
-    padding: var(--admin-space-8);
+    padding: var(--admin-space-6) var(--admin-space-8) var(--admin-space-10);
 }
 
 .admin-topbar {
@@ -336,7 +399,7 @@ dd {
     justify-content: space-between;
     gap: var(--admin-space-4);
     max-width: var(--admin-shell-content-max);
-    margin: 0 auto var(--admin-space-6);
+    margin: 0 auto var(--admin-space-5);
     color: var(--admin-color-muted);
     font-size: 14px;
 }
@@ -352,12 +415,13 @@ dd {
     width: 100%;
     max-width: var(--admin-shell-content-max);
     min-width: 0;
-    margin: 0 auto var(--admin-space-6);
+    margin: 0 auto var(--admin-space-5);
 }
 
 .admin-page-heading h1 {
     margin: 0;
-    font-size: clamp(28px, 4vw, 40px);
+    font-size: clamp(26px, 3vw, 34px);
+    letter-spacing: -0.02em;
     line-height: 1.15;
 }
 
@@ -372,7 +436,7 @@ dd {
     width: 100%;
     max-width: 100%;
     border: 1px solid var(--admin-color-border);
-    border-radius: var(--admin-radius-lg);
+    border-radius: var(--admin-radius-md);
     background: var(--admin-color-surface);
     box-shadow: var(--admin-shadow-sm);
 }
@@ -383,7 +447,7 @@ dd {
 
 .panel,
 .admin-login-card {
-    padding: var(--admin-space-6);
+    padding: var(--admin-space-5) var(--admin-space-6);
 }
 
 .panel {
@@ -421,7 +485,7 @@ dd {
 
 .admin-panel__title {
     margin: 0;
-    font-size: 20px;
+    font-size: 18px;
     line-height: 1.3;
 }
 
@@ -458,7 +522,7 @@ dd {
 
 .admin-alert {
     margin: 0 0 var(--admin-space-5);
-    padding: var(--admin-space-4);
+    padding: var(--admin-space-3) var(--admin-space-4);
     border: 1px solid transparent;
     border-radius: var(--admin-radius-sm);
 }
@@ -499,7 +563,7 @@ dd {
 
 .admin-fieldset {
     display: grid;
-    gap: var(--admin-space-5);
+    gap: var(--admin-space-4);
     min-width: 0;
     margin: 0;
     padding: var(--admin-space-5);
@@ -646,7 +710,7 @@ dd {
 
 .admin-form {
     display: grid;
-    gap: var(--admin-space-5);
+    gap: var(--admin-space-4);
 }
 
 .admin-check-list {
