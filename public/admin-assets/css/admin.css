@@ -920,7 +920,109 @@ dd {
     justify-content: flex-start;
 }
 
+.admin-role-identity-meta {
+    display: grid;
+    grid-template-columns: minmax(96px, auto) minmax(0, 1fr);
+    gap: var(--admin-space-2) var(--admin-space-4);
+    margin: 0 0 var(--admin-space-5);
+}
+
+.admin-role-edit-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: start;
+    gap: var(--admin-space-6);
+}
+
+.admin-role-edit-column {
+    display: grid;
+    min-width: 0;
+    gap: var(--admin-space-6);
+}
+
+.admin-role-identity-meta dt {
+    color: var(--admin-color-muted);
+    font-weight: 700;
+}
+
+.admin-role-identity-meta dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-role-identity-name {
+    min-width: 0;
+}
+
+.admin-permissions-set {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.admin-permissions-list {
+    gap: var(--admin-space-3);
+}
+
+.admin-permission-groups {
+    display: grid;
+    gap: var(--admin-space-4);
+}
+
+.admin-permission-group {
+    padding: var(--admin-space-4);
+    border: 1px solid var(--admin-color-border);
+    border-radius: var(--admin-radius-md);
+    background: var(--admin-color-bg);
+}
+
+.admin-permission-group__heading {
+    margin: 0 0 var(--admin-space-3);
+    color: var(--admin-color-text);
+    font-size: 15px;
+}
+
+.admin-permission-option {
+    min-width: 0;
+    padding: var(--admin-space-2) 0;
+}
+
+.admin-permission-option__content {
+    display: grid;
+    min-width: 0;
+    gap: var(--admin-space-1);
+}
+
+.admin-permission-option__name,
+.admin-permission-option__slug {
+    overflow-wrap: anywhere;
+}
+
+.admin-permission-option__name {
+    color: var(--admin-color-text);
+    font-weight: 700;
+}
+
+.admin-permission-option__slug {
+    color: var(--admin-color-muted);
+    font-size: 13px;
+}
+
+.admin-permission-option input:disabled + .admin-permission-option__content {
+    color: var(--admin-color-muted);
+}
+
+.admin-permission-option input:disabled + .admin-permission-option__content .admin-permission-option__name,
+.admin-permission-option input:disabled + .admin-permission-option__content .admin-permission-option__slug {
+    color: inherit;
+}
+
 @media (max-width: 900px) {
+    .admin-role-edit-layout {
+        grid-template-columns: 1fr;
+    }
+
     .admin-shell {
         grid-template-columns: 1fr;
     }
