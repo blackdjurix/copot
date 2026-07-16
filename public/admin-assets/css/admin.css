@@ -856,6 +856,33 @@ dd {
     color: var(--admin-color-muted);
 }
 
+.admin-users-table .admin-users-name,
+.admin-users-table .admin-users-email,
+.admin-users-table .admin-users-meta {
+    overflow-wrap: anywhere;
+}
+
+.admin-users-name__value {
+    display: block;
+    color: var(--admin-color-text);
+    font-weight: 800;
+}
+
+.admin-users-email,
+.admin-users-meta {
+    color: var(--admin-color-muted);
+    font-size: 13px;
+}
+
+.admin-users-status,
+.admin-users-actions {
+    white-space: nowrap;
+}
+
+.admin-users-actions .admin-row-actions {
+    justify-content: flex-start;
+}
+
 @media (max-width: 900px) {
     .admin-shell {
         grid-template-columns: 1fr;
