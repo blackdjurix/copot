@@ -59,10 +59,6 @@ $identityInitials = count($identityParts) > 1
         </aside>
 
         <div class="admin-main-shell">
-            <div class="admin-topbar" aria-label="Admin context">
-                <span><?= htmlspecialchars($siteName ?? 'copot', ENT_QUOTES, 'UTF-8') ?></span>
-            </div>
-
             <header class="admin-page-heading">
                 <h1><?= htmlspecialchars($title ?? 'Admin Shell', ENT_QUOTES, 'UTF-8') ?></h1>
             </header>

@@ -4,14 +4,14 @@
     --admin-color-navigation: #10233f;
     --admin-color-navigation-foreground: #f8fafc;
     --admin-color-navigation-foreground-strong: #ffffff;
-    --admin-color-navigation-link: #e5e7eb;
-    --admin-color-navigation-muted: #cbd5e1;
+    --admin-color-navigation-link: #f1f5f9;
+    --admin-color-navigation-muted: #d5deeb;
     --admin-color-navigation-active: #1d3557;
     --admin-color-navigation-hover: rgb(255 255 255 / 0.1);
     --admin-color-navigation-accent: #5ca7ff;
     --admin-color-navigation-avatar-border: rgb(255 255 255 / 0.18);
     --admin-color-navigation-avatar-surface: rgb(255 255 255 / 0.12);
-    --admin-color-navigation-control-surface: #ffffff;
+    --admin-color-navigation-control-surface: rgb(255 255 255 / 0.08);
     --admin-color-text: #16243a;
     --admin-color-muted: #64748b;
     --admin-color-border: #dfe5ee;
@@ -328,16 +328,32 @@ dd {
     background: var(--admin-color-navigation-hover);
 }
 
+.admin-nav-link:focus-visible {
+    color: var(--admin-color-navigation-foreground-strong);
+    background: var(--admin-color-navigation-hover);
+    box-shadow: var(--admin-focus-ring-inverse);
+}
+
 .admin-nav-link[aria-current="page"] {
     color: var(--admin-color-navigation-foreground-strong);
     background: var(--admin-color-navigation-active);
-    box-shadow: inset 3px 0 0 var(--admin-color-navigation-accent);
+    box-shadow: inset 4px 0 0 var(--admin-color-navigation-accent);
+}
+
+.admin-nav-link[aria-current="page"]:focus-visible {
+    box-shadow: inset 4px 0 0 var(--admin-color-navigation-accent), var(--admin-focus-ring-inverse);
 }
 
 .admin-sidebar-footer {
     display: grid;
     gap: var(--admin-space-3);
     margin-top: auto;
+    padding-top: var(--admin-space-4);
+    border-top: 1px solid var(--admin-color-navigation-avatar-border);
+}
+
+.admin-sidebar-footer form {
+    margin: 0;
 }
 
 .admin-user {
@@ -378,8 +394,16 @@ dd {
 
 .admin-sidebar-footer button {
     width: 100%;
-    color: var(--admin-color-text);
+    border-color: var(--admin-color-navigation-avatar-border);
+    color: var(--admin-color-navigation-foreground-strong);
     background: var(--admin-color-navigation-control-surface);
+    font-weight: 700;
+}
+
+.admin-sidebar-footer button:hover {
+    color: var(--admin-color-navigation-foreground-strong);
+    background: var(--admin-color-navigation-hover);
+    filter: none;
 }
 
 .admin-sidebar-footer button:focus-visible {
@@ -390,18 +414,6 @@ dd {
     width: 100%;
     min-width: 0;
     padding: var(--admin-space-6) var(--admin-space-8) var(--admin-space-10);
-}
-
-.admin-topbar {
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--admin-space-4);
-    max-width: var(--admin-shell-content-max);
-    margin: 0 auto var(--admin-space-5);
-    color: var(--admin-color-muted);
-    font-size: 14px;
 }
 
 .admin-main {
@@ -415,7 +427,7 @@ dd {
     width: 100%;
     max-width: var(--admin-shell-content-max);
     min-width: 0;
-    margin: 0 auto var(--admin-space-5);
+    margin: 0 auto var(--admin-space-6);
 }
 
 .admin-page-heading h1 {
