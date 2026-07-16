@@ -883,6 +883,43 @@ dd {
     justify-content: flex-start;
 }
 
+.admin-roles-table .admin-roles-name,
+.admin-roles-table .admin-roles-slug {
+    overflow-wrap: anywhere;
+}
+
+.admin-roles-name__value {
+    display: block;
+    color: var(--admin-color-text);
+    font-weight: 800;
+}
+
+.admin-roles-slug {
+    color: var(--admin-color-muted);
+    font-size: 13px;
+}
+
+.admin-roles-slug code {
+    overflow-wrap: anywhere;
+}
+
+.admin-roles-type,
+.admin-roles-actions {
+    white-space: nowrap;
+}
+
+.admin-roles-count > span {
+    display: inline-block;
+    min-width: 1.5ch;
+    color: var(--admin-color-text);
+    font-weight: 700;
+    text-align: center;
+}
+
+.admin-roles-actions .admin-row-actions {
+    justify-content: flex-start;
+}
+
 @media (max-width: 900px) {
     .admin-shell {
         grid-template-columns: 1fr;
