@@ -188,7 +188,7 @@ try {
     $assert(str_contains($css, '@media (max-width: 900px)'), 'Tablet responsive breakpoint is missing.');
     $assert(str_contains($css, '@media (max-width: 560px)'), 'Mobile responsive breakpoint is missing.');
     $assert(str_contains($css, '@media (prefers-reduced-motion: reduce)'), 'Reduced-motion rule is missing.');
-    $assert(str_contains($css, '.admin-sidebar-footer button:focus-visible'), 'Logout button lacks explicit focus-visible treatment.');
+    $assert(str_contains($css, '.admin-account-menu__trigger:focus-visible'), 'Account menu trigger lacks explicit focus-visible treatment.');
     $assert(str_contains($css, 'position: sticky'), 'Desktop sidebar does not remain available within the viewport.');
     $assert(str_contains($css, 'height: 100vh'), 'Desktop sidebar lacks a viewport-height baseline.');
     $assert(!preg_match('/theme-assets|themes\//', $css), 'Admin CSS must not depend on frontend theme assets.');

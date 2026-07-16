@@ -40,27 +40,31 @@ $identityInitials = count($identityParts) > 1
                 <?php endforeach; ?>
             </nav>
 
-            <div class="admin-sidebar-footer">
-                <div class="admin-user">
-                    <div class="admin-user__identity">
-                        <span class="admin-user__avatar" aria-hidden="true"><?= htmlspecialchars($identityInitials, ENT_QUOTES, 'UTF-8') ?></span>
-                        <span class="admin-user__details">
-                            <span class="admin-user-name"><?= htmlspecialchars($identityName, ENT_QUOTES, 'UTF-8') ?></span>
-                            <span><?= htmlspecialchars($identityEmail, ENT_QUOTES, 'UTF-8') ?></span>
-                        </span>
-                    </div>
-                </div>
-
-                <form method="post" action="<?= htmlspecialchars($adminLogoutUrl, ENT_QUOTES, 'UTF-8') ?>">
-                    <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                    <button class="admin-button admin-button--secondary" type="submit">Logout</button>
-                </form>
-            </div>
         </aside>
 
         <div class="admin-main-shell">
-            <header class="admin-page-heading">
-                <h1><?= htmlspecialchars($title ?? 'Admin Shell', ENT_QUOTES, 'UTF-8') ?></h1>
+            <header class="admin-topbar">
+                <div class="admin-topbar__title">
+                    <h1><?= htmlspecialchars($title ?? 'Admin Shell', ENT_QUOTES, 'UTF-8') ?></h1>
+                </div>
+
+                <details class="admin-account-menu">
+                    <summary class="admin-account-menu__trigger">
+                        <span class="admin-account-menu__initials" aria-hidden="true"><?= htmlspecialchars($identityInitials, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="admin-account-menu__trigger-name"><?= htmlspecialchars($identityName, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="admin-account-menu__chevron" aria-hidden="true">▾</span>
+                    </summary>
+                    <div class="admin-account-menu__panel">
+                        <div class="admin-account-menu__identity">
+                            <span class="admin-account-menu__name"><?= htmlspecialchars($identityName, ENT_QUOTES, 'UTF-8') ?></span>
+                            <?php if ($identityEmail !== ''): ?><span class="admin-account-menu__email"><?= htmlspecialchars($identityEmail, ENT_QUOTES, 'UTF-8') ?></span><?php endif; ?>
+                        </div>
+                        <form class="admin-account-menu__logout" method="post" action="<?= htmlspecialchars($adminLogoutUrl, ENT_QUOTES, 'UTF-8') ?>">
+                            <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                            <button class="admin-button admin-button--secondary" type="submit">Logout</button>
+                        </form>
+                    </div>
+                </details>
             </header>
 
             <main id="admin-main" class="admin-main" tabindex="-1">
