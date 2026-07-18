@@ -9,6 +9,7 @@ use Copot\Core\User;
 final class ModuleManagerAdmin
 {
     private const SELF_MANAGEMENT_DENIED = 'module_manager_self_management_denied';
+    private const RESERVED_DETAIL_NAMES = ['install', 'enable', 'disable', 'uninstall'];
 
     public function __construct(private object $app)
     {
@@ -23,6 +24,32 @@ final class ModuleManagerAdmin
         }
 
         return $this->renderInventory($request, $user);
+    }
+
+    public function detailResponse(Request $request, string $name): Response
+    {
+        $user = $this->authorize($request);
+
+        if ($user instanceof Response) {
+            return $user;
+        }
+
+        if (preg_match('/^[a-z0-9_-]+$/', $name) !== 1
+            || in_array($name, self::RESERVED_DETAIL_NAMES, true)) {
+            return $this->app->adminErrors()->response($request, 404);
+        }
+
+        try {
+            $item = $this->findItem($this->inventory(), $name);
+
+            if ($item === null) {
+                return $this->app->adminErrors()->response($request, 404);
+            }
+
+            return $this->renderDetail($request, $user, $this->presentDenialReasons([$item])[0]);
+        } catch (Throwable) {
+            return $this->app->adminErrors()->response($request, 503);
+        }
     }
 
     public function mutationResponse(Request $request, string $action): Response
@@ -40,6 +67,7 @@ final class ModuleManagerAdmin
         }
 
         $name = $request->post('module');
+        $returnContext = $request->post('return_context');
 
         if (!is_string($name) || preg_match('/^[a-z0-9][a-z0-9_-]*$/', $name) !== 1) {
             return $this->renderInventory($request, $user, 'invalid_module_name', null, 422);
@@ -76,7 +104,11 @@ final class ModuleManagerAdmin
             return $this->app->adminErrors()->response($request, 503);
         }
 
-        return Response::redirect($this->modulesPath() . '?notice=' . rawurlencode($action . '_success'));
+        $target = $returnContext === 'detail'
+            ? $this->modulePath($name)
+            : $this->modulesPath();
+
+        return Response::redirect($target . '?notice=' . rawurlencode($action . '_success'));
     }
 
     private function authorize(Request $request): User|Response
@@ -115,12 +147,8 @@ final class ModuleManagerAdmin
                 'items' => $items,
                 'csrfToken' => $this->app->csrf()->token(),
                 'inventoryPath' => $this->modulesPath(),
-                'actionPaths' => [
-                    'install' => $this->app->adminUrl()->childUrl('modules/install'),
-                    'enable' => $this->app->adminUrl()->childUrl('modules/enable'),
-                    'disable' => $this->app->adminUrl()->childUrl('modules/disable'),
-                    'uninstall' => $this->app->adminUrl()->childUrl('modules/uninstall'),
-                ],
+                'detailPath' => fn (string $name): string => $this->modulePath($name),
+                'actionPaths' => $this->actionPaths(),
                 'error' => $this->messageFor($error),
                 'notice' => $notice ?? $this->noticeFor($request->input('notice')),
             ]);
@@ -132,6 +160,37 @@ final class ModuleManagerAdmin
                 $this->app->csrf()->token(),
                 $request->path()
             ), $status);
+        } catch (Throwable) {
+            return $this->app->adminErrors()->response($request, 503);
+        }
+    }
+
+    private function renderDetail(Request $request, User $user, array $item): Response
+    {
+        try {
+            $view = __DIR__ . '/../views/admin/module-detail.php';
+
+            if (!is_file($view)) {
+                throw new RuntimeException('Module Manager detail view is unavailable.');
+            }
+
+            $content = $this->renderView($view, [
+                'item' => $item,
+                'csrfToken' => $this->app->csrf()->token(),
+                'inventoryPath' => $this->modulesPath(),
+                'detailPath' => $this->modulePath((string) ($item['name'] ?? '')),
+                'actionPaths' => $this->actionPaths(),
+                'error' => $this->messageFor($request->input('error')),
+                'notice' => $this->noticeFor($request->input('notice')),
+            ]);
+
+            return Response::html($this->app->adminPageRenderer()->render(
+                'Module Details',
+                $content,
+                $user,
+                $this->app->csrf()->token(),
+                $request->path()
+            ));
         } catch (Throwable) {
             return $this->app->adminErrors()->response($request, 503);
         }
@@ -246,6 +305,22 @@ final class ModuleManagerAdmin
     private function modulesPath(): string
     {
         return $this->app->adminUrl()->childUrl('modules');
+    }
+
+    private function modulePath(string $name): string
+    {
+        return $this->app->adminUrl()->childUrl('modules/' . rawurlencode($name));
+    }
+
+    private function actionPaths(): array
+    {
+        return array_combine(
+            ['install', 'enable', 'disable', 'uninstall'],
+            array_map(
+                fn (string $action): string => $this->app->adminUrl()->childUrl('modules/' . $action),
+                ['install', 'enable', 'disable', 'uninstall']
+            )
+        );
     }
 
     private function noticeFor(mixed $notice): ?string

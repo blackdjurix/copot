@@ -44,6 +44,17 @@ final class Batch3IntegrationAuth extends Auth
     public function user(): ?User { return $this->actor; }
 }
 
+final class Batch3IntegrationDeniedUser extends User
+{
+    public function __construct() {}
+    public function id(): int { return 933003; }
+    public function name(): string { return 'Batch 3 Denied'; }
+    public function email(): string { return 'batch3-denied@example.test'; }
+    public function status(): string { return 'active'; }
+    public function isActive(): bool { return true; }
+    public function can(string $permission): bool { return false; }
+}
+
 $assertions = 0;
 $assert = static function (bool $condition, string $message) use (&$assertions): void {
     $assertions++;
@@ -57,6 +68,17 @@ $status = static fn (Response $response): int => (int) $value($response, 'status
 $content = static fn (Response $response): string => (string) $value($response, 'content');
 $location = static fn (Response $response): ?string =>
     (($value($response, 'headers')['Location'] ?? null) ?: null);
+$rowFor = static function (string $html, string $name): string {
+    preg_match_all('/<tr>.*?<\/tr>/s', $html, $matches);
+
+    foreach ($matches[0] as $row) {
+        if (str_contains($row, 'href="/admin/modules/' . $name . '"')) {
+            return $row;
+        }
+    }
+
+    return '';
+};
 
 $app = new Application($basePath);
 $app->session()->start();
@@ -144,30 +166,60 @@ try {
     $assert($status($get) === 200, 'Authorized Module Manager inventory GET failed.');
     $assert(str_contains($html, 'admin-shell'), 'Inventory did not use the Admin shell.');
     $assert(str_contains($html, 'Batch 3 &lt;Fixture&gt;'), 'Manifest-origin title was not escaped.');
-    $assert(str_contains($html, 'Permission &lt;Fixture&gt; &amp;'), 'Permission metadata display name was not escaped.');
-    $assert(!str_contains($html, 'Permission <Fixture> &'), 'Raw permission metadata leaked into inventory output.');
-    $assert(str_contains($html, 'Stored permissions:'), 'Stored permission metadata summary was not rendered.');
-    $assert(str_contains($html, 'Discovered permissions:'), 'Discovered permission metadata summary was not rendered.');
+    $headerMatch = preg_match('/<thead>.*?<tr>(.*?)<\/tr>.*?<\/thead>/s', $html, $headerParts);
+    preg_match_all('/<th scope="col">(.*?)<\/th>/', (string) ($headerParts[1] ?? ''), $headers);
+    $assert($headerMatch === 1 && array_map('trim', $headers[1]) === ['Module', 'Version', 'Lifecycle', 'Discovery', 'Notes', 'Actions'],
+        'Module inventory did not render the locked six-column compact table.');
+    $assert(str_contains($html, 'href="/admin/modules/' . $fixtureName . '"'), 'Module inventory did not expose an Open detail link.');
+    $assert(!str_contains($html, 'Stored permissions:'), 'Detailed permission evidence remained in the compact inventory.');
+    $assert(!str_contains($html, 'Discovered permissions:'), 'Discovered permission evidence remained in the compact inventory.');
     $assert(str_contains($html, $malformedName), 'Malformed discovery item was not rendered.');
-    $assert(str_contains($html, 'Malformed discovery data'), 'Malformed discovery diagnostic was not rendered.');
+    $assert(!str_contains($html, 'Malformed discovery data'), 'Detailed discovery diagnostics remained in the compact inventory.');
     $assert(str_contains($html, 'Missing &lt;Installed&gt;'), 'Installed-but-missing item was not rendered safely.');
     $assert(str_contains($html, 'action="/admin/modules/install"'), 'Install action did not use the configured default path.');
     $assert(str_contains($html, 'Modules'), 'Module Manager navigation label was not rendered.');
-    $selfRow = '';
-    preg_match_all('/<tr>.*?<\/tr>/s', $html, $rowMatches);
-    foreach ($rowMatches[0] as $candidateRow) {
-        if (str_contains($candidateRow, 'value="module-manager"')) {
-            $selfRow = $candidateRow;
-            break;
-        }
-    }
+    $selfRow = $rowFor($html, 'module-manager');
     $assert($selfRow !== '', 'Module Manager inventory row was not rendered.');
-    $assert(substr_count($selfRow, 'Module Manager cannot disable or uninstall itself.') === 2,
-        'Self-management denial message was not rendered for both protected actions.');
+    $assert(substr_count($selfRow, 'Module Manager cannot disable or uninstall itself.') === 1,
+        'Self-management denial message was not rendered for the visible protected action.');
+    $assert(str_contains($selfRow, 'admin-module-notes') && !str_contains($selfRow, 'admin-module-action__reason'),
+        'Module notes were not separated from the action controls.');
     $assert(!str_contains($selfRow, 'module_manager_self_management_denied'),
         'Raw self-management denial code leaked into inventory output.');
-    $assert(substr_count($selfRow, ' disabled') >= 2,
-        'Self-management disable and uninstall controls were not visibly disabled.');
+    $assert(substr_count($selfRow, ' disabled') >= 1,
+        'Self-management disable control was not visibly disabled.');
+
+    $fixtureRow = $rowFor($html, $fixtureName);
+    $assert(str_contains($fixtureRow, '>Install<') && !str_contains($fixtureRow, '>Enable<')
+        && !str_contains($fixtureRow, '>Disable<') && !str_contains($fixtureRow, '>Uninstall<'),
+        'Not-installed action matrix was incorrect.');
+
+    $detail = $app->router()->dispatch(new Request('GET', '/admin/modules/' . $fixtureName));
+    $detailHtml = $content($detail);
+    $assert($status($detail) === 200, 'Known Module Detail route did not render.');
+    $assert(str_contains($detailHtml, 'admin-module-detail-layout')
+        && str_contains($detailHtml, 'admin-module-detail-column--primary')
+        && str_contains($detailHtml, 'admin-module-detail-column--secondary'),
+        'Module Detail did not render the expected two-column layout hooks.');
+    foreach (['Operational evidence', 'Stored permissions', 'Discovered permissions', 'Dependencies', 'Contribution files', 'Diagnostics', 'Denial reasons', 'Permission &lt;Fixture&gt; &amp;'] as $evidence) {
+        $assert(str_contains($detailHtml, $evidence), "Module Detail omitted {$evidence} evidence.");
+    }
+    $assert($status($app->router()->dispatch(new Request('GET', '/admin/modules/Bad!'))) === 404,
+        'Invalid Module Detail slug did not use shared 404.');
+    $assert($status($app->router()->dispatch(new Request('GET', '/admin/modules/does-not-exist'))) === 404,
+        'Missing Module Detail item did not use shared 404.');
+    foreach (['install', 'enable', 'disable', 'uninstall'] as $reservedName) {
+        $reservedResponse = $app->router()->dispatch(new Request('GET', '/admin/modules/' . $reservedName));
+        $assert($status($reservedResponse) === 404,
+            "Reserved Module Manager path [{$reservedName}] was not rejected as a detail route.");
+    }
+    $authProperty->setValue($app, new Batch3IntegrationAuth(new Batch3IntegrationDeniedUser()));
+    $unauthorizedDetail = $app->router()->dispatch(new Request('GET', '/admin/modules/' . $fixtureName));
+    $assert($status($unauthorizedDetail) === 403, 'Unauthorized Module Detail request was not denied.');
+    $authProperty->setValue($app, $fakeAuth);
+    $malformedDetail = $app->router()->dispatch(new Request('GET', '/admin/modules/' . $malformedName));
+    $assert($status($malformedDetail) === 200 && str_contains($content($malformedDetail), 'Malformed discovery data'),
+        'Module Detail did not expose malformed discovery evidence.');
 
     $csrf = $app->session()->csrfToken();
     $initialInventory = (new ModuleInventoryBuilder(
@@ -184,6 +236,11 @@ try {
     $assert(($initialFixture['available_actions']['install']['enabled'] ?? false) === true,
         'Initial inventory did not mark the uninstalled fixture eligible for installation.');
     $app->modules()->install($fixtureName);
+    $installedDisabled = $app->router()->dispatch(new Request('GET', '/admin/modules'));
+    $installedDisabledRow = $rowFor($content($installedDisabled), $fixtureName);
+    $assert(str_contains($installedDisabledRow, '>Enable<') && str_contains($installedDisabledRow, '>Uninstall<')
+        && !str_contains($installedDisabledRow, '>Disable<'),
+        'Installed-disabled action matrix was incorrect.');
     $staleInstall = $app->router()->dispatch(new Request('POST', '/admin/modules/install', [], [
         '_token' => $csrf,
         'module' => $fixtureName,
@@ -199,6 +256,7 @@ try {
     $install = $app->router()->dispatch(new Request('POST', '/admin/modules/install', [], [
         '_token' => $csrf,
         'module' => $fixtureName,
+        'return_context' => 'https://example.test/unsafe',
     ]));
     $assert($status($install) === 302, 'Install did not use PRG.');
     $assert($location($install) === '/admin/modules?notice=install_success', 'Install PRG location was incorrect.');
@@ -212,8 +270,22 @@ try {
     $enable = $app->router()->dispatch(new Request('POST', '/admin/modules/enable', [], [
         '_token' => $csrf,
         'module' => $fixtureName,
+        'return_context' => 'unexpected',
     ]));
-    $assert($status($enable) === 302 && $location($enable) === '/admin/modules?notice=enable_success', 'Enable did not use configured PRG.');
+    $assert($status($enable) === 302 && $location($enable) === '/admin/modules?notice=enable_success', 'Unknown return context did not fall back to the configured list.');
+
+    $enableDetail = $app->router()->dispatch(new Request('POST', '/admin/modules/enable', [], [
+        '_token' => $csrf,
+        'module' => $fixtureName,
+        'return_context' => 'detail',
+    ]));
+    $assert($status($enableDetail) === 422, 'Repeated enable did not preserve the controlled lifecycle denial.');
+
+    $installedEnabled = $app->router()->dispatch(new Request('GET', '/admin/modules'));
+    $installedEnabledRow = $rowFor($content($installedEnabled), $fixtureName);
+    $assert(str_contains($installedEnabledRow, '>Disable<') && !str_contains($installedEnabledRow, '>Enable<')
+        && !str_contains($installedEnabledRow, '>Uninstall<'),
+        'Installed-enabled action matrix was incorrect.');
 
     $disable = $app->router()->dispatch(new Request('POST', '/admin/modules/disable', [], [
         '_token' => $csrf,
@@ -256,15 +328,19 @@ try {
     $configuredHtml = $content($configured);
     $assert($status($configured) === 200, 'Configured non-default Module Manager path did not execute.');
     $assert(str_contains($configuredHtml, 'action="/dapur/modules/install"'), 'Configured inventory action ignored the Admin path.');
+    $configuredDetail = $configuredApp->router()->dispatch(new Request('GET', '/dapur/modules/' . $fixtureName));
+    $assert($status($configuredDetail) === 200 && str_contains($content($configuredDetail), 'action="/dapur/modules/install"'),
+        'Configured Module Detail route or action path failed.');
     $assert($status($configuredApp->router()->dispatch(new Request('GET', '/admin/modules'))) === 404, 'Default Module Manager path remained registered in configured fixture.');
     $configuredPost = $configuredApp->router()->dispatch(new Request('POST', '/dapur/modules/install', [], [
         '_token' => $configuredApp->session()->csrfToken(),
         'module' => $fixtureName,
+        'return_context' => 'detail',
     ]));
     $assert($status($configuredPost) === 302, 'Configured-path mutation did not use PRG.');
-    $assert($location($configuredPost) === '/dapur/modules?notice=install_success',
+    $assert($location($configuredPost) === '/dapur/modules/' . $fixtureName . '?notice=install_success',
         'Configured-path mutation redirected to an unexpected location.');
-    $assert($location($configuredPost) !== '/admin/modules?notice=install_success',
+    $assert($location($configuredPost) !== '/admin/modules/' . $fixtureName . '?notice=install_success',
         'Configured-path mutation fell back to the default Admin path.');
 
     echo "M3.3 Batch 3 Module Manager integration passed ({$assertions} assertions)." . PHP_EOL;

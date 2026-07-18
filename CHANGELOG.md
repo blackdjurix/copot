@@ -44,6 +44,7 @@
 
 ### Changed
 
+- Completed Admin UX Refinement 1 presentation work on `feature/admin-ux-refinement-1`: compact Module Manager list/detail presentation, Role-aligned User and Role Detail layouts, compact role and permission controls, and full-width technical metadata alignment. Focused integration evidence, syntax and source review, source/runtime equality, runtime smoke, and authenticated browser acceptance pass. Shell Foundation remains planned and unimplemented; existing routes, backend, Core, permission, CSRF, lifecycle, and persistence contracts are unchanged.
 - Completed M3.3 Batch 5 validation and manual Admin verification on the feature branch. Baseline automated validation passes 816 assertions; patch-focused reruns pass 130 assertions; cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
 - Corrected Module Manager Admin presentation so stable denial codes remain internal and known codes render as human-readable messages with a controlled fallback. Lifecycle, authorization, CSRF, database, filesystem, and policy contracts are unchanged.
 - Preserved the M3.3 boundaries: the `InstallerFinalizer::BASELINE_MODULES` addition remains the sole approved Core touchpoint; no additional Core change, package publication, release, tag, or merge is approved by this closure synchronization.

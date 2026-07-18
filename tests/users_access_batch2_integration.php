@@ -406,6 +406,57 @@ $csrfInput = static fn (array $input = []): array => ['_token' => $app->session(
     $edit = $request('GET', $editPath);
     $assert($statusOf($edit) === 200 && str_contains($contentOf($edit), 'Active Created'),
         'Edit target did not render.');
+    $editHtml = $contentOf($edit);
+    $primaryStart = strpos($editHtml, 'admin-user-detail-column--primary');
+    $secondaryStart = strpos($editHtml, 'admin-user-detail-column--secondary');
+    $primaryHtml = ($primaryStart !== false && $secondaryStart !== false && $secondaryStart > $primaryStart)
+        ? substr($editHtml, $primaryStart, $secondaryStart - $primaryStart)
+        : '';
+    $secondaryHtml = $secondaryStart !== false ? substr($editHtml, $secondaryStart) : '';
+    $assert(str_contains($editHtml, 'admin-user-detail-layout')
+        && $primaryStart !== false
+        && $secondaryStart !== false,
+        'User Detail did not use the Role Detail two-column layout pattern.');
+    $assert(str_contains($primaryHtml, 'user-identity-title')
+        && str_contains($primaryHtml, 'user-roles-title')
+        && !str_contains($primaryHtml, 'user-summary-title'),
+        'User Detail primary column does not contain only identity and role assignment sections.');
+    $assert(str_contains($secondaryHtml, 'user-summary-title')
+        && str_contains($secondaryHtml, 'user-password-title')
+        && str_contains($secondaryHtml, 'user-status-title')
+        && !str_contains($primaryHtml, 'user-password-title')
+        && !str_contains($primaryHtml, 'user-status-title'),
+        'User Detail secondary column does not contain summary, password, and status sections.');
+    $assert(str_contains($editHtml, 'name="role_ids[]"')
+        && str_contains($editHtml, 'name="password"')
+        && str_contains($editHtml, 'name="password_confirmation"')
+        && str_contains($editHtml, 'name="status"')
+        && str_contains($editHtml, 'name="_token"'),
+        'User Detail form and role checkbox contracts were not preserved.');
+    $roleOptionCount = substr_count($editHtml, 'class="admin-user-role-option"');
+    $roleCheckboxCount = substr_count($editHtml, 'name="role_ids[]"');
+    $assert($roleOptionCount > 0
+        && $roleOptionCount === $roleCheckboxCount
+        && str_contains($editHtml, 'admin-user-role-option__header')
+        && str_contains($editHtml, 'admin-user-role-option__title')
+        && str_contains($editHtml, 'admin-user-role-option__meta')
+        && str_contains($editHtml, 'role_ids_present'),
+        'User role options did not retain compact markup, metadata, and checkbox inputs.');
+    $roleStatement = $connection->prepare(
+        "SELECT id FROM roles WHERE slug LIKE :slug ORDER BY id DESC LIMIT 1"
+    );
+    $roleStatement->execute(['slug' => 'm31-full-%']);
+    $fullRoleId = (int) $roleStatement->fetchColumn();
+    $roleEdit = $request('GET', $app->adminUrl()->childUrl('roles/' . $fullRoleId . '/edit'));
+    $roleEditHtml = $contentOf($roleEdit);
+    $assert($fullRoleId > 0 && $statusOf($roleEdit) === 200
+        && str_contains($roleEditHtml, 'admin-permission-option__header')
+        && str_contains($roleEditHtml, 'admin-permission-option__title')
+        && str_contains($roleEditHtml, 'admin-permission-option__slug')
+        && str_contains($roleEditHtml, 'name="permission_ids[]"')
+        && str_contains($roleEditHtml, 'name="permission_ids_present"')
+        && str_contains($roleEditHtml, 'name="_token"'),
+        'Role Detail permission options did not retain the compact title/slug row and form contract.');
     $missing = $request('GET', $app->adminUrl()->childUrl('users/999999999/edit'));
     $assert($statusOf($missing) === 404, 'Missing edit target did not use shared 404.');
     $assert(str_contains($contentOf($missing), 'admin-shell'), 'Shared 404 did not render in Admin shell.');

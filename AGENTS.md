@@ -18,9 +18,9 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone / checkpoint: Post-M3 Admin UX Refinement 1 implementation on `feature/admin-ux-refinement-1`; M3.3 is merged and its branch lifecycle is closed.
+Current milestone / checkpoint: Post-M3 Admin UX Refinement 1 work-unit closure on `feature/admin-ux-refinement-1`; implementation, focused validation, source/runtime review, and browser acceptance are complete. M3.3 is merged and its branch lifecycle is closed.
 
-Current work: Admin UX Refinement 1 implementation on `feature/admin-ux-refinement-1`, following completed Post-M3 documentation synchronization.
+Current work: Completed Admin UX Refinement 1 implementation and validation on `feature/admin-ux-refinement-1`, following completed Post-M3 documentation synchronization; the worktree is ready for user-owned Git closure. Shell Foundation planning is approved, but implementation has not started.
 
 Primary goal:
 
@@ -75,7 +75,8 @@ Current state:
 * Fresh installation enables `settings-manager` with the existing baseline ModuleManager flow. Existing installations install and enable it through the same ModuleManager lifecycle; no schema change or upgrade SQL is required.
 * Batch 1 focused contract and integration coverage passes 42 assertions, with relevant Admin, Settings, Site Asset, packaging, and isolated clean-install compatibility passing.
 * The Database Upgrade / Migration System concept is locked as planned but remains unimplemented and excluded from M3.2.
-* Admin UX Refinement 1 is the active Post-M3 target on `feature/admin-ux-refinement-1`, after M3.3 and before reserved M3.4 Content Manager.
+* Admin UX Refinement 1 implementation and validation are complete on `feature/admin-ux-refinement-1`, after M3.3 and before reserved M3.4 Content Manager; the current work unit is ready for user-owned Git closure.
+* Shell Foundation planning is approved and remains pending; no Shell Foundation implementation has started.
 * The approved Copot Admin Shell image is the canonical visual authority for Admin UX Refinement 1, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior.
 * Authenticated Public Toolbar is not Webcore or Admin UX Refinement 1 scope; it remains Theme-owned future scope, with Webcore limited to existing authentication, current-user, permission facts, or a later minimal hook if proven necessary.
 * The post-v0.12.0 Core freeze remains in force.
@@ -712,7 +713,7 @@ Copot v0.12.0 is released and is the current stable Webcore baseline.
 
 M3 Preparation is complete and closed. M3.1 Users & Access and M3.2 Settings Manager are complete and merged but remain unreleased.
 
-The active checkpoint is Admin UX Refinement 1 implementation on `feature/admin-ux-refinement-1`. M3.3 is merged, synchronized, and branch-closed.
+The active checkpoint is Admin UX Refinement 1 work-unit closure on `feature/admin-ux-refinement-1`. Its implementation, focused validation, source/runtime review, runtime smoke, and authenticated browser acceptance are complete. M3.3 is merged, synchronized, and branch-closed.
 
 The immediate goal is to:
 

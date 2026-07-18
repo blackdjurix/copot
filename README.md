@@ -28,7 +28,7 @@ M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is Admin UX Refinement 1 implementation on `feature/admin-ux-refinement-1`, following completed Post-M3 documentation synchronization. M3.3 reached its No-Return Point and branch lifecycle closure.
+The active checkpoint is Admin UX Refinement 1 work-unit closure on `feature/admin-ux-refinement-1`, following completed Post-M3 documentation synchronization. Its implementation, focused validation, source/runtime review, runtime smoke, and authenticated browser acceptance are complete. M3.3 reached its No-Return Point and branch lifecycle closure; user-owned Git closure for the current work unit remains.
 
 M2 Platform Capabilities are complete. Copot v0.12.0 remains the latest stable released Webcore baseline. M3.1 and M3.2 are merged but are not yet included in a new release. M3.3 is merged but remains unreleased, untagged, and unpublished; Batches 1–5 implementation, validation, and manual Admin verification are complete.
 
@@ -54,7 +54,7 @@ M3.1 Users & Access completed its five approved batches and merged through `5c4c
 
 The approved M3.3 Module Manager contract requires both `admin.access` and dedicated runtime permission `modules.manage` (`Manage modules`) for inventory and install, enable, disable, and uninstall. Fresh-install provisioning is present in the canonical schema; existing-install provisioning is present in the controlled operator-run `database/upgrades/m3_3_module_manager_permission.sql`. The artifact is the second independent upgrade artifact, but the Database Upgrade / Migration System trigger is not currently reached. Batch 3 activation and Admin implementation are complete, and all established lifecycle, authorization, CSRF, database, filesystem, and policy contracts remain unchanged.
 
-Admin UX Refinement 1 is the active Post-M3 target after M3.3 and before reserved M3.4 Content Manager. The approved Copot Admin Shell image is the canonical visual authority, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior. WordPress and other Admin interfaces are supporting references only.
+Admin UX Refinement 1 implementation is complete on `feature/admin-ux-refinement-1` after M3.3 and before reserved M3.4 Content Manager. The completed work covers the Module Manager list/detail presentation and User/Role Detail presentation refinements, with focused automated, source, runtime, and authenticated browser evidence passed. The approved Copot Admin Shell image is the canonical visual authority, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior. Shell Foundation remains planned and unimplemented. WordPress and other Admin interfaces are supporting references only.
 
 Authenticated Public Toolbar is not part of Webcore or Admin UX Refinement 1. It remains Theme-owned future scope; Webcore may expose only existing authentication, current-user, and permission facts, or a minimal hook if later proven necessary, and must not render or own the toolbar UI contract.
 

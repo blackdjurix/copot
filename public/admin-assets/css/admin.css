@@ -1041,17 +1041,30 @@ dd {
 }
 
 .admin-permission-option__content {
-    display: grid;
+    flex: 1 1 auto;
     min-width: 0;
-    gap: var(--admin-space-1);
+    min-inline-size: 0;
 }
 
-.admin-permission-option__name,
+.admin-permission-option__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    min-width: 0;
+    gap: var(--admin-space-3);
+}
+
+.admin-permission-option__slug {
+    justify-self: end;
+    text-align: right;
+}
+
+.admin-permission-option__title,
 .admin-permission-option__slug {
     overflow-wrap: anywhere;
 }
 
-.admin-permission-option__name {
+.admin-permission-option__title {
     color: var(--admin-color-text);
     font-weight: 700;
 }
@@ -1065,13 +1078,272 @@ dd {
     color: var(--admin-color-muted);
 }
 
-.admin-permission-option input:disabled + .admin-permission-option__content .admin-permission-option__name,
+.admin-permission-option input:disabled + .admin-permission-option__content .admin-permission-option__title,
 .admin-permission-option input:disabled + .admin-permission-option__content .admin-permission-option__slug {
     color: inherit;
 }
 
+@media (max-width: 560px) {
+    .admin-permission-option__header {
+        grid-template-columns: 1fr;
+        gap: var(--admin-space-1);
+    }
+
+    .admin-permission-option__slug {
+        justify-self: start;
+        text-align: left;
+    }
+}
+
+.admin-modules-table .admin-module-identity,
+.admin-modules-table .admin-module-version,
+.admin-modules-table .admin-module-notes,
+.admin-modules-table .admin-module-actions {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-module-identity__title,
+.admin-module-version__primary {
+    display: block;
+    color: var(--admin-color-text);
+    font-weight: 800;
+}
+
+.admin-module-identity__name {
+    color: var(--admin-color-muted);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+.admin-module-identity__name {
+    margin-top: var(--admin-space-1);
+}
+
+.admin-module-identity__name code {
+    overflow-wrap: anywhere;
+}
+
+.admin-module-lifecycle,
+.admin-module-discovery {
+    white-space: nowrap;
+}
+
+.admin-module-notes {
+    max-width: 28ch;
+    color: var(--admin-color-muted);
+}
+
+.admin-module-actions {
+    white-space: nowrap;
+}
+
+.admin-module-actions .admin-row-actions {
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.admin-module-action {
+    display: inline-flex;
+    width: auto;
+    gap: 0;
+}
+
+.admin-module-action .admin-button {
+    min-inline-size: 7.5rem;
+    white-space: nowrap;
+}
+
+.admin-user-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    align-items: start;
+    gap: var(--admin-space-6);
+}
+
+.admin-user-detail-column {
+    display: grid;
+    min-width: 0;
+    gap: var(--admin-space-6);
+}
+
+.admin-user-detail-meta {
+    display: grid;
+    grid-template-columns: minmax(96px, auto) minmax(0, 1fr);
+    gap: var(--admin-space-2) var(--admin-space-4);
+    margin: 0;
+}
+
+.admin-user-detail-meta dt {
+    color: var(--admin-color-muted);
+    font-weight: 700;
+}
+
+.admin-user-detail-meta dd {
+    min-width: 0;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-user-role-option {
+    display: flex;
+    align-items: flex-start;
+    min-width: 0;
+    gap: var(--admin-space-2);
+    padding: var(--admin-space-2) 0;
+    cursor: pointer;
+}
+
+.admin-user-role-option > input[type="checkbox"] {
+    flex: 0 0 auto;
+    width: 1rem;
+    min-height: 0;
+    height: 1rem;
+    margin: 0.25em 0 0;
+}
+
+.admin-user-role-option > input[type="checkbox"]:focus-visible {
+    outline: 2px solid transparent;
+    box-shadow: var(--admin-focus-ring);
+}
+
+.admin-user-role-option__content {
+    display: grid;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-inline-size: 0;
+    gap: var(--admin-space-1);
+}
+
+.admin-user-role-option__header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    min-width: 0;
+    gap: var(--admin-space-3);
+}
+
+.admin-user-role-option__title,
+.admin-user-role-option__meta {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-user-role-option__title {
+    color: var(--admin-color-text);
+    font-weight: 700;
+}
+
+.admin-user-role-option__meta {
+    color: var(--admin-color-muted);
+    font-size: 13px;
+    justify-self: end;
+    text-align: right;
+}
+
+@media (max-width: 560px) {
+    .admin-user-role-option__header {
+        grid-template-columns: 1fr;
+        gap: var(--admin-space-1);
+    }
+
+    .admin-user-role-option__meta {
+        justify-self: start;
+        text-align: left;
+    }
+}
+
+.admin-module-detail-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+    gap: var(--admin-space-6);
+}
+
+.admin-module-detail-column {
+    display: grid;
+    align-content: start;
+    gap: var(--admin-space-6);
+    min-width: 0;
+}
+
+.admin-module-detail-meta {
+    display: grid;
+    grid-template-columns: minmax(150px, 0.4fr) minmax(0, 1fr);
+    gap: var(--admin-space-2) var(--admin-space-4);
+    margin: 0;
+}
+
+.admin-module-detail-meta dt {
+    color: var(--admin-color-muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.admin-module-detail-meta dd {
+    margin: 0;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-module-detail-evidence {
+    display: grid;
+    gap: var(--admin-space-6);
+    margin-top: var(--admin-space-6);
+}
+
+.admin-module-detail-evidence h3,
+.admin-module-detail-panel h3 {
+    margin: 0 0 var(--admin-space-2);
+    color: var(--admin-color-text);
+    font-size: 15px;
+}
+
+.admin-module-detail-evidence p,
+.admin-module-detail-panel p {
+    margin: 0;
+    color: var(--admin-color-muted);
+}
+
+.admin-module-detail-list {
+    display: grid;
+    gap: var(--admin-space-2);
+    margin: 0;
+    padding-left: var(--admin-space-5);
+    overflow-wrap: anywhere;
+}
+
+.admin-module-detail-actions {
+    display: grid;
+    gap: var(--admin-space-4);
+}
+
+.admin-module-detail-action {
+    display: grid;
+    justify-items: start;
+    gap: var(--admin-space-2);
+}
+
+.admin-module-detail-action__reasons {
+    margin: 0;
+    padding-left: var(--admin-space-5);
+    color: var(--admin-color-muted);
+    overflow-wrap: anywhere;
+}
+
+.admin-module-detail-denials {
+    margin-top: var(--admin-space-4);
+}
+
 @media (max-width: 900px) {
+    .admin-module-detail-layout {
+        grid-template-columns: 1fr;
+    }
+
     .admin-role-edit-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-user-detail-layout {
         grid-template-columns: 1fr;
     }
 

@@ -15,6 +15,10 @@ $app->router()->get($modulesPath, static function ($request) use ($modulesAdmin)
     return $modulesAdmin->inventoryResponse($request);
 });
 
+$app->router()->get($app->adminUrl()->childUrl('modules/{name}'), static function ($request, array $params) use ($modulesAdmin): Response {
+    return $modulesAdmin->detailResponse($request, (string) ($params['name'] ?? ''));
+});
+
 foreach (['install', 'enable', 'disable', 'uninstall'] as $action) {
     $path = $app->adminUrl()->childUrl('modules/' . $action);
 

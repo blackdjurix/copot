@@ -6,7 +6,9 @@ $sectionErrors = static fn (string $section): array => ($errorSection ?? null) =
     <div class="admin-alert admin-alert--success" role="status"><?= htmlspecialchars($notice, ENT_QUOTES, 'UTF-8') ?></div>
 <?php endif; ?>
 
-<section class="admin-panel" aria-labelledby="user-identity-title">
+<div class="admin-user-detail-layout">
+<div class="admin-user-detail-column admin-user-detail-column--primary">
+<section class="admin-panel admin-user-detail-section" aria-labelledby="user-identity-title">
     <header class="admin-panel__header">
         <div class="admin-panel__heading">
             <h2 class="admin-panel__title" id="user-identity-title">Identity</h2>
@@ -47,7 +49,7 @@ $sectionErrors = static fn (string $section): array => ($errorSection ?? null) =
     </div>
 </section>
 
-<section class="admin-panel" aria-labelledby="user-roles-title">
+<section class="admin-panel admin-user-detail-section" aria-labelledby="user-roles-title">
     <header class="admin-panel__header">
         <div class="admin-panel__heading">
             <h2 class="admin-panel__title" id="user-roles-title">Roles</h2>
@@ -72,14 +74,15 @@ $sectionErrors = static fn (string $section): array => ($errorSection ?? null) =
                 <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken, ENT_QUOTES, 'UTF-8') ?>">
                 <input type="hidden" name="role_ids_present" value="1">
                 <?php foreach ($availableRoles as $availableRole): ?>
-                    <div class="admin-field">
-                        <label>
-                            <input type="checkbox" name="role_ids[]" value="<?= htmlspecialchars((string) $availableRole->id(), ENT_QUOTES, 'UTF-8') ?>" <?= in_array($availableRole->id(), $assignedRoleIds, true) ? 'checked' : '' ?>>
-                            <?= htmlspecialchars($availableRole->name(), ENT_QUOTES, 'UTF-8') ?>
-                            <code><?= htmlspecialchars($availableRole->slug(), ENT_QUOTES, 'UTF-8') ?></code>
-                            <span><?= $availableRole->isSeeded() ? 'Seeded' : 'Custom' ?></span>
-                        </label>
-                    </div>
+                    <label class="admin-user-role-option">
+                        <input type="checkbox" name="role_ids[]" value="<?= htmlspecialchars((string) $availableRole->id(), ENT_QUOTES, 'UTF-8') ?>" <?= in_array($availableRole->id(), $assignedRoleIds, true) ? 'checked' : '' ?>>
+                        <span class="admin-user-role-option__content">
+                            <span class="admin-user-role-option__header">
+                                <span class="admin-user-role-option__title"><?= htmlspecialchars($availableRole->name(), ENT_QUOTES, 'UTF-8') ?></span>
+                                <span class="admin-user-role-option__meta"><code><?= htmlspecialchars($availableRole->slug(), ENT_QUOTES, 'UTF-8') ?></code> · <?= $availableRole->isSeeded() ? 'Seeded' : 'Custom' ?></span>
+                            </span>
+                        </span>
+                    </label>
                 <?php endforeach; ?>
                 <div class="admin-actions admin-form__actions">
                     <button class="admin-button admin-button--primary" type="submit">Replace roles</button>
@@ -105,8 +108,21 @@ $sectionErrors = static fn (string $section): array => ($errorSection ?? null) =
     </div>
 </section>
 
+</div>
+
+<div class="admin-user-detail-column admin-user-detail-column--secondary">
+<section class="admin-panel admin-user-detail-section admin-user-detail-summary" aria-labelledby="user-summary-title">
+    <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="user-summary-title">Account summary</h2><p class="admin-panel__description">Current identity and status.</p></div></header>
+    <div class="admin-panel__body">
+        <dl class="admin-user-detail-meta">
+            <dt>Name</dt><dd><?= htmlspecialchars($target->name(), ENT_QUOTES, 'UTF-8') ?></dd>
+            <dt>Email</dt><dd><?= htmlspecialchars($target->email(), ENT_QUOTES, 'UTF-8') ?></dd>
+            <dt>Status</dt><dd><?= htmlspecialchars($target->status(), ENT_QUOTES, 'UTF-8') ?></dd>
+        </dl>
+    </div>
+</section>
 <?php if (!empty($canManagePassword)): ?>
-    <section class="admin-panel" aria-labelledby="user-password-title">
+    <section class="admin-panel admin-user-detail-section" aria-labelledby="user-password-title">
         <header class="admin-panel__header"><h2 class="admin-panel__title" id="user-password-title">Password</h2></header>
         <div class="admin-panel__body">
             <?php if ($sectionErrors('password') !== []): ?>
@@ -125,7 +141,7 @@ $sectionErrors = static fn (string $section): array => ($errorSection ?? null) =
 <?php endif; ?>
 
 <?php if (!empty($canManageStatus)): ?>
-    <section class="admin-panel" aria-labelledby="user-status-title">
+    <section class="admin-panel admin-user-detail-section" aria-labelledby="user-status-title">
         <header class="admin-panel__header"><h2 class="admin-panel__title" id="user-status-title">Account status</h2></header>
         <div class="admin-panel__body">
             <?php if ($sectionErrors('status') !== []): ?>
@@ -147,3 +163,5 @@ $sectionErrors = static fn (string $section): array => ($errorSection ?? null) =
         </div>
     </section>
 <?php endif; ?>
+</div>
+</div>

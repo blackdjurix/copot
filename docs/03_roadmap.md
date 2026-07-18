@@ -710,7 +710,7 @@ Batch 5 also closes the concrete access-denied recovery blocker: an authenticate
 
 Focused M3.1 Batches 1–4 pass 487 assertions. The recovery regression adds 17 assertions, producing 504 focused M3.1 plus recovery assertions. The complete M2.4 unified platform regression chain and manual Admin verification also pass.
 
-Non-blocking Admin UX improvements remain deferred: normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical slugs from the default UI, add global floating notifications while retaining inline field errors, explain effective permissions for multi-role users, and provide reusable dashboard block spacing. Gather patterns from M3.2 and M3.3, then schedule Admin UX Refinement 1 after M3.3 and before M3.4.
+Admin UX Refinement 1 has completed the current Module Manager list/detail and User/Role Detail presentation work, including compact controls and technical metadata alignment. Focused automated validation, source review, source/runtime equality, runtime smoke, and authenticated browser acceptance pass. The worktree is ready for user-owned Git closure. Shell Foundation planning is approved but implementation has not started. Remaining non-blocking Admin UX items include global floating notifications, effective-permission explanation for multi-role users, and reusable dashboard block spacing; these remain deferred until separately approved.
 
 Post-M3.1 Roadmap Sync is complete. It preserves the approved M3 sequence, locks the planned Database Upgrade / Migration System concept, and completed M3.2 preparation before Batch 1 began.
 
@@ -722,9 +722,9 @@ Fresh installs use the canonical `database/schema.sql`; existing installations c
 
 #### Admin UX Refinement 1
 
-Status: active Post-M3 implementation on `feature/admin-ux-refinement-1`. It follows M3.3 and precedes reserved M3.4 Content Manager.
+Status: implementation and validation complete on `feature/admin-ux-refinement-1`; the current work unit is ready for user-owned Git closure. It follows M3.3 and precedes reserved M3.4 Content Manager.
 
-M3.2 and M3.3 collect management-UI patterns. Admin UX Refinement 1 will normalize permission checkbox sizing/alignment, group permissions by domain/function, hide technical permission slugs by default, add floating global notifications while preserving inline validation, clarify effective permissions for multi-role users, and establish reusable dashboard block spacing.
+M3.2 and M3.3 provided management-UI patterns. Admin UX Refinement 1 completed the approved Module Manager list/detail and User/Role Detail presentation refinements, including permission checkbox sizing/alignment and technical metadata alignment. Shell Foundation is the next approved presentation-only plan and remains unimplemented. Global floating notifications, effective-permission explanation for multi-role users, and reusable dashboard block spacing remain deferred.
 
 The approved Copot Admin Shell image is the canonical visual authority, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior. WordPress and other Admin interfaces are supporting references only.
 
