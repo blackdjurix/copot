@@ -187,3 +187,7 @@ Batch 5 result: complete and pass. Batch 5 is validation, manual verification, a
 ## Completion Gate
 
 M3.2 completion gate: met. All five batches pass their gates; approved Core touchpoints remain minimal and reviewed; the existing Settings system remains singular; registered-only scalar fields, generic JSON and secret/environment exclusion, specialized Logo/Favicon workflows, configured Admin paths, controlled Admin-shell errors, validation-before-write, and atomic save behavior remain preserved. Automated and manual verification pass. M3.2 merged to `main` through `afd82f0`, was pushed, and closed its feature-branch lifecycle; M3.3 has not begun early.
+
+## Post-Completion Settings Category 1 Compatibility Note
+
+The post-M3.2 Settings Category 1 presentation remediation preserves the completed manager contract. The Admin surface presents six tabs in locked order: General, Localization, Security, Email, Maintenance, and Branding. General and Localization continue to use the existing full Settings save workflow; no partial-section save contract was introduced. Security, Email, and Maintenance are truthful non-editable empty states, while Branding is presented as a separate tab with preserved Logo/Favicon actions and safe empty/preview states. Existing routes, action URLs, CSRF handling, field names, values, validation behavior, permissions, and backend workflows remain unchanged.

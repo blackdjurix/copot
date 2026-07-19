@@ -4,6 +4,10 @@
 
 ### Added
 
+- Added Shell Foundation on `feature/admin-shell-foundation`, including the shared responsive Admin shell, mobile off-canvas drawer with scroll locking and focus recovery, accessible navigation and menus, keyboard behavior, and configured Admin-path presentation.
+- Added the Settings Category 1 presentation remediation with ordered tabs, automatic keyboard activation, truthful Security/Email/Maintenance empty states, standalone Branding presentation, safe empty asset states, and preserved full Settings save and Logo/Favicon workflows.
+- Added local-only session lifetime behavior: `APP_ENV=local` uses a 30-day cookie and server-side session lifetime, while non-local environments retain the 120-minute default. Focused automated validation, source/runtime equality, runtime checks, and authenticated browser acceptance passed.
+
 - Added the M3.3 Module Manager implementation through Batches 1–5 on `feature/m3.3-module-manager`, including lifecycle, security, package, clean-install, Admin verification, and focused review evidence; the milestone was fast-forward merged into `main` at `020f2b2`, with its local and remote feature branches deleted.
 - Added the M3.2 Batch 1 Settings Manager module boundary with lifecycle-owned Admin Settings routes, navigation, fixed compatibility presentation, and Site Asset controls.
 - Added deterministic registered-only Settings definition discovery through the existing `SettingsService`, plus 42 focused contract and integration assertions.
@@ -42,9 +46,13 @@
 - Added the unified M2.4 regression gate covering focused Batches 2–5 plus the complete chained M2.3 → M2.2 → M2.1 regression path.
 - Added Git ignore coverage for runtime `storage/site-assets/` output created by Site Asset upload and manual verification flows.
 
+### Deferred validation
+
+- Deferred non-material browser checks are limited to local Logo/Favicon file-chooser preview, exact cookie `Expires`/`Max-Age` metadata, a safe server-side validation-error interaction, and exact DOM persistence observation after cancelling a `beforeunload` dialog. These are validation-surface limitations, not known implementation failures.
+
 ### Changed
 
-- Completed Admin UX Refinement 1 presentation work on `feature/admin-ux-refinement-1`: compact Module Manager list/detail presentation, Role-aligned User and Role Detail layouts, compact role and permission controls, and full-width technical metadata alignment. Focused integration evidence, syntax and source review, source/runtime equality, runtime smoke, and authenticated browser acceptance pass. Shell Foundation remains planned and unimplemented; existing routes, backend, Core, permission, CSRF, lifecycle, and persistence contracts are unchanged.
+- Completed Admin UX Refinement 1 presentation work on `feature/admin-ux-refinement-1`: compact Module Manager list/detail presentation, Role-aligned User and Role Detail layouts, compact role and permission controls, and full-width technical metadata alignment. At that historical checkpoint, focused integration evidence, syntax and source review, source/runtime equality, runtime smoke, and authenticated browser acceptance passed; Shell Foundation had not yet started. Existing routes, backend, Core, permission, CSRF, lifecycle, and persistence contracts were unchanged.
 - Completed M3.3 Batch 5 validation and manual Admin verification on the feature branch. Baseline automated validation passes 816 assertions; patch-focused reruns pass 130 assertions; cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
 - Corrected Module Manager Admin presentation so stable denial codes remain internal and known codes render as human-readable messages with a controlled fallback. Lifecycle, authorization, CSRF, database, filesystem, and policy contracts are unchanged.
 - Preserved the M3.3 boundaries: the `InstallerFinalizer::BASELINE_MODULES` addition remains the sole approved Core touchpoint; no additional Core change, package publication, release, tag, or merge is approved by this closure synchronization.
