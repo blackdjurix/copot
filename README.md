@@ -28,7 +28,7 @@ M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is post-integration closure on `main`: Admin UX Refinement 1, Shell Foundation, and Settings Category 1 were integrated parent-first with `--ff-only` at `69fda0d`. The completed feature branches remain present pending separate cleanup authorization; no PR was used. Implementation, focused validation, source/runtime review, runtime smoke, and authenticated browser acceptance are complete.
+The active checkpoint is post-integration closure on `main`: Admin UX Refinement 1, Shell Foundation, and Settings Category 1 were integrated parent-first with `--ff-only` at `69fda0d`. Both completed feature branches were subsequently deleted locally and remotely after verified containment; only `main` remains locally and remotely, and no PR was used. Implementation, focused validation, source/runtime review, runtime smoke, and authenticated browser acceptance are complete.
 
 M2 Platform Capabilities are complete. Copot v0.12.0 remains the latest stable released Webcore baseline. M3.1 and M3.2 are merged but are not yet included in a new release. M3.3 is merged but remains unreleased, untagged, and unpublished; Batches 1–5 implementation, validation, and manual Admin verification are complete.
 
