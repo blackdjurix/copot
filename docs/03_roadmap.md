@@ -783,6 +783,12 @@ Explicit non-goals include marketplace or remote installation, package download 
 
 The M3.3 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification are complete. M3.3 reached its No-Return Point and branch lifecycle closure; it remains unreleased, untagged, and unpublished.
 
+#### M3.4 Content Manager Preparation
+
+M3.4 remains the next approved milestone after M3.3 and the completed Admin UX Refinement 1 checkpoint. The authoritative preparation contract is defined in `docs/18_m3_4_content_manager_contract.md`.
+
+The preparation contract keeps the existing `modules/content` module as the sole Content owner, locks fixed `page` and `article` types, defines the draft/published/archived lifecycle with archive-to-draft restore and no hard delete, adds the required `content.read` permission boundary, preserves optional Taxonomy integration and the existing `content::show` Theme boundary, and defers revisions, autosave, preview, scheduling, custom fields, content-type management, Media Library integration, bulk actions, APIs, and other future capabilities. Preparation does not claim implementation, schema or permission provisioning, runtime validation, browser validation, or integration completion.
+
 Current branch strategy:
 
 ```text
