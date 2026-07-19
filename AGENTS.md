@@ -18,9 +18,9 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone / checkpoint: Shell Foundation and Settings Category 1 documentation closure on `feature/admin-shell-foundation`; implementation, focused validation, source/runtime review, and browser acceptance are complete. M3.3 is merged and its branch lifecycle is closed.
+Current milestone / checkpoint: Admin UX Refinement 1, Shell Foundation, and Settings Category 1 are integrated into `main` through parent-first fast-forward closure. Implementation, focused validation, source/runtime review, and browser acceptance are complete. M3.3 is merged and its branch lifecycle is closed.
 
-Current work: Shell Foundation and Settings Category 1 implementation and validation are complete on `feature/admin-shell-foundation`, following completed Post-M3 documentation synchronization. Documentation closure is in progress; Git writes remain on hold for user-owned closure. Browser-only limitations are recorded separately and are non-material.
+Current work: Admin UX Refinement 1, Shell Foundation, and Settings Category 1 are merged into `main` at `69fda0d` using parent-first `--ff-only` integration. The completed feature branches remain present pending separate cleanup authorization; no PR was used. Browser-only limitations are recorded separately and are non-material. The next project target follows the authoritative roadmap.
 
 Primary goal:
 
@@ -75,7 +75,7 @@ Current state:
 * Fresh installation enables `settings-manager` with the existing baseline ModuleManager flow. Existing installations install and enable it through the same ModuleManager lifecycle; no schema change or upgrade SQL is required.
 * Batch 1 focused contract and integration coverage passes 42 assertions, with relevant Admin, Settings, Site Asset, packaging, and isolated clean-install compatibility passing.
 * The Database Upgrade / Migration System concept is locked as planned but remains unimplemented and excluded from M3.2.
-* Admin UX Refinement 1 and Shell Foundation implementation and validation are complete after M3.3 and before reserved M3.4 Content Manager; the current work unit is in documentation closure on `feature/admin-shell-foundation`.
+* Admin UX Refinement 1 and Shell Foundation implementation and validation are complete after M3.3 and before reserved M3.4 Content Manager; both completed branches are integrated into `main` through parent-first `--ff-only` closure and remain present pending separate cleanup authorization.
 * Settings Category 1 presentation remediation is complete: the six-tab presentation, truthful deferred states, standalone Branding presentation, safe empty asset states, and existing full-save compatibility are validated.
 * Local development uses a 30-day session lifetime; non-local environments retain the 120-minute default, with cookie and server-side lifetimes synchronized.
 * The approved Copot Admin Shell image is the canonical visual authority for Admin UX Refinement 1, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior.
@@ -714,7 +714,7 @@ Copot v0.12.0 is released and is the current stable Webcore baseline.
 
 M3 Preparation is complete and closed. M3.1 Users & Access and M3.2 Settings Manager are complete and merged but remain unreleased.
 
-The active checkpoint is Shell Foundation and Settings Category 1 documentation closure on `feature/admin-shell-foundation`. Their implementation, focused validation, source/runtime review, runtime smoke, and authenticated browser acceptance are complete. M3.3 is merged, synchronized, and branch-closed.
+The active checkpoint is post-integration closure on `main`. Admin UX Refinement 1, Shell Foundation, and Settings Category 1 are merged through parent-first `--ff-only` integration at `69fda0d`; the completed feature branches remain present pending separate cleanup authorization, and no PR was used. Their implementation, focused validation, source/runtime review, runtime smoke, and authenticated browser acceptance are complete. M3.3 is merged, synchronized, and branch-closed.
 
 The immediate goal is to:
 

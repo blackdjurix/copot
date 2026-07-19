@@ -722,7 +722,7 @@ Fresh installs use the canonical `database/schema.sql`; existing installations c
 
 #### Admin UX Refinement 1
 
-Status: implementation and validation complete on `feature/admin-shell-foundation`; the current work unit is ready for documentation and user-owned Git closure. It follows M3.3 and precedes reserved M3.4 Content Manager.
+Status: implementation and validation complete and integrated into `main` at `69fda0d` through parent-first `--ff-only` closure. The completed feature branches remain present pending separate cleanup authorization; no PR was used. It follows M3.3 and precedes reserved M3.4 Content Manager.
 
 M3.2 and M3.3 provided management-UI patterns. Admin UX Refinement 1 completed the Module Manager and User/Role Detail refinements, and Shell Foundation completed the shared shell presentation, responsive drawer, accessibility behavior, and configured-path integration. Settings Category 1 completed the presentation-only Settings tab and Branding refinement without adding partial saves or backend capability. Global floating notifications, effective-permission explanation for multi-role users, and reusable dashboard block spacing remain deferred.
 
@@ -789,6 +789,9 @@ Current branch strategy:
 main at synchronized Post-M3 anchor
 -> `feature/admin-ux-refinement-1` from synchronized `main`
 -> Admin UX Refinement 1
+-> `feature/admin-shell-foundation` from the completed parent branch
+-> Shell Foundation and Settings Category 1
+-> parent-first `--ff-only` integration into `main`
 -> reserved M3.4 Content Manager
 ```
 
