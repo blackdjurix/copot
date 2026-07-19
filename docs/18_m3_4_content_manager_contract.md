@@ -2,7 +2,7 @@
 
 ## Status
 
-The M3.4 Content Manager preparation contract has been committed; the preparation branch was pushed and fast-forward integrated into `main`, and `main` was pushed and synchronized with `origin/main`. M3.4 implementation has not started. Schema changes, permission provisioning, runtime synchronization, implementation validation, and browser validation remain outstanding. Preparation branch cleanup has not occurred; release and publication have not started.
+The M3.4 Content Manager preparation contract has been committed; the preparation branch was pushed, fast-forward integrated into `main`, and deleted locally and remotely. Local and remote branch inventories now contain only `main`; `main` and `origin/main` are synchronized at the verified cleanup state. M3.4 implementation has not started. Schema work, permission provisioning, runtime synchronization, implementation validation, and browser validation remain outstanding. Release and publication have not started.
 
 M3.4 is Content Manager. M3.7 remains Theme Manager. The existing `modules/content` module remains the sole Content owner; M3.4 evolves that module and does not create a replacement Content Manager module.
 
