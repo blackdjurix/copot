@@ -8,14 +8,18 @@ use Copot\Core\View;
 
 class AdminPageRenderer
 {
+    private AdminIcon $icons;
+
     public function __construct(
         private View $view,
         private AdminUrl $adminUrl,
         private AdminNavigation $navigation,
         private string $appName,
         private string $siteName,
-        private string $documentLocale = 'en'
+        private string $documentLocale = 'en',
+        ?AdminIcon $icons = null
     ) {
+        $this->icons = $icons ?? new AdminIcon();
     }
 
     public function render(
@@ -39,6 +43,7 @@ class AdminPageRenderer
             'userEmail' => $user->email(),
             'currentPath' => $currentPath,
             'navigation' => $navigation,
+            'renderAdminIcon' => fn (?string $key, string $class = 'admin-icon'): string => $this->icons->render($key, $class),
             'content' => $content,
         ]);
     }

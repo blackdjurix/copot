@@ -1,0 +1,753 @@
+{
+  "project": "Copot Admin Default Icon Pack",
+  "version": "1.0.0",
+  "iconCount": 106,
+  "rendering": "trusted inline SVG through Copot\\Core\\Admin\\AdminIcon",
+  "sourceAuthority": "copot-icons-final-inline-fixed(1).zip",
+  "spriteIncluded": false,
+  "spriteOmissionReason": "Individual files are the replaceable source of truth; a generated sprite would become stale after file replacement.",
+  "icons": [
+    {
+      "key": "account-activity",
+      "file": "icon-account-activity.svg",
+      "sha256": "dc067b7fccfe0541eb6316c3740d14f8cf8ea356521832402b589a21383962c3",
+      "bytes": 232,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "active-users",
+      "file": "icon-active-users.svg",
+      "sha256": "a8cab57658fa4156d297bc5780a16efdd57a8ccb622933216f48f34326db55e5",
+      "bytes": 260,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "activity",
+      "file": "icon-activity.svg",
+      "sha256": "0dd07e712e1744d370fac6c3501bbc13718fb20c4d692fc63b65aa8768373bee",
+      "bytes": 202,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "add",
+      "file": "icon-add.svg",
+      "sha256": "cc2dc684ae27113a65c366512e69b074548c00dcf97ed6b9e65f096a39e80ced",
+      "bytes": 195,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "archive",
+      "file": "icon-archive.svg",
+      "sha256": "4e4f7843c725d78915e06680b4afb5b374fd4be37b4e3d693890aea367adc684",
+      "bytes": 235,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "arrow-down",
+      "file": "icon-arrow-down.svg",
+      "sha256": "0262f9cd1727f94a90c234ea6e737908c7237a9e101c7252b191f546f3ff4156",
+      "bytes": 201,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "arrow-up",
+      "file": "icon-arrow-up.svg",
+      "sha256": "5ccdda0ac2c220a0a1b1aa6a725f743d0ea62cad976b7ceec66d8aec24ec550d",
+      "bytes": 201,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "assigned-users",
+      "file": "icon-assigned-users.svg",
+      "sha256": "8f848172f2f9505ddb8084e6ac44ceaa0c07afd8ec3bb927bc22691b138cca1f",
+      "bytes": 304,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "bell",
+      "file": "icon-bell.svg",
+      "sha256": "b16fdefdc4e2b979aec689a36afc06c17b9dbeb1947f657fb1c1f71256453067",
+      "bytes": 236,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "branding",
+      "file": "icon-branding.svg",
+      "sha256": "ae7ab0f84782d5e95f2d428a220599e1eda36bd6451174ad74c30fb90295bff5",
+      "bytes": 248,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "calendar",
+      "file": "icon-calendar.svg",
+      "sha256": "82a7ac8a5947d674961021a40b370c07f78418d334b08bdfcc9689e6b4efcc60",
+      "bytes": 250,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "category",
+      "file": "icon-category.svg",
+      "sha256": "c4cd72f9f82c8a9faa541d2dc1884268a6f6f98ea41cbd9d15e55396a4d6cefc",
+      "bytes": 222,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "check",
+      "file": "icon-check.svg",
+      "sha256": "57fc5ac03485eb1f18e4aab18b4372a2d8782d28055c7f257444d48d816da339",
+      "bytes": 194,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "chevron-down",
+      "file": "icon-chevron-down.svg",
+      "sha256": "cf18c98ac2b07a127426c0063ae8bf9b0e0f0564e60eff0091da9de65ad03de2",
+      "bytes": 194,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "chevron-left",
+      "file": "icon-chevron-left.svg",
+      "sha256": "03d683650843b386b08923f4e2bcd0757c648b9bdc914860349640d19aacf7b8",
+      "bytes": 195,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "chevron-right",
+      "file": "icon-chevron-right.svg",
+      "sha256": "fbd2d88607b9022372f1535af4b2d96904bf2d23681900db0aa54054892df005",
+      "bytes": 194,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "child-term",
+      "file": "icon-child-term.svg",
+      "sha256": "f8528f33cbd3772bdfb3d71f2d7b7a5c2eb61a46f334ea6e315729b9ba8ff903",
+      "bytes": 245,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "clock",
+      "file": "icon-clock.svg",
+      "sha256": "8a0d1bfb2f6917b151417fcdff4f34f136d36cc75dbc926b6a45e88b53aee71d",
+      "bytes": 222,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "close",
+      "file": "icon-close.svg",
+      "sha256": "495c04164bd2900105f025caf4d6658077a0a6fc9e094f34c5c8f268c236a19e",
+      "bytes": 200,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "configure",
+      "file": "icon-configure.svg",
+      "sha256": "7954e9edfb71f3a0b934995ed85339446827c1f54391a6d54e3e429688d0608e",
+      "bytes": 651,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "content-pipeline",
+      "file": "icon-content-pipeline.svg",
+      "sha256": "760130cde8c9f4a11c00e150cb7476854a27bb1842a51abb027a664b94488438",
+      "bytes": 299,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "content-types",
+      "file": "icon-content-types.svg",
+      "sha256": "098ae783187f6da73e6c987b7cfd1afd345d6034ff3a1701c0666be20bb51ce3",
+      "bytes": 253,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "content",
+      "file": "icon-content.svg",
+      "sha256": "8fcd933af90fe79e9ffd4cea5270cfeb70e615546e26099bbb583f6af36a6c7d",
+      "bytes": 281,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "contributions",
+      "file": "icon-contributions.svg",
+      "sha256": "2e0092ecae1273a2323c35b5439b61ee26b3c09243ee0eec1dddc3d403d38ffa",
+      "bytes": 242,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "dashboard",
+      "file": "icon-dashboard.svg",
+      "sha256": "bf6b20e80968adf17f4390036c9ad9f4b5fa2c58415007e636114922322dc339",
+      "bytes": 249,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "delete",
+      "file": "icon-delete.svg",
+      "sha256": "623819d0f746313ae8bccf0e86e07c121cc86cd06590690403961dca0f7210b8",
+      "bytes": 264,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "dependencies",
+      "file": "icon-dependencies.svg",
+      "sha256": "df3bdeebd6ea895e12a2297bffa34f95b034b33d885f25d7b58369e9fbd8f38c",
+      "bytes": 302,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "disable",
+      "file": "icon-disable.svg",
+      "sha256": "1ed673189a90d07f128d0609a2a97e60533b0812930aab42fad387809d3e9f1e",
+      "bytes": 220,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "disabled",
+      "file": "icon-disabled.svg",
+      "sha256": "1ed673189a90d07f128d0609a2a97e60533b0812930aab42fad387809d3e9f1e",
+      "bytes": 220,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "download",
+      "file": "icon-download.svg",
+      "sha256": "36b074680e820653ff95d2b486fe72347723db9d7cfd8be1584dd37b7bc11754",
+      "bytes": 232,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "edit",
+      "file": "icon-edit.svg",
+      "sha256": "ec4212e9d4329e13d717aca1438a4e1d5ca4180833b58c47d718c731bd420b07",
+      "bytes": 241,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "email-settings",
+      "file": "icon-email-settings.svg",
+      "sha256": "aedc8ba510553414caaa43252cbc6ea7e9e00873c2e12980670999089384d686",
+      "bytes": 260,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "enable",
+      "file": "icon-enable.svg",
+      "sha256": "9efd7eab1edec0e50514c8f7840be698a97cda9dde6d965a533956e79d624dbb",
+      "bytes": 228,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "enabled-modules",
+      "file": "icon-enabled-modules.svg",
+      "sha256": "6668d096e0519cd8aeb49a926ece7e8dd541a407395019afc3a8fd1191a030c5",
+      "bytes": 295,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "environment",
+      "file": "icon-environment.svg",
+      "sha256": "1c354a50406b9783a206523bcf21a2e2266d0eebfe0f83468b1ee64bc5ce4839",
+      "bytes": 275,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "error",
+      "file": "icon-error.svg",
+      "sha256": "19a945054e411677611df8256ebc8fc8be36e017e39d5726ecc37caf12867fb9",
+      "bytes": 226,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "external-link",
+      "file": "icon-external-link.svg",
+      "sha256": "e32941dd8b23494ab7177f6b95d38ea46b274e3149c6783fd80f03f471daeb29",
+      "bytes": 235,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "eye",
+      "file": "icon-eye.svg",
+      "sha256": "3f58ad5e2c8f7a40521d6d1141a2e09b5bfb8b00a9c99cee03fea163d0f0ff2a",
+      "bytes": 269,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "favicon",
+      "file": "icon-favicon.svg",
+      "sha256": "0453fbfaa6e38ccfc474fd5bcd895c6195423af76efc438a9eaf9920be8bd3cd",
+      "bytes": 248,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "filter",
+      "file": "icon-filter.svg",
+      "sha256": "ba8a3fe0aca6fb36fda470ca3ce4dc1602b98a12292d38661cf229aeb0a99b78",
+      "bytes": 202,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "flat-taxonomy",
+      "file": "icon-flat-taxonomy.svg",
+      "sha256": "9f623b7f0f10aaa4742049205b6adfd025a5e5d1dec1186d89f7c695fc2bbbfe",
+      "bytes": 293,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "folder",
+      "file": "icon-folder.svg",
+      "sha256": "786bd1c486626ee2f712572295098b5a13508fdf8a4c192b527dd5c8f9287e51",
+      "bytes": 198,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "globe",
+      "file": "icon-globe.svg",
+      "sha256": "80d98867df961bc2338dcfb3fe93e7f86555d83b3991f1059ed9efae56a009b6",
+      "bytes": 258,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "hierarchy",
+      "file": "icon-hierarchy.svg",
+      "sha256": "fbfa0253b68c64b679081f14013285e3a4c399dcbb9a9e4e1dc0b27e66c660f0",
+      "bytes": 353,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "image",
+      "file": "icon-image.svg",
+      "sha256": "6879de2d065930d9c050d5cf8881a3ef73a5f7e0195258bf800150c7062d5579",
+      "bytes": 281,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "info",
+      "file": "icon-info.svg",
+      "sha256": "6d69cb7154b3d4255806c2100efec61970111fc39b46d60664de4a298e1343b3",
+      "bytes": 239,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "install",
+      "file": "icon-install.svg",
+      "sha256": "615e26b3a7d658f6eb2c5a642f8b3a5805535241c5e9fe35a8f23bf0cdb2c020",
+      "bytes": 237,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "key",
+      "file": "icon-key.svg",
+      "sha256": "70b997e728d97ce3495e21dd749240970ad7f4f312eed2b8bbf7fc2d8b44bdea",
+      "bytes": 237,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "localization",
+      "file": "icon-localization.svg",
+      "sha256": "d82262e4e6b71527b8fbffc1b11bbf08cf198eabc3d98694680d0b3a5b8f18e3",
+      "bytes": 262,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "lock",
+      "file": "icon-lock.svg",
+      "sha256": "8d39a4f986c1145ccae598d08eb9b31ffa53dad22e230b9adcb72ce376bb70f8",
+      "bytes": 252,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "logo",
+      "file": "icon-logo.svg",
+      "sha256": "2431e35d23c7dbf6bb11732641075cb9f0662e00deb38329b91f4b19ef782679",
+      "bytes": 278,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "mail",
+      "file": "icon-mail.svg",
+      "sha256": "090f3bf6ed4f0d02ad56e5cd8403e879a04a72b422109cd57de71ee5b5cefa19",
+      "bytes": 240,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "maintenance",
+      "file": "icon-maintenance.svg",
+      "sha256": "c6f27dd1c26f9cc25b32e6aa340de82dd3526b45aa5abb55e7d1906c0bd0b5a1",
+      "bytes": 268,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "menu",
+      "file": "icon-menu.svg",
+      "sha256": "0461e6a413aab3b45b764b7ab096826d5758bf6ee564f4f777ca3744c3291b88",
+      "bytes": 203,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "minus",
+      "file": "icon-minus.svg",
+      "sha256": "68239ebc5f408ef76422704662ecdf280d30c4e81aefa81b65a3bb4086c3523b",
+      "bytes": 188,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "module-overview",
+      "file": "icon-module-overview.svg",
+      "sha256": "86d5924b55e2d48bca433fc004552f69f7a8559e3df389f94dd4a2b0867a7ffb",
+      "bytes": 367,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "module",
+      "file": "icon-module.svg",
+      "sha256": "6d57f4bab62fdf91dc54cf93e2e11c025a66b35206fe60e50d62b0865beea055",
+      "bytes": 259,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "modules",
+      "file": "icon-modules.svg",
+      "sha256": "510a9d98e2bf3acb0a1c55733799d4ff5aec4f7764f8637d06a2ceea5d5a9ae0",
+      "bytes": 257,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "more-horizontal",
+      "file": "icon-more-horizontal.svg",
+      "sha256": "4f4b090b989cdd24528fd752febcd38c3c919b54566c3454544cbf505622101b",
+      "bytes": 259,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "more-vertical",
+      "file": "icon-more-vertical.svg",
+      "sha256": "989e515733e95947d1887e2d807c398e0e11acf265a1f6e603bdff28eefb9a06",
+      "bytes": 259,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "package",
+      "file": "icon-package.svg",
+      "sha256": "d0c2be29f96745aa21c64bb38ed7959638c60edc4e3bfa6a170d91b5fc7ba23d",
+      "bytes": 247,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "palette",
+      "file": "icon-palette.svg",
+      "sha256": "569e7b935309461f6842e26632a3764a2c86103272659ed77d2c10d9e066e8b6",
+      "bytes": 451,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "parent-term",
+      "file": "icon-parent-term.svg",
+      "sha256": "96f737ad283233d56580939df0fa53e3425c544e4aa8fbcf29976c43c04919e0",
+      "bytes": 216,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "permission-content",
+      "file": "icon-permission-content.svg",
+      "sha256": "37265feadd2f754464f19ed91187a3f099153f5d5266075a8aec0bbd17042cf9",
+      "bytes": 244,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "permission-core",
+      "file": "icon-permission-core.svg",
+      "sha256": "b21770401c6e33d6b4af20cf7952d7c31af299a9d61628f0b564d38fd149986d",
+      "bytes": 310,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "permission-modules",
+      "file": "icon-permission-modules.svg",
+      "sha256": "6d57f4bab62fdf91dc54cf93e2e11c025a66b35206fe60e50d62b0865beea055",
+      "bytes": 259,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "permission-settings",
+      "file": "icon-permission-settings.svg",
+      "sha256": "7954e9edfb71f3a0b934995ed85339446827c1f54391a6d54e3e429688d0608e",
+      "bytes": 651,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "permission-users",
+      "file": "icon-permission-users.svg",
+      "sha256": "7b2ec85e0a0042c891370d865beade9ece01e46dae066c91c9789e356e97c5c6",
+      "bytes": 264,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "permissions",
+      "file": "icon-permissions.svg",
+      "sha256": "1eef7d169c29de7367368907905f3990c4151fd33bcb5a31b1316de548286982",
+      "bytes": 254,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "plug",
+      "file": "icon-plug.svg",
+      "sha256": "f29a5851499832f2dbeca086cfeba356110b43e0528c24abe02c30ba9b8b78b4",
+      "bytes": 249,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "plus",
+      "file": "icon-plus.svg",
+      "sha256": "e278958e6393c1df819c5f1175b5a555fbdd35631ab4a8ab21f3e0db16686a5d",
+      "bytes": 196,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "published-content",
+      "file": "icon-published-content.svg",
+      "sha256": "b778cbcc231d39fa082f77d1b2f5b0fa5b3a96a92bac55cadf35af92ce1a45fc",
+      "bytes": 243,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "quick-menu",
+      "file": "icon-quick-menu.svg",
+      "sha256": "ea74d883ae891c624d1f6f4b878ba9625af0142f6c877023e7207f5735d53160",
+      "bytes": 360,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "recent-activity",
+      "file": "icon-recent-activity.svg",
+      "sha256": "c9fc8eea6e83a74258649c629821310772d919e5cf80ef9f85af3897f990dd92",
+      "bytes": 241,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "refresh",
+      "file": "icon-refresh.svg",
+      "sha256": "539c604b40d58c35b3e2cf6c97ca19e6887fea696ea98305e886c7daf402c2ff",
+      "bytes": 277,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "reset",
+      "file": "icon-reset.svg",
+      "sha256": "8268b925574428dd798c32aba0e4e394c6342c060518e053047d5bd7d04d4048",
+      "bytes": 226,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "role-system",
+      "file": "icon-role-system.svg",
+      "sha256": "1eef7d169c29de7367368907905f3990c4151fd33bcb5a31b1316de548286982",
+      "bytes": 254,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "roles",
+      "file": "icon-roles.svg",
+      "sha256": "b173e0a1187721e509f400f38041695880908f23c3b66b4011bd5be20579001e",
+      "bytes": 270,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "save",
+      "file": "icon-save.svg",
+      "sha256": "acbe5dec1ed093f1fff5da68280a1dd4a010c13cb00e605242feed2a9c374018",
+      "bytes": 242,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "search",
+      "file": "icon-search.svg",
+      "sha256": "f4b58a624082091a75d7c1cd553cd81829878c1b6b300c6db67af4358d9555e4",
+      "bytes": 227,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "security",
+      "file": "icon-security.svg",
+      "sha256": "bfe02fa5509de1bfda985960606c91dccba4099ef76f2a6b1c11cd93ba4a8c36",
+      "bytes": 321,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "settings-general",
+      "file": "icon-settings-general.svg",
+      "sha256": "7954e9edfb71f3a0b934995ed85339446827c1f54391a6d54e3e429688d0608e",
+      "bytes": 651,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "settings",
+      "file": "icon-settings.svg",
+      "sha256": "6a195b31e2707c66dc28e7f877be50e3e5706cba388f3e1c41564aafbb301931",
+      "bytes": 653,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "shield-check",
+      "file": "icon-shield-check.svg",
+      "sha256": "2b6c97cdabdad3e539b47f117825ddb0ee65633e1d30f1392c5d5cfda37feaba",
+      "bytes": 263,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "shield-user",
+      "file": "icon-shield-user.svg",
+      "sha256": "36f5fd28fb8619ea3dc84494ddcd883a3976bb43fb13ad1ad7bba4254778e51b",
+      "bytes": 298,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "shield",
+      "file": "icon-shield.svg",
+      "sha256": "28b54a2b3f3d7300ec16dbd89ac8d22748c020b0c5cd98707dc6822237a05617",
+      "bytes": 228,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "slug",
+      "file": "icon-slug.svg",
+      "sha256": "e46395b5a04567a03e530c1cc433a9b256b7ee671bc86b7d174ec84434c1ea3d",
+      "bytes": 257,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "sort",
+      "file": "icon-sort.svg",
+      "sha256": "a96b7def0a611a4f0b4ad7e6f03d3d0fb2aa5ce1313f5635e7d1ae051ce49a8d",
+      "bytes": 256,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "success",
+      "file": "icon-success.svg",
+      "sha256": "9efd7eab1edec0e50514c8f7840be698a97cda9dde6d965a533956e79d624dbb",
+      "bytes": 228,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "tag",
+      "file": "icon-tag.svg",
+      "sha256": "015227a3b45063a9651723578554a12085e5d6912550efd981c3eea5f5cd11b8",
+      "bytes": 232,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "tags",
+      "file": "icon-tags.svg",
+      "sha256": "34763ba36651164ee23df6002e14dbf609783ea840992404bb1e74cb25cbc603",
+      "bytes": 255,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "taxonomy",
+      "file": "icon-taxonomy.svg",
+      "sha256": "9d236152f957814c04338d94fe5432a09e462bf518f196997a473b8800c57e9c",
+      "bytes": 243,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "total-content",
+      "file": "icon-total-content.svg",
+      "sha256": "37265feadd2f754464f19ed91187a3f099153f5d5266075a8aec0bbd17042cf9",
+      "bytes": 244,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "uninstall",
+      "file": "icon-uninstall.svg",
+      "sha256": "a812c4354d7653f9dbe2d5940ee25f29b737df133d99a718052254eedf08cec3",
+      "bytes": 236,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "upload",
+      "file": "icon-upload.svg",
+      "sha256": "d6b6b4b251fc4e269f70144052ec15286a5e67839d4702b5716bc520349783c2",
+      "bytes": 231,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "user-active",
+      "file": "icon-user-active.svg",
+      "sha256": "a36449905bc831efc8c11e7b8ae2985e25ac010c52a0fe945b2e712db4f91112",
+      "bytes": 254,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "user-add",
+      "file": "icon-user-add.svg",
+      "sha256": "303edc9fe6f744f1ff2cfd9b55aca863ef9fa26be0ed972297fa0592aa72144a",
+      "bytes": 255,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "user-edit",
+      "file": "icon-user-edit.svg",
+      "sha256": "370cc547179a5f381e39bf364f58328c5dd60d95f2c7de8c27e008631d7a9f17",
+      "bytes": 263,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "user-locked",
+      "file": "icon-user-locked.svg",
+      "sha256": "55a95746293721374611addef86f8d5085791f8b4b31c2fdcd41cae9fe6c27b8",
+      "bytes": 320,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "user-security",
+      "file": "icon-user-security.svg",
+      "sha256": "557e69ff6ab2c8e6b663e554e5379d8b5799ac6c77a2809b5941d95aed17d4b5",
+      "bytes": 307,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "user",
+      "file": "icon-user.svg",
+      "sha256": "122ae8052186f43a4e184011f6b702d9bf2cfdcb07aedf1cf1522eae65b41472",
+      "bytes": 229,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "users-snapshot",
+      "file": "icon-users-snapshot.svg",
+      "sha256": "8f848172f2f9505ddb8084e6ac44ceaa0c07afd8ec3bb927bc22691b138cca1f",
+      "bytes": 304,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "users",
+      "file": "icon-users.svg",
+      "sha256": "9791c4a2d239cb8fa64f1e3e69ac6b9233ca1c9825fb92d367bcb290b4df1e36",
+      "bytes": 338,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "view",
+      "file": "icon-view.svg",
+      "sha256": "2df4c275c3539591b59ea45bd9e93c959ebfb6a1caa1e4af25adf5429e11a42b",
+      "bytes": 268,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "warning",
+      "file": "icon-warning.svg",
+      "sha256": "eda728a63e4d920eeef6bde6fb64357476cda5d54de38ef985b911366d9d2908",
+      "bytes": 234,
+      "viewBox": "0 0 24 24"
+    },
+    {
+      "key": "wrench",
+      "file": "icon-wrench.svg",
+      "sha256": "30dfb9c2bd9dae3a2ec86e384dc352af37d1422380edc246d2c6b6b6dcf8c1d6",
+      "bytes": 253,
+      "viewBox": "0 0 24 24"
+    }
+  ]
+}

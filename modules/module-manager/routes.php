@@ -9,7 +9,7 @@ require_once __DIR__ . '/Services/ModuleManagerAdmin.php';
 $modulesAdmin = new ModuleManagerAdmin($app);
 $modulesPath = $app->adminUrl()->childUrl('modules');
 
-$app->adminNavigation()->add('Modules', $modulesPath, 'modules.manage');
+$app->adminNavigation()->add('Modules', $modulesPath, 'modules.manage', 'modules');
 
 $app->router()->get($modulesPath, static function ($request) use ($modulesAdmin): Response {
     return $modulesAdmin->inventoryResponse($request);

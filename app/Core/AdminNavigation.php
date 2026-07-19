@@ -6,8 +6,12 @@ class AdminNavigation
 {
     private array $items = [];
 
-    public function add(string $label, string $url, string|array|null $permissions = null): void
-    {
+    public function add(
+        string $label,
+        string $url,
+        string|array|null $permissions = null,
+        ?string $icon = null
+    ): void {
         $label = trim($label);
         $url = '/' . trim($url, '/');
 
@@ -29,6 +33,7 @@ class AdminNavigation
             'label' => $label,
             'url' => $url,
             'permissions' => $this->normalizePermissions($permissions),
+            'icon' => $this->normalizeIcon($icon),
         ];
     }
 
@@ -41,10 +46,16 @@ class AdminNavigation
                 continue;
             }
 
-            $items[] = [
+            $resolved = [
                 'label' => $item['label'],
                 'url' => $item['url'],
             ];
+
+            if ($item['icon'] !== null) {
+                $resolved['icon'] = $item['icon'];
+            }
+
+            $items[] = $resolved;
         }
 
         return $items;
@@ -77,6 +88,29 @@ class AdminNavigation
         }
 
         return $normalized;
+    }
+
+    private function normalizeIcon(?string $icon): ?string
+    {
+        if ($icon === null) {
+            return null;
+        }
+
+        $icon = strtolower(trim($icon));
+
+        if ($icon === '') {
+            return null;
+        }
+
+        if (str_starts_with($icon, 'icon-')) {
+            $icon = substr($icon, 5);
+        }
+
+        if (preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $icon) !== 1) {
+            throw new \InvalidArgumentException('Admin navigation icon key is invalid.');
+        }
+
+        return $icon;
     }
 
     private function isVisible(array $permissions, ?User $user): bool

@@ -23,7 +23,7 @@ $taxonomyPermissions = [
     'taxonomy.delete',
 ];
 
-$app->adminNavigation()->add('Taxonomy', $app->adminUrl()->childUrl('taxonomy'), $taxonomyPermissions);
+$app->adminNavigation()->add('Taxonomy', $app->adminUrl()->childUrl('taxonomy'), $taxonomyPermissions, 'taxonomy');
 
 $app->adminDashboard()->add(
     'taxonomy.overview',

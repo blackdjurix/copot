@@ -45,7 +45,7 @@ $app->adminNavigation()->add('Content', $app->adminUrl()->childUrl('content'), [
     'content.update',
     'content.delete',
     'content.publish',
-]);
+], 'content');
 
 $app->adminDashboard()->add(
     'content.overview',

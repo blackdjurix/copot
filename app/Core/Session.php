@@ -16,8 +16,11 @@ class Session
 
         session_name($this->config->get('session.name', 'COPOTSESSID'));
 
+        $lifetimeSeconds = (int) $this->config->get('session.lifetime', 120) * 60;
+        ini_set('session.gc_maxlifetime', (string) $lifetimeSeconds);
+
         session_set_cookie_params([
-            'lifetime' => $this->config->get('session.lifetime', 120) * 60,
+            'lifetime' => $lifetimeSeconds,
             'path' => $this->config->get('session.path', '/'),
             'secure' => $this->config->get('session.secure', false),
             'httponly' => $this->config->get('session.http_only', true),

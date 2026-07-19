@@ -89,7 +89,7 @@ class Application
         $this->adminUrl = new AdminUrl($this->config);
         $this->adminNavigation = new AdminNavigation();
         $this->adminDashboard = new AdminDashboardRegistry();
-        $this->adminNavigation->add('Dashboard', $this->adminUrl->baseUrl());
+        $this->adminNavigation->add('Dashboard', $this->adminUrl->baseUrl(), null, 'dashboard');
         $this->adminPageRenderer = new AdminPageRenderer(
             $this->view,
             $this->adminUrl,
