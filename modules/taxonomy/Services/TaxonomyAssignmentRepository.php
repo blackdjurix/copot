@@ -14,25 +14,27 @@ class TaxonomyAssignmentRepository
         $termId = $this->normalizeTermId($termId);
         $this->ensureTermExists($termId);
 
-        $statement = $this->database->connection()->prepare(
-            'INSERT IGNORE INTO taxonomy_assignments (
-                taxonomy_term_id,
-                entity_type,
-                entity_id,
-                created_at
-            ) VALUES (
-                :taxonomy_term_id,
-                :entity_type,
-                :entity_id,
-                NOW()
-            )'
-        );
+        $this->withinTransaction(function () use ($entityType, $entityId, $termId): void {
+            $statement = $this->database->connection()->prepare(
+                'INSERT IGNORE INTO taxonomy_assignments (
+                    taxonomy_term_id,
+                    entity_type,
+                    entity_id,
+                    created_at
+                ) VALUES (
+                    :taxonomy_term_id,
+                    :entity_type,
+                    :entity_id,
+                    NOW()
+                )'
+            );
 
-        $statement->execute([
-            'taxonomy_term_id' => $termId,
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
-        ]);
+            $statement->execute([
+                'taxonomy_term_id' => $termId,
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+            ]);
+        });
     }
 
     public function sync(string $entityType, int $entityId, array $termIds): void
@@ -41,9 +43,7 @@ class TaxonomyAssignmentRepository
         $termIds = $this->normalizeTermIds($termIds);
         $connection = $this->database->connection();
 
-        $connection->beginTransaction();
-
-        try {
+        $this->withinTransaction(function () use ($connection, $entityType, $entityId, $termIds): void {
             $delete = $connection->prepare(
                 'DELETE FROM taxonomy_assignments
                 WHERE entity_type = :entity_type
@@ -57,13 +57,7 @@ class TaxonomyAssignmentRepository
             foreach ($termIds as $termId) {
                 $this->assign($entityType, $entityId, $termId);
             }
-
-            $connection->commit();
-        } catch (Throwable $exception) {
-            $connection->rollBack();
-
-            throw $exception;
-        }
+        });
     }
 
     public function syncForType(string $entityType, int $entityId, string $typeSlug, array $termIds): void
@@ -74,9 +68,7 @@ class TaxonomyAssignmentRepository
         $this->ensureTermsBelongToType($termIds, $typeSlug);
         $connection = $this->database->connection();
 
-        $connection->beginTransaction();
-
-        try {
+        $this->withinTransaction(function () use ($connection, $entityType, $entityId, $typeSlug, $termIds): void {
             $delete = $connection->prepare(
                 'DELETE taxonomy_assignments
                 FROM taxonomy_assignments
@@ -95,10 +87,28 @@ class TaxonomyAssignmentRepository
             foreach ($termIds as $termId) {
                 $this->assign($entityType, $entityId, $termId);
             }
+        });
+    }
 
-            $connection->commit();
+    private function withinTransaction(callable $operation): void
+    {
+        $connection = $this->database->connection();
+        $ownsTransaction = !$connection->inTransaction();
+
+        if ($ownsTransaction) {
+            $connection->beginTransaction();
+        }
+
+        try {
+            $operation();
+
+            if ($ownsTransaction && $connection->inTransaction()) {
+                $connection->commit();
+            }
         } catch (Throwable $exception) {
-            $connection->rollBack();
+            if ($ownsTransaction && $connection->inTransaction()) {
+                $connection->rollBack();
+            }
 
             throw $exception;
         }

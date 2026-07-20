@@ -20,6 +20,9 @@
 
         <form class="admin-form" method="post" action="<?= htmlspecialchars($formAction, ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+            <?php if (!empty($content['updated_at'])): ?>
+                <input type="hidden" name="expected_updated_at" value="<?= htmlspecialchars($content['updated_at'], ENT_QUOTES, 'UTF-8') ?>">
+            <?php endif; ?>
 
             <div class="admin-field">
                 <label class="admin-field__label" for="type">Type</label>

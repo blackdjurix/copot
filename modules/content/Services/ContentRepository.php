@@ -2,6 +2,10 @@
 
 use Copot\Core\Database;
 
+class ContentStaleWriteException extends InvalidArgumentException
+{
+}
+
 class ContentRepository
 {
     public function __construct(private Database $database)
@@ -103,7 +107,7 @@ class ContentRepository
         return (int) $this->database->connection()->lastInsertId();
     }
 
-    public function update(int $id, array $data): void
+    public function update(int $id, array $data, string $expectedUpdatedAt): void
     {
         $data = $this->normalizePayload($data, false);
 
@@ -126,8 +130,9 @@ class ContentRepository
                     WHEN :status_for_unarchive <> \'archived\' THEN NULL
                     ELSE archived_at
                 END,
-                updated_at = NOW()
-            WHERE id = :id'
+                updated_at = GREATEST(NOW(), DATE_ADD(updated_at, INTERVAL 1 SECOND))
+            WHERE id = :id
+              AND updated_at = :expected_updated_at'
         );
 
         $statement->execute([
@@ -143,57 +148,46 @@ class ContentRepository
             'status_for_archive' => $data['status'],
             'status_for_unarchive' => $data['status'],
             'author_id' => $data['author_id'],
+            'expected_updated_at' => $expectedUpdatedAt,
         ]);
+
+        if ($statement->rowCount() !== 1) {
+            throw new ContentStaleWriteException('Content changed after it was loaded. Refresh and try again.');
+        }
     }
 
-    public function archive(int $id): void
+    public function transition(int $id, string $from, string $to): void
     {
+        $allowed = [
+            'draft' => ['published', 'archived'],
+            'published' => ['draft', 'archived'],
+            'archived' => ['draft'],
+        ];
+
+        if (!in_array($to, $allowed[$from] ?? [], true)) {
+            throw new InvalidArgumentException("Content transition [{$from}] to [{$to}] is not allowed.");
+        }
+
+        $publishedAt = $to === 'published' ? 'NOW()' : 'NULL';
+        $archivedAt = $to === 'archived' ? 'NOW()' : 'NULL';
         $statement = $this->database->connection()->prepare(
-            'UPDATE content
-            SET status = :status,
-                archived_at = NOW(),
-                updated_at = NOW()
-            WHERE id = :id'
+            "UPDATE content
+            SET status = :to,
+                published_at = {$publishedAt},
+                archived_at = {$archivedAt},
+                updated_at = GREATEST(NOW(), DATE_ADD(updated_at, INTERVAL 1 SECOND))
+            WHERE id = :id AND status = :from"
         );
 
         $statement->execute([
             'id' => $id,
-            'status' => 'archived',
+            'from' => $from,
+            'to' => $to,
         ]);
-    }
 
-    public function publish(int $id): void
-    {
-        $statement = $this->database->connection()->prepare(
-            'UPDATE content
-            SET status = :status,
-                published_at = COALESCE(published_at, NOW()),
-                archived_at = NULL,
-                updated_at = NOW()
-            WHERE id = :id'
-        );
-
-        $statement->execute([
-            'id' => $id,
-            'status' => 'published',
-        ]);
-    }
-
-    public function draft(int $id): void
-    {
-        $statement = $this->database->connection()->prepare(
-            'UPDATE content
-            SET status = :status,
-                published_at = NULL,
-                archived_at = NULL,
-                updated_at = NOW()
-            WHERE id = :id'
-        );
-
-        $statement->execute([
-            'id' => $id,
-            'status' => 'draft',
-        ]);
+        if ($statement->rowCount() !== 1) {
+            throw new ContentStaleWriteException('Content changed before the transition could be applied. Refresh and try again.');
+        }
     }
 
     public function slugExists(string $slug, ?int $ignoreId = null): bool
@@ -222,6 +216,10 @@ class ContentRepository
             }
 
             $data[$field] = trim($data[$field]);
+        }
+
+        if (strlen($data['slug']) > 190) {
+            throw new InvalidArgumentException('Content slug cannot exceed 190 characters.');
         }
 
         if (!in_array($data['type'], ['page', 'article'], true)) {

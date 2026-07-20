@@ -56,6 +56,7 @@ INSERT INTO roles (name, slug, created_at, updated_at) VALUES
 INSERT INTO permissions (name, slug, created_at, updated_at) VALUES
     ('Access protected area', 'protected.access', NOW(), NOW()),
     ('Access admin shell', 'admin.access', NOW(), NOW()),
+    ('Read content', 'content.read', NOW(), NOW()),
     ('Create content', 'content.create', NOW(), NOW()),
     ('Update content', 'content.update', NOW(), NOW()),
     ('Archive content', 'content.delete', NOW(), NOW()),
@@ -91,6 +92,7 @@ INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
 FROM roles
 INNER JOIN permissions ON permissions.slug IN (
+    'content.read',
     'content.create',
     'content.update',
     'content.delete',

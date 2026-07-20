@@ -10,6 +10,10 @@
   },
   "permissions": [
     {
+      "slug": "content.read",
+      "name": "Read content"
+    },
+    {
       "slug": "content.create",
       "name": "Create content"
     },

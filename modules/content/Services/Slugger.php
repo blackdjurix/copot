@@ -4,16 +4,7 @@ class Slugger
 {
     public function unique(string $title, ContentRepository $contents, ?int $ignoreId = null): string
     {
-        $base = $this->generate($title);
-        $slug = $base;
-        $suffix = 2;
-
-        while ($contents->slugExists($slug, $ignoreId)) {
-            $slug = $base . '-' . $suffix;
-            $suffix++;
-        }
-
-        return $slug;
+        return $this->generate($title);
     }
 
     public function generate(string $value): string
@@ -24,6 +15,10 @@ class Slugger
 
         if ($slug === '') {
             throw new InvalidArgumentException('Content slug cannot be empty.');
+        }
+
+        if (strlen($slug) > 190) {
+            throw new InvalidArgumentException('Content slug cannot exceed 190 characters.');
         }
 
         return $slug;
