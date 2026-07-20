@@ -37,6 +37,30 @@ $contentSlugger = new Slugger();
 $contentTaxonomyRepository = $contentTaxonomyEnabled ? new TaxonomyRepository($app->database()) : null;
 $contentTaxonomyAssignments = $contentTaxonomyEnabled ? new TaxonomyAssignmentRepository($app->database()) : null;
 $contentService = new ContentService($app->database(), $contentRepository, $contentTaxonomyAssignments);
+$contentValidationMessage = static function (InvalidArgumentException $exception): string {
+    return match (true) {
+        $exception instanceof ContentDuplicateSlugException => 'The content slug is already in use.',
+        $exception instanceof ContentStaleWriteException => 'Content changed after it was loaded. Refresh and try again.',
+        default => 'Submitted content data is invalid.',
+    };
+};
+$contentRouteId = static function (mixed $value): ?int {
+    if (!is_string($value) && !is_int($value)) {
+        return null;
+    }
+
+    $normalized = (string) $value;
+
+    if (!preg_match('/^[1-9][0-9]*$/', $normalized)) {
+        return null;
+    }
+
+    $id = filter_var($normalized, FILTER_VALIDATE_INT, [
+        'options' => ['min_range' => 1],
+    ]);
+
+    return is_int($id) ? $id : null;
+};
 $contentAdminUrlService = $app->adminUrl();
 $contentAdminUrl = static function (string $path = '') use ($contentAdminUrlService): string {
     return $contentAdminUrlService->childUrl($path);
@@ -175,9 +199,27 @@ $contentToFormData = function (?Content $content = null): array {
     ];
 };
 
-$contentReadFormData = function ($request, $user, ?Content $existing = null) use ($contentSlugger, $contentRepository): array {
-    $requestedStatus = (string) $request->input('status', 'draft');
+$contentReadFormData = function ($request, $user, ?Content $existing = null) use ($contentSlugger, $contentValidationMessage): array {
+    $errors = [];
+    $invalidPayload = false;
+    $readScalar = static function (string $field, mixed $default = '') use ($request, &$invalidPayload): string {
+        $value = $request->input($field, $default);
+
+        if ($value !== null && !is_scalar($value)) {
+            $invalidPayload = true;
+
+            return '';
+        }
+
+        return (string) $value;
+    };
+    $statusValue = $request->input('status', 'draft');
+    $requestedStatus = is_scalar($statusValue) || $statusValue === null ? (string) $statusValue : '';
     $currentStatus = $existing?->status();
+
+    if ($statusValue !== null && !is_scalar($statusValue)) {
+        $invalidPayload = true;
+    }
 
     if (!in_array($requestedStatus, ['draft', 'published', 'archived'], true)) {
         $requestedStatus = $currentStatus ?: 'draft';
@@ -188,16 +230,18 @@ $contentReadFormData = function ($request, $user, ?Content $existing = null) use
     }
 
     $data = [
-        'type' => (string) $request->input('type', 'page'),
-        'title' => trim((string) $request->input('title', '')),
-        'slug' => trim((string) $request->input('slug', '')),
-        'excerpt' => (string) $request->input('excerpt', ''),
-        'body' => (string) $request->input('body', ''),
+        'type' => $readScalar('type', 'page'),
+        'title' => trim($readScalar('title')),
+        'slug' => trim($readScalar('slug')),
+        'excerpt' => $readScalar('excerpt'),
+        'body' => $readScalar('body'),
         'status' => $requestedStatus,
         'author_id' => $existing?->authorId() ?? $user->id(),
     ];
 
-    $errors = [];
+    if ($invalidPayload) {
+        $errors[] = 'Submitted content data is invalid.';
+    }
 
     if ($data['title'] === '') {
         $errors[] = 'Title is required.';
@@ -220,7 +264,7 @@ $contentReadFormData = function ($request, $user, ?Content $existing = null) use
             $data['slug'] = $contentSlugger->generate($slugInput !== '' ? $slugInput : $data['title']);
         }
     } catch (InvalidArgumentException $exception) {
-        $errors[] = $exception->getMessage();
+        $errors[] = $contentValidationMessage($exception);
     }
 
     return [$data, $errors];
@@ -230,17 +274,27 @@ $contentTaxonomyIdsFromRequest = function ($request, string $field): array {
     $values = $request->post($field, []);
 
     if (!is_array($values)) {
-        $values = [$values];
+        throw new InvalidArgumentException('Taxonomy assignments are invalid.');
     }
 
     $ids = [];
 
     foreach ($values as $value) {
-        if (!is_numeric($value) || (int) $value <= 0) {
-            continue;
+        if (!is_string($value) && !is_int($value)) {
+            throw new InvalidArgumentException('Taxonomy assignments are invalid.');
         }
 
-        $id = (int) $value;
+        $normalized = (string) $value;
+
+        if (!preg_match('/^[1-9][0-9]*$/', $normalized)) {
+            throw new InvalidArgumentException('Taxonomy assignments are invalid.');
+        }
+
+        $id = (int) $normalized;
+
+        if ($id <= 0) {
+            throw new InvalidArgumentException('Taxonomy assignments are invalid.');
+        }
 
         if (!in_array($id, $ids, true)) {
             $ids[] = $id;
@@ -470,6 +524,7 @@ $app->router()->get($app->adminUrl()->childUrl('content/create'), function ($req
 $app->router()->get($app->adminUrl()->childUrl('content/{id}/edit'), function ($request, array $params) use (
     $app,
     $contentRepository,
+    $contentRouteId,
     $contentRequireAdmin,
     $contentRenderAdmin,
     $contentRenderView,
@@ -484,8 +539,8 @@ $app->router()->get($app->adminUrl()->childUrl('content/{id}/edit'), function ($
         return $user;
     }
 
-    $id = (int) ($params['id'] ?? 0);
-    $entry = $id > 0 ? $contentRepository->findById($id) : null;
+    $id = $contentRouteId($params['id'] ?? null);
+    $entry = $id !== null ? $contentRepository->findById($id) : null;
 
     if (!$entry) {
         return $app->adminErrors()->response($request, 404);
@@ -519,23 +574,30 @@ $app->router()->post($app->adminUrl()->childUrl('content'), function ($request) 
     $contentSelectedTaxonomyFromRequest,
     $contentTaxonomyOptions,
     $contentToFormData,
+    $contentValidationMessage,
     $contentValidateCsrf,
     $contentAdminBase
 ): Response {
-    $csrfResponse = $contentValidateCsrf($request);
-
-    if ($csrfResponse) {
-        return $csrfResponse;
-    }
-
     $user = $contentRequireAdmin($request, ['content.create']);
 
     if ($user instanceof Response) {
         return $user;
     }
 
+    $csrfResponse = $contentValidateCsrf($request);
+
+    if ($csrfResponse) {
+        return $csrfResponse;
+    }
+
     [$data, $errors] = $contentReadFormData($request, $user);
-    $selectedTaxonomy = $contentSelectedTaxonomyFromRequest($request);
+    $selectedTaxonomy = [];
+
+    try {
+        $selectedTaxonomy = $contentSelectedTaxonomyFromRequest($request);
+    } catch (InvalidArgumentException $exception) {
+        $errors[] = $contentValidationMessage($exception);
+    }
 
     if ($errors !== []) {
         $content = $contentRenderView('form', [
@@ -566,7 +628,7 @@ $app->router()->post($app->adminUrl()->childUrl('content'), function ($request) 
             'submitLabel' => 'Create content',
             'csrfToken' => $app->session()->csrfToken(),
             'canPublish' => $user->can('content.publish'),
-            'errors' => [$exception->getMessage()],
+            'errors' => [$contentValidationMessage($exception)],
             'content' => array_merge($contentToFormData(), $data),
             'taxonomy' => $contentTaxonomyOptions(),
             'selectedTaxonomy' => $selectedTaxonomy,
@@ -574,21 +636,7 @@ $app->router()->post($app->adminUrl()->childUrl('content'), function ($request) 
 
         return $contentRenderAdmin('Create Content', $content, $user, $request->path(), 422);
     } catch (ContentWriteException $exception) {
-        $content = $contentRenderView('form', [
-            'adminBase' => $contentAdminBase,
-            'formAction' => $app->adminUrl()->childUrl('content'),
-            'formMode' => 'create',
-            'heading' => 'Create Content',
-            'submitLabel' => 'Create content',
-            'csrfToken' => $app->session()->csrfToken(),
-            'canPublish' => $user->can('content.publish'),
-            'errors' => [$exception->getMessage()],
-            'content' => array_merge($contentToFormData(), $data),
-            'taxonomy' => $contentTaxonomyOptions(),
-            'selectedTaxonomy' => $selectedTaxonomy,
-        ]);
-
-        return $contentRenderAdmin('Create Content', $content, $user, $request->path(), 422);
+        return $app->adminErrors()->response($request, 503);
     }
 
     return Response::redirect($app->adminUrl()->childUrl('content'));
@@ -597,25 +645,26 @@ $app->router()->post($app->adminUrl()->childUrl('content'), function ($request) 
 $app->router()->post($app->adminUrl()->childUrl('content/{id}/publish'), function ($request, array $params) use (
     $app,
     $contentRepository,
+    $contentRouteId,
     $contentService,
     $contentRequireAdmin,
     $contentValidateCsrf
 ): Response {
-    $csrfResponse = $contentValidateCsrf($request);
-
-    if ($csrfResponse) {
-        return $csrfResponse;
-    }
-
     $user = $contentRequireAdmin($request, ['content.publish']);
 
     if ($user instanceof Response) {
         return $user;
     }
 
-    $id = (int) ($params['id'] ?? 0);
+    $csrfResponse = $contentValidateCsrf($request);
 
-    if ($id <= 0 || !$contentRepository->findById($id)) {
+    if ($csrfResponse) {
+        return $csrfResponse;
+    }
+
+    $id = $contentRouteId($params['id'] ?? null);
+
+    if ($id === null || !$contentRepository->findById($id)) {
         return $app->adminErrors()->response($request, 404);
     }
 
@@ -623,6 +672,8 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/publish'), functio
         $contentService->publish($id);
     } catch (InvalidArgumentException $exception) {
         return $app->adminErrors()->response($request, 422);
+    } catch (ContentWriteException) {
+        return $app->adminErrors()->response($request, 503);
     }
 
     return Response::redirect($app->adminUrl()->childUrl('content'));
@@ -631,25 +682,26 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/publish'), functio
 $app->router()->post($app->adminUrl()->childUrl('content/{id}/draft'), function ($request, array $params) use (
     $app,
     $contentRepository,
+    $contentRouteId,
     $contentService,
     $contentRequireAdmin,
     $contentValidateCsrf
 ): Response {
-    $csrfResponse = $contentValidateCsrf($request);
-
-    if ($csrfResponse) {
-        return $csrfResponse;
-    }
-
     $user = $contentRequireAdmin($request, ['content.publish']);
 
     if ($user instanceof Response) {
         return $user;
     }
 
-    $id = (int) ($params['id'] ?? 0);
+    $csrfResponse = $contentValidateCsrf($request);
 
-    if ($id <= 0 || !$contentRepository->findById($id)) {
+    if ($csrfResponse) {
+        return $csrfResponse;
+    }
+
+    $id = $contentRouteId($params['id'] ?? null);
+
+    if ($id === null || !$contentRepository->findById($id)) {
         return $app->adminErrors()->response($request, 404);
     }
 
@@ -657,6 +709,8 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/draft'), function 
         $contentService->draft($id);
     } catch (InvalidArgumentException $exception) {
         return $app->adminErrors()->response($request, 422);
+    } catch (ContentWriteException) {
+        return $app->adminErrors()->response($request, 503);
     }
 
     return Response::redirect($app->adminUrl()->childUrl('content'));
@@ -665,25 +719,26 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/draft'), function 
 $app->router()->post($app->adminUrl()->childUrl('content/{id}/archive'), function ($request, array $params) use (
     $app,
     $contentRepository,
+    $contentRouteId,
     $contentService,
     $contentRequireAdmin,
     $contentValidateCsrf
 ): Response {
-    $csrfResponse = $contentValidateCsrf($request);
-
-    if ($csrfResponse) {
-        return $csrfResponse;
-    }
-
     $user = $contentRequireAdmin($request, ['content.delete']);
 
     if ($user instanceof Response) {
         return $user;
     }
 
-    $id = (int) ($params['id'] ?? 0);
+    $csrfResponse = $contentValidateCsrf($request);
 
-    if ($id <= 0 || !$contentRepository->findById($id)) {
+    if ($csrfResponse) {
+        return $csrfResponse;
+    }
+
+    $id = $contentRouteId($params['id'] ?? null);
+
+    if ($id === null || !$contentRepository->findById($id)) {
         return $app->adminErrors()->response($request, 404);
     }
 
@@ -691,6 +746,8 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/archive'), functio
         $contentService->archive($id);
     } catch (InvalidArgumentException $exception) {
         return $app->adminErrors()->response($request, 422);
+    } catch (ContentWriteException) {
+        return $app->adminErrors()->response($request, 503);
     }
 
     return Response::redirect($app->adminUrl()->childUrl('content'));
@@ -699,25 +756,26 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/archive'), functio
 $app->router()->post($app->adminUrl()->childUrl('content/{id}/restore'), function ($request, array $params) use (
     $app,
     $contentRepository,
+    $contentRouteId,
     $contentService,
     $contentRequireAdmin,
     $contentValidateCsrf
 ): Response {
-    $csrfResponse = $contentValidateCsrf($request);
-
-    if ($csrfResponse) {
-        return $csrfResponse;
-    }
-
     $user = $contentRequireAdmin($request, ['content.delete']);
 
     if ($user instanceof Response) {
         return $user;
     }
 
-    $id = (int) ($params['id'] ?? 0);
+    $csrfResponse = $contentValidateCsrf($request);
 
-    if ($id <= 0 || !$contentRepository->findById($id)) {
+    if ($csrfResponse) {
+        return $csrfResponse;
+    }
+
+    $id = $contentRouteId($params['id'] ?? null);
+
+    if ($id === null || !$contentRepository->findById($id)) {
         return $app->adminErrors()->response($request, 404);
     }
 
@@ -725,6 +783,8 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/restore'), functio
         $contentService->restore($id);
     } catch (InvalidArgumentException $exception) {
         return $app->adminErrors()->response($request, 422);
+    } catch (ContentWriteException) {
+        return $app->adminErrors()->response($request, 503);
     }
 
     return Response::redirect($app->adminUrl()->childUrl('content'));
@@ -733,6 +793,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}/restore'), functio
 $app->router()->post($app->adminUrl()->childUrl('content/{id}'), function ($request, array $params) use (
     $app,
     $contentRepository,
+    $contentRouteId,
     $contentService,
     $contentRequireAdmin,
     $contentRenderAdmin,
@@ -741,30 +802,37 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}'), function ($requ
     $contentSelectedTaxonomyFromRequest,
     $contentTaxonomyOptions,
     $contentToFormData,
+    $contentValidationMessage,
     $contentValidateCsrf,
     $contentAdminBase
 ): Response {
-    $csrfResponse = $contentValidateCsrf($request);
-
-    if ($csrfResponse) {
-        return $csrfResponse;
-    }
-
     $user = $contentRequireAdmin($request, ['content.update']);
 
     if ($user instanceof Response) {
         return $user;
     }
 
-    $id = (int) ($params['id'] ?? 0);
-    $entry = $id > 0 ? $contentRepository->findById($id) : null;
+    $csrfResponse = $contentValidateCsrf($request);
+
+    if ($csrfResponse) {
+        return $csrfResponse;
+    }
+
+    $id = $contentRouteId($params['id'] ?? null);
+    $entry = $id !== null ? $contentRepository->findById($id) : null;
 
     if (!$entry) {
         return $app->adminErrors()->response($request, 404);
     }
 
     [$data, $errors] = $contentReadFormData($request, $user, $entry);
-    $selectedTaxonomy = $contentSelectedTaxonomyFromRequest($request);
+    $selectedTaxonomy = [];
+
+    try {
+        $selectedTaxonomy = $contentSelectedTaxonomyFromRequest($request);
+    } catch (InvalidArgumentException $exception) {
+        $errors[] = $contentValidationMessage($exception);
+    }
 
     if ($errors !== []) {
         $content = $contentRenderView('form', [
@@ -785,11 +853,12 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}'), function ($requ
     }
 
     try {
+        $expectedUpdatedAt = $request->input('expected_updated_at', '');
         $contentService->update(
             $entry->id(),
             $data,
             $selectedTaxonomy,
-            trim((string) $request->input('expected_updated_at', ''))
+            is_string($expectedUpdatedAt) ? trim($expectedUpdatedAt) : ''
         );
     } catch (InvalidArgumentException $exception) {
         $content = $contentRenderView('form', [
@@ -800,7 +869,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}'), function ($requ
             'submitLabel' => 'Save changes',
             'csrfToken' => $app->session()->csrfToken(),
             'canPublish' => $user->can('content.publish'),
-            'errors' => [$exception->getMessage()],
+            'errors' => [$contentValidationMessage($exception)],
             'content' => array_merge($contentToFormData($entry), $data),
             'taxonomy' => $contentTaxonomyOptions(),
             'selectedTaxonomy' => $selectedTaxonomy,
@@ -808,21 +877,7 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}'), function ($requ
 
         return $contentRenderAdmin('Edit Content', $content, $user, $request->path(), 422);
     } catch (ContentWriteException $exception) {
-        $content = $contentRenderView('form', [
-            'adminBase' => $contentAdminBase,
-            'formAction' => $app->adminUrl()->childUrl('content/' . $entry->id()),
-            'formMode' => 'edit',
-            'heading' => 'Edit Content',
-            'submitLabel' => 'Save changes',
-            'csrfToken' => $app->session()->csrfToken(),
-            'canPublish' => $user->can('content.publish'),
-            'errors' => [$exception->getMessage()],
-            'content' => array_merge($contentToFormData($entry), $data),
-            'taxonomy' => $contentTaxonomyOptions(),
-            'selectedTaxonomy' => $selectedTaxonomy,
-        ]);
-
-        return $contentRenderAdmin('Edit Content', $content, $user, $request->path(), 422);
+        return $app->adminErrors()->response($request, 503);
     }
 
     return Response::redirect($app->adminUrl()->childUrl('content'));

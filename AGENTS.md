@@ -18,9 +18,9 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone / checkpoint: M3.4 Content Manager Batch 1 and Batch 2 Foundation are complete and branch-closed on synchronized `main`. Batch 3 Admin Content Workspace is complete and fast-forward merged into synchronized `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`; its local and remote feature branches were deleted after verified containment.
+Current milestone / checkpoint: M3.4 Content Manager Batch 1 and Batch 2 Foundation are complete and branch-closed on synchronized `main`. Batch 3 Admin Content Workspace is complete and fast-forward merged into synchronized `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`; its local and remote feature branches were deleted after verified containment. Batch 4 implementation and validation are complete on the active feature branch and remain pending Git integration and lifecycle closure.
 
-Current work: M3.4 Content Manager Batch 1 and Batch 2 foundation evidence is complete, including 99 focused assertions, runtime synchronization, and browser validation. Batch 3 Admin Content Workspace implementation and validation are complete and merged into `main`, with 33 Batch 3 assertions and 132 total focused executed assertions. Batch 3 is NRP CONFIRMED after merge, branch cleanup, and final verification. Batch 4 is the next implementation batch.
+Current work: M3.4 Content Manager Batch 1 and Batch 2 foundation evidence is complete, including 99 focused assertions, runtime synchronization, and browser validation. Batch 3 Admin Content Workspace implementation and validation are complete and merged into `main`, with 33 Batch 3 assertions and 132 total focused executed assertions. Batch 3 is NRP CONFIRMED after merge, branch cleanup, and final verification. Batch 4 implementation and validation are complete on `feature/m3.4-content-manager-batch-4`; documentation is being prepared before separate Git integration approval. Batch 4 is an NRP CANDIDATE, not NRP CONFIRMED. Batch 5 and full M3.4 completion remain outstanding.
 
 Primary goal:
 
@@ -55,7 +55,10 @@ Current state:
 * Batch 3 Admin Content Workspace implementation and validation are complete and fast-forward merged into `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`.
 * Batch 3 validation passes 33 focused assertions; combined executed M3.4 foundation and Batch 3 evidence totals 132 assertions, with runtime synchronization and browser validation passing.
 * The local and remote Batch 3 feature branches were deleted after verified containment in `main`.
-* Batch 3 is NRP CONFIRMED; Batch 4 is the next implementation batch, and Batch 5 and full M3.4 completion remain outstanding.
+* Batch 3 is NRP CONFIRMED. Batch 4 implementation and validation are complete on the active feature branch and are an NRP CANDIDATE pending documentation, Git integration, and lifecycle closure. Batch 5 and full M3.4 completion remain outstanding.
+* Batch 4 focused validation passes 33 assertions. Directly affected Content regressions pass: Batch 1 provisioning (9), Batch 1 transaction/lifecycle (37), Batch 2 authorization (53), and Batch 3 workspace (33). Package builder smoke passes 825 assertions and clean-install verification passes 60 assertions.
+* Batch 4 PHP lint and `git diff --check` pass. Source review passed after strict positive-decimal route-ID parsing and controlled handling of non-string `expected_updated_at` P2 remediations. Targeted runtime synchronization matches for `modules/content/routes.php` and `modules/content/Services/ContentService.php`.
+* Batch 4 browser validation passes with limitations: normal Content lifecycle, public published rendering, Draft/Archived denial, plaintext escaping, malformed read-ID containment, current configured Admin path, and desktop/390 × 844 smoke pass. Connector limitations blocked browser request replay for CSRF, authorization-before-CSRF, malformed mutation payloads/identifiers, duplicate slug, stale write, repeated transitions, and injected persistence-error responses; these remain covered by focused automated tests and source review. Optional Taxonomy-disabled browser behavior was not exercised.
 * Baseline automated validation passes 816 assertions: 272 focused regression, 58 clean-install, and 486 package builder smoke assertions.
 * Patch-focused reruns pass 130 assertions: 35 Batch 3 integration, 41 Batch 3 security, and 54 Batch 4 lifecycle assertions. Cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
 * Manual Admin verification passes in a disposable official-package installation, including lifecycle, self-management protection, human-readable denial messaging, raw-key absence, module-file preservation, and leak checks; disposable resources were fully cleaned.
@@ -722,7 +725,7 @@ Copot v0.12.0 is released and is the current stable Webcore baseline.
 
 M3 Preparation is complete and closed. M3.1 Users & Access, M3.2 Settings Manager, and M3.3 Module Manager are complete and merged but remain unreleased. M3.4 Content Manager is active.
 
-The active checkpoint is the completed M3.4 Batch 3 Admin Content Workspace implementation fast-forward merged into `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`. Batch 3 passes 33 focused assertions; combined executed M3.4 foundation and Batch 3 evidence totals 132 assertions, with runtime synchronization and browser validation passing. Batch 3 is NRP CONFIRMED after merge, branch cleanup, and final verification. Batch 4 is the next implementation batch.
+The active checkpoint is M3.4 Batch 4 implementation and validation complete on `feature/m3.4-content-manager-batch-4`, with documentation being prepared before separate Git integration approval. Batch 4 passes 33 focused assertions; directly affected Content regressions pass with 9, 37, 53, and 33 assertions respectively. Package builder smoke passes 825 assertions and clean-install verification passes 60 assertions. Runtime synchronization matches and browser validation passes with documented request-replay limitations. Batch 4 is an NRP CANDIDATE, not NRP CONFIRMED. Batch 5 and full M3.4 completion remain outstanding.
 
 The immediate goal is to:
 
@@ -735,7 +738,7 @@ The immediate goal is to:
 * preserve the completed M3.3 Batches 1–5 implementation, validation, documentation synchronization, focused review, and clean synchronized `main` state;
 * preserve the approved M3.3 Module Manager contract, activation policy, and five-batch closure evidence;
 * preserve the completed M3.4 Batch 1 and Batch 2 foundation, its 99 focused assertions, runtime/browser evidence, and closed Git lifecycle;
-* begin the approved M3.4 Batch 4 implementation only after its separate scope confirmation;
+* complete documentation preparation for the implemented and validated M3.4 Batch 4 before separate Git integration and lifecycle-closure approvals;
 * keep package publication, release work, tagging, and any Core change beyond the approved InstallerFinalizer touchpoint behind separate approval gates;
 * keep environment/runtime secrets outside editable Settings;
 * keep Database Upgrade / Migration System implementation outside M3.2 and preserve the approved M3.4 Content Manager ownership, lifecycle, permission, Taxonomy, Theme, and public-rendering boundaries.

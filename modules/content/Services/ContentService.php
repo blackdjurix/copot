@@ -82,19 +82,21 @@ class ContentService
 
     private function transition(int $id, string $target, array $expectedFrom): void
     {
-        $current = $this->repository->findById($id);
+        $this->withinTransaction(function () use ($id, $target, $expectedFrom): void {
+            $current = $this->repository->findById($id);
 
-        if (!$current) {
-            throw new InvalidArgumentException('Content entry was not found.');
-        }
+            if (!$current) {
+                throw new InvalidArgumentException('Content entry was not found.');
+            }
 
-        $this->assertTransition($current->status(), $target);
+            $this->assertTransition($current->status(), $target);
 
-        if (!in_array($current->status(), $expectedFrom, true)) {
-            throw new InvalidArgumentException("Content transition [{$current->status()}] to [{$target}] is not allowed.");
-        }
+            if (!in_array($current->status(), $expectedFrom, true)) {
+                throw new InvalidArgumentException("Content transition [{$current->status()}] to [{$target}] is not allowed.");
+            }
 
-        $this->repository->transition($id, $current->status(), $target);
+            $this->repository->transition($id, $current->status(), $target);
+        });
     }
 
     private function assertTransition(string $from, ?string $to, bool $allowSame = false): void

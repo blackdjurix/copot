@@ -28,7 +28,9 @@ M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is M3.4 Content Manager Batch 3 Admin Content Workspace: implementation and validation are complete and fast-forward merged into `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`. The local and remote feature branches were deleted after verified containment. Batch 3 is NRP CONFIRMED. Batch 4 is the next implementation batch; Batch 5 and full M3.4 completion remain outstanding.
+The active checkpoint is M3.4 Content Manager Batch 4: implementation and validation are complete on `feature/m3.4-content-manager-batch-4`, and documentation is being prepared before separate Git integration and lifecycle-closure approval. Batch 4 is an NRP CANDIDATE, not NRP CONFIRMED. Batch 5 and full M3.4 completion remain outstanding; release, tag, and publication have not started.
+
+Batch 4 focused validation passes 33 assertions. Directly affected Content regressions pass with 9 provisioning, 37 transaction/lifecycle, 53 authorization, and 33 workspace assertions. Package builder smoke passes 825 assertions and clean-install verification passes 60 assertions. PHP lint, `git diff --check`, targeted source-to-runtime synchronization, and source review pass. Browser validation passes with limitations: normal lifecycle, published rendering, Draft/Archived denial, plaintext escaping, malformed read-ID containment, current configured Admin path, and desktop/390 × 844 smoke were confirmed; request replay was unavailable for CSRF, authorization-before-CSRF, malformed mutation payloads/identifiers, duplicate slug, stale write, repeated transitions, and injected persistence-error responses. Those cases remain covered by focused automated tests and source review. Optional Taxonomy-disabled browser behavior was not exercised.
 
 M2 Platform Capabilities are complete. Copot v0.12.0 remains the latest stable released Webcore baseline. M3.1 and M3.2 are merged but are not yet included in a new release. M3.3 is merged but remains unreleased, untagged, and unpublished; Batches 1–5 implementation, validation, and manual Admin verification are complete.
 
@@ -570,7 +572,7 @@ Only `published` content renders on the frontend. Draft, archived, and missing c
 
 M1.5 uses a plain textarea for the body. M1.6 adds optional taxonomy integration when the Taxonomy module is enabled. Content still works when the Taxonomy module is disabled; the category/tag fields and list column are hidden and assignment sync is skipped.
 
-The current Content Module does not include Editor.js, media/image handling, SEO, comments, advanced search, revisions, autosave, approval workflow, custom fields, scheduling, or the expanded Content Manager / Workspace planned for M3.
+The current Content Manager does not include Editor.js, media/image handling, SEO, comments, advanced search, revisions, autosave, approval workflow, custom fields, or scheduling. The approved M3.4 five-batch scope remains limited to the existing Content module and defers those future capabilities.
 
 ## Taxonomy Foundation
 
