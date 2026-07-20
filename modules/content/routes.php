@@ -133,6 +133,22 @@ $contentRequireAdmin = function ($request, array $permissions) use ($app, $conte
     return $user;
 };
 
+$contentNormalizeWorkspace = static function ($request): array {
+    $search = trim((string) $request->input('q', ''));
+    $type = $request->input('type');
+    $status = $request->input('status');
+    $page = max(1, (int) $request->input('page', 1));
+    $requestedPerPage = (int) $request->input('per_page', 25);
+
+    return [
+        'search' => $search,
+        'type' => in_array($type, ['page', 'article'], true) ? $type : null,
+        'status' => in_array($status, ['draft', 'published', 'archived'], true) ? $status : null,
+        'page' => $page,
+        'per_page' => $requestedPerPage < 1 ? 25 : min($requestedPerPage, 100),
+    ];
+};
+
 $contentToFormData = function (?Content $content = null): array {
     if (!$content) {
         return [
@@ -332,6 +348,8 @@ $app->router()->get($app->adminUrl()->childUrl('content'), function ($request) u
     $contentRequireAdmin,
     $contentRenderAdmin,
     $contentRenderView,
+    $contentNormalizeWorkspace,
+    $contentAdminUrl,
     $contentTaxonomyForList,
     $contentTaxonomyEnabled,
     $contentAdminBase
@@ -342,10 +360,47 @@ $app->router()->get($app->adminUrl()->childUrl('content'), function ($request) u
         return $user;
     }
 
-    $contents = $contentRepository->paginate(50);
+    $filters = $contentNormalizeWorkspace($request);
+    $workspace = $contentRepository->workspace(
+        $filters,
+        $filters['per_page'],
+        ($filters['page'] - 1) * $filters['per_page']
+    );
+    $lastPage = max(1, (int) ceil($workspace['total'] / $filters['per_page']));
+
+    if ($workspace['total'] > 0 && $filters['page'] > $lastPage) {
+        $filters['page'] = $lastPage;
+        $workspace = $contentRepository->workspace(
+            $filters,
+            $filters['per_page'],
+            ($filters['page'] - 1) * $filters['per_page']
+        );
+    }
+
+    $query = array_filter([
+        'q' => $filters['search'],
+        'type' => $filters['type'],
+        'status' => $filters['status'],
+        'per_page' => $filters['per_page'],
+    ], static fn ($value): bool => $value !== null && $value !== '');
+    $paginationUrl = static function (int $page) use ($contentAdminUrl, $query): string {
+        return $contentAdminUrl('content') . '?' . http_build_query(array_merge($query, ['page' => $page]));
+    };
+    $hasFilters = $filters['search'] !== '' || $filters['type'] !== null || $filters['status'] !== null;
+    $contents = $workspace['items'];
     $content = $contentRenderView('list', [
         'adminBase' => $contentAdminBase,
         'contents' => $contents,
+        'hasFilters' => $hasFilters,
+        'page' => $filters['page'],
+        'perPage' => $filters['per_page'],
+        'total' => $workspace['total'],
+        'lastPage' => $lastPage,
+        'paginationUrl' => $paginationUrl,
+        'query' => $query,
+        'search' => $filters['search'],
+        'selectedType' => $filters['type'],
+        'selectedStatus' => $filters['status'],
         'taxonomyAvailable' => $contentTaxonomyEnabled,
         'taxonomyTerms' => $contentTaxonomyForList($contents),
         'canCreate' => $user->can('content.create'),

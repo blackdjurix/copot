@@ -12,6 +12,58 @@ class ContentRepository
     {
     }
 
+    public function workspace(array $filters = [], int $limit = 25, int $offset = 0): array
+    {
+        $limit = max(1, min($limit, 100));
+        $offset = max(0, $offset);
+        $where = [];
+        $parameters = [];
+        $search = trim((string) ($filters['search'] ?? ''));
+        $type = ($filters['type'] ?? null);
+        $status = ($filters['status'] ?? null);
+
+        if ($search !== '') {
+            $where[] = '(title LIKE :search_title OR slug LIKE :search_slug)';
+            $parameters['search_title'] = '%' . $search . '%';
+            $parameters['search_slug'] = '%' . $search . '%';
+        }
+
+        if (in_array($type, ['page', 'article'], true)) {
+            $where[] = 'type = :type';
+            $parameters['type'] = $type;
+        }
+
+        if (in_array($status, ['draft', 'published', 'archived'], true)) {
+            $where[] = 'status = :status';
+            $parameters['status'] = $status;
+        }
+
+        $whereSql = $where === [] ? '' : 'WHERE ' . implode(' AND ', $where);
+        $connection = $this->database->connection();
+        $count = $connection->prepare("SELECT COUNT(*) FROM content {$whereSql}");
+        $count->execute($parameters);
+
+        $statement = $connection->prepare(
+            "SELECT * FROM content
+            {$whereSql}
+            ORDER BY updated_at DESC, id DESC
+            LIMIT :limit OFFSET :offset"
+        );
+        foreach ($parameters as $name => $value) {
+            $statement->bindValue($name, $value, PDO::PARAM_STR);
+        }
+        $statement->bindValue('limit', $limit, PDO::PARAM_INT);
+        $statement->bindValue('offset', $offset, PDO::PARAM_INT);
+        $statement->execute();
+
+        return [
+            'items' => array_map(fn (array $row): Content => new Content($row), $statement->fetchAll()),
+            'total' => (int) $count->fetchColumn(),
+            'limit' => $limit,
+            'offset' => $offset,
+        ];
+    }
+
     public function paginate(int $limit = 50, int $offset = 0): array
     {
         $limit = max(1, min($limit, 100));

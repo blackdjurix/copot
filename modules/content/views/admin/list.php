@@ -13,15 +13,67 @@
     </header>
 
     <div class="admin-panel__body">
+        <form class="admin-filters" method="get" action="<?= htmlspecialchars($adminUrl('content'), ENT_QUOTES, 'UTF-8') ?>">
+            <div class="admin-filters__row">
+                <label class="admin-field">
+                    <span class="admin-field__label">Search</span>
+                    <input type="search" name="q" value="<?= htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Title or slug">
+                </label>
+                <label class="admin-field">
+                    <span class="admin-field__label">Type</span>
+                    <select name="type">
+                        <option value="">All types</option>
+                        <option value="page" <?= (($selectedType ?? null) === 'page') ? 'selected' : '' ?>>Page</option>
+                        <option value="article" <?= (($selectedType ?? null) === 'article') ? 'selected' : '' ?>>Article</option>
+                    </select>
+                </label>
+                <label class="admin-field">
+                    <span class="admin-field__label">Status</span>
+                    <select name="status">
+                        <option value="">All statuses</option>
+                        <option value="draft" <?= (($selectedStatus ?? null) === 'draft') ? 'selected' : '' ?>>Draft</option>
+                        <option value="published" <?= (($selectedStatus ?? null) === 'published') ? 'selected' : '' ?>>Published</option>
+                        <option value="archived" <?= (($selectedStatus ?? null) === 'archived') ? 'selected' : '' ?>>Archived</option>
+                    </select>
+                </label>
+                <label class="admin-field">
+                    <span class="admin-field__label">Per page</span>
+                    <select name="per_page">
+                        <?php foreach ([25, 50, 100] as $pageSize): ?>
+                            <option value="<?= $pageSize ?>" <?= (($perPage ?? 25) === $pageSize) ? 'selected' : '' ?>><?= $pageSize ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </label>
+                <div class="admin-filters__actions">
+                    <button class="admin-button admin-button--secondary" type="submit">Apply</button>
+                    <?php if (!empty($hasFilters)): ?>
+                        <a class="admin-button admin-button--link" href="<?= htmlspecialchars($adminUrl('content'), ENT_QUOTES, 'UTF-8') ?>">Clear</a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </form>
+
+        <?php if (($total ?? 0) > 0): ?>
+            <p class="admin-table-meta">Showing page <?= (int) ($page ?? 1) ?> of <?= (int) ($lastPage ?? 1) ?> (<?= (int) $total ?> results)</p>
+        <?php endif; ?>
+
         <?php if (empty($contents)): ?>
             <div class="admin-empty-state">
-                <h3 class="admin-empty-state__title">No content yet</h3>
-                <p class="admin-empty-state__description">Create the first content entry to begin publishing.</p>
-
-                <?php if (!empty($canCreate)): ?>
+                <?php if (!empty($hasFilters)): ?>
+                    <h3 class="admin-empty-state__title">No matching content</h3>
+                    <p class="admin-empty-state__description">No content matches the current search or filters.</p>
                     <div class="admin-empty-state__actions">
-                        <a class="admin-button admin-button--primary" href="<?= htmlspecialchars($adminUrl('content/create'), ENT_QUOTES, 'UTF-8') ?>">Create content</a>
+                        <a class="admin-button admin-button--secondary" href="<?= htmlspecialchars($adminUrl('content'), ENT_QUOTES, 'UTF-8') ?>">Clear filters</a>
                     </div>
+                <?php else: ?>
+                    <h3 class="admin-empty-state__title">No content yet</h3>
+                    <p class="admin-empty-state__description">Create the first content entry to begin publishing.</p>
+
+                    <?php if (!empty($canCreate)): ?>
+                        <div class="admin-empty-state__actions">
+                            <a class="admin-button admin-button--primary" href="<?= htmlspecialchars($adminUrl('content/create'), ENT_QUOTES, 'UTF-8') ?>">Create content</a>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
         <?php else: ?>
@@ -116,6 +168,17 @@
                     </tbody>
                 </table>
             </div>
+            <?php if (($lastPage ?? 1) > 1): ?>
+                <nav class="admin-pagination" aria-label="Content pagination">
+                    <?php if (($page ?? 1) > 1): ?>
+                        <a class="admin-button admin-button--link" href="<?= htmlspecialchars($paginationUrl(($page ?? 1) - 1), ENT_QUOTES, 'UTF-8') ?>">Previous</a>
+                    <?php endif; ?>
+                    <span class="admin-table-meta">Page <?= (int) $page ?> of <?= (int) $lastPage ?></span>
+                    <?php if (($page ?? 1) < ($lastPage ?? 1)): ?>
+                        <a class="admin-button admin-button--link" href="<?= htmlspecialchars($paginationUrl(($page ?? 1) + 1), ENT_QUOTES, 'UTF-8') ?>">Next</a>
+                    <?php endif; ?>
+                </nav>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 </section>
