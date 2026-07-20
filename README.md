@@ -28,7 +28,7 @@ M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is M3.4 Content Manager Batch 3 Admin Content Workspace: implementation and validation are complete on the unpushed `feature/m3.4-content-manager-batch-3` branch. Git integration and branch closure remain pending; Batch 3 is an NRP Candidate, not NRP Confirmed. Batch 4, Batch 5, and full M3.4 completion remain outstanding.
+The active checkpoint is M3.4 Content Manager Batch 3 Admin Content Workspace: implementation and validation are complete and fast-forward merged into `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`. The feature branch remains locally and remotely, fully contained and eligible for separately authorized cleanup; cleanup remains pending. Batch 3 is an NRP Candidate, not NRP Confirmed. Batch 4 is the next implementation batch; Batch 5 and full M3.4 completion remain outstanding.
 
 M2 Platform Capabilities are complete. Copot v0.12.0 remains the latest stable released Webcore baseline. M3.1 and M3.2 are merged but are not yet included in a new release. M3.3 is merged but remains unreleased, untagged, and unpublished; Batches 1–5 implementation, validation, and manual Admin verification are complete.
 
