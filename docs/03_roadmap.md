@@ -205,7 +205,7 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; local and remote `feature/m3.3-module-manager` branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; local and remote `feature/m3.3-module-manager` branches are deleted. M3.3 remains unreleased, untagged, and unpublished. M3.4 Batch 1 and Batch 2 Foundation are complete and branch-closed; Batch 3 Admin Content Workspace implementation and validation are complete on an unpushed feature branch, with Git integration and branch closure pending. Batch 4, Batch 5, and full M3.4 completion remain outstanding.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -787,16 +787,16 @@ The M3.3 implementation, validation, documentation synchronization, focused revi
 
 Status: Batch 1 and Batch 2 Foundation complete and branch-closed on synchronized `main` at `5b51a1471da63b280e1444cd2f7ba8da4d168f28`. Focused validation passes 99 assertions: provisioning and upgrade (9), transaction/lifecycle/slug/stale-write/Taxonomy atomicity (37), and authorization matrix (53). PHP lint, `git diff --check`, disposable database cleanup, runtime synchronization, and browser validation pass. The foundation feature branch was fast-forward merged, pushed and verified against `origin/main`, and deleted locally and remotely.
 
-Batch 3 Admin Content Workspace is the active next batch. Source audit and scope planning are complete; implementation has not started, the branch has not been created, and the Batch 3 No-Return Point has not been reached. Batch 4, Batch 5, and full M3.4 milestone completion remain outstanding. Release, tag, and publication have not started. The authoritative five-batch contract remains defined in `docs/18_m3_4_content_manager_contract.md`.
+Batch 3 Admin Content Workspace implementation and validation are complete on the unpushed `feature/m3.4-content-manager-batch-3` branch. Batch 3 focused validation passes 33 assertions, for 132 total focused executed M3.4 assertions including the foundation. Runtime synchronization and browser validation pass; multi-page browser navigation was not fully exercisable because the runtime had one result page, and limited-permission browser behavior remains covered by the automated authorization regression. Batch 3 is an NRP Candidate, not NRP Confirmed; Git integration and branch closure have not started. Batch 4, Batch 5, and full M3.4 milestone completion remain outstanding. Release, tag, and publication have not started. The authoritative five-batch contract remains defined in `docs/18_m3_4_content_manager_contract.md`.
 
 The contract keeps the existing `modules/content` module as the sole Content owner, locks fixed `page` and `article` types, defines the draft/published/archived lifecycle with archive-to-draft restore and no hard delete, adds the required `content.read` permission boundary, preserves optional Taxonomy integration and the existing `content::show` Theme boundary, and defers revisions, autosave, preview, scheduling, custom fields, content-type management, Media Library integration, bulk actions, APIs, and other future capabilities. Batches 1 and 2 foundation implementation and validation are complete; the later batches and full M3.4 integration and completion remain outstanding.
 
 Current branch/state:
 
 ```text
-main at synchronized M3.4 foundation anchor
+feature/m3.4-content-manager-batch-3 at unpushed Batch 3 implementation
 -> Batch 1 and Batch 2 Foundation complete and branch-closed
--> Batch 3 Admin Content Workspace (next active work unit; branch not created)
+-> Batch 3 Admin Content Workspace implementation and validation complete (NRP Candidate; integration pending)
 -> Batch 4
 -> Batch 5 and full M3.4 completion
 ```
