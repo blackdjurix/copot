@@ -82,7 +82,7 @@
                                             <a class="admin-button admin-button--link" href="<?= htmlspecialchars($adminUrl('content/' . $item->id() . '/edit'), ENT_QUOTES, 'UTF-8') ?>">Edit</a>
                                         <?php endif; ?>
 
-                                        <?php if (!empty($canPublish) && $item->status() !== 'published'): ?>
+                                        <?php if (!empty($canPublish) && $item->status() === 'draft'): ?>
                                             <form class="admin-inline-form" method="post" action="<?= htmlspecialchars($adminUrl('content/' . $item->id() . '/publish'), ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                                 <button class="admin-button admin-button--link" type="submit">Publish</button>
@@ -93,6 +93,13 @@
                                             <form class="admin-inline-form" method="post" action="<?= htmlspecialchars($adminUrl('content/' . $item->id() . '/draft'), ENT_QUOTES, 'UTF-8') ?>">
                                                 <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                                 <button class="admin-button admin-button--link" type="submit">Draft</button>
+                                            </form>
+                                        <?php endif; ?>
+
+                                        <?php if (!empty($canDelete) && $item->isArchived()): ?>
+                                            <form class="admin-inline-form" method="post" action="<?= htmlspecialchars($adminUrl('content/' . $item->id() . '/restore'), ENT_QUOTES, 'UTF-8') ?>">
+                                                <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                                <button class="admin-button admin-button--link" type="submit">Restore</button>
                                             </form>
                                         <?php endif; ?>
 

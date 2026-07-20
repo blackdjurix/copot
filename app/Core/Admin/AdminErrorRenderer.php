@@ -12,7 +12,7 @@ use Throwable;
 
 final class AdminErrorRenderer
 {
-    private const ALLOWED_STATUSES = [403, 404, 419, 500, 503];
+    private const ALLOWED_STATUSES = [403, 404, 419, 422, 500, 503];
 
     public function __construct(
         private View $view,

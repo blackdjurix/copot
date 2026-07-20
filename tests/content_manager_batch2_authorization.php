@@ -24,6 +24,7 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
     }
 };
 $statusOf = static fn (Response $response): int => (int) (new ReflectionProperty($response, 'status'))->getValue($response);
+$contentOf = static fn (Response $response): string => (string) (new ReflectionProperty($response, 'content'))->getValue($response);
 
 $host = (string) Env::get('DB_HOST', '127.0.0.1');
 $port = (int) Env::get('DB_PORT', '3306');
@@ -112,6 +113,7 @@ try {
         'read_update' => $createActor('read-update', ['admin.access', 'content.read', 'content.update']),
         'read_publish' => $createActor('read-publish', ['admin.access', 'content.read', 'content.publish']),
         'read_delete' => $createActor('read-delete', ['admin.access', 'content.read', 'content.delete']),
+        'read_publish_delete' => $createActor('read-publish-delete', ['admin.access', 'content.read', 'content.publish', 'content.delete']),
     ];
 
     require_once $basePath . '/modules/content/Services/Content.php';
@@ -123,6 +125,9 @@ try {
     $draftId = $repository->create([
         'type' => 'article', 'title' => 'Draft article', 'slug' => 'draft-article', 'body' => 'Draft body', 'status' => 'draft', 'author_id' => null,
     ]);
+    $archivedId = $repository->create([
+        'type' => 'article', 'title' => 'Archived article', 'slug' => 'archived-article', 'body' => 'Archived body', 'status' => 'archived', 'author_id' => null,
+    ]);
 
     $switch = static function (int $userId) use ($app): void {
         $app->auth()->logout();
@@ -132,6 +137,35 @@ try {
     $token = static function () use ($app): string {
         return $app->session()->csrfToken();
     };
+
+    $switch($actors['read_publish_delete']);
+    $archivedList = $app->run(new Request('GET', $contentUrl));
+    $archivedRowMatches = [];
+    $assert(
+        preg_match('/<tr>.*?Archived article.*?<\/tr>/s', $contentOf($archivedList), $archivedRowMatches) === 1,
+        'Archived Content row was not rendered.'
+    );
+    $archivedRow = $archivedRowMatches[0] ?? '';
+    $assert(str_contains($archivedRow, '/content/' . $archivedId . '/restore'), 'Archived Content did not render the restore route.');
+    $assert(str_contains($archivedRow, '>Restore</button>'), 'Archived Content did not render a Restore action.');
+    $assert(!str_contains($archivedRow, '/content/' . $archivedId . '/publish'), 'Archived Content rendered a direct Publish action.');
+
+    $switch($actors['read']);
+    $unauthorizedRestore = $app->run(new Request('POST', $app->adminUrl()->childUrl("content/{$archivedId}/restore"), [], ['_token' => $token()]));
+    $assert($statusOf($unauthorizedRestore) === 403, 'Restore without content.delete was not denied.');
+    $assert($repository->findById($archivedId)?->status() === 'archived', 'Unauthorized restore mutated archived Content.');
+
+    $switch($actors['read_publish_delete']);
+    $invalidPublish = $app->run(new Request('POST', $app->adminUrl()->childUrl("content/{$archivedId}/publish"), [], ['_token' => $token()]));
+    $assert($statusOf($invalidPublish) === 422, 'Invalid archived publish did not return HTTP 422.');
+    $assert($repository->findById($archivedId)?->status() === 'archived', 'Invalid archived publish mutated Content.');
+    $assert($statusOf($app->adminErrors()->response(new Request('GET', $contentUrl), 422)) === 422, 'AdminErrorRenderer did not preserve HTTP 422.');
+    $assert($statusOf($app->adminErrors()->response(new Request('GET', $contentUrl), 403)) === 403, 'AdminErrorRenderer regressed HTTP 403 handling.');
+    $assert($statusOf($app->adminErrors()->response(new Request('GET', $contentUrl), 418)) === 500, 'AdminErrorRenderer changed unsupported-status handling.');
+
+    $authorizedRestore = $app->run(new Request('POST', $app->adminUrl()->childUrl("content/{$archivedId}/restore"), [], ['_token' => $token()]));
+    $assert($statusOf($authorizedRestore) === 302, 'Authorized restore did not redirect successfully.');
+    $assert($repository->findById($archivedId)?->status() === 'draft', 'Authorized restore did not return archived Content to draft.');
 
     $switch($actors['read']);
     $navigation = $app->adminNavigation()->itemsFor($app->auth()->user());
@@ -194,8 +228,10 @@ try {
     $app->auth()->logout();
     $publishedResponse = $app->run(new Request('GET', '/content/public-article'));
     $draftResponse = $app->run(new Request('GET', '/content/draft-article'));
+    $rootSlugResponse = $app->run(new Request('GET', '/public-article'));
     $assert($statusOf($publishedResponse) === 200, 'Published public Content route was affected by Admin permissions: ' . $statusOf($publishedResponse));
     $assert($statusOf($draftResponse) === 404, 'Draft Content became publicly available: ' . $statusOf($draftResponse));
+    $assert($statusOf($rootSlugResponse) === 404, 'A root-level slug route was introduced unexpectedly.');
 
     echo "M3.4 Content authorization matrix passed ({$assertions} assertions)." . PHP_EOL;
 } finally {

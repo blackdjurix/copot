@@ -2,7 +2,7 @@
 
 ## Status
 
-The M3.4 Content Manager preparation contract remains committed and integrated into `main`; the preparation branch lifecycle is closed. The active `feature/m3.4-content-manager-batch-1` branch is based on that verified anchor and contains the reviewed, uncommitted Batch 1 plus Batch 2 foundation implementation. The existing `modules/content` module remains the sole owner. Batch 1 permission/provisioning and authorization behavior, and Batch 2 lifecycle, restore, persistence, Taxonomy atomicity, slug, and stale-write behavior are implemented locally. Focused validation passes: provisioning/upgrade (9 assertions), transaction/lifecycle/slug/stale-write (37 assertions), authorization matrix (39 assertions), 85 assertions total; PHP lint and `git diff --check` pass, and disposable database cleanup leaves zero test databases. These changes remain uncommitted and unpublished. Runtime synchronization and browser validation have not occurred. Documentation synchronization now reflects this local state; final commit preparation remains pending. Batch 3 Admin Content Workspace, full M3.4 integration and completion validation, and the No-Return Point remain outstanding. Release and publication have not started.
+The M3.4 Content Manager preparation contract remains committed and integrated into `main`; the preparation branch lifecycle is closed. The active `feature/m3.4-content-manager-batch-1` branch is based on that verified anchor and contains the committed Batch 1 and Batch 2 foundation implementation plus the current unstaged archived-lifecycle and shared Admin 422 correction. The existing `modules/content` module remains the sole owner. Batch 1 permission/provisioning and authorization behavior, and Batch 2 lifecycle, restore, persistence, Taxonomy atomicity, slug, and stale-write behavior are implemented locally. Focused validation passes: provisioning/upgrade (9 assertions), transaction/lifecycle/slug/stale-write (37 assertions), authorization matrix (53 assertions), 99 assertions total; PHP lint and `git diff --check` pass, and disposable database cleanup leaves zero test databases. Runtime synchronization and initial browser validation have completed; the current correction still requires focused browser revalidation. The correction remains uncommitted and unpublished. Documentation synchronization reflects this state; final commit preparation remains pending. Batch 3 Admin Content Workspace, full M3.4 integration and completion validation, and the No-Return Point remain outstanding. Release and publication have not started.
 
 M3.4 is Content Manager. M3.7 remains Theme Manager. The existing `modules/content` module remains the sole Content owner; M3.4 evolves that module and does not create a replacement Content Manager module.
 
@@ -285,7 +285,7 @@ The Webcore freeze remains active. Content requirements must first be solved in 
 
 The following are not authorized by this document:
 
-* Core changes;
+* Core changes, except the explicitly approved narrow `AdminErrorRenderer` HTTP 422 supported-status correction for controlled Content validation responses;
 * schema changes;
 * permission provisioning implementation;
 * upgrade SQL implementation;
