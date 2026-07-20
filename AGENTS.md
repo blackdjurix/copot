@@ -10,7 +10,7 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Distribution & Release Preparation are complete. Copot v0.12.0 is the current stable Webcore baseline. M3 Preparation is complete and M3 Core Modules is the active phase.
+The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Distribution & Release Preparation are complete. Copot v0.12.0 is the current stable Webcore baseline. M3 Preparation is complete and M3 Core Modules is the active phase. M3.4 Content Manager is active.
 
 ---
 
@@ -18,13 +18,13 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone / checkpoint: Admin UX Refinement 1, Shell Foundation, and Settings Category 1 are integrated into `main` through parent-first fast-forward closure. Implementation, focused validation, source/runtime review, and browser acceptance are complete. M3.3 is merged and its branch lifecycle is closed.
+Current milestone / checkpoint: M3.4 Content Manager Batch 1 and Batch 2 Foundation are complete and branch-closed on synchronized `main`. Batch 3 Admin Content Workspace is the next active work unit.
 
-Current work: Admin UX Refinement 1, Shell Foundation, and Settings Category 1 are merged into `main` at `69fda0d` using parent-first `--ff-only` integration. Both completed feature branches were subsequently deleted locally and remotely after verified containment; only `main` remains locally and remotely, and no PR was used. Browser-only limitations are recorded separately and are non-material. The next project target follows the authoritative roadmap.
+Current work: M3.4 Content Manager Batch 1 and Batch 2 foundation evidence is complete, including 99 focused assertions, runtime synchronization, and browser validation. Batch 3 source audit and scope planning are complete; implementation has not started, its branch has not been created, and its No-Return Point has not been reached.
 
 Primary goal:
 
-Maintain the completed M3.3 Batch 1–5 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` state while keeping M3.3 unreleased, untagged, unpublished, and distinct from the reserved M3.4 Content Manager scope.
+Advance the approved M3.4 Content Manager contract through Batch 3 while keeping the completed Batch 1 and Batch 2 foundation branch-closed and preserving the milestone’s unreleased, untagged, and unpublished state.
 
 Current state:
 
@@ -48,6 +48,11 @@ Current state:
 * M3.3 Module Manager Batches 1–5 implementation and validation are complete and were fast-forward merged into `main` at `020f2b2`.
 * `main` and `origin/main` were clean and synchronized at `020f2b2`; local and remote `feature/m3.3-module-manager` branches were deleted, and its branch lifecycle is closed.
 * M3.3 reached its No-Return Point and remains unreleased, untagged, and unpublished.
+* M3.4 Content Manager is active.
+* M3.4 Batch 1 and Batch 2 Foundation are complete and branch-closed on synchronized `main` at `5b51a1471da63b280e1444cd2f7ba8da4d168f28`.
+* M3.4 focused foundation validation passes 99 assertions: provisioning and upgrade (9), transaction/lifecycle/slug/stale-write/Taxonomy atomicity (37), and authorization matrix (53).
+* M3.4 foundation PHP lint, `git diff --check`, disposable database cleanup, runtime synchronization, and browser validation pass.
+* Batch 3 Admin Content Workspace is the next active work unit; source audit and scope planning are complete, implementation has not started, its branch has not been created, and its No-Return Point has not been reached.
 * Baseline automated validation passes 816 assertions: 272 focused regression, 58 clean-install, and 486 package builder smoke assertions.
 * Patch-focused reruns pass 130 assertions: 35 Batch 3 integration, 41 Batch 3 security, and 54 Batch 4 lifecycle assertions. Cumulative executed evidence is 946 assertions with overlap and is not a unique full-suite total.
 * Manual Admin verification passes in a disposable official-package installation, including lifecycle, self-management protection, human-readable denial messaging, raw-key absence, module-file preservation, and leak checks; disposable resources were fully cleaned.
@@ -712,9 +717,9 @@ Commit messages should remain clear and milestone-aware.
 
 Copot v0.12.0 is released and is the current stable Webcore baseline.
 
-M3 Preparation is complete and closed. M3.1 Users & Access and M3.2 Settings Manager are complete and merged but remain unreleased.
+M3 Preparation is complete and closed. M3.1 Users & Access, M3.2 Settings Manager, and M3.3 Module Manager are complete and merged but remain unreleased. M3.4 Content Manager is active.
 
-The active checkpoint is post-integration closure on `main`. Admin UX Refinement 1, Shell Foundation, and Settings Category 1 are merged through parent-first `--ff-only` integration at `69fda0d`; both completed feature branches were subsequently deleted locally and remotely after verified containment, only `main` remains, and no PR was used. Their implementation, focused validation, source/runtime review, runtime smoke, and authenticated browser acceptance are complete. M3.3 is merged, synchronized, and branch-closed.
+The active checkpoint is the completed M3.4 Batch 1 and Batch 2 foundation on synchronized `main`. Its 99 focused assertions, runtime synchronization, and browser validation pass; the foundation feature branch is closed. Batch 3 Admin Content Workspace is the next active work unit, with source audit and scope planning complete but implementation and branch creation not started.
 
 The immediate goal is to:
 
@@ -724,11 +729,13 @@ The immediate goal is to:
 * preserve the completed M3.1 implementation and its 504 focused assertions, unified platform regression, and manual verification evidence;
 * preserve the completed M3.2 Settings Manager milestone and its 366 focused assertions;
 * preserve the existing Settings definitions, typed service, persistence, permission, Admin URL, CSRF, Admin Shell, and specialized Site Asset contracts;
-* record M3.3 Batches 1–5 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification as complete;
+* preserve the completed M3.3 Batches 1–5 implementation, validation, documentation synchronization, focused review, and clean synchronized `main` state;
 * preserve the approved M3.3 Module Manager contract, activation policy, and five-batch closure evidence;
+* preserve the completed M3.4 Batch 1 and Batch 2 foundation, its 99 focused assertions, runtime/browser evidence, and closed Git lifecycle;
+* begin the approved M3.4 Batch 3 Admin Content Workspace only after its separate feature branch is created and the batch scope is confirmed;
 * keep package publication, release work, tagging, and any Core change beyond the approved InstallerFinalizer touchpoint behind separate approval gates;
 * keep environment/runtime secrets outside editable Settings;
-* keep Database Upgrade / Migration System implementation outside M3.2 and keep Admin UX Refinement 1 presentation-only, module-local, and after M3.3 before M3.4.
+* keep Database Upgrade / Migration System implementation outside M3.2 and preserve the approved M3.4 Content Manager ownership, lifecycle, permission, Taxonomy, Theme, and public-rendering boundaries.
 
 M2.2 scope and architecture are defined in `docs/12_extensibility_foundation.md`.
 

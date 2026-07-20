@@ -783,22 +783,22 @@ Explicit non-goals include marketplace or remote installation, package download 
 
 The M3.3 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification are complete. M3.3 reached its No-Return Point and branch lifecycle closure; it remains unreleased, untagged, and unpublished.
 
-#### M3.4 Content Manager Preparation
+#### M3.4 Content Manager
 
-M3.4 remains the next approved milestone after M3.3 and the completed Admin UX Refinement 1 checkpoint. The authoritative preparation contract is defined in `docs/18_m3_4_content_manager_contract.md`.
+Status: Batch 1 and Batch 2 Foundation complete and branch-closed on synchronized `main` at `5b51a1471da63b280e1444cd2f7ba8da4d168f28`. Focused validation passes 99 assertions: provisioning and upgrade (9), transaction/lifecycle/slug/stale-write/Taxonomy atomicity (37), and authorization matrix (53). PHP lint, `git diff --check`, disposable database cleanup, runtime synchronization, and browser validation pass. The foundation feature branch was fast-forward merged, pushed and verified against `origin/main`, and deleted locally and remotely.
 
-The preparation contract keeps the existing `modules/content` module as the sole Content owner, locks fixed `page` and `article` types, defines the draft/published/archived lifecycle with archive-to-draft restore and no hard delete, adds the required `content.read` permission boundary, preserves optional Taxonomy integration and the existing `content::show` Theme boundary, and defers revisions, autosave, preview, scheduling, custom fields, content-type management, Media Library integration, bulk actions, APIs, and other future capabilities. Preparation does not claim implementation, schema or permission provisioning, runtime validation, browser validation, or integration completion.
+Batch 3 Admin Content Workspace is the active next batch. Source audit and scope planning are complete; implementation has not started, the branch has not been created, and the Batch 3 No-Return Point has not been reached. Batch 4, Batch 5, and full M3.4 milestone completion remain outstanding. Release, tag, and publication have not started. The authoritative five-batch contract remains defined in `docs/18_m3_4_content_manager_contract.md`.
 
-Current branch strategy:
+The contract keeps the existing `modules/content` module as the sole Content owner, locks fixed `page` and `article` types, defines the draft/published/archived lifecycle with archive-to-draft restore and no hard delete, adds the required `content.read` permission boundary, preserves optional Taxonomy integration and the existing `content::show` Theme boundary, and defers revisions, autosave, preview, scheduling, custom fields, content-type management, Media Library integration, bulk actions, APIs, and other future capabilities. Batches 1 and 2 foundation implementation and validation are complete; the later batches and full M3.4 integration and completion remain outstanding.
+
+Current branch/state:
 
 ```text
-main at synchronized Post-M3 anchor
--> `feature/admin-ux-refinement-1` from synchronized `main`
--> Admin UX Refinement 1
--> `feature/admin-shell-foundation` from the completed parent branch
--> Shell Foundation and Settings Category 1
--> parent-first `--ff-only` integration into `main`
--> reserved M3.4 Content Manager
+main at synchronized M3.4 foundation anchor
+-> Batch 1 and Batch 2 Foundation complete and branch-closed
+-> Batch 3 Admin Content Workspace (next active work unit; branch not created)
+-> Batch 4
+-> Batch 5 and full M3.4 completion
 ```
 
 ---
