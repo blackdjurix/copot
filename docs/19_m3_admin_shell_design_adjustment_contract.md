@@ -57,7 +57,7 @@ Design completion does not imply domain, milestone, Git, release, tag, merge, pu
 
 ## Branch and NRP Expectations
 
-M3.R1 and each milestone-specific design-adjustment work unit use their own dedicated branch and lifecycle. Batch 6 uses the future branch `feature/m3.4-content-manager-batch-6` when separately authorized. Each work unit reaches its own NRP evaluation only after documentation, validation, Git integration, final verification, and final changeset requirements are satisfied.
+M3.R1 and each milestone-specific design-adjustment work unit use their own dedicated branch and lifecycle. Batch 6 uses `feature/m3.4-content-manager-batch-6`; its implementation is merged into `main`, while branch cleanup and final lifecycle verification remain pending. Each work unit reaches its own NRP evaluation only after documentation, validation, Git integration, final verification, and final changeset requirements are satisfied.
 
 ## Exclusions
 
