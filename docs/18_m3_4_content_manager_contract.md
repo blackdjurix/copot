@@ -6,13 +6,13 @@ M3.4 Content Manager Batch 1 and Batch 2 Foundation: COMPLETE. The foundation im
 
 Git lifecycle: the foundation feature branch was fast-forward merged into `main`; `main` was pushed and verified against `origin/main`; local and remote foundation feature branches were deleted; `main` and `origin/main` are synchronized at `5b51a1471da63b280e1444cd2f7ba8da4d168f28`; only `main` remains locally; and the workspace is clean. Previous work-unit NRP: CONFIRMED.
 
-Current work unit: M3.4 Content Manager Batch 6 implementation and validation are complete. Feature commit `79aee25d78dbe905ea0a6149ec5c07110375db04` (`feat(m3.4): redesign content admin workspace`) was fast-forward merged into `main` with no merge commit, and local/remote `main` were pushed and verified synchronized at that commit. The local and remote feature branches remain at the same commit; branch cleanup, final lifecycle documentation, and final local/remote verification remain pending. Batch 6 redesigned the Content Admin list and create/edit presentation, improved filters, empty states, human-readable type/status presentation, responsive rows, action hierarchy, and validation accessibility recovery. The final Admin navigation order is `Dashboard → Content → Taxonomy → Users → Roles → Modules → Settings`, implemented through minimal optional ordering metadata within the existing request-scoped navigation contract. Permission filtering, active state, module loading, routes, ownership, and domain behavior remain preserved. Focused automation, source review, targeted repository-to-runtime synchronization with SHA-256 verification, and authenticated browser validation passed; mobile Content action targets were remediated and browser-verified at approximately 46px. Browser limitations remain documented for permission-variant account switching, full reliable automated keyboard traversal, numeric contrast measurement, true 200% zoom measurement, initial-empty fixtures, and Taxonomy-unavailable runtime fixtures; these are not known implementation defects. Batch 6 remains `NRP CANDIDATE` until branch cleanup, final lifecycle documentation, and final local/remote verification are complete. Full M3.4 closure remains pending, and M3.R1 follows full M3.4 closure before M3.5.
+Current work unit: M3.4 Content Manager Batch 6 implementation and validation are complete. Feature commit `79aee25d78dbe905ea0a6149ec5c07110375db04` (`feat(m3.4): redesign content admin workspace`) was fast-forward merged into `main` with no merge commit, and local/remote `main` were pushed and verified synchronized at that commit. The local and remote feature branches were safely deleted after containment verification, and only the main worktree remains. Batch 6 redesigned the Content Admin list and create/edit presentation, improved filters, empty states, human-readable type/status presentation, responsive rows, action hierarchy, and validation accessibility recovery. The final Admin navigation order is `Dashboard → Content → Taxonomy → Users → Roles → Modules → Settings`, implemented through minimal optional ordering metadata within the existing request-scoped navigation contract. Permission filtering, active state, module loading, routes, ownership, and domain behavior remain preserved. Focused automation, source review, targeted repository-to-runtime synchronization with SHA-256 verification, and authenticated browser validation passed; mobile Content action targets were remediated and browser-verified at approximately 46px. Browser limitations remain documented for permission-variant account switching, full reliable automated keyboard traversal, numeric contrast measurement, true 200% zoom measurement, initial-empty fixtures, and Taxonomy-unavailable runtime fixtures; these are not known implementation defects. Batch 6 is `NRP CONFIRMED`, and full M3.4 is `NRP CONFIRMED`. M3.R1 is the next work unit and must complete before M3.5.
 
 Batch 6 form validation evidence includes a global error summary with valid field-specific associations. The browser-verified mobile remediation raised visible Content row-action targets to approximately 46px without changing action semantics or lifecycle behavior.
 
 M3.4 is Content Manager. M3.7 remains Theme Manager. The existing `modules/content` module remains the sole Content owner; M3.4 evolves that module and does not create a replacement Content Manager module.
 
-Batch 5 retains its historical closure and NRP record above. Batch 6 has been integrated into `main`, but its feature-branch lifecycle and NRP evaluation remain open. Release, tag, and publication remain separately authorized and have not started.
+Batch 5 retains its historical closure and NRP record above. Batch 6 has been integrated into `main`, its feature-branch lifecycle is closed, and its NRP is confirmed. Release, tag, and publication remain separately authorized and have not started.
 
 The six-batch structure below is the approved M3.4 preparation contract. Batch 6 follows Batch 5 and is required before full M3.4 closure. The reusable Admin Shell design-adjustment rules are defined in `docs/19_m3_admin_shell_design_adjustment_contract.md`. M3.R1 is a separate horizontal work unit after full M3.4 closure and before M3.5; it is not part of M3.4.
 
@@ -285,9 +285,9 @@ Acceptance boundary: Batches 1–5 pass; approved Content Admin and public rende
 
 Focused validation: unified focused Content suite plus required existing Admin, Taxonomy, Theme rendering, hardening, package, and clean-install regressions.
 
-Approval gates: manual/browser acceptance, documentation closure, Git integration, branch cleanup, and post-cleanup verification are complete; this final documentation correction, its commit/push, final verification, and NRP confirmation remain separate user approvals. Release, tag, and publication remain outstanding.
+Approval gates: manual/browser acceptance, documentation closure, Git integration, branch cleanup, post-cleanup verification, and NRP confirmation are complete. Release, tag, and publication remain outstanding.
 
-Documentation/runtime impact: record Batch 5 validation and documentation completion without claiming full M3.4 closure. Full M3.4 contract and roadmap closure remain deferred until Batch 6 branch lifecycle closure, final verification, and NRP evaluation pass.
+Documentation/runtime impact: Batch 5 validation and documentation completion are recorded without altering its historical boundaries. Full M3.4 closure is recorded only after Batch 6 branch lifecycle closure, final verification, and NRP evaluation.
 
 ### Batch 6 — Admin Content Workspace Redesign and Admin Shell Navigation Ordering
 
@@ -307,7 +307,7 @@ Branch: `feature/m3.4-content-manager-batch-6` when separately authorized.
 
 Approval gates: design review, implementation review, focused validation, browser acceptance, documentation, branch review, staging, commit, push, merge, branch cleanup, release, tag, and publication remain separate approvals.
 
-Documentation/runtime impact: Batch 6 has its own documentation, validation evidence, branch lifecycle, and independent NRP evaluation. Batch 6 follows Batch 5 and is required before full M3.4 closure. It does not invalidate Batch 5.
+Documentation/runtime impact: Batch 6 documentation, validation evidence, branch lifecycle closure, and independent NRP evaluation are complete. Batch 6 completes the approved M3.4 six-batch structure and does not invalidate Batch 5.
 
 ## Core, Schema, and Migration Gate
 
@@ -327,4 +327,4 @@ The following are not authorized by this document:
 
 ## Completion Boundary
 
-M3.4 preparation is complete when this contract is reviewed and approved. M3.4 implementation is complete only after Batches 1–6, focused validation, required runtime/browser acceptance, documentation closure, and separate Git integration approvals pass. Batch 5 retains an independent closure and NRP lifecycle; Batch 6 is required before full M3.4 closure. M3.R1 follows full M3.4 closure and must complete before M3.5 begins.
+M3.4 preparation is complete when this contract is reviewed and approved. M3.4 implementation and closure are complete after Batches 1–6, focused validation, required runtime/browser acceptance, documentation closure, separate Git integration approvals, branch lifecycle closure, and final verification pass. Batch 5 retains its independent closure and NRP record. M3.4 is `NRP CONFIRMED`; M3.R1 follows full M3.4 closure and must complete before M3.5 begins.
