@@ -25,7 +25,7 @@ $logoUploadPath = $adminUrl->childUrl('settings/site-assets/logo');
 $logoRemovePath = $adminUrl->childUrl('settings/site-assets/logo/remove');
 $faviconUploadPath = $adminUrl->childUrl('settings/site-assets/favicon');
 $faviconRemovePath = $adminUrl->childUrl('settings/site-assets/favicon/remove');
-$app->adminNavigation()->add('Settings', $settingsPath, 'settings.update', 'settings');
+$app->adminNavigation()->add('Settings', $settingsPath, 'settings.update', 'settings', 70);
 $settingsManager = new SettingsManager(
     $app->settings(),
     new SettingsFieldMapper(SettingsManagerPolicy::defaults()),

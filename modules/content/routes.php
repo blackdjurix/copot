@@ -68,7 +68,7 @@ $contentAdminUrl = static function (string $path = '') use ($contentAdminUrlServ
 
 $app->adminNavigation()->add('Content', $app->adminUrl()->childUrl('content'), [
     'content.read',
-], 'content');
+], 'content', 20);
 
 $app->adminDashboard()->add(
     'content.overview',

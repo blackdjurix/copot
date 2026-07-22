@@ -10,7 +10,8 @@ class AdminNavigation
         string $label,
         string $url,
         string|array|null $permissions = null,
-        ?string $icon = null
+        ?string $icon = null,
+        ?int $order = null
     ): void {
         $label = trim($label);
         $url = '/' . trim($url, '/');
@@ -34,6 +35,7 @@ class AdminNavigation
             'url' => $url,
             'permissions' => $this->normalizePermissions($permissions),
             'icon' => $this->normalizeIcon($icon),
+            'order' => $order,
         ];
     }
 
@@ -41,10 +43,28 @@ class AdminNavigation
     {
         $items = [];
 
-        foreach ($this->items as $item) {
+        $visibleItems = [];
+
+        foreach ($this->items as $index => $item) {
             if (!$this->isVisible($item['permissions'], $user)) {
                 continue;
             }
+
+            $visibleItems[] = [
+                'index' => $index,
+                'item' => $item,
+            ];
+        }
+
+        usort($visibleItems, static function (array $left, array $right): int {
+            $leftOrder = $left['item']['order'] ?? PHP_INT_MAX;
+            $rightOrder = $right['item']['order'] ?? PHP_INT_MAX;
+
+            return [$leftOrder, $left['index']] <=> [$rightOrder, $right['index']];
+        });
+
+        foreach ($visibleItems as $visibleItem) {
+            $item = $visibleItem['item'];
 
             $resolved = [
                 'label' => $item['label'],

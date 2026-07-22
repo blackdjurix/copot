@@ -88,6 +88,18 @@ try {
 }
 $assert($invalidIconRejected, 'Unsafe navigation icon key was not rejected.');
 
+$orderedNavigation = new AdminNavigation();
+$orderedNavigation->add('Settings', '/dapur/settings', null, 'settings', 70);
+$orderedNavigation->add('Dashboard', '/dapur', null, 'dashboard', 10);
+$orderedNavigation->add('Content', '/dapur/content', null, 'content', 20);
+$orderedNavigation->add('Taxonomy', '/dapur/taxonomy', null, 'taxonomy', 30);
+$orderedNavigation->add('Users', '/dapur/users', null, 'users', 40);
+$orderedNavigation->add('Roles', '/dapur/roles', null, 'roles', 50);
+$orderedNavigation->add('Modules', '/dapur/modules', null, 'modules', 60);
+$assert(array_column($orderedNavigation->itemsFor($user), 'label') === [
+    'Dashboard', 'Content', 'Taxonomy', 'Users', 'Roles', 'Modules', 'Settings',
+], 'Explicit Admin navigation order was not applied.');
+
 $layout = (string) file_get_contents($basePath . '/resources/views/admin/layout.php');
 $css = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
 $script = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-shell.js');
@@ -119,18 +131,18 @@ $assert(str_contains($script, 'openButton.focus()'), 'Focus return to the trigge
 $assert(!str_contains($script, 'command-search'), 'Admin shell JavaScript must not implement Command Search.');
 
 foreach ([
-    'app/Core/Application.php' => "adminNavigation->add('Dashboard', \$this->adminUrl->baseUrl(), null, 'dashboard')",
-    'modules/content/routes.php' => "'content.publish',\n], 'content')",
-    'modules/taxonomy/routes.php' => "\$taxonomyPermissions, 'taxonomy')",
-    'modules/settings-manager/routes.php' => "'settings.update', 'settings')",
-    'modules/users-access/routes.php' => "'users.read', 'users')",
-    'modules/module-manager/routes.php' => "'modules.manage', 'modules')",
+    'app/Core/Application.php' => "adminNavigation->add('Dashboard', \$this->adminUrl->baseUrl(), null, 'dashboard', 10)",
+    'modules/content/routes.php' => "], 'content', 20);",
+    'modules/taxonomy/routes.php' => "'taxonomy', 30);",
+    'modules/settings-manager/routes.php' => "'settings', 70);",
+    'modules/users-access/routes.php' => "'users', 40);",
+    'modules/module-manager/routes.php' => "'modules', 60);",
 ] as $relativePath => $needle) {
     $source = (string) file_get_contents($basePath . '/' . $relativePath);
     $assert(str_contains(str_replace("\r\n", "\n", $source), $needle), "Expected icon registration is missing in [{$relativePath}].");
 }
 
 $usersRoutes = (string) file_get_contents($basePath . '/modules/users-access/routes.php');
-$assert(str_contains(str_replace("\r\n", "\n", $usersRoutes), "'roles.permissions.manage',\n], 'roles')"), 'Roles navigation icon registration is missing.');
+$assert(str_contains(str_replace("\r\n", "\n", $usersRoutes), "'roles.permissions.manage',\n], 'roles', 50);"), 'Roles navigation icon registration is missing.');
 
 echo "Shell Foundation Batch 1 smoke tests passed ({$assertions} assertions)." . PHP_EOL;

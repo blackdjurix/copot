@@ -35,12 +35,12 @@ $usersAdminBase = $app->adminUrl()->baseUrl();
 $usersAdminUrlService = $app->adminUrl();
 $usersAdminUrl = static fn (string $path = ''): string => $usersAdminUrlService->childUrl($path);
 
-$app->adminNavigation()->add('Users', $usersAdminUrl('users'), 'users.read', 'users');
+$app->adminNavigation()->add('Users', $usersAdminUrl('users'), 'users.read', 'users', 40);
 $app->adminNavigation()->add('Roles', $usersAdminUrl('roles'), [
     'roles.read',
     'roles.manage',
     'roles.permissions.manage',
-], 'roles');
+], 'roles', 50);
 
 $usersRenderView = static function (string $view, array $data = []) use ($usersAdminUrl): string {
     $file = __DIR__ . '/views/admin/' . $view . '.php';

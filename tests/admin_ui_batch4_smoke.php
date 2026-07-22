@@ -188,7 +188,7 @@ foreach ([
     'Taxonomy terms' => $taxonomyTerms,
     'Taxonomy types' => $taxonomyTypes,
 ] as $label => $output) {
-    $assert(str_contains($output, 'class="admin-panel"'), "{$label} does not use the shared panel.");
+    $assert(preg_match('/class="[^"]*\badmin-panel\b/', $output) === 1, "{$label} does not use the shared panel.");
 }
 
 $assert(str_contains($contentForm, 'class="admin-alert admin-alert--danger" role="alert"'), 'Content form errors lack shared alert semantics.');
@@ -196,14 +196,14 @@ $assert(str_contains($taxonomyForm, 'class="admin-alert admin-alert--danger" rol
 $assert(str_contains($contentForm, 'class="admin-field__label" for="title"'), 'Content title label is not associated with its field.');
 $assert(str_contains($contentForm, '<span class="admin-visually-hidden">required</span>'), 'Content required state lacks accessible text.');
 $assert(str_contains($taxonomyForm, 'class="admin-field__label" for="name"'), 'Taxonomy name label is not associated with its field.');
-$assert(str_contains($contentForm, 'class="admin-fieldset"'), 'Content taxonomy does not use the shared fieldset.');
+$assert(preg_match('/class="[^"]*\badmin-fieldset\b/', $contentForm) === 1, 'Content taxonomy does not use the shared fieldset.');
 $assert(str_contains($contentForm, 'class="admin-check-list"'), 'Content taxonomy checkbox list contract is missing.');
 
 // Tables and empty states are behaviorally consumed.
 $assert(str_contains($contentList, 'class="admin-table-wrap"'), 'Content list lacks the responsive table wrapper.');
 $assert(str_contains($contentList, 'class="admin-table"'), 'Content list lacks the shared table class.');
 $assert(str_contains($contentList, '<th scope="col">Title</th>'), 'Content table header semantics regressed.');
-$assert(str_contains($contentEmpty, 'class="admin-empty-state"'), 'Content empty state is missing.');
+$assert(preg_match('/class="[^"]*\badmin-empty-state\b/', $contentEmpty) === 1, 'Content empty state is missing.');
 $assert(str_contains($taxonomyTerms, 'class="admin-table-wrap"'), 'Taxonomy terms lack the responsive table wrapper.');
 $assert(str_contains($taxonomyTermsEmpty, 'class="admin-empty-state"'), 'Taxonomy terms empty state is missing.');
 $assert(str_contains($taxonomyTypes, 'class="admin-table"'), 'Taxonomy types lack the shared table class.');
