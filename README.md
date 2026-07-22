@@ -28,9 +28,9 @@ M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-The active checkpoint is M3.4 Content Manager Batch 4 final documentation closure on `main`. Commit `48c1ca12ada0fe813b8efc1f4e8e0b9d52c03ccc` (`feat(m3.4): harden content manager batch 4`) was fast-forward merged into `main`; the main push was previously completed and freshly re-verified. The local and remote feature branches were safely deleted after verified containment, and the branch lifecycle is closed. This final documentation commit records Batch 4 as NRP CONFIRMED after final verification. Batch 5 is the next work unit and full M3.4 completion remains outstanding; release, tag, and publication have not started.
+The active checkpoint is M3.4 Batch 5 closure sequencing adjustment on `feature/m3.4-content-manager-batch-5`. Batch 5 validation and documentation work are complete on its dedicated branch, with its closure lifecycle still pending; Batch 6 is the next M3.4 work unit on future branch `feature/m3.4-content-manager-batch-6`. Full M3.4 closure waits for Batch 6, and M3.R1 follows full M3.4 closure before M3.5. Release, tag, and publication have not started.
 
-Batch 4 focused validation passes 33 assertions. Directly affected Content regressions pass with 9 provisioning, 37 transaction/lifecycle, 53 authorization, and 33 workspace assertions. Package builder smoke passes 825 assertions and clean-install verification passes 60 assertions. PHP lint, `git diff --check`, targeted source-to-runtime synchronization, and source review pass. Browser validation passes with limitations: normal lifecycle, published rendering, Draft/Archived denial, plaintext escaping, malformed read-ID containment, current configured Admin path, and desktop/390 × 844 smoke were confirmed; request replay was unavailable for CSRF, authorization-before-CSRF, malformed mutation payloads/identifiers, duplicate slug, stale write, repeated transitions, and injected persistence-error responses. Those cases remain covered by focused automated tests and source review. Optional Taxonomy-disabled browser behavior was not exercised. Batch 4 is NRP CONFIRMED after final documentation commit and verification; Batch 5 is the next work unit.
+Batch 4 focused validation passes 33 assertions. Directly affected Content regressions pass with 9 provisioning, 37 transaction/lifecycle, 53 authorization, and 33 workspace assertions. Package builder smoke passes 825 assertions and clean-install verification passes 60 assertions. PHP lint, `git diff --check`, targeted source-to-runtime synchronization, and source review pass. Browser validation passes with limitations: normal lifecycle, published rendering, Draft/Archived denial, plaintext escaping, malformed read-ID containment, current configured Admin path, and desktop/390 × 844 smoke were confirmed; request replay was unavailable for CSRF, authorization-before-CSRF, malformed mutation payloads/identifiers, duplicate slug, stale write, repeated transitions, and injected persistence-error responses. Those cases remain covered by focused automated tests and source review. Optional Taxonomy-disabled browser behavior was not exercised. Batch 4 is NRP CONFIRMED after final documentation commit and verification; Batch 5 validation and documentation work are complete, with its independent closure lifecycle pending.
 
 M2 Platform Capabilities are complete. Copot v0.12.0 remains the latest stable released Webcore baseline. M3.1 and M3.2 are merged but are not yet included in a new release. M3.3 is merged but remains unreleased, untagged, and unpublished; Batches 1–5 implementation, validation, and manual Admin verification are complete.
 
@@ -41,6 +41,7 @@ M3.1  Users & Access
 M3.2  Settings Manager
 M3.3  Module Manager
 M3.4  Content Manager
+M3.R1 Admin Shell Retouch 1 (after full M3.4 closure, before M3.5)
 M3.5  Taxonomy Manager
 M3.6  Navigation Manager
 M3.7  Theme Manager
@@ -50,7 +51,7 @@ M3.10 Redirect Manager
 M3.11 Form Manager
 ```
 
-The sequence is governed by real dependency evidence, risk, and architecture boundaries. Planning batch counts are envelopes rather than immutable implementation counts, and exact batch structure is locked just-in-time before each milestone starts.
+The sequence is governed by real dependency evidence, risk, architecture boundaries, and the approved M3 Admin Shell design-adjustment governance. Planning batch counts are domain envelopes rather than immutable implementation counts; horizontal M3.R1 and relevant design-adjustment checkpoints are governed separately, and exact milestone batch structure is locked just-in-time before each milestone starts.
 
 M3.1 Users & Access completed its five approved batches and merged through `5c4cf8c`; local XAMPP workflow commit `35863e9` followed on `main`. M3.2 Settings Manager completed its five approved batches and merged to `main` through `afd82f0`: lifecycle-owned configured-path Admin routes, registered scalar management with validation-before-write and atomic persistence, specialized Logo/Favicon workflows, and tests-only security/compatibility hardening. Generic JSON and Site Asset descriptors remain excluded. Final focused M3.2 coverage is 366 assertions, required M2.1/M2.3/M3.1 compatibility regressions and manual verification pass. M3.3 implementation and validation are complete and merged into `main`; documentation synchronization, final focused review, user-owned commit, push, and merge-readiness assessment are complete. M3.2 is merged but not released.
 
@@ -572,7 +573,7 @@ Only `published` content renders on the frontend. Draft, archived, and missing c
 
 M1.5 uses a plain textarea for the body. M1.6 adds optional taxonomy integration when the Taxonomy module is enabled. Content still works when the Taxonomy module is disabled; the category/tag fields and list column are hidden and assignment sync is skipped.
 
-The current Content Manager does not include Editor.js, media/image handling, SEO, comments, advanced search, revisions, autosave, approval workflow, custom fields, or scheduling. The approved M3.4 five-batch scope remains limited to the existing Content module and defers those future capabilities.
+The current Content Manager does not include Editor.js, media/image handling, SEO, comments, advanced search, revisions, autosave, approval workflow, custom fields, or scheduling. The approved M3.4 scope remains limited to the existing Content module and defers those future capabilities. Batch 6 separately covers scoped Admin Content workspace presentation and Content-related Admin Shell navigation placement/order; it does not add domain capabilities, Navigation Manager, Theme Manager, frontend Theme rendering, or Core behavior. The M3.4 contract is defined in `docs/18_m3_4_content_manager_contract.md`, and reusable Admin Shell design-adjustment governance is defined in `docs/19_m3_admin_shell_design_adjustment_contract.md`.
 
 ## Taxonomy Foundation
 

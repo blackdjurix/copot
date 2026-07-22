@@ -6,13 +6,13 @@ M3.4 Content Manager Batch 1 and Batch 2 Foundation: COMPLETE. The foundation im
 
 Git lifecycle: the foundation feature branch was fast-forward merged into `main`; `main` was pushed and verified against `origin/main`; local and remote foundation feature branches were deleted; `main` and `origin/main` are synchronized at `5b51a1471da63b280e1444cd2f7ba8da4d168f28`; only `main` remains locally; and the workspace is clean. Previous work-unit NRP: CONFIRMED.
 
-Current work unit: M3.4 Content Manager Batch 5 — Runtime Acceptance and Closure. Focused validation passes all five Content regressions: provisioning (9), transaction/lifecycle (37), authorization (53), workspace (33), and security/integration (33), for 165 assertions. Package builder smoke passes 825 assertions and clean-install verification passes 60 assertions. Relevant Content PHP lint covers 8 files with no syntax errors; `git diff --check` passes. The clean-install script left its disposable database present after the run; it was manually removed and verified absent, recorded as a test-harness cleanup observation rather than a Content defect. Temporary browser-credential resources were also removed. Manual/runtime acceptance passes authenticated Admin access, Content navigation and listing, taxonomy display, search/status filtering with preserved query state, create/edit forms, published rendering, Draft/Archived denial, default Admin-path compatibility, and 390 × 844 responsive shell smoke. Browser request replay remains unavailable for missing/invalid CSRF, authorization-before-CSRF, malformed mutation payloads/identifiers, duplicate slug, stale write, repeated transitions, and injected persistence-error responses; focused automated tests and source review cover those request-level cases. Taxonomy-disabled behavior is covered by focused automation; it was not separately exercised in the browser. No Content runtime defect was identified; no runtime or test files were changed. Batch 5 validation and documentation closure are recorded on the dedicated feature branch; M3.4 Git integration, release, tag, and publication approvals remain outstanding.
+Current work unit: M3.4 Content Manager Batch 5 closure sequencing adjustment. Focused validation passes all five Content regressions: provisioning (9), transaction/lifecycle (37), authorization (53), workspace (33), and security/integration (33), for 165 assertions. Package builder smoke passes 825 assertions and clean-install verification passes 60 assertions. Relevant Content PHP lint covers 8 files with no syntax errors; `git diff --check` passes. The clean-install script left its disposable database present after the run; it was manually removed and verified absent, recorded as a test-harness cleanup observation rather than a Content defect. Temporary browser-credential resources were also removed. Manual/runtime acceptance passes authenticated Admin access, Content navigation and listing, taxonomy display, search/status filtering with preserved query state, create/edit forms, published rendering, Draft/Archived denial, default Admin-path compatibility, and 390 × 844 responsive shell smoke. Browser request replay remains unavailable for missing/invalid CSRF, authorization-before-CSRF, malformed mutation payloads/identifiers, duplicate slug, stale write, repeated transitions, and injected persistence-error responses; focused automated tests and source review cover those request-level cases. Taxonomy-disabled behavior is covered by focused automation; it was not separately exercised in the browser. No Content runtime defect was identified; no runtime or test files were changed. Batch 5 validation and documentation work are complete on the dedicated feature branch, but its Git integration, branch cleanup, final verification, and final changeset remain pending; Batch 5 is not full M3.4 closure and is not NRP CONFIRMED. Batch 6 is the next M3.4 work unit. Full M3.4 closure is deferred until Batch 6 completes; M3.R1 follows full M3.4 closure and must complete before M3.5 begins.
 
 M3.4 is Content Manager. M3.7 remains Theme Manager. The existing `modules/content` module remains the sole Content owner; M3.4 evolves that module and does not create a replacement Content Manager module.
 
-Remaining Batch 5 approval gates are branch review, staging, commit, push, merge, branch cleanup, release, tag, and publication.
+Remaining Batch 5 approval gates are branch review, staging, commit, push, merge, branch cleanup, final verification, final changeset, release, tag, and publication. Batch 6 and M3.R1 have separate future branches and lifecycles.
 
-The exact five-batch structure below is the approved M3.4 preparation contract. It refines the Stage 2 six-batch planning envelope using current repository evidence without changing the approved M3 sequence.
+The six-batch structure below is the approved M3.4 preparation contract. Batch 6 follows Batch 5 and is required before full M3.4 closure. The reusable Admin Shell design-adjustment rules are defined in `docs/19_m3_admin_shell_design_adjustment_contract.md`. M3.R1 is a separate horizontal work unit after full M3.4 closure and before M3.5; it is not part of M3.4.
 
 ## Objective
 
@@ -143,7 +143,7 @@ The M3.4 Admin workspace must provide:
 * explicit permission checks on every management route;
 * no bulk mutation.
 
-The workspace must preserve the existing Admin Shell and sanitized error boundary. No Admin redesign or frontend framework is authorized.
+The workspace must preserve the existing Admin Shell and sanitized error boundary. Batch 1–5 work did not authorize an Admin redesign or frontend framework. Batch 6 separately authorizes scoped Content workspace presentation refinement and Content-related Admin Shell navigation placement/order within the existing Admin navigation contract; it does not authorize a frontend framework or a shell-wide redesign.
 
 ## Public and Runtime Boundary
 
@@ -169,6 +169,8 @@ M3.4 does not add:
 * Theme Manager behavior;
 * a Theme rendering redesign;
 * Content logic in Webcore or Themes.
+
+Batch 6 navigation work is limited to Content-related placement and ordering within the existing Admin Shell navigation contract. It is not Navigation Manager implementation or frontend Navigation integration. Batch 6 is not Theme Manager behavior or a frontend Theme rendering redesign.
 
 No Webcore change is approved without concrete defect evidence and the existing Core-change escalation review.
 
@@ -213,7 +215,7 @@ The following remain outside strict M3.4 scope:
 * generic migration runner;
 * Theme Manager or rendering redesign.
 
-## Five-Batch Plan
+## Six-Batch Plan
 
 ### Batch 1 — Contract, Permission, and Baseline
 
@@ -277,13 +279,33 @@ Objective: complete focused regression, runtime/manual acceptance, documentation
 
 Ownership: Content module, tests, documentation, and user-owned Git integration workflow.
 
-Acceptance boundary: all five batches pass; approved Content Admin and public rendering behavior is validated; fixture scenarios pass; package and fresh-install implications are checked; no unresolved scope, schema, security, or Core blocker remains.
+Acceptance boundary: Batches 1–5 pass; approved Content Admin and public rendering behavior is validated; fixture scenarios pass; package and fresh-install implications are checked; no unresolved scope, schema, security, or Core blocker remains within the Batch 5 boundary. Batch 6 is a subsequent approved M3.4 work unit and is not required to validate Batch 5 evidence.
 
 Focused validation: unified focused Content suite plus required existing Admin, Taxonomy, Theme rendering, hardening, package, and clean-install regressions.
 
 Approval gates: manual/browser acceptance, documentation closure, branch review, staging, commit, push, merge, release, and publication remain separate user approvals.
 
-Documentation/runtime impact: close the M3.4 contract and roadmap state only after implementation and validation evidence exists. This preparation document does not claim completion.
+Documentation/runtime impact: record Batch 5 validation and documentation completion without claiming full M3.4 closure. Full M3.4 contract and roadmap closure remain deferred until Batch 6 implementation, validation, documentation, and separate Git lifecycle gates pass.
+
+### Batch 6 — Admin Content Workspace Redesign and Admin Shell Navigation Ordering
+
+Objective: refine the Content Manager Admin workspace and the Content-related placement/order of existing Admin Shell navigation while preserving the approved Content runtime contract and current shell identity.
+
+Ownership: Content module presentation, applicable Admin Shell presentation, tests, documentation, Product Designer-supported review, and the user-owned Git integration workflow.
+
+Scope: desktop and responsive Content workspace hierarchy; search and filters; listing readability; status presentation; forms; contextual actions; empty states; accessibility; and Content-related Admin Shell navigation placement and ordering within the existing request-scoped Admin navigation contract.
+
+Design authority: project and M3.4 contracts, committed implementation and tests, approved Admin Shell design authority, Product Designer recommendation as design support, and approved implementation. The reusable review rules are defined in `docs/19_m3_admin_shell_design_adjustment_contract.md`.
+
+Acceptance: the Content workspace is readable and usable at approved desktop and mobile widths; existing Content routes, permissions, CSRF, lifecycle, Taxonomy compatibility, sanitized errors, and deferred boundaries remain intact; valid contextual actions and empty states are presented; Content-related navigation placement/order is consistent with the approved shell; focused regressions and required browser, responsive, accessibility, lint, synchronization, and documentation checks pass.
+
+Out of scope: M3.R1; Navigation Manager; Theme Manager; frontend Theme rendering; Content domain, permission, route, schema, lifecycle, or Core changes unless a concrete in-scope defect is found; new Content capabilities; and release, tag, publication, or unrelated Git work.
+
+Branch: `feature/m3.4-content-manager-batch-6` when separately authorized.
+
+Approval gates: design review, implementation review, focused validation, browser acceptance, documentation, branch review, staging, commit, push, merge, branch cleanup, release, tag, and publication remain separate approvals.
+
+Documentation/runtime impact: Batch 6 has its own documentation, validation evidence, branch lifecycle, and independent NRP evaluation. Batch 6 follows Batch 5 and is required before full M3.4 closure. It does not invalidate Batch 5.
 
 ## Core, Schema, and Migration Gate
 
@@ -303,4 +325,4 @@ The following are not authorized by this document:
 
 ## Completion Boundary
 
-M3.4 preparation is complete when this contract is reviewed and approved. M3.4 implementation is complete only after all five batches, focused validation, required runtime/browser acceptance, documentation closure, and separate Git integration approvals pass.
+M3.4 preparation is complete when this contract is reviewed and approved. M3.4 implementation is complete only after Batches 1–6, focused validation, required runtime/browser acceptance, documentation closure, and separate Git integration approvals pass. Batch 5 retains an independent closure and NRP lifecycle; Batch 6 is required before full M3.4 closure. M3.R1 follows full M3.4 closure and must complete before M3.5 begins.

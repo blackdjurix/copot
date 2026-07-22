@@ -392,9 +392,11 @@ The approved sequence is:
 | M3.10 | Redirect Manager | 4 | Medium |
 | M3.11 | Form Manager | 7 | Very High |
 
-Total planning envelope: 59 batches.
+Total planning envelope: 59 domain implementation batches. The count excludes the horizontal M3.R1 Admin Shell Retouch 1 work unit and the relevant Admin Shell design-adjustment checkpoints attached to M3.5–M3.11. Those governance work units do not silently renumber the domain milestone envelopes.
 
-The planning envelope is not an immutable implementation count. Exact batch structure is locked just-in-time before each milestone begins.
+The approved horizontal sequence is `M3.4 Batch 6 -> full M3.4 closure -> M3.R1 Admin Shell Retouch 1 -> M3.5`. M3.R1 is outside M3.4 and must close before M3.5 begins.
+
+The planning envelope is not an immutable implementation count. Exact batch structure is locked just-in-time before each milestone begins. The approved M3.4 six-batch refinement, M3.R1 horizontal checkpoint, and M3.5–M3.11 design-adjustment checkpoints are recorded in `docs/03_roadmap.md` and governed by `docs/19_m3_admin_shell_design_adjustment_contract.md`.
 
 ### Sequencing Rationale
 
@@ -761,7 +763,7 @@ M3.3 implementation, package inclusion, validation, manual verification, documen
 
 The M3.3 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification are complete. The Core freeze remains active; the approved `InstallerFinalizer::BASELINE_MODULES` addition is the sole M3.3 Core touchpoint, and the current denial-message correction is module-local.
 
-The approved Copot Admin Shell image is the canonical visual authority, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior. WordPress and other Admin interfaces are supporting references only.
+The approved Copot Admin Shell image is the canonical visual authority, and the latest UI Refinement Plan is the external scope and implementation authority. Neither source authorizes new backend or Core behavior. WordPress and other Admin interfaces are supporting references only. M3 Admin design-adjustment work follows the reusable governance contract in `docs/19_m3_admin_shell_design_adjustment_contract.md`; Product Designer input is design support only and does not supersede project contracts, committed implementation/tests, or Core/module ownership.
 
 Authenticated Public Toolbar is not part of Webcore or Admin UX Refinement 1. It remains Theme-owned future scope; Webcore may expose existing authentication, current-user, or permission facts, or a minimal hook if later proven necessary, but must not render or own the toolbar UI contract.
 
