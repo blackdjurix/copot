@@ -814,7 +814,11 @@ main at Batch 6 post-merge documentation checkpoint; HEAD 79aee25d78dbe905ea0a61
 
 ### M3.R1 — Admin Shell Retouch 1
 
-M3.R1 is a horizontal Admin Shell work unit after full M3.4 closure and before M3.5:
+M3.4 is complete and `NRP CONFIRMED`. M3.R1 preparation is active on the
+dedicated preparation branch; M3.R1 implementation has not started. The
+preparation and scope contract is `docs/20_m3_r1_admin_shell_retouch_contract.md`.
+M3.R1 is a horizontal Admin Shell work unit after full M3.4 closure and before
+M3.5:
 
 ```text
 M3.4 closure
@@ -828,7 +832,7 @@ M3.R1 is outside M3.4, Batch 5, Batch 6, and M3.5. It reviews the M3.1 Users & A
 
 Each reviewed page is classified as `redesign required`, `retouch required`, `review only`, or `NO CHANGE REQUIRED`. Product Designer input supports the review and recommendation; it does not authorize domain behavior, permissions, routes, schema, data contracts, ownership, Core architecture, or Git/release actions.
 
-M3.R1 may change approved presentation and Admin navigation ordering within the existing navigation contract. It requires a dedicated future branch, focused validation, desktop/mobile browser evidence, accessibility review, documentation, branch lifecycle, and independent NRP evaluation. M3.5 must not begin before M3.R1 closes.
+M3.R1 may change approved presentation and Admin navigation ordering within the existing navigation contract. Preparation is documentation-only; implementation requires the contract's preparation, classification, and implementation gates. The work unit requires focused validation, desktop/mobile browser evidence, accessibility review, documentation, branch lifecycle, and independent NRP evaluation. M3.5 must not begin before M3.R1 closes. Release, tag, and publication remain separately authorized.
 
 ### M3.5–M3.11 Admin Shell Design-Adjustment Checkpoints
 
