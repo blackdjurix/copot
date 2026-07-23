@@ -42,12 +42,13 @@ Current entry status: all five criteria are satisfied. The Canonical Style
 source correspondence and corrected contract passed focused source review;
 the preparation contract was committed, pushed, and fast-forward integrated
 into synchronized `main`. Classification is the next gate. Final per-surface
-classifications remain undecided, M3.R1 implementation remains unauthorized,
-and the feature branch remains locally and remotely present as a merged
-cleanup candidate with zero unique commits; cleanup is separately authorized
-and pending. M3.R1 preparation: NRP CANDIDATE. Full M3.R1: NRP NOT REACHED.
-This post-merge documentation correction remains in progress until committed;
-the status labels do not complete documentation closure or branch cleanup.
+classifications remain undecided, M3.R1 implementation remains unauthorized.
+The post-merge documentation correction was committed and
+pushed, and local and remote preparation branches were deleted after verified
+containment; the preparation branch lifecycle is closed. M3.R1 preparation:
+NRP CANDIDATE. Full M3.R1: NRP NOT REACHED. Final closure evaluation remains
+pending after this documentation state is committed and synchronized;
+classification is next, and the status labels do not authorize implementation.
 
 ## Authority and Source Relationship
 
