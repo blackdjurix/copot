@@ -10,7 +10,7 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Distribution & Release Preparation are complete. Copot v0.12.0 is the current stable Webcore baseline. M3 Preparation is complete and M3 Core Modules is the active phase. M3.4 Content Manager is complete; M3.R1 preparation is active.
+The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Distribution & Release Preparation are complete. Copot v0.12.0 is the current stable Webcore baseline. M3 Preparation is complete and M3 Core Modules is the active phase. M3.4 Content Manager is complete; the M3.R1 preparation contract is integrated into `main` and classification is next.
 
 ---
 
@@ -18,7 +18,7 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ### M3 Core Modules
 
-Current milestone / checkpoint: M3.4 Content Manager final lifecycle closure is complete on `main` at the verified anchor `8bdd48463c26ef8c43683455eba3d1a99c3e4aa7`. Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation is active on `feature/m3.r1-admin-shell-retouch-1`; implementation has not started and M3.5 must wait for M3.R1 closure.
+Current milestone / checkpoint: M3.4 Content Manager final lifecycle closure is complete on `main` at the verified anchor `8bdd48463c26ef8c43683455eba3d1a99c3e4aa7`. Batch 6 and full M3.4 are `NRP CONFIRMED`. The M3.R1 preparation contract is integrated into `main`; preparation source review and merge are complete, classification is next, implementation has not started, and M3.5 must wait for M3.R1 closure. The merged feature branch remains present locally and remotely pending separately authorized cleanup.
 
 Previous work: Batch 6 redesigned the Content Admin list and create/edit presentation, improved filters, empty states, human-readable type/status presentation, responsive rows, action hierarchy, and validation accessibility recovery. The final Admin navigation order is Dashboard → Content → Taxonomy → Users → Roles → Modules → Settings, implemented through minimal optional ordering metadata within the existing request-scoped navigation contract. Permission filtering, active state, module loading, routes, ownership, and domain behavior remain preserved. Focused automation, source review, targeted runtime synchronization with SHA-256 verification, authenticated browser validation, fast-forward integration, `main` push, feature-branch cleanup, and final verification passed; mobile Content action targets were remediated to approximately 46px. Browser limitations remain documented for permission variants, full automated keyboard traversal, numeric contrast, true 200% zoom, initial-empty, and Taxonomy-unavailable fixtures. Batch 6 and full M3.4 are `NRP CONFIRMED`. Current work is M3.R1 preparation and scope lock only.
 
@@ -49,8 +49,8 @@ Current state:
 * `main` and `origin/main` were clean and synchronized at `020f2b2`; local and remote `feature/m3.3-module-manager` branches were deleted, and its branch lifecycle is closed.
 * M3.3 reached its No-Return Point and remains unreleased, untagged, and unpublished.
 * M3.4 Content Manager implementation, validation, fast-forward integration, `main` push, feature-branch cleanup, and final verification are complete; Batch 6 and full M3.4 are `NRP CONFIRMED`.
-* M3.R1 preparation is active on `feature/m3.r1-admin-shell-retouch-1`; the Canonical Style prototype is `K:/My Drive/Codex/copot/prototype/copot(6).zip` with extracted directory `K:/My Drive/Codex/copot/prototype/copot-6-extracted`.
-* M3.R1 preparation is documentation-only and uses the committed Admin Shell and Content workspace at `8bdd48463c26ef8c43683455eba3d1a99c3e4aa7` as the structural/current implementation baseline. UI implementation and later Git lifecycle operations remain unstarted.
+* M3.R1 preparation is integrated into `main`; classification is next and the merged feature branch `feature/m3.r1-admin-shell-retouch-1` remains present pending separately authorized cleanup. The Canonical Style prototype is `K:/My Drive/Codex/copot/prototype/copot(6).zip` with extracted directory `K:/My Drive/Codex/copot/prototype/copot-6-extracted`.
+* M3.R1 preparation remains documentation-only and uses the committed Admin Shell and Content workspace at `8bdd48463c26ef8c43683455eba3d1a99c3e4aa7` as the structural/current implementation baseline. Classification and UI implementation remain unstarted; feature-branch cleanup remains separately authorized and pending.
 * M3.4 Batch 1 and Batch 2 Foundation are complete and branch-closed on synchronized `main` at `5b51a1471da63b280e1444cd2f7ba8da4d168f28`.
 * M3.4 focused foundation validation passes 99 assertions: provisioning and upgrade (9), transaction/lifecycle/slug/stale-write/Taxonomy atomicity (37), and authorization matrix (53).
 * M3.4 foundation PHP lint, `git diff --check`, disposable database cleanup, runtime synchronization, and browser validation pass.
@@ -725,7 +725,7 @@ Commit messages should remain clear and milestone-aware.
 
 Copot v0.12.0 is released and is the current stable Webcore baseline.
 
-M3 Preparation is complete and closed. M3.1 Users & Access, M3.2 Settings Manager, M3.3 Module Manager, and M3.4 Content Manager are complete and merged but remain unreleased. M3.R1 preparation is active; M3.R1 implementation and M3.5 have not started.
+M3 Preparation is complete and closed. M3.1 Users & Access, M3.2 Settings Manager, M3.3 Module Manager, and M3.4 Content Manager are complete and merged but remain unreleased. M3.R1 preparation is integrated into `main`; classification is next, while M3.R1 implementation and M3.5 have not started.
 
 M3.4 Content Manager final lifecycle closure is complete on `main` at the verified anchor `8bdd48463c26ef8c43683455eba3d1a99c3e4aa7`. Batch 6 implementation, validation, integration, branch cleanup, and final verification are complete; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation follows full M3.4 closure and must complete before M3.5. The M3.R1 preparation contract is `docs/20_m3_r1_admin_shell_retouch_contract.md`; implementation has not started. Release, tag, and publication remain separately authorized.
 

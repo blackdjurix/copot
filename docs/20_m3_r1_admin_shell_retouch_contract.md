@@ -38,11 +38,16 @@ Entry criteria:
    extracted prototype is verified.
 5. This preparation contract is reviewed before classification begins.
 
-Current entry status: criteria 1–4 are satisfied and contract creation is
-complete. Focused contract source review found issues requiring correction;
-criterion 5 remains pending until the corrected contract and effective diff
-pass source review. M3.R1 implementation and final surface classification
-remain unauthorized by preparation alone.
+Current entry status: all five criteria are satisfied. The Canonical Style
+source correspondence and corrected contract passed focused source review;
+the preparation contract was committed, pushed, and fast-forward integrated
+into synchronized `main`. Classification is the next gate. Final per-surface
+classifications remain undecided, M3.R1 implementation remains unauthorized,
+and the feature branch remains locally and remotely present as a merged
+cleanup candidate with zero unique commits; cleanup is separately authorized
+and pending. M3.R1 preparation: NRP CANDIDATE. Full M3.R1: NRP NOT REACHED.
+This post-merge documentation correction remains in progress until committed;
+the status labels do not complete documentation closure or branch cleanup.
 
 ## Authority and Source Relationship
 

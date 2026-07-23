@@ -796,11 +796,11 @@ The contract keeps the existing `modules/content` module as the sole Content own
 Current branch/state:
 
 ```text
-main at Batch 6 post-merge documentation checkpoint; HEAD 79aee25d78dbe905ea0a6149ec5c07110375db04
+main at the integrated M3.R1 preparation checkpoint; HEAD 1876a266d4e2f843d6c03abea92b8f0e35ede138 (`docs(m3.r1): lock admin shell retouch contract`)
 -> Batch 1 and Batch 2 Foundation complete and branch-closed
 -> Batch 3 Admin Content Workspace implementation and validation complete (NRP CONFIRMED; branches deleted)
 -> Batch 4 Integration and Security Hardening implementation/validation complete and fast-forward merged into main (NRP CONFIRMED; feature branches deleted; branch lifecycle closed)
--> Main and origin/main are clean and synchronized at 912bec86f2fdc799ab6c554da5341979f6be7cb5
+-> Main and origin/main are clean and synchronized at 1876a266d4e2f843d6c03abea92b8f0e35ede138 (0/0)
 -> Batch 5 focused, package, clean-install, lint, runtime, and manual acceptance evidence complete
 -> Batch 5 implementation, validation, documentation, commit, feature push, fast-forward merge, main synchronization, branch cleanup, and post-cleanup verification complete
 -> Batch 5 lifecycle is closed; release, tag, and publication remain outstanding
@@ -809,14 +809,19 @@ main at Batch 6 post-merge documentation checkpoint; HEAD 79aee25d78dbe905ea0a61
 -> Batch 6 feature commit fast-forward merged into main and main pushed; no merge commit created
 -> Batch 6 feature branches were safely deleted after containment verification; only the main worktree remains
 -> Batch 6 and full M3.4 are NRP CONFIRMED after final documentation and verification
--> M3.R1 is the next work unit and must complete before M3.5
+-> M3.R1 classification is the next gate; implementation has not started and M3.5 remains blocked
 ```
 
 ### M3.R1 — Admin Shell Retouch 1
 
-M3.4 is complete and `NRP CONFIRMED`. M3.R1 preparation is active on the
-dedicated preparation branch; M3.R1 implementation has not started. The
-preparation and scope contract is `docs/20_m3_r1_admin_shell_retouch_contract.md`.
+M3.4 is complete and `NRP CONFIRMED`. The M3.R1 preparation and scope
+contract is integrated into synchronized `main`; its source review, commit,
+push, and fast-forward integration are complete. The feature branch remains
+present locally and remotely as a merged cleanup candidate with zero unique
+commits; cleanup is separately authorized and pending. M3.R1 classification is
+the next gate, implementation has not started, and the preparation contract
+does not authorize implementation. The contract is
+`docs/20_m3_r1_admin_shell_retouch_contract.md`.
 M3.R1 is a horizontal Admin Shell work unit after full M3.4 closure and before
 M3.5:
 
