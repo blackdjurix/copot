@@ -207,6 +207,8 @@ M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
 M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; local and remote `feature/m3.3-module-manager` branches are deleted. M3.3 remains unreleased, untagged, and unpublished. M3.4 Batch 1 and Batch 2 Foundation are complete and branch-closed; Batch 3 Admin Content Workspace implementation and validation are complete and were fast-forward merged into `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`. Its local and remote feature branches were deleted after verified containment. Batch 3 is NRP CONFIRMED. Batch 4 implementation and validation are complete and fast-forward merged into `main` at `48c1ca12ada0fe813b8efc1f4e8e0b9d52c03ccc` (`feat(m3.4): harden content manager batch 4`). The main push was previously completed and freshly re-verified; the local and remote feature branches were safely deleted after verified containment, and the branch lifecycle is closed. Batch 4 is NRP CONFIRMED after this final documentation commit and verification. Batch 5 implementation, validation, documentation, commit, feature push, fast-forward merge, and main synchronization are complete at `912bec86f2fdc799ab6c554da5341979f6be7cb5`; its local and remote feature branches were deleted after verified containment, and its branch lifecycle is closed. Batch 5 is NRP CONFIRMED. Batch 6 implementation, focused source review, automated validation, targeted runtime synchronization, authenticated browser validation, fast-forward integration, `main` push, feature-branch cleanup, and final verification are complete at final documentation commit `ae2c404be195dbf4395986ad21f7cb0be7da83a8`; no merge commit was created. Batch 6 and full M3.4 are NRP CONFIRMED; M3.R1 is next and must complete before M3.5.
 
+The preceding milestone summary records the pre-classification sequence state. The current M3.R1 status is classification gate complete with `NO MATERIAL RETOUCH REQUIRED`; full M3.R1 is at `NRP CANDIDATE` pending documentation and Git lifecycle closure, and M3.5 remains blocked until `NRP CONFIRMED`.
+
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
 ---
@@ -809,8 +811,9 @@ main at the M3.R1 preparation post-cleanup documentation checkpoint; HEAD 5887da
 -> Batch 6 feature commit fast-forward merged into main and main pushed; no merge commit created
 -> Batch 6 feature branches were safely deleted after containment verification; only the main worktree remains
 -> Batch 6 and full M3.4 are NRP CONFIRMED after final documentation and verification
--> M3.R1 preparation contract integrated, corrected, and branch-closed; classification is the next gate
--> M3.R1 implementation has not started and M3.5 remains blocked; release, tag, and publication remain separately authorized
+-> M3.R1 preparation contract integrated, corrected, and branch-closed; classification gate complete with `NO MATERIAL RETOUCH REQUIRED`
+-> M3.R1 has no implementation batches or implementation branch; full M3.R1 is `NRP CANDIDATE` pending documentation and Git lifecycle closure
+-> M3.5 remains blocked until M3.R1 reaches `NRP CONFIRMED`; release, tag, and publication remain separately authorized
 ```
 
 ### M3.R1 — Admin Shell Retouch 1
@@ -819,9 +822,11 @@ M3.4 is complete and `NRP CONFIRMED`. The M3.R1 preparation and scope
 contract is integrated into synchronized `main`; its source review, commit,
 push, fast-forward integration, post-merge documentation correction, and
 feature-branch cleanup are complete after verified containment. The local and
-remote preparation branches are absent. M3.R1 classification is the next
-gate, implementation has not started, and the preparation contract does not
-authorize implementation. The contract is
+remote preparation branches are absent. M3.R1 classification is complete with
+the final outcome `NO MATERIAL RETOUCH REQUIRED`; no implementation batches,
+implementation branch, production/test changes, runtime synchronization, or
+browser validation are required. Full M3.R1 is at `NRP CANDIDATE` pending
+documentation and Git lifecycle closure. The contract is
 `docs/20_m3_r1_admin_shell_retouch_contract.md`.
 M3.R1 is a horizontal Admin Shell work unit after full M3.4 closure and before
 M3.5:

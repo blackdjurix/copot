@@ -41,14 +41,14 @@ Entry criteria:
 Current entry status: all five criteria are satisfied. The Canonical Style
 source correspondence and corrected contract passed focused source review;
 the preparation contract was committed, pushed, and fast-forward integrated
-into synchronized `main`. Classification is the next gate. Final per-surface
-classifications remain undecided, M3.R1 implementation remains unauthorized.
-The post-merge documentation correction was committed and
-pushed, and local and remote preparation branches were deleted after verified
-containment; the preparation branch lifecycle is closed. M3.R1 preparation:
-NRP CANDIDATE. Full M3.R1: NRP NOT REACHED. Final closure evaluation remains
-pending after this documentation state is committed and synchronized;
-classification is next, and the status labels do not authorize implementation.
+into synchronized `main`. The preparation branch lifecycle is closed.
+Classification is now complete with final outcome `NO MATERIAL RETOUCH
+REQUIRED`. Full M3.R1 is at `NRP CANDIDATE` pending this documentation closure,
+the user-owned documentation commit and push, final verification, and lifecycle
+closure. The preparation work unit remains historically `NRP CONFIRMED`; this
+does not mean full M3.R1 is confirmed. No UI implementation, implementation
+batches, implementation branch, production/test changes, runtime synchronization,
+or authenticated browser validation is required.
 
 ## Authority and Source Relationship
 
@@ -98,14 +98,14 @@ The approved prototype ZIP is
 `K:/My Drive/Codex/copot/prototype/copot(6).zip`, and its matching extracted
 prototype is `K:/My Drive/Codex/copot/prototype/copot-6-extracted`.
 
-The ZIP and extracted directory currently correspond: both contain 16 files
-with matching relative paths and SHA-256 content. Prototype evidence inspected
-for preparation includes `css_files/admin.css`, `_dashboard.html`,
+The ZIP is 81,458 bytes with SHA-256
+`B0C5F4D237FD6BB203EAAD21500139A00185A058054041461377C7682372FD2E`. The ZIP
+and extracted directory correspond: both contain 16 files with matching
+relative paths and SHA-256 content, with no missing, unexpected, or mismatched
+files. Fresh focused inspection covered `css_files/admin.css`, `_dashboard.html`,
 `_content.html`, `_users.html`, `_user_create.html`, `_user_details.html`,
 `_roles.html`, `_roles_details.html`, `_role_create.html`, `_settings.html`,
-`_modules.html`, and `_module_details.html`. The remaining taxonomy prototype
-files are included in the inventory evidence and may be reviewed during
-classification.
+`_modules.html`, and `_module_details.html`.
 
 A prototype difference does not authorize a change. The prototype is visual and
 UX evidence; it does not override locked project contracts or committed
@@ -276,19 +276,31 @@ implementation starts before this gate.
 
 Each inventory item has evidence-backed classification, approved style
 direction, explicit boundaries, and unresolved decisions recorded. `NO CHANGE
-REQUIRED` is valid when evidence supports it.
+REQUIRED` is valid when evidence supports it. This gate is complete. The final
+records are Shared page header/action treatment and visual tokens `NO CHANGE
+REQUIRED`; Users list, Roles list, and Module list `REVIEW ONLY`; and standalone
+prototype User Detail and Role Detail surfaces `EXCLUDED`. No surface is
+`REDESIGN REQUIRED` or `RETOUCH REQUIRED`.
 
 ### Implementation gate
 
 Only approved `RETOUCH REQUIRED` or `REDESIGN REQUIRED` records may enter
-implementation. The smallest affected presentation files and focused tests are
-selected just-in-time. A prototype detail remains a proposal until this gate.
+implementation. No records meet that threshold for this M3.R1 classification;
+therefore no implementation gate, implementation batches, or implementation
+branch is required. Prototype-led summary cards, filtering, extra metadata,
+avatars, pagination, compact Module action menus, command search, notifications,
+sidebar system status, and standalone detail pages remain optional
+approval-required proposals or excluded scope.
 
 ### Validation gate
 
-Focused automation, source review, lint/diff checks, responsive checks,
-accessibility review, authenticated desktop/mobile browser evidence, limitation
-disposition, and documentation closure must pass before NRP evaluation.
+For an implementation-bearing work unit, focused automation, source review,
+lint/diff checks, responsive checks, accessibility review, authenticated
+desktop/mobile browser evidence, limitation disposition, and documentation
+closure must pass before NRP evaluation. Because this classification produces
+no implementation, no production/test changes, runtime synchronization, or
+authenticated browser validation is required for M3.R1; documentation closure
+and final Git verification remain required.
 
 Likely strategy: one preparation contract followed by one or more narrowly
 locked presentation work units. Batch count is not fixed in this contract.
@@ -334,9 +346,12 @@ integration, push, cleanup, and final changeset operations remain separately
 authorized.
 
 NRP Candidate is reached when approved classifications have been implemented or
-closed as `NO CHANGE REQUIRED`, focused validation and browser/accessibility
-evidence are complete, documentation is synchronized, and no unresolved
-in-scope blocker remains.
+closed as `NO CHANGE REQUIRED`, applicable focused validation and
+browser/accessibility evidence are complete, documentation is synchronized, and
+no unresolved in-scope blocker remains. For this no-implementation outcome,
+source review and Canonical Style verification are the applicable evidence;
+production/test changes, runtime synchronization, and browser validation are
+not required.
 
 NRP Confirmed requires the NRP Candidate record plus separately authorized Git
 integration, final verification, clean synchronized state, branch-lifecycle
@@ -346,18 +361,39 @@ boundary is confirmed.
 Design completion does not authorize or imply release, tag, or publication.
 Those remain separate project decisions.
 
-## Unresolved Decisions Before Implementation
+## Classification Closure
 
-- Which prototype-led differences are approved for each reviewed repository
-  surface.
-- Whether any prototype-only sidebar status, notifications, command search, or
-  other deferred surface is rejected, retained as reference, or separately
-  approved; committed omission boundaries remain the default.
-- Whether prototype-only detail surfaces remain comparison evidence or receive
-  separately approved routes/pages; M3.R1 itself does not authorize them.
-- Exact per-surface spacing, density, gradient, contrast, and responsive values
-  where prototype evidence and committed contracts do not uniquely decide.
-- Final classification records and implementation file scope.
+The focused Canonical Style verification is complete. The final outcome is
+`NO MATERIAL RETOUCH REQUIRED`: the current Shared Admin Shell, M3.1 Users &
+Access, M3.2 Settings Manager, and M3.3 Module Manager contain no material
+authorized presentation-only gap that justifies M3.R1 implementation. This does
+not claim pixel identity; remaining differences are minor stylistic values,
+harmless layout values, prototype-only decoration, or broader feature/data/
+interaction proposals.
 
-No production or test implementation is authorized until these decisions are
-resolved through the classification and implementation gates.
+Final classifications:
+
+- Shared page header and action treatment — `NO CHANGE REQUIRED`;
+- Users list — `REVIEW ONLY`;
+- Roles list — `REVIEW ONLY`;
+- Module list — `REVIEW ONLY`;
+- typography, spacing, density, panels, shadows, gradients, and contrast —
+  `NO CHANGE REQUIRED`;
+- standalone prototype User Detail surface — `EXCLUDED`;
+- standalone prototype Role Detail surface — `EXCLUDED`.
+
+The final Admin navigation order remains `Dashboard → Content → Taxonomy →
+Users → Roles → Modules → Settings`. M3.4 Content Manager remains comparison-
+only and is not a primary M3.R1 target.
+
+Prototype-led enhancements retained only as optional future approval-required
+proposals include summary cards, search/filtering, extra role/status/metadata or
+description fields, avatars, pagination, compact Module action menus, and
+standalone detail routes/pages. Command search, notifications, and sidebar
+system status remain excluded by contract. These proposals are not M3.R1
+implementation scope.
+
+The classification gate is complete. Full M3.R1 is `NRP CANDIDATE` pending the
+documentation commit, user-owned push, final verification, and lifecycle
+closure. M3.5 remains blocked until M3.R1 reaches `NRP CONFIRMED`. Release, tag,
+and publication remain unstarted and separately authorized.
