@@ -43,12 +43,15 @@ source correspondence and corrected contract passed focused source review;
 the preparation contract was committed, pushed, and fast-forward integrated
 into synchronized `main`. The preparation branch lifecycle is closed.
 Classification is now complete with final outcome `NO MATERIAL RETOUCH
-REQUIRED`. Full M3.R1 is at `NRP CANDIDATE` pending this documentation closure,
-the user-owned documentation commit and push, final verification, and lifecycle
-closure. The preparation work unit remains historically `NRP CONFIRMED`; this
-does not mean full M3.R1 is confirmed. No UI implementation, implementation
-batches, implementation branch, production/test changes, runtime synchronization,
-or authenticated browser validation is required.
+REQUIRED`. The classification documentation commit
+`c5d27adeba6c1f440f6b9c62309a447f82e43a08` (`docs(m3.r1): record classification
+closure`) is pushed to `origin/main`; local and remote `main` are synchronized
+at `0/0`, the workspace is clean, and full M3.R1 is `NRP CONFIRMED`. The
+preparation work unit is historically and operationally `NRP CONFIRMED`. No UI
+implementation, implementation batches, implementation branch, production/test
+changes, runtime synchronization, or authenticated browser validation was
+required. M3.5 is next and unblocked from the M3.R1 sequencing gate, subject to
+its own preparation, contract, approval, branch, and validation workflow.
 
 ## Authority and Source Relationship
 
@@ -393,7 +396,11 @@ standalone detail routes/pages. Command search, notifications, and sidebar
 system status remain excluded by contract. These proposals are not M3.R1
 implementation scope.
 
-The classification gate is complete. Full M3.R1 is `NRP CANDIDATE` pending the
-documentation commit, user-owned push, final verification, and lifecycle
-closure. M3.5 remains blocked until M3.R1 reaches `NRP CONFIRMED`. Release, tag,
+The classification gate and full M3.R1 lifecycle are complete. The final
+documentation commit is `c5d27adeba6c1f440f6b9c62309a447f82e43a08`
+(`docs(m3.r1): record classification closure`), it is pushed to `origin/main`,
+local and remote `main` are synchronized at `0/0`, and the workspace is clean.
+Full M3.R1 is `NRP CONFIRMED`. M3.5 is the next milestone and is unblocked from
+the M3.R1 sequencing gate, but has not started and remains subject to its own
+preparation, contract, approval, branch, and validation workflow. Release, tag,
 and publication remain unstarted and separately authorized.
