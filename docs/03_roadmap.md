@@ -833,8 +833,8 @@ runtime synchronization, or browser validation were required. Full M3.R1 is
 subject to its own preparation, contract, approval, branch, and validation
 workflow. The contract is
 `docs/20_m3_r1_admin_shell_retouch_contract.md`.
-M3.R1 is a horizontal Admin Shell work unit after full M3.4 closure and before
-M3.5:
+M3.R1 is a completed horizontal Admin Shell work unit after full M3.4 closure
+and before M3.5:
 
 ```text
 M3.4 closure
@@ -848,7 +848,7 @@ M3.R1 is outside M3.4, Batch 5, Batch 6, and M3.5. It reviews the M3.1 Users & A
 
 Each reviewed page is classified as `redesign required`, `retouch required`, `review only`, or `NO CHANGE REQUIRED`. Product Designer input supports the review and recommendation; it does not authorize domain behavior, permissions, routes, schema, data contracts, ownership, Core architecture, or Git/release actions.
 
-M3.R1 may change approved presentation and Admin navigation ordering within the existing navigation contract. Preparation is documentation-only; implementation requires the contract's preparation, classification, and implementation gates. The completed work unit required focused validation, desktop/mobile browser evidence, accessibility review, documentation, branch lifecycle, and independent NRP evaluation; its accepted outcome required no implementation. M3.5 is now unblocked from the M3.R1 sequencing gate but must follow its own preparation, contract, approval, branch, and validation workflow. Release, tag, and publication remain separately authorized.
+M3.R1 may change approved presentation and Admin navigation ordering within the existing navigation contract. Its accepted outcome required no implementation. M3.5 is now in documentation preparation: product scope is accepted, the five implementation work units are locked at responsibility level, and the dedicated preparation contract is prepared. The scope is fixed to the existing Taxonomy module's `category` hierarchy and flat `tag` management, with no taxonomy type CRUD, filtering, or Navigation Manager work. Branch creation is not authorized, implementation has not started, preparation is `NRP CANDIDATE` pending review, documentation commit/push, post-Git state check, and final preparation closure, and full M3.5 is `NRP NOT REACHED`. Release, tag, and publication remain separately authorized.
 
 ### M3.5–M3.11 Admin Shell Design-Adjustment Checkpoints
 
@@ -856,7 +856,7 @@ The reusable requirements are defined in `docs/19_m3_admin_shell_design_adjustme
 
 | Milestone | Required design-adjustment review |
 |---|---|
-| M3.5 Taxonomy Manager | Taxonomy workspace and its relationship to Content; review placement and consistency in the Admin Shell. |
+| M3.5 Taxonomy Manager | Taxonomy workspace, category hierarchy, flat tags, relationship to Content, and placement/consistency in the Admin Shell. |
 | M3.6 Navigation Manager | Navigation-management workspace and Admin placement; preserve the Navigation ownership boundary. |
 | M3.7 Theme Manager | Admin Theme Manager and settings surfaces; frontend Theme rendering remains excluded. |
 | M3.8 Media Library | Media-management and selection surfaces when implemented. |
@@ -892,6 +892,7 @@ Core Modules:
    * Batch 6 follows Batch 5 and precedes full M3.4 closure.
    * M3.R1 follows full M3.4 closure and precedes M3.5; it is outside M3.4.
 5. M3.5 Taxonomy Manager
+   * preparation contract and exact work-unit breakdown before implementation
    * relevant Admin Shell design-adjustment checkpoint before closure
 6. M3.6 Navigation Manager
    * relevant Admin Shell design-adjustment checkpoint before closure

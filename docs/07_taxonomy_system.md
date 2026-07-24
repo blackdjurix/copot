@@ -68,7 +68,10 @@ category
 tag
 ```
 
-The `parent_id` column exists on terms for future hierarchy support, but M1.6 admin UI remains flat and does not provide tree editing.
+The `parent_id` column exists on terms for future hierarchy support, but M1.6
+Admin UI remains flat and does not provide tree editing. M3.5 Taxonomy Manager
+is the separately accepted scope for category hierarchy management; it does not
+authorize taxonomy type CRUD or change the flat `tag` contract.
 
 ---
 
@@ -135,6 +138,22 @@ When the Taxonomy module is disabled:
 M1.6 does not add frontend taxonomy rendering or public taxonomy archive pages.
 
 ---
+
+## M3.5 Taxonomy Manager Boundary
+
+M3.5 evolves this existing module without replacing it. Its accepted scope is
+limited to hierarchically managing `category` terms, keeping `tag` terms flat,
+and preserving the existing Content assignment boundary. Category parent
+validation, cycle prevention, child-safe deletion, and clear Admin hierarchy
+presentation are M3.5 requirements. The existing `taxonomy.create`,
+`taxonomy.update`, and `taxonomy.delete` permissions remain the permission
+boundary; taxonomy type CRUD is excluded.
+
+The dedicated contract is:
+
+```text
+docs/21_m3_5_taxonomy_manager_contract.md
+```
 
 ## Future Work
 
