@@ -12,11 +12,13 @@ product direction, ownership, invariants, preservation boundaries, probable
 work units, validation strategy, and lifecycle gates. It does not authorize
 implementation, branch creation, Git integration, release, tag, or publication.
 
-Product scope is accepted. The dedicated preparation contract is prepared. The
-five implementation work units are locked at responsibility level. Branch
-creation is not authorized and implementation has not started. Preparation is
-`NRP CANDIDATE`, pending review, documentation commit/push, post-Git state
-check, and final preparation closure. Full M3.5 is `NRP NOT REACHED`.
+Product scope is accepted. The dedicated preparation contract is committed to
+`main` at `1e6c837340b0ea561870b7fe729791edcc0aa9f5`
+(`docs(m3.5): lock taxonomy manager preparation contract`), and local and
+remote `main` are synchronized at `0/0`. The five implementation work units
+are locked at responsibility level. Branch creation is not authorized and
+implementation has not started. Preparation is ready for final NRP evaluation;
+full M3.5 is `NRP NOT REACHED`.
 
 ## Milestone Position
 
