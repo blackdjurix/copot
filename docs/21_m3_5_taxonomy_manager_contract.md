@@ -7,18 +7,22 @@ Manager. It manages the existing built-in `category` and `tag` types and does
 not create a replacement module, generic taxonomy platform, or new Core
 abstraction.
 
-This is the M3.5 preparation contract and scope lock. It records accepted
-product direction, ownership, invariants, preservation boundaries, locked
-responsibility-level work units, validation strategy, and lifecycle gates. It does not authorize
-implementation, branch creation, Git integration, release, tag, or publication.
+This is the M3.5 preparation contract and scope lock, now carrying the
+documented Work Unit 1 implementation checkpoint. It records accepted product
+direction, ownership, invariants, preservation boundaries, locked
+responsibility-level work units, validation strategy, and lifecycle gates. It
+does not authorize Git integration, release, tag, or publication.
 
 Product scope is accepted. The dedicated preparation contract is committed to
 `main` at `1e6c837340b0ea561870b7fe729791edcc0aa9f5`
-(`docs(m3.5): lock taxonomy manager preparation contract`), and local and
-remote `main` are synchronized at `0/0`. The five implementation work units
-are locked at responsibility level. Branch creation is not authorized and
-implementation has not started. Preparation is `NRP CONFIRMED`;
-full M3.5 is `NRP NOT REACHED`.
+(`docs(m3.5): lock taxonomy manager preparation contract`). The active
+milestone branch is `feature/m3.5-taxonomy-manager`, and the five implementation
+work units remain locked at responsibility level. Work Unit 1 implementation and
+primary validation are complete; focused compatibility evidence passed, the
+existing baseline schema was sufficient, no schema upgrade or migration artifact
+was required, and production PHP/schema/install-upgrade state remained unchanged.
+Work Unit 1 is `NRP CANDIDATE` pending Git/documentation closure. Full M3.5 is
+`NRP NOT REACHED`.
 
 ## Milestone Position
 
@@ -242,8 +246,14 @@ decisions within each approved work unit.
 
 Verify clean/existing schema support and define baseline fixtures and focused
 compatibility evidence for fixed types, trees, assignments, stale identifiers,
-and deletion states. The preparation contract belongs to the documentation-only
-phase and must be accepted and integrated before an implementation branch exists.
+and deletion states. Implementation and primary validation are complete in
+`tests/m3_5_work_unit1_taxonomy_compatibility.php`: the focused suite passed 25
+assertions, existing Content provisioning/transaction regressions passed, the
+baseline schema was sufficient, and no schema upgrade or migration artifact was
+required. Production PHP/schema/install-upgrade state remained unchanged.
+
+Work Unit 1 is `NRP CANDIDATE` pending Git/documentation closure. The next
+implementation target is Work Unit 2 — Hierarchy Domain and Transaction Safety.
 
 Responsibility-level file groups: focused Taxonomy compatibility tests and fixtures, with
 `database/schema.sql` only if a verified provisioning defect is found, and
@@ -310,11 +320,11 @@ No broad unrelated suite is required without a concrete regression reason.
 
 ## Branch and NRP Lifecycle
 
-Preparation approval is required before branch creation. The provisional branch
-is `feature/m3.5-taxonomy-manager`, based on the accepted synchronized `main`
-preparation anchor, merged to `main`, and deleted locally/remotely only after
-verified containment and closure. No branch exists or is authorized during this
-preparation task.
+Preparation approval was required before branch creation. The active milestone
+branch is `feature/m3.5-taxonomy-manager`, based on the accepted synchronized
+`main` preparation anchor. It is the locked implementation branch for Work
+Units 1–5 and remains unmerged and unclosed pending later user-authorized Git
+closure.
 
 Preparation NRP and full M3.5 NRP are separate. Preparation NRP requires this
 contract, scope approval, dependency review, exact work-unit approval, and an
@@ -323,8 +333,9 @@ implementation, focused validation, applicable runtime/browser evidence,
 documentation, Git integration, clean synchronization, branch cleanup, and
 final verification.
 
-Preparation is `NRP CONFIRMED`; full M3.5 remains `NRP NOT REACHED`. Release,
-tag, and publication remain separately authorized.
+Preparation is `NRP CONFIRMED`; Work Unit 1 is `NRP CANDIDATE` pending Git and
+documentation closure; full M3.5 remains `NRP NOT REACHED`. Release, tag, and
+publication remain separately authorized.
 
 ## Exclusions and Completion Boundary
 
