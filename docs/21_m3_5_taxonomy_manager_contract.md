@@ -8,8 +8,8 @@ not create a replacement module, generic taxonomy platform, or new Core
 abstraction.
 
 This is the M3.5 preparation contract and scope lock. It records accepted
-product direction, ownership, invariants, preservation boundaries, probable
-work units, validation strategy, and lifecycle gates. It does not authorize
+product direction, ownership, invariants, preservation boundaries, locked
+responsibility-level work units, validation strategy, and lifecycle gates. It does not authorize
 implementation, branch creation, Git integration, release, tag, or publication.
 
 Product scope is accepted. The dedicated preparation contract is committed to
@@ -17,7 +17,7 @@ Product scope is accepted. The dedicated preparation contract is committed to
 (`docs(m3.5): lock taxonomy manager preparation contract`), and local and
 remote `main` are synchronized at `0/0`. The five implementation work units
 are locked at responsibility level. Branch creation is not authorized and
-implementation has not started. Preparation is ready for final NRP evaluation;
+implementation has not started. Preparation is `NRP CONFIRMED`;
 full M3.5 is `NRP NOT REACHED`.
 
 ## Milestone Position
@@ -231,11 +231,12 @@ The reusable Admin Shell adjustment contract applies only to Taxonomy surfaces:
 
 This checkpoint must not reopen M3.R1 or alter unrelated Admin surfaces.
 
-## Probable Work Units
+## Locked Responsibility-Level Work Units
 
-The roadmap's five-unit envelope is provisionally justified by separate domain,
-security, presentation, and closure risks. The exact breakdown remains subject
-to approval.
+The five implementation work units are locked at responsibility level across
+the separate domain, security, presentation, and closure risks. Exact
+implementation file scope and internal task decomposition remain just-in-time
+decisions within each approved work unit.
 
 ### Work Unit 1 — Provisioning, Baseline Fixtures, and Focused Compatibility Evidence
 
@@ -244,7 +245,7 @@ compatibility evidence for fixed types, trees, assignments, stale identifiers,
 and deletion states. The preparation contract belongs to the documentation-only
 phase and must be accepted and integrated before an implementation branch exists.
 
-Probable files: focused Taxonomy compatibility tests and fixtures, with
+Responsibility-level file groups: focused Taxonomy compatibility tests and fixtures, with
 `database/schema.sql` only if a verified provisioning defect is found, and
 documentation updates only where evidence requires them. Validation is schema,
 clean-install, upgrade, fixture, and focused compatibility review. Stop on
@@ -255,7 +256,7 @@ unresolved schema or compatibility.
 Enforce category parenting, cycle prevention, tag flatness, child-safe deletion,
 and atomic writes in Taxonomy services/repositories.
 
-Probable files: `modules/taxonomy/Services/TaxonomyRepository.php`,
+Responsibility-level file groups: `modules/taxonomy/Services/TaxonomyRepository.php`,
 `TaxonomyAssignmentRepository.php`, type/term models, and focused domain tests.
 Validate parent existence, same-type rules, self/descendant rejection, cycles,
 stale IDs, tag flatness, deletion safety, rollback, and Content assignments.
@@ -266,7 +267,7 @@ Stop on partial writes, unsafe deletion, or assignment regression.
 Apply the invariant boundary to existing configured-path routes and permission-
 aware mutations.
 
-Probable files: `modules/taxonomy/routes.php`, `module.json`, and focused
+Responsibility-level file groups: `modules/taxonomy/routes.php`, `module.json`, and focused
 security tests. Validate the permission matrix, authorization-before-CSRF,
 CSRF, identifiers, wrong-type/missing targets, controlled failures, configured
 paths, and escaping. Stop on disclosure, route drift, or ownership leakage.
@@ -276,7 +277,7 @@ paths, and escaping. Stop on disclosure, route drift, or ownership leakage.
 Add accessible category hierarchy and tag-flat surfaces using existing Admin
 patterns.
 
-Probable files: `modules/taxonomy/views/admin/types.php`, `terms.php`,
+Responsibility-level file groups: `modules/taxonomy/views/admin/types.php`, `terms.php`,
 `form.php`, shared CSS only if an approved gap is proven, and presentation
 tests. Validate semantic hierarchy, selectors, action visibility, states,
 desktop/mobile/narrow-mobile, keyboard/focus, labels, touch targets, and zoom.
@@ -287,7 +288,7 @@ Stop on inaccessible controls or unrelated shell expansion.
 Prove Content compatibility, installation/package compatibility where affected,
 focused regressions, documentation, and lifecycle closure.
 
-Probable files: focused tests and authorized documentation. Validate assignment
+Responsibility-level file groups: focused tests and authorized documentation. Validate assignment
 regressions, security, package/clean install where relevant, PHP lint, runtime
 hashes only if synchronization occurs, authenticated browser evidence,
 accessibility, `git diff --check`, final diff, containment, and clean state.
@@ -322,7 +323,7 @@ implementation, focused validation, applicable runtime/browser evidence,
 documentation, Git integration, clean synchronization, branch cleanup, and
 final verification.
 
-This task does not claim preparation or full M3.5 `NRP CONFIRMED`. Release,
+Preparation is `NRP CONFIRMED`; full M3.5 remains `NRP NOT REACHED`. Release,
 tag, and publication remain separately authorized.
 
 ## Exclusions and Completion Boundary
