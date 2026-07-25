@@ -8,10 +8,10 @@ not create a replacement module, generic taxonomy platform, or new Core
 abstraction.
 
 This is the M3.5 preparation contract and scope lock, now carrying the
-documented Work Unit 1 implementation checkpoint. It records accepted product
-direction, ownership, invariants, preservation boundaries, locked
-responsibility-level work units, validation strategy, and lifecycle gates. It
-does not authorize Git integration, release, tag, or publication.
+documented Work Unit 1 and Work Unit 2 implementation checkpoints. It records
+accepted product direction, ownership, invariants, preservation boundaries,
+locked responsibility-level work units, validation strategy, and lifecycle
+gates. It does not authorize Git integration, release, tag, or publication.
 
 Product scope is accepted. The dedicated preparation contract is committed to
 `main` at `1e6c837340b0ea561870b7fe729791edcc0aa9f5`
@@ -21,8 +21,12 @@ work units remain locked at responsibility level. Work Unit 1 implementation and
 primary validation are complete; focused compatibility evidence passed, the
 existing baseline schema was sufficient, no schema upgrade or migration artifact
 was required, and production PHP/schema/install-upgrade state remained unchanged.
-Work Unit 1 is `NRP CONFIRMED`; documentation and Git closure are complete through this integration. Full M3.5 is
-`NRP NOT REACHED`.
+Work Unit 2 implementation and primary validation are also complete; focused
+domain validation passed 39 assertions, Work Unit 1 compatibility regression
+passed 25 assertions, and the Content transaction/lifecycle regression passed 37
+assertions. Work Units 1 and 2 are `NRP CONFIRMED`; documentation and Git closure
+are complete through this integration. Work Unit 3 — Authorization and Route
+Orchestration is next and has not started. Full M3.5 is `NRP NOT REACHED`.
 
 ## Milestone Position
 
@@ -252,8 +256,9 @@ assertions, existing Content provisioning/transaction regressions passed, the
 baseline schema was sufficient, and no schema upgrade or migration artifact was
 required. Production PHP/schema/install-upgrade state remained unchanged.
 
-Work Unit 1 is `NRP CONFIRMED`; documentation and Git closure are complete through this integration. The next
-implementation target is Work Unit 2 — Hierarchy Domain and Transaction Safety.
+Work Unit 1 is `NRP CONFIRMED`; documentation and Git closure are complete
+through this integration. Work Unit 2 is also complete and `NRP CONFIRMED`;
+Work Unit 3 — Authorization and Route Orchestration is next and has not started.
 
 Responsibility-level file groups: focused Taxonomy compatibility tests and fixtures, with
 `database/schema.sql` only if a verified provisioning defect is found, and
@@ -265,6 +270,31 @@ unresolved schema or compatibility.
 
 Enforce category parenting, cycle prevention, tag flatness, child-safe deletion,
 and atomic writes in Taxonomy services/repositories.
+
+Implementation is complete in `modules/taxonomy/Services/TaxonomyRepository.php`
+with focused coverage in `tests/m3_5_work_unit2_taxonomy_domain.php`. Persisted
+category parents must exist and belong to the managed category type; self-parent,
+descendant-parent, existing-cycle, unresolved-ancestor, malformed/stale parent,
+and wrong-type parent cases fail closed. Ancestor traversal uses a visited-ID set
+and a deterministic safe depth bound. Tags remain flat, term type mutation is
+rejected, and create/update/delete mutations execute within repository-owned root
+transactions while preserving an existing caller transaction.
+
+Deletion remains protected for assigned terms and now rejects categories with
+children. Unused leaf categories and unused tags may be deleted. WU2 required no
+schema, migration, route, UI, Core, Content production, or install/upgrade change,
+and existing Content assignment compatibility is preserved.
+
+Primary local PHP 8.5.7 / MySQL validation passed 39 focused WU2 assertions. The
+WU1 Taxonomy compatibility regression passed 25 assertions and the M3.4 Content
+foundation transaction/lifecycle regression passed 37 assertions. A one-line
+focused-test harness correction changed the `$rejects` helper from catching only
+`RuntimeException` to catching `Throwable`, so expected `InvalidArgumentException`
+domain rejections are recognized without changing production behavior.
+
+Work Unit 2 is `NRP CONFIRMED`; documentation and Git closure are complete
+through this integration. Work Unit 3 — Authorization and Route Orchestration is
+next and has not started.
 
 Responsibility-level file groups: `modules/taxonomy/Services/TaxonomyRepository.php`,
 `TaxonomyAssignmentRepository.php`, type/term models, and focused domain tests.
@@ -332,8 +362,10 @@ implementation, focused validation, applicable runtime/browser evidence,
 documentation, Git integration, clean synchronization, branch cleanup, and
 final verification.
 
-Preparation is `NRP CONFIRMED`; Work Unit 1 is `NRP CONFIRMED` after implementation, focused validation, documentation, and Git closure; full M3.5 remains `NRP NOT REACHED`. Release, tag, and
-publication remain separately authorized.
+Preparation is `NRP CONFIRMED`; Work Units 1 and 2 are `NRP CONFIRMED` after
+implementation, focused validation, documentation, and Git closure. Work Unit 3
+is next and has not started. Full M3.5 remains `NRP NOT REACHED`. Release, tag,
+and publication remain separately authorized.
 
 ## Exclusions and Completion Boundary
 
