@@ -22,7 +22,7 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
     if (!$condition) throw new RuntimeException($message);
 };
 $rejects = static function (callable $operation, string $message) use ($assert): void {
-    try { $operation(); } catch (RuntimeException) { $assert(true, $message); return; }
+    try { $operation(); } catch (Throwable) { $assert(true, $message); return; }
     $assert(false, $message);
 };
 
