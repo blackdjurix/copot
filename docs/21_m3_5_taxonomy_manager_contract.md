@@ -21,7 +21,7 @@ work units remain locked at responsibility level. Work Unit 1 implementation and
 primary validation are complete; focused compatibility evidence passed, the
 existing baseline schema was sufficient, no schema upgrade or migration artifact
 was required, and production PHP/schema/install-upgrade state remained unchanged.
-Work Unit 1 is `NRP CANDIDATE` pending Git/documentation closure. Full M3.5 is
+Work Unit 1 is `NRP CONFIRMED`; documentation and Git closure are complete through this integration. Full M3.5 is
 `NRP NOT REACHED`.
 
 ## Milestone Position
@@ -252,7 +252,7 @@ assertions, existing Content provisioning/transaction regressions passed, the
 baseline schema was sufficient, and no schema upgrade or migration artifact was
 required. Production PHP/schema/install-upgrade state remained unchanged.
 
-Work Unit 1 is `NRP CANDIDATE` pending Git/documentation closure. The next
+Work Unit 1 is `NRP CONFIRMED`; documentation and Git closure are complete through this integration. The next
 implementation target is Work Unit 2 — Hierarchy Domain and Transaction Safety.
 
 Responsibility-level file groups: focused Taxonomy compatibility tests and fixtures, with
@@ -323,8 +323,7 @@ No broad unrelated suite is required without a concrete regression reason.
 Preparation approval was required before branch creation. The active milestone
 branch is `feature/m3.5-taxonomy-manager`, based on the accepted synchronized
 `main` preparation anchor. It is the locked implementation branch for Work
-Units 1–5 and remains unmerged and unclosed pending later user-authorized Git
-closure.
+Units 1–5 and remains the active milestone branch for Work Units 1–5; milestone merge and milestone-branch deletion have not started.
 
 Preparation NRP and full M3.5 NRP are separate. Preparation NRP requires this
 contract, scope approval, dependency review, exact work-unit approval, and an
@@ -333,8 +332,7 @@ implementation, focused validation, applicable runtime/browser evidence,
 documentation, Git integration, clean synchronization, branch cleanup, and
 final verification.
 
-Preparation is `NRP CONFIRMED`; Work Unit 1 is `NRP CANDIDATE` pending Git and
-documentation closure; full M3.5 remains `NRP NOT REACHED`. Release, tag, and
+Preparation is `NRP CONFIRMED`; Work Unit 1 is `NRP CONFIRMED` after implementation, focused validation, documentation, and Git closure; full M3.5 remains `NRP NOT REACHED`. Release, tag, and
 publication remain separately authorized.
 
 ## Exclusions and Completion Boundary
