@@ -132,10 +132,31 @@ $taxonomyResolveType = function (string $typeSlug) use ($taxonomyRepository, $ta
     return $taxonomyRepository->findTypeBySlug($typeSlug);
 };
 
-$taxonomyResolveTerm = function (string $typeSlug, int $termId) use ($taxonomyRepository, $taxonomyResolveType): array {
-    $type = $taxonomyResolveType($typeSlug);
+$taxonomyPositiveRouteId = static function (mixed $value): ?int {
+    if (!is_int($value) && !is_string($value)) {
+        return null;
+    }
 
-    if (!$type || $termId <= 0) {
+    $raw = (string) $value;
+
+    if (preg_match('/^[1-9][0-9]*$/D', $raw) !== 1) {
+        return null;
+    }
+
+    $id = (int) $raw;
+
+    if ($id <= 0 || (string) $id !== $raw) {
+        return null;
+    }
+
+    return $id;
+};
+
+$taxonomyResolveTerm = function (string $typeSlug, mixed $termId) use ($taxonomyRepository, $taxonomyResolveType, $taxonomyPositiveRouteId): array {
+    $type = $taxonomyResolveType($typeSlug);
+    $termId = $taxonomyPositiveRouteId($termId);
+
+    if (!$type || $termId === null) {
         return [null, null];
     }
 
@@ -171,7 +192,7 @@ $taxonomyToFormData = function (?TaxonomyTerm $term = null): array {
 $taxonomyReadFormData = function ($request, TaxonomyType $type, ?TaxonomyTerm $existing = null) use ($taxonomyRepository, $taxonomySlugger): array {
     $data = [
         'taxonomy_type_id' => $type->id(),
-        'parent_id' => null,
+        'parent_id' => $request->input('parent_id', null),
         'name' => trim((string) $request->input('name', '')),
         'slug' => trim((string) $request->input('slug', '')),
         'description' => (string) $request->input('description', ''),
@@ -225,7 +246,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/edit')
         return $user;
     }
 
-    [$type, $term] = $taxonomyResolveTerm((string) ($params['type'] ?? ''), (int) ($params['term_id'] ?? 0));
+    [$type, $term] = $taxonomyResolveTerm((string) ($params['type'] ?? ''), $params['term_id'] ?? null);
 
     if (!$type || !$term) {
         return $app->adminErrors()->response($request, 404);
@@ -367,19 +388,19 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/delet
     $taxonomyValidateCsrf,
     $taxonomyAdminBase
 ): Response {
-    $csrfResponse = $taxonomyValidateCsrf($request);
-
-    if ($csrfResponse) {
-        return $csrfResponse;
-    }
-
     $user = $taxonomyRequireAdmin($request, ['taxonomy.delete']);
 
     if ($user instanceof Response) {
         return $user;
     }
 
-    [$type, $term] = $taxonomyResolveTerm((string) ($params['type'] ?? ''), (int) ($params['term_id'] ?? 0));
+    $csrfResponse = $taxonomyValidateCsrf($request);
+
+    if ($csrfResponse) {
+        return $csrfResponse;
+    }
+
+    [$type, $term] = $taxonomyResolveTerm((string) ($params['type'] ?? ''), $params['term_id'] ?? null);
 
     if (!$type || !$term) {
         return $app->adminErrors()->response($request, 404);
@@ -388,6 +409,13 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/delet
     try {
         $taxonomyRepository->deleteTermIfUnused($term->id(), $taxonomyAssignments);
     } catch (RuntimeException $exception) {
+        if (!in_array($exception->getMessage(), [
+            'Taxonomy term cannot be deleted while it is assigned.',
+            'Taxonomy category cannot be deleted while it has children.',
+        ], true)) {
+            return $app->adminErrors()->response($request, 503);
+        }
+
         $terms = $taxonomyRepository->termsByType($type->slug());
         $usageCounts = [];
 
@@ -408,6 +436,8 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/delet
         ]);
 
         return $taxonomyRenderAdmin($type->name(), $content, $user, $request->path(), 409);
+    } catch (Throwable) {
+        return $app->adminErrors()->response($request, 503);
     }
 
     return Response::redirect($app->adminUrl()->childUrl('taxonomy/' . $type->slug()));
@@ -425,25 +455,29 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}'), fu
     $taxonomyValidateCsrf,
     $taxonomyAdminBase
 ): Response {
-    $csrfResponse = $taxonomyValidateCsrf($request);
-
-    if ($csrfResponse) {
-        return $csrfResponse;
-    }
-
     $user = $taxonomyRequireAdmin($request, ['taxonomy.update']);
 
     if ($user instanceof Response) {
         return $user;
     }
 
-    [$type, $term] = $taxonomyResolveTerm((string) ($params['type'] ?? ''), (int) ($params['term_id'] ?? 0));
+    $csrfResponse = $taxonomyValidateCsrf($request);
+
+    if ($csrfResponse) {
+        return $csrfResponse;
+    }
+
+    [$type, $term] = $taxonomyResolveTerm((string) ($params['type'] ?? ''), $params['term_id'] ?? null);
 
     if (!$type || !$term) {
         return $app->adminErrors()->response($request, 404);
     }
 
-    [$data, $errors] = $taxonomyReadFormData($request, $type, $term);
+    try {
+        [$data, $errors] = $taxonomyReadFormData($request, $type, $term);
+    } catch (Throwable) {
+        return $app->adminErrors()->response($request, 503);
+    }
 
     if ($errors !== []) {
         $content = $taxonomyRenderView('form', [
@@ -475,6 +509,8 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}'), fu
         ]);
 
         return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user, $request->path(), 422);
+    } catch (Throwable) {
+        return $app->adminErrors()->response($request, 503);
     }
 
     return Response::redirect($app->adminUrl()->childUrl('taxonomy/' . $type->slug()));
@@ -492,16 +528,16 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}'), function ($r
     $taxonomyValidateCsrf,
     $taxonomyAdminBase
 ): Response {
-    $csrfResponse = $taxonomyValidateCsrf($request);
-
-    if ($csrfResponse) {
-        return $csrfResponse;
-    }
-
     $user = $taxonomyRequireAdmin($request, ['taxonomy.create']);
 
     if ($user instanceof Response) {
         return $user;
+    }
+
+    $csrfResponse = $taxonomyValidateCsrf($request);
+
+    if ($csrfResponse) {
+        return $csrfResponse;
     }
 
     $type = $taxonomyResolveType((string) ($params['type'] ?? ''));
@@ -510,7 +546,11 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}'), function ($r
         return $app->adminErrors()->response($request, 404);
     }
 
-    [$data, $errors] = $taxonomyReadFormData($request, $type);
+    try {
+        [$data, $errors] = $taxonomyReadFormData($request, $type);
+    } catch (Throwable) {
+        return $app->adminErrors()->response($request, 503);
+    }
 
     if ($errors !== []) {
         $content = $taxonomyRenderView('form', [
@@ -542,6 +582,8 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}'), function ($r
         ]);
 
         return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user, $request->path(), 422);
+    } catch (Throwable) {
+        return $app->adminErrors()->response($request, 503);
     }
 
     return Response::redirect($app->adminUrl()->childUrl('taxonomy/' . $type->slug()));
