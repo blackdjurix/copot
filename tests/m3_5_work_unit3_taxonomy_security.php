@@ -95,7 +95,7 @@ try {
     $assignments = new TaxonomyAssignmentRepository($database);
     $db = $database->connection();
     $auth = new Wu3AuthSpy(null);
-    $csrf = new Wu3CsrfSpy();
+    $csrf = new Wu3CsrfSpy($app->session());
 
     $alternate = new class($app, $database, $auth, $csrf) {
         public function __construct(private Application $app, private Database $databaseValue, private Auth $authValue, private Csrf $csrfValue) {}
