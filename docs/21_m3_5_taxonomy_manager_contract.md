@@ -8,7 +8,7 @@ not create a replacement module, generic taxonomy platform, or new Core
 abstraction.
 
 This is the M3.5 preparation contract and scope lock, now carrying the
-documented Work Unit 1, Work Unit 2, and Work Unit 3 implementation checkpoints. It records
+documented Work Unit 1 through Work Unit 4 implementation checkpoints. It records
 accepted product direction, ownership, invariants, preservation boundaries,
 locked responsibility-level work units, validation strategy, and lifecycle
 gates. It does not authorize Git integration, release, tag, or publication.
@@ -27,7 +27,14 @@ passed 25 assertions, and the Content transaction/lifecycle regression passed 37
 assertions. Work Units 1 and 2 are `NRP CONFIRMED`; documentation and Git closure
 are complete through this integration. Work Unit 3 — Authorization and Route
 Orchestration implementation and primary validation are complete; WU3 is `NRP
-CONFIRMED`. Full M3.5 is `NRP NOT REACHED`.
+CONFIRMED`. Work Unit 4 implementation is complete in `e092a87..20de704`;
+focused presentation validation passed 11 assertions, the required WU3/WU2/WU1
+and Content regressions passed 41/39/25/37 assertions, and isolated browser
+validation passed the configured `/admin` Taxonomy surfaces and responsive checks
+at 1440×900, 390×844, and 320×800. AI Acceptance is `PARTIAL`; Human Acceptance
+is `PENDING` for true 200% zoom and permission-restricted/empty/unavailable
+browser evidence not established by the available harness. WU4 is an `NRP
+CANDIDATE`; WU5 is next. Full M3.5 is `NRP NOT REACHED`.
 
 ## Milestone Position
 
@@ -323,6 +330,17 @@ tests. Validate semantic hierarchy, selectors, action visibility, states,
 desktop/mobile/narrow-mobile, keyboard/focus, labels, touch targets, and zoom.
 Stop on inaccessible controls or unrelated shell expansion.
 
+WU4 implementation is complete in `e092a87..20de704`. The focused presentation
+suite passes 11 assertions; WU3 security, WU2 domain, WU1 compatibility, and
+the M3.4 Content transaction/lifecycle baseline pass 41, 39, 25, and 37
+assertions. Isolated browser validation passes the configured `/admin` landing,
+category/tag workspaces and forms, category self/descendant exclusion, flat-tag
+presentation, validation associations, controlled not-found states, and
+responsive no-overflow checks at 1440×900, 390×844, and 320×800. True 200%
+zoom and permission-restricted, empty, and unavailable browser fixtures remain
+unproven in the available harness; AI Acceptance is `PARTIAL`, Human Acceptance
+is `PENDING`, and WU4 is an `NRP CANDIDATE` pending those criteria.
+
 ### Work Unit 5 — Integration, Hardening, Documentation, and Closure
 
 Prove Content compatibility, installation/package compatibility where affected,
@@ -362,9 +380,10 @@ implementation, focused validation, applicable runtime/browser evidence,
 documentation, Git integration, clean synchronization, branch cleanup, and
 final verification.
 
-Preparation is `NRP CONFIRMED`; Work Units 1 and 2 are `NRP CONFIRMED` after
-implementation, focused validation, documentation, and Git closure. Work Unit 3
-implementation and primary validation are complete; WU3 is `NRP CONFIRMED`. Full M3.5 remains NRP NOT REACHED. Release, tag,
+Preparation is `NRP CONFIRMED`; Work Units 1–3 are `NRP CONFIRMED` after
+implementation, focused validation, documentation, and Git closure. Work Unit 4
+implementation and primary validation are complete; WU4 is an `NRP CANDIDATE`
+pending the named acceptance evidence. WU5 is next. Full M3.5 remains NRP NOT REACHED. Release, tag,
 and publication remain separately authorized.
 
 ## Exclusions and Completion Boundary
