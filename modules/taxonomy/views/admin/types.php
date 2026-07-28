@@ -31,10 +31,12 @@
                                     <span class="admin-table-meta">Built-in type: <?= htmlspecialchars($type->slug(), ENT_QUOTES, 'UTF-8') ?></span>
                                 </td>
                                 <td>
-                                    <span class="admin-badge <?= $type->isHierarchical() ? 'admin-badge--info' : '' ?>"><?= $type->isHierarchical() ? 'Hierarchical' : 'Flat' ?></span>
                                     <span class="admin-table-meta">
                                         <?= $type->slug() === 'category' ? 'Organize content into parent and child groups.' : 'Apply independent labels without nesting.' ?>
                                     </span>
+                                </td>
+                                <td>
+                                    <span class="admin-badge <?= $type->isHierarchical() ? 'admin-badge--info' : '' ?>"><?= $type->isHierarchical() ? 'Hierarchical' : 'Flat' ?></span>
                                 </td>
                                 <td>
                                     <a class="admin-button admin-button--link" href="<?= htmlspecialchars($adminUrl('taxonomy/' . $type->slug()), ENT_QUOTES, 'UTF-8') ?>">Open</a>

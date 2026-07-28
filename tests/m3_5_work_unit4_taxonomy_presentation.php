@@ -66,6 +66,11 @@ $form = $render($basePath . '/modules/taxonomy/views/admin/form.php', [
     'csrfToken' => 'token', 'term' => ['name' => '', 'slug' => '', 'description' => '<unsafe>', 'sort_order' => 0, 'parent_id' => 1],
     'parentCandidates' => [['term' => $root, 'depth' => 0]], 'heading' => 'Create Category', 'submitLabel' => 'Create term', 'adminUrl' => $adminUrl,
 ]);
+$restricted = $render($basePath . '/modules/taxonomy/views/admin/terms.php', [
+    'type' => $tagType, 'terms' => [$root], 'usageCounts' => [1 => 0],
+    'canCreate' => false, 'canUpdate' => false, 'canDelete' => false,
+    'csrfToken' => 'token', 'adminUrl' => $adminUrl, 'error' => null,
+]);
 
 $assert(str_contains($types, 'category') && str_contains($types, 'tag'), 'Landing does not present only the fixed built-in types.');
 $assert(str_contains($types, 'Hierarchical') && str_contains($types, 'Flat'), 'Landing does not communicate hierarchy modes.');
@@ -74,6 +79,9 @@ $assert(str_contains($categories, 'Has children') && str_contains($categories, '
 $assert(str_contains($tags, 'Tags are flat') && !str_contains($tags, 'parent_id'), 'Tag presentation exposes hierarchy controls.');
 $assert(str_contains($form, 'for="parent_id"') && str_contains($form, 'Root category (no parent)'), 'Category parent selector lacks an associated root option.');
 $assert(str_contains($form, 'aria-describedby="taxonomy-error-name"'), 'Validation error is not associated with the name field.');
+$assert(str_contains($form, 'aria-invalid="true"'), 'Invalid fields are not marked invalid.');
+$assert(!str_contains($form, 'Child'), 'Edit form did not exclude the descendant parent candidate.');
+$assert(str_contains($restricted, 'No actions available') && !str_contains($restricted, '>Edit<'), 'Permission-restricted actions are still rendered.');
 $assert(str_contains($form, '&lt;unsafe&gt;'), 'Unexpected term content is not escaped.');
 
 echo "M3.5 Work Unit 4 Taxonomy presentation tests passed ({$assertions} assertions)." . PHP_EOL;

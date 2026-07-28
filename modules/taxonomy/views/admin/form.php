@@ -35,6 +35,13 @@
             $describedBy = static function (string $field) use ($fieldErrors): string {
                 return $fieldErrors[$field] === [] ? '' : 'taxonomy-error-' . $field;
             };
+            $fieldAttributes = static function (string $field) use ($fieldErrors, $describedBy): string {
+                if ($fieldErrors[$field] === []) {
+                    return '';
+                }
+
+                return ' aria-describedby="' . htmlspecialchars($describedBy($field), ENT_QUOTES, 'UTF-8') . '" aria-invalid="true"';
+            };
             ?>
             <div class="admin-field">
                 <label class="admin-field__label" for="name">
@@ -42,13 +49,13 @@
                     <span class="admin-field__required" aria-hidden="true">*</span>
                     <span class="admin-visually-hidden">required</span>
                 </label>
-                <input id="name" name="name" type="text" value="<?= htmlspecialchars($term['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>" required aria-describedby="<?= htmlspecialchars($describedBy('name'), ENT_QUOTES, 'UTF-8') ?>">
+                <input id="name" name="name" type="text" value="<?= htmlspecialchars($term['name'] ?? '', ENT_QUOTES, 'UTF-8') ?>" required<?= $fieldAttributes('name') ?>">
                 <?php if ($fieldErrors['name'] !== []): ?><p class="admin-field__error" id="taxonomy-error-name"><?= htmlspecialchars(implode(' ', $fieldErrors['name']), ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
             </div>
 
             <div class="admin-field">
                 <label class="admin-field__label" for="slug">Slug</label>
-                <input id="slug" name="slug" type="text" value="<?= htmlspecialchars($term['slug'] ?? '', ENT_QUOTES, 'UTF-8') ?>" aria-describedby="<?= htmlspecialchars($describedBy('slug'), ENT_QUOTES, 'UTF-8') ?>">
+                <input id="slug" name="slug" type="text" value="<?= htmlspecialchars($term['slug'] ?? '', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAttributes('slug') ?>>
             </div>
 
             <div class="admin-field">
@@ -58,14 +65,14 @@
 
             <div class="admin-field">
                 <label class="admin-field__label" for="sort_order">Sort order</label>
-                <input id="sort_order" name="sort_order" type="number" value="<?= htmlspecialchars((string) ($term['sort_order'] ?? 0), ENT_QUOTES, 'UTF-8') ?>" aria-describedby="<?= htmlspecialchars($describedBy('sort_order'), ENT_QUOTES, 'UTF-8') ?>">
+                <input id="sort_order" name="sort_order" type="number" value="<?= htmlspecialchars((string) ($term['sort_order'] ?? 0), ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAttributes('sort_order') ?>>
                 <?php if ($fieldErrors['sort_order'] !== []): ?><p class="admin-field__error" id="taxonomy-error-sort_order"><?= htmlspecialchars(implode(' ', $fieldErrors['sort_order']), ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
             </div>
 
             <?php if ($type?->isHierarchical()): ?>
                 <div class="admin-field">
                     <label class="admin-field__label" for="parent_id">Parent category</label>
-                    <select id="parent_id" name="parent_id" aria-describedby="<?= htmlspecialchars($describedBy('parent_id'), ENT_QUOTES, 'UTF-8') ?>">
+                    <select id="parent_id" name="parent_id"<?= $fieldAttributes('parent_id') ?>>
                         <option value="">Root category (no parent)</option>
                         <?php foreach (($parentCandidates ?? []) as $candidate): ?>
                             <?php $candidateTerm = $candidate['term']; ?>
