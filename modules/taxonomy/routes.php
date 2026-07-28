@@ -177,6 +177,7 @@ $taxonomyToFormData = function (?TaxonomyTerm $term = null): array {
             'slug' => '',
             'description' => '',
             'sort_order' => 0,
+            'parent_id' => null,
         ];
     }
 
@@ -186,7 +187,50 @@ $taxonomyToFormData = function (?TaxonomyTerm $term = null): array {
         'slug' => $term->slug(),
         'description' => $term->description() ?? '',
         'sort_order' => $term->sortOrder(),
+        'parent_id' => $term->parentId(),
     ];
+};
+
+$taxonomyParentCandidates = function (TaxonomyType $type, ?int $currentId = null) use ($taxonomyRepository): array {
+    if (!$type->isHierarchical()) {
+        return [];
+    }
+
+    $terms = $taxonomyRepository->termsByType($type->slug());
+    $byParent = [];
+
+    foreach ($terms as $term) {
+        $byParent[$term->parentId() ?? 0][] = $term;
+    }
+
+    $excluded = [];
+    if ($currentId !== null) {
+        $stack = [$currentId];
+        while ($stack !== []) {
+            $id = array_pop($stack);
+            if (isset($excluded[$id])) {
+                continue;
+            }
+            $excluded[$id] = true;
+            foreach ($byParent[$id] ?? [] as $child) {
+                $stack[] = $child->id();
+            }
+        }
+    }
+
+    $candidates = [];
+    $walk = function (?int $parentId, int $depth) use (&$walk, &$candidates, $byParent, $excluded): void {
+        foreach ($byParent[$parentId ?? 0] ?? [] as $term) {
+            if (isset($excluded[$term->id()])) {
+                continue;
+            }
+            $candidates[] = ['term' => $term, 'depth' => $depth];
+            $walk($term->id(), $depth + 1);
+        }
+    };
+    $walk(null, 0);
+
+    return $candidates;
 };
 
 $taxonomyReadFormData = function ($request, TaxonomyType $type, ?TaxonomyTerm $existing = null) use ($taxonomyRepository, $taxonomySlugger): array {
@@ -238,7 +282,8 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/edit')
     $taxonomyRenderAdmin,
     $taxonomyRenderView,
     $taxonomyResolveTerm,
-    $taxonomyToFormData
+    $taxonomyToFormData,
+    $taxonomyParentCandidates
 ): Response {
     $user = $taxonomyRequireAdmin($request, ['taxonomy.update']);
 
@@ -261,6 +306,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}/edit')
         'csrfToken' => $app->csrf()->token(),
         'errors' => [],
         'term' => $taxonomyToFormData($term),
+        'parentCandidates' => $taxonomyParentCandidates($type, $term->id()),
     ]);
 
     return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user, $request->path());
@@ -273,7 +319,8 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/create'), functi
     $taxonomyRenderAdmin,
     $taxonomyRenderView,
     $taxonomyResolveType,
-    $taxonomyToFormData
+    $taxonomyToFormData,
+    $taxonomyParentCandidates
 ): Response {
     $user = $taxonomyRequireAdmin($request, ['taxonomy.create']);
 
@@ -296,6 +343,7 @@ $app->router()->get($app->adminUrl()->childUrl('taxonomy/{type}/create'), functi
         'csrfToken' => $app->csrf()->token(),
         'errors' => [],
         'term' => $taxonomyToFormData(),
+        'parentCandidates' => $taxonomyParentCandidates($type),
     ]);
 
     return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user, $request->path());
@@ -452,6 +500,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}'), fu
     $taxonomyResolveTerm,
     $taxonomyReadFormData,
     $taxonomyToFormData,
+    $taxonomyParentCandidates,
     $taxonomyValidateCsrf,
     $taxonomyAdminBase
 ): Response {
@@ -489,6 +538,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}'), fu
             'csrfToken' => $app->csrf()->token(),
             'errors' => $errors,
             'term' => array_merge($taxonomyToFormData($term), $data),
+            'parentCandidates' => $taxonomyParentCandidates($type, $term->id()),
         ]);
 
         return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user, $request->path(), 422);
@@ -506,6 +556,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}/{term_id}'), fu
             'csrfToken' => $app->csrf()->token(),
             'errors' => [$exception->getMessage()],
             'term' => array_merge($taxonomyToFormData($term), $data),
+            'parentCandidates' => $taxonomyParentCandidates($type, $term->id()),
         ]);
 
         return $taxonomyRenderAdmin('Edit Taxonomy Term', $content, $user, $request->path(), 422);
@@ -525,6 +576,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}'), function ($r
     $taxonomyResolveType,
     $taxonomyReadFormData,
     $taxonomyToFormData,
+    $taxonomyParentCandidates,
     $taxonomyValidateCsrf,
     $taxonomyAdminBase
 ): Response {
@@ -562,6 +614,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}'), function ($r
             'csrfToken' => $app->csrf()->token(),
             'errors' => $errors,
             'term' => array_merge($taxonomyToFormData(), $data),
+            'parentCandidates' => $taxonomyParentCandidates($type),
         ]);
 
         return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user, $request->path(), 422);
@@ -579,6 +632,7 @@ $app->router()->post($app->adminUrl()->childUrl('taxonomy/{type}'), function ($r
             'csrfToken' => $app->csrf()->token(),
             'errors' => [$exception->getMessage()],
             'term' => array_merge($taxonomyToFormData(), $data),
+            'parentCandidates' => $taxonomyParentCandidates($type),
         ]);
 
         return $taxonomyRenderAdmin('Create Taxonomy Term', $content, $user, $request->path(), 422);
