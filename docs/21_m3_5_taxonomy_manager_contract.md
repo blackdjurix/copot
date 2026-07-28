@@ -8,7 +8,7 @@ not create a replacement module, generic taxonomy platform, or new Core
 abstraction.
 
 This is the M3.5 preparation contract and scope lock, now carrying the
-documented Work Unit 1 and Work Unit 2 implementation checkpoints. It records
+documented Work Unit 1, Work Unit 2, and Work Unit 3 implementation checkpoints. It records
 accepted product direction, ownership, invariants, preservation boundaries,
 locked responsibility-level work units, validation strategy, and lifecycle
 gates. It does not authorize Git integration, release, tag, or publication.
@@ -26,7 +26,8 @@ domain validation passed 39 assertions, Work Unit 1 compatibility regression
 passed 25 assertions, and the Content transaction/lifecycle regression passed 37
 assertions. Work Units 1 and 2 are `NRP CONFIRMED`; documentation and Git closure
 are complete through this integration. Work Unit 3 — Authorization and Route
-Orchestration is next and has not started. Full M3.5 is `NRP NOT REACHED`.
+Orchestration implementation and primary validation are complete; WU3 is `NRP
+CONFIRMED`. Full M3.5 is `NRP NOT REACHED`.
 
 ## Milestone Position
 
@@ -258,7 +259,7 @@ required. Production PHP/schema/install-upgrade state remained unchanged.
 
 Work Unit 1 is `NRP CONFIRMED`; documentation and Git closure are complete
 through this integration. Work Unit 2 is also complete and `NRP CONFIRMED`;
-Work Unit 3 — Authorization and Route Orchestration is next and has not started.
+Work Unit 3 implementation and primary validation are complete; WU3 is `NRP CONFIRMED`.
 
 Responsibility-level file groups: focused Taxonomy compatibility tests and fixtures, with
 `database/schema.sql` only if a verified provisioning defect is found, and
@@ -304,8 +305,7 @@ Stop on partial writes, unsafe deletion, or assignment regression.
 
 ### Work Unit 3 — Authorization and Route Orchestration
 
-Apply the invariant boundary to existing configured-path routes and permission-
-aware mutations.
+Implementation is complete in `modules/taxonomy/routes.php` with focused security coverage in `tests/m3_5_work_unit3_taxonomy_security.php`. Canonical positive-decimal route IDs are enforced, authorization occurs before CSRF on mutation routes, malformed/stale/missing/wrong-type targets return controlled `404`, raw submitted `parent_id` delegates to the WU2 repository/domain boundary, expected domain failures return `422`, assigned-term or parent-with-children delete conflicts return `409`, and unexpected persistence/runtime failures return sanitized `503`. Configured Admin-path ownership and unchanged permissions `taxonomy.create`, `taxonomy.update`, and `taxonomy.delete` are preserved. Cloud validation passed 41 WU3 security + 39 WU2 domain + 25 WU1 compatibility + 37 Content transaction/lifecycle = 142 PASS in reproducible Cloud PHP / PDO MySQL / MariaDB. Local XAMPP rerun was not required. No schema change, migration change, additional Core-production change, or Content-production change was required.
 
 Responsibility-level file groups: `modules/taxonomy/routes.php`, `module.json`, and focused
 security tests. Validate the permission matrix, authorization-before-CSRF,
@@ -364,7 +364,7 @@ final verification.
 
 Preparation is `NRP CONFIRMED`; Work Units 1 and 2 are `NRP CONFIRMED` after
 implementation, focused validation, documentation, and Git closure. Work Unit 3
-is next and has not started. Full M3.5 remains `NRP NOT REACHED`. Release, tag,
+implementation and primary validation are complete; WU3 is `NRP CONFIRMED`. Full M3.5 remains NRP NOT REACHED. Release, tag,
 and publication remain separately authorized.
 
 ## Exclusions and Completion Boundary
