@@ -8,10 +8,11 @@ not create a replacement module, generic taxonomy platform, or new Core
 abstraction.
 
 This is the M3.5 preparation contract and scope lock, now carrying the
-documented Work Unit 1 through Work Unit 4 implementation checkpoints. It records
+documented Work Unit 1 through Work Unit 5 implementation and closure
+checkpoints. It records
 accepted product direction, ownership, invariants, preservation boundaries,
 locked responsibility-level work units, validation strategy, and lifecycle
-gates. It does not authorize Git integration, release, tag, or publication.
+gates. It does not authorize merge to `main`, release, tag, or publication.
 
 Product scope is accepted. The dedicated preparation contract is committed to
 `main` at `1e6c837340b0ea561870b7fe729791edcc0aa9f5`
@@ -33,7 +34,9 @@ and Content regressions passed 41/39/25/37 assertions, and isolated browser
 validation passed the configured `/admin` Taxonomy surfaces and responsive checks
 at 1440×900, 390×844, and 320×800. AI Acceptance is `PASS`; Human Acceptance
 is `NOT REQUIRED`; the final browser gap gate passed. WU4 is `NRP
-CONFIRMED`; WU5 is next and not started. Full M3.5 is `NRP NOT REACHED`.
+CONFIRMED`; WU5 is `NRP CONFIRMED`. Full M3.5 is `NRP CONFIRMED` on the
+clean synchronized feature branch; merge to `main` remains separately
+authorized.
 
 ## Milestone Position
 
@@ -353,6 +356,22 @@ hashes only if synchronization occurs, authenticated browser evidence,
 accessibility, `git diff --check`, final diff, containment, and clean state.
 Stop on any unresolved blocker or incomplete evidence.
 
+WU5 closure is complete without production implementation changes. The audit
+confirmed that the WU1–WU4 Taxonomy implementation remains within the approved
+module, route, permission, Core, Content, and presentation boundaries. Focused
+validation passed WU1 compatibility (25 assertions), WU2 domain (39), WU3
+security (41), WU4 presentation (11), Content provisioning (9), Content
+transaction/lifecycle (37), Content authorization (53), Content workspace
+(33), Content security/integration (33), Content presentation (31), package
+builder smoke (825), and isolated clean-install verification (59). All 199 PHP
+files lint clean and `git diff --check` passes. No package, schema, migration,
+upgrade, Composer, or runtime synchronization change was required. Existing
+accepted authenticated browser evidence covers the configured Admin Taxonomy
+surfaces, responsive and 200%-equivalent layouts, accessibility states,
+permission restriction/denial, empty states, and sanitized unavailable-state
+recovery. AI Acceptance is `PASS`; Human Acceptance is `NOT REQUIRED`; WU5 is
+`NRP CONFIRMED`.
+
 ## Validation Contract
 
 Validation is proportional to the approved implementation and includes PHP
@@ -381,11 +400,11 @@ implementation, focused validation, applicable runtime/browser evidence,
 documentation, Git integration, clean synchronization, branch cleanup, and
 final verification.
 
-Preparation is `NRP CONFIRMED`; Work Units 1–3 are `NRP CONFIRMED` after
-implementation, focused validation, documentation, and Git closure. Work Unit 4
-implementation and primary validation are complete; WU4 is `NRP CONFIRMED`.
-WU5 is next and not started. Full M3.5 remains NRP NOT REACHED. Release, tag,
-and publication remain separately authorized.
+Preparation is `NRP CONFIRMED`; Work Units 1–5 are `NRP CONFIRMED` after
+implementation, focused validation, documentation, Git delivery, and final
+verification. Full M3.5 is `NRP CONFIRMED` on the clean synchronized feature
+branch. Merge to `main`, feature-branch deletion, release, tag, and publication
+remain separately authorized gates.
 
 ## Exclusions and Completion Boundary
 

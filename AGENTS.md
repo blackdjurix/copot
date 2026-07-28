@@ -10,7 +10,7 @@ copot is a modular PHP-based website framework designed for flexible website, co
 
 M1 Framework Foundation is complete and released as v0.8.0.
 
-The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Distribution & Release Preparation are complete. Copot v0.12.0 is the current stable Webcore baseline. M3 Preparation is complete and M3 Core Modules is the active phase. M3.4 Content Manager is complete; M3.R1 preparation, classification, and full lifecycle closure are complete with full M3.R1 at NRP CONFIRMED. M3.5 Taxonomy Manager is active on `feature/m3.5-taxonomy-manager`; Work Units 1 and 2 implementation, primary validation, documentation, and Git closure are complete, with both Work Units at NRP CONFIRMED. Work Unit 3 — Authorization and Route Orchestration implementation and primary validation are complete; WU3 is `NRP CONFIRMED`. Full M3.5 remains NRP NOT REACHED.
+The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Distribution & Release Preparation are complete. Copot v0.12.0 is the current stable Webcore baseline. M3 Preparation is complete and M3 Core Modules is the active phase. M3.4 Content Manager is complete; M3.R1 preparation, classification, and full lifecycle closure are complete with full M3.R1 at NRP CONFIRMED. M3.5 Taxonomy Manager is active on `feature/m3.5-taxonomy-manager`; Work Units 1–5 implementation, validation, documentation, and Git closure are complete and NRP CONFIRMED. Full M3.5 is `NRP CONFIRMED` on the clean synchronized feature branch; merge to `main` remains separately authorized.
 
 ---
 
@@ -24,7 +24,7 @@ Previous work: Batch 6 redesigned the Content Admin list and create/edit present
 
 Primary goal:
 
-Complete the M3.5 Work Unit 3 documentation closure while preserving the completed M3.4 milestone, the completed M3.R1 lifecycle, and the separately authorized unreleased, untagged, and unpublished state.
+Preserve the completed M3.4 milestone and M3.R1 lifecycle while keeping the completed, unreleased, untagged, and unpublished M3.5 feature branch eligible for its separately authorized merge gate.
 
 Current state:
 
@@ -722,9 +722,9 @@ Commit messages should remain clear and milestone-aware.
 
 Copot v0.12.0 is released and is the current stable Webcore baseline.
 
-M3 Preparation is complete and closed. M3.1 Users & Access, M3.2 Settings Manager, M3.3 Module Manager, and M3.4 Content Manager are complete and merged but remain unreleased. M3.R1 preparation, classification, and lifecycle closure are complete; the final outcome is `NO MATERIAL RETOUCH REQUIRED`, no implementation branch or batches were required, and full M3.R1 is `NRP CONFIRMED` on synchronized `main`. M3.5 Taxonomy Manager is active on `feature/m3.5-taxonomy-manager`; Work Units 1–4 are `NRP CONFIRMED`. WU4 AI Acceptance is `PASS`, Human Acceptance is `NOT REQUIRED`, WU5 is next and not started, and Full M3.5 is `NRP NOT REACHED`.
+M3 Preparation is complete and closed. M3.1 Users & Access, M3.2 Settings Manager, M3.3 Module Manager, and M3.4 Content Manager are complete and merged but remain unreleased. M3.R1 preparation, classification, and lifecycle closure are complete; the final outcome is `NO MATERIAL RETOUCH REQUIRED`, no implementation branch or batches were required, and full M3.R1 is `NRP CONFIRMED` on synchronized `main`. M3.5 Taxonomy Manager is active on `feature/m3.5-taxonomy-manager`; Work Units 1–5 and full M3.5 are `NRP CONFIRMED` on the clean synchronized feature branch. Merge to `main`, release, tag, and publication remain separately authorized.
 
-M3.4 Content Manager final lifecycle closure is complete on `main` at the verified anchor `8bdd48463c26ef8c43683455eba3d1a99c3e4aa7`. Batch 6 implementation, validation, integration, branch cleanup, and final verification are complete; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation, classification, and lifecycle closure follow full M3.4 closure and are complete with `NO MATERIAL RETOUCH REQUIRED`; no implementation was necessary. Final lifecycle documentation commit `c5d27adeba6c1f440f6b9c62309a447f82e43a08` is pushed and `main` is clean and synchronized at `0/0`. The M3.R1 preparation contract is `docs/20_m3_r1_admin_shell_retouch_contract.md`. Full M3.R1 is `NRP CONFIRMED`. M3.5 is active on `feature/m3.5-taxonomy-manager`; WU1 and WU2 are `NRP CONFIRMED`, WU3 implementation and primary validation are complete; WU3 is `NRP CONFIRMED`, and full M3.5 remains NRP NOT REACHED. Release, tag, and publication remain separately authorized.
+M3.4 Content Manager final lifecycle closure is complete on `main` at the verified anchor `8bdd48463c26ef8c43683455eba3d1a99c3e4aa7`. Batch 6 implementation, validation, integration, branch cleanup, and final verification are complete; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation, classification, and lifecycle closure follow full M3.4 closure and are complete with `NO MATERIAL RETOUCH REQUIRED`; no implementation was necessary. Final lifecycle documentation commit `c5d27adeba6c1f440f6b9c62309a447f82e43a08` is pushed and `main` is clean and synchronized at `0/0`. The M3.R1 preparation contract is `docs/20_m3_r1_admin_shell_retouch_contract.md`. Full M3.R1 is `NRP CONFIRMED`. M3.5 is active on `feature/m3.5-taxonomy-manager`; WU1–WU5 implementation, validation, documentation, and Git closure are complete; full M3.5 is `NRP CONFIRMED` on the clean synchronized feature branch. Merge to `main`, release, tag, and publication remain separately authorized.
 
 The immediate goal is to:
 
