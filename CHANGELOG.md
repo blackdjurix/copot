@@ -4,7 +4,7 @@
 
 ### Added
 
-- Closed M3.5 Taxonomy Manager Work Unit 5 on `feature/m3.5-taxonomy-manager`. Focused Taxonomy, Content compatibility, package, clean-install, PHP lint, browser, accessibility, documentation, and Git verification passed; WU1–WU5 and full M3.5 are `NRP CONFIRMED` on the clean synchronized feature branch. Merge to `main`, release, tag, and publication remain separately authorized.
+- Closed M3.5 Taxonomy Manager Work Unit 5 and fast-forward integrated the completed feature branch into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576`, with no merge commit. Focused Taxonomy, Content compatibility, package, clean-install, PHP lint, browser, accessibility, documentation, Git, containment, and branch-lifecycle verification passed; WU1–WU5 and full M3.5 are `NRP CONFIRMED`. Local and remote feature branches are deleted. M3.6 is next and not started; release, tag, and publication remain not started and separately authorized.
 
 - Added Shell Foundation on `feature/admin-shell-foundation`, including the shared responsive Admin shell, mobile off-canvas drawer with scroll locking and focus recovery, accessible navigation and menus, keyboard behavior, and configured Admin-path presentation.
 - Added the Settings Category 1 presentation remediation with ordered tabs, automatic keyboard activation, truthful Security/Email/Maintenance empty states, standalone Branding presentation, safe empty asset states, and preserved full Settings save and Logo/Favicon workflows.

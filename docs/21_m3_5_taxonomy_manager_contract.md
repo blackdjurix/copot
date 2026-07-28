@@ -16,9 +16,10 @@ gates. It does not authorize merge to `main`, release, tag, or publication.
 
 Product scope is accepted. The dedicated preparation contract is committed to
 `main` at `1e6c837340b0ea561870b7fe729791edcc0aa9f5`
-(`docs(m3.5): lock taxonomy manager preparation contract`). The active
-milestone branch is `feature/m3.5-taxonomy-manager`, and the five implementation
-work units remain locked at responsibility level. Work Unit 1 implementation and
+(`docs(m3.5): lock taxonomy manager preparation contract`). The former
+milestone branch was `feature/m3.5-taxonomy-manager`; it is now deleted after
+integration, and the five implementation work units remain locked at
+responsibility level. Work Unit 1 implementation and
 primary validation are complete; focused compatibility evidence passed, the
 existing baseline schema was sufficient, no schema upgrade or migration artifact
 was required, and production PHP/schema/install-upgrade state remained unchanged.
@@ -34,9 +35,11 @@ and Content regressions passed 41/39/25/37 assertions, and isolated browser
 validation passed the configured `/admin` Taxonomy surfaces and responsive checks
 at 1440×900, 390×844, and 320×800. AI Acceptance is `PASS`; Human Acceptance
 is `NOT REQUIRED`; the final browser gap gate passed. WU4 is `NRP
-CONFIRMED`; WU5 is `NRP CONFIRMED`. Full M3.5 is `NRP CONFIRMED` on the
-clean synchronized feature branch; merge to `main` remains separately
-authorized.
+CONFIRMED`; WU5 is `NRP CONFIRMED`. M3.5 was fast-forward integrated into
+`main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit;
+feature containment and local/remote feature-branch deletion are confirmed.
+Full M3.5 is `NRP CONFIRMED`. M3.6 Navigation Manager is next and not started;
+release, tag, and publication remain not started and separately authorized.
 
 ## Milestone Position
 
@@ -388,10 +391,12 @@ No broad unrelated suite is required without a concrete regression reason.
 
 ## Branch and NRP Lifecycle
 
-Preparation approval was required before branch creation. The active milestone
-branch is `feature/m3.5-taxonomy-manager`, based on the accepted synchronized
-`main` preparation anchor. It is the locked implementation branch for Work
-Units 1–5 and remains the active milestone branch for Work Units 1–5; milestone merge and milestone-branch deletion have not started.
+Preparation approval was required before branch creation. The former milestone
+branch `feature/m3.5-taxonomy-manager` was based on the accepted synchronized
+`main` preparation anchor and carried Work Units 1–5 through implementation and
+closure. It was fast-forward integrated into `main` at
+`b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit; containment
+passed and local/remote branch deletion is complete.
 
 Preparation NRP and full M3.5 NRP are separate. Preparation NRP requires this
 contract, scope approval, dependency review, exact work-unit approval, and an
@@ -403,8 +408,8 @@ final verification.
 Preparation is `NRP CONFIRMED`; Work Units 1–5 are `NRP CONFIRMED` after
 implementation, focused validation, documentation, Git delivery, and final
 verification. Full M3.5 is `NRP CONFIRMED` on the clean synchronized feature
-branch. Merge to `main`, feature-branch deletion, release, tag, and publication
-remain separately authorized gates.
+branch. M3.5 is now integrated and branch-closed; merge to `main` is complete.
+Release, tag, and publication remain separately authorized gates.
 
 ## Exclusions and Completion Boundary
 
