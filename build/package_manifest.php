@@ -10,6 +10,7 @@ return [
         'database',
         'modules/content',
         'modules/module-manager',
+        'modules/navigation',
         'modules/settings-manager',
         'modules/taxonomy',
         'public',

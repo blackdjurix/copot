@@ -1,0 +1,16 @@
+{
+  "name": "navigation",
+  "title": "Navigation Manager",
+  "description": "Navigation-owned menus, items, and target references for Copot.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "requires": {
+    "modules": []
+  },
+  "permissions": [
+    {
+      "slug": "navigation.manage",
+      "name": "Manage navigation"
+    }
+  ]
+}

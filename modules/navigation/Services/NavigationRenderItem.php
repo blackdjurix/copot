@@ -1,0 +1,49 @@
+<?php
+
+final class NavigationRenderItem
+{
+    public function __construct(
+        private string $kind,
+        private string $reference,
+        private string $label,
+        private ?string $url,
+        private bool $isVisible = true
+    ) {
+    }
+
+    public function kind(): string
+    {
+        return $this->kind;
+    }
+
+    public function reference(): string
+    {
+        return $this->reference;
+    }
+
+    public function label(): string
+    {
+        return $this->label;
+    }
+
+    public function url(): ?string
+    {
+        return $this->url;
+    }
+
+    public function isVisible(): bool
+    {
+        return $this->isVisible;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'kind' => $this->kind,
+            'reference' => $this->reference,
+            'label' => $this->label,
+            'url' => $this->url,
+            'is_visible' => $this->isVisible,
+        ];
+    }
+}

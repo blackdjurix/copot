@@ -74,7 +74,8 @@ INSERT INTO permissions (name, slug, created_at, updated_at) VALUES
     ('Manage roles', 'roles.manage', NOW(), NOW()),
     ('Manage user roles', 'users.roles.manage', NOW(), NOW()),
     ('Manage role permissions', 'roles.permissions.manage', NOW(), NOW()),
-    ('Manage modules', 'modules.manage', NOW(), NOW());
+    ('Manage modules', 'modules.manage', NOW(), NOW()),
+    ('Manage navigation', 'navigation.manage', NOW(), NOW());
 
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
@@ -138,6 +139,12 @@ FROM roles
 INNER JOIN permissions ON permissions.slug = 'modules.manage'
 WHERE roles.slug = 'admin';
 
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT roles.id, permissions.id
+FROM roles
+INNER JOIN permissions ON permissions.slug = 'navigation.manage'
+WHERE roles.slug = 'admin';
+
 CREATE TABLE settings (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     namespace VARCHAR(64) NOT NULL,
@@ -188,6 +195,53 @@ CREATE TABLE themes (
     updated_at DATETIME NOT NULL,
     UNIQUE KEY uq_themes_theme_id (theme_id),
     INDEX idx_themes_type_active (type, is_active)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE navigation_menus (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    slug VARCHAR(150) NOT NULL UNIQUE,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE navigation_items (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    menu_id BIGINT UNSIGNED NOT NULL,
+    parent_id BIGINT UNSIGNED NULL,
+    label VARCHAR(190) NOT NULL,
+    target_kind VARCHAR(100) NOT NULL,
+    target_reference VARCHAR(255) NOT NULL,
+    custom_url VARCHAR(2048) NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    is_visible TINYINT(1) NOT NULL DEFAULT 1,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    UNIQUE KEY uq_navigation_items_menu_id (menu_id, id),
+    INDEX idx_navigation_items_menu_parent_order (menu_id, parent_id, sort_order),
+    CONSTRAINT fk_navigation_items_menu
+        FOREIGN KEY (menu_id) REFERENCES navigation_menus(id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_navigation_items_parent
+        FOREIGN KEY (menu_id, parent_id) REFERENCES navigation_items(menu_id, id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE navigation_menu_assignments (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    theme_id VARCHAR(100) NOT NULL,
+    location_key VARCHAR(100) NOT NULL,
+    menu_id BIGINT UNSIGNED NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    UNIQUE KEY uq_navigation_assignment_theme_location (theme_id, location_key),
+    INDEX idx_navigation_assignment_menu (menu_id),
+    CONSTRAINT fk_navigation_assignment_theme
+        FOREIGN KEY (theme_id) REFERENCES themes(theme_id)
+        ON DELETE CASCADE,
+    CONSTRAINT fk_navigation_assignment_menu
+        FOREIGN KEY (menu_id) REFERENCES navigation_menus(id)
+        ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE content (

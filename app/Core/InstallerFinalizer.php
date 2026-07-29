@@ -10,7 +10,7 @@ class InstallerFinalizer
         ['localization', 'timezone'],
         ['localization', 'locale'],
     ];
-    private const BASELINE_MODULES = ['content', 'settings-manager', 'taxonomy', 'module-manager'];
+    private const BASELINE_MODULES = ['content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation'];
 
     public function __construct(
         private Database $database,
