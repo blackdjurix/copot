@@ -14,6 +14,18 @@ final class NavigationRepository
         return $row === null ? null : new NavigationMenu($row);
     }
 
+    public function menus(): array
+    {
+        $statement = $this->database->connection()->query(
+            'SELECT * FROM navigation_menus ORDER BY name ASC, id ASC'
+        );
+
+        return array_map(
+            static fn (array $row): NavigationMenu => new NavigationMenu($row),
+            $statement->fetchAll()
+        );
+    }
+
     public function lockMenu(int $id): ?array
     {
         return $this->row('SELECT * FROM navigation_menus WHERE id = :id LIMIT 1 FOR UPDATE', ['id' => $id]);

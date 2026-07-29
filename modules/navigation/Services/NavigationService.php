@@ -105,6 +105,21 @@ final class NavigationService
         return $this->repository->orderedItems($menuId);
     }
 
+    public function menus(): array
+    {
+        return $this->repository->menus();
+    }
+
+    public function findMenu(int $menuId): ?NavigationMenu
+    {
+        return $this->repository->findMenu($this->positiveId($menuId, 'Navigation menu ID'));
+    }
+
+    public function findItem(int $itemId): ?NavigationItem
+    {
+        return $this->repository->findItem($this->positiveId($itemId, 'Navigation item ID'));
+    }
+
     private function requireMenu(int $id): void
     {
         if ($this->repository->lockMenu($id) === null) { throw new InvalidArgumentException('Navigation menu does not exist.'); }
