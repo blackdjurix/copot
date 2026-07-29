@@ -45,6 +45,30 @@ CREATE TABLE IF NOT EXISTS navigation_menu_assignments (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+DROP PROCEDURE IF EXISTS m3_6_navigation_target_reference_nullable;
+
+DELIMITER $$
+
+CREATE PROCEDURE m3_6_navigation_target_reference_nullable()
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = DATABASE()
+            AND table_name = 'navigation_items'
+            AND column_name = 'target_reference'
+            AND is_nullable = 'NO'
+    ) THEN
+        ALTER TABLE navigation_items
+            MODIFY target_reference VARCHAR(255) NULL;
+    END IF;
+END$$
+
+DELIMITER ;
+
+CALL m3_6_navigation_target_reference_nullable();
+DROP PROCEDURE IF EXISTS m3_6_navigation_target_reference_nullable;
+
 INSERT INTO permissions (name, slug, created_at, updated_at)
 SELECT 'Manage navigation', 'navigation.manage', NOW(), NOW()
 FROM (SELECT 1) AS desired

@@ -211,7 +211,7 @@ CREATE TABLE navigation_items (
     parent_id BIGINT UNSIGNED NULL,
     label VARCHAR(190) NOT NULL,
     target_kind VARCHAR(100) NOT NULL,
-    target_reference VARCHAR(255) NOT NULL,
+    target_reference VARCHAR(255) NULL,
     custom_url VARCHAR(2048) NULL,
     sort_order INT NOT NULL DEFAULT 0,
     is_visible TINYINT(1) NOT NULL DEFAULT 1,
