@@ -870,7 +870,7 @@ These checkpoints are horizontal design-governance work units and are not includ
 
 ## M3 Core Modules
 
-M3.6 Navigation Manager preparation is `NRP CANDIDATE`; full M3.6 is `NRP NOT REACHED` and implementation has not started. The accepted preparation contract is `docs/22_m3_6_navigation_manager_contract.md`. Navigation owns its domain, Themes declare `navigation_locations` and own presentation, Content is the baseline optional target provider, production Taxonomy targets remain deferred, `AdminNavigation` remains separate, and no Core change is currently justified.
+M3.6 Navigation Manager preparation is `NRP CONFIRMED`. Work Unit 1 — Contract, Provisioning, and Compatibility Foundation implementation and primary validation are complete on `feature/m3.6-navigation-manager` at `38d75fa1d676371b5c78e392871649a663e573db`; focused compatibility passed 23 assertions and WU1 is `NRP CANDIDATE`. WU2 is not started and is the next separately authorized gate. Full M3.6 is `NRP NOT REACHED`. The accepted preparation contract is `docs/22_m3_6_navigation_manager_contract.md`. Navigation owns its domain, Themes declare `navigation_locations` and own presentation, Content remains the baseline optional target provider, production Taxonomy targets remain deferred, and `AdminNavigation` remains separate. The approved WU1 Core touch is limited to adding `navigation` to the existing baseline ModuleManager lifecycle; no generic Core abstraction or migration framework is introduced.
 
 ### Objective
 

@@ -8,9 +8,14 @@ into Navigation. This is a preparation contract and scope lock; implementation
 has not started.
 
 M3.5 Taxonomy Manager remains closed and `NRP CONFIRMED`. M3.6 preparation is
-`NRP CANDIDATE`. Full M3.6 is `NRP NOT REACHED`. No implementation branch,
-production change, schema implementation, upgrade SQL, runtime work, release,
-tag, or publication is authorized by this document.
+`NRP CONFIRMED`. Work Unit 1 — Contract, Provisioning, and Compatibility
+Foundation implementation and primary validation are complete on
+`feature/m3.6-navigation-manager` at
+`38d75fa1d676371b5c78e392871649a663e573db`
+(`feat(m3.6): establish navigation WU1 foundation`). Focused WU1 compatibility
+passed 23 assertions. WU1 is `NRP CANDIDATE`; WU2 is not started and is the
+next separately authorized gate. Full M3.6 is `NRP NOT REACHED`. Release, tag,
+and publication remain separately authorized.
 
 The contract preserves the approved M3 sequence and the ownership decisions in
 `docs/16_m3_core_freeze_and_module_contract.md`. It records the accepted
@@ -23,9 +28,11 @@ and internal tasks remain just-in-time decisions within an approved work unit.
 ```text
 M3.5 Taxonomy Manager (NRP CONFIRMED)
 ->
-M3.6 Navigation Manager preparation (NRP CANDIDATE)
+M3.6 Navigation Manager preparation (NRP CONFIRMED)
 ->
-M3.6 Navigation Manager implementation (NRP NOT REACHED)
+M3.6 Work Unit 1 (NRP CANDIDATE)
+->
+M3.6 Work Unit 2 (not started; next separately authorized gate)
 ->
 M3.7 Theme Manager
 ```
@@ -68,10 +75,12 @@ contract owned by the provider.
 contract. It is not replaced by public Navigation data, and M3.6 must not
 silently merge Admin management navigation with frontend menu data.
 
-No Core change is currently justified. M3.6 must use existing public Core and
-Admin Shell contracts unless a concrete compatibility defect is demonstrated
-and separately approved; speculative abstractions and framework-wide changes
-are excluded.
+The approved WU1 Core touch is limited to adding `navigation` to the existing
+`InstallerFinalizer::BASELINE_MODULES` lifecycle so fresh installs use the
+existing ModuleManager install-and-enable path. No generic Core navigation
+abstraction, migration framework, or broader Installer redesign is introduced.
+Any further Core change requires a concrete compatibility defect and separate
+approval.
 
 ## Product and Compatibility Contract
 
@@ -107,15 +116,22 @@ planning units, not evidence that implementation has begun.
 
 ### Work Unit 1 — Contract, Provisioning, and Compatibility Foundation
 
-Define the module boundary, public contracts, data invariants, compatibility
-matrix, lifecycle expectations, and any narrowly justified provisioning work.
-Do not introduce schema implementation or upgrade SQL during preparation.
+Complete: WU1 established the Navigation manifest, provider-neutral resolver
+interface, registry, resolved render-item contract, three-table persistence
+foundation, `navigation.manage` provisioning, idempotent existing-install
+upgrade artifact, fresh-install baseline ModuleManager activation, package
+inclusion, and clean-install expectation update. The hierarchy-capable schema
+records the locked five-level invariant; traversal enforcement, move/reorder
+behavior, and custom-URL validation remain deferred. Focused compatibility
+passed 23 assertions, and WU1 is `NRP CANDIDATE` pending independent NRP
+evaluation.
 
 ### Work Unit 2 — Navigation Domain Service and Hierarchy
 
-Implement only after separate authorization: the Navigation-owned domain
-service, menu/item hierarchy, deterministic ordering, visibility metadata, and
-safe lifecycle behavior required by the approved contract.
+Not started. WU2 is the next separately authorized gate for the
+Navigation-owned domain service, menu/item hierarchy, deterministic ordering,
+visibility metadata, and safe lifecycle behavior required by the approved
+contract.
 
 ### Work Unit 3 — Content Target Resolver Integration
 
@@ -146,19 +162,21 @@ separate authorizations.
 
 ## Validation and Lifecycle Gates
 
-Preparation validation is documentation and contract review only. It requires
-scope and ownership review, dependency and compatibility review, confirmation
-of the six work units, confirmation that production Taxonomy targets remain
-deferred, confirmation that no Core change is justified, and `git diff --check`.
-No PHP, database, runtime, or browser tests are required for preparation.
+Preparation is `NRP CONFIRMED`. WU1 primary validation passed: focused WU1
+compatibility (23 assertions), direct Module Manager provisioning, Content
+provisioning, M3.5 WU1 Taxonomy compatibility, package-builder, distribution,
+and clean-install checks, PHP lint, and `git diff --check`. Production Taxonomy
+targets remain deferred. No runtime or browser validation was required for WU1.
 
-Preparation may be classified `NRP CANDIDATE` only after this contract and the
-exact work-unit breakdown are accepted. Full M3.6 remains `NRP NOT REACHED`
-until separately authorized implementation, focused validation, applicable
-runtime/browser evidence, documentation closure, Git delivery, and final NRP
-evaluation are complete.
+Preparation is `NRP CONFIRMED`. WU1 is `NRP CANDIDATE` after implementation,
+primary validation, and documentation closure. Full M3.6 remains `NRP NOT
+REACHED` until separately authorized later work units, focused validation,
+applicable runtime/browser evidence, Git delivery, and final NRP evaluation are
+complete.
 
-The preparation boundary is documentation-only. It does not authorize changes
-to production code, `modules/navigation`, database schema or upgrade SQL,
-Content, Taxonomy, Theme, Core, runtime state, release artifacts, tags, or
+WU1 is closed to further scope expansion. It does not authorize Content resolver
+implementation, production Taxonomy targets, Theme `navigation_locations`
+declaration or consumption, Admin routes/views, hierarchy domain services,
+five-level traversal enforcement, custom-URL validation, `AdminNavigation`
+changes, generic Core work, runtime work, release artifacts, tags, or
 publication.
