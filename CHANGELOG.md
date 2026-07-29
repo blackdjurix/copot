@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added the M3.6 Navigation Manager preparation contract at `docs/22_m3_6_navigation_manager_contract.md`. M3.6 preparation is `NRP CANDIDATE`; full M3.6 is `NRP NOT REACHED` and implementation has not started. The documentation locks Navigation ownership, Theme-declared locations, optional Content target resolution, deferred production Taxonomy targets, separate `AdminNavigation`, no currently justified Core change, and six responsibility-level work units.
+
 - Closed M3.5 Taxonomy Manager Work Unit 5 and fast-forward integrated the completed feature branch into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576`, with no merge commit. Focused Taxonomy, Content compatibility, package, clean-install, PHP lint, browser, accessibility, documentation, Git, containment, and branch-lifecycle verification passed; WU1–WU5 and full M3.5 are `NRP CONFIRMED`. Local and remote feature branches are deleted. M3.6 is next and not started; release, tag, and publication remain not started and separately authorized.
 
 - Added Shell Foundation on `feature/admin-shell-foundation`, including the shared responsive Admin shell, mobile off-canvas drawer with scroll locking and focus recovery, accessible navigation and menus, keyboard behavior, and configured Admin-path presentation.

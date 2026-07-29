@@ -2,6 +2,8 @@
 
 A modular PHP-based website framework designed for flexible content, business, and automation solutions.
 
+M3.6 Navigation Manager preparation is `NRP CANDIDATE`; full M3.6 is `NRP NOT REACHED` and implementation has not started. The preparation contract is `docs/22_m3_6_navigation_manager_contract.md`. Navigation owns its domain, Themes declare `navigation_locations` and own presentation, Content is the baseline optional target provider, production Taxonomy targets remain deferred, `AdminNavigation` remains separate, and no Core change is currently justified.
+
 ## Status
 
 M1 Framework Foundation is complete and released as v0.8.0.
