@@ -4,8 +4,8 @@
 
 M3.6 prepares the existing platform for a Navigation Manager that owns
 navigation data and management behavior without moving presentation ownership
-into Navigation. This is a preparation contract and scope lock; implementation
-has not started.
+into Navigation. This remains a preparation contract and scope lock; Work
+Units 1 and 2 implementation is complete on the feature branch.
 
 M3.5 Taxonomy Manager remains closed and `NRP CONFIRMED`. M3.6 preparation is
 `NRP CONFIRMED`. Work Unit 1 — Contract, Provisioning, and Compatibility
@@ -13,9 +13,13 @@ Foundation implementation and primary validation are complete on
 `feature/m3.6-navigation-manager` at
 `38d75fa1d676371b5c78e392871649a663e573db`
 (`feat(m3.6): establish navigation WU1 foundation`). Focused WU1 compatibility
-passed 23 assertions. WU1 is `NRP CANDIDATE`; WU2 is not started and is the
-next separately authorized gate. Full M3.6 is `NRP NOT REACHED`. Release, tag,
-and publication remain separately authorized.
+passed 23 assertions. WU1 remains `NRP CANDIDATE`. Work Unit 2 — Navigation
+Domain Service and Hierarchy implementation and primary validation are complete
+at `7e54d0309c8ca75f0f32200394fd2a271c8a9b83`
+(`feat(m3.6): add navigation domain hierarchy service`); focused WU2 domain
+validation passed 44 assertions. WU2 is `NRP CANDIDATE`; WU3 is not started
+and is the next separately authorized gate. Full M3.6 is `NRP NOT REACHED`.
+Release, tag, and publication remain separately authorized.
 
 The contract preserves the approved M3 sequence and the ownership decisions in
 `docs/16_m3_core_freeze_and_module_contract.md`. It records the accepted
@@ -32,7 +36,9 @@ M3.6 Navigation Manager preparation (NRP CONFIRMED)
 ->
 M3.6 Work Unit 1 (NRP CANDIDATE)
 ->
-M3.6 Work Unit 2 (not started; next separately authorized gate)
+M3.6 Work Unit 2 (NRP CANDIDATE)
+->
+M3.6 Work Unit 3 (not started; next separately authorized gate)
 ->
 M3.7 Theme Manager
 ```
@@ -111,8 +117,8 @@ production Taxonomy targets, or a new Core navigation abstraction.
 
 ## Locked Work Units
 
-The six work units are locked at responsibility level. They are preparation
-planning units, not evidence that implementation has begun.
+The six work units are locked at responsibility level. WU1 and WU2 have
+implementation evidence; later units remain separately authorized gates.
 
 ### Work Unit 1 — Contract, Provisioning, and Compatibility Foundation
 
@@ -128,10 +134,15 @@ evaluation.
 
 ### Work Unit 2 — Navigation Domain Service and Hierarchy
 
-Not started. WU2 is the next separately authorized gate for the
-Navigation-owned domain service, menu/item hierarchy, deterministic ordering,
-visibility metadata, and safe lifecycle behavior required by the approved
-contract.
+Complete: WU2 added Navigation menu and item value objects, a repository, and
+the Navigation-owned domain service. It enforces a maximum hierarchy depth of
+five levels including root; same-menu parenting; self, descendant, and cycle
+rejection; moved-subtree depth validation; deterministic sibling ordering; and
+exact sibling reorder. Provider/custom target payload invariants and the
+accepted custom-URL grammar are enforced. Standalone mutations own their
+transaction and caller-owned transactions receive private savepoint isolation.
+Focused WU2 domain validation passed 44 assertions. WU2 is `NRP CANDIDATE`
+pending independent NRP evaluation.
 
 ### Work Unit 3 — Content Target Resolver Integration
 
@@ -168,15 +179,21 @@ provisioning, M3.5 WU1 Taxonomy compatibility, package-builder, distribution,
 and clean-install checks, PHP lint, and `git diff --check`. Production Taxonomy
 targets remain deferred. No runtime or browser validation was required for WU1.
 
-Preparation is `NRP CONFIRMED`. WU1 is `NRP CANDIDATE` after implementation,
-primary validation, and documentation closure. Full M3.6 remains `NRP NOT
+Preparation is `NRP CONFIRMED`. WU1 remains `NRP CANDIDATE` after
+implementation, primary validation, and documentation closure. WU2 primary
+validation passed: focused WU2 domain validation (44 assertions), WU1
+Navigation compatibility, Content transaction and provisioning, and M3.5 WU1
+and WU2 Taxonomy regressions, plus PHP lint and `git diff --check`. WU2 is
+`NRP CANDIDATE`. WU3 is not started and is the next separately authorized
+gate; Content target resolver implementation remains deferred to WU3, the
+Admin workspace to WU4, Theme location declaration/consumption to WU5, and
+production Taxonomy targets remain deferred. Full M3.6 remains `NRP NOT
 REACHED` until separately authorized later work units, focused validation,
 applicable runtime/browser evidence, Git delivery, and final NRP evaluation are
 complete.
 
-WU1 is closed to further scope expansion. It does not authorize Content resolver
+WU1 is closed to further scope expansion. WU2 delivered only its approved
+Navigation domain behavior; it does not authorize Content resolver
 implementation, production Taxonomy targets, Theme `navigation_locations`
-declaration or consumption, Admin routes/views, hierarchy domain services,
-five-level traversal enforcement, custom-URL validation, `AdminNavigation`
-changes, generic Core work, runtime work, release artifacts, tags, or
-publication.
+declaration or consumption, Admin routes/views, `AdminNavigation` changes,
+generic Core work, runtime work, release artifacts, tags, or publication.
