@@ -21,7 +21,7 @@ validation passed 44 assertions. WU2 is `NRP CONFIRMED`. Work Unit 3 — Content
 Target Resolver Integration implementation and primary validation are complete
 at `3e387c5756636d08416880a8d8ec5ca1112cad75`
 (`feat(m3.6): add content navigation target resolver`); focused WU3 resolver
-validation passed 19 assertions. WU3 is `NRP CANDIDATE`; WU4 is not started
+validation passed 19 assertions. WU3 is `NRP CONFIRMED`; WU4 is not started
 and is the next separately authorized gate. Full M3.6 is `NRP NOT REACHED`.
 Release, tag, publication, merge, and branch cleanup remain separately
 authorized.
@@ -43,7 +43,7 @@ M3.6 Work Unit 1 (NRP CONFIRMED)
 ->
 M3.6 Work Unit 2 (NRP CONFIRMED)
 ->
-M3.6 Work Unit 3 (NRP CANDIDATE)
+M3.6 Work Unit 3 (NRP CONFIRMED)
 ->
 M3.6 Work Unit 4 (not started; next separately authorized gate)
 ->
@@ -159,9 +159,9 @@ stored title as label. Title, slug, and publication changes are reflected
 without cross-request caching. Missing, stale, malformed, draft, archived,
 disabled, and unavailable Content targets fail closed. No Core wiring, global
 registry, or service locator was introduced. Focused WU3 resolver validation
-passed 19 assertions. WU3 is `NRP CANDIDATE` pending independent NRP
-evaluation. Navigation item visibility and Theme rendering remain deferred to
-WU5; production Taxonomy targets remain deferred.
+passed 19 assertions. WU3 is `NRP CONFIRMED`. Navigation item visibility and
+Theme rendering remain deferred to WU5; production Taxonomy targets remain
+deferred.
 
 ### Work Unit 4 — Admin Management Workspace
 
@@ -200,7 +200,7 @@ and WU2 Taxonomy regressions, plus PHP lint and `git diff --check`. WU2 is
 `NRP CONFIRMED`. WU3 primary validation passed: focused WU3 resolver validation
 (19 assertions), WU2 Navigation domain, WU1 Navigation compatibility, and
 Content public publication/security regressions, plus PHP lint and `git diff
---check`. WU3 is `NRP CANDIDATE`. WU4 is not started and is the next separately
+--check`. WU3 is `NRP CONFIRMED`. WU4 is not started and is the next separately
 authorized gate; the Admin workspace remains deferred to WU4, Navigation item
 visibility and Theme location declaration/consumption to WU5, and production
 Taxonomy targets remain deferred. Full M3.6 remains `NRP NOT
