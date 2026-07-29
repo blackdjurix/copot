@@ -13,11 +13,11 @@ Foundation implementation and primary validation are complete on
 `feature/m3.6-navigation-manager` at
 `38d75fa1d676371b5c78e392871649a663e573db`
 (`feat(m3.6): establish navigation WU1 foundation`). Focused WU1 compatibility
-passed 23 assertions. WU1 remains `NRP CANDIDATE`. Work Unit 2 — Navigation
+passed 23 assertions. WU1 is `NRP CONFIRMED`. Work Unit 2 — Navigation
 Domain Service and Hierarchy implementation and primary validation are complete
 at `7e54d0309c8ca75f0f32200394fd2a271c8a9b83`
 (`feat(m3.6): add navigation domain hierarchy service`); focused WU2 domain
-validation passed 44 assertions. WU2 is `NRP CANDIDATE`; WU3 is not started
+validation passed 44 assertions. WU2 is `NRP CONFIRMED`; WU3 is not started
 and is the next separately authorized gate. Full M3.6 is `NRP NOT REACHED`.
 Release, tag, and publication remain separately authorized.
 
@@ -34,9 +34,9 @@ M3.5 Taxonomy Manager (NRP CONFIRMED)
 ->
 M3.6 Navigation Manager preparation (NRP CONFIRMED)
 ->
-M3.6 Work Unit 1 (NRP CANDIDATE)
+M3.6 Work Unit 1 (NRP CONFIRMED)
 ->
-M3.6 Work Unit 2 (NRP CANDIDATE)
+M3.6 Work Unit 2 (NRP CONFIRMED)
 ->
 M3.6 Work Unit 3 (not started; next separately authorized gate)
 ->
@@ -129,8 +129,7 @@ upgrade artifact, fresh-install baseline ModuleManager activation, package
 inclusion, and clean-install expectation update. The hierarchy-capable schema
 records the locked five-level invariant; traversal enforcement, move/reorder
 behavior, and custom-URL validation remain deferred. Focused compatibility
-passed 23 assertions, and WU1 is `NRP CANDIDATE` pending independent NRP
-evaluation.
+passed 23 assertions, and WU1 is `NRP CONFIRMED`.
 
 ### Work Unit 2 — Navigation Domain Service and Hierarchy
 
@@ -141,8 +140,7 @@ rejection; moved-subtree depth validation; deterministic sibling ordering; and
 exact sibling reorder. Provider/custom target payload invariants and the
 accepted custom-URL grammar are enforced. Standalone mutations own their
 transaction and caller-owned transactions receive private savepoint isolation.
-Focused WU2 domain validation passed 44 assertions. WU2 is `NRP CANDIDATE`
-pending independent NRP evaluation.
+Focused WU2 domain validation passed 44 assertions. WU2 is `NRP CONFIRMED`.
 
 ### Work Unit 3 — Content Target Resolver Integration
 
@@ -179,12 +177,12 @@ provisioning, M3.5 WU1 Taxonomy compatibility, package-builder, distribution,
 and clean-install checks, PHP lint, and `git diff --check`. Production Taxonomy
 targets remain deferred. No runtime or browser validation was required for WU1.
 
-Preparation is `NRP CONFIRMED`. WU1 remains `NRP CANDIDATE` after
-implementation, primary validation, and documentation closure. WU2 primary
+Preparation is `NRP CONFIRMED`. WU1 is `NRP CONFIRMED` after implementation,
+primary validation, and documentation closure. WU2 primary
 validation passed: focused WU2 domain validation (44 assertions), WU1
 Navigation compatibility, Content transaction and provisioning, and M3.5 WU1
 and WU2 Taxonomy regressions, plus PHP lint and `git diff --check`. WU2 is
-`NRP CANDIDATE`. WU3 is not started and is the next separately authorized
+`NRP CONFIRMED`. WU3 is not started and is the next separately authorized
 gate; Content target resolver implementation remains deferred to WU3, the
 Admin workspace to WU4, Theme location declaration/consumption to WU5, and
 production Taxonomy targets remain deferred. Full M3.6 remains `NRP NOT
