@@ -7,6 +7,8 @@ use stdClass;
 
 class ThemeDiscovery
 {
+    private const MAX_METADATA_BYTES = 262144;
+    private const MAX_SCREENSHOT_BYTES = 8388608;
     private const SUPPORTED_CAPABILITIES = ['module_view_overrides', 'navigation_locations'];
     private const SCREENSHOT_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
     private const SETTING_TYPES = ['string', 'integer', 'float', 'boolean'];
@@ -112,9 +114,14 @@ class ThemeDiscovery
 
     private function loadTheme(string $themePath, string $themeJson): ThemeDefinition
     {
+        $metadataSize = filesize($themeJson);
+        if ($metadataSize === false || $metadataSize > self::MAX_METADATA_BYTES) {
+            throw new ThemeException('theme.json exceeds the metadata size limit.');
+        }
+
         $contents = file_get_contents($themeJson);
 
-        if ($contents === false) {
+        if ($contents === false || strlen($contents) > self::MAX_METADATA_BYTES) {
             throw new ThemeException('Unable to read theme.json.');
         }
 
@@ -325,9 +332,29 @@ class ThemeDiscovery
             throw new ThemeException('Theme screenshot file was not found.');
         }
 
+        $screenshotSize = filesize($screenshotPath);
+        if ($screenshotSize === false || $screenshotSize > self::MAX_SCREENSHOT_BYTES) {
+            throw new ThemeException('Theme screenshot exceeds the size limit.');
+        }
+
         $resolvedScreenshot = realpath($screenshotPath);
         if ($resolvedScreenshot === false || !$this->isInsideDirectory($resolvedScreenshot, $themePath)) {
             throw new ThemeException('Theme screenshot path is outside the theme folder.');
+        }
+
+        $mime = finfo_open(FILEINFO_MIME_TYPE);
+        $detectedMime = $mime === false ? false : finfo_file($mime, $resolvedScreenshot);
+        if ($mime !== false) {
+            finfo_close($mime);
+        }
+        $expectedMime = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'webp' => 'image/webp',
+        ][$extension] ?? null;
+        if ($expectedMime === null || $detectedMime !== $expectedMime) {
+            throw new ThemeException('Theme screenshot MIME type is invalid.');
         }
 
         $metadata['screenshot'] = $screenshot;

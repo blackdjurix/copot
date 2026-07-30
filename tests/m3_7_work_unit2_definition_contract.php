@@ -116,7 +116,7 @@ try {
     ];
     $themePath = $writeTheme($root, 'contract-theme', $manifest);
     mkdir($themePath . DIRECTORY_SEPARATOR . 'screenshots', 0777, true);
-    file_put_contents($themePath . DIRECTORY_SEPARATOR . 'screenshots' . DIRECTORY_SEPARATOR . 'PREVIEW.WEBP', 'image');
+    file_put_contents($themePath . DIRECTORY_SEPARATOR . 'screenshots' . DIRECTORY_SEPARATOR . 'PREVIEW.WEBP', base64_decode('UklGRiIAAABXRUJQVlA4IBgAAAAwAQCdASoBAAEADsADAA==', true));
 
     $definition = (new ThemeDiscovery($root))->discover()[0];
     $assert($definition->description() === 'A normalized description.' && $definition->author() === 'Copot', 'Optional metadata was not normalized.');

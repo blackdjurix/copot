@@ -6,6 +6,8 @@ use Throwable;
 
 final class ThemeSettingsService
 {
+    private const MAX_SUBMITTED_FIELDS = 128;
+    private const MAX_STRING_VALUE_LENGTH = 4096;
     private const SAVEPOINT_PREFIX = 'theme_settings_save_';
     private static int $savepointCounter = 0;
 
@@ -36,12 +38,17 @@ final class ThemeSettingsService
         $values = [];
         $errors = [];
 
+        if (count($submitted) > self::MAX_SUBMITTED_FIELDS) {
+            throw new ThemeSettingsValidationException(['settings' => 'Too many settings were submitted.'], $submitted);
+        }
+
         foreach ($set['definitions'] as $key => $definition) {
             $field = $this->fieldFor($set['fields'], $key);
             if (!array_key_exists($key, $submitted) && (($field['control'] ?? null) === 'checkbox')) {
                 $submitted[$key] = false;
             }
-            if (!array_key_exists($key, $submitted) || is_array($submitted[$key]) || is_object($submitted[$key])) {
+            if (!array_key_exists($key, $submitted) || is_array($submitted[$key]) || is_object($submitted[$key])
+                || (is_string($submitted[$key]) && strlen($submitted[$key]) > self::MAX_STRING_VALUE_LENGTH)) {
                 $errors[$key] = 'Enter a valid value.';
                 continue;
             }

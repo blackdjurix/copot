@@ -75,6 +75,18 @@ screenshot usefulness, activation-warning comprehension, settings-form clarity,
 color-control usability, true 200% zoom, 320px presentation, and final Theme
 workspace quality. Full M3.7 remains `NRP NOT REACHED`; WU6 remains unauthorized.
 
+Objective WU6 security, regression, documentation, and integration-readiness work
+is now implemented in the feature branch. Discovery bounds `theme.json` metadata,
+isolates malformed, missing, unavailable, and corrupted Theme inputs with generic
+diagnostics, and validates contained screenshot size and detected MIME. Activation
+and Theme settings routes authorize before CSRF and mutation, require coherent
+submitted targets, reject malformed or oversized values, and preserve the
+transactional atomicity established by WU3 and WU5. Runtime Theme settings remain
+active-Theme-only and independent of the Admin module; Navigation locations remain
+read-only. Automated WU6 evidence also checks package manifest inclusion/exclusion
+and the clean-install/upgrade validation surface. Merge, branch cleanup, and
+publication remain pending.
+
 The existing Core Theme System remains the sole owner of filesystem discovery,
 registry persistence, active-theme state, activation, loading, rendering, view
 resolution and overrides, controlled assets, and runtime theme-setting

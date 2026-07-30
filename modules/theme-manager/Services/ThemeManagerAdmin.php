@@ -8,6 +8,7 @@ use Copot\Core\User;
 
 final class ThemeManagerAdmin
 {
+    private const MAX_SCREENSHOT_BYTES = 8388608;
     private const SCREENSHOT_MIME_TYPES = [
         'jpg' => 'image/jpeg',
         'jpeg' => 'image/jpeg',
@@ -100,12 +101,13 @@ final class ThemeManagerAdmin
                 }
 
                 $content = file_get_contents($path);
-                if ($content === false) {
+                $mime = $this->screenshotMimeType($path);
+                if ($content === false || $mime === null || strlen($content) > self::MAX_SCREENSHOT_BYTES) {
                     return $this->app->adminErrors()->response($request, 404);
                 }
 
                 return Response::content($content, 200, [
-                    'Content-Type' => self::SCREENSHOT_MIME_TYPES[strtolower(pathinfo($path, PATHINFO_EXTENSION))],
+                    'Content-Type' => $mime,
                     'Cache-Control' => 'private, no-store',
                     'X-Content-Type-Options' => 'nosniff',
                 ]);
@@ -199,7 +201,29 @@ final class ThemeManagerAdmin
             return null;
         }
 
+        $size = filesize($candidate);
+        if ($size === false || $size > self::MAX_SCREENSHOT_BYTES) {
+            return null;
+        }
+
         return str_starts_with($candidate, rtrim($root, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR) ? $candidate : null;
+    }
+
+    private function screenshotMimeType(string $path): ?string
+    {
+        $extension = strtolower((string) pathinfo($path, PATHINFO_EXTENSION));
+        $expected = self::SCREENSHOT_MIME_TYPES[$extension] ?? null;
+        if ($expected === null) {
+            return null;
+        }
+
+        $mime = finfo_open(FILEINFO_MIME_TYPE);
+        $detected = $mime === false ? false : finfo_file($mime, $path);
+        if ($mime !== false) {
+            finfo_close($mime);
+        }
+
+        return $detected === $expected ? $expected : null;
     }
 
     private function noticeFor(mixed $notice): ?string
