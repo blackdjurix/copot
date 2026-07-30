@@ -51,6 +51,30 @@ narrow 320px overflow containment in the shared Admin Shell. Visual human
 review remains limited to hierarchy, screenshot usefulness, activation-warning
 comprehension, and final presentation quality.
 
+WU5 implementation adds the controlled Theme settings workspace and Core runtime
+resolution. Theme overrides use the existing `settings` table and Settings
+primitives under a deterministic, length-safe Theme namespace mapper; no second
+settings table is introduced. Save and reset operations validate every field
+before writing and use the established owned-transaction/savepoint boundary,
+including preservation of caller-owned outer transactions. Reset removes all
+overrides in the Theme namespace, including obsolete fields. Corrupt or unreadable
+overrides fall back to declared defaults.
+
+Core resolves only the active registry Theme's normalized settings metadata and
+exposes the deterministic effective values intrinsically as `$themeSettings` to
+both content and layout rendering. Runtime resolution does not require the
+`theme-manager` module or filesystem discovery; malformed active metadata fails
+closed to an empty controlled settings array. Theme settings display declared
+`supports.navigation_locations` in deterministic read-only form and perform no
+Navigation writes. WU5 focused evidence covers typed controls, namespace mapping,
+validation, inactive-value preservation, reset behavior, runtime isolation, and
+malformed metadata handling.
+
+The combined WU4/WU5 human review remains deferred for visual hierarchy,
+screenshot usefulness, activation-warning comprehension, settings-form clarity,
+color-control usability, true 200% zoom, 320px presentation, and final Theme
+workspace quality. Full M3.7 remains `NRP NOT REACHED`; WU6 remains unauthorized.
+
 The existing Core Theme System remains the sole owner of filesystem discovery,
 registry persistence, active-theme state, activation, loading, rendering, view
 resolution and overrides, controlled assets, and runtime theme-setting

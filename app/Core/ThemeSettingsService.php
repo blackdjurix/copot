@@ -6,6 +6,9 @@ use Throwable;
 
 final class ThemeSettingsService
 {
+    private const SAVEPOINT_PREFIX = 'theme_settings_save_';
+    private static int $savepointCounter = 0;
+
     public function __construct(private SettingsRepository $repository, private Database $database)
     {
     }
@@ -59,8 +62,15 @@ final class ThemeSettingsService
         }
 
         $connection = $this->database->connection();
-        try {
+        $ownsTransaction = !$connection->inTransaction();
+        $savepoint = null;
+        if ($ownsTransaction) {
             $connection->beginTransaction();
+        } else {
+            $savepoint = $this->nextSavepoint();
+            $connection->exec('SAVEPOINT ' . $savepoint);
+        }
+        try {
             foreach ($values as $key => $value) {
                 $definition = $set['definitions'][$key];
                 $service->set($definition->namespace(), $key, $value);
@@ -69,10 +79,23 @@ final class ThemeSettingsService
             if ($effective !== $values) {
                 throw new SettingsException('Theme settings postcondition failed.');
             }
-            $connection->commit();
+            if ($ownsTransaction) {
+                $connection->commit();
+            } else {
+                $connection->exec('RELEASE SAVEPOINT ' . $savepoint);
+            }
             return $effective;
         } catch (Throwable $exception) {
-            if ($connection->inTransaction()) $connection->rollBack();
+            try {
+                if ($ownsTransaction) {
+                    if ($connection->inTransaction()) $connection->rollBack();
+                } elseif ($connection->inTransaction()) {
+                    $connection->exec('ROLLBACK TO SAVEPOINT ' . $savepoint);
+                    $connection->exec('RELEASE SAVEPOINT ' . $savepoint);
+                }
+            } catch (Throwable $cleanupFailure) {
+                throw new \RuntimeException('Theme settings transaction cleanup failed.', 0, $cleanupFailure);
+            }
             throw $exception instanceof ThemeSettingsValidationException ? $exception : new SettingsException('Theme settings could not be saved.', 0, $exception);
         }
     }
@@ -81,13 +104,33 @@ final class ThemeSettingsService
     {
         $namespace = ThemeSettingsStorage::namespaceFor($theme->id());
         $connection = $this->database->connection();
-        try {
+        $ownsTransaction = !$connection->inTransaction();
+        $savepoint = null;
+        if ($ownsTransaction) {
             $connection->beginTransaction();
+        } else {
+            $savepoint = $this->nextSavepoint();
+            $connection->exec('SAVEPOINT ' . $savepoint);
+        }
+        try {
             $this->repository->deleteNamespace($namespace);
             if ($this->values($theme) !== $this->defaults($theme)) throw new SettingsException('Theme settings reset postcondition failed.');
-            $connection->commit();
+            if ($ownsTransaction) {
+                $connection->commit();
+            } else {
+                $connection->exec('RELEASE SAVEPOINT ' . $savepoint);
+            }
         } catch (Throwable $exception) {
-            if ($connection->inTransaction()) $connection->rollBack();
+            try {
+                if ($ownsTransaction) {
+                    if ($connection->inTransaction()) $connection->rollBack();
+                } elseif ($connection->inTransaction()) {
+                    $connection->exec('ROLLBACK TO SAVEPOINT ' . $savepoint);
+                    $connection->exec('RELEASE SAVEPOINT ' . $savepoint);
+                }
+            } catch (Throwable $cleanupFailure) {
+                throw new \RuntimeException('Theme settings transaction cleanup failed.', 0, $cleanupFailure);
+            }
             throw $exception instanceof SettingsException ? $exception : new SettingsException('Theme settings could not be reset.', 0, $exception);
         }
     }
@@ -120,14 +163,23 @@ final class ThemeSettingsService
         $definitions = [];
         $fields = [];
         $settings = $metadata['settings'] ?? [];
-        if (!is_array($settings) || !is_array($settings['sections'] ?? null)) return ['registry' => $registry, 'definitions' => [], 'fields' => []];
+        if ($settings === []) return ['registry' => $registry, 'definitions' => [], 'fields' => []];
+        if (!is_array($settings) || ($settings['version'] ?? null) !== 1 || !is_array($settings['sections'] ?? null) || $settings['sections'] === [] || !array_is_list($settings['sections'])) {
+            throw new SettingsException('Theme settings metadata is invalid.');
+        }
+        if (array_diff(array_keys($settings), ['version', 'sections']) !== []) throw new SettingsException('Theme settings metadata is invalid.');
         foreach ($settings['sections'] as $section) {
-            if (!is_array($section)) continue;
+            if (!is_array($section) || !is_array($section['fields'] ?? null) || $section['fields'] === [] || !array_is_list($section['fields'])) throw new SettingsException('Theme settings metadata is invalid.');
+            if (array_diff(array_keys($section), ['id', 'label', 'description', 'fields']) !== [] || !is_string($section['id'] ?? null) || !is_string($section['label'] ?? null)) throw new SettingsException('Theme settings metadata is invalid.');
             $normalizedFields = [];
             foreach (($section['fields'] ?? []) as $field) {
-                if (!is_array($field) || !is_string($field['key'] ?? null)) continue;
+                if (!is_array($field) || !is_string($field['key'] ?? null)) throw new SettingsException('Theme settings metadata is invalid.');
+                if (array_diff(array_keys($field), ['key', 'label', 'description', 'type', 'control', 'default', 'validation']) !== [] || !is_string($field['label'] ?? null) || !is_string($field['type'] ?? null) || !is_string($field['control'] ?? null) || !array_key_exists('default', $field) || !is_array($field['validation'] ?? null)) throw new SettingsException('Theme settings metadata is invalid.');
                 $key = $field['key']; $validation = is_array($field['validation'] ?? null) ? $field['validation'] : [];
                 $type = $field['type'] ?? ''; $default = $field['default'] ?? null;
+                if (array_diff(array_keys($validation), ['required', 'allowed_values', 'min', 'max', 'max_length', 'format']) !== []) throw new SettingsException('Theme settings metadata is invalid.');
+                $compatible = ['string' => ['text', 'select', 'color'], 'integer' => ['number'], 'float' => ['number'], 'boolean' => ['checkbox']];
+                if (!isset($compatible[$type]) || !in_array($field['control'], $compatible[$type], true)) throw new SettingsException('Theme settings metadata is invalid.');
                 $validator = static function (mixed $value) use ($validation, $type): bool {
                     if (($validation['required'] ?? false) && $type === 'string' && trim((string) $value) === '') return false;
                     if (isset($validation['min']) && $value < $validation['min']) return false;
@@ -148,6 +200,13 @@ final class ThemeSettingsService
         }
         usort($fields, static fn ($a, $b) => $a['id'] <=> $b['id']);
         return ['registry' => $registry, 'definitions' => $definitions, 'fields' => $fields];
+    }
+
+    private function nextSavepoint(): string
+    {
+        self::$savepointCounter++;
+
+        return self::SAVEPOINT_PREFIX . self::$savepointCounter . '_' . bin2hex(random_bytes(6));
     }
 
     private function normalize(SettingDefinition $definition, mixed $value): mixed

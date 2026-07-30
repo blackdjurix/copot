@@ -98,6 +98,7 @@ try {
         $app->session()->set((string) $app->config()->get('auth.session_key', '_copot_user_id'), $userId);
     };
     $url = $app->adminUrl()->childUrl('themes');
+    $settingsUrl = $app->adminUrl()->childUrl('themes/alpha/settings');
     $token = static fn (): string => $app->session()->csrfToken();
 
     $makeTheme = static function (string $id, string $name, bool $withScreenshot = false) use ($fixtureRoot): void {
@@ -117,6 +118,9 @@ try {
             $manifest['screenshot'] = 'screenshot.png';
             file_put_contents($themePath . DIRECTORY_SEPARATOR . 'screenshot.png', base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', true));
         }
+        if ($id === 'alpha') {
+            $manifest['settings'] = ['version' => 1, 'sections' => [['id' => 'appearance', 'label' => 'Appearance', 'fields' => [['key' => 'accent', 'label' => 'Accent', 'type' => 'string', 'control' => 'color', 'default' => '#ffffff', 'validation' => ['format' => 'hex_color']]]]]];
+        }
         file_put_contents($themePath . DIRECTORY_SEPARATOR . 'theme.json', json_encode($manifest, JSON_THROW_ON_ERROR));
     };
     mkdir($fixtureRoot, 0777, true);
@@ -134,12 +138,15 @@ try {
     $guest = $app->run(new Request('GET', $url));
     $assert($statusOf($guest) === 302 && $locationOf($guest) === $app->adminUrl()->baseUrl(), 'Unauthenticated Theme request did not redirect to configured Admin login.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('themes/alpha/activate'), [], []))) === 302, 'Unauthenticated POST did not redirect before CSRF.');
+    $assert($statusOf($app->run(new Request('GET', $settingsUrl))) === 302, 'Unauthenticated settings request did not redirect.');
     $switch($adminOnly);
     $assert($statusOf($app->run(new Request('GET', $url))) === 403, 'Admin-only user reached Theme workspace.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('themes/alpha/activate'), [], []))) === 403, 'Admin-only POST did not fail before CSRF.');
+    $assert($statusOf($app->run(new Request('POST', $settingsUrl, [], []))) === 403, 'Admin-only settings POST did not fail before CSRF.');
     $switch($themesOnly);
     $assert($statusOf($app->run(new Request('GET', $url))) === 403, 'Theme-only user reached Theme workspace.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('themes/alpha/activate'), [], []))) === 403, 'Theme-only POST did not fail before CSRF.');
+    $assert($statusOf($app->run(new Request('POST', $settingsUrl, [], []))) === 403, 'Theme-only settings POST did not fail before CSRF.');
     $switch($full);
     $navigation = $app->adminNavigation()->itemsFor($app->auth()->user());
     $assert(array_column($navigation, 'label') === ['Dashboard', 'Themes'], 'Theme navigation was not permission filtered or deterministically ordered.');
@@ -152,6 +159,12 @@ try {
     $assert(!str_contains($html, '<script>') && strlen($html) < 50000, 'Hostile metadata was not escaped and bounded.');
     $assert(str_contains($html, 'aria-current="page"'), 'Themes navigation item was not marked active.');
     $assert(!str_contains($html, $basePath) && !str_contains($html, 'CREATE TABLE') && !str_contains($html, 'Exception'), 'Theme workspace leaked internal diagnostics.');
+    $settings = $app->run(new Request('GET', $settingsUrl)); $settingsHtml = $contentOf($settings); $assert($statusOf($settings) === 200 && str_contains($settingsHtml, 'Theme settings') && str_contains($settingsHtml, 'type="color"'), 'Active Theme settings surface did not render its controlled form.'); $betaSettings = $app->run(new Request('GET', $app->adminUrl()->childUrl('themes/beta/settings'))); $assert($statusOf($betaSettings) === 200 && str_contains($contentOf($betaSettings), 'No settings declared'), 'Inactive no-settings Theme did not render its intentional empty state.');
+    $assert($statusOf($app->run(new Request('POST', $settingsUrl, [], []))) === 419, 'Missing settings CSRF was not rejected.');
+    $assert($statusOf($app->run(new Request('POST', $settingsUrl, [], ['_token' => 'invalid', 'theme_id' => 'alpha', 'settings' => ['accent' => '#123456']]))) === 419, 'Invalid settings CSRF was not rejected.');
+    $assert($statusOf($app->run(new Request('POST', $settingsUrl, [], ['_token' => $token(), 'theme_id' => ['alpha'], 'settings' => ['accent' => '#123456']]))) === 422, 'Array settings Theme ID was not rejected.');
+    $assert($statusOf($app->run(new Request('POST', $settingsUrl, [], ['_token' => $token(), 'theme_id' => 'beta', 'settings' => ['accent' => '#123456']]))) === 422, 'Mismatched settings Theme ID was not rejected.');
+    $savedSettings = $app->run(new Request('POST', $settingsUrl, [], ['_token' => $token(), 'theme_id' => 'alpha', 'settings' => ['accent' => '#123456']])); $assert($statusOf($savedSettings) === 302 && str_contains($locationOf($savedSettings), 'saved=1'), 'Valid Theme settings save did not use PRG.');
 
     $before = (int) $db->query('SELECT COUNT(*) FROM themes')->fetchColumn();
     $getMutationProbe = $app->run(new Request('GET', $url));
