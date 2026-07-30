@@ -2,7 +2,7 @@
 
 A modular PHP-based website framework designed for flexible content, business, and automation solutions.
 
-M3.6 Navigation Manager preparation and WU1–WU4 are complete on the feature branch. WU1–WU3 are `NRP CONFIRMED`; WU4 is an `NRP CANDIDATE` after objective/runtime validation and human acceptance. The Navigation Admin workspace covers menu/item management, custom/provider targets, hierarchy, parent exclusion, exact sibling reorder, empty and unavailable-provider states, permission handling, CSRF, validation, PRG, configured Admin paths, active navigation, responsive presentation at `1440×900`, `390×844`, `320×800`, and `200%` zoom, plus console/network inspection. `AdminNavigation` remains separate from managed public Navigation data. Theme location declaration, frontend consumption, and design-adjustment review remain deferred to WU5; production Taxonomy targets remain deferred. Full M3.6 is `NRP NOT REACHED`; WU5 is the next separately authorized gate. The preparation contract is `docs/22_m3_6_navigation_manager_contract.md`.
+M3.6 Navigation Manager preparation and WU1–WU5 are complete on the feature branch. WU1–WU4 are `NRP CONFIRMED`; WU5 is an `NRP CANDIDATE` after deterministic validation, runtime/browser validation, and human acceptance. WU5 adds the narrow request-scoped, deterministic, frozen, lazy, fail-closed Core frontend Theme context seam and Theme-owned Navigation consumption. Assigned menus, hierarchy, sibling order, visibility, custom targets, published Content targets, empty/no-assignment handling, and unavailable or disabled providers were validated. Public home and Content pages passed console/network, responsive, true `200%` zoom, touch-target, and keyboard/focus review. The WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. `AdminNavigation` remains separate from managed public Navigation data. Production Taxonomy targets and Theme Manager functionality remain deferred. Full M3.6 is `NRP NOT REACHED`; WU6 is the next separately authorized gate. The preparation contract is `docs/22_m3_6_navigation_manager_contract.md`.
 
 ## Status
 
@@ -24,13 +24,18 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
+Current M3.6 state: WU1–WU5 are complete on the feature branch. WU1–WU4 are
+`NRP CONFIRMED`; WU5 is `NRP CANDIDATE` after implementation, deterministic
+validation, runtime/browser validation, and human acceptance. WU6 is the next
+separately authorized gate; full M3.6 remains `NRP NOT REACHED`.
+
 M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; its local and remote feature branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
 
 M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-M3.4 Content Manager is complete on `main`; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation, classification, and lifecycle closure are complete, with final outcome `NO MATERIAL RETOUCH REQUIRED`. M3.5 product scope was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit. Work Units 1–5 and full M3.5 are `NRP CONFIRMED`; feature containment passed, and local/remote feature branches are deleted. M3.6 preparation and WU1–WU4 are complete; WU1–WU3 are `NRP CONFIRMED` and WU4 is `NRP CANDIDATE`. Full M3.6 is `NRP NOT REACHED`; WU5 is the next separately authorized gate. Release, tag, and publication remain not started and separately authorized. WU4 implementation is complete at `43085441a82ecc38941ca880b2dbbd6823f61215` (`feat(m3.6): add navigation admin workspace`). Category hierarchy and flat tags are included; type CRUD and filtering remain excluded.
+M3.4 Content Manager is complete on `main`; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation, classification, and lifecycle closure are complete, with final outcome `NO MATERIAL RETOUCH REQUIRED`. M3.5 product scope was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit. Work Units 1–5 and full M3.5 are `NRP CONFIRMED`; feature containment passed, and local/remote feature branches are deleted. M3.6 WU1–WU5 are complete on the feature branch; WU1–WU4 are `NRP CONFIRMED` and WU5 is `NRP CANDIDATE`. Full M3.6 is `NRP NOT REACHED`; WU6 is the next separately authorized gate. Release, tag, and publication remain not started and separately authorized. WU4 implementation is complete at `43085441a82ecc38941ca880b2dbbd6823f61215` (`feat(m3.6): add navigation admin workspace`). WU5 implementation is complete at `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation in frontend themes`). Category hierarchy and flat tags are included; type CRUD and filtering remain excluded.
 
 M3.R1 final classifications are: Shared page header/action treatment and visual tokens `NO CHANGE REQUIRED`; Users list, Roles list, and Module list `REVIEW ONLY`; standalone prototype User Detail and Role Detail surfaces `EXCLUDED`. Prototype-led summary cards, filtering, extra metadata, avatars, pagination, compact Module action menus, standalone detail pages, command search, notifications, and sidebar system status remain optional future proposals or excluded scope; they are not M3.R1 implementation scope.
 

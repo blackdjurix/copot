@@ -871,7 +871,24 @@ These checkpoints are horizontal design-governance work units and are not includ
 
 ## M3 Core Modules
 
-M3.6 Navigation Manager preparation and WU1–WU4 are complete. WU1–WU3 are `NRP CONFIRMED`; WU4 implementation and objective/runtime plus human acceptance evidence passed at `43085441a82ecc38941ca880b2dbbd6823f61215` and WU4 is `NRP CANDIDATE`. The Navigation Admin workspace covers menu/item management, custom/provider targets, hierarchy, parent exclusion, exact sibling reorder, empty and unavailable-provider states, permission handling, CSRF, validation, PRG, configured Admin paths, active navigation, responsive presentation at `1440×900`, `390×844`, `320×800`, and `200%` zoom, plus console/network inspection. `AdminNavigation` remains separate from managed public Navigation data. Theme location declaration, frontend consumption, and design adjustment remain deferred to WU5; production Taxonomy targets remain deferred. WU5 is the next separately authorized gate. Full M3.6 is `NRP NOT REACHED`. The accepted preparation contract is `docs/22_m3_6_navigation_manager_contract.md`; no generic Core abstraction or migration framework is introduced.
+M3.6 WU1–WU5 are complete on the feature branch. WU1–WU4 are `NRP
+CONFIRMED`; WU5 is `NRP CANDIDATE` after focused validation, package smoke,
+runtime/browser evidence, and human acceptance. The WU5 implementation commit
+is `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation
+in frontend themes`). The narrow Core frontend Theme context seam is
+request-scoped, deterministic, frozen before dispatch, lazily composed, and
+fail-closed; Core and public/Content routes do not depend directly on
+Navigation, while Themes own markup, styling, composition, and responsive
+presentation. `supports.navigation_locations`, assigned menus, hierarchy,
+sibling order, visibility, custom targets, published Content targets, and
+fail-closed unavailable/hidden/disabled-provider behavior are accepted. The
+WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. Production
+Taxonomy targets and Theme Manager functionality remain deferred. Full M3.6 is
+`NRP NOT REACHED`; WU6 is the next separately authorized gate.
+
+The following paragraph is the superseded pre-WU5 checkpoint record:
+
+M3.6 WU1–WU5 are complete on the feature branch. WU1–WU4 are `NRP CONFIRMED`; WU5 implementation and deterministic/runtime/browser/human acceptance evidence passed at `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation in frontend themes`) and WU5 is `NRP CANDIDATE`. The narrow Core frontend Theme context seam is request-scoped, deterministic, frozen before dispatch, lazily composed, and fail-closed; Core and public/Content routes do not depend directly on Navigation, while Themes own markup, styling, composition, and responsive presentation. `supports.navigation_locations`, assigned menus, hierarchy, sibling order, visibility, custom targets, published Content targets, and fail-closed unavailable/hidden/disabled-provider behavior are accepted. The WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. Production Taxonomy targets and Theme Manager functionality remain deferred. WU6 is the next separately authorized gate. Full M3.6 is `NRP NOT REACHED`. The accepted preparation contract is `docs/22_m3_6_navigation_manager_contract.md`; no generic Core abstraction or migration framework is introduced.
 
 ### Objective
 

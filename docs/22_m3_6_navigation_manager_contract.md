@@ -5,7 +5,7 @@
 M3.6 prepares the existing platform for a Navigation Manager that owns
 navigation data and management behavior without moving presentation ownership
 into Navigation. This remains a preparation contract and scope lock; Work
-Units 1 through 4 implementation is complete on the feature branch.
+Units 1 through 5 implementation is complete on the feature branch.
 
 M3.5 Taxonomy Manager remains closed and `NRP CONFIRMED`. M3.6 preparation is
 `NRP CONFIRMED`. Work Unit 1 — Contract, Provisioning, and Compatibility
@@ -26,9 +26,26 @@ Management Workspace implementation is complete at
 `43085441a82ecc38941ca880b2dbbd6823f61215`
 (`feat(m3.6): add navigation admin workspace`). Objective/runtime validation,
 provisioning and upgrade rerun safety, source/runtime SHA-256 synchronization,
-HTTP/session validation, and human acceptance passed. WU4 is `NRP CANDIDATE`;
+HTTP/session validation, and human acceptance passed. WU4 is `NRP CONFIRMED`;
 full M3.6 is `NRP NOT REACHED`. Release, tag, publication, merge, and branch
 cleanup remain separately authorized.
+
+Work Unit 5 — Theme Consumption and Design-Adjustment Checkpoint is complete
+at `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation
+in frontend themes`). The narrow Core frontend Theme context seam is
+request-scoped, deterministic, frozen before dispatch, lazily composed, and
+fail-closed. Core and public/Content routes do not depend directly on
+Navigation; Themes own markup, styling, composition, and responsive
+presentation. `supports.navigation_locations` is validated and used by
+Navigation-owned consumption. Focused WU5 validation passed 15 assertions;
+package-builder smoke passed 891 assertions. Runtime/browser evidence and
+human acceptance passed for public home and Content pages, empty/no-assignment
+states, provider disable/restore, console/network inspection, responsive
+widths, true `200%` zoom, touch targets, and keyboard/focus usability. The WU4
+Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. WU5 is `NRP
+CANDIDATE`; full M3.6 remains `NRP NOT REACHED`. Production Taxonomy targets
+and Theme Manager functionality remain deferred. WU6 is the next separately
+authorized gate.
 
 The contract preserves the approved M3 sequence and the ownership decisions in
 `docs/16_m3_core_freeze_and_module_contract.md`. It records the accepted
@@ -49,9 +66,11 @@ M3.6 Work Unit 2 (NRP CONFIRMED)
 ->
 M3.6 Work Unit 3 (NRP CONFIRMED)
 ->
-M3.6 Work Unit 4 (NRP CANDIDATE)
+M3.6 Work Unit 4 (NRP CONFIRMED)
 ->
-M3.6 Work Unit 5 (next separately authorized gate)
+M3.6 Work Unit 5 (NRP CANDIDATE)
+->
+M3.6 Work Unit 6 (next separately authorized gate)
 ->
 M3.7 Theme Manager
 ```
@@ -184,10 +203,19 @@ CONFIRMED`.
 
 ### Work Unit 5 — Theme Consumption and Design-Adjustment Checkpoint
 
-Consume Theme-declared `navigation_locations` through the public contract.
-Themes own rendering and presentation. Review the Navigation workspace and
-placement under the reusable Admin Shell design-adjustment governance; this
-unit does not authorize a frontend Theme redesign.
+Complete: WU5 consumes Theme-declared `navigation_locations` through the
+public Core frontend Theme context contract. The seam is request-scoped,
+deterministic, frozen before dispatch, lazily composed, and fail-closed.
+Navigation owns contributor orchestration and resolved data; Core owns only
+context composition; Themes own rendering, markup, styling, composition, and
+responsive presentation. Assigned menus, hierarchy, sibling order, visibility,
+custom targets, published Content targets, empty/no-assignment handling, and
+unavailable or disabled providers are covered. Focused validation passed 15
+assertions, package-builder smoke passed 891 assertions, runtime/browser
+validation passed, and human acceptance passed at `1440×900`, `390×844`,
+`320×800`, true `200%` zoom, touch targets, and keyboard/focus usability. The
+WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. WU5 is `NRP
+CANDIDATE`, not `NRP CONFIRMED`.
 
 ### Work Unit 6 — Security, Milestone Regression, Documentation, and Lifecycle Closure
 
@@ -212,13 +240,13 @@ and WU2 Taxonomy regressions, plus PHP lint and `git diff --check`. WU2 is
 `NRP CONFIRMED`. WU3 primary validation passed: focused WU3 resolver validation
 (19 assertions), WU2 Navigation domain, WU1 Navigation compatibility, and
 Content public publication/security regressions, plus PHP lint and `git diff
---check`. WU3 is `NRP CONFIRMED`. WU4 is `NRP CANDIDATE` after implementation,
+--check`. WU3 is `NRP CONFIRMED`. WU4 is `NRP CONFIRMED` after implementation,
 objective/runtime validation, source/runtime synchronization, HTTP/session
-validation, and human acceptance. Theme location declaration, frontend
-consumption, and the design-adjustment checkpoint remain deferred to WU5, as do
-production Taxonomy targets. Full M3.6 remains `NRP NOT REACHED` until
-separately authorized later work units, focused validation, applicable
-runtime/browser evidence, Git delivery, and final NRP evaluation are complete.
+validation, and human acceptance. WU5 is `NRP CANDIDATE` after implementation,
+focused validation, package smoke, runtime/browser evidence, and human
+acceptance. Full M3.6 remains `NRP NOT REACHED` until WU6, independent
+validation, Git delivery, and final NRP evaluation are complete. Production
+Taxonomy targets and Theme Manager functionality remain deferred.
 
 WU1 is closed to further scope expansion. WU2 delivered only its approved
 Navigation domain behavior; it does not authorize Content resolver
