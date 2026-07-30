@@ -813,7 +813,7 @@ main at the M3.R1 preparation post-cleanup documentation checkpoint; HEAD 5887da
 -> Batch 6 and full M3.4 are NRP CONFIRMED after final documentation and verification
 -> M3.R1 preparation contract integrated, corrected, and branch-closed; classification gate complete with `NO MATERIAL RETOUCH REQUIRED`
 -> M3.R1 has no implementation batches or implementation branch; full M3.R1 is `NRP CONFIRMED` after pushed documentation closure and synchronized clean `main`
--> M3.5 was subsequently completed and branch-closed; M3.6 is next and not started; release, tag, and publication remain separately authorized
+-> M3.5 was subsequently completed and branch-closed; M3.6 WU1–WU4 are complete, WU4 is `NRP CANDIDATE`, and WU5 is the next separately authorized gate; release, tag, and publication remain separately authorized
 ```
 
 ### M3.R1 — Admin Shell Retouch 1
@@ -831,7 +831,8 @@ implementation batches, implementation branch, production/test changes,
 runtime synchronization, or browser validation were required. Full M3.R1 is
 `NRP CONFIRMED`. M3.5 subsequently completed its approved preparation,
 implementation, validation, integration, documentation, and branch-lifecycle
-closure. M3.6 is next and not started. The contract is
+closure. M3.6 WU1–WU4 are complete, with WU4 an `NRP CANDIDATE` and WU5 the
+next separately authorized gate. The contract is
 `docs/20_m3_r1_admin_shell_retouch_contract.md`.
 M3.R1 is a completed horizontal Admin Shell work unit after full M3.4 closure
 and before M3.5:
@@ -848,7 +849,7 @@ M3.R1 is outside M3.4, Batch 5, Batch 6, and M3.5. It reviews the M3.1 Users & A
 
 Each reviewed page is classified as `redesign required`, `retouch required`, `review only`, or `NO CHANGE REQUIRED`. Product Designer input supports the review and recommendation; it does not authorize domain behavior, permissions, routes, schema, data contracts, ownership, Core architecture, or Git/release actions.
 
-M3.R1 may change approved presentation and Admin navigation ordering within the existing navigation contract. Its accepted outcome required no implementation. M3.5 product scope was accepted, and its dedicated preparation contract is committed to `main` at `1e6c837340b0ea561870b7fe729791edcc0aa9f5` (`docs(m3.5): lock taxonomy manager preparation contract`). M3.5 was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit; its five work units and full M3.5 are `NRP CONFIRMED`, feature containment passed, and the local/remote feature branches are deleted. WU5 confirms 25/39/41/11 Taxonomy assertions, 9/37/53/33/33/31 Content/package-compatible assertions, 825 package assertions, 59 clean-install assertions, and clean PHP lint/diff checks. The scope remains fixed to the existing Taxonomy module's `category` hierarchy and flat `tag` management, with no taxonomy type CRUD, filtering, or Navigation Manager work. M3.6 Navigation Manager is next and not started. Release, tag, and publication remain not started and separately authorized.
+M3.R1 may change approved presentation and Admin navigation ordering within the existing navigation contract. Its accepted outcome required no implementation. M3.5 product scope was accepted, and its dedicated preparation contract is committed to `main` at `1e6c837340b0ea561870b7fe729791edcc0aa9f5` (`docs(m3.5): lock taxonomy manager preparation contract`). M3.5 was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit; its five work units and full M3.5 are `NRP CONFIRMED`, feature containment passed, and the local/remote feature branches are deleted. WU5 confirms 25/39/41/11 Taxonomy assertions, 9/37/53/33/33/31 Content/package-compatible assertions, 825 package assertions, 59 clean-install assertions, and clean PHP lint/diff checks. The scope remains fixed to the existing Taxonomy module's `category` hierarchy and flat `tag` management, with no taxonomy type CRUD, filtering, or Navigation Manager work. M3.6 WU1–WU4 are now complete, WU4 is `NRP CANDIDATE`, and WU5 is the next separately authorized gate. Release, tag, and publication remain not started and separately authorized.
 
 ### M3.5–M3.11 Admin Shell Design-Adjustment Checkpoints
 
@@ -870,7 +871,7 @@ These checkpoints are horizontal design-governance work units and are not includ
 
 ## M3 Core Modules
 
-M3.6 Navigation Manager preparation and WU1–WU3 are `NRP CONFIRMED`. WU3 Content Target Resolver Integration primary validation passed 19 assertions on `feature/m3.6-navigation-manager` at `3e387c5756636d08416880a8d8ec5ca1112cad75`. Content owns `ContentNavigationTargetResolver`; Navigation owns request-scoped optional-provider composition for canonical lowercase globally unique Content-slug references, published-only `/content/{slug}` results, and fail-closed unavailable targets without Core wiring or global state. WU4 is not started and is the next separately authorized gate. The Admin workspace remains deferred to WU4, Navigation item visibility and Theme location declaration/consumption to WU5, and production Taxonomy targets remain deferred. Full M3.6 is `NRP NOT REACHED`. The accepted preparation contract is `docs/22_m3_6_navigation_manager_contract.md`. Navigation owns its domain and `AdminNavigation` remains separate; no generic Core abstraction or migration framework is introduced.
+M3.6 Navigation Manager preparation and WU1–WU4 are complete. WU1–WU3 are `NRP CONFIRMED`; WU4 implementation and objective/runtime plus human acceptance evidence passed at `43085441a82ecc38941ca880b2dbbd6823f61215` and WU4 is `NRP CANDIDATE`. The Navigation Admin workspace covers menu/item management, custom/provider targets, hierarchy, parent exclusion, exact sibling reorder, empty and unavailable-provider states, permission handling, CSRF, validation, PRG, configured Admin paths, active navigation, responsive presentation at `1440×900`, `390×844`, `320×800`, and `200%` zoom, plus console/network inspection. `AdminNavigation` remains separate from managed public Navigation data. Theme location declaration, frontend consumption, and design adjustment remain deferred to WU5; production Taxonomy targets remain deferred. WU5 is the next separately authorized gate. Full M3.6 is `NRP NOT REACHED`. The accepted preparation contract is `docs/22_m3_6_navigation_manager_contract.md`; no generic Core abstraction or migration framework is introduced.
 
 ### Objective
 

@@ -5,7 +5,7 @@
 M3.6 prepares the existing platform for a Navigation Manager that owns
 navigation data and management behavior without moving presentation ownership
 into Navigation. This remains a preparation contract and scope lock; Work
-Units 1 through 3 implementation is complete on the feature branch.
+Units 1 through 4 implementation is complete on the feature branch.
 
 M3.5 Taxonomy Manager remains closed and `NRP CONFIRMED`. M3.6 preparation is
 `NRP CONFIRMED`. Work Unit 1 — Contract, Provisioning, and Compatibility
@@ -21,10 +21,14 @@ validation passed 44 assertions. WU2 is `NRP CONFIRMED`. Work Unit 3 — Content
 Target Resolver Integration implementation and primary validation are complete
 at `3e387c5756636d08416880a8d8ec5ca1112cad75`
 (`feat(m3.6): add content navigation target resolver`); focused WU3 resolver
-validation passed 19 assertions. WU3 is `NRP CONFIRMED`; WU4 is not started
-and is the next separately authorized gate. Full M3.6 is `NRP NOT REACHED`.
-Release, tag, publication, merge, and branch cleanup remain separately
-authorized.
+validation passed 19 assertions. WU3 is `NRP CONFIRMED`. Work Unit 4 — Admin
+Management Workspace implementation is complete at
+`43085441a82ecc38941ca880b2dbbd6823f61215`
+(`feat(m3.6): add navigation admin workspace`). Objective/runtime validation,
+provisioning and upgrade rerun safety, source/runtime SHA-256 synchronization,
+HTTP/session validation, and human acceptance passed. WU4 is `NRP CANDIDATE`;
+full M3.6 is `NRP NOT REACHED`. Release, tag, publication, merge, and branch
+cleanup remain separately authorized.
 
 The contract preserves the approved M3 sequence and the ownership decisions in
 `docs/16_m3_core_freeze_and_module_contract.md`. It records the accepted
@@ -45,7 +49,9 @@ M3.6 Work Unit 2 (NRP CONFIRMED)
 ->
 M3.6 Work Unit 3 (NRP CONFIRMED)
 ->
-M3.6 Work Unit 4 (not started; next separately authorized gate)
+M3.6 Work Unit 4 (NRP CANDIDATE)
+->
+M3.6 Work Unit 5 (next separately authorized gate)
 ->
 M3.7 Theme Manager
 ```
@@ -165,10 +171,16 @@ deferred.
 
 ### Work Unit 4 — Admin Management Workspace
 
-Provide the Navigation-owned Admin management workspace, with established
-permission, CSRF, validation, escaping, PRG, configured-path, responsive, and
-accessibility contracts. Keep `AdminNavigation` separate from managed public
-navigation data.
+Complete: WU4 provides the Navigation-owned Admin management workspace for
+menu and item management, custom and provider targets, hierarchy, parent
+exclusion, exact sibling reorder, visibility, empty and unavailable-provider
+states, permission handling, CSRF, validation, escaping, PRG, configured Admin
+paths, and active Admin navigation. Objective/runtime validation and human
+acceptance passed, including responsive presentation at `1440×900`, `390×844`,
+`320×800`, and `200%` zoom, plus console and network inspection. No source or
+runtime mismatch or accepted defect remains. Keep `AdminNavigation` separate
+from managed public navigation data. WU4 is `NRP CANDIDATE`, not `NRP
+CONFIRMED`.
 
 ### Work Unit 5 — Theme Consumption and Design-Adjustment Checkpoint
 
@@ -200,13 +212,13 @@ and WU2 Taxonomy regressions, plus PHP lint and `git diff --check`. WU2 is
 `NRP CONFIRMED`. WU3 primary validation passed: focused WU3 resolver validation
 (19 assertions), WU2 Navigation domain, WU1 Navigation compatibility, and
 Content public publication/security regressions, plus PHP lint and `git diff
---check`. WU3 is `NRP CONFIRMED`. WU4 is not started and is the next separately
-authorized gate; the Admin workspace remains deferred to WU4, Navigation item
-visibility and Theme location declaration/consumption to WU5, and production
-Taxonomy targets remain deferred. Full M3.6 remains `NRP NOT
-REACHED` until separately authorized later work units, focused validation,
-applicable runtime/browser evidence, Git delivery, and final NRP evaluation are
-complete.
+--check`. WU3 is `NRP CONFIRMED`. WU4 is `NRP CANDIDATE` after implementation,
+objective/runtime validation, source/runtime synchronization, HTTP/session
+validation, and human acceptance. Theme location declaration, frontend
+consumption, and the design-adjustment checkpoint remain deferred to WU5, as do
+production Taxonomy targets. Full M3.6 remains `NRP NOT REACHED` until
+separately authorized later work units, focused validation, applicable
+runtime/browser evidence, Git delivery, and final NRP evaluation are complete.
 
 WU1 is closed to further scope expansion. WU2 delivered only its approved
 Navigation domain behavior; it does not authorize Content resolver
