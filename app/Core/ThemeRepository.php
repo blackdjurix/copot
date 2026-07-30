@@ -77,6 +77,17 @@ class ThemeRepository
         return is_array($theme) ? $theme : null;
     }
 
+    public function activeFrontendRows(): array
+    {
+        $statement = $this->database->connection()->prepare(
+            'SELECT * FROM themes WHERE type = :type AND is_active = 1 ORDER BY id ASC'
+        );
+
+        $statement->execute(['type' => 'frontend']);
+
+        return $statement->fetchAll();
+    }
+
     public function deactivateByType(string $type): void
     {
         $statement = $this->database->connection()->prepare(

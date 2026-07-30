@@ -25,7 +25,15 @@ normalizes optional descriptors into `ThemeDefinition` without adding
 persistence, activation, Admin routes, or runtime settings behavior. The
 focused WU2 definition contract covers valid normalization and rejection of
 malformed, duplicate, unsupported, incompatible, and path-escaping definitions.
-Full M3.7 NRP remains `NRP NOT REACHED`; this record does not authorize WU3.
+
+WU3 implementation adds the Core `ThemeLifecycle` catalog and activation path.
+It joins fresh discovery, bounded diagnostics, registry rows, and active state
+without mutation during reads. Activation always performs fresh preflight and
+atomically refreshes the normalized registry snapshot and single active
+frontend state, with rollback preservation on persistence or postcondition
+failure. No Admin workspace, settings persistence, or filesystem mutation is
+included. Full M3.7 NRP remains `NRP NOT REACHED`; this record does not authorize
+WU4.
 
 The existing Core Theme System remains the sole owner of filesystem discovery,
 registry persistence, active-theme state, activation, loading, rendering, view

@@ -31,6 +31,7 @@ class Application
     private ModuleManager $modules;
     private ModuleLoader $moduleLoader;
     private ThemeManager $themes;
+    private ThemeLifecycle $themeLifecycle;
     private ThemeLoader $themeLoader;
     private ThemeAssets $themeAssets;
     private ViewRenderer $viewRenderer;
@@ -78,6 +79,12 @@ class Application
             $themeRepository = new ThemeRepository($this->database),
             $this->database,
             $this->basePath
+        );
+        $this->themeLifecycle = new ThemeLifecycle(
+            new ThemeDiscovery($this->path('themes')),
+            $this->themes,
+            $themeRepository,
+            $this->database
         );
         $this->themeLoader = new ThemeLoader($themeRepository, $this->basePath);
         $this->themeAssets = new ThemeAssets($this->themeLoader);
@@ -220,6 +227,11 @@ class Application
     public function themes(): ThemeManager
     {
         return $this->themes;
+    }
+
+    public function themeLifecycle(): ThemeLifecycle
+    {
+        return $this->themeLifecycle;
     }
 
     public function themeLoader(): ThemeLoader
