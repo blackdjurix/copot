@@ -4,6 +4,8 @@
 
 ### Added
 
+- Implemented M3.7 WU1 compatibility baseline on `feature/m3.7-theme-manager`: first-party `theme-manager` module manifest, `themes.manage` fresh/upgrade provisioning, baseline installation and package inclusion, and error-tolerant Theme catalog discovery. Focused WU1 compatibility passes 16 assertions; no Admin workspace, WU2 settings contract, activation orchestration, or runtime settings behavior is included.
+
 - Added `docs/23_m3_7_theme_manager_contract.md`, locking the first-party `theme-manager` Admin boundary over the existing Core Theme System, controlled declarative theme settings, active-theme and activation safety, Navigation and branding boundaries, `admin.access`/`themes.manage`, exclusions, design checkpoint, and exactly six M3.7 preparation work units. M3.7 preparation is independent after M3.6 closure; full M3.7 is `NRP NOT REACHED`.
 
 ### Changed

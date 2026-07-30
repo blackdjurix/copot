@@ -1,0 +1,16 @@
+{
+  "name": "theme-manager",
+  "title": "Theme Manager",
+  "description": "First-party compatibility baseline for future Theme Manager administration.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "requires": {
+    "modules": []
+  },
+  "permissions": [
+    {
+      "slug": "themes.manage",
+      "name": "Manage themes"
+    }
+  ]
+}

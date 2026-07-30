@@ -12,6 +12,7 @@ return [
         'modules/module-manager',
         'modules/navigation',
         'modules/settings-manager',
+        'modules/theme-manager',
         'modules/taxonomy',
         'public',
         'resources',

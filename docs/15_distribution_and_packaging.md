@@ -171,7 +171,7 @@ Verification must cover:
 4. first administrator creation;
 5. initial Settings persistence;
 6. default Theme activation;
-7. baseline Content, Settings Manager, and Taxonomy module enablement;
+7. baseline Content, Settings Manager, Taxonomy, Module Manager, Navigation, and Theme Manager module enablement;
 8. Admin login and logout;
 9. Content, Settings, and Taxonomy Admin access;
 10. public Theme rendering;

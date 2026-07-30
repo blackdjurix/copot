@@ -10,7 +10,7 @@ class InstallerFinalizer
         ['localization', 'timezone'],
         ['localization', 'locale'],
     ];
-    private const BASELINE_MODULES = ['content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation'];
+    private const BASELINE_MODULES = ['content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation', 'theme-manager'];
 
     public function __construct(
         private Database $database,
@@ -111,7 +111,7 @@ class InstallerFinalizer
     {
         $defaultTheme = null;
 
-        foreach ($this->themeDiscovery->discover() as $theme) {
+        foreach ($this->themeDiscovery->discoverCatalog()['themes'] as $theme) {
             if ($theme->id() === 'default') {
                 $defaultTheme = $theme;
                 break;

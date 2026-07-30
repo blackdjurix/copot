@@ -13,24 +13,48 @@ class ThemeDiscovery
 
     public function discover(): array
     {
+        $catalog = $this->discoverCatalog();
+
+        if ($catalog['errors'] !== []) {
+            throw new ThemeException('Theme discovery failed.');
+        }
+
+        return $catalog['themes'];
+    }
+
+    /**
+     * Discover all healthy themes while retaining bounded diagnostics for
+     * individual invalid or unavailable entries.
+     *
+     * @return array{themes: list<ThemeDefinition>, errors: list<array{theme: ?string, status: string, code: string, message: string}>}
+     */
+    public function discoverCatalog(): array
+    {
         $themesPath = realpath($this->themesPath);
 
         if ($themesPath === false || !is_dir($themesPath)) {
-            throw new ThemeException("Themes directory [{$this->themesPath}] was not found.");
+            return [
+                'themes' => [],
+                'errors' => [$this->failure(null, 'unavailable', 'themes_path_unavailable')],
+            ];
         }
 
         $themes = [];
+        $errors = [];
         $directories = glob(rtrim($themesPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR) ?: [];
 
         foreach ($directories as $directory) {
             $themePath = realpath($directory);
+            $themeIdentifier = $this->safeThemeIdentifier(basename($directory));
 
             if ($themePath === false || !is_dir($themePath)) {
-                throw new ThemeException("Theme directory [{$directory}] was not found.");
+                $errors[] = $this->failure($themeIdentifier, 'unavailable', 'theme_path_unavailable');
+                continue;
             }
 
             if (!$this->isInsideDirectory($themePath, $themesPath)) {
-                throw new ThemeException("Theme directory [{$directory}] is outside the themes directory.");
+                $errors[] = $this->failure($themeIdentifier, 'invalid', 'theme_path_escape');
+                continue;
             }
 
             $themeJson = $themePath . DIRECTORY_SEPARATOR . 'theme.json';
@@ -39,10 +63,16 @@ class ThemeDiscovery
                 continue;
             }
 
-            $theme = $this->loadTheme($themePath, $themeJson);
+            try {
+                $theme = $this->loadTheme($themePath, $themeJson);
+            } catch (\Throwable) {
+                $errors[] = $this->failure($themeIdentifier, 'invalid', 'invalid_definition');
+                continue;
+            }
 
             if (isset($themes[$theme->id()])) {
-                throw new ThemeException("Duplicate theme ID [{$theme->id()}] was found.");
+                $errors[] = $this->failure($theme->id(), 'invalid', 'duplicate_theme_id');
+                continue;
             }
 
             $themes[$theme->id()] = $theme;
@@ -50,7 +80,28 @@ class ThemeDiscovery
 
         ksort($themes);
 
-        return array_values($themes);
+        usort($errors, static function (array $left, array $right): int {
+            return [(string) ($left['theme'] ?? ''), $left['code']] <=> [(string) ($right['theme'] ?? ''), $right['code']];
+        });
+
+        return ['themes' => array_values($themes), 'errors' => $errors];
+    }
+
+    private function failure(?string $theme, string $status, string $code): array
+    {
+        return [
+            'theme' => $theme,
+            'status' => $status,
+            'code' => $code,
+            'message' => $status === 'unavailable'
+                ? 'Theme is unavailable.'
+                : 'Theme definition is invalid.',
+        ];
+    }
+
+    private function safeThemeIdentifier(string $value): ?string
+    {
+        return preg_match('/^[a-z0-9_-]+$/', $value) === 1 ? $value : null;
     }
 
     private function loadTheme(string $themePath, string $themeJson): ThemeDefinition

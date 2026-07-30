@@ -190,7 +190,7 @@ Included so far:
 - Canonical `database/schema.sql` installation
 - First administrator and initial site/localization setup
 - Automatic default-theme activation
-- Automatic Content, Taxonomy, Settings Manager, and Module Manager module enablement
+- Automatic Content, Taxonomy, Settings Manager, Module Manager, Navigation, and Theme Manager compatibility-baseline module enablement
 - Atomic final installation marker at `storage/installed.lock`
 - Installer denial after successful installation
 
@@ -546,7 +546,7 @@ M1.5 adds a basic local Content Module at:
 modules/content
 ```
 
-For an existing or manually prepared installation, install and enable the Content Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, Settings Manager, and Module Manager automatically as baseline modules.
+For an existing or manually prepared installation, install and enable the Content Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, Settings Manager, Module Manager, Navigation, and the Theme Manager compatibility baseline automatically as baseline modules.
 
 Install and enable the Content Module:
 
@@ -593,7 +593,7 @@ M1.6 adds a reusable local Taxonomy Foundation module at:
 modules/taxonomy
 ```
 
-For an existing or manually prepared installation, install and enable the Taxonomy Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, Settings Manager, and Module Manager automatically as baseline modules.
+For an existing or manually prepared installation, install and enable the Taxonomy Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, Settings Manager, Module Manager, Navigation, and the Theme Manager compatibility baseline automatically as baseline modules.
 
 Install and enable the Taxonomy Module:
 
@@ -663,7 +663,7 @@ M1.8 provides a fresh-install web flow at:
 /install
 ```
 
-When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The installer checks the environment, tests a dedicated empty database, persists the five `DB_*` connection values in the root `.env`, installs the canonical schema, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables Content, Taxonomy, Settings Manager, and Module Manager. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
+When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The installer checks the environment, tests a dedicated empty database, persists the five `DB_*` connection values in the root `.env`, installs the canonical schema, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables Content, Taxonomy, Settings Manager, Module Manager, Navigation, and the Theme Manager compatibility baseline. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
 
 Requirements:
 
@@ -681,7 +681,7 @@ For a fresh manual check:
 1. Ensure `storage/installed.lock` is absent and select an empty disposable database.
 2. Open `/install` and complete Requirements, Database, Administrator & Site, and Finalize.
 3. Confirm the final redirect uses the configured admin path.
-4. Confirm `/install` returns `404`, the default theme is active, and Content, Taxonomy, Settings Manager, and Module Manager are enabled.
+4. Confirm `/install` returns `404`, the default theme is active, and Content, Taxonomy, Settings Manager, Module Manager, Navigation, and Theme Manager are enabled.
 5. If schema execution fails partially, use a new clean database; M1.8 has no destructive repair/reset flow.
 
 ## Manual Settings Test Checklist

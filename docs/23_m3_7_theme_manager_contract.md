@@ -8,6 +8,18 @@ Manager is closed with WU1–WU6 and full M3.6 `NRP CONFIRMED`; M3.7 preparation
 is independent of that closure and is evaluated from the final documentation,
 Git, and remote evidence. Full M3.7 is `NRP NOT REACHED`.
 
+### WU1 implementation state
+
+WU1 implementation is present on `feature/m3.7-theme-manager` as a compatibility
+baseline only. The module manifest declares `themes.manage` without routes or
+Admin workspace behavior. Fresh schema provisioning, the idempotent existing-
+installation upgrade, baseline module activation, package inclusion, and the
+tolerant catalog companion API are implemented. The focused WU1 compatibility
+test passes 16 assertions covering healthy plus malformed discovery, unavailable
+roots, bounded diagnostics, registry non-mutation, fresh and existing
+permission provisioning, module activation, and package inclusion. Full M3.7
+NRP remains `NRP NOT REACHED`; this record does not authorize WU2.
+
 The existing Core Theme System remains the sole owner of filesystem discovery,
 registry persistence, active-theme state, activation, loading, rendering, view
 resolution and overrides, controlled assets, and runtime theme-setting

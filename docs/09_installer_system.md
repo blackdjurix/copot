@@ -167,9 +167,9 @@ The installer collects Site Name, optional Site Tagline, Timezone, and Locale on
 
 The default theme is local trusted project code. Installation must use `ThemeDiscovery`, `ThemeManager::register()`, and `ThemeManager::activate('default')` so registry metadata, relative path storage, layout validation, and single-active-theme rules remain centralized.
 
-Content, Settings Manager, and Taxonomy are local baseline modules. Installation must use `ModuleManager::install()` followed by `enable()` for each module. M1.8 does not enable the Example module and does not add module selection UI.
+Content, Settings Manager, Taxonomy, Module Manager, and the Theme Manager compatibility baseline are local baseline modules. Installation must use `ModuleManager::install()` followed by `enable()` for each module. M1.8 does not enable the Example module and does not add module selection UI.
 
-The finalizer verifies `default`, `content`, and `taxonomy` through existing discovery services before it creates the final marker. Missing or invalid local project metadata stops finalization without claiming installation success.
+The finalizer verifies `default` through the tolerant Theme catalog and enables the approved baseline modules through existing discovery services before it creates the final marker. Missing or invalid default-theme metadata stops finalization without claiming installation success; unrelated malformed themes remain bounded catalog evidence.
 
 ## Installation State and Lock
 
