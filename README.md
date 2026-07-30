@@ -2,7 +2,7 @@
 
 A modular PHP-based website framework designed for flexible content, business, and automation solutions.
 
-M3.6 Navigation Manager implementation, validation, runtime/browser review, human acceptance, security closure, and feature-branch documentation are complete through WU6 commit `62a2dfb892f06005644c82cba1015ed5dc71b0e7` (`test(m3.6): close navigation security gate`). WU1–WU5 are `NRP CONFIRMED`; WU6 security closure passed 15 assertions. The narrow request-scoped, deterministic, frozen, lazy, fail-closed Core frontend Theme context seam and Theme-owned Navigation consumption remain bounded. `AdminNavigation` remains separate from managed public Navigation data. Production Taxonomy targets and Theme Manager functionality remain deferred. Full M3.6 is `NRP NOT REACHED` pending separately authorized fast-forward integration, branch lifecycle closure, and final NRP evaluation. Release, tag, and publication remain not started and separately authorized. The preparation contract is `docs/22_m3_6_navigation_manager_contract.md`.
+M3.6 Navigation Manager WU1–WU6 are complete. WU6 security closure passed 15 assertions at `62a2dfb892f06005644c82cba1015ed5dc71b0e7` (`test(m3.6): close navigation security gate`); the final feature-branch documentation correction is `8deb4f67d47f476e254b36e3802bd250e393921d` (`docs(m3.6): correct WU6 security closure anchor`). M3.6 was fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d` with no merge commit; the feature branch lifecycle is closed and local/remote `main` are synchronized. WU1–WU5 are `NRP CONFIRMED`; full M3.6 is ready for independent final NRP evaluation but is not yet marked `NRP CONFIRMED`. Production Taxonomy targets remain deferred. M3.7 Theme Manager is next; release, tag, and publication remain not started and separately authorized. The preparation contract is `docs/22_m3_6_navigation_manager_contract.md`.
 
 ## Status
 
@@ -24,11 +24,11 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-Current M3.6 state: WU1–WU6 are complete on the feature branch. WU1–WU5 are
-`NRP CONFIRMED`; WU6 security closure passed 15 assertions and feature-branch
-documentation closure is complete. Full M3.6 remains `NRP NOT REACHED` pending
-separately authorized fast-forward integration, branch lifecycle closure, and
-final NRP evaluation.
+Current M3.6 state: WU1–WU6 are complete and integrated into `main` at
+`8deb4f67d47f476e254b36e3802bd250e393921d` by fast-forward, with no merge
+commit. WU1–WU5 are `NRP CONFIRMED`; the feature branch lifecycle is closed,
+and full M3.6 is ready for independent final NRP evaluation but is not yet
+marked `NRP CONFIRMED`.
 
 M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; its local and remote feature branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
 
@@ -36,7 +36,7 @@ M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-M3.4 Content Manager is complete on `main`; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation, classification, and lifecycle closure are complete, with final outcome `NO MATERIAL RETOUCH REQUIRED`. M3.5 product scope was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit. Work Units 1–5 and full M3.5 are `NRP CONFIRMED`; feature containment passed, and local/remote feature branches are deleted. M3.6 WU1–WU5 are complete on the feature branch; WU1–WU4 are `NRP CONFIRMED` and WU5 is `NRP CANDIDATE`. Full M3.6 is `NRP NOT REACHED`; WU6 is the next separately authorized gate. Release, tag, and publication remain not started and separately authorized. WU4 implementation is complete at `43085441a82ecc38941ca880b2dbbd6823f61215` (`feat(m3.6): add navigation admin workspace`). WU5 implementation is complete at `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation in frontend themes`). Category hierarchy and flat tags are included; type CRUD and filtering remain excluded.
+M3.4 Content Manager is complete on `main`; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation, classification, and lifecycle closure are complete, with final outcome `NO MATERIAL RETOUCH REQUIRED`. M3.5 product scope was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit. Work Units 1–5 and full M3.5 are `NRP CONFIRMED`; feature containment passed, and local/remote feature branches are deleted. M3.6 WU1–WU6 are complete and fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d`; WU1–WU5 are `NRP CONFIRMED`, the feature branch lifecycle is closed, and full M3.6 is ready for independent final NRP evaluation but is not yet marked `NRP CONFIRMED`. Release, tag, and publication remain not started and separately authorized. WU4 implementation is complete at `43085441a82ecc38941ca880b2dbbd6823f61215` (`feat(m3.6): add navigation admin workspace`). WU5 implementation is complete at `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation in frontend themes`). Category hierarchy and flat tags are included; type CRUD and filtering remain excluded.
 
 M3.R1 final classifications are: Shared page header/action treatment and visual tokens `NO CHANGE REQUIRED`; Users list, Roles list, and Module list `REVIEW ONLY`; standalone prototype User Detail and Role Detail surfaces `EXCLUDED`. Prototype-led summary cards, filtering, extra metadata, avatars, pagination, compact Module action menus, standalone detail pages, command search, notifications, and sidebar system status remain optional future proposals or excluded scope; they are not M3.R1 implementation scope.
 

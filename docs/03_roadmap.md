@@ -871,8 +871,9 @@ These checkpoints are horizontal design-governance work units and are not includ
 
 ## M3 Core Modules
 
-M3.6 WU1–WU6 are complete on the feature branch. WU1–WU5 are `NRP
-CONFIRMED`; WU6 security closure passed 15 assertions after focused validation,
+M3.6 WU1–WU6 are complete and fast-forward integrated into `main` at
+`8deb4f67d47f476e254b36e3802bd250e393921d` with no merge commit. WU1–WU5 are
+`NRP CONFIRMED`; WU6 security closure passed 15 assertions after focused validation,
 runtime/browser evidence, and human acceptance. The WU5 implementation commit
 is `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation
 in frontend themes`). The narrow Core frontend Theme context seam is
@@ -883,9 +884,10 @@ presentation. `supports.navigation_locations`, assigned menus, hierarchy,
 sibling order, visibility, custom targets, published Content targets, and
 fail-closed unavailable/hidden/disabled-provider behavior are accepted. The
 WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. Production
-Taxonomy targets and Theme Manager functionality remain deferred. Full M3.6 is
-`NRP NOT REACHED` pending separately authorized integration, branch lifecycle
-closure, and final NRP evaluation.
+Taxonomy targets remain deferred. The feature branch lifecycle is closed. Full
+M3.6 is ready for independent final NRP evaluation but remains not marked `NRP
+CONFIRMED`; M3.7 Theme Manager is next. Release, tag, and publication remain
+not started and separately authorized.
 
 The following paragraph is the superseded pre-WU5 checkpoint record:
 

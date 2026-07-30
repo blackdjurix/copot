@@ -5,7 +5,7 @@
 M3.6 prepares the existing platform for a Navigation Manager that owns
 navigation data and management behavior without moving presentation ownership
 into Navigation. This remains a preparation contract and scope lock; Work
-Units 1 through 5 implementation is complete on the feature branch.
+Units 1 through 6 implementation and closure are complete on `main`.
 
 M3.5 Taxonomy Manager remains closed and `NRP CONFIRMED`. M3.6 preparation is
 `NRP CONFIRMED`. Work Unit 1 — Contract, Provisioning, and Compatibility
@@ -43,9 +43,15 @@ human acceptance passed for public home and Content pages, empty/no-assignment
 states, provider disable/restore, console/network inspection, responsive
 widths, true `200%` zoom, touch targets, and keyboard/focus usability. The WU4
 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. WU5 is `NRP
-CONFIRMED`; full M3.6 remains `NRP NOT REACHED` pending separately authorized
-integration and branch lifecycle closure. Production Taxonomy targets and Theme
-Manager functionality remain deferred.
+CONFIRMED`. WU6 security closure passed 15 assertions at
+`62a2dfb892f06005644c82cba1015ed5dc71b0e7` (`test(m3.6): close navigation
+security gate`). The final documentation correction is
+`8deb4f67d47f476e254b36e3802bd250e393921d` (`docs(m3.6): correct WU6 security
+closure anchor`). M3.6 was fast-forward integrated into `main` at that commit
+with no merge commit; the feature branch lifecycle is closed and local/remote
+`main` are synchronized. Full M3.6 is ready for independent final NRP
+evaluation but is not yet marked `NRP CONFIRMED`. Production Taxonomy targets
+remain deferred and M3.7 Theme Manager is next.
 
 The contract preserves the approved M3 sequence and the ownership decisions in
 `docs/16_m3_core_freeze_and_module_contract.md`. It records the accepted
@@ -222,11 +228,10 @@ Complete: WU6 security closure passed 15 assertions covering frontend context
 manifest path containment, fail-closed contributor registration and composition,
 safe diagnostics, request/render isolation, deterministic context collisions, and
 representative Navigation Admin scalar payload guards. Full-range containment,
-forbidden-scope audit, documentation closure, and feature-branch Git
-verification passed. WU1–WU5 are `NRP CONFIRMED`; full M3.6 remains `NRP NOT
-REACHED` pending separately authorized fast-forward integration, branch
-lifecycle closure, and final NRP evaluation. Release, tag, and publication
-remain separate and not started.
+forbidden-scope audit, documentation closure, fast-forward integration, and
+feature-branch lifecycle closure passed. WU1–WU5 are `NRP CONFIRMED`; full M3.6
+is ready for independent final NRP evaluation but remains not marked `NRP
+CONFIRMED`. Release, tag, and publication remain separate and not started.
 
 ## Validation and Lifecycle Gates
 
@@ -248,10 +253,11 @@ Content public publication/security regressions, plus PHP lint and `git diff
 objective/runtime validation, source/runtime synchronization, HTTP/session
 validation, and human acceptance. WU5 is `NRP CONFIRMED` after implementation,
 focused validation, package smoke, runtime/browser evidence, and human
-acceptance. WU6 security closure passed 15 assertions and Git delivery is
-complete. Full M3.6 remains `NRP NOT REACHED` until separately authorized
-integration, branch lifecycle, and final NRP evaluation. Production Taxonomy
-targets and Theme Manager functionality remain deferred.
+acceptance. WU6 security closure passed 15 assertions and Git delivery,
+fast-forward integration, and feature-branch lifecycle closure are complete.
+Full M3.6 is ready for independent final NRP evaluation but remains not marked
+`NRP CONFIRMED`. Production Taxonomy targets remain deferred and M3.7 Theme
+Manager is next.
 
 WU1 is closed to further scope expansion. WU2 delivered only its approved
 Navigation domain behavior; it does not authorize Content resolver
