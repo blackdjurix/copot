@@ -14,7 +14,8 @@ class ModuleDefinition
         private ?string $routes = null,
         private ?string $listeners = null,
         private array $requires = [],
-        private array $permissions = []
+        private array $permissions = [],
+        private ?string $frontendContext = null
     ) {
     }
 
@@ -58,6 +59,11 @@ class ModuleDefinition
         return $this->listeners;
     }
 
+    public function frontendContext(): ?string
+    {
+        return $this->frontendContext;
+    }
+
     public function requires(): array
     {
         return $this->requires;
@@ -79,6 +85,7 @@ class ModuleDefinition
             'author' => $this->author,
             'routes' => $this->routes,
             'listeners' => $this->listeners,
+            'frontend_context' => $this->frontendContext,
             'requires' => $this->requires,
             'permissions' => $this->permissions,
         ];

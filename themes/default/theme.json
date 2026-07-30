@@ -9,6 +9,7 @@
     "layout": "layouts/app.php"
   },
   "supports": {
-    "module_view_overrides": true
+    "module_view_overrides": true,
+    "navigation_locations": ["primary"]
   }
 }

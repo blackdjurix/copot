@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "author": "Copot",
   "routes": "routes.php",
+  "frontend_context": "frontend-context.php",
   "requires": {
     "modules": []
   },

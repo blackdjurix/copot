@@ -66,6 +66,46 @@ class ModuleLoader
         }
     }
 
+    public function loadFrontendContextContributors(Application $app): void
+    {
+        $this->errors = [];
+        $discovered = $this->discoveredByName();
+
+        try {
+            $enabled = $this->repository->enabled();
+        } catch (\Throwable $exception) {
+            $this->errors[] = 'Unable to load enabled modules from database: ' . $exception->getMessage();
+            return;
+        }
+
+        foreach ($enabled as $moduleRow) {
+            $name = (string) ($moduleRow['name'] ?? '');
+            $module = $discovered[$name] ?? null;
+            if (!$module instanceof ModuleDefinition || $module->frontendContext() === null) {
+                continue;
+            }
+
+            $modulePath = realpath($module->path());
+            $relative = $module->frontendContext();
+            $path = $modulePath === false ? '' : $modulePath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relative);
+            $resolved = $path === '' ? false : realpath($path);
+            if ($modulePath === false || $resolved === false || !is_file($resolved) || !$this->isInsideModule($resolved, $modulePath)) {
+                $app->diagnostics()->warning('frontend.theme_context.registration_failed', 'Frontend Theme context contributor was unavailable.', ['component' => 'module-loader', 'operation' => 'register', 'slot' => $name]);
+                continue;
+            }
+
+            try {
+                $contributor = require $resolved;
+                if (!$contributor instanceof FrontendThemeContextContributor) {
+                    throw new \RuntimeException('Contributor file did not return a valid contributor.');
+                }
+                $app->frontendThemeContext()->register($contributor);
+            } catch (\Throwable) {
+                $app->diagnostics()->warning('frontend.theme_context.registration_failed', 'Frontend Theme context contributor failed closed.', ['component' => 'module-loader', 'operation' => 'register', 'slot' => $name]);
+            }
+        }
+    }
+
     public function errors(): array
     {
         return $this->errors;

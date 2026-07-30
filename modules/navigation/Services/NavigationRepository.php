@@ -146,6 +146,22 @@ final class NavigationRepository
         return (int) $statement->fetchColumn();
     }
 
+    public function assignedMenu(string $themeId, string $locationKey): ?NavigationMenu
+    {
+        $statement = $this->database->connection()->prepare(
+            'SELECT navigation_menus.*
+             FROM navigation_menu_assignments
+             INNER JOIN navigation_menus ON navigation_menus.id = navigation_menu_assignments.menu_id
+             WHERE navigation_menu_assignments.theme_id = :theme_id
+               AND navigation_menu_assignments.location_key = :location_key
+             LIMIT 1'
+        );
+        $statement->execute(['theme_id' => $themeId, 'location_key' => $locationKey]);
+        $row = $statement->fetch();
+
+        return is_array($row) ? new NavigationMenu($row) : null;
+    }
+
     private function row(string $sql, array $parameters): ?array
     {
         $statement = $this->database->connection()->prepare($sql);

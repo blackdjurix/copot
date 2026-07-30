@@ -81,6 +81,7 @@ class ModuleDiscovery
             author: isset($metadata['author']) ? (string) $metadata['author'] : null,
             routes: isset($metadata['routes']) ? (string) $metadata['routes'] : null,
             listeners: isset($metadata['listeners']) ? (string) $metadata['listeners'] : null,
+            frontendContext: isset($metadata['frontend_context']) ? (string) $metadata['frontend_context'] : null,
             requires: isset($metadata['requires']) && is_array($metadata['requires']) ? $metadata['requires'] : [],
             permissions: isset($metadata['permissions']) && is_array($metadata['permissions']) ? $metadata['permissions'] : []
         );
@@ -116,6 +117,11 @@ class ModuleDiscovery
             if (!$this->isSafeListenerPath($metadata['listeners'])) {
                 return 'Module listeners path must be a safe relative path inside the module folder.';
             }
+        }
+
+        if (array_key_exists('frontend_context', $metadata)
+            && (!is_string($metadata['frontend_context']) || !$this->isSafeListenerPath($metadata['frontend_context']))) {
+            return 'Module frontend context path must be a safe relative path inside the module folder.';
         }
 
         if (array_key_exists('requires', $metadata)) {

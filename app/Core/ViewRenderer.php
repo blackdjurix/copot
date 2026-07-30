@@ -9,7 +9,8 @@ class ViewRenderer
     public function __construct(
         private ThemeLoader $themes,
         private ThemeAssets $themeAssets,
-        private SiteBranding $branding
+        private SiteBranding $branding,
+        private ?FrontendThemeContextRegistry $frontendThemeContext = null
     )
     {
     }
@@ -17,6 +18,9 @@ class ViewRenderer
     public function renderFile(string $contentPath, array $context = [], ?string $layout = null, ?string $title = null): string
     {
         $theme = $this->themes->activeTheme();
+        if ($this->frontendThemeContext !== null) {
+            $context = array_replace($context, $this->frontendThemeContext->compose($theme));
+        }
         $themeAsset = fn (string $path): string => $this->themeAssets->url($path);
         $title = $title ?? $this->branding->name();
         $contentPath = $this->resolveContentPath($contentPath);

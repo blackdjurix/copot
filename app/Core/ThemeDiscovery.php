@@ -200,6 +200,23 @@ class ThemeDiscovery
         if (!$metadataObject->supports instanceof stdClass || !isset($metadata['supports']) || !is_array($metadata['supports'])) {
             throw new ThemeException('Optional field [supports] must be a JSON object.');
         }
+
+        if (!array_key_exists('navigation_locations', $metadata['supports'])) {
+            return;
+        }
+
+        $locations = $metadata['supports']['navigation_locations'];
+        if (!is_array($locations)) {
+            throw new ThemeException('Theme supports.navigation_locations must be an array.');
+        }
+
+        $seen = [];
+        foreach ($locations as $location) {
+            if (!is_string($location) || preg_match('/^[a-z][a-z0-9._-]*$/D', $location) !== 1 || isset($seen[$location])) {
+                throw new ThemeException('Theme supports.navigation_locations contains an invalid or duplicate location.');
+            }
+            $seen[$location] = true;
+        }
     }
 
     private function isInsideDirectory(string $path, string $directory): bool

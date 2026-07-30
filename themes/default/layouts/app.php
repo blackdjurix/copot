@@ -26,6 +26,25 @@
         </div>
     </header>
 
+    <?php $navigationLocations = is_array($context['navigation']['locations'] ?? null) ? $context['navigation']['locations'] : []; ?>
+    <?php if ($navigationLocations !== []): ?>
+        <nav aria-label="Primary navigation">
+            <?php $renderNavigation = function (array $items) use (&$renderNavigation): void { ?>
+                <ul>
+                    <?php foreach ($items as $item): ?>
+                        <li>
+                            <a href="<?= htmlspecialchars((string) ($item['url'] ?? '#'), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) ($item['label'] ?? ''), ENT_QUOTES, 'UTF-8') ?></a>
+                            <?php if (is_array($item['children'] ?? null) && $item['children'] !== []): ?>
+                                <?php $renderNavigation($item['children']); ?>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php }; ?>
+            <?php $renderNavigation($navigationLocations['primary'] ?? []); ?>
+        </nav>
+    <?php endif; ?>
+
     <main class="page-shell">
         <?= $content ?? '' ?>
     </main>
