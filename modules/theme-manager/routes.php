@@ -13,8 +13,8 @@ $app->router()->get($themesPath, static function ($request) use ($themeManagerAd
     return $themeManagerAdmin->inventoryResponse($request);
 });
 
-$app->router()->post($app->adminUrl()->childUrl('themes/{theme_id}/activate'), static function ($request) use ($themeManagerAdmin): Response {
-    return $themeManagerAdmin->activateResponse($request);
+$app->router()->post($app->adminUrl()->childUrl('themes/{theme_id}/activate'), static function ($request, array $params) use ($themeManagerAdmin): Response {
+    return $themeManagerAdmin->activateResponse($request, (string) ($params['theme_id'] ?? ''));
 });
 
 $app->router()->get($app->adminUrl()->childUrl('themes/{theme_id}/screenshot'), static function ($request, array $params) use ($themeManagerAdmin): Response {

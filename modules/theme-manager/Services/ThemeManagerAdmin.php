@@ -34,7 +34,7 @@ final class ThemeManagerAdmin
         }
     }
 
-    public function activateResponse(Request $request): Response
+    public function activateResponse(Request $request, string $routeThemeId): Response
     {
         $user = $this->authorize($request);
 
@@ -47,13 +47,19 @@ final class ThemeManagerAdmin
             return $this->app->adminErrors()->response($request, 419);
         }
 
-        $themeId = $request->post('theme_id');
-        if (!is_string($themeId) || preg_match('/^[a-z0-9-]+$/D', $themeId) !== 1) {
+        if (preg_match('/^[a-z0-9-]+$/D', $routeThemeId) !== 1) {
+            return $this->app->adminErrors()->response($request, 422);
+        }
+
+        $submittedThemeId = $request->post('theme_id');
+        if (!is_string($submittedThemeId)
+            || preg_match('/^[a-z0-9-]+$/D', $submittedThemeId) !== 1
+            || $submittedThemeId !== $routeThemeId) {
             return $this->app->adminErrors()->response($request, 422);
         }
 
         try {
-            $this->app->themeLifecycle()->activate($themeId);
+            $this->app->themeLifecycle()->activate($routeThemeId);
         } catch (ThemeException) {
             return $this->renderInventory($request, $user, 'Activation could not be completed for this Theme.', 422);
         } catch (Throwable) {

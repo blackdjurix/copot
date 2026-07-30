@@ -2221,6 +2221,10 @@ html.admin-nav-open body {
 }
 
 @media (max-width: 680px) {
+    html {
+        overflow-x: hidden;
+    }
+
     .admin-shell-page .admin-main-shell {
         overflow-x: clip;
     }
