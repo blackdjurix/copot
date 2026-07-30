@@ -1,9 +1,10 @@
 {
   "name": "theme-manager",
   "title": "Theme Manager",
-  "description": "First-party compatibility baseline for future Theme Manager administration.",
+  "description": "First-party Theme discovery, lifecycle, and Admin workspace.",
   "version": "0.1.0",
   "author": "Copot",
+  "routes": "routes.php",
   "requires": {
     "modules": []
   },

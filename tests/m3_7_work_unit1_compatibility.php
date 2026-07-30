@@ -138,7 +138,7 @@ try {
     $moduleManager = new ModuleManager(new ModuleDiscovery($basePath . '/modules'), new ModuleRepository(new Database($config)));
     $discovered = $moduleManager->discover();
     $themeModule = array_values(array_filter($discovered, static fn ($module): bool => $module->name() === 'theme-manager'))[0] ?? null;
-    $assert($themeModule !== null && $themeModule->routes() === null, 'Theme Manager baseline must discover without Admin routes.');
+    $assert($themeModule !== null && $themeModule->routes() === 'routes.php', 'Theme Manager Admin routes must remain discoverable from the module manifest.');
     $moduleManager->install('theme-manager');
     $moduleManager->enable('theme-manager');
     $assert((string) $connection->query("SELECT status FROM modules WHERE name = 'theme-manager'")->fetchColumn() === 'enabled', 'Theme Manager baseline must install and enable.');

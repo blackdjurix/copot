@@ -3,7 +3,8 @@
 ## Purpose and status
 
 M3.7 prepares an official first-party `theme-manager` Admin module over the
-existing Core Theme System. It does not begin implementation. M3.6 Navigation
+existing Core Theme System. The preparation contract remains the scope
+authority for the implementation work. M3.6 Navigation
 Manager is closed with WU1–WU6 and full M3.6 `NRP CONFIRMED`; M3.7 preparation
 is independent of that closure and is evaluated from the final documentation,
 Git, and remote evidence. Full M3.7 is `NRP NOT REACHED`.
@@ -11,8 +12,7 @@ Git, and remote evidence. Full M3.7 is `NRP NOT REACHED`.
 ### WU1 implementation state
 
 WU1 implementation is present on `feature/m3.7-theme-manager` as a compatibility
-baseline. The module manifest declares `themes.manage` without routes or Admin
-workspace behavior. Fresh schema provisioning, the idempotent existing-
+baseline. Fresh schema provisioning, the idempotent existing-
 installation upgrade, baseline module activation, package inclusion, and the
 tolerant catalog companion API are implemented. The focused WU1 compatibility
 test passes 16 assertions covering healthy plus malformed discovery, unavailable
@@ -32,8 +32,24 @@ without mutation during reads. Activation always performs fresh preflight and
 atomically refreshes the normalized registry snapshot and single active
 frontend state, with rollback preservation on persistence or postcondition
 failure. No Admin workspace, settings persistence, or filesystem mutation is
-included. Full M3.7 NRP remains `NRP NOT REACHED`; this record does not authorize
-WU4.
+included in WU3. Full M3.7 NRP remains `NRP NOT REACHED`.
+
+WU4 implementation adds the first-party Theme Manager Admin workspace. The
+enabled module registers configured-path `GET /themes`, protected screenshot
+delivery, and `POST /themes/{theme_id}/activate` routes. The workspace reads
+only `ThemeLifecycle::inventory()`, requires both `admin.access` and
+`themes.manage`, and routes activation only through
+`ThemeLifecycle::activate()`. It presents deterministic healthy, active,
+inactive, discovered, stale, invalid, unavailable, empty, and catalog-error
+states with escaped bounded metadata, normalized screenshot placeholders or
+images, PRG success notices, and sanitized controlled failures. No settings
+forms, setting-value writes, runtime resolution, Navigation assignment, or
+later-work-unit behavior is included. Focused WU4 automation, predecessor
+regressions, package checks, targeted runtime synchronization, and authenticated
+browser checks pass; browser review found no known Theme-workspace defect after
+narrow 320px overflow containment in the shared Admin Shell. Visual human
+review remains limited to hierarchy, screenshot usefulness, activation-warning
+comprehension, and final presentation quality.
 
 The existing Core Theme System remains the sole owner of filesystem discovery,
 registry persistence, active-theme state, activation, loading, rendering, view

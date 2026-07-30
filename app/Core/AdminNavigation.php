@@ -34,9 +34,31 @@ class AdminNavigation
             'label' => $label,
             'url' => $url,
             'permissions' => $this->normalizePermissions($permissions),
+            'permissions_match_all' => false,
             'icon' => $this->normalizeIcon($icon),
             'order' => $order,
         ];
+    }
+
+    /**
+     * Register an item that is visible only when the user has every listed permission.
+     * Existing add() callers retain its established any-permission behavior.
+     */
+    public function addRequired(
+        string $label,
+        string $url,
+        array $permissions,
+        ?string $icon = null,
+        ?int $order = null
+    ): void {
+        $countBefore = count($this->items);
+        $this->add($label, $url, $permissions, $icon, $order);
+
+        if (count($this->items) === $countBefore) {
+            return;
+        }
+
+        $this->items[array_key_last($this->items)]['permissions_match_all'] = true;
     }
 
     public function itemsFor(?User $user): array
@@ -46,7 +68,7 @@ class AdminNavigation
         $visibleItems = [];
 
         foreach ($this->items as $index => $item) {
-            if (!$this->isVisible($item['permissions'], $user)) {
+            if (!$this->isVisible($item['permissions'], $user, (bool) ($item['permissions_match_all'] ?? false))) {
                 continue;
             }
 
@@ -133,13 +155,23 @@ class AdminNavigation
         return $icon;
     }
 
-    private function isVisible(array $permissions, ?User $user): bool
+    private function isVisible(array $permissions, ?User $user, bool $matchAll = false): bool
     {
         if (!$user) {
             return false;
         }
 
         if ($permissions === []) {
+            return true;
+        }
+
+        if ($matchAll) {
+            foreach ($permissions as $permission) {
+                if (!$user->can($permission)) {
+                    return false;
+                }
+            }
+
             return true;
         }
 
