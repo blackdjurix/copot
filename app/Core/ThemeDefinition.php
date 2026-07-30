@@ -14,7 +14,9 @@ class ThemeDefinition
         private ?string $description = null,
         private ?string $author = null,
         private array $supports = [],
-        private array $metadata = []
+        private array $metadata = [],
+        private ?string $screenshot = null,
+        private array $settings = []
     ) {
     }
 
@@ -63,6 +65,16 @@ class ThemeDefinition
         return $this->supports;
     }
 
+    public function screenshot(): ?string
+    {
+        return $this->screenshot;
+    }
+
+    public function settings(): array
+    {
+        return $this->settings;
+    }
+
     public function metadata(): array
     {
         return $this->metadata;
@@ -80,6 +92,8 @@ class ThemeDefinition
             'description' => $this->description,
             'author' => $this->author,
             'supports' => $this->supports,
+            'screenshot' => $this->screenshot,
+            'settings' => $this->settings,
             'metadata' => $this->metadata,
         ];
     }
