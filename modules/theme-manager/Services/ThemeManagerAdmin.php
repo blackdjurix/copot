@@ -144,6 +144,7 @@ final class ThemeManagerAdmin
             'inventoryPath' => $this->app->adminUrl()->childUrl('themes'),
             'activationPath' => fn (string $id): string => $this->app->adminUrl()->childUrl('themes/' . $id . '/activate'),
             'screenshotPath' => fn (string $id): string => $this->app->adminUrl()->childUrl('themes/' . $id . '/screenshot'),
+            'settingsPath' => fn (string $id): string => $this->app->adminUrl()->childUrl('themes/' . $id . '/settings'),
             'notice' => $this->noticeFor($request->input('notice')),
             'error' => $error,
         ]);

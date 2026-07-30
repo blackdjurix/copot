@@ -10,7 +10,8 @@ class ViewRenderer
         private ThemeLoader $themes,
         private ThemeAssets $themeAssets,
         private SiteBranding $branding,
-        private ?FrontendThemeContextRegistry $frontendThemeContext = null
+        private ?FrontendThemeContextRegistry $frontendThemeContext = null,
+        private ?ThemeSettingsResolver $themeSettingsResolver = null
     )
     {
     }
@@ -30,6 +31,7 @@ class ViewRenderer
             'themeAsset' => $themeAsset,
             'branding' => $this->branding,
             'context' => $context,
+            'themeSettings' => $this->themeSettingsResolver?->resolve() ?? [],
         ];
         $content = $this->renderPhpFile($contentPath, $variables);
 
@@ -62,6 +64,7 @@ class ViewRenderer
             $themeAsset = $__variables['themeAsset'] ?? null;
             $branding = $__variables['branding'] ?? null;
             $context = $__variables['context'] ?? [];
+            $themeSettings = $__variables['themeSettings'] ?? [];
 
             $initialOutputLevel = ob_get_level();
 

@@ -94,6 +94,7 @@ $statusLabels = [
                                 <button class="admin-button admin-button--primary" type="submit">Activate <?= $display($definition->name(), 120) ?></button>
                             </form></div>
                         <?php endif; ?>
+                        <?php if ($healthy && $identified && $definition->settings() !== []): ?><div class="admin-panel__actions"><a class="admin-button" href="<?= $escape($settingsPath($themeId)) ?>">Theme settings</a></div><?php endif; ?>
                     </article>
                 <?php endforeach; ?>
             </div>

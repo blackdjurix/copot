@@ -35,6 +35,7 @@ class Application
     private ThemeLoader $themeLoader;
     private ThemeAssets $themeAssets;
     private ViewRenderer $viewRenderer;
+    private ThemeSettingsResolver $themeSettingsResolver;
     private FrontendThemeContextRegistry $frontendThemeContext;
     private ViewResolver $viewResolver;
     private AdminNavigation $adminNavigation;
@@ -88,8 +89,9 @@ class Application
         );
         $this->themeLoader = new ThemeLoader($themeRepository, $this->basePath);
         $this->themeAssets = new ThemeAssets($this->themeLoader);
+        $this->themeSettingsResolver = new ThemeSettingsResolver($themeRepository, new ThemeSettingsService(new SettingsRepository($this->database), $this->database));
         $this->frontendThemeContext = new FrontendThemeContextRegistry($this->diagnostics);
-        $this->viewRenderer = new ViewRenderer($this->themeLoader, $this->themeAssets, $this->branding, $this->frontendThemeContext);
+        $this->viewRenderer = new ViewRenderer($this->themeLoader, $this->themeAssets, $this->branding, $this->frontendThemeContext, $this->themeSettingsResolver);
         $this->viewResolver = new ViewResolver(
             $this->themeLoader,
             $this->path('resources/views'),
@@ -247,6 +249,11 @@ class Application
     public function viewRenderer(): ViewRenderer
     {
         return $this->viewRenderer;
+    }
+
+    public function themeSettingsResolver(): ThemeSettingsResolver
+    {
+        return $this->themeSettingsResolver;
     }
 
     public function frontendThemeContext(): FrontendThemeContextRegistry

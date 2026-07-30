@@ -117,6 +117,16 @@ class SettingsRepository
         ]);
     }
 
+    public function deleteNamespace(string $namespace): void
+    {
+        $this->validateNamespace($namespace);
+
+        $statement = $this->database->connection()->prepare(
+            'DELETE FROM settings WHERE namespace = :namespace'
+        );
+        $statement->execute(['namespace' => $namespace]);
+    }
+
     private function validateIdentifiers(string $namespace, string $key): void
     {
         $this->validateNamespace($namespace);
