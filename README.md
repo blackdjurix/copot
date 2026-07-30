@@ -2,7 +2,7 @@
 
 A modular PHP-based website framework designed for flexible content, business, and automation solutions.
 
-M3.6 Navigation Manager preparation and WU1–WU5 are complete on the feature branch. WU1–WU4 are `NRP CONFIRMED`; WU5 is an `NRP CANDIDATE` after deterministic validation, runtime/browser validation, and human acceptance. WU5 adds the narrow request-scoped, deterministic, frozen, lazy, fail-closed Core frontend Theme context seam and Theme-owned Navigation consumption. Assigned menus, hierarchy, sibling order, visibility, custom targets, published Content targets, empty/no-assignment handling, and unavailable or disabled providers were validated. Public home and Content pages passed console/network, responsive, true `200%` zoom, touch-target, and keyboard/focus review. The WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. `AdminNavigation` remains separate from managed public Navigation data. Production Taxonomy targets and Theme Manager functionality remain deferred. Full M3.6 is `NRP NOT REACHED`; WU6 is the next separately authorized gate. The preparation contract is `docs/22_m3_6_navigation_manager_contract.md`.
+M3.6 Navigation Manager implementation, validation, runtime/browser review, human acceptance, security closure, and feature-branch documentation are complete through WU6 commit `16f94603e2414ec373577b3cd88665ec742f948c`. WU1–WU5 are `NRP CONFIRMED`; WU6 security closure passed 15 assertions. The narrow request-scoped, deterministic, frozen, lazy, fail-closed Core frontend Theme context seam and Theme-owned Navigation consumption remain bounded. `AdminNavigation` remains separate from managed public Navigation data. Production Taxonomy targets and Theme Manager functionality remain deferred. Full M3.6 is `NRP NOT REACHED` pending separately authorized fast-forward integration, branch lifecycle closure, and final NRP evaluation. Release, tag, and publication remain not started and separately authorized. The preparation contract is `docs/22_m3_6_navigation_manager_contract.md`.
 
 ## Status
 
@@ -24,10 +24,11 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-Current M3.6 state: WU1–WU5 are complete on the feature branch. WU1–WU4 are
-`NRP CONFIRMED`; WU5 is `NRP CANDIDATE` after implementation, deterministic
-validation, runtime/browser validation, and human acceptance. WU6 is the next
-separately authorized gate; full M3.6 remains `NRP NOT REACHED`.
+Current M3.6 state: WU1–WU6 are complete on the feature branch. WU1–WU5 are
+`NRP CONFIRMED`; WU6 security closure passed 15 assertions and feature-branch
+documentation closure is complete. Full M3.6 remains `NRP NOT REACHED` pending
+separately authorized fast-forward integration, branch lifecycle closure, and
+final NRP evaluation.
 
 M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; its local and remote feature branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
 

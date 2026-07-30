@@ -43,9 +43,9 @@ human acceptance passed for public home and Content pages, empty/no-assignment
 states, provider disable/restore, console/network inspection, responsive
 widths, true `200%` zoom, touch targets, and keyboard/focus usability. The WU4
 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. WU5 is `NRP
-CANDIDATE`; full M3.6 remains `NRP NOT REACHED`. Production Taxonomy targets
-and Theme Manager functionality remain deferred. WU6 is the next separately
-authorized gate.
+CONFIRMED`; full M3.6 remains `NRP NOT REACHED` pending separately authorized
+integration and branch lifecycle closure. Production Taxonomy targets and Theme
+Manager functionality remain deferred.
 
 The contract preserves the approved M3 sequence and the ownership decisions in
 `docs/16_m3_core_freeze_and_module_contract.md`. It records the accepted
@@ -68,9 +68,9 @@ M3.6 Work Unit 3 (NRP CONFIRMED)
 ->
 M3.6 Work Unit 4 (NRP CONFIRMED)
 ->
-M3.6 Work Unit 5 (NRP CANDIDATE)
+M3.6 Work Unit 5 (NRP CONFIRMED)
 ->
-M3.6 Work Unit 6 (next separately authorized gate)
+M3.6 Work Unit 6 (security closure complete; integration gate remains separate)
 ->
 M3.7 Theme Manager
 ```
@@ -198,8 +198,7 @@ paths, and active Admin navigation. Objective/runtime validation and human
 acceptance passed, including responsive presentation at `1440×900`, `390×844`,
 `320×800`, and `200%` zoom, plus console and network inspection. No source or
 runtime mismatch or accepted defect remains. Keep `AdminNavigation` separate
-from managed public navigation data. WU4 is `NRP CANDIDATE`, not `NRP
-CONFIRMED`.
+from managed public navigation data. WU4 is `NRP CONFIRMED`.
 
 ### Work Unit 5 — Theme Consumption and Design-Adjustment Checkpoint
 
@@ -215,14 +214,19 @@ assertions, package-builder smoke passed 891 assertions, runtime/browser
 validation passed, and human acceptance passed at `1440×900`, `390×844`,
 `320×800`, true `200%` zoom, touch targets, and keyboard/focus usability. The
 WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. WU5 is `NRP
-CANDIDATE`, not `NRP CONFIRMED`.
+CONFIRMED`.
 
 ### Work Unit 6 — Security, Milestone Regression, Documentation, and Lifecycle Closure
 
-Complete focused security and compatibility validation, applicable Content and
-Theme regressions, documentation closure, containment review, Git verification,
-and the independent NRP decision. Release, tag, publication, and merge remain
-separate authorizations.
+Complete: WU6 security closure passed 15 assertions covering frontend context
+manifest path containment, fail-closed contributor registration and composition,
+safe diagnostics, request/render isolation, deterministic context collisions, and
+representative Navigation Admin scalar payload guards. Full-range containment,
+forbidden-scope audit, documentation closure, and feature-branch Git
+verification passed. WU1–WU5 are `NRP CONFIRMED`; full M3.6 remains `NRP NOT
+REACHED` pending separately authorized fast-forward integration, branch
+lifecycle closure, and final NRP evaluation. Release, tag, and publication
+remain separate and not started.
 
 ## Validation and Lifecycle Gates
 
@@ -242,11 +246,12 @@ and WU2 Taxonomy regressions, plus PHP lint and `git diff --check`. WU2 is
 Content public publication/security regressions, plus PHP lint and `git diff
 --check`. WU3 is `NRP CONFIRMED`. WU4 is `NRP CONFIRMED` after implementation,
 objective/runtime validation, source/runtime synchronization, HTTP/session
-validation, and human acceptance. WU5 is `NRP CANDIDATE` after implementation,
+validation, and human acceptance. WU5 is `NRP CONFIRMED` after implementation,
 focused validation, package smoke, runtime/browser evidence, and human
-acceptance. Full M3.6 remains `NRP NOT REACHED` until WU6, independent
-validation, Git delivery, and final NRP evaluation are complete. Production
-Taxonomy targets and Theme Manager functionality remain deferred.
+acceptance. WU6 security closure passed 15 assertions and Git delivery is
+complete. Full M3.6 remains `NRP NOT REACHED` until separately authorized
+integration, branch lifecycle, and final NRP evaluation. Production Taxonomy
+targets and Theme Manager functionality remain deferred.
 
 WU1 is closed to further scope expansion. WU2 delivered only its approved
 Navigation domain behavior; it does not authorize Content resolver
