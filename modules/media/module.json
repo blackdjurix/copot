@@ -1,0 +1,17 @@
+{
+  "name": "media",
+  "title": "Media Library",
+  "description": "Media catalogue identity, variants, and usage records.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "requires": {
+    "modules": []
+  },
+  "permissions": [
+    { "slug": "media.view", "name": "View media" },
+    { "slug": "media.upload", "name": "Upload media" },
+    { "slug": "media.use", "name": "Use media" },
+    { "slug": "media.edit", "name": "Edit media" },
+    { "slug": "media.delete", "name": "Delete media" }
+  ]
+}

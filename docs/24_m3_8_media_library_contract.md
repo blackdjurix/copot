@@ -25,15 +25,20 @@ M3.8 preparation documentation:
 LOCALLY VALIDATED
 
 Implementation:
+WU2 LOCALLY IMPLEMENTED AND VALIDATED
+
+WU3–WU7:
 NOT STARTED
 
 Implementation branch:
-CREATED FOR PREPARATION ONLY
+WU2 DELIVERY GATE
 ```
 
-The preparation branch is `feature/m3.8-media-library`. No implementation,
-schema creation, runtime synchronization, merge, push, release, tag, or
-publication is authorized by this document.
+The branch is `feature/m3.8-media-library`. WU2 implementation and focused
+validation are complete. Durable Git delivery and final remote verification
+are the next closure gate. WU2 remains NRP CANDIDATE until that gate and
+post-Git documentation review are complete. WU3–WU7 remain not started and
+unauthorized.
 
 ## Locked architecture and ownership
 
@@ -270,6 +275,33 @@ transaction-safe, and compatible with fresh and existing installations.
 
 **Human review:** Required for schema and deletion/usage semantics.
 
+#### WU2 implementation decision record
+
+WU2 establishes the module-local Media catalogue with `BIGINT UNSIGNED`
+auto-increment identities, a `MediaId` value object, and the locked tables
+`media`, `media_variants`, and `media_usages`. Media kind is limited to
+`image` and `document`; images require positive dimensions, documents require
+null dimensions, byte size is positive, and storage keys are opaque
+application values rather than paths or URLs. No lifecycle status, soft
+deletion, force deletion, checksum, generic metadata JSON, delivery URL,
+processing settings, crop data, or focal-point data is part of WU2.
+
+`media_usages` has no `updated_at` column. Its identity is the composite key
+`(media_id, consumer_type, consumer_id, usage_key)`, with numeric
+`BIGINT UNSIGNED` consumer IDs as the accepted baseline. Variant ownership is
+enforced by a cascading Media foreign key; usage ownership is restricted.
+Media deletion locks the Media row, rejects active usages, deletes the Media
+row, and relies on the variant foreign-key cascade. WU2 does not expose
+variant generation or processing.
+
+Repositories remain separate for Media, variant descriptors, and usage rows.
+The module lifecycle service owns transactions and nested savepoints. WU2
+does not use optimistic concurrency through `updated_at`; timestamps are
+maintained for audit ordering only. Fresh schema provisioning and the
+idempotent existing-install upgrade provision tables and permissions. Module
+registration and activation remain application-lifecycle operations through
+the existing ModuleManager and installer baseline entrypoint.
+
 ### WU3 — Secure upload, original storage, and controlled delivery
 
 **Objective:** Implement secure original-file registration, storage, cleanup,
@@ -431,4 +463,8 @@ Preparation documentation is locally validated when this contract and its
 directly affected status documentation pass documentation-focused review. This
 does not authorize implementation or determine milestone closure.
 
-Implementation remains `NOT STARTED`.
+WU2 implementation and focused validation are complete. Durable Git delivery
+and final remote verification are the next closure gate. WU2 remains NRP
+CANDIDATE until that gate and post-Git documentation review are complete.
+WU3–WU7 remain `NOT STARTED` and unauthorized; milestone closure is not
+implied.

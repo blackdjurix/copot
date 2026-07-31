@@ -14,6 +14,7 @@ return [
         'modules/settings-manager',
         'modules/theme-manager',
         'modules/taxonomy',
+        'modules/media',
         'public',
         'resources',
         'routes',

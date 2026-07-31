@@ -66,7 +66,7 @@ try {
         $assert(in_array($table, $tables, true), "Current schema must retain {$table}.");
     }
     foreach (['media', 'media_variants', 'media_usages'] as $table) {
-        $assert(!in_array($table, $tables, true), "WU1 must not introduce Media table {$table}.");
+        $assert(in_array($table, $tables, true), "WU2 must provision Media table {$table}.");
     }
 
     $config = new Config($basePath . '/config');
@@ -87,9 +87,9 @@ try {
     );
     $discoveredNames = array_map(static fn ($module): string => $module->name(), $moduleManager->discover());
     sort($discoveredNames);
-    $assert($discoveredNames === ['content', 'example', 'module-manager', 'navigation', 'settings-manager', 'taxonomy', 'theme-manager', 'users-access'], 'Current module discovery baseline changed unexpectedly.');
+    $assert($discoveredNames === ['content', 'example', 'media', 'module-manager', 'navigation', 'settings-manager', 'taxonomy', 'theme-manager', 'users-access'], 'Current module discovery baseline changed unexpectedly.');
 
-    $baselineModules = ['content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation', 'theme-manager'];
+    $baselineModules = ['content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation', 'theme-manager', 'media'];
     foreach ($baselineModules as $moduleName) {
         $moduleManager->install($moduleName);
         $moduleManager->enable($moduleName);
@@ -132,10 +132,10 @@ try {
     $assert(!preg_match('/MediaStorage|MediaRepository|mediaAssets|media_variants|media_usages/i', $siteAssetSource), 'SiteAssetStorage must not expose a generic Media API.');
     $assert(str_contains($applicationSource, 'new SiteAssetStorage') && str_contains($applicationSource, 'function siteAssets'), 'Application must retain the existing site-branding storage boundary.');
 
-    $assert(!is_dir($basePath . '/modules/media'), 'WU1 must not register a Media module.');
-    $assert(glob($basePath . '/database/upgrades/*media*') === [], 'WU1 must not add a Media upgrade artifact.');
+    $assert(is_dir($basePath . '/modules/media'), 'WU2 must register the Media module.');
+    $assert(glob($basePath . '/database/upgrades/*media*') !== [], 'WU2 must add a Media upgrade artifact.');
     $manifest = require $basePath . '/build/package_manifest.php';
-    $assert(!in_array('modules/media', $manifest['include'] ?? [], true), 'WU1 must not add a speculative Media package entry.');
+    $assert(in_array('modules/media', $manifest['include'] ?? [], true), 'WU2 Media module must be present in the installable package.');
     $coreFiles = glob($basePath . '/app/Core/*Media*.php') ?: [];
     $assert($coreFiles === [], 'WU1 must not add a Core Media implementation.');
 

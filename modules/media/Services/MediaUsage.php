@@ -1,0 +1,22 @@
+<?php
+
+final class MediaUsage
+{
+    public function __construct(
+        private MediaId $mediaId,
+        private string $consumerType,
+        private int $consumerId,
+        private string $usageKey,
+        private string $createdAt
+    ) {
+        if (trim($consumerType) === '' || $consumerId <= 0 || trim($usageKey) === '') {
+            throw new InvalidArgumentException('Media usage identity is invalid.');
+        }
+    }
+
+    public function mediaId(): MediaId { return $this->mediaId; }
+    public function consumerType(): string { return $this->consumerType; }
+    public function consumerId(): int { return $this->consumerId; }
+    public function usageKey(): string { return $this->usageKey; }
+    public function createdAt(): string { return $this->createdAt; }
+}
