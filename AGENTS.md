@@ -6,6 +6,8 @@
 
 M3.6 Navigation Manager WU1–WU6 are complete and `NRP CONFIRMED`. WU6 security closure passed 15 assertions at `62a2dfb892f06005644c82cba1015ed5dc71b0e7` (`test(m3.6): close navigation security gate`); the final feature-branch documentation correction is `8deb4f67d47f476e254b36e3802bd250e393921d` (`docs(m3.6): correct WU6 security closure anchor`). M3.6 was fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d` with no merge commit; the feature branch lifecycle is closed and local/remote `main` are synchronized. Full M3.6 Navigation Manager is `NRP CONFIRMED`. M3.7 WU1–WU6 are complete, objectively accepted, and fast-forward integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and local/remote feature-branch cleanup passed. Reachable browser and human presentation review passed, with only the real-settings Theme Settings/color-control spot-check deferred non-blockingly because the bundled Default Theme declares no settings. Full M3.7 is `NRP CONFIRMED`. Theme-specific feature configuration belongs to Theme Manager; global feature or content-domain expansion remains outside M3.7. ZIP installation, marketplace, uninstall, Media Library, page building, Custom CSS, and related excluded capabilities remain outside M3.7. Release, tag, and publication remain not started and separately authorized. The contracts are `docs/22_m3_6_navigation_manager_contract.md` and `docs/23_m3_7_theme_manager_contract.md`.
 
+M3.8 initial clarification and preparation audit are `COMPLETE`. The M3.8 preparation contract is `AUTHORED` and preparation documentation is `LOCALLY VALIDATED`; implementation is `NOT STARTED`, and `feature/m3.8-media-library` is created for preparation only. The contract is `docs/24_m3_8_media_library_contract.md`. No production implementation, schema creation, runtime synchronization, merge, push, release, tag, or publication has started.
+
 ## Purpose
 
 ### Current M3.7 post-merge state
@@ -16,8 +18,8 @@ commit. Post-merge documentation closure commit `8dea71c82a4076c8b9d399047031e0a
 review passed; feature containment and local/remote feature-branch cleanup
 passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
-settings. Release, tag, and publication remain not started. The next target is
-M3.8 Media Library preparation, not implementation. Older M3.7 preparation
+settings. Release, tag, and publication remain not started. M3.8 Media Library
+preparation is the active documentation-only target. Older M3.7 preparation
 checkpoint statements below are historical.
 
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.

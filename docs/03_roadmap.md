@@ -1022,6 +1022,24 @@ The existing Site Asset boundary owns only fixed Logo/Favicon lifecycle behavior
 
 Media Library is module-owned and provides general media management and selection behavior. Any future generic media or image-processing infrastructure must be justified by concrete reusable consumers before entering Webcore.
 
+### M3.8 Media Library preparation status
+
+M3.8 initial clarification and preparation audit are `COMPLETE`. The
+preparation contract is `AUTHORED` and preparation documentation is `LOCALLY
+VALIDATED`; implementation is `NOT STARTED`. Preparation uses
+`feature/m3.8-media-library`; no production
+implementation, schema creation, runtime synchronization, merge, push,
+release, tag, or publication has started. The authoritative preparation
+contract is `docs/24_m3_8_media_library_contract.md`.
+
+The clarification brief adds no new roadmap capability. It strengthens the
+existing Media direction by locking first-party module ownership, a database
+catalogue with filesystem binary storage, stable Media identity, controlled
+delivery, a reusable picker, bounded synchronous image processing, managed PDF
+behavior, usage-aware deletion safety, and exactly seven work units. Actual
+Content, Theme, and Site Settings field adoption remains post-M3.8 through
+explicit consumer contracts.
+
 ---
 
 ## M4 Business / Application Modules

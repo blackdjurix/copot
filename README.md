@@ -8,9 +8,15 @@ commit. Post-merge documentation closure commit `8dea71c82a4076c8b9d399047031e0a
 review passed; feature containment and local/remote feature-branch cleanup
 passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
-settings. Release, tag, and publication remain not started. The next target is
-M3.8 Media Library preparation, not implementation. Older M3.7 preparation
+settings. Release, tag, and publication remain not started. M3.8 Media Library
+preparation is the active documentation-only target. Older M3.7 preparation
 checkpoint statements below are historical.
+
+M3.8 initial clarification and preparation audit are `COMPLETE`. The M3.8
+preparation contract is `AUTHORED` and preparation documentation is `LOCALLY
+VALIDATED`; implementation is `NOT STARTED`. Preparation uses
+`feature/m3.8-media-library`. The contract is
+`docs/24_m3_8_media_library_contract.md`.
 
 A modular PHP-based website framework designed for flexible content, business, and automation solutions.
 
@@ -39,7 +45,7 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 Current M3.6 state: WU1–WU6 are complete and integrated into `main` at
 `8deb4f67d47f476e254b36e3802bd250e393921d` by fast-forward, with no merge
 commit. WU1–WU6 are `NRP CONFIRMED`; the feature branch lifecycle is closed,
-and full M3.6 is `NRP CONFIRMED`. M3.7 WU1–WU6 are complete, objectively accepted, and integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and branch cleanup passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check is deferred and non-blocking because the bundled Default Theme declares no settings. M3.8 Media Library preparation is the next target, not implementation.
+and full M3.6 is `NRP CONFIRMED`. M3.7 WU1–WU6 are complete, objectively accepted, and integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and branch cleanup passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check is deferred and non-blocking because the bundled Default Theme declares no settings. M3.8 Media Library preparation is the active documentation-only target; its preparation contract is authored and locally validated.
 
 M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; its local and remote feature branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
 
