@@ -25,7 +25,10 @@ M3.8 preparation documentation:
 LOCALLY VALIDATED
 
 Implementation:
-WU2 LOCALLY IMPLEMENTED AND VALIDATED
+WU2 IMPLEMENTED, VALIDATED, AND DURABLY DELIVERED
+
+WU3:
+IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE
 
 WU3–WU7:
 NOT STARTED
@@ -35,9 +38,11 @@ WU2 DELIVERY GATE
 ```
 
 The branch is `feature/m3.8-media-library`. WU2 implementation and focused
+validation are complete and durably delivered. WU2 remains NRP CANDIDATE
+until post-Git documentation review. WU3 implementation and focused
 validation are complete. Durable Git delivery and final remote verification
-are the next closure gate. WU2 remains NRP CANDIDATE until that gate and
-post-Git documentation review are complete. WU3–WU7 remain not started and
+are the next closure gate. WU3 remains NRP CANDIDATE until remote verification
+and post-Git lifecycle review are complete. WU4–WU7 remain not started and
 unauthorized.
 
 ## Locked architecture and ownership
@@ -327,6 +332,40 @@ rules.
 
 **Human review:** Required for security and filesystem behavior.
 
+#### WU3 implementation decision record
+
+WU3 is implemented entirely inside `modules/media`. The upload boundary
+accepts an internal normalized source object and deliberately does not claim
+that `is_uploaded_file()` was checked; a future HTTP adapter owns that
+boundary. `MediaFileInspector` trusts neither browser MIME nor filename
+extension, fails closed when file inspection is unavailable, and validates
+JPEG, PNG, WebP, GIF, ICO, and PDF with the locked size, dimension, structure,
+and byte-preservation rules. PDF handling is signature/EOF validation only;
+there is no parser, renderer, sanitizer, or malware scanner.
+
+`MediaFilesystemStorage` owns `.tmp` staging, bounded copying, symlink and
+containment checks, exclusive temporary creation, same-filesystem activation,
+and cleanup. Final originals use the locked
+`originals/ab/cd/<32-lowercase-hex>.<extension>` layout. The upload service
+reinspects the staged copy before activation and creates the WU2 row only
+after the final original exists; database failure removes the activated
+original. Delivery is public baseline behavior through the module-owned
+`/media/{id}` and `/media/{id}/download` routes, with strict positive IDs,
+stable identity checks, bounded full responses, sanitized disposition names,
+and the locked security/cache headers. No Admin, picker, consumer, variant,
+EXIF, derivative, queue, or generic storage work is included.
+
+WU3 limitations are explicit: no checksum is stored, so a same-size,
+same-MIME replacement cannot be detected; delivery is buffered and bounded to
+16 MiB; Range and conditional-request support is intentionally absent; a
+cleanup failure can leave an unreachable orphan file; and real concurrent
+filesystem stress was not performed. Deterministic exclusive creation,
+collision exhaustion, no-overwrite behavior, failed staging, activation
+failure, database compensation, sanitized diagnostics, grammar, and
+containment paths are covered by the focused WU3 suite. Symlink rejection is
+implemented and source-reviewed, but symlink creation was unavailable in the
+current Windows test environment.
+
 ### WU4 — Image processing and generated responsive outputs
 
 **Objective:** Provide bounded image operations and generated responsive
@@ -463,8 +502,9 @@ Preparation documentation is locally validated when this contract and its
 directly affected status documentation pass documentation-focused review. This
 does not authorize implementation or determine milestone closure.
 
-WU2 implementation and focused validation are complete. Durable Git delivery
-and final remote verification are the next closure gate. WU2 remains NRP
-CANDIDATE until that gate and post-Git documentation review are complete.
-WU3–WU7 remain `NOT STARTED` and unauthorized; milestone closure is not
-implied.
+WU2 implementation and focused validation are complete. WU2 remains NRP
+CANDIDATE until its post-Git documentation review is complete. WU3
+implementation and focused validation are complete. Durable Git delivery and
+final remote verification are the next closure gate. WU3 remains NRP CANDIDATE
+until remote verification and post-Git lifecycle review are complete. WU4–WU7
+remain `NOT STARTED` and unauthorized; milestone closure is not implied.

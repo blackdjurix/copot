@@ -1024,13 +1024,14 @@ Media Library is module-owned and provides general media management and selectio
 
 ### M3.8 Media Library preparation status
 
-M3.8 initial clarification and preparation audit are `COMPLETE`. The
-preparation contract is `AUTHORED` and preparation documentation is `LOCALLY
-VALIDATED`; implementation is `NOT STARTED`. Preparation uses
-`feature/m3.8-media-library`; no production
-implementation, schema creation, runtime synchronization, merge, push,
-release, tag, or publication has started. The authoritative preparation
-contract is `docs/24_m3_8_media_library_contract.md`.
+M3.8 initial clarification and preparation audit are `COMPLETE`. WU1 and WU2
+are implemented and focused-validated, with WU2 durably delivered on
+`feature/m3.8-media-library`; WU3 implementation and focused validation are
+complete. Durable Git delivery and final remote verification are the next
+closure gate. WU3 remains NRP CANDIDATE until remote verification and post-Git
+lifecycle review are complete. WU4–WU7 remain not started and unauthorized.
+No merge, release, tag, or publication has started. The authoritative
+preparation contract is `docs/24_m3_8_media_library_contract.md`.
 
 The clarification brief adds no new roadmap capability. It strengthens the
 existing Media direction by locking first-party module ownership, a database

@@ -1,12 +1,13 @@
 {
   "name": "media",
   "title": "Media Library",
-  "description": "Media catalogue identity, variants, and usage records.",
+  "description": "Media catalogue, secure original storage, and controlled public delivery.",
   "version": "0.1.0",
   "author": "Copot",
   "requires": {
     "modules": []
   },
+  "routes": "routes.php",
   "permissions": [
     { "slug": "media.view", "name": "View media" },
     { "slug": "media.upload", "name": "Upload media" },
