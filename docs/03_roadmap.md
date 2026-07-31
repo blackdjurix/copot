@@ -936,6 +936,20 @@ This sequence is approved by M3 Prep Stage 2 as refined by the documented Batch 
 
 Navigation data remains module-owned by the future Navigation boundary. Themes declare locations and control rendering through a documented consumption contract. Domain-owned target resolution is contributed through explicit contracts, registries, or resolvers.
 
+### M3.7 Theme Manager status
+
+M3.7 Work Units 1–6 are implemented and objectively accepted on
+`feature/m3.7-theme-manager` at `d6563851b6e4146e92fbf3423f0ccd06038c020f`.
+Reachable browser and human presentation review passed. The actual Theme
+Settings form and color-control spot-check is deferred non-blockingly because
+the bundled Default Theme declares no settings; it will be performed later with
+a real settings-bearing Theme. Theme-specific feature configuration belongs to
+Theme Manager. Global feature or content-domain expansion is outside M3.7.
+ZIP installation, marketplace, uninstall, Media Library, page building, Custom
+CSS, and other excluded capabilities remain outside M3.7. Integration and
+feature-branch cleanup are pending; release, tag, and publication have not
+started.
+
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
 ### Existing Module Evolution

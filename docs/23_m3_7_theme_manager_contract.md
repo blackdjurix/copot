@@ -2,12 +2,15 @@
 
 ## Purpose and status
 
-M3.7 prepares an official first-party `theme-manager` Admin module over the
+M3.7 defines and delivers an official first-party `theme-manager` Admin module over the
 existing Core Theme System. The preparation contract remains the scope
 authority for the implementation work. M3.6 Navigation
 Manager is closed with WU1–WU6 and full M3.6 `NRP CONFIRMED`; M3.7 preparation
-is independent of that closure and is evaluated from the final documentation,
-Git, and remote evidence. Full M3.7 is `NRP NOT REACHED`.
+was independent of that closure. WU1–WU6 implementation and objective automated
+acceptance are complete at feature anchor
+`d6563851b6e4146e92fbf3423f0ccd06038c020f`; reachable browser and human
+presentation review passed. Feature integration and branch cleanup remain
+pending at this checkpoint.
 
 ### WU1 implementation state
 
@@ -70,13 +73,16 @@ Navigation writes. WU5 focused evidence covers typed controls, namespace mapping
 validation, inactive-value preservation, reset behavior, runtime isolation, and
 malformed metadata handling.
 
-The combined WU4/WU5 human review remains deferred for visual hierarchy,
-screenshot usefulness, activation-warning comprehension, settings-form clarity,
-color-control usability, true 200% zoom, 320px presentation, and final Theme
-workspace quality. Full M3.7 remains `NRP NOT REACHED`; WU6 remains unauthorized.
+The reachable WU4/WU5 browser and human presentation review passed. The actual
+Theme Settings form and color-control visual spot-check remains deferred and
+non-blocking because the bundled Default Theme declares no settings; it will be
+performed later with a real settings-bearing Theme. The broader deferred review
+criteria remain visual hierarchy, screenshot usefulness, activation-warning
+comprehension, settings-form clarity, color-control usability, true 200% zoom,
+320px presentation, and final Theme workspace quality.
 
 Objective WU6 security, regression, documentation, and integration-readiness work
-is now implemented in the feature branch. Discovery bounds `theme.json` metadata,
+is complete in the feature branch. Discovery bounds `theme.json` metadata,
 isolates malformed, missing, unavailable, and corrupted Theme inputs with generic
 diagnostics, and validates contained screenshot size and detected MIME. Activation
 and Theme settings routes authorize before CSRF and mutation, require coherent
@@ -84,8 +90,8 @@ submitted targets, reject malformed or oversized values, and preserve the
 transactional atomicity established by WU3 and WU5. Runtime Theme settings remain
 active-Theme-only and independent of the Admin module; Navigation locations remain
 read-only. Automated WU6 evidence also checks package manifest inclusion/exclusion
-and the clean-install/upgrade validation surface. Merge, branch cleanup, and
-publication remain pending.
+and the clean-install/upgrade validation surface. Integration and branch cleanup
+remain pending. Release, tag, and publication remain separate and not started.
 
 The existing Core Theme System remains the sole owner of filesystem discovery,
 registry persistence, active-theme state, activation, loading, rendering, view

@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### M3.7 Theme Manager acceptance closure
+
+- Completed WU1–WU6 implementation and objective automated acceptance on `feature/m3.7-theme-manager` through `d6563851b6e4146e92fbf3423f0ccd06038c020f`.
+- Completed reachable browser and human presentation review with no known implementation defect. The actual Theme Settings form and color-control spot-check remains deferred, non-blocking, and requires a real Theme that declares settings because the bundled Default Theme declares none.
+- Recorded that Theme-specific feature configuration belongs to Theme Manager, while global feature/content-domain expansion remains outside M3.7. ZIP installation, marketplace, uninstall, Media Library, page building, Custom CSS, and related excluded capabilities remain outside M3.7.
+- Integration, feature-branch cleanup, release, tag, and publication were still pending at this documentation checkpoint.
+
 ### Added
 
 - Implemented M3.7 WU1 compatibility baseline on `feature/m3.7-theme-manager`: first-party `theme-manager` module manifest, `themes.manage` fresh/upgrade provisioning, baseline installation and package inclusion, and error-tolerant Theme catalog discovery. Focused WU1 compatibility passes 16 assertions; no Admin workspace, WU2 settings contract, activation orchestration, or runtime settings behavior is included.

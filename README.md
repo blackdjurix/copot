@@ -2,7 +2,7 @@
 
 A modular PHP-based website framework designed for flexible content, business, and automation solutions.
 
-M3.6 Navigation Manager WU1–WU6 and full M3.6 are `NRP CONFIRMED`. WU6 security closure passed 15 assertions at `62a2dfb892f06005644c82cba1015ed5dc71b0e7` (`test(m3.6): close navigation security gate`); the final feature-branch documentation correction is `8deb4f67d47f476e254b36e3802bd250e393921d` (`docs(m3.6): correct WU6 security closure anchor`). M3.6 was fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d` with no merge commit; the feature branch lifecycle is closed and local/remote `main` are synchronized. M3.7 Theme Manager preparation is the active independent documentation target; full M3.7 is `NRP NOT REACHED`. Release, tag, and publication remain not started and separately authorized. The contracts are `docs/22_m3_6_navigation_manager_contract.md` and `docs/23_m3_7_theme_manager_contract.md`.
+M3.6 Navigation Manager WU1–WU6 and full M3.6 are `NRP CONFIRMED`. WU6 security closure passed 15 assertions at `62a2dfb892f06005644c82cba1015ed5dc71b0e7` (`test(m3.6): close navigation security gate`); the final feature-branch documentation correction is `8deb4f67d47f476e254b36e3802bd250e393921d` (`docs(m3.6): correct WU6 security closure anchor`). M3.6 was fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d` with no merge commit; the feature branch lifecycle is closed and local/remote `main` are synchronized. M3.7 WU1–WU6 implementation and objective acceptance are complete at feature anchor `d6563851b6e4146e92fbf3423f0ccd06038c020f`; reachable browser and presentation review passed. The actual Theme Settings/color-control visual spot-check is deferred non-blockingly because the bundled Default Theme declares no settings. M3.7 integration and branch cleanup are pending. Theme-specific feature configuration belongs to Theme Manager; global feature/content-domain expansion and ZIP installation, marketplace, uninstall, Media Library, page building, Custom CSS, and other excluded capabilities remain outside M3.7. Release, tag, and publication remain not started and separately authorized. The contracts are `docs/22_m3_6_navigation_manager_contract.md` and `docs/23_m3_7_theme_manager_contract.md`.
 
 ## Status
 
@@ -28,7 +28,7 @@ Current M3.6 state: WU1–WU6 are complete and integrated into `main` at
 `8deb4f67d47f476e254b36e3802bd250e393921d` by fast-forward, with no merge
 commit. WU1–WU6 are `NRP CONFIRMED`; the feature branch lifecycle is closed,
 and full M3.6 is `NRP CONFIRMED`. M3.7 Theme Manager preparation is the active
-independent documentation target; full M3.7 remains `NRP NOT REACHED`.
+M3.7 WU1–WU6 are complete on the feature branch at `d6563851b6e4146e92fbf3423f0ccd06038c020f`; objective automated acceptance and reachable browser/presentation review passed. Integration and branch cleanup are pending. The real-settings Theme Settings/color-control spot-check is deferred and non-blocking because the bundled Default Theme declares no settings.
 
 M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; its local and remote feature branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
 
