@@ -41,6 +41,59 @@ final class MediaRepository
         return array_map(fn (array $row): Media => $this->hydrate($row), $statement->fetchAll());
     }
 
+    public function workspace(array $filters = [], int $limit = 24, int $offset = 0): array
+    {
+        $limit = max(1, min($limit, 24));
+        $offset = max(0, $offset);
+        $where = [];
+        $parameters = [];
+        $search = trim((string) ($filters['search'] ?? ''));
+        $kind = $filters['kind'] ?? null;
+        $capability = $filters['capability'] ?? null;
+
+        if ($search !== '') {
+            $where[] = '(title LIKE :search_title OR original_filename LIKE :search_filename)';
+            $parameters['search_title'] = '%' . $search . '%';
+            $parameters['search_filename'] = '%' . $search . '%';
+        }
+
+        if (in_array($kind, ['image', 'document'], true)) {
+            $where[] = 'kind = :kind';
+            $parameters['kind'] = $kind;
+        }
+
+        $editableSql = "(kind = 'image' AND mime_type IN ('image/jpeg', 'image/png', 'image/webp'))";
+        if ($capability === 'editable') {
+            $where[] = $editableSql;
+        } elseif ($capability === 'manage-only') {
+            $where[] = 'NOT ' . $editableSql;
+        }
+
+        $whereSql = $where === [] ? '' : 'WHERE ' . implode(' AND ', $where);
+        $connection = $this->database->connection();
+        $count = $connection->prepare("SELECT COUNT(*) FROM media {$whereSql}");
+        $count->execute($parameters);
+
+        $statement = $connection->prepare(
+            "SELECT * FROM media {$whereSql}
+             ORDER BY updated_at DESC, id DESC
+             LIMIT :limit OFFSET :offset"
+        );
+        foreach ($parameters as $name => $value) {
+            $statement->bindValue($name, $value, PDO::PARAM_STR);
+        }
+        $statement->bindValue('limit', $limit, PDO::PARAM_INT);
+        $statement->bindValue('offset', $offset, PDO::PARAM_INT);
+        $statement->execute();
+
+        return [
+            'items' => array_map(fn (array $row): Media => $this->hydrate($row), $statement->fetchAll()),
+            'total' => (int) $count->fetchColumn(),
+            'limit' => $limit,
+            'offset' => $offset,
+        ];
+    }
+
     public function create(array $data): MediaId
     {
         $statement = $this->database->connection()->prepare(

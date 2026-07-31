@@ -31,24 +31,28 @@ WU3:
 IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
 
 WU4:
-IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE
-NEXT GATE: DURABLE GIT DELIVERY AND REMOTE VERIFICATION
-NRP CANDIDATE PENDING FINAL LIFECYCLE REVIEW
+IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
+NRP CONFIRMED
 
-WU5–WU7:
+WU5:
+IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
+AI ACCEPTANCE EVIDENCE RECORDED
+HUMAN RUNTIME/BROWSER REVIEW PENDING; NOT FINALLY CLOSED
+
+WU6–WU7:
 NOT STARTED
 
 Implementation branch:
-WU2 DELIVERY GATE
+WU5 DELIVERY GATE
 ```
 
-The branch is `feature/m3.8-media-library`. WU2 implementation and focused
-validation are complete and durably delivered. WU2 remains NRP CANDIDATE
-until post-Git documentation review. WU3 is an accepted predecessor and is
-durably delivered. WU4 implementation and focused validation are complete.
-Durable Git delivery and remote verification are the next closure gate. WU4
-remains NRP CANDIDATE pending final lifecycle review. WU5–WU7 remain not
-started and unauthorized.
+The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
+predecessors and are durably delivered. WU4 implementation and focused
+validation are complete, durably delivered, and `NRP CONFIRMED`. WU5
+implementation and focused validation are complete and durably delivered,
+with AI acceptance evidence recorded. Human runtime/browser review remains
+pending, so WU5 is not finally closed. WU6–WU7 remain not started and
+unauthorized.
 
 ## Locked architecture and ownership
 
@@ -458,6 +462,29 @@ checkpoint evidence.
 **Human review:** Required for Admin hierarchy, picker entry points, responsive
 behavior, and accessibility.
 
+#### WU5 implementation decision record
+
+WU5 adds the module-local Admin workspace at the configured Admin path with
+`GET /admin/media`, `GET /admin/media/upload`, `POST /admin/media/upload`,
+`POST /admin/media/{id}/title`, and `POST /admin/media/{id}/process`. Media is
+registered after Content and before Taxonomy; no dashboard item is added.
+The workspace uses a fixed page size of 24, deterministic updated/id ordering,
+bounded title/original-filename search, kind and editable/manage-only filters,
+and controlled original delivery for image previews. Documents use a generic
+document representation.
+
+Upload, title updates, and processing reuse the existing Media services through
+a module-local Admin orchestration boundary. Processing exposes only the
+square, landscape, and contain presets locked for WU5; arbitrary transform
+inputs are not accepted. No storage key, physical path, temporary path, or
+generated-file location is rendered. WU5 adds no delete route and does not call
+the Media deletion lifecycle. Generated variants remain internal; no public
+variant delivery, picker, or consumer integration is added.
+
+Focused AI acceptance evidence is recorded in
+`tests/m3_8_work_unit5_admin_media_workspace.php` with 34 passing assertions.
+Human runtime/browser review remains pending and WU5 is not finally closed.
+
 ### WU6 — Media picker, consumer contracts, usage, and deletion safety
 
 **Objective:** Deliver reusable selection and consumer contracts owned by
@@ -542,7 +569,9 @@ does not authorize implementation or determine milestone closure.
 
 WU2 implementation and focused validation are complete. WU2 remains NRP
 CANDIDATE until its post-Git documentation review is complete. WU3
-implementation and focused validation are complete. Durable Git delivery and
-final remote verification are the next closure gate. WU3 remains NRP CANDIDATE
-until remote verification and post-Git lifecycle review are complete. WU4–WU7
-remain `NOT STARTED` and unauthorized; milestone closure is not implied.
+implementation and focused validation are complete. WU3 remains NRP CANDIDATE
+until its post-Git lifecycle review is complete. WU4 is `NRP CONFIRMED`. WU5
+implementation and focused validation are complete with AI acceptance evidence
+recorded, but human runtime/browser review remains pending and WU5 is not
+finally closed. WU6–WU7 remain `NOT STARTED` and unauthorized; milestone
+closure is not implied.
