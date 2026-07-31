@@ -207,6 +207,47 @@ the seven-unit plan is unchanged.
 
 **Human review:** Required for architecture, scope, and compatibility boundary.
 
+### WU1 evidence record
+
+WU1 is a tests-and-documentation-only compatibility baseline. The focused
+evidence is `tests/m3_8_work_unit1_compatibility.php`.
+
+The evidence establishes that the current schema installs successfully, the
+existing baseline modules can be discovered, installed, enabled, and their
+manifest permissions remain registered, and enabled module state and module
+permission state survive a reconnect. It also boots the current Application
+compatibility through the required clean-install regression and confirms from
+the application boundary that `Application::siteAssets()` continues to expose
+the existing `SiteAssetStorage` branding boundary.
+
+The test confirms that `SiteAssetStorage` remains limited to the fixed Logo and
+Favicon slots and that the pre-Media baseline contains no `media`,
+`media_variants`, or `media_usages` tables, Media module registration, Media
+upgrade artifact, Core Media implementation, generic Media storage API, or
+speculative package entry.
+
+WU1 records only the accepted action categories `view`, `upload`, `use`,
+`edit`, and `delete`. Concrete permission identifiers and display names are
+deferred to WU2, where the Media module and domain boundaries exist.
+
+No executable fixtures were added for upload validation, MIME or extension
+enforcement, dimension or decompression limits, traversal or symlink handling,
+partial-write recovery, or Media catalogue/reference lifecycle. Later units
+may add test-generated temporary fixtures for those contracts after their
+implementation decisions are approved. WU1 adds no production, schema,
+installer, upgrade, module, permission, package, route, UI, storage, or
+runtime changes.
+
+Validation recorded for this baseline: `tests/m3_8_work_unit1_compatibility.php`
+passed 44 assertions; `tests/m3_7_work_unit1_compatibility.php` passed 16;
+`tests/post_m2_package_builder_smoke.php` passed 927;
+`tests/post_m2_clean_install_verification.php` passed 64; and
+`tests/minimal_site_capabilities_batch4_smoke.php` passed 54. The required
+`tests/minimal_site_capabilities_batch5_smoke.php` regression did not pass: it
+stopped at its existing assertion that the Settings UI contain exactly two
+upload forms. No WU1 file changes the Settings UI, so this is recorded as an
+unrelated pre-existing regression signal rather than WU1 evidence.
+
 ### WU2 — Media domain, schema, repository, and lifecycle
 
 **Objective:** Establish the Media domain, candidate `media`,
