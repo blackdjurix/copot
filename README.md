@@ -1,5 +1,17 @@
 # copot
 
+## Current M3.7 post-merge state
+
+M3.7 WU1–WU6 are complete and integrated into `main` at
+`667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
+commit. Objective automated acceptance and reachable browser/presentation
+review passed; feature containment and local/remote feature-branch cleanup
+passed. The real-settings Theme Settings/color-control spot-check remains
+deferred and non-blocking because the bundled Default Theme declares no
+settings. Release, tag, and publication remain not started. The next target is
+M3.8 Media Library preparation, not implementation. Older M3.7 preparation
+checkpoint statements below are historical.
+
 A modular PHP-based website framework designed for flexible content, business, and automation solutions.
 
 M3.6 Navigation Manager WU1–WU6 and full M3.6 are `NRP CONFIRMED`. WU6 security closure passed 15 assertions at `62a2dfb892f06005644c82cba1015ed5dc71b0e7` (`test(m3.6): close navigation security gate`); the final feature-branch documentation correction is `8deb4f67d47f476e254b36e3802bd250e393921d` (`docs(m3.6): correct WU6 security closure anchor`). M3.6 was fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d` with no merge commit; the feature branch lifecycle is closed and local/remote `main` are synchronized. M3.7 WU1–WU6 implementation and objective acceptance are complete at feature anchor `d6563851b6e4146e92fbf3423f0ccd06038c020f`; reachable browser and presentation review passed. The actual Theme Settings/color-control visual spot-check is deferred non-blockingly because the bundled Default Theme declares no settings. M3.7 integration and branch cleanup are pending. Theme-specific feature configuration belongs to Theme Manager; global feature/content-domain expansion and ZIP installation, marketplace, uninstall, Media Library, page building, Custom CSS, and other excluded capabilities remain outside M3.7. Release, tag, and publication remain not started and separately authorized. The contracts are `docs/22_m3_6_navigation_manager_contract.md` and `docs/23_m3_7_theme_manager_contract.md`.

@@ -8,6 +8,18 @@ M3.6 Navigation Manager WU1–WU6 are complete and `NRP CONFIRMED`. WU6 security
 
 ## Purpose
 
+### Current M3.7 post-merge state
+
+M3.7 WU1–WU6 are complete and integrated into `main` at
+`667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
+commit. Objective automated acceptance and reachable browser/presentation
+review passed; feature containment and local/remote feature-branch cleanup
+passed. The real-settings Theme Settings/color-control spot-check remains
+deferred and non-blocking because the bundled Default Theme declares no
+settings. Release, tag, and publication remain not started. The next target is
+M3.8 Media Library preparation, not implementation. Older M3.7 preparation
+checkpoint statements below are historical.
+
 copot is a modular PHP-based website framework designed for flexible website, content, business, and automation use cases.
 
 M1 Framework Foundation is complete and released as v0.8.0.

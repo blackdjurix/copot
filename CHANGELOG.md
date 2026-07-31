@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### M3.7 post-merge closure
+
+- Integrated all intended M3.7 WU1–WU6 changes into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge commit.
+- Verified feature containment and deleted the local and remote `feature/m3.7-theme-manager` branches. All intended changes are committed and pushed.
+- No known implementation, security, schema, package, or integration blocker remains. The real-settings Theme Settings/color-control spot-check remains deferred and non-blocking because the bundled Default Theme declares no settings.
+- Release, tag, and publication remain not started. The next target is M3.8 Media Library preparation, not implementation.
+
 ### M3.7 Theme Manager acceptance closure
 
 - Completed WU1–WU6 implementation and objective automated acceptance on `feature/m3.7-theme-manager` through `d6563851b6e4146e92fbf3423f0ccd06038c020f`.

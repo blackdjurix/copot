@@ -2,6 +2,18 @@
 
 ## Purpose and status
 
+### Post-merge status
+
+WU1–WU6 are complete and integrated into `main` at
+`667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
+commit. Objective automated acceptance and reachable browser/presentation
+review passed; feature containment and local/remote feature-branch cleanup
+passed. The real-settings Theme Settings/color-control spot-check remains
+deferred and non-blocking because the bundled Default Theme declares no
+settings. No known implementation, security, schema, package, or integration
+blocker remains. Release, tag, and publication remain not started. The next
+target is M3.8 Media Library preparation, not implementation.
+
 M3.7 defines and delivers an official first-party `theme-manager` Admin module over the
 existing Core Theme System. The preparation contract remains the scope
 authority for the implementation work. M3.6 Navigation
@@ -90,8 +102,9 @@ submitted targets, reject malformed or oversized values, and preserve the
 transactional atomicity established by WU3 and WU5. Runtime Theme settings remain
 active-Theme-only and independent of the Admin module; Navigation locations remain
 read-only. Automated WU6 evidence also checks package manifest inclusion/exclusion
-and the clean-install/upgrade validation surface. Integration and branch cleanup
-remain pending. Release, tag, and publication remain separate and not started.
+and the clean-install/upgrade validation surface. Integration completed at
+`667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and branch
+cleanup passed. Release, tag, and publication remain separate and not started.
 
 The existing Core Theme System remains the sole owner of filesystem discovery,
 registry persistence, active-theme state, activation, loading, rendering, view
