@@ -52,6 +52,7 @@ try {
     $app->moduleLoader()->loadRoutes($app);
     require $basePath . '/routes/admin_fallback.php';
     $connection = $app->database()->connection();
+    $assert(class_exists('MediaVariantKey'), 'Media route bootstrap did not load the variant key dependency.');
 
     $permissionIds = [];
     foreach (['admin.access', 'media.view', 'media.upload', 'media.edit', 'taxonomy.create', 'taxonomy.update', 'taxonomy.delete'] as $slug) {

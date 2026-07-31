@@ -24,6 +24,7 @@ require_once __DIR__ . '/Services/MediaProcessingRequest.php';
 require_once __DIR__ . '/Services/MediaImageProcessor.php';
 require_once __DIR__ . '/Services/MediaGdImageProcessor.php';
 require_once __DIR__ . '/Services/MediaVariantFilesystemStorage.php';
+require_once __DIR__ . '/Services/MediaVariantKey.php';
 require_once __DIR__ . '/Services/MediaProcessingService.php';
 require_once __DIR__ . '/Services/MediaAdmin.php';
 
