@@ -875,9 +875,9 @@ These checkpoints are horizontal design-governance work units and are not includ
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
-commit. Objective automated acceptance and reachable browser/presentation
+commit. Post-merge documentation closure commit `8dea71c82a4076c8b9d399047031e0a1ad18b0c6` preceded this correction. Objective automated acceptance and reachable browser/presentation
 review passed; feature containment and local/remote feature-branch cleanup
-passed. The real-settings Theme Settings/color-control spot-check remains
+passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
 settings. Release, tag, and publication remain not started. The next target is
 M3.8 Media Library preparation, not implementation. Older M3.7 preparation
@@ -898,8 +898,10 @@ sibling order, visibility, custom targets, published Content targets, and
 fail-closed unavailable/hidden/disabled-provider behavior are accepted. The
 WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. Production
 Taxonomy targets remain deferred. The feature branch lifecycle is closed. Full
-M3.6 Navigation Manager is `NRP CONFIRMED`. M3.7 Theme Manager preparation is
-the active independent documentation target; full M3.7 is `NRP NOT REACHED`.
+M3.6 Navigation Manager is `NRP CONFIRMED`. M3.7 WU1–WU6 are complete and
+full M3.7 is `NRP CONFIRMED`, fast-forward integrated at
+`667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; M3.8 Media Library preparation is
+the next target, not implementation.
 Release, tag, and publication remain not started and separately authorized.
 
 The following paragraph is retained as a historical pre-WU5 checkpoint record
@@ -950,17 +952,17 @@ Navigation data remains module-owned by the future Navigation boundary. Themes d
 
 ### M3.7 Theme Manager status
 
-M3.7 Work Units 1–6 are implemented and objectively accepted on
-`feature/m3.7-theme-manager` at `d6563851b6e4146e92fbf3423f0ccd06038c020f`.
-Reachable browser and human presentation review passed. The actual Theme
-Settings form and color-control spot-check is deferred non-blockingly because
-the bundled Default Theme declares no settings; it will be performed later with
-a real settings-bearing Theme. Theme-specific feature configuration belongs to
-Theme Manager. Global feature or content-domain expansion is outside M3.7.
-ZIP installation, marketplace, uninstall, Media Library, page building, Custom
-CSS, and other excluded capabilities remain outside M3.7. Integration and
-feature-branch cleanup are pending; release, tag, and publication have not
-started.
+M3.7 Work Units 1–6 are implemented, objectively accepted, and fast-forward
+integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` with no
+merge commit. Reachable browser and human presentation review passed. The
+actual Theme Settings form and color-control spot-check remains deferred and
+non-blocking because the bundled Default Theme declares no settings. Theme-
+specific feature configuration belongs to Theme Manager. Global feature or
+content-domain expansion is outside M3.7. ZIP installation, marketplace,
+uninstall, Media Library, page building, Custom CSS, and other excluded
+capabilities remain outside M3.7. Feature containment and branch cleanup
+passed. Full M3.7 is `NRP CONFIRMED`; release, tag, and publication have not
+started. M3.8 Media Library preparation is the next target, not implementation.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
