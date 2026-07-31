@@ -12,13 +12,13 @@ settings. Release, tag, and publication remain not started. M3.8 Media Library
 preparation is the active documentation-only target. Older M3.7 preparation
 checkpoint statements below are historical.
 
-M3.8 initial clarification and preparation audit are `COMPLETE`. WU1 and WU2
-are implemented and focused-validated, with WU2 durably delivered on
-`feature/m3.8-media-library`; WU3 implementation and focused validation are
-complete. Durable Git delivery and final remote verification are the next
-closure gate. WU3 remains NRP CANDIDATE until remote verification and post-Git
-lifecycle review are complete. WU4–WU7 remain not started and unauthorized.
-The contract is `docs/24_m3_8_media_library_contract.md`.
+M3.8 initial clarification and preparation audit are `COMPLETE`. WU1–WU3
+are accepted predecessors, implemented, focused-validated, and durably
+delivered on `feature/m3.8-media-library`. WU4 implementation and focused
+validation are complete. Durable Git delivery and remote verification are the
+next closure gate. WU4 remains NRP CANDIDATE pending final lifecycle review.
+WU5–WU7 remain not started and unauthorized. The contract is
+`docs/24_m3_8_media_library_contract.md`.
 
 A modular PHP-based website framework designed for flexible content, business, and automation solutions.
 

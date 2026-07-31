@@ -23,6 +23,26 @@ final class MediaVariantRepository
         return array_map(fn (array $row): MediaVariant => $this->hydrate($row), $statement->fetchAll());
     }
 
+    public function saveOrReplaceDescriptor(array $data): ?MediaVariant
+    {
+        $mediaId = $data['media_id'] instanceof MediaId ? $data['media_id'] : new MediaId((int) $data['media_id']);
+        MediaVariant::validateInput(['id' => 1, 'variantKey' => $data['variant_key'] ?? '', 'storageKey' => $data['storage_key'] ?? '', 'mimeType' => $data['mime_type'] ?? '', 'extension' => $data['extension'] ?? '', 'byteSize' => $data['byte_size'] ?? 0, 'width' => $data['width'] ?? null, 'height' => $data['height'] ?? null]);
+        $previous = $this->find($mediaId, (string) $data['variant_key']);
+        if (!$previous && count($this->forMedia($mediaId)) >= 24) throw new MediaProcessingValidationException('Media variant limit reached.');
+        if ($previous) {
+            $statement = $this->database->connection()->prepare('UPDATE media_variants SET storage_key = :storage_key, mime_type = :mime_type, extension = :extension, byte_size = :byte_size, width = :width, height = :height, updated_at = NOW() WHERE media_id = :media_id AND variant_key = :variant_key');
+            $statement->execute(['storage_key'=>$data['storage_key'],'mime_type'=>$data['mime_type'],'extension'=>$data['extension'],'byte_size'=>$data['byte_size'],'width'=>$data['width']??null,'height'=>$data['height']??null,'media_id'=>$mediaId->value(),'variant_key'=>$data['variant_key']]);
+            return $previous;
+        }
+        $this->saveDescriptor([...$data, 'media_id' => $mediaId->value()]); return null;
+    }
+
+    public function deleteDescriptor(MediaId|int $mediaId, string $variantKey): ?MediaVariant
+    {
+        $mediaId = $mediaId instanceof MediaId ? $mediaId : new MediaId($mediaId); $previous = $this->find($mediaId, $variantKey); if (!$previous) return null;
+        $statement = $this->database->connection()->prepare('DELETE FROM media_variants WHERE media_id = :media_id AND variant_key = :variant_key'); $statement->execute(['media_id'=>$mediaId->value(),'variant_key'=>$variantKey]); return $previous;
+    }
+
     public function saveDescriptor(array $data): int
     {
         $statement = $this->database->connection()->prepare(

@@ -28,9 +28,14 @@ Implementation:
 WU2 IMPLEMENTED, VALIDATED, AND DURABLY DELIVERED
 
 WU3:
-IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE
+IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
 
-WU3–WU7:
+WU4:
+IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE
+NEXT GATE: DURABLE GIT DELIVERY AND REMOTE VERIFICATION
+NRP CANDIDATE PENDING FINAL LIFECYCLE REVIEW
+
+WU5–WU7:
 NOT STARTED
 
 Implementation branch:
@@ -39,11 +44,11 @@ WU2 DELIVERY GATE
 
 The branch is `feature/m3.8-media-library`. WU2 implementation and focused
 validation are complete and durably delivered. WU2 remains NRP CANDIDATE
-until post-Git documentation review. WU3 implementation and focused
-validation are complete. Durable Git delivery and final remote verification
-are the next closure gate. WU3 remains NRP CANDIDATE until remote verification
-and post-Git lifecycle review are complete. WU4–WU7 remain not started and
-unauthorized.
+until post-Git documentation review. WU3 is an accepted predecessor and is
+durably delivered. WU4 implementation and focused validation are complete.
+Durable Git delivery and remote verification are the next closure gate. WU4
+remains NRP CANDIDATE pending final lifecycle review. WU5–WU7 remain not
+started and unauthorized.
 
 ## Locked architecture and ownership
 
@@ -392,6 +397,39 @@ format policy.
 
 **Human review:** Required for image quality, animation behavior, privacy, and
 performance limits.
+
+#### WU4 implementation decision record
+
+WU4 uses native GD only. GD is not a global installer prerequisite; image
+processing fails closed when GD is unavailable, and JPEG processing also fails
+closed when EXIF support is unavailable. The current bundled PHP runtime has
+`php_gd.dll` and supports JPEG, PNG, WebP, and GIF when enabled through a
+CLI-only override, while the authoritative `php.ini` leaves GD disabled.
+Imagick and third-party dependencies are not introduced.
+
+The module-local processing boundary uses typed requests, deterministic
+semantic keys, deterministic physical keys, a GD processor, and a separate
+generated-variant filesystem namespace. Editable JPEG, PNG, and WebP sources
+are decoded, normalized for EXIF orientation, cropped or aspect-cropped,
+rotated, resized, and re-encoded in that order. PNG/WebP alpha is preserved;
+JPEG output composites transparency on white. GIF, ICO, PDF, SVG, video, and
+audio are rejected from generic processing. Originals remain byte-identical.
+
+Responsive widths are limited to `320, 640, 960, 1280, 1920, 2560`, with at
+most six outputs per call and no upscaling. Generated output is bounded to
+4096 by 4096 pixels, 16,777,216 pixels, and 16 MiB per variant. Variant
+descriptors use the existing `media_variants` table, deterministic semantic
+keys, and a maximum of 24 semantic descriptors per Media. No schema or
+upgrade change was required. No public variant route or Media deletion
+orchestration was added; physical variant deletion during Media deletion
+remains a WU6 boundary.
+
+Focused WU4 validation passes 52 assertions with GD enabled only through the
+CLI override. Limitations remain: output bytes may vary across GD/libjpeg/
+libwebp runtime versions; real concurrent processing stress was not required;
+cleanup failure may leave unreachable generated files; GD or JPEG EXIF may be
+unavailable on a deployment; and no public variant delivery contract exists
+until WU6.
 
 ### WU5 — Admin Media workspace and management workflows
 
