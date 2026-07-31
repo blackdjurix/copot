@@ -90,11 +90,18 @@ try {
     $assert(!in_array('Media', array_column($app->adminDashboard()->itemsFor($app->auth()->user()), 'title'), true), 'Media dashboard registration was added unexpectedly.');
 
     $assert($statusOf($app->run(new Request('GET', $mediaPath))) === 200, 'Media Admin workspace did not render.');
+    $uploadPageHtml = $contentOf($app->run(new Request('GET', $uploadPath)));
+    $assert(str_contains($uploadPageHtml, 'admin-panel__body') && str_contains($uploadPageHtml, 'admin-form'), 'Media upload form did not use the established Admin panel spacing structure.');
     $temporaryFiles[] = $source = tempnam(sys_get_temp_dir(), 'copot-wu5-');
     file_put_contents($source, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', true));
     $upload = new Request('POST', $uploadPath, [], ['_token' => $csrf(), 'title' => 'A <hero> image'], ['media' => ['name' => 'unsafe/original.png', 'type' => 'image/png', 'tmp_name' => $source, 'error' => UPLOAD_ERR_OK, 'size' => filesize($source)]]);
     $uploadResponse = $app->run($upload);
     $assert($statusOf($uploadResponse) === 302 && str_contains($locationOf($uploadResponse), 'notice=uploaded'), 'Multipart upload did not use PRG.');
+    $temporaryFiles[] = $invalidPdf = tempnam(sys_get_temp_dir(), 'copot-wu5-pdf-');
+    file_put_contents($invalidPdf, "%PDF-1.4\nnot a complete PDF\n");
+    $invalidPdfResponse = $app->run(new Request('POST', $uploadPath, [], ['_token' => $csrf(), 'title' => 'Invalid PDF'], ['media' => ['name' => 'invalid.pdf', 'type' => 'application/pdf', 'tmp_name' => $invalidPdf, 'error' => UPLOAD_ERR_OK, 'size' => filesize($invalidPdf)]]));
+    $invalidPdfHtml = $contentOf($invalidPdfResponse);
+    $assert($statusOf($invalidPdfResponse) === 422 && str_contains($invalidPdfHtml, 'The uploaded PDF is invalid or incomplete.') && !str_contains($invalidPdfHtml, 'PDF structure') && !str_contains($invalidPdfHtml, $invalidPdf), 'Invalid PDF upload did not return a clear sanitized validation message.');
     $mediaId = (int) $connection->query('SELECT id FROM media ORDER BY id DESC LIMIT 1')->fetchColumn();
     $assert($mediaId > 0, 'Uploaded Media identity was not persisted.');
     $createdStorageKeys[] = (string) $connection->query('SELECT storage_key FROM media WHERE id = ' . $mediaId)->fetchColumn();
@@ -122,6 +129,7 @@ try {
     try { $mediaAdmin->preset($mediaId, 'arbitrary'); $assert(false, 'Arbitrary processing preset was accepted.'); } catch (MediaProcessingValidationException) { $assert(true, 'Arbitrary processing preset rejection passed.'); }
 
     $html = $contentOf($app->run(new Request('GET', $mediaPath, ['q' => 'original.png', 'kind' => 'image', 'capability' => 'editable'])));
+    $assert(str_contains($html, 'admin-media-filters') && str_contains($html, 'admin-media-table-panel') && str_contains($html, 'admin-panel__body'), 'Media workspace did not use the established Admin panel spacing structure.');
     $assert(str_contains($html, 'A &lt;hero&gt; image') && str_contains($html, '/media/' . $mediaId), 'Media output was not escaped or controlled.');
     $assert(!str_contains($html, 'storage/media') && !str_contains($html, 'storage_key') && !str_contains($html, '.tmp'), 'Media workspace leaked storage details.');
     $assert(str_contains($html, 'square') && str_contains($html, 'landscape') && str_contains($html, 'contain'), 'Fixed processing presets were not presented.');

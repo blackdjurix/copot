@@ -123,6 +123,12 @@ $app->router()->post($mediaUploadPath, function ($request) use ($mediaRequireAdm
     $csrf = $mediaValidateCsrf($request); if ($csrf) return $csrf;
     $title = trim((string) $request->post('title', '')); $file = $request->file('media');
     try { $mediaAdmin->upload($file ?? [], $title); return Response::redirect($mediaAdminPath . '?notice=uploaded'); }
+    catch (MediaUploadValidationException $exception) {
+        $error = str_contains($exception->getMessage(), 'PDF structure')
+            ? 'The uploaded PDF is invalid or incomplete.'
+            : 'The uploaded file could not be validated.';
+        return $mediaRenderAdmin('Upload Media', $mediaRenderView('upload', ['csrfToken' => $app->csrf()->token(), 'error' => $error, 'title' => $title]), $user, $request->path(), 422);
+    }
     catch (MediaUploadException) { return $mediaRenderAdmin('Upload Media', $mediaRenderView('upload', ['csrfToken' => $app->csrf()->token(), 'error' => 'The media could not be uploaded.', 'title' => $title]), $user, $request->path(), 422); }
 });
 $app->router()->post($app->adminUrl()->childUrl('media/{id}/title'), function ($request, array $params) use ($app, $mediaRequireAdmin, $mediaValidateCsrf, $mediaAdmin, $mediaRepository, $mediaId, $mediaAdminPath): Response {

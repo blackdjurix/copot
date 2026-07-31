@@ -1033,7 +1033,12 @@ dd {
     font-weight: 800;
 }
 
+.admin-media-filters {
+    padding: var(--admin-space-5) var(--admin-space-6);
+}
+
 .admin-media-table td {
+    padding: var(--admin-space-4);
     overflow-wrap: anywhere;
 }
 
@@ -1059,6 +1064,10 @@ dd {
 @media (max-width: 680px) {
     .admin-media-table-wrap {
         overflow-x: hidden;
+    }
+
+    .admin-content-filters.admin-media-filters {
+        padding: var(--admin-space-4);
     }
 
     .admin-media-table {
