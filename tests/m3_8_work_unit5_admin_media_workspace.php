@@ -124,6 +124,9 @@ try {
     $assert(str_contains($html, 'A &lt;hero&gt; image') && str_contains($html, '/media/' . $mediaId), 'Media output was not escaped or controlled.');
     $assert(!str_contains($html, 'storage/media') && !str_contains($html, 'storage_key') && !str_contains($html, '.tmp'), 'Media workspace leaked storage details.');
     $assert(str_contains($html, 'square') && str_contains($html, 'landscape') && str_contains($html, 'contain'), 'Fixed processing presets were not presented.');
+    $assert(str_contains($html, 'admin-media-table') && str_contains($html, 'data-label="Actions"'), 'Media workspace lacks the responsive table structure.');
+    $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
+    $assert(str_contains($adminCss, '.admin-media-table') && str_contains($adminCss, 'min-width: 0;'), 'Media responsive styles do not constrain the narrow table layout.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['title' => 'No CSRF']))) === 419, 'Title mutation did not reject missing CSRF.');
     $titleResponse = $app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['_token' => $csrf(), 'title' => 'Updated title']));
     $assert($statusOf($titleResponse) === 302 && str_contains($locationOf($titleResponse), 'notice=title-updated'), 'Title update did not use PRG.');
