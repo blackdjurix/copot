@@ -40,13 +40,14 @@ AI ACCEPTANCE PASS
 HUMAN VISUAL/BROWSER ACCEPTANCE PASS; NRP CONFIRMED; FINALLY CLOSED
 
 WU6:
-NEXT PREPARATION/AUDIT TARGET; IMPLEMENTATION NOT STARTED; UNAUTHORIZED
+IMPLEMENTATION FOR APPROVED CONTENT FEATURED-MEDIA PICKER, USAGE SYNCHRONIZATION,
+AND UNUSED-ONLY DELETION SAFETY; HUMAN ACCEPTANCE AND NRP REMAIN UNDECIDED
 
 WU7:
 NOT STARTED
 
 Implementation branch:
-`feature/m3.8-media-library` CONTINUES FOR WU6 PREPARATION/AUDIT
+`feature/m3.8-media-library` CONTINUES FOR WU6; WU7 REMAINS UNAUTHORIZED
 ```
 
 The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
@@ -54,9 +55,10 @@ predecessors and are durably delivered. WU4 implementation and focused
 validation are complete, durably delivered, and `NRP CONFIRMED`. WU5
 presentation refinement is implemented and focused-validated on the active
 feature branch. AI acceptance and human visual/browser acceptance are `PASS`;
-WU5 is finally closed and `NRP CONFIRMED`. WU6 is the next preparation/audit
-target on the same branch; its implementation is not started and remains
-unauthorized. WU7 remains not started and unauthorized. Full M3.8 is `NRP NOT
+WU5 is finally closed and `NRP CONFIRMED`. WU6 implementation is limited to the
+approved Content featured-Media picker, usage synchronization, and unused-only
+deletion safety on the same branch. Focused validation and human acceptance
+remain separate; WU7 remains not started and unauthorized. Full M3.8 is `NRP NOT
 REACHED`.
 
 ## Locked architecture and ownership
@@ -611,6 +613,7 @@ presentation refinement and focused validation are complete with AI acceptance
 `PASS`. Human visual/browser acceptance is `PASS` for bounded cards, grid
 presentation, card-to-preview interaction, preview overlay usability, and the
 Admin/public action boundary. WU5 is finally closed and `NRP CONFIRMED`. WU6
-is the next preparation/audit target; its implementation is not started and
-remains unauthorized. WU7 remains `NOT STARTED` and unauthorized. Full M3.8
+is implemented within the approved Content featured-Media, usage, and
+unused-only deletion boundary; focused validation and human acceptance remain
+separate. WU7 remains `NOT STARTED` and unauthorized. Full M3.8
 is `NRP NOT REACHED`; milestone closure is not implied.

@@ -50,6 +50,12 @@ class Content
         return $authorId === null ? null : (int) $authorId;
     }
 
+    public function featuredMediaId(): ?int
+    {
+        $id = $this->attributes['featured_media_id'] ?? null;
+        return $id === null ? null : (int) $id;
+    }
+
     public function publishedAt(): ?string
     {
         $publishedAt = $this->attributes['published_at'] ?? null;

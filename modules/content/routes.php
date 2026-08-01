@@ -8,6 +8,12 @@ require_once __DIR__ . '/Services/ContentRepository.php';
 require_once __DIR__ . '/Services/ContentService.php';
 require_once __DIR__ . '/Services/Slugger.php';
 
+$contentMediaServicesPath = dirname(__DIR__) . '/media/Services';
+foreach (['MediaId', 'Media', 'MediaUsage', 'MediaUsageRepository', 'MediaRepository', 'MediaContentReferenceService'] as $contentMediaService) {
+    $contentMediaServiceFile = $contentMediaServicesPath . '/' . $contentMediaService . '.php';
+    if (is_file($contentMediaServiceFile)) require_once $contentMediaServiceFile;
+}
+
 $taxonomyServicesPath = dirname(__DIR__) . '/taxonomy/Services';
 $contentTaxonomyAvailable = is_file($taxonomyServicesPath . '/TaxonomyType.php')
     && is_file($taxonomyServicesPath . '/TaxonomyTerm.php')
@@ -36,7 +42,10 @@ $contentRepository = new ContentRepository($app->database());
 $contentSlugger = new Slugger();
 $contentTaxonomyRepository = $contentTaxonomyEnabled ? new TaxonomyRepository($app->database()) : null;
 $contentTaxonomyAssignments = $contentTaxonomyEnabled ? new TaxonomyAssignmentRepository($app->database()) : null;
-$contentService = new ContentService($app->database(), $contentRepository, $contentTaxonomyAssignments);
+$contentMediaReferences = class_exists('MediaContentReferenceService') && class_exists('MediaRepository') && class_exists('MediaUsageRepository')
+    ? new MediaContentReferenceService($app->database(), new MediaRepository($app->database()), new MediaUsageRepository($app->database()))
+    : null;
+$contentService = new ContentService($app->database(), $contentRepository, $contentTaxonomyAssignments, $contentMediaReferences);
 $contentValidationMessage = static function (InvalidArgumentException $exception): string {
     return match (true) {
         $exception instanceof ContentDuplicateSlugException => 'The content slug is already in use.',
@@ -183,6 +192,7 @@ $contentToFormData = function (?Content $content = null): array {
             'excerpt' => '',
             'body' => '',
             'status' => 'draft',
+            'featured_media_id' => null,
             'updated_at' => null,
         ];
     }
@@ -195,11 +205,12 @@ $contentToFormData = function (?Content $content = null): array {
         'excerpt' => $content->excerpt() ?? '',
         'body' => $content->body(),
         'status' => $content->status(),
+        'featured_media_id' => $content->featuredMediaId(),
         'updated_at' => $content->updatedAt(),
     ];
 };
 
-$contentReadFormData = function ($request, $user, ?Content $existing = null) use ($contentSlugger, $contentValidationMessage): array {
+$contentReadFormData = function ($request, $user, ?Content $existing = null) use ($contentSlugger, $contentValidationMessage, $contentMediaReferences): array {
     $errors = [];
     $invalidPayload = false;
     $readScalar = static function (string $field, mixed $default = '') use ($request, &$invalidPayload): string {
@@ -236,11 +247,28 @@ $contentReadFormData = function ($request, $user, ?Content $existing = null) use
         'excerpt' => $readScalar('excerpt'),
         'body' => $readScalar('body'),
         'status' => $requestedStatus,
+        'featured_media_id' => null,
         'author_id' => $existing?->authorId() ?? $user->id(),
     ];
 
+    $featured = $request->input('featured_media_id');
+    if ($featured !== null && $featured !== '' && (!is_scalar($featured) || !preg_match('/^[1-9][0-9]*$/', (string) $featured))) {
+        $errors[] = 'Featured Media reference is invalid.';
+    } else {
+        $data['featured_media_id'] = $featured === null || $featured === '' ? null : (int) $featured;
+    }
+
     if ($invalidPayload) {
         $errors[] = 'Submitted content data is invalid.';
+    }
+
+    if ($data['featured_media_id'] !== null) {
+        if (!$user->can('media.use')) {
+            $errors[] = 'Featured Media selection is not authorized.';
+        } elseif ($contentMediaReferences) {
+            try { $contentMediaReferences->validate($data['featured_media_id']); }
+            catch (InvalidArgumentException) { $errors[] = 'Selected Media is unavailable for featured use.'; }
+        }
     }
 
     if ($data['title'] === '') {

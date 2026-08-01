@@ -28,6 +28,16 @@ final class MediaFilesystemStorage
         return is_file($path) && !is_link($path) && $this->inside($path, $this->root . DIRECTORY_SEPARATOR . 'originals') ? $path : null;
     }
     public function delete(string $storageKey): void { $path = $this->resolve($storageKey); if ($path && $this->deleteOperation) { ($this->deleteOperation)($path); return; } if ($path) @unlink($path); }
+    public function quarantine(string $storageKey, string $token): array
+    {
+        $path = $this->resolve($storageKey);
+        if (!$path) return ['purge' => static function (): void {}];
+        $root = $this->root . DIRECTORY_SEPARATOR . '.quarantine' . DIRECTORY_SEPARATOR . preg_replace('/[^a-z0-9-]/i', '', $token);
+        $this->mkdirSafe($root);
+        $destination = $root . DIRECTORY_SEPARATOR . basename($storageKey);
+        if (file_exists($destination) || !@rename($path, $destination)) throw new MediaStorageException('Media cleanup could not be staged.');
+        return ['purge' => static function () use ($destination): void { if (is_file($destination)) @unlink($destination); }, 'restore' => function () use ($path, $destination): void { if (is_file($destination)) @rename($destination, $path); }];
+    }
     private function ensureDirectories(): void { $this->mkdirSafe($this->root); $this->mkdirSafe($this->root . DIRECTORY_SEPARATOR . '.tmp'); $this->mkdirSafe($this->root . DIRECTORY_SEPARATOR . 'originals'); }
     private function mkdirSafe(string $path): void { if (is_link($path) || (!is_dir($path) && !@mkdir($path, 0755, true) && !is_dir($path)) || is_link($path)) throw new MediaStorageException('Media storage is unavailable.'); }
     private function inside(string $path, string $base): bool { $realBase = realpath($base); $realPath = realpath($path); return $realBase !== false && $realPath !== false && ($realPath === $realBase || str_starts_with($realPath, $realBase . DIRECTORY_SEPARATOR)); }

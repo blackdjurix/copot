@@ -97,6 +97,7 @@
         publicLink.href = card.dataset.mediaPublicUrl;
         const titleForm = actions.querySelector('[data-preview-title-form]');
         const processActions = actions.querySelector('[data-preview-process-actions]');
+        const deleteForm = actions.querySelector('[data-preview-delete-form]');
 
         if (titleForm) {
             titleForm.action = card.dataset.mediaTitleUrl;
@@ -111,6 +112,7 @@
                 form.action = card.dataset.mediaProcessUrl;
             });
         }
+        if (deleteForm) deleteForm.setAttribute('action', card.dataset.mediaDeleteUrl);
 
         const fragment = document.createDocumentFragment();
         fragment.append(actions);

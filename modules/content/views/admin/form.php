@@ -5,6 +5,7 @@ $fieldErrors = [
     'slug' => [],
     'excerpt' => [],
     'body' => [],
+    'featured_media' => [],
     'status' => [],
     'taxonomy' => [],
 ];
@@ -23,6 +24,8 @@ foreach (($errors ?? []) as $error) {
         $fieldErrors['status'][] = $error;
     } elseif (str_contains($error, 'Taxonomy')) {
         $fieldErrors['taxonomy'][] = $error;
+    } elseif (str_contains($error, 'Featured Media')) {
+        $fieldErrors['featured_media'][] = $error;
     } else {
         $formErrors[] = $error;
     }
@@ -135,6 +138,28 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
                 </fieldset>
 
                 <div class="admin-content-form-sidebar">
+                    <fieldset class="admin-content-form-section" data-media-picker data-picker-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker'), ENT_QUOTES, 'UTF-8') ?>" data-upload-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker/upload'), ENT_QUOTES, 'UTF-8') ?>" data-csrf-token="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                        <legend>Featured Media</legend>
+                        <input type="hidden" name="featured_media_id" value="<?= htmlspecialchars((string) ($content['featured_media_id'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-media-picker-input>
+                        <p class="admin-field__help" data-media-picker-status><?= !empty($content['featured_media_id']) ? 'A featured image is selected.' : 'Optional. Select an image for this content entry.' ?></p>
+                        <?php $renderFieldErrors('featured_media'); ?>
+                        <div class="admin-actions">
+                            <button class="admin-button admin-button--secondary" type="button" data-media-picker-open>Select Media</button>
+                            <button class="admin-button admin-button--link" type="button" data-media-picker-clear>Clear</button>
+                        </div>
+                        <label class="admin-field__label" for="featured-media-upload">Upload one image</label>
+                        <input id="featured-media-upload" type="file" accept="image/jpeg,image/png,image/webp" data-media-picker-upload>
+                        <button class="admin-button admin-button--secondary" type="button" data-media-picker-upload-button>Upload and select</button>
+                        <dialog class="admin-media-picker" data-media-picker-dialog aria-labelledby="media-picker-title">
+                            <div class="admin-media-picker__panel">
+                                <h3 id="media-picker-title">Select featured Media</h3>
+                                <label for="media-picker-search">Search title or original filename</label>
+                                <input id="media-picker-search" type="search" data-media-picker-search>
+                                <div class="admin-media-picker__results" data-media-picker-results aria-live="polite"></div>
+                                <div class="admin-actions"><button type="button" class="admin-button admin-button--secondary" data-media-picker-cancel>Cancel</button><button type="button" class="admin-button admin-button--primary" data-media-picker-confirm disabled>Use selected Media</button></div>
+                            </div>
+                        </dialog>
+                    </fieldset>
                     <fieldset class="admin-content-form-section">
                         <legend>Status</legend>
                         <?php if (($content['status'] ?? 'draft') === 'archived'): ?>
@@ -203,3 +228,4 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
         </div>
     </div>
 </section>
+<script src="/admin-assets/js/content-media-picker.js" defer></script>

@@ -154,7 +154,7 @@ try {
     $assert($statusOf($titleResponse) === 302 && str_contains($locationOf($titleResponse), 'notice=title-updated'), 'Title update did not use PRG.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('media/0/title'), [], ['_token' => $csrf(), 'title' => 'Invalid']))) === 404, 'Non-positive Media ID was accepted.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/process'), [], ['_token' => $csrf(), 'preset' => 'arbitrary']))) === 422, 'Arbitrary process request was not rejected.');
-    $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/delete'), [], ['_token' => $csrf()]))) === 404, 'Admin delete route was added unexpectedly.');
+    $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/delete'), [], ['_token' => $csrf()]))) === 403, 'Admin delete route did not enforce media.delete authorization.');
 
     $switch($readActor);
     $readHtml = $contentOf($app->run(new Request('GET', $mediaPath)));

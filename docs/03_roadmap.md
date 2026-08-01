@@ -880,7 +880,7 @@ review passed; feature containment and local/remote feature-branch cleanup
 passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
 settings. Release, tag, and publication remain not started. The next target is
-M3.8 WU6 preparation/audit, not implementation. Full M3.8 remains `NRP NOT REACHED`.
+M3.8 WU6 implementation and focused validation are complete; final human acceptance remains separate. Full M3.8 remains `NRP NOT REACHED`.
 Older M3.7 preparation
 checkpoint statements below are historical.
 
@@ -963,8 +963,9 @@ content-domain expansion is outside M3.7. ZIP installation, marketplace,
 uninstall, Media Library, page building, Custom CSS, and other excluded
 capabilities remain outside M3.7. Feature containment and branch cleanup
 passed. Full M3.7 is `NRP CONFIRMED`; release, tag, and publication have not
-started. M3.8 WU5 is `NRP CONFIRMED`; WU6 preparation/audit is the next target,
-not implementation, and full M3.8 remains `NRP NOT REACHED`.
+started. M3.8 WU5 is `NRP CONFIRMED`; WU6 implementation and focused validation
+are complete, final human acceptance remains separate, and full M3.8 remains
+`NRP NOT REACHED`.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1026,6 +1027,11 @@ Media Library is module-owned and provides general media management and selectio
 
 ### M3.8 Media Library preparation status
 
+WU6 implementation is limited to the approved Content featured-Media picker,
+usage synchronization, and unused-only Media deletion safety. Focused
+validation and human acceptance remain separate gates; WU7 is not started and
+full M3.8 remains `NRP NOT REACHED`.
+
 M3.8 initial clarification and preparation audit are `COMPLETE`. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
 delivered on `feature/m3.8-media-library`; WU4 is `NRP CONFIRMED`. WU5
@@ -1037,9 +1043,10 @@ overlay usability, and the Admin/public action boundary. WU5 is finally closed
 and `NRP CONFIRMED`. Manual upload accepts one file per submission;
 drag-and-drop and multiple-file/batch upload remain unsupported future Media
 enhancements and are not WU5 blockers; video remains outside the current M3.8
-contract. WU6 is the next preparation/audit target on this branch; its
-implementation is not started and remains unauthorized. Full M3.8 is `NRP NOT
-REACHED`. No merge, release, tag, publication, rebase, or branch deletion has
+contract. WU6 implementation covers the approved Content featured-Media picker, usage
+synchronization, and unused-only Media deletion safety; focused validation and
+human acceptance remain separate gates. WU7 is not started and unauthorized.
+Full M3.8 is `NRP NOT REACHED`. No merge, release, tag, publication, rebase, or branch deletion has
 started or been authorized. The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.

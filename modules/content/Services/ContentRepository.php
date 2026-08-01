@@ -128,6 +128,7 @@ class ContentRepository
                 author_id,
                 published_at,
                 archived_at,
+                featured_media_id,
                 created_at,
                 updated_at
             ) VALUES (
@@ -140,6 +141,7 @@ class ContentRepository
                 :author_id,
                 :published_at,
                 NULL,
+                :featured_media_id,
                 NOW(),
                 NOW()
             )'
@@ -154,6 +156,7 @@ class ContentRepository
             'status' => $data['status'],
             'author_id' => $data['author_id'],
             'published_at' => $data['status'] === 'published' ? $this->now() : null,
+            'featured_media_id' => $data['featured_media_id'],
         ]);
 
         return (int) $this->database->connection()->lastInsertId();
@@ -171,6 +174,7 @@ class ContentRepository
                 excerpt = :excerpt,
                 body = :body,
                 status = :status,
+                featured_media_id = :featured_media_id,
                 author_id = :author_id,
                 published_at = CASE
                     WHEN :status_for_publish = \'published\' AND published_at IS NULL THEN NOW()
@@ -195,6 +199,7 @@ class ContentRepository
             'excerpt' => $data['excerpt'],
             'body' => $data['body'],
             'status' => $data['status'],
+            'featured_media_id' => $data['featured_media_id'],
             'status_for_publish' => $data['status'],
             'status_for_clear' => $data['status'],
             'status_for_archive' => $data['status'],
@@ -242,6 +247,15 @@ class ContentRepository
         }
     }
 
+    public function delete(int $id): void
+    {
+        $statement = $this->database->connection()->prepare('DELETE FROM content WHERE id = :id');
+        $statement->execute(['id' => $id]);
+        if ($statement->rowCount() !== 1) {
+            throw new InvalidArgumentException('Content entry was not found.');
+        }
+    }
+
     public function slugExists(string $slug, ?int $ignoreId = null): bool
     {
         $sql = 'SELECT 1 FROM content WHERE slug = :slug';
@@ -285,6 +299,15 @@ class ContentRepository
         $data['excerpt'] = isset($data['excerpt']) && is_string($data['excerpt']) && trim($data['excerpt']) !== ''
             ? trim($data['excerpt'])
             : null;
+
+        $featured = $data['featured_media_id'] ?? null;
+        if ($featured === '' || $featured === null) {
+            $data['featured_media_id'] = null;
+        } elseif (is_int($featured) || (is_string($featured) && preg_match('/^[1-9][0-9]*$/', $featured))) {
+            $data['featured_media_id'] = (int) $featured;
+        } else {
+            throw new InvalidArgumentException('Featured Media reference is invalid.');
+        }
 
         if (!array_key_exists('author_id', $data) || $data['author_id'] === null || $data['author_id'] === '') {
             if ($requireAuthor) {

@@ -262,11 +262,13 @@ CREATE TABLE content (
     author_id BIGINT UNSIGNED NULL,
     published_at DATETIME NULL,
     archived_at DATETIME NULL,
+    featured_media_id BIGINT UNSIGNED NULL,
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL,
     UNIQUE KEY uq_content_slug (slug),
     INDEX idx_content_status_published (status, published_at),
     INDEX idx_content_type_status (type, status),
+    INDEX idx_content_featured_media (featured_media_id),
     CONSTRAINT fk_content_author
         FOREIGN KEY (author_id) REFERENCES users(id)
         ON DELETE SET NULL

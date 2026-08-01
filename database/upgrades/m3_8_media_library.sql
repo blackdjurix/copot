@@ -14,6 +14,10 @@ CREATE TABLE IF NOT EXISTS media (
     INDEX idx_media_kind_updated (kind, updated_at, id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+ALTER TABLE content
+    ADD COLUMN IF NOT EXISTS featured_media_id BIGINT UNSIGNED NULL,
+    ADD INDEX IF NOT EXISTS idx_content_featured_media (featured_media_id);
+
 CREATE TABLE IF NOT EXISTS media_variants (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     media_id BIGINT UNSIGNED NOT NULL,

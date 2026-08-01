@@ -27,4 +27,14 @@ final class MediaUsageRepository
         $statement = $this->database->connection()->prepare('DELETE FROM media_usages WHERE media_id = :media_id AND consumer_type = :consumer_type AND consumer_id = :consumer_id AND usage_key = :usage_key');
         $statement->execute(['media_id' => $mediaId->value(), 'consumer_type' => trim($consumerType), 'consumer_id' => $consumerId, 'usage_key' => trim($usageKey)]);
     }
+
+    public function forConsumer(string $consumerType, int $consumerId, string $usageKey = ''): array
+    {
+        $sql = 'SELECT * FROM media_usages WHERE consumer_type = :consumer_type AND consumer_id = :consumer_id';
+        $params = ['consumer_type' => trim($consumerType), 'consumer_id' => $consumerId];
+        if ($usageKey !== '') { $sql .= ' AND usage_key = :usage_key'; $params['usage_key'] = trim($usageKey); }
+        $statement = $this->database->connection()->prepare($sql);
+        $statement->execute($params);
+        return array_map(fn (array $row): MediaUsage => new MediaUsage(new MediaId((int) $row['media_id']), (string) $row['consumer_type'], (int) $row['consumer_id'], (string) $row['usage_key'], (string) $row['created_at']), $statement->fetchAll());
+    }
 }

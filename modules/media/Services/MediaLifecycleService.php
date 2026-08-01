@@ -6,7 +6,7 @@ final class MediaLifecycleService
 {
     private static int $savepointCounter = 0;
 
-    public function __construct(private Database $database, private MediaRepository $media, private MediaVariantRepository $variants, private MediaUsageRepository $usages) {}
+    public function __construct(private Database $database, private MediaRepository $media, private MediaVariantRepository $variants, private MediaUsageRepository $usages, private ?MediaFilesystemStorage $originalStorage = null, private ?MediaVariantFilesystemStorage $variantStorage = null, private $diagnostics = null) {}
 
     public function create(array $data): MediaId
     {
@@ -54,12 +54,34 @@ final class MediaLifecycleService
 
     public function delete(MediaId|int $id): void
     {
-        $this->atomic(function () use ($id): void {
+        $connection = $this->database->connection();
+        $owns = !$connection->inTransaction();
+        if ($owns) $connection->beginTransaction();
+        $quarantine = [];
+        try {
             $media = $this->media->findById($id, true);
             if (!$media) throw new MediaNotFoundException('Media was not found.');
             if ($this->usages->forMedia($media->id(), true) !== []) throw new MediaInUseException('Referenced Media cannot be deleted.');
+            if ($this->originalStorage) {
+                $quarantine[] = $this->originalStorage->quarantine($media->storageKey(), 'media-' . $media->id()->value());
+            }
+            if ($this->variantStorage) {
+                foreach ($this->variants->forMedia($media->id()) as $variant) {
+                    $quarantine[] = $this->variantStorage->quarantine($variant->storageKey(), 'media-' . $media->id()->value());
+                }
+            }
             $this->media->delete($media->id());
-        });
+            if ($owns) $connection->commit();
+            foreach ($quarantine as $entry) {
+                try { $entry['purge'](); } catch (Throwable) {
+                    if (is_object($this->diagnostics) && method_exists($this->diagnostics, 'warning')) $this->diagnostics->warning('media.quarantine_cleanup_failed', 'Media cleanup requires recovery.', ['component' => 'media']);
+                }
+            }
+        } catch (Throwable $exception) {
+            if ($owns && $connection->inTransaction()) $connection->rollBack();
+            foreach (array_reverse($quarantine) as $entry) { try { $entry['restore'](); } catch (Throwable) {} }
+            throw $exception;
+        }
     }
 
     private function atomic(callable $operation): mixed

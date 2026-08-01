@@ -19,7 +19,8 @@ class ContentService
     public function __construct(
         private Database $database,
         private ContentRepository $repository,
-        private ?TaxonomyAssignmentRepository $taxonomyAssignments = null
+        private ?TaxonomyAssignmentRepository $taxonomyAssignments = null,
+        private ?MediaContentReferenceService $mediaReferences = null
     ) {
     }
 
@@ -27,6 +28,7 @@ class ContentService
     {
         return $this->withinTransaction(function () use ($data, $taxonomy): int {
             $contentId = $this->repository->create($data);
+            $this->mediaReferences?->sync($contentId, null, $data['featured_media_id'] ?? null);
             $this->syncTaxonomy($contentId, $taxonomy);
 
             return $contentId;
@@ -56,6 +58,7 @@ class ContentService
 
             $this->assertTransition($current->status(), $data['status'] ?? null, true);
             $this->repository->update($id, $data, $expectedUpdatedAt);
+            $this->mediaReferences?->sync($id, $current->featuredMediaId(), $data['featured_media_id'] ?? null);
             $this->syncTaxonomy($id, $taxonomy);
         });
     }
@@ -78,6 +81,18 @@ class ContentService
     public function restore(int $id): void
     {
         $this->transition($id, 'draft', ['archived']);
+    }
+
+    public function delete(int $id): void
+    {
+        $this->withinTransaction(function () use ($id): void {
+            $current = $this->repository->findById($id);
+            if (!$current) {
+                throw new InvalidArgumentException('Content entry was not found.');
+            }
+            $this->mediaReferences?->sync($id, $current->featuredMediaId(), null);
+            $this->repository->delete($id);
+        });
     }
 
     private function transition(int $id, string $target, array $expectedFrom): void

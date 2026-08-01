@@ -9,6 +9,7 @@ require_once __DIR__ . '/Services/MediaVariant.php';
 require_once __DIR__ . '/Services/MediaUsage.php';
 require_once __DIR__ . '/Services/MediaVariantRepository.php';
 require_once __DIR__ . '/Services/MediaUsageRepository.php';
+require_once __DIR__ . '/Services/MediaContentReferenceService.php';
 require_once __DIR__ . '/Services/MediaRepository.php';
 require_once __DIR__ . '/Services/MediaLifecycleService.php';
 require_once __DIR__ . '/Services/MediaUploadSource.php';
@@ -31,10 +32,11 @@ require_once __DIR__ . '/Services/MediaAdmin.php';
 $mediaRepository = new MediaRepository($app->database());
 $mediaVariants = new MediaVariantRepository($app->database());
 $mediaUsages = new MediaUsageRepository($app->database());
-$mediaLifecycle = new MediaLifecycleService($app->database(), $mediaRepository, $mediaVariants, $mediaUsages);
 $mediaInspector = new MediaFileInspector();
 $mediaOriginalStorage = new MediaFilesystemStorage($app->path('storage/media'));
 $mediaVariantStorage = new MediaVariantFilesystemStorage($app->path('storage/media'));
+$mediaDiagnostics = method_exists($app, 'diagnostics') ? $app->diagnostics() : null;
+$mediaLifecycle = new MediaLifecycleService($app->database(), $mediaRepository, $mediaVariants, $mediaUsages, $mediaOriginalStorage, $mediaVariantStorage, $mediaDiagnostics);
 $mediaDelivery = new MediaDeliveryService($mediaRepository, $mediaInspector, $mediaOriginalStorage);
 $mediaId = static function (string $value): ?int { return preg_match('/^[1-9][0-9]*$/', $value) ? (int) $value : null; };
 $notFound = static fn (): \Copot\Core\Response => \Copot\Core\Response::content('404 Not Found', 404, ['Content-Type' => 'text/plain; charset=UTF-8', 'Cache-Control' => 'no-store', 'X-Content-Type-Options' => 'nosniff']);
@@ -45,7 +47,6 @@ if (!method_exists($app, 'adminUrl') || !method_exists($app, 'adminNavigation'))
     return;
 }
 
-$mediaDiagnostics = method_exists($app, 'diagnostics') ? $app->diagnostics() : null;
 $mediaUpload = new MediaUploadService($app->database(), $mediaLifecycle, $mediaInspector, $mediaOriginalStorage, $mediaDiagnostics);
 $mediaProcessing = new MediaProcessingService($app->database(), $mediaRepository, $mediaVariants, $mediaInspector, new MediaGdImageProcessor(), $mediaOriginalStorage, $mediaVariantStorage, $mediaDiagnostics);
 $mediaAdmin = new MediaAdmin($mediaRepository, $mediaUpload, $mediaLifecycle, $mediaProcessing);
@@ -54,7 +55,9 @@ $mediaAdminUrl = $app->adminUrl();
 $mediaAdminBase = $mediaAdminUrl->baseUrl();
 $mediaAdminPath = $mediaAdminUrl->childUrl('media');
 $mediaUploadPath = $mediaAdminUrl->childUrl('media/upload');
+$mediaPickerPath = $mediaAdminUrl->childUrl('media/context-picker');
 $app->adminNavigation()->add('Media', $mediaAdminPath, 'media.view', 'image', 25);
+
 
 $mediaRenderView = static function (string $view, array $data = []) use ($app, $mediaAdminUrl): string {
     $file = __DIR__ . '/views/admin/' . $view . '.php';
@@ -83,6 +86,43 @@ $mediaValidateCsrf = static function ($request) use ($app): ?Response {
         ? $app->adminErrors()->response($request, 419)
         : null;
 };
+$app->router()->get($mediaPickerPath, function ($request) use ($mediaRequireAdmin, $mediaRepository): Response {
+    $user = $mediaRequireAdmin($request, ['media.use']);
+    if ($user instanceof Response) return $user;
+    if ((string) $request->input('consumer', '') !== 'content') return Response::content(json_encode(['error' => 'Unavailable picker context.']), 422, ['Content-Type' => 'application/json; charset=UTF-8']);
+    $workspace = $mediaRepository->workspace(['search' => trim((string) $request->input('q', '')), 'capability' => 'editable'], 24, max(0, ((int) $request->input('page', 1) - 1) * 24));
+    $items = array_map(static fn (Media $media): array => ['id' => $media->id()->value(), 'title' => $media->title(), 'original_filename' => $media->originalFilename(), 'mime_type' => $media->mimeType(), 'url' => '/media/' . $media->id()->value()], $workspace['items']);
+    $currentId = (string) $request->input('current', '');
+    $current = preg_match('/^[1-9][0-9]*$/', $currentId) ? $mediaRepository->findById((int) $currentId) : null;
+    $currentAllowed = $current && in_array($current->mimeType(), ['image/jpeg', 'image/png', 'image/webp'], true);
+    return Response::content(json_encode(['items' => $items, 'total' => $workspace['total'], 'page' => max(1, (int) $request->input('page', 1)), 'per_page' => 24, 'current' => $currentAllowed ? ['id' => $current->id()->value(), 'title' => $current->title()] : null, 'stale' => $currentId !== '' && !$currentAllowed], JSON_THROW_ON_ERROR), 200, ['Content-Type' => 'application/json; charset=UTF-8', 'Cache-Control' => 'no-store']);
+});
+$app->router()->post($app->adminUrl()->childUrl('media/{id}/delete'), function ($request, array $params) use ($app, $mediaRequireAdmin, $mediaValidateCsrf, $mediaLifecycle, $mediaRepository, $mediaUsages, $mediaId, $mediaAdminPath): Response {
+    $user = $mediaRequireAdmin($request, ['media.delete']); if ($user instanceof Response) return $user;
+    $csrf = $mediaValidateCsrf($request); if ($csrf) return $csrf;
+    $id = $mediaId((string) ($params['id'] ?? '')); if ($id === null || !$mediaRepository->findById($id)) return Response::content('404 Not Found', 404);
+    try { $mediaLifecycle->delete($id); return Response::redirect($mediaAdminPath . '?notice=deleted'); }
+    catch (MediaInUseException) {
+        $details = array_map(static function (MediaUsage $usage): string { return $usage->consumerType() === 'content' && $usage->usageKey() === 'featured_media' ? 'Content #' . $usage->consumerId() . ' — Featured media' : 'Media is used by another managed record.'; }, array_slice($mediaUsages->forMedia($id), 0, 8));
+        $message = 'Media cannot be deleted while it is in use.' . ($details !== [] ? ' ' . $details[0] : '');
+        return Response::redirect($mediaAdminPath . '?error=' . rawurlencode($message), 303);
+    } catch (Throwable) { return $app->adminErrors()->response($request, 503); }
+});
+$app->router()->post($mediaPickerPath . '/upload', function ($request) use ($app, $mediaRequireAdmin, $mediaValidateCsrf, $mediaUpload): Response {
+    $user = $mediaRequireAdmin($request, ['media.use']);
+    if ($user instanceof Response) return $user;
+    if (!$user->can('media.upload')) return $app->adminErrors()->response($request, 403);
+    $csrf = $mediaValidateCsrf($request); if ($csrf) return $csrf;
+    try {
+        $file = $request->file('media');
+        if (!$file) throw new MediaUploadValidationException('invalid');
+        $facts = (new MediaFileInspector())->inspect((string) $file['tmp_name']);
+        if (!in_array($facts->mimeType(), ['image/jpeg', 'image/png', 'image/webp'], true)) throw new MediaUploadValidationException('invalid');
+        $id = $mediaUpload->upload(MediaUploadSource::fromArray($file), (string) $request->post('title', ''));
+        return Response::content(json_encode(['id' => $id->value()], JSON_THROW_ON_ERROR), 201, ['Content-Type' => 'application/json; charset=UTF-8']);
+    } catch (MediaUploadValidationException) { return Response::content(json_encode(['error' => 'The uploaded file could not be validated.']), 422, ['Content-Type' => 'application/json; charset=UTF-8']); }
+      catch (Throwable) { return Response::content(json_encode(['error' => 'The media could not be uploaded.']), 503, ['Content-Type' => 'application/json; charset=UTF-8']); }
+});
 $mediaNormalizeWorkspace = static function ($request): array {
     $kind = $request->input('kind');
     $capability = $request->input('capability');
@@ -102,7 +142,7 @@ $mediaRenderList = static function ($request, $user, array $filters, array $work
         'mediaItems' => $workspace['items'], 'total' => $workspace['total'], 'page' => $filters['page'], 'lastPage' => $lastPage,
         'paginationUrl' => $paginationUrl, 'query' => $query, 'search' => $filters['search'], 'selectedKind' => $filters['kind'],
         'selectedCapability' => $filters['capability'], 'hasFilters' => $filters['search'] !== '' || $filters['kind'] !== null || $filters['capability'] !== null,
-        'canEdit' => $user->can('media.edit'), 'canUpload' => $user->can('media.upload'), 'csrfToken' => $app->csrf()->token(), 'notice' => $request->input('notice'), 'error' => $error,
+        'canEdit' => $user->can('media.edit'), 'canDelete' => $user->can('media.delete'), 'canUpload' => $user->can('media.upload'), 'csrfToken' => $app->csrf()->token(), 'notice' => $request->input('notice'), 'error' => $error,
         'isEditable' => static fn (Media $item): bool => $mediaAdmin->isEditable($item),
     ]);
     return $mediaRenderAdmin('Media', $content, $user, $request->path());
@@ -112,7 +152,7 @@ $app->router()->get($mediaAdminPath, function ($request) use ($mediaRequireAdmin
     $user = $mediaRequireAdmin($request, ['media.view']); if ($user instanceof Response) return $user;
     $filters = $mediaNormalizeWorkspace($request); $workspace = $mediaAdmin->workspace($filters, $filters['page']); $lastPage = $mediaPage($workspace);
     if ($workspace['total'] > 0 && $filters['page'] > $lastPage) { $filters['page'] = $lastPage; $workspace = $mediaAdmin->workspace($filters, $filters['page']); }
-    return $mediaRenderList($request, $user, $filters, $workspace);
+    return $mediaRenderList($request, $user, $filters, $workspace, (string) $request->input('error', ''));
 });
 $app->router()->get($mediaUploadPath, function ($request) use ($mediaRequireAdmin, $mediaRenderView, $mediaRenderAdmin, $app): Response {
     $user = $mediaRequireAdmin($request, ['media.upload']); if ($user instanceof Response) return $user;
