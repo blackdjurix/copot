@@ -1028,9 +1028,13 @@ M3.8 initial clarification and preparation audit are `COMPLETE`. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
 delivered on `feature/m3.8-media-library`; WU4 is `NRP CONFIRMED`. WU5
 presentation refinement implements the accepted visual grid/card management
-direction and centralized filename title fallback; focused validation is
-complete, while final human visual review remains pending. WU5 remains an
-`NRP CANDIDATE`. WU6 picker direction is documentation-only and its
+direction and centralized filename title fallback; focused validation and
+human visual/browser review are complete. Human acceptance is `PASS` for
+bounded cards, grid presentation, card-to-preview interaction, preview
+overlay usability, and the Admin/public action boundary. WU5 remains an
+`NRP CANDIDATE` pending a separate final NRP decision. Manual upload accepts
+one file per submission; drag-and-drop and multiple-file/batch upload remain
+future Media enhancements and are not WU5 blockers. WU6 picker direction is documentation-only and its
 implementation remains unauthorized. No merge, release, tag, or
 publication has started. The
 authoritative preparation contract is

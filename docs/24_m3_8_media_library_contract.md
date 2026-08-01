@@ -37,7 +37,7 @@ NRP CONFIRMED
 WU5:
 PRESENTATION REFINEMENT IMPLEMENTED; FOCUSED VALIDATION COMPLETE
 AI ACCEPTANCE EVIDENCE RECORDED
-HUMAN VISUAL/BROWSER REVIEW PENDING; NRP CANDIDATE
+HUMAN VISUAL/BROWSER REVIEW PASS; NRP CANDIDATE PENDING FINAL NRP DECISION
 
 WU6–WU7:
 NOT STARTED
@@ -50,9 +50,10 @@ The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
 predecessors and are durably delivered. WU4 implementation and focused
 validation are complete, durably delivered, and `NRP CONFIRMED`. WU5
 presentation refinement is implemented and focused-validated on the active
-feature branch. Human visual/browser review remains pending, so WU5 remains an
-`NRP CANDIDATE` and is not finally closed. WU6 picker direction is documented
-only; WU6–WU7 remain not started and unauthorized.
+feature branch. Human visual/browser review is `PASS`; WU5 remains an
+`NRP CANDIDATE` pending a separate final NRP decision and is not finally
+closed. WU6 picker direction is documented only; WU6–WU7 remain not started
+and unauthorized.
 
 ## Locked architecture and ownership
 
@@ -496,6 +497,10 @@ trimming. An unusable explicit title and filename are rejected, and persisted
 Media titles are always non-empty. This boundary is shared by Admin upload and
 future picker upload.
 
+The current manual upload workflow accepts one file per submission. It does not
+provide drag-and-drop upload or multiple-file selection/batch upload. These are
+future Media upload enhancements, not WU5 defects or acceptance blockers.
+
 The accepted WU6 direction is documentation-only at this stage: a consumer-
 triggered modal or floating picker with a visual grid, consumer-specific type
 support, inline upload and selection, a detail/selection surface, and an
@@ -507,7 +512,10 @@ Focused AI acceptance evidence is recorded in
 preview structure, keyboard/inert interaction hooks, title fallback,
 explicit-title preservation, unusable fallback rejection, and existing
 security boundaries.
-Human visual/browser review remains pending and WU5 is not finally closed.
+Human visual/browser review is `PASS` for bounded cards, grid presentation,
+card-to-preview interaction, preview overlay usability, and the Admin/public
+action boundary. WU5 is not finally closed because final NRP remains a separate
+decision. No additional human-required criterion remains for WU5.
 
 ### WU6 — Media picker, consumer contracts, usage, and deletion safety
 
@@ -596,6 +604,8 @@ CANDIDATE until its post-Git documentation review is complete. WU3
 implementation and focused validation are complete. WU3 remains NRP CANDIDATE
 until its post-Git lifecycle review is complete. WU4 is `NRP CONFIRMED`. WU5
 presentation refinement and focused validation are complete with AI acceptance
-evidence recorded, but human visual/browser review remains pending; WU5 remains
-an `NRP CANDIDATE` and is not finally closed. WU6–WU7 remain `NOT STARTED` and
-unauthorized; milestone closure is not implied.
+evidence recorded. Human visual/browser review is `PASS` for bounded cards,
+grid presentation, card-to-preview interaction, preview overlay usability, and
+the Admin/public action boundary. WU5 remains an `NRP CANDIDATE` pending a
+separate final NRP decision and is not finally closed. WU6–WU7 remain `NOT
+STARTED` and unauthorized; milestone closure is not implied.

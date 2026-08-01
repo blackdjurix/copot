@@ -18,8 +18,12 @@ are accepted predecessors, implemented, focused-validated, and durably
 delivered on `feature/m3.8-media-library`; WU4 is `NRP CONFIRMED`. WU5
 presentation refinement now implements the accepted visual grid/card
 management direction and centralized filename title fallback; focused
-validation is passing, while final human visual review remains pending. WU5
-remains an `NRP CANDIDATE`. WU6 picker direction is documented only and its
+validation and human visual/browser review are complete. Human acceptance is
+`PASS` for bounded cards, grid presentation, card-to-preview interaction,
+preview overlay usability, and the Admin/public action boundary. WU5 remains
+an `NRP CANDIDATE` pending a separate final NRP decision. Manual upload accepts
+one file per submission; drag-and-drop and multiple-file/batch upload remain
+future Media enhancements and are not WU5 blockers. WU6 picker direction is documented only and its
 implementation remains unauthorized. The contract is
 `docs/24_m3_8_media_library_contract.md`.
 
@@ -50,7 +54,7 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 Current M3.6 state: WU1–WU6 are complete and integrated into `main` at
 `8deb4f67d47f476e254b36e3802bd250e393921d` by fast-forward, with no merge
 commit. WU1–WU6 are `NRP CONFIRMED`; the feature branch lifecycle is closed,
-and full M3.6 is `NRP CONFIRMED`. M3.7 WU1–WU6 are complete, objectively accepted, and integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and branch cleanup passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check is deferred and non-blocking because the bundled Default Theme declares no settings. M3.8 WU5 presentation refinement is the active implementation follow-up; its grid/card direction and filename title fallback are implemented and pending final human visual review.
+and full M3.6 is `NRP CONFIRMED`. M3.7 WU1–WU6 are complete, objectively accepted, and integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and branch cleanup passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check is deferred and non-blocking because the bundled Default Theme declares no settings. M3.8 WU5 presentation refinement is implemented and focused-validated; human visual/browser review is `PASS` for bounded cards, grid presentation, card-to-preview interaction, preview overlay usability, and the Admin/public action boundary. WU5 remains an `NRP CANDIDATE` pending a separate final NRP decision. Manual upload accepts one file per submission; drag-and-drop and multiple-file/batch upload remain future Media enhancements and are not WU5 blockers.
 
 M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; its local and remote feature branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
 
