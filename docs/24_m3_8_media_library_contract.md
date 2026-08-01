@@ -36,24 +36,28 @@ NRP CONFIRMED
 
 WU5:
 PRESENTATION REFINEMENT IMPLEMENTED; FOCUSED VALIDATION COMPLETE
-AI ACCEPTANCE EVIDENCE RECORDED
-HUMAN VISUAL/BROWSER REVIEW PASS; NRP CANDIDATE PENDING FINAL NRP DECISION
+AI ACCEPTANCE PASS
+HUMAN VISUAL/BROWSER ACCEPTANCE PASS; NRP CONFIRMED; FINALLY CLOSED
 
-WU6–WU7:
+WU6:
+NEXT PREPARATION/AUDIT TARGET; IMPLEMENTATION NOT STARTED; UNAUTHORIZED
+
+WU7:
 NOT STARTED
 
 Implementation branch:
-WU5 DELIVERY GATE
+`feature/m3.8-media-library` CONTINUES FOR WU6 PREPARATION/AUDIT
 ```
 
 The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
 predecessors and are durably delivered. WU4 implementation and focused
 validation are complete, durably delivered, and `NRP CONFIRMED`. WU5
 presentation refinement is implemented and focused-validated on the active
-feature branch. Human visual/browser review is `PASS`; WU5 remains an
-`NRP CANDIDATE` pending a separate final NRP decision and is not finally
-closed. WU6 picker direction is documented only; WU6–WU7 remain not started
-and unauthorized.
+feature branch. AI acceptance and human visual/browser acceptance are `PASS`;
+WU5 is finally closed and `NRP CONFIRMED`. WU6 is the next preparation/audit
+target on the same branch; its implementation is not started and remains
+unauthorized. WU7 remains not started and unauthorized. Full M3.8 is `NRP NOT
+REACHED`.
 
 ## Locked architecture and ownership
 
@@ -507,15 +511,15 @@ support, inline upload and selection, a detail/selection surface, and an
 optional link to `/admin/media`. No WU6 picker or functional `Use from Media
 Library` action is implemented in WU5.
 
-Focused AI acceptance evidence is recorded in
+Focused AI acceptance is `PASS`, and the evidence is recorded in
 `tests/m3_8_work_unit5_admin_media_workspace.php`, including bounded grid and
 preview structure, keyboard/inert interaction hooks, title fallback,
 explicit-title preservation, unusable fallback rejection, and existing
 security boundaries.
-Human visual/browser review is `PASS` for bounded cards, grid presentation,
+Human visual/browser acceptance is `PASS` for bounded cards, grid presentation,
 card-to-preview interaction, preview overlay usability, and the Admin/public
-action boundary. WU5 is not finally closed because final NRP remains a separate
-decision. No additional human-required criterion remains for WU5.
+action boundary. WU5 is finally closed and `NRP CONFIRMED`. No additional
+human-required criterion remains for WU5.
 
 ### WU6 — Media picker, consumer contracts, usage, and deletion safety
 
@@ -604,8 +608,9 @@ CANDIDATE until its post-Git documentation review is complete. WU3
 implementation and focused validation are complete. WU3 remains NRP CANDIDATE
 until its post-Git lifecycle review is complete. WU4 is `NRP CONFIRMED`. WU5
 presentation refinement and focused validation are complete with AI acceptance
-evidence recorded. Human visual/browser review is `PASS` for bounded cards,
-grid presentation, card-to-preview interaction, preview overlay usability, and
-the Admin/public action boundary. WU5 remains an `NRP CANDIDATE` pending a
-separate final NRP decision and is not finally closed. WU6–WU7 remain `NOT
-STARTED` and unauthorized; milestone closure is not implied.
+`PASS`. Human visual/browser acceptance is `PASS` for bounded cards, grid
+presentation, card-to-preview interaction, preview overlay usability, and the
+Admin/public action boundary. WU5 is finally closed and `NRP CONFIRMED`. WU6
+is the next preparation/audit target; its implementation is not started and
+remains unauthorized. WU7 remains `NOT STARTED` and unauthorized. Full M3.8
+is `NRP NOT REACHED`; milestone closure is not implied.

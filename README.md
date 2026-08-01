@@ -8,23 +8,24 @@ commit. Post-merge documentation closure commit `8dea71c82a4076c8b9d399047031e0a
 review passed; feature containment and local/remote feature-branch cleanup
 passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
-settings. Release, tag, and publication remain not started. M3.8 WU5
-presentation refinement is the active implementation follow-up; final human
-visual review remains pending. Older M3.7 preparation checkpoint statements
+settings. Release, tag, and publication remain not started. M3.8 WU5 is
+`NRP CONFIRMED`; WU6 preparation/audit is the next documentation-only target,
+while full M3.8 remains `NRP NOT REACHED`. Older M3.7 preparation checkpoint statements
 below are historical.
 
 M3.8 initial clarification and preparation audit are `COMPLETE`. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
 delivered on `feature/m3.8-media-library`; WU4 is `NRP CONFIRMED`. WU5
-presentation refinement now implements the accepted visual grid/card
-management direction and centralized filename title fallback; focused
-validation and human visual/browser review are complete. Human acceptance is
-`PASS` for bounded cards, grid presentation, card-to-preview interaction,
-preview overlay usability, and the Admin/public action boundary. WU5 remains
-an `NRP CANDIDATE` pending a separate final NRP decision. Manual upload accepts
-one file per submission; drag-and-drop and multiple-file/batch upload remain
-future Media enhancements and are not WU5 blockers. WU6 picker direction is documented only and its
-implementation remains unauthorized. The contract is
+presentation refinement implements the accepted visual grid/card management
+direction and centralized filename title fallback; focused validation and AI
+acceptance are `PASS`, and human visual/browser acceptance is `PASS` for
+bounded cards, grid presentation, card-to-preview interaction, preview overlay
+usability, and the Admin/public action boundary. WU5 is finally closed and
+`NRP CONFIRMED`. Manual upload accepts one file per submission; drag-and-drop
+and multiple-file/batch upload remain unsupported future Media enhancements and
+are not WU5 blockers; video remains outside the current M3.8 contract. WU6 is
+the next preparation/audit target on this branch; its implementation is not
+started and remains unauthorized. Full M3.8 is `NRP NOT REACHED`. The contract is
 `docs/24_m3_8_media_library_contract.md`.
 
 A modular PHP-based website framework designed for flexible content, business, and automation solutions.
@@ -54,7 +55,7 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 Current M3.6 state: WU1–WU6 are complete and integrated into `main` at
 `8deb4f67d47f476e254b36e3802bd250e393921d` by fast-forward, with no merge
 commit. WU1–WU6 are `NRP CONFIRMED`; the feature branch lifecycle is closed,
-and full M3.6 is `NRP CONFIRMED`. M3.7 WU1–WU6 are complete, objectively accepted, and integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and branch cleanup passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check is deferred and non-blocking because the bundled Default Theme declares no settings. M3.8 WU5 presentation refinement is implemented and focused-validated; human visual/browser review is `PASS` for bounded cards, grid presentation, card-to-preview interaction, preview overlay usability, and the Admin/public action boundary. WU5 remains an `NRP CANDIDATE` pending a separate final NRP decision. Manual upload accepts one file per submission; drag-and-drop and multiple-file/batch upload remain future Media enhancements and are not WU5 blockers.
+and full M3.6 is `NRP CONFIRMED`. M3.7 WU1–WU6 are complete, objectively accepted, and integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and branch cleanup passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check is deferred and non-blocking because the bundled Default Theme declares no settings. M3.8 WU5 presentation refinement is implemented and focused-validated; AI acceptance and human visual/browser acceptance are `PASS` for bounded cards, grid presentation, card-to-preview interaction, preview overlay usability, and the Admin/public action boundary. WU5 is finally closed and `NRP CONFIRMED`. Manual upload accepts one file per submission; drag-and-drop and multiple-file/batch upload remain unsupported future Media enhancements and are not WU5 blockers; video remains outside the current M3.8 contract. WU6 is the next preparation/audit target on this branch; its implementation is not started and remains unauthorized. Full M3.8 is `NRP NOT REACHED`.
 
 M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; its local and remote feature branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
 
@@ -62,7 +63,7 @@ M3 Prep Stage 1 Governance + Architecture Lock is complete.
 
 M3 Prep Stage 2 M3 Sequencing Lock is complete.
 
-M3.4 Content Manager is complete on `main`; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation, classification, and lifecycle closure are complete, with final outcome `NO MATERIAL RETOUCH REQUIRED`. M3.5 product scope was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit. Work Units 1–5 and full M3.5 are `NRP CONFIRMED`; feature containment passed, and local/remote feature branches are deleted. M3.6 WU1–WU6 and full M3.6 are `NRP CONFIRMED`, fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d`; the feature branch lifecycle is closed. M3.7 WU1–WU6 are complete and full M3.7 is `NRP CONFIRMED` after fast-forward integration at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`, feature containment, and branch cleanup. M3.8 WU5 presentation refinement is the active target; WU6 picker implementation remains unauthorized. Release, tag, and publication remain not started and separately authorized. WU4 implementation is complete at `43085441a82ecc38941ca880b2dbbd6823f61215` (`feat(m3.6): add navigation admin workspace`). WU5 implementation is complete at `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation in frontend themes`). Category hierarchy and flat tags are included; type CRUD and filtering remain excluded.
+M3.4 Content Manager is complete on `main`; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 preparation, classification, and lifecycle closure are complete, with final outcome `NO MATERIAL RETOUCH REQUIRED`. M3.5 product scope was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit. Work Units 1–5 and full M3.5 are `NRP CONFIRMED`; feature containment passed, and local/remote feature branches are deleted. M3.6 WU1–WU6 and full M3.6 are `NRP CONFIRMED`, fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d`; the feature branch lifecycle is closed. M3.7 WU1–WU6 are complete and full M3.7 is `NRP CONFIRMED` after fast-forward integration at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`, feature containment, and branch cleanup. M3.8 WU5 is finally closed and `NRP CONFIRMED`; WU6 preparation/audit is the next target on `feature/m3.8-media-library`, while WU6 implementation remains not started and unauthorized. Full M3.8 is `NRP NOT REACHED`. Release, tag, and publication remain not started and separately authorized. WU4 implementation is complete at `43085441a82ecc38941ca880b2dbbd6823f61215` (`feat(m3.6): add navigation admin workspace`). WU5 implementation is complete at `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation in frontend themes`). Category hierarchy and flat tags are included; type CRUD and filtering remain excluded.
 
 M3.R1 final classifications are: Shared page header/action treatment and visual tokens `NO CHANGE REQUIRED`; Users list, Roles list, and Module list `REVIEW ONLY`; standalone prototype User Detail and Role Detail surfaces `EXCLUDED`. Prototype-led summary cards, filtering, extra metadata, avatars, pagination, compact Module action menus, standalone detail pages, command search, notifications, and sidebar system status remain optional future proposals or excluded scope; they are not M3.R1 implementation scope.
 

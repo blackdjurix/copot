@@ -880,7 +880,8 @@ review passed; feature containment and local/remote feature-branch cleanup
 passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
 settings. Release, tag, and publication remain not started. The next target is
-M3.8 Media Library preparation, not implementation. Older M3.7 preparation
+M3.8 WU6 preparation/audit, not implementation. Full M3.8 remains `NRP NOT REACHED`.
+Older M3.7 preparation
 checkpoint statements below are historical.
 
 M3.6 WU1–WU6 are complete and `NRP CONFIRMED`, fast-forward integrated into `main` at
@@ -962,7 +963,8 @@ content-domain expansion is outside M3.7. ZIP installation, marketplace,
 uninstall, Media Library, page building, Custom CSS, and other excluded
 capabilities remain outside M3.7. Feature containment and branch cleanup
 passed. Full M3.7 is `NRP CONFIRMED`; release, tag, and publication have not
-started. M3.8 Media Library preparation is the next target, not implementation.
+started. M3.8 WU5 is `NRP CONFIRMED`; WU6 preparation/audit is the next target,
+not implementation, and full M3.8 remains `NRP NOT REACHED`.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1028,15 +1030,17 @@ M3.8 initial clarification and preparation audit are `COMPLETE`. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
 delivered on `feature/m3.8-media-library`; WU4 is `NRP CONFIRMED`. WU5
 presentation refinement implements the accepted visual grid/card management
-direction and centralized filename title fallback; focused validation and
-human visual/browser review are complete. Human acceptance is `PASS` for
+direction and centralized filename title fallback; focused validation and AI
+acceptance are `PASS`, and human visual/browser acceptance is `PASS` for
 bounded cards, grid presentation, card-to-preview interaction, preview
-overlay usability, and the Admin/public action boundary. WU5 remains an
-`NRP CANDIDATE` pending a separate final NRP decision. Manual upload accepts
-one file per submission; drag-and-drop and multiple-file/batch upload remain
-future Media enhancements and are not WU5 blockers. WU6 picker direction is documentation-only and its
-implementation remains unauthorized. No merge, release, tag, or
-publication has started. The
+overlay usability, and the Admin/public action boundary. WU5 is finally closed
+and `NRP CONFIRMED`. Manual upload accepts one file per submission;
+drag-and-drop and multiple-file/batch upload remain unsupported future Media
+enhancements and are not WU5 blockers; video remains outside the current M3.8
+contract. WU6 is the next preparation/audit target on this branch; its
+implementation is not started and remains unauthorized. Full M3.8 is `NRP NOT
+REACHED`. No merge, release, tag, publication, rebase, or branch deletion has
+started or been authorized. The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.
 
