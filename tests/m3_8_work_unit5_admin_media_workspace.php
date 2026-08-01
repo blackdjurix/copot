@@ -20,9 +20,9 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
     $assertions++;
     if (!$condition) throw new RuntimeException($message);
 };
-$statusOf = static fn (Response $response): int => (int) (new ReflectionProperty($response, 'status'))->getValue($response);
-$contentOf = static fn (Response $response): string => (string) (new ReflectionProperty($response, 'content'))->getValue($response);
-$locationOf = static fn (Response $response): string => (string) ((new ReflectionProperty($response, 'headers'))->getValue($response)['Location'] ?? '');
+$statusOf = static function (Response $response): int { $property = new ReflectionProperty($response, 'status'); $property->setAccessible(true); return (int) $property->getValue($response); };
+$contentOf = static function (Response $response): string { $property = new ReflectionProperty($response, 'content'); $property->setAccessible(true); return (string) $property->getValue($response); };
+$locationOf = static function (Response $response): string { $property = new ReflectionProperty($response, 'headers'); $property->setAccessible(true); return (string) (($property->getValue($response)['Location'] ?? '')); };
 
 $host = (string) Env::get('DB_HOST', '127.0.0.1');
 $port = (int) Env::get('DB_PORT', '3306');
@@ -139,13 +139,16 @@ try {
     try { $mediaAdmin->preset($mediaId, 'arbitrary'); $assert(false, 'Arbitrary processing preset was accepted.'); } catch (MediaProcessingValidationException) { $assert(true, 'Arbitrary processing preset rejection passed.'); }
 
     $html = $contentOf($app->run(new Request('GET', $mediaPath, ['q' => 'original.png', 'kind' => 'image', 'capability' => 'editable'])));
-    $assert(str_contains($html, 'admin-media-filters') && str_contains($html, 'admin-media-grid-panel') && str_contains($html, 'admin-media-grid') && str_contains($html, 'admin-media-card') && str_contains($html, 'admin-panel__body'), 'Media workspace did not use the accepted grid/card presentation structure.');
+    $assert(str_contains($html, 'admin-media-filters') && str_contains($html, 'admin-media-grid-panel') && str_contains($html, 'admin-media-grid') && str_contains($html, 'data-media-card') && str_contains($html, 'role="button"') && str_contains($html, 'admin-panel__body'), 'Media workspace did not use the accepted interactive grid/card presentation structure.');
     $assert(str_contains($html, 'A &lt;hero&gt; image') && str_contains($html, '/media/' . $mediaId), 'Media output was not escaped or controlled.');
     $assert(!str_contains($html, 'storage/media') && !str_contains($html, 'storage_key') && !str_contains($html, '.tmp'), 'Media workspace leaked storage details.');
     $assert(str_contains($html, 'square') && str_contains($html, 'landscape') && str_contains($html, 'contain'), 'Fixed processing presets were not presented.');
-    $assert(str_contains($html, 'Actions') && str_contains($html, 'Square') && str_contains($html, 'Landscape') && str_contains($html, 'Contain'), 'Media workspace lacks the contextual action surface.');
+    $assert(str_contains($html, 'admin-media-preview') && str_contains($html, 'role="dialog"') && str_contains($html, 'aria-modal="true"') && str_contains($html, 'Previous media') && str_contains($html, 'Next media') && str_contains($html, 'Open public view') && str_contains($html, 'Square') && str_contains($html, 'Landscape') && str_contains($html, 'Contain'), 'Media workspace lacks the accessible preview action surface.');
+    $assert(!str_contains($html, 'admin-media-card__actions') && !str_contains($html, 'Download') && !str_contains($html, '/download'), 'Media Manager exposed a removed card action or Admin download affordance.');
     $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
-    $assert(str_contains($adminCss, '.admin-media-grid') && str_contains($adminCss, 'minmax(min(100%, 16rem), 1fr)') && str_contains($adminCss, 'overflow-wrap: anywhere;'), 'Media responsive grid styles do not constrain narrow cards.');
+    $adminJs = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-media.js');
+    $assert(str_contains($adminCss, '.admin-media-grid') && str_contains($adminCss, 'minmax(min(100%, 18rem), 18rem)') && str_contains($adminCss, 'justify-content: start;') && str_contains($adminCss, 'overflow-wrap: anywhere;'), 'Media responsive grid styles do not retain bounded cards.');
+    $assert(str_contains($adminJs, "event.key === 'Escape'") && str_contains($adminJs, 'setBackgroundInactive') && str_contains($adminJs, 'lockedScrollY') && str_contains($adminJs, 'origin.focus'), 'Media preview interaction script lacks focus, escape, or background-inert handling.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['title' => 'No CSRF']))) === 419, 'Title mutation did not reject missing CSRF.');
     $titleResponse = $app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['_token' => $csrf(), 'title' => 'Updated title']));
     $assert($statusOf($titleResponse) === 302 && str_contains($locationOf($titleResponse), 'notice=title-updated'), 'Title update did not use PRG.');

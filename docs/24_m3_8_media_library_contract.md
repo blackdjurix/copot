@@ -471,11 +471,15 @@ registered after Content and before Taxonomy; no dashboard item is added.
 The workspace uses a fixed page size of 24, deterministic updated/id ordering,
 bounded title/original-filename search, kind and editable/manage-only filters,
 and controlled original delivery for image previews. The default presentation is
-a responsive visual grid of cards: title is the primary identity, original
-filename is secondary metadata, image previews preserve aspect ratio on a
-neutral surface, and PDFs/documents use a clear generic document visual. Card
-metadata remains compact and secondary actions are grouped in an accessible
-contextual action surface. Documents use no processing controls.
+a responsive visual grid of bounded-width cards: title is the primary identity,
+original filename is secondary metadata, image previews preserve aspect ratio on
+a neutral surface, and PDFs/documents use a clear generic document visual. The
+card is the primary interactive target and opens an accessible Admin
+preview/details overlay with previous/next navigation limited to the current
+filtered page. Overlay actions provide title editing, fixed image processing
+presets, and the existing public view link; Download is intentionally not an
+Admin Media Manager action and remains part of public delivery. Documents use
+no processing controls.
 
 Upload, title updates, and processing reuse the existing Media services through
 a module-local Admin orchestration boundary. Processing exposes only the
@@ -499,9 +503,10 @@ optional link to `/admin/media`. No WU6 picker or functional `Use from Media
 Library` action is implemented in WU5.
 
 Focused AI acceptance evidence is recorded in
-`tests/m3_8_work_unit5_admin_media_workspace.php` with 43 passing assertions,
-including grid structure, contextual actions, title fallback, explicit-title
-preservation, unusable fallback rejection, and existing security boundaries.
+`tests/m3_8_work_unit5_admin_media_workspace.php`, including bounded grid and
+preview structure, keyboard/inert interaction hooks, title fallback,
+explicit-title preservation, unusable fallback rejection, and existing
+security boundaries.
 Human visual/browser review remains pending and WU5 is not finally closed.
 
 ### WU6 — Media picker, consumer contracts, usage, and deletion safety
