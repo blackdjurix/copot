@@ -147,7 +147,7 @@ try {
     $assert(!str_contains($html, 'admin-media-card__actions') && !str_contains($html, 'Download') && !str_contains($html, '/download'), 'Media Manager exposed a removed card action or Admin download affordance.');
     $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
     $adminJs = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-media.js');
-    $assert(str_contains($adminCss, '.admin-media-grid') && str_contains($adminCss, 'minmax(min(100%, 18rem), 18rem)') && str_contains($adminCss, 'justify-content: start;') && str_contains($adminCss, 'overflow-wrap: anywhere;'), 'Media responsive grid styles do not retain bounded cards.');
+    $assert(str_contains($adminCss, '.admin-media-grid') && str_contains($adminCss, 'repeat(auto-fill, minmax(min(100%, 18rem), 18rem))') && str_contains($adminCss, 'justify-content: start;') && str_contains($adminCss, 'overflow-wrap: anywhere;'), 'Media responsive grid styles do not retain bounded cards.');
     $assert(str_contains($adminJs, "event.key === 'Escape'") && str_contains($adminJs, 'setBackgroundInactive') && str_contains($adminJs, 'lockedScrollY') && str_contains($adminJs, 'origin.focus'), 'Media preview interaction script lacks focus, escape, or background-inert handling.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['title' => 'No CSRF']))) === 419, 'Title mutation did not reject missing CSRF.');
     $titleResponse = $app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['_token' => $csrf(), 'title' => 'Updated title']));
