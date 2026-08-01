@@ -141,7 +141,8 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
                     <fieldset class="admin-content-form-section" data-media-picker data-picker-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker'), ENT_QUOTES, 'UTF-8') ?>" data-upload-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker/upload'), ENT_QUOTES, 'UTF-8') ?>" data-csrf-token="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                         <legend>Featured Media</legend>
                         <input type="hidden" name="featured_media_id" value="<?= htmlspecialchars((string) ($content['featured_media_id'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-media-picker-input>
-                        <p class="admin-field__help" data-media-picker-status><?= !empty($content['featured_media_id']) ? 'A featured image is selected.' : 'Optional. Select an image for this content entry.' ?></p>
+                        <p class="admin-field__help" data-media-picker-status aria-live="polite"><?= !empty($content['featured_media_id']) ? 'A featured image is selected.' : 'Optional. Select an image for this content entry.' ?></p>
+                        <div class="admin-media-picker__selected" data-media-picker-selected hidden></div>
                         <?php $renderFieldErrors('featured_media'); ?>
                         <div class="admin-actions">
                             <button class="admin-button admin-button--secondary" type="button" data-media-picker-open>Select Media</button>
@@ -149,13 +150,14 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
                         </div>
                         <label class="admin-field__label" for="featured-media-upload">Upload one image</label>
                         <input id="featured-media-upload" type="file" accept="image/jpeg,image/png,image/webp" data-media-picker-upload>
-                        <button class="admin-button admin-button--secondary" type="button" data-media-picker-upload-button>Upload and select</button>
+                        <button class="admin-button admin-button--secondary" type="button" data-media-picker-upload-button>Upload and prepare</button>
                         <dialog class="admin-media-picker" data-media-picker-dialog aria-labelledby="media-picker-title">
                             <div class="admin-media-picker__panel">
                                 <h3 id="media-picker-title">Select featured Media</h3>
                                 <label for="media-picker-search">Search title or original filename</label>
                                 <input id="media-picker-search" type="search" data-media-picker-search>
                                 <div class="admin-media-picker__results" data-media-picker-results aria-live="polite"></div>
+                                <div class="admin-media-picker__prepare" data-media-picker-prepare hidden><p data-media-picker-prepare-status>Prepare featured image</p><div class="admin-media-picker__crop-frame"><img data-media-picker-crop-image alt="Crop preview"></div><label>Horizontal crop position<input type="range" min="0" max="100" value="50" data-media-picker-crop-x></label><button type="button" class="admin-button admin-button--primary" data-media-picker-process>Confirm crop</button><button type="button" class="admin-button admin-button--secondary" data-media-picker-process-cancel>Cancel crop</button></div>
                                 <div class="admin-actions"><button type="button" class="admin-button admin-button--secondary" data-media-picker-cancel>Cancel</button><button type="button" class="admin-button admin-button--primary" data-media-picker-confirm disabled>Use selected Media</button></div>
                             </div>
                         </dialog>

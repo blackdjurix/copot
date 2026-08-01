@@ -1,38 +1,39 @@
 (function () {
-    'use strict';
-    const root = document.querySelector('[data-media-picker]');
-    if (!root) return;
-    const dialog = root.querySelector('[data-media-picker-dialog]');
-    const input = root.querySelector('[data-media-picker-input]');
-    const status = root.querySelector('[data-media-picker-status]');
-    const results = root.querySelector('[data-media-picker-results]');
-    const search = root.querySelector('[data-media-picker-search]');
-    const confirm = root.querySelector('[data-media-picker-confirm]');
-    const upload = root.querySelector('[data-media-picker-upload]');
-    const uploadButton = root.querySelector('[data-media-picker-upload-button]');
-    let pending = input.value || '';
-    let restore = null;
-    function render(items) {
-        results.textContent = '';
-        if (!items.length) { results.textContent = 'No available images found.'; return; }
-        items.forEach(function (item) {
-            const button = document.createElement('button'); button.type = 'button'; button.className = 'admin-media-picker__item'; button.dataset.id = item.id; button.setAttribute('aria-pressed', String(String(item.id) === String(pending)));
-            button.innerHTML = '<img alt="" src="' + item.url + '"><span>' + item.title.replace(/[&<>"']/g, function (c) { return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]; }) + '</span>';
-            button.addEventListener('click', function () { pending = String(item.id); results.querySelectorAll('[data-id]').forEach(function (node) { node.setAttribute('aria-pressed', String(node.dataset.id) === pending); }); confirm.disabled = false; });
-            results.appendChild(button);
-        });
-    }
-    function load() { const url = root.dataset.pickerUrl + '?consumer=content&current=' + encodeURIComponent(input.value || '') + '&q=' + encodeURIComponent(search.value || ''); fetch(url, { credentials: 'same-origin', headers: { 'Accept': 'application/json' } }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); }).then(function (data) { if (data.stale) status.textContent = 'The previously selected Media is stale or unavailable. Choose another image or clear it.'; render(data.items || []); }).catch(function () { results.textContent = 'Media is unavailable. Try again later.'; }); }
-    root.querySelector('[data-media-picker-open]').addEventListener('click', function () { restore = document.activeElement; pending = input.value || ''; confirm.disabled = !pending; dialog.showModal(); search.focus(); load(); });
-    root.querySelector('[data-media-picker-cancel]').addEventListener('click', function () { dialog.close(); if (restore) restore.focus(); });
-    root.querySelector('[data-media-picker-clear]').addEventListener('click', function () { input.value = ''; pending = ''; status.textContent = 'No featured Media selected.'; });
-    confirm.addEventListener('click', function () { input.value = pending; status.textContent = pending ? 'A featured image is selected.' : 'No featured Media selected.'; dialog.close(); if (restore) restore.focus(); });
-    search.addEventListener('input', load);
-    uploadButton.addEventListener('click', function () {
-        if (!upload.files.length) { status.textContent = 'Choose one JPEG, PNG, or WebP image first.'; return; }
-        const form = new FormData(); form.append('_token', root.dataset.csrfToken || ''); form.append('media', upload.files[0]);
-        uploadButton.disabled = true;
-        fetch(root.dataset.uploadUrl, { method: 'POST', body: form, credentials: 'same-origin' }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); }).then(function (data) { pending = String(data.id); input.value = pending; status.textContent = 'Uploaded image selected.'; upload.value = ''; }).catch(function () { status.textContent = 'The image could not be uploaded.'; }).finally(function () { uploadButton.disabled = false; });
+    document.querySelectorAll('[data-media-picker]').forEach(function (root) {
+        var input = root.querySelector('[data-media-picker-input]'), status = root.querySelector('[data-media-picker-status]'), selected = root.querySelector('[data-media-picker-selected]');
+        var dialog = root.querySelector('[data-media-picker-dialog]'), results = root.querySelector('[data-media-picker-results]'), search = root.querySelector('[data-media-picker-search]');
+        var confirm = root.querySelector('[data-media-picker-confirm]'), pending = input.value || '', committed = input.value || '', restore = null, currentDescriptor = null;
+        var prepare = root.querySelector('[data-media-picker-prepare]'), cropImage = root.querySelector('[data-media-picker-crop-image]'), cropX = root.querySelector('[data-media-picker-crop-x]'), prepareStatus = root.querySelector('[data-media-picker-prepare-status]');
+        function announce(message) { status.textContent = message; }
+        function renderSelected(descriptor) {
+            currentDescriptor = descriptor;
+            selected.hidden = !descriptor;
+            selected.textContent = '';
+            if (!descriptor) return;
+            var image = document.createElement('img'); image.src = descriptor.url; image.alt = descriptor.alt || descriptor.title || descriptor.original_filename || ''; image.width = descriptor.width || 640; image.height = descriptor.height || 360; image.loading = 'lazy';
+            var text = document.createElement('p'); text.textContent = (descriptor.title || descriptor.original_filename || 'Image') + ' — selected as featured image';
+            var note = document.createElement('p'); note.textContent = 'Save the Content form to keep this selection.';
+            var change = document.createElement('button'); change.type = 'button'; change.className = 'admin-button admin-button--link'; change.textContent = 'Change'; change.addEventListener('click', open);
+            var recrop = document.createElement('button'); recrop.type = 'button'; recrop.className = 'admin-button admin-button--link'; recrop.textContent = 'Re-crop / Adjust crop'; recrop.addEventListener('click', function () { beginPrepare(input.value); });
+            var remove = document.createElement('button'); remove.type = 'button'; remove.className = 'admin-button admin-button--link'; remove.textContent = 'Remove'; remove.addEventListener('click', clear);
+            selected.append(image, text, note, change, recrop, remove);
+        }
+        function render(items) { results.textContent = ''; if (!items.length) { results.textContent = 'No available images found.'; return; } items.forEach(function (item) { var button = document.createElement('button'); button.type = 'button'; button.className = 'admin-media-picker__item'; button.textContent = (item.title || item.original_filename) + ' (' + item.mime_type + ')'; button.dataset.id = item.id; button.addEventListener('click', function () { pending = String(item.id); Array.prototype.forEach.call(results.querySelectorAll('[aria-pressed]'), function (node) { node.setAttribute('aria-pressed', 'false'); }); button.setAttribute('aria-pressed', 'true'); beginPrepare(pending, item.url); }); results.append(button); }); }
+        function load() { var url = root.dataset.pickerUrl + '?consumer=content&current=' + encodeURIComponent(input.value || '') + '&q=' + encodeURIComponent(search.value || ''); fetch(url, { credentials: 'same-origin', headers: { Accept: 'application/json' } }).then(function (r) { if (!r.ok) throw new Error(); return r.json(); }).then(function (data) { if (data.stale) announce('The previously selected Media is stale or unavailable. Choose another image or clear it.'); if (data.current) renderSelected(data.current); render(data.items || []); }).catch(function () { results.textContent = 'Media is unavailable. Try again later.'; }); }
+        function cropForImage(image) { var w = image.naturalWidth || 1280, h = image.naturalHeight || 720, target = 16 / 9, cw = w, ch = Math.round(w / target); if (ch > h) { ch = h; cw = Math.round(h * target); } var x = Math.round((w - cw) * (Number(cropX.value) / 100)); return { x: x, y: Math.max(0, Math.round((h - ch) / 2)), width: cw, height: ch }; }
+        function beginPrepare(id, previewUrl) { pending = String(id); prepare.hidden = false; results.hidden = true; confirm.disabled = true; prepareStatus.textContent = 'Prepare featured image. The original remains unchanged.'; cropImage.src = previewUrl || '/media/' + encodeURIComponent(id); cropImage.onload = function () { prepareStatus.textContent = 'Adjust the 16:9 crop, then confirm.'; }; }
+        function cancelPrepare() { prepare.hidden = true; results.hidden = false; pending = committed; confirm.disabled = !pending; }
+        function processCrop() { prepareStatus.textContent = 'Preparing featured image…'; var form = new FormData(); form.append('_token', root.dataset.csrfToken || ''); form.append('media_id', pending); var crop = cropForImage(cropImage); Object.keys(crop).forEach(function (key) { form.append('crop[' + key + ']', String(crop[key])); }); fetch(root.dataset.processUrl || root.dataset.pickerUrl + '/process', { method: 'POST', body: form, credentials: 'same-origin' }).then(function (r) { return r.json().then(function (data) { if (!r.ok) throw new Error(data.error || 'The featured image could not be prepared.'); return data; }); }).then(function (data) { input.value = String(data.id); committed = input.value; prepare.hidden = true; results.hidden = false; confirm.disabled = false; announce('Featured image prepared and selected. Save the Content form to keep it.'); var first = (data.variants || [])[data.variants.length - 1] || null; renderSelected(first ? { id: data.id, title: 'Featured image', original_filename: 'Featured image', url: first.url, width: first.width, height: first.height, alt: 'Featured image' } : null); }).catch(function (error) { prepareStatus.textContent = error.message || 'The featured image could not be prepared.'; }); }
+        function open() { restore = document.activeElement; dialog.showModal(); load(); search.focus(); }
+        function close() { if (dialog.open) dialog.close(); prepare.hidden = true; results.hidden = false; pending = committed; if (restore) restore.focus(); }
+        function clear() { input.value = ''; committed = ''; pending = ''; renderSelected(null); announce('Featured image selection cleared. Save the Content form to remove it.'); }
+        root.dataset.processUrl = root.dataset.pickerUrl + '/process';
+        root.querySelector('[data-media-picker-open]').addEventListener('click', open); root.querySelector('[data-media-picker-clear]').addEventListener('click', clear);
+        root.querySelector('[data-media-picker-cancel]').addEventListener('click', close); root.querySelector('[data-media-picker-process]').addEventListener('click', processCrop); root.querySelector('[data-media-picker-process-cancel]').addEventListener('click', cancelPrepare);
+        confirm.addEventListener('click', function () { input.value = pending; committed = pending; announce(pending ? 'A featured image is selected. Save the Content form to keep it.' : 'No featured image selected.'); dialog.close(); if (restore) restore.focus(); });
+        search.addEventListener('input', function () { window.clearTimeout(search._timer); search._timer = window.setTimeout(load, 200); });
+        root.querySelector('[data-media-picker-upload-button]').addEventListener('click', function () { var file = root.querySelector('[data-media-picker-upload]').files[0]; if (!file) { announce('Choose one JPEG, PNG, or WebP image first.'); return; } var form = new FormData(); form.append('_token', root.dataset.csrfToken || ''); form.append('media', file); announce('Uploading image…'); fetch(root.dataset.uploadUrl, { method: 'POST', body: form, credentials: 'same-origin' }).then(function (r) { return r.json().then(function (data) { if (!r.ok) throw new Error(data.error || 'The image could not be uploaded.'); return data; }); }).then(function (data) { announce('Image uploaded. Preparing it does not save the Content form.'); if (!dialog.open) open(); beginPrepare(data.id); }).catch(function (error) { announce(error.message || 'The image could not be uploaded.'); }); });
+        dialog.addEventListener('cancel', function () { pending = committed; prepare.hidden = true; results.hidden = false; });
+        if (input.value) { load(); }
     });
-    dialog.addEventListener('cancel', function () { if (restore) restore.focus(); });
 }());

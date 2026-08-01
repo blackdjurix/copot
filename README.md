@@ -1,9 +1,11 @@
 # copot
 
 Current WU6 implementation: the approved Content featured-Media picker, usage
-synchronization, and unused-only Media deletion safety are being delivered on
-`feature/m3.8-media-library`; final human acceptance and WU7 remain separate.
-Full M3.8 remains `NRP NOT REACHED`.
+synchronization, unused-only Media deletion safety, bounded 16:9 preparation /
+crop, and processed featured-image rendering on the single public Content view
+are implemented and focused-validated on `feature/m3.8-media-library`.
+Human acceptance remains separate; WU6 is not `NRP CONFIRMED`. Full M3.8
+remains `NRP NOT REACHED`.
 
 ## Current M3.7 post-merge state
 

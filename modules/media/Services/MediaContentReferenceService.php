@@ -10,7 +10,8 @@ final class MediaContentReferenceService
     public function __construct(
         private Database $database,
         private MediaRepository $media,
-        private MediaUsageRepository $usages
+        private MediaUsageRepository $usages,
+        private ?MediaVariantRepository $variants = null
     ) {
     }
 
@@ -42,12 +43,22 @@ final class MediaContentReferenceService
     {
         $media = $this->validate($mediaId);
         if (!$media) return null;
+        $variants = $this->variants?->forMedia($media->id()) ?? [];
+        $prepared = array_values(array_filter($variants, static fn (MediaVariant $variant): bool => str_starts_with($variant->variantKey(), 'content-featured-')));
+        usort($prepared, static fn (MediaVariant $a, MediaVariant $b): int => ($b->width() ?? 0) <=> ($a->width() ?? 0));
+        if ($prepared === []) return null;
+        $srcset = array_map(static fn (MediaVariant $variant): string => '/media/' . $media->id()->value() . '/variant/' . rawurlencode($variant->variantKey()) . ' ' . (int) $variant->width() . 'w', $prepared);
+        $primary = $prepared[0];
         return [
             'id' => $media->id()->value(),
             'title' => $media->title(),
             'original_filename' => $media->originalFilename(),
             'mime_type' => $media->mimeType(),
-            'url' => '/media/' . $media->id()->value(),
+            'url' => '/media/' . $media->id()->value() . '/variant/' . rawurlencode($primary->variantKey()),
+            'srcset' => implode(', ', $srcset),
+            'width' => $primary->width(),
+            'height' => $primary->height(),
+            'alt' => $media->title() !== '' ? $media->title() : $media->originalFilename(),
         ];
     }
 }

@@ -40,8 +40,10 @@ AI ACCEPTANCE PASS
 HUMAN VISUAL/BROWSER ACCEPTANCE PASS; NRP CONFIRMED; FINALLY CLOSED
 
 WU6:
-IMPLEMENTATION FOR APPROVED CONTENT FEATURED-MEDIA PICKER, USAGE SYNCHRONIZATION,
-AND UNUSED-ONLY DELETION SAFETY; HUMAN ACCEPTANCE AND NRP REMAIN UNDECIDED
+IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE FOR APPROVED CONTENT FEATURED-MEDIA
+PICKER, USAGE SYNCHRONIZATION, UNUSED-ONLY DELETION SAFETY, BOUNDED 16:9
+PREPARATION/CROP, AND SINGLE PUBLIC CONTENT-VIEW RENDERING; HUMAN ACCEPTANCE
+REMAINS SEPARATE; WU6 NRP NOT CONFIRMED
 
 WU7:
 NOT STARTED
@@ -56,10 +58,12 @@ validation are complete, durably delivered, and `NRP CONFIRMED`. WU5
 presentation refinement is implemented and focused-validated on the active
 feature branch. AI acceptance and human visual/browser acceptance are `PASS`;
 WU5 is finally closed and `NRP CONFIRMED`. WU6 implementation is limited to the
-approved Content featured-Media picker, usage synchronization, and unused-only
-deletion safety on the same branch. Focused validation and human acceptance
-remain separate; WU7 remains not started and unauthorized. Full M3.8 is `NRP NOT
-REACHED`.
+approved Content featured-Media picker, usage synchronization, unused-only
+deletion safety, the Media-owned `content.featured` 16:9 preparation/crop
+profile, and processed featured-image rendering on the single public Content
+view. Focused validation is complete; human acceptance remains separate and
+WU6 is not `NRP CONFIRMED`. WU7 remains not started and unauthorized. Full M3.8
+is `NRP NOT REACHED`.
 
 ## Locked architecture and ownership
 
@@ -507,11 +511,13 @@ The current manual upload workflow accepts one file per submission. It does not
 provide drag-and-drop upload or multiple-file selection/batch upload. These are
 future Media upload enhancements, not WU5 defects or acceptance blockers.
 
-The accepted WU6 direction is documentation-only at this stage: a consumer-
-triggered modal or floating picker with a visual grid, consumer-specific type
-support, inline upload and selection, a detail/selection surface, and an
-optional link to `/admin/media`. No WU6 picker or functional `Use from Media
-Library` action is implemented in WU5.
+The accepted WU6 direction is implemented on the active branch: a
+consumer-triggered picker with a visual grid, consumer-specific type support,
+inline upload, selection, bounded Media descriptors, Media-owned preparation
+and crop, and an optional link to `/admin/media`. Content stores only the Media
+ID; Media owns profile validation, variants, controlled delivery, and the
+original-file boundary. Archive/index/card rendering, galleries, arbitrary
+profiles, drag-and-drop, batch upload, and video remain excluded.
 
 Focused AI acceptance is `PASS`, and the evidence is recorded in
 `tests/m3_8_work_unit5_admin_media_workspace.php`, including bounded grid and
@@ -528,8 +534,10 @@ human-required criterion remains for WU5.
 **Objective:** Deliver reusable selection and consumer contracts owned by
 Media.
 
-**Production scope:** Existing selection, inline upload, field-specific crop or
-processing request, stable-reference return contract, descriptor/URL contract,
+**Production scope:** Existing selection, inline upload, the locked Content
+`content.featured` profile (JPEG/PNG/WebP, minimum 1280×720 source, 16:9 crop,
+640/960/1280 bounded responsive widths, center default), stable-reference
+return contract, processed single-view rendering, descriptor/URL contract,
 usage visibility, and referenced-deletion blocking.
 
 **Validation scope:** Picker selection/upload flows, unauthorized use, stale
@@ -538,8 +546,10 @@ and duplicate-pipeline prevention.
 
 **Dependencies:** WU3 through WU5.
 
-**Exclusions:** Actual production Content, Theme, and Site Settings field
-adoption unless separately approved.
+**Exclusions:** Theme and Site Settings field adoption, archive/index/card
+featured-image rendering, galleries, multiple selection, arbitrary consumer
+profiles, video/audio/GIF/ICO/document processing, batch upload, and new
+processing engines.
 
 **Acceptance direction:** A consumer can request and receive a stable Media
 reference and controlled descriptor without owning Media internals.

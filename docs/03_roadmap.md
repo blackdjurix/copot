@@ -879,8 +879,11 @@ commit. Post-merge documentation closure commit `8dea71c82a4076c8b9d399047031e0a
 review passed; feature containment and local/remote feature-branch cleanup
 passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
-settings. Release, tag, and publication remain not started. The next target is
-M3.8 WU6 implementation and focused validation are complete; final human acceptance remains separate. Full M3.8 remains `NRP NOT REACHED`.
+settings. Release, tag, and publication remain not started. M3.8 WU6
+implementation and focused validation are complete, including the bounded
+Content featured-image preparation/crop and single public-view rendering;
+human acceptance remains separate and WU6 is not `NRP CONFIRMED`. Full M3.8
+remains `NRP NOT REACHED`.
 Older M3.7 preparation
 checkpoint statements below are historical.
 

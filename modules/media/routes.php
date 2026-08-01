@@ -27,6 +27,8 @@ require_once __DIR__ . '/Services/MediaGdImageProcessor.php';
 require_once __DIR__ . '/Services/MediaVariantFilesystemStorage.php';
 require_once __DIR__ . '/Services/MediaVariantKey.php';
 require_once __DIR__ . '/Services/MediaProcessingService.php';
+require_once __DIR__ . '/Services/MediaFeaturedProfile.php';
+require_once __DIR__ . '/Services/MediaVariantDeliveryService.php';
 require_once __DIR__ . '/Services/MediaAdmin.php';
 
 $mediaRepository = new MediaRepository($app->database());
@@ -38,10 +40,12 @@ $mediaVariantStorage = new MediaVariantFilesystemStorage($app->path('storage/med
 $mediaDiagnostics = method_exists($app, 'diagnostics') ? $app->diagnostics() : null;
 $mediaLifecycle = new MediaLifecycleService($app->database(), $mediaRepository, $mediaVariants, $mediaUsages, $mediaOriginalStorage, $mediaVariantStorage, $mediaDiagnostics);
 $mediaDelivery = new MediaDeliveryService($mediaRepository, $mediaInspector, $mediaOriginalStorage);
+$mediaVariantDelivery = new MediaVariantDeliveryService($mediaRepository, $mediaVariants, $mediaVariantStorage, $mediaInspector);
 $mediaId = static function (string $value): ?int { return preg_match('/^[1-9][0-9]*$/', $value) ? (int) $value : null; };
 $notFound = static fn (): \Copot\Core\Response => \Copot\Core\Response::content('404 Not Found', 404, ['Content-Type' => 'text/plain; charset=UTF-8', 'Cache-Control' => 'no-store', 'X-Content-Type-Options' => 'nosniff']);
 $app->router()->get('/media/{id}/download', static function ($request, array $params) use ($mediaDelivery, $mediaId, $notFound) { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); try { return $mediaDelivery->download($id); } catch (Throwable) { return $notFound(); } });
 $app->router()->get('/media/{id}', static function ($request, array $params) use ($mediaDelivery, $mediaId, $notFound) { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); try { return $mediaDelivery->inline($id); } catch (Throwable) { return $notFound(); } });
+$app->router()->get('/media/{id}/variant/{key}', static function ($request, array $params) use ($mediaVariantDelivery, $mediaId, $notFound): Response { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); return $mediaVariantDelivery->inline($id, (string) ($params['key'] ?? '')); });
 
 if (!method_exists($app, 'adminUrl') || !method_exists($app, 'adminNavigation')) {
     return;
@@ -86,7 +90,7 @@ $mediaValidateCsrf = static function ($request) use ($app): ?Response {
         ? $app->adminErrors()->response($request, 419)
         : null;
 };
-$app->router()->get($mediaPickerPath, function ($request) use ($mediaRequireAdmin, $mediaRepository): Response {
+$app->router()->get($mediaPickerPath, function ($request) use ($mediaRequireAdmin, $mediaRepository, $mediaVariants): Response {
     $user = $mediaRequireAdmin($request, ['media.use']);
     if ($user instanceof Response) return $user;
     if ((string) $request->input('consumer', '') !== 'content') return Response::content(json_encode(['error' => 'Unavailable picker context.']), 422, ['Content-Type' => 'application/json; charset=UTF-8']);
@@ -95,7 +99,10 @@ $app->router()->get($mediaPickerPath, function ($request) use ($mediaRequireAdmi
     $currentId = (string) $request->input('current', '');
     $current = preg_match('/^[1-9][0-9]*$/', $currentId) ? $mediaRepository->findById((int) $currentId) : null;
     $currentAllowed = $current && in_array($current->mimeType(), ['image/jpeg', 'image/png', 'image/webp'], true);
-    return Response::content(json_encode(['items' => $items, 'total' => $workspace['total'], 'page' => max(1, (int) $request->input('page', 1)), 'per_page' => 24, 'current' => $currentAllowed ? ['id' => $current->id()->value(), 'title' => $current->title()] : null, 'stale' => $currentId !== '' && !$currentAllowed], JSON_THROW_ON_ERROR), 200, ['Content-Type' => 'application/json; charset=UTF-8', 'Cache-Control' => 'no-store']);
+    $prepared = $currentAllowed ? array_values(array_filter($mediaVariants->forMedia($current->id()), static fn (MediaVariant $variant): bool => str_starts_with($variant->variantKey(), 'content-featured-'))) : [];
+    usort($prepared, static fn (MediaVariant $a, MediaVariant $b): int => ($b->width() ?? 0) <=> ($a->width() ?? 0));
+    $descriptor = $currentAllowed && $prepared !== [] ? ['id' => $current->id()->value(), 'title' => $current->title(), 'original_filename' => $current->originalFilename(), 'url' => '/media/' . $current->id()->value() . '/variant/' . rawurlencode($prepared[0]->variantKey()), 'srcset' => implode(', ', array_map(static fn (MediaVariant $variant): string => '/media/' . $current->id()->value() . '/variant/' . rawurlencode($variant->variantKey()) . ' ' . (int) $variant->width() . 'w', $prepared)), 'width' => $prepared[0]->width(), 'height' => $prepared[0]->height(), 'alt' => $current->title() !== '' ? $current->title() : $current->originalFilename()] : null;
+    return Response::content(json_encode(['items' => $items, 'total' => $workspace['total'], 'page' => max(1, (int) $request->input('page', 1)), 'per_page' => 24, 'current' => $descriptor, 'stale' => $currentId !== '' && (!$currentAllowed || $descriptor === null)], JSON_THROW_ON_ERROR), 200, ['Content-Type' => 'application/json; charset=UTF-8', 'Cache-Control' => 'no-store']);
 });
 $app->router()->post($app->adminUrl()->childUrl('media/{id}/delete'), function ($request, array $params) use ($app, $mediaRequireAdmin, $mediaValidateCsrf, $mediaLifecycle, $mediaRepository, $mediaUsages, $mediaId, $mediaAdminPath): Response {
     $user = $mediaRequireAdmin($request, ['media.delete']); if ($user instanceof Response) return $user;
@@ -122,6 +129,14 @@ $app->router()->post($mediaPickerPath . '/upload', function ($request) use ($app
         return Response::content(json_encode(['id' => $id->value()], JSON_THROW_ON_ERROR), 201, ['Content-Type' => 'application/json; charset=UTF-8']);
     } catch (MediaUploadValidationException) { return Response::content(json_encode(['error' => 'The uploaded file could not be validated.']), 422, ['Content-Type' => 'application/json; charset=UTF-8']); }
       catch (Throwable) { return Response::content(json_encode(['error' => 'The media could not be uploaded.']), 503, ['Content-Type' => 'application/json; charset=UTF-8']); }
+});
+$app->router()->post($mediaPickerPath . '/process', function ($request) use ($app, $mediaRequireAdmin, $mediaValidateCsrf, $mediaProcessing, $mediaRepository, $mediaVariants, $mediaId): Response {
+    $user = $mediaRequireAdmin($request, ['media.use']); if ($user instanceof Response) return $user;
+    $csrf = $mediaValidateCsrf($request); if ($csrf) return $csrf;
+    $id = $mediaId((string) $request->post('media_id', '')); $crop = $request->post('crop', []);
+    if ($id === null || !is_array($crop)) return Response::content(json_encode(['error' => 'The featured image could not be prepared.']), 422, ['Content-Type' => 'application/json; charset=UTF-8']);
+    try { $results = $mediaProcessing->process($id, MediaFeaturedProfile::request($id, array_map('intval', $crop))); $variants = array_map(static fn (MediaVariant $variant): array => ['key' => $variant->variantKey(), 'width' => $variant->width(), 'height' => $variant->height(), 'url' => '/media/' . $id . '/variant/' . rawurlencode($variant->variantKey())], $results); return Response::content(json_encode(['id' => $id, 'variants' => $variants], JSON_THROW_ON_ERROR), 200, ['Content-Type' => 'application/json; charset=UTF-8']); }
+    catch (Throwable) { return Response::content(json_encode(['error' => 'The featured image could not be prepared.']), 422, ['Content-Type' => 'application/json; charset=UTF-8']); }
 });
 $mediaNormalizeWorkspace = static function ($request): array {
     $kind = $request->input('kind');
