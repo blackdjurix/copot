@@ -3143,7 +3143,7 @@ html.admin-nav-open body {
 .admin-media-picker__selected { display: grid; gap: .5rem; margin: .75rem 0; max-width: 28rem; }
 .admin-media-picker__selected img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
 .admin-media-picker__prepare[hidden] { display: none; }
-.admin-media-picker__crop-frame { position: relative; width: min(100%, 40rem); max-height: 55vh; overflow: hidden; background: #111; line-height: 0; }
+.admin-media-picker__crop-frame { position: relative; width: min(100%, 40rem); overflow: hidden; background: #111; line-height: 0; }
 .admin-media-picker__crop-frame img { width: 100%; height: 100%; object-fit: cover; }
 .admin-media-picker__crop-frame { cursor: crosshair; touch-action: none; }
 .admin-media-picker__crop-frame img { display: block; height: auto; object-fit: contain; user-select: none; pointer-events: none; }
