@@ -4,7 +4,7 @@
 <form class="admin-panel" method="post" enctype="multipart/form-data" action="<?= $esc($adminUrl('media/upload')) ?>">
     <div class="admin-panel__body admin-form">
         <input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>">
-        <label for="media-title">Title</label><input id="media-title" name="title" value="<?= $esc($title) ?>" maxlength="190" required>
+        <label for="media-title">Title <span class="admin-form__hint">(optional; defaults to the filename)</span></label><input id="media-title" name="title" value="<?= $esc($title) ?>" maxlength="190">
         <label for="media-file">File</label><input id="media-file" name="media" type="file" required>
         <div class="admin-form__actions"><a class="admin-button admin-button--secondary" href="<?= $esc($adminUrl('media')) ?>">Cancel</a><button class="admin-button admin-button--primary" type="submit">Upload media</button></div>
     </div>

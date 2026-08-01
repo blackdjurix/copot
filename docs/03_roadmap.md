@@ -1027,9 +1027,11 @@ Media Library is module-owned and provides general media management and selectio
 M3.8 initial clarification and preparation audit are `COMPLETE`. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
 delivered on `feature/m3.8-media-library`; WU4 is `NRP CONFIRMED`. WU5
-implementation and focused validation are complete, with AI acceptance
-evidence recorded; human runtime/browser review remains pending, so WU5 is
-not finally closed. WU6–WU7 remain not started and unauthorized. No merge, release, tag, or
+presentation refinement implements the accepted visual grid/card management
+direction and centralized filename title fallback; focused validation is
+complete, while final human visual review remains pending. WU5 remains an
+`NRP CANDIDATE`. WU6 picker direction is documentation-only and its
+implementation remains unauthorized. No merge, release, tag, or
 publication has started. The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.

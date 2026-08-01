@@ -113,29 +113,39 @@ try {
     $mediaStorage = new MediaFilesystemStorage($basePath . '/storage/media');
     $mediaProcessing = new MediaProcessingService($app->database(), $mediaRepository, $mediaVariants, $mediaInspector, new MediaGdImageProcessor(), $mediaStorage, new MediaVariantFilesystemStorage($basePath . '/storage/media'));
     $mediaAdmin = new MediaAdmin($mediaRepository, new MediaUploadService($app->database(), $mediaLifecycle, $mediaInspector, $mediaStorage), $mediaLifecycle, $mediaProcessing);
+    $fallbackImageId = $mediaAdmin->upload(['name' => 'holiday_photo.png', 'type' => 'image/png', 'tmp_name' => $source, 'error' => UPLOAD_ERR_OK, 'size' => filesize($source)], '   ');
+    $createdStorageKeys[] = (string) $connection->query('SELECT storage_key FROM media WHERE id = ' . $fallbackImageId->value())->fetchColumn();
+    $temporaryFiles[] = $fallbackPdf = tempnam(sys_get_temp_dir(), 'copot-wu5-fallback-pdf-');
+    file_put_contents($fallbackPdf, "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF\n");
+    $fallbackPdfId = $mediaAdmin->upload(['name' => 'press_kit.pdf', 'type' => 'application/pdf', 'tmp_name' => $fallbackPdf, 'error' => UPLOAD_ERR_OK, 'size' => filesize($fallbackPdf)], '');
+    $createdStorageKeys[] = (string) $connection->query('SELECT storage_key FROM media WHERE id = ' . $fallbackPdfId->value())->fetchColumn();
+    $assert($connection->query('SELECT title FROM media WHERE id = ' . $fallbackImageId->value())->fetchColumn() === 'holiday photo', 'Blank image title did not derive from the filename.');
+    $assert($connection->query('SELECT title FROM media WHERE id = ' . $fallbackPdfId->value())->fetchColumn() === 'press kit', 'Blank PDF title did not derive from the filename.');
+    try { $mediaAdmin->upload(['name' => '.png', 'type' => 'image/png', 'tmp_name' => $source, 'error' => UPLOAD_ERR_OK, 'size' => filesize($source)], '   '); $assert(false, 'Unusable filename fallback was accepted.'); } catch (MediaUploadValidationException) { $assert(true, 'Unusable filename fallback was rejected.'); }
     $documentId = $mediaLifecycle->create(['kind' => 'document', 'original_filename' => 'manual-guide.pdf', 'title' => 'Manual guide', 'storage_key' => 'manual-guide.pdf', 'mime_type' => 'application/pdf', 'extension' => 'pdf', 'byte_size' => 64, 'width' => null, 'height' => null])->value();
     $connection->exec("UPDATE media SET updated_at = '2026-01-01 00:00:00'");
     $workspace = $mediaRepository->workspace(['search' => 'original.png'], 24, 0);
     $assert($workspace['total'] === 1 && count($workspace['items']) === 1, 'Filename search/count did not match.');
     $assert($workspace['limit'] === 24, 'Media workspace page size was not fixed at 24.');
     $allWorkspace = $mediaRepository->workspace([], 24, 0);
-    $assert($allWorkspace['total'] === 2 && $allWorkspace['items'][0]->id()->value() === $documentId, 'Workspace ordering was not updated_at/id descending.');
-    $assert($mediaRepository->workspace(['kind' => 'document'])['total'] === 1, 'Document kind filter did not match.');
-    $assert($mediaRepository->workspace(['capability' => 'editable'])['total'] === 1 && $mediaRepository->workspace(['capability' => 'manage-only'])['total'] === 1, 'Capability filters did not partition editable/manage-only Media.');
-    $assert($mediaRepository->workspace([], 1, 0)['items'][0]->id()->value() === $documentId && $mediaRepository->workspace([], 1, 1)['items'][0]->id()->value() === $mediaId, 'Bounded pagination was not deterministic.');
+    $expectedNewest = max($mediaId, $documentId, $fallbackImageId->value(), $fallbackPdfId->value());
+    $assert($allWorkspace['total'] === 4 && $allWorkspace['items'][0]->id()->value() === $expectedNewest, 'Workspace ordering was not updated_at/id descending.');
+    $assert($mediaRepository->workspace(['kind' => 'document'])['total'] === 2, 'Document kind filter did not match.');
+    $assert($mediaRepository->workspace(['capability' => 'editable'])['total'] === 2 && $mediaRepository->workspace(['capability' => 'manage-only'])['total'] === 2, 'Capability filters did not partition editable/manage-only Media.');
+    $assert($mediaRepository->workspace([], 1, 0)['items'][0]->id()->value() === $expectedNewest && $mediaRepository->workspace([], 1, 3)['items'][0]->id()->value() === min($mediaId, $documentId, $fallbackImageId->value(), $fallbackPdfId->value()), 'Bounded pagination was not deterministic.');
     $assert($mediaAdmin->preset($mediaId, 'square')->outputFormat() === 'webp' && $mediaAdmin->preset($mediaId, 'square')->resizeWidth() === 640 && $mediaAdmin->preset($mediaId, 'square')->quality() === 82, 'Square preset mapping was incorrect.');
     $assert($mediaAdmin->preset($mediaId, 'landscape')->resizeWidth() === 1280 && $mediaAdmin->preset($mediaId, 'landscape')->resizeHeight() === 720, 'Landscape preset mapping was incorrect.');
     $assert($mediaAdmin->preset($mediaId, 'contain')->fit() === 'contain' && $mediaAdmin->preset($mediaId, 'contain')->outputFormat() === null && $mediaAdmin->preset($mediaId, 'contain')->quality() === null, 'Contain preset did not preserve source/default format quality.');
     try { $mediaAdmin->preset($mediaId, 'arbitrary'); $assert(false, 'Arbitrary processing preset was accepted.'); } catch (MediaProcessingValidationException) { $assert(true, 'Arbitrary processing preset rejection passed.'); }
 
     $html = $contentOf($app->run(new Request('GET', $mediaPath, ['q' => 'original.png', 'kind' => 'image', 'capability' => 'editable'])));
-    $assert(str_contains($html, 'admin-media-filters') && str_contains($html, 'admin-media-table-panel') && str_contains($html, 'admin-panel__body'), 'Media workspace did not use the established Admin panel spacing structure.');
+    $assert(str_contains($html, 'admin-media-filters') && str_contains($html, 'admin-media-grid-panel') && str_contains($html, 'admin-media-grid') && str_contains($html, 'admin-media-card') && str_contains($html, 'admin-panel__body'), 'Media workspace did not use the accepted grid/card presentation structure.');
     $assert(str_contains($html, 'A &lt;hero&gt; image') && str_contains($html, '/media/' . $mediaId), 'Media output was not escaped or controlled.');
     $assert(!str_contains($html, 'storage/media') && !str_contains($html, 'storage_key') && !str_contains($html, '.tmp'), 'Media workspace leaked storage details.');
     $assert(str_contains($html, 'square') && str_contains($html, 'landscape') && str_contains($html, 'contain'), 'Fixed processing presets were not presented.');
-    $assert(str_contains($html, 'admin-media-table') && str_contains($html, 'data-label="Actions"'), 'Media workspace lacks the responsive table structure.');
+    $assert(str_contains($html, 'Actions') && str_contains($html, 'Square') && str_contains($html, 'Landscape') && str_contains($html, 'Contain'), 'Media workspace lacks the contextual action surface.');
     $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
-    $assert(str_contains($adminCss, '.admin-media-table') && str_contains($adminCss, 'min-width: 0;'), 'Media responsive styles do not constrain the narrow table layout.');
+    $assert(str_contains($adminCss, '.admin-media-grid') && str_contains($adminCss, 'minmax(min(100%, 16rem), 1fr)') && str_contains($adminCss, 'overflow-wrap: anywhere;'), 'Media responsive grid styles do not constrain narrow cards.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['title' => 'No CSRF']))) === 419, 'Title mutation did not reject missing CSRF.');
     $titleResponse = $app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['_token' => $csrf(), 'title' => 'Updated title']));
     $assert($statusOf($titleResponse) === 302 && str_contains($locationOf($titleResponse), 'notice=title-updated'), 'Title update did not use PRG.');

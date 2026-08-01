@@ -14,7 +14,7 @@ $noticeText = match ($notice ?? null) {
 };
 ?>
 <header class="admin-panel__header">
-    <div class="admin-panel__heading"><h2 class="admin-panel__title">Media</h2><p class="admin-panel__description">Manage uploaded images and documents without exposing storage details.</p></div>
+    <div class="admin-panel__heading"><h2 class="admin-panel__title">Media</h2><p class="admin-panel__description">Browse and manage uploaded images and documents without exposing storage details.</p></div>
     <?php if ($canUpload): ?><div class="admin-actions"><a class="admin-button admin-button--primary" href="<?= $esc($adminUrl('media/upload')) ?>">Upload media</a></div><?php endif; ?>
 </header>
 <?php if ($noticeText): ?><div class="admin-alert admin-alert--success" role="status"><?= $esc($noticeText) ?></div><?php endif; ?>
@@ -29,20 +29,31 @@ $noticeText = match ($notice ?? null) {
 <?php if ($total === 0): ?>
     <div class="admin-empty-state"><h3 class="admin-empty-state__title"><?= $hasFilters ? 'No matching media' : 'No media yet' ?></h3><p class="admin-empty-state__description"><?= $hasFilters ? 'Try changing the search or filters.' : 'Upload the first image or document.' ?></p></div>
 <?php else: ?>
-    <section class="admin-panel admin-media-table-panel" aria-label="Media items">
+    <section class="admin-panel admin-media-grid-panel" aria-label="Media items">
         <div class="admin-panel__body">
-            <div class="admin-table-wrap admin-media-table-wrap"><table class="admin-table admin-media-table"><thead><tr><th>Preview</th><th>Media</th><th>Details</th><th>Actions</th></tr></thead><tbody>
-    <?php foreach ($mediaItems as $item): $editable = $isEditable($item); ?>
-        <tr>
-            <td data-label="Preview"><?php if ($item->kind() === 'image'): ?><img src="<?= $esc('/media/' . $item->id()->value()) ?>" alt="<?= $esc($item->title()) ?>" width="96" height="72" loading="lazy"><?php else: ?><span aria-label="PDF or document" class="admin-media-document">Document</span><?php endif; ?></td>
-            <td data-label="Media"><strong><?= $esc($item->title()) ?></strong><br><span><?= $esc($item->originalFilename()) ?></span><br><span><?= $esc(ucfirst($item->kind())) ?> · <?= $esc($item->mimeType()) ?></span></td>
-            <td data-label="Details"><?= $item->width() !== null ? $esc($item->width() . ' × ' . $item->height()) . '<br>' : '' ?><?= $esc($formatBytes($item->byteSize())) ?><br><span><?= $editable ? 'Editable' : 'Manage-only' ?></span><br><time datetime="<?= $esc($item->updatedAt()) ?>"><?= $esc($item->updatedAt()) ?></time></td>
-            <td data-label="Actions"><div class="admin-row-actions"><a class="admin-button admin-button--link" href="<?= $esc('/media/' . $item->id()->value()) ?>">View</a><a class="admin-button admin-button--link" href="<?= $esc('/media/' . $item->id()->value() . '/download') ?>">Download</a>
-                <?php if ($canEdit): ?><form method="post" action="<?= $esc($adminUrl('media/' . $item->id()->value() . '/title')) ?>"><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><label class="admin-sr-only" for="media-title-<?= $item->id()->value() ?>">Title</label><input id="media-title-<?= $item->id()->value() ?>" name="title" value="<?= $esc($item->title()) ?>" maxlength="190"><button class="admin-button admin-button--link" type="submit">Save title</button></form><?php endif; ?>
-                <?php if ($canEdit && $editable): ?><form method="post" action="<?= $esc($adminUrl('media/' . $item->id()->value() . '/process')) ?>"><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><label class="admin-sr-only" for="media-preset-<?= $item->id()->value() ?>">Processing preset</label><select id="media-preset-<?= $item->id()->value() ?>" name="preset"><option value="square">Square</option><option value="landscape">Landscape</option><option value="contain">Contain</option></select><button class="admin-button admin-button--link" type="submit">Process</button></form><?php endif; ?>
-            </div></td>
-        </tr>
-            <?php endforeach; ?></tbody></table></div>
+            <div class="admin-media-grid">
+                <?php foreach ($mediaItems as $item): $editable = $isEditable($item); ?>
+                    <article class="admin-media-card">
+                        <div class="admin-media-card__preview">
+                            <?php if ($item->kind() === 'image'): ?><img src="<?= $esc('/media/' . $item->id()->value()) ?>" alt="<?= $esc($item->title()) ?>" loading="lazy">
+                            <?php else: ?><div class="admin-media-card__document" aria-label="PDF or document"><span class="admin-media-card__document-icon" aria-hidden="true">PDF</span><span>Document</span></div><?php endif; ?>
+                        </div>
+                        <div class="admin-media-card__body">
+                            <div class="admin-media-card__identity"><h3><?= $esc($item->title()) ?></h3><p><?= $esc($item->originalFilename()) ?></p></div>
+                            <div class="admin-media-card__meta"><span class="admin-badge <?= $item->kind() === 'document' ? 'admin-badge--warning' : 'admin-badge--info' ?>"><?= $esc(ucfirst($item->kind())) ?></span><span><?= $esc($formatBytes($item->byteSize())) ?></span><?php if ($item->width() !== null): ?><span><?= $esc($item->width() . ' × ' . $item->height()) ?></span><?php endif; ?><span><?= $editable ? 'Editable' : 'Manage-only' ?></span></div>
+                            <p class="admin-media-card__timestamp"><time datetime="<?= $esc($item->updatedAt()) ?>">Updated <?= $esc($item->updatedAt()) ?></time></p>
+                            <details class="admin-media-card__actions">
+                                <summary>Actions</summary>
+                                <div class="admin-media-card__action-list">
+                                    <a class="admin-button admin-button--secondary" href="<?= $esc('/media/' . $item->id()->value()) ?>">View</a><a class="admin-button admin-button--secondary" href="<?= $esc('/media/' . $item->id()->value() . '/download') ?>">Download</a>
+                                    <?php if ($canEdit): ?><form method="post" action="<?= $esc($adminUrl('media/' . $item->id()->value() . '/title')) ?>"><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><label class="admin-sr-only" for="media-title-<?= $item->id()->value() ?>">Title</label><input id="media-title-<?= $item->id()->value() ?>" name="title" value="<?= $esc($item->title()) ?>" maxlength="190"><button class="admin-button admin-button--secondary" type="submit">Save title</button></form><?php endif; ?>
+                                    <?php if ($canEdit && $editable): ?><form method="post" action="<?= $esc($adminUrl('media/' . $item->id()->value() . '/process')) ?>"><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><label class="admin-sr-only" for="media-preset-<?= $item->id()->value() ?>">Processing preset</label><select id="media-preset-<?= $item->id()->value() ?>" name="preset"><option value="square">Square</option><option value="landscape">Landscape</option><option value="contain">Contain</option></select><button class="admin-button admin-button--secondary" type="submit">Process</button></form><?php endif; ?>
+                                </div>
+                            </details>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
             <nav class="admin-content-pagination admin-pagination" aria-label="Media pagination"><span>Page <?= $esc($page) ?> of <?= $esc($lastPage) ?></span><?php if ($page > 1): ?><a class="admin-button admin-button--link" href="<?= $esc($paginationUrl($page - 1)) ?>">Previous</a><?php endif; ?><?php if ($page < $lastPage): ?><a class="admin-button admin-button--link" href="<?= $esc($paginationUrl($page + 1)) ?>">Next</a><?php endif; ?></nav>
         </div>
     </section>

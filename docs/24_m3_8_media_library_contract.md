@@ -35,9 +35,9 @@ IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
 NRP CONFIRMED
 
 WU5:
-IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
+PRESENTATION REFINEMENT IMPLEMENTED; FOCUSED VALIDATION COMPLETE
 AI ACCEPTANCE EVIDENCE RECORDED
-HUMAN RUNTIME/BROWSER REVIEW PENDING; NOT FINALLY CLOSED
+HUMAN VISUAL/BROWSER REVIEW PENDING; NRP CANDIDATE
 
 WU6–WU7:
 NOT STARTED
@@ -49,10 +49,10 @@ WU5 DELIVERY GATE
 The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
 predecessors and are durably delivered. WU4 implementation and focused
 validation are complete, durably delivered, and `NRP CONFIRMED`. WU5
-implementation and focused validation are complete and durably delivered,
-with AI acceptance evidence recorded. Human runtime/browser review remains
-pending, so WU5 is not finally closed. WU6–WU7 remain not started and
-unauthorized.
+presentation refinement is implemented and focused-validated on the active
+feature branch. Human visual/browser review remains pending, so WU5 remains an
+`NRP CANDIDATE` and is not finally closed. WU6 picker direction is documented
+only; WU6–WU7 remain not started and unauthorized.
 
 ## Locked architecture and ownership
 
@@ -470,8 +470,12 @@ WU5 adds the module-local Admin workspace at the configured Admin path with
 registered after Content and before Taxonomy; no dashboard item is added.
 The workspace uses a fixed page size of 24, deterministic updated/id ordering,
 bounded title/original-filename search, kind and editable/manage-only filters,
-and controlled original delivery for image previews. Documents use a generic
-document representation.
+and controlled original delivery for image previews. The default presentation is
+a responsive visual grid of cards: title is the primary identity, original
+filename is secondary metadata, image previews preserve aspect ratio on a
+neutral surface, and PDFs/documents use a clear generic document visual. Card
+metadata remains compact and secondary actions are grouped in an accessible
+contextual action surface. Documents use no processing controls.
 
 Upload, title updates, and processing reuse the existing Media services through
 a module-local Admin orchestration boundary. Processing exposes only the
@@ -481,9 +485,24 @@ generated-file location is rendered. WU5 adds no delete route and does not call
 the Media deletion lifecycle. Generated variants remain internal; no public
 variant delivery, picker, or consumer integration is added.
 
+Upload titles are optional. An explicit non-empty title is preserved; a blank
+title derives centrally from the original filename by stripping its final
+extension, replacing underscores with spaces, collapsing whitespace, and
+trimming. An unusable explicit title and filename are rejected, and persisted
+Media titles are always non-empty. This boundary is shared by Admin upload and
+future picker upload.
+
+The accepted WU6 direction is documentation-only at this stage: a consumer-
+triggered modal or floating picker with a visual grid, consumer-specific type
+support, inline upload and selection, a detail/selection surface, and an
+optional link to `/admin/media`. No WU6 picker or functional `Use from Media
+Library` action is implemented in WU5.
+
 Focused AI acceptance evidence is recorded in
-`tests/m3_8_work_unit5_admin_media_workspace.php` with 34 passing assertions.
-Human runtime/browser review remains pending and WU5 is not finally closed.
+`tests/m3_8_work_unit5_admin_media_workspace.php` with 43 passing assertions,
+including grid structure, contextual actions, title fallback, explicit-title
+preservation, unusable fallback rejection, and existing security boundaries.
+Human visual/browser review remains pending and WU5 is not finally closed.
 
 ### WU6 — Media picker, consumer contracts, usage, and deletion safety
 
@@ -571,7 +590,7 @@ WU2 implementation and focused validation are complete. WU2 remains NRP
 CANDIDATE until its post-Git documentation review is complete. WU3
 implementation and focused validation are complete. WU3 remains NRP CANDIDATE
 until its post-Git lifecycle review is complete. WU4 is `NRP CONFIRMED`. WU5
-implementation and focused validation are complete with AI acceptance evidence
-recorded, but human runtime/browser review remains pending and WU5 is not
-finally closed. WU6–WU7 remain `NOT STARTED` and unauthorized; milestone
-closure is not implied.
+presentation refinement and focused validation are complete with AI acceptance
+evidence recorded, but human visual/browser review remains pending; WU5 remains
+an `NRP CANDIDATE` and is not finally closed. WU6–WU7 remain `NOT STARTED` and
+unauthorized; milestone closure is not implied.
