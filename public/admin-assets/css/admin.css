@@ -3144,3 +3144,8 @@ html.admin-nav-open body {
 .admin-media-picker__prepare[hidden] { display: none; }
 .admin-media-picker__crop-frame { width: min(100%, 40rem); aspect-ratio: 16 / 9; overflow: hidden; background: #111; display: grid; place-items: center; }
 .admin-media-picker__crop-frame img { width: 100%; height: 100%; object-fit: cover; }
+.admin-media-picker__crop-frame { position: relative; cursor: grab; touch-action: none; }
+.admin-media-picker__crop-frame:active { cursor: grabbing; }
+.admin-media-picker__crop-frame img { position: absolute; inset: 0; user-select: none; pointer-events: none; transform-origin: center; }
+.admin-media-picker__crop-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; margin: .75rem 0; }
+.admin-media-picker__crop-controls label { display: grid; gap: .35rem; }

@@ -44,8 +44,8 @@ $mediaVariantDelivery = new MediaVariantDeliveryService($mediaRepository, $media
 $mediaId = static function (string $value): ?int { return preg_match('/^[1-9][0-9]*$/', $value) ? (int) $value : null; };
 $notFound = static fn (): \Copot\Core\Response => \Copot\Core\Response::content('404 Not Found', 404, ['Content-Type' => 'text/plain; charset=UTF-8', 'Cache-Control' => 'no-store', 'X-Content-Type-Options' => 'nosniff']);
 $app->router()->get('/media/{id}/download', static function ($request, array $params) use ($mediaDelivery, $mediaId, $notFound) { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); try { return $mediaDelivery->download($id); } catch (Throwable) { return $notFound(); } });
-$app->router()->get('/media/{id}', static function ($request, array $params) use ($mediaDelivery, $mediaId, $notFound) { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); try { return $mediaDelivery->inline($id); } catch (Throwable) { return $notFound(); } });
 $app->router()->get('/media/{id}/variant/{key}', static function ($request, array $params) use ($mediaVariantDelivery, $mediaId, $notFound): Response { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); return $mediaVariantDelivery->inline($id, (string) ($params['key'] ?? '')); });
+$app->router()->get('/media/{id}', static function ($request, array $params) use ($mediaDelivery, $mediaId, $notFound) { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); try { return $mediaDelivery->inline($id); } catch (Throwable) { return $notFound(); } });
 
 if (!method_exists($app, 'adminUrl') || !method_exists($app, 'adminNavigation')) {
     return;
