@@ -45,6 +45,16 @@ final class MediaContentReferenceService
         if (!$media) return null;
         $variants = $this->variants?->forMedia($media->id()) ?? [];
         $prepared = array_values(array_filter($variants, static fn (MediaVariant $variant): bool => str_starts_with($variant->variantKey(), 'content-featured-')));
+        $currentByWidth = [];
+        foreach ($prepared as $variant) {
+            $width = $variant->width();
+            if ($width === null) continue;
+            $current = $currentByWidth[$width] ?? null;
+            if (!$current || strcmp($variant->updatedAt(), $current->updatedAt()) > 0 || (strcmp($variant->updatedAt(), $current->updatedAt()) === 0 && $variant->id() > $current->id())) {
+                $currentByWidth[$width] = $variant;
+            }
+        }
+        $prepared = array_values($currentByWidth);
         usort($prepared, static fn (MediaVariant $a, MediaVariant $b): int => ($b->width() ?? 0) <=> ($a->width() ?? 0));
         if ($prepared === []) return null;
         $srcset = array_map(static fn (MediaVariant $variant): string => '/media/' . $media->id()->value() . '/variant/' . rawurlencode($variant->variantKey()) . ' ' . (int) $variant->width() . 'w', $prepared);
