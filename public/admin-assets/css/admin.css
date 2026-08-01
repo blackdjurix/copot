@@ -3136,6 +3136,7 @@ html.admin-nav-open body {
 .admin-media-picker::backdrop { background: rgba(0,0,0,.55); }
 .admin-media-picker__panel { padding: 1.25rem; }
 .admin-media-picker__results { display: grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); gap: .75rem; margin: 1rem 0; max-height: 55vh; overflow: auto; }
+.admin-media-picker__results[hidden], .admin-media-picker [data-media-picker-search][hidden] { display: none !important; }
 .admin-media-picker__item { display: grid; gap: .35rem; border: 2px solid transparent; background: #f5f5f5; padding: .35rem; text-align: left; }
 .admin-media-picker__item[aria-pressed="true"] { border-color: #2457d6; }
 .admin-media-picker__item img { width: 100%; aspect-ratio: 1; object-fit: cover; }
