@@ -293,6 +293,10 @@ Status: Complete.
 
 First Production Consumer Integration is deferred to the first milestone that has a real caller/listener pair. It is not a blocker for completing the M2.2 foundation. Temporary fixture events are test-only and do not establish production API.
 
+Deferred Item: `DI-M2.2-01` — First production consumer integration. Status:
+Deferred. It remains unscheduled until a concrete caller/listener pair with a
+safe transaction boundary is explicitly approved.
+
 Detailed scope, architecture, batch planning, and acceptance criteria are defined in:
 
 ```text
@@ -300,6 +304,11 @@ docs/12_extensibility_foundation.md
 ```
 
 ##### Deferred from M2.2
+
+Deferred Item: `DI-M2.2-02` — Expanded event delivery and integration
+capabilities. Status: Deferred. The following capability set was considered
+for M2.2 and intentionally postponed; it remains unscheduled and does not
+authorize placeholder infrastructure.
 
 * asynchronous events;
 * queue infrastructure;
@@ -332,7 +341,28 @@ docs/13_minimal_site_capabilities.md
 
 The separate Core four-color palette and semantic-mapping proposal in `docs/11_branding_foundation.md` remains deferred and is not an M2.3 acceptance requirement.
 
+Deferred Item: `DI-M2.3-01` — Core palette and semantic mapping. Status:
+Deferred. It remains unscheduled pending an explicitly approved Branding
+Foundation scope; it is not implied by the M2.3 identity contract.
+
 ##### Deferred from M2.3
+
+Deferred Item: `DI-M2.3-02` — Localization expansion. Status: Deferred and
+Unscheduled; it covers multilingual content and per-user or per-module locale
+and timezone support.
+
+Deferred Item: `DI-M2.3-03` — Advanced branding and theme presentation.
+Status: Deferred and Unscheduled; it covers advanced branding UI,
+theme-specific advanced colors, and Custom CSS.
+
+Deferred Item: `DI-M2.3-04` — Generic file-management, SVG security, and
+external storage. Status: Deferred and Unscheduled; it covers arbitrary
+generic file management, SVG without a security contract, and CDN/external
+storage expansion.
+
+These records do not authorize adoption. Other entries in the following list
+are not normalized here because their scope has been partly adopted by M3.8
+and requires separate governance disposition.
 
 * multilingual content and translation management;
 * per-user or per-module locale and timezone;
@@ -447,6 +477,21 @@ Lean M2 does not include:
 * generic Asset Management Foundation.
 
 A deferred capability may return to M2 only when a concrete M3 dependency requires it before Core Module implementation can proceed safely.
+
+## Deferred Items
+
+This registry indexes intentional postponements only. A Deferred Item is not
+authorization, and an `Unscheduled` target does not create future scope.
+
+| ID and title | Source | Class | Status | Target |
+| --- | --- | --- | --- | --- |
+| `DI-M2.2-01` — First production consumer integration | M2.2 Extensibility Foundation | Integration | Deferred | Unscheduled |
+| `DI-M2.2-02` — Expanded event delivery and integration capabilities | M2.2 Deferred from | Platform capability set | Deferred | Unscheduled |
+| `DI-M2.3-01` — Core palette and semantic mapping | M2.3 Minimal Site Capabilities | Branding capability | Deferred | Unscheduled |
+| `DI-M2.3-02` — Localization expansion | M2.3 Deferred from | Localization capability set | Deferred | Unscheduled |
+| `DI-M2.3-03` — Advanced branding and theme presentation | M2.3 Deferred from | Branding/presentation capability set | Deferred | Unscheduled |
+| `DI-M2.3-04` — Generic file-management, SVG security, and external storage | M2.3 Deferred from | Media/storage capability set | Deferred | Unscheduled |
+| `DI-M3.8-WU6-01` — Further Media Manager visual/presentation refinement | M3.8 WU6 | Presentation refinement | Deferred | Unscheduled |
 
 ### Asset Terminology
 
@@ -1035,6 +1080,22 @@ consumer-scoped pending preparation and save-time promotion, usage
 synchronization, and unused-only Media deletion safety. Focused validation and
 human functional/browser acceptance are complete; WU7 is not started and full
 M3.8 remains `NRP NOT REACHED`.
+
+#### Deferred Item — DI-M3.8-WU6-01
+
+- **Title:** Further Media Manager visual/presentation refinement
+- **Status:** Deferred
+- **Detail:** Follow-on visual refinement of the Media workspace and detail
+  presentation after the accepted WU6 functional baseline.
+- **Reason:** The delivered picker, consumer-scoped preparation/save boundary,
+  deletion safety, and public rendering are accepted; additional presentation
+  work is not required to preserve that baseline.
+- **Impact:** Non-blocking. It must not reopen the accepted WU6 functional
+  baseline or alter WU7 scope.
+- **Revisit trigger:** A separately approved presentation review with a
+  concrete, bounded target.
+- **Initial target disposition:** Unscheduled. This item authorizes no future
+  milestone or work unit.
 
 M3.8 initial clarification and preparation audit are `COMPLETE`. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
