@@ -93,24 +93,14 @@
 
     const renderActions = (card) => {
         const actions = template.content.cloneNode(true);
-        const publicLink = actions.querySelector('[data-preview-public-link]');
-        publicLink.href = card.dataset.mediaPublicUrl;
         const titleForm = actions.querySelector('[data-preview-title-form]');
-        const processActions = actions.querySelector('[data-preview-process-actions]');
         const deleteForm = actions.querySelector('[data-preview-delete-form]');
 
         if (titleForm) {
             titleForm.action = card.dataset.mediaTitleUrl;
             titleForm.querySelector('[data-preview-title-input]').value = card.dataset.mediaTitle;
             titleForm.querySelector('[data-preview-title-input]').setAttribute('aria-label', `Title for ${card.dataset.mediaTitle}`);
-            titleForm.querySelector('[data-preview-title-label]').textContent = `Title for ${card.dataset.mediaTitle}`;
-        }
-        if (processActions && card.dataset.mediaEditable !== '1') {
-            processActions.remove();
-        } else if (processActions) {
-            processActions.querySelectorAll('[data-preview-process-form]').forEach((form) => {
-                form.action = card.dataset.mediaProcessUrl;
-            });
+            titleForm.querySelector('[data-preview-title-label]').textContent = 'Title';
         }
         if (deleteForm) deleteForm.setAttribute('action', card.dataset.mediaDeleteUrl);
 

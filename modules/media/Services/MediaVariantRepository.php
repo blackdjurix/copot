@@ -23,12 +23,19 @@ final class MediaVariantRepository
         return array_map(fn (array $row): MediaVariant => $this->hydrate($row), $statement->fetchAll());
     }
 
+    public function expiredPending(string $before): array
+    {
+        $statement = $this->database->connection()->prepare("SELECT * FROM media_variants WHERE variant_key LIKE 'pending-%' AND created_at < :before ORDER BY id ASC");
+        $statement->execute(['before' => $before]);
+        return array_map(fn (array $row): MediaVariant => $this->hydrate($row), $statement->fetchAll());
+    }
+
     public function saveOrReplaceDescriptor(array $data): ?MediaVariant
     {
         $mediaId = $data['media_id'] instanceof MediaId ? $data['media_id'] : new MediaId((int) $data['media_id']);
         MediaVariant::validateInput(['id' => 1, 'variantKey' => $data['variant_key'] ?? '', 'storageKey' => $data['storage_key'] ?? '', 'mimeType' => $data['mime_type'] ?? '', 'extension' => $data['extension'] ?? '', 'byteSize' => $data['byte_size'] ?? 0, 'width' => $data['width'] ?? null, 'height' => $data['height'] ?? null]);
         $previous = $this->find($mediaId, (string) $data['variant_key']);
-        if (!$previous && count($this->forMedia($mediaId)) >= 24) throw new MediaProcessingValidationException('Media variant limit reached.');
+        if (!$previous && $this->isTransientKey((string) $data['variant_key']) && count(array_filter($this->forMedia($mediaId), fn (MediaVariant $variant): bool => $this->isTransientKey($variant->variantKey()))) >= 24) throw new MediaProcessingValidationException('Media variant limit reached.');
         if ($previous) {
             $statement = $this->database->connection()->prepare('UPDATE media_variants SET storage_key = :storage_key, mime_type = :mime_type, extension = :extension, byte_size = :byte_size, width = :width, height = :height, updated_at = NOW() WHERE media_id = :media_id AND variant_key = :variant_key');
             $statement->execute(['storage_key'=>$data['storage_key'],'mime_type'=>$data['mime_type'],'extension'=>$data['extension'],'byte_size'=>$data['byte_size'],'width'=>$data['width']??null,'height'=>$data['height']??null,'media_id'=>$mediaId->value(),'variant_key'=>$data['variant_key']]);
@@ -57,4 +64,6 @@ final class MediaVariantRepository
     {
         return new MediaVariant((int) $row['id'], new MediaId((int) $row['media_id']), (string) $row['variant_key'], (string) $row['storage_key'], (string) $row['mime_type'], (string) $row['extension'], (int) $row['byte_size'], $row['width'] === null ? null : (int) $row['width'], $row['height'] === null ? null : (int) $row['height'], (string) $row['created_at'], (string) $row['updated_at']);
     }
+
+    private function isTransientKey(string $key): bool { return str_starts_with($key, 'r1-') || str_starts_with($key, 'content-featured-'); }
 }

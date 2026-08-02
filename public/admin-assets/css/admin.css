@@ -1106,7 +1106,7 @@ dd {
 
 .admin-media-card__body {
     display: grid;
-    gap: var(--admin-space-3);
+    gap: var(--admin-space-2);
     padding: var(--admin-space-4);
 }
 
@@ -1116,21 +1116,17 @@ dd {
     font-size: 16px;
 }
 
-.admin-media-card__identity p,
-.admin-media-card__timestamp {
-    margin: var(--admin-space-1) 0 0;
-    color: var(--admin-color-muted);
-    font-size: 13px;
-    overflow-wrap: anywhere;
-}
-
 .admin-media-card__meta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--admin-space-2) var(--admin-space-3);
+    gap: var(--admin-space-1);
     color: var(--admin-color-muted);
     font-size: 13px;
+}
+
+.admin-media-card__separator {
+    color: var(--admin-color-border);
 }
 
 .admin-media-preview[hidden] {
@@ -1228,7 +1224,35 @@ dd {
 
 .admin-media-preview__nav {
     align-self: center;
-    min-width: 6rem;
+    justify-self: center;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--admin-radius-sm);
+    color: var(--admin-color-muted);
+    background: transparent;
+    font: inherit;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.admin-media-preview__nav:hover:not(:disabled) {
+    color: var(--admin-color-text);
+    background: var(--admin-color-bg);
+}
+
+.admin-media-preview__nav:focus-visible {
+    outline: 2px solid var(--admin-color-primary);
+    outline-offset: 2px;
+}
+
+.admin-media-preview__nav:disabled {
+    cursor: default;
+    opacity: 0.4;
 }
 
 .admin-media-preview__details {
@@ -1251,8 +1275,7 @@ dd {
     border-top: 1px solid var(--admin-color-border);
 }
 
-.admin-media-preview__actions form,
-.admin-media-preview__process {
+.admin-media-preview__actions form {
     display: flex;
     flex-wrap: wrap;
     align-items: end;
@@ -1263,8 +1286,25 @@ dd {
     min-width: min(18rem, 100%);
 }
 
-.admin-media-preview__process {
+.admin-media-preview__actions .admin-media-preview__title-form {
+    display: grid;
+    min-width: min(18rem, 100%);
     gap: var(--admin-space-2);
+}
+
+.admin-media-preview__title-form input {
+    width: 100%;
+    min-width: 0;
+}
+
+.admin-media-preview__title-form .admin-button {
+    justify-self: start;
+}
+
+.admin-media-preview__destructive {
+    flex-basis: 100%;
+    padding-top: var(--admin-space-3);
+    border-top: 1px solid var(--admin-color-border);
 }
 
 html.admin-media-preview-open,
@@ -1306,7 +1346,7 @@ html.admin-media-preview-open body {
     }
 
     .admin-media-preview__nav {
-        width: 100%;
+        width: 2.5rem;
     }
 }
 

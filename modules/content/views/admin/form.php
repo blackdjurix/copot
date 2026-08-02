@@ -138,9 +138,10 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
                 </fieldset>
 
                 <div class="admin-content-form-sidebar">
-                    <fieldset class="admin-content-form-section" data-media-picker data-picker-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker'), ENT_QUOTES, 'UTF-8') ?>" data-upload-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker/upload'), ENT_QUOTES, 'UTF-8') ?>" data-csrf-token="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <fieldset class="admin-content-form-section" data-media-picker data-content-id="<?= htmlspecialchars((string) ($content['id'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-picker-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker'), ENT_QUOTES, 'UTF-8') ?>" data-upload-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker/upload'), ENT_QUOTES, 'UTF-8') ?>" data-csrf-token="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                         <legend>Featured Media</legend>
                         <input type="hidden" name="featured_media_id" value="<?= htmlspecialchars((string) ($content['featured_media_id'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-media-picker-input>
+                        <input type="hidden" name="featured_media_pending_token" value="" data-media-picker-pending-input>
                         <p class="admin-field__help" data-media-picker-status aria-live="polite"><?= !empty($content['featured_media_id']) ? 'A featured image is selected.' : 'Optional. Select an image for this content entry.' ?></p>
                         <div class="admin-media-picker__selected" data-media-picker-selected hidden></div>
                         <?php $renderFieldErrors('featured_media'); ?>

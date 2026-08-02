@@ -7,7 +7,7 @@ final class MediaVariantDeliveryService
     public function __construct(private MediaRepository $media, private MediaVariantRepository $variants, private MediaVariantFilesystemStorage $storage, private MediaFileInspector $inspector) {}
     public function inline(int $id, string $key): Response
     {
-        if ($id < 1 || !preg_match('/^content-featured-[a-f0-9]{32}$/', $key)) return $this->notFound();
+        if ($id < 1 || !preg_match('/^(?:content-featured|content-slot)-[a-f0-9]{32}$/', $key)) return $this->notFound();
         $media = $this->media->findById($id); $variant = $media ? $this->variants->find($id, $key) : null; $path = $variant ? $this->storage->resolve($variant->storageKey()) : null;
         if (!$media || !$variant || !$path) return $this->notFound();
         try { $facts = $this->inspector->inspect($path); } catch (Throwable) { return $this->notFound(); }

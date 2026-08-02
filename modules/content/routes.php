@@ -9,7 +9,7 @@ require_once __DIR__ . '/Services/ContentService.php';
 require_once __DIR__ . '/Services/Slugger.php';
 
 $contentMediaServicesPath = dirname(__DIR__) . '/media/Services';
-foreach (['MediaId', 'Media', 'MediaUsage', 'MediaUsageRepository', 'MediaRepository', 'MediaVariant', 'MediaVariantRepository', 'MediaContentReferenceService'] as $contentMediaService) {
+foreach (['MediaId', 'Media', 'MediaUsage', 'MediaUsageRepository', 'MediaRepository', 'MediaVariant', 'MediaVariantRepository', 'MediaVariantKey', 'MediaVariantFilesystemStorage', 'MediaPendingPreparationService', 'MediaContentReferenceService'] as $contentMediaService) {
     $contentMediaServiceFile = $contentMediaServicesPath . '/' . $contentMediaService . '.php';
     if (is_file($contentMediaServiceFile)) require_once $contentMediaServiceFile;
 }
@@ -43,7 +43,7 @@ $contentSlugger = new Slugger();
 $contentTaxonomyRepository = $contentTaxonomyEnabled ? new TaxonomyRepository($app->database()) : null;
 $contentTaxonomyAssignments = $contentTaxonomyEnabled ? new TaxonomyAssignmentRepository($app->database()) : null;
 $contentMediaReferences = class_exists('MediaContentReferenceService') && class_exists('MediaRepository') && class_exists('MediaUsageRepository')
-    ? new MediaContentReferenceService($app->database(), new MediaRepository($app->database()), new MediaUsageRepository($app->database()), class_exists('MediaVariantRepository') ? new MediaVariantRepository($app->database()) : null)
+    ? new MediaContentReferenceService($app->database(), new MediaRepository($app->database()), new MediaUsageRepository($app->database()), class_exists('MediaVariantRepository') ? new MediaVariantRepository($app->database()) : null, class_exists('MediaPendingPreparationService') ? new MediaPendingPreparationService(null, new MediaVariantRepository($app->database()), new MediaVariantFilesystemStorage($app->path('storage/media')), $app->session()) : null, new MediaVariantFilesystemStorage($app->path('storage/media')))
     : null;
 $contentService = new ContentService($app->database(), $contentRepository, $contentTaxonomyAssignments, $contentMediaReferences);
 $contentValidationMessage = static function (InvalidArgumentException $exception): string {
@@ -211,7 +211,7 @@ $contentToFormData = function (?Content $content = null): array {
 };
 $contentFeaturedDescriptor = static function (?Content $content) use ($contentMediaReferences): ?array {
     if (!$content || !$contentMediaReferences || $content->featuredMediaId() === null) return null;
-    try { return $contentMediaReferences->descriptor($content->featuredMediaId()); } catch (Throwable) { return null; }
+    try { return $contentMediaReferences->descriptor($content->featuredMediaId(), $content->id()); } catch (Throwable) { return null; }
 };
 
 $contentReadFormData = function ($request, $user, ?Content $existing = null) use ($contentSlugger, $contentValidationMessage, $contentMediaReferences): array {
@@ -261,6 +261,9 @@ $contentReadFormData = function ($request, $user, ?Content $existing = null) use
     } else {
         $data['featured_media_id'] = $featured === null || $featured === '' ? null : (int) $featured;
     }
+    $pendingToken = $request->input('featured_media_pending_token');
+    if ($pendingToken !== null && $pendingToken !== '' && (!is_scalar($pendingToken) || !preg_match('/^[a-f0-9]{64}$/', (string)$pendingToken))) $errors[]='Featured Media preparation is invalid.';
+    $data['featured_media_pending_token'] = is_string($pendingToken) && preg_match('/^[a-f0-9]{64}$/',$pendingToken) ? $pendingToken : null;
 
     if ($invalidPayload) {
         $errors[] = 'Submitted content data is invalid.';
@@ -513,7 +516,7 @@ $app->router()->get('/content/{slug}', function ($request, array $params) use ($
     }
 
     $featuredMedia = null;
-    try { $featuredMedia = $contentMediaReferences?->descriptor($entry->featuredMediaId()); } catch (Throwable) { $featuredMedia = null; }
+    try { $featuredMedia = $contentMediaReferences?->descriptor($entry->featuredMediaId(), $entry->id()); } catch (Throwable) { $featuredMedia = null; }
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('content::show'),
         ['content' => $entry, 'featuredMedia' => $featuredMedia],
@@ -652,7 +655,7 @@ $app->router()->post($app->adminUrl()->childUrl('content'), function ($request) 
     }
 
     try {
-        $contentId = $contentService->create($data, $selectedTaxonomy);
+        $contentId = $contentService->create($data, $selectedTaxonomy, $user->id());
     } catch (InvalidArgumentException $exception) {
         $content = $contentRenderView('form', [
             'adminBase' => $contentAdminBase,
@@ -892,7 +895,8 @@ $app->router()->post($app->adminUrl()->childUrl('content/{id}'), function ($requ
             $entry->id(),
             $data,
             $selectedTaxonomy,
-            is_string($expectedUpdatedAt) ? trim($expectedUpdatedAt) : ''
+            is_string($expectedUpdatedAt) ? trim($expectedUpdatedAt) : '',
+            $user->id()
         );
     } catch (InvalidArgumentException $exception) {
         $content = $contentRenderView('form', [

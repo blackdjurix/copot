@@ -24,20 +24,21 @@ class ContentService
     ) {
     }
 
-    public function create(array $data, array $taxonomy = []): int
+    public function create(array $data, array $taxonomy = [], ?int $userId = null): int
     {
-        return $this->withinTransaction(function () use ($data, $taxonomy): int {
+        $cleanup=[]; $result=$this->withinTransaction(function () use ($data, $taxonomy, $userId, &$cleanup): int {
             $contentId = $this->repository->create($data);
-            $this->mediaReferences?->sync($contentId, null, $data['featured_media_id'] ?? null);
+            $cleanup=$this->mediaReferences?->sync($contentId, null, $data['featured_media_id'] ?? null, $data['featured_media_pending_token'] ?? null, $userId) ?? [];
             $this->syncTaxonomy($contentId, $taxonomy);
 
             return $contentId;
         });
+        $this->mediaReferences?->finalize($cleanup); return $result;
     }
 
-    public function update(int $id, array $data, array $taxonomy = [], string $expectedUpdatedAt = ''): void
+    public function update(int $id, array $data, array $taxonomy = [], string $expectedUpdatedAt = '', ?int $userId = null): void
     {
-        $this->withinTransaction(function () use ($id, $data, $taxonomy, $expectedUpdatedAt): void {
+        $cleanup=[]; $this->withinTransaction(function () use ($id, $data, $taxonomy, $expectedUpdatedAt, $userId, &$cleanup): void {
             $current = $this->repository->findById($id);
 
             if (!$current) {
@@ -58,9 +59,10 @@ class ContentService
 
             $this->assertTransition($current->status(), $data['status'] ?? null, true);
             $this->repository->update($id, $data, $expectedUpdatedAt);
-            $this->mediaReferences?->sync($id, $current->featuredMediaId(), $data['featured_media_id'] ?? null);
+            $cleanup=$this->mediaReferences?->sync($id, $current->featuredMediaId(), $data['featured_media_id'] ?? null, $data['featured_media_pending_token'] ?? null, $userId) ?? [];
             $this->syncTaxonomy($id, $taxonomy);
         });
+        $this->mediaReferences?->finalize($cleanup);
     }
 
     public function publish(int $id): void

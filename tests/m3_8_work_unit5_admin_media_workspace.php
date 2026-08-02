@@ -142,8 +142,8 @@ try {
     $assert(str_contains($html, 'admin-media-filters') && str_contains($html, 'admin-media-grid-panel') && str_contains($html, 'admin-media-grid') && str_contains($html, 'data-media-card') && str_contains($html, 'role="button"') && str_contains($html, 'admin-panel__body'), 'Media workspace did not use the accepted interactive grid/card presentation structure.');
     $assert(str_contains($html, 'A &lt;hero&gt; image') && str_contains($html, '/media/' . $mediaId), 'Media output was not escaped or controlled.');
     $assert(!str_contains($html, 'storage/media') && !str_contains($html, 'storage_key') && !str_contains($html, '.tmp'), 'Media workspace leaked storage details.');
-    $assert(str_contains($html, 'square') && str_contains($html, 'landscape') && str_contains($html, 'contain'), 'Fixed processing presets were not presented.');
-    $assert(str_contains($html, 'admin-media-preview') && str_contains($html, 'role="dialog"') && str_contains($html, 'aria-modal="true"') && str_contains($html, 'Previous media') && str_contains($html, 'Next media') && str_contains($html, 'Open public view') && str_contains($html, 'Square') && str_contains($html, 'Landscape') && str_contains($html, 'Contain'), 'Media workspace lacks the accessible preview action surface.');
+    $assert(str_contains($html, 'Uploaded') && str_contains($html, 'admin-media-card__separator'), 'Media cards do not present compact uploaded metadata.');
+    $assert(str_contains($html, 'admin-media-preview') && str_contains($html, 'role="dialog"') && str_contains($html, 'aria-modal="true"') && str_contains($html, 'Previous media') && str_contains($html, 'Next media') && str_contains($html, 'Save changes') && !str_contains($html, 'Open public view') && !str_contains($html, 'Square') && !str_contains($html, 'Landscape') && !str_contains($html, 'Contain'), 'Media workspace preview actions do not match the focused Media metadata boundary.');
     $assert(!str_contains($html, 'admin-media-card__actions') && !str_contains($html, 'Download') && !str_contains($html, '/download'), 'Media Manager exposed a removed card action or Admin download affordance.');
     $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
     $adminJs = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-media.js');
@@ -158,7 +158,7 @@ try {
 
     $switch($readActor);
     $readHtml = $contentOf($app->run(new Request('GET', $mediaPath)));
-    $assert(!str_contains($readHtml, 'Upload media') && !str_contains($readHtml, 'Save title') && !str_contains($readHtml, 'Process'), 'Read-only Media presentation exposed management actions.');
+    $assert(!str_contains($readHtml, 'Upload media') && !str_contains($readHtml, 'Save changes') && !str_contains($readHtml, 'Process'), 'Read-only Media presentation exposed management actions.');
     $switch($noReadActor);
     $assert($statusOf($app->run(new Request('GET', $mediaPath))) === 403, 'Media list access without media.view was not denied.');
     $assert($statusOf($app->run(new Request('GET', $uploadPath))) === 403, 'Upload access without media.upload was not denied.');

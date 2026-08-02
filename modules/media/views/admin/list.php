@@ -6,6 +6,9 @@ $formatBytes = static function (int $bytes): string {
     if ($bytes >= 1024) return number_format($bytes / 1024, 1) . ' KB';
     return $bytes . ' B';
 };
+$formatCardDate = static function (string $value): string {
+    return (new DateTimeImmutable($value))->format('j M Y');
+};
 $noticeText = match ($notice ?? null) {
     'uploaded' => 'Media uploaded.',
     'title-updated' => 'Media title updated.',
@@ -33,15 +36,14 @@ $noticeText = match ($notice ?? null) {
         <div class="admin-panel__body">
             <div class="admin-media-grid">
                 <?php foreach ($mediaItems as $index => $item): $editable = $isEditable($item); $mediaId = $item->id()->value(); ?>
-                    <article class="admin-media-card" tabindex="0" role="button" data-media-card data-media-index="<?= $esc($index) ?>" data-media-id="<?= $esc($mediaId) ?>" data-media-title="<?= $esc($item->title()) ?>" data-media-filename="<?= $esc($item->originalFilename()) ?>" data-media-kind="<?= $esc($item->kind()) ?>" data-media-mime="<?= $esc($item->mimeType()) ?>" data-media-bytes="<?= $esc($formatBytes($item->byteSize())) ?>" data-media-width="<?= $esc($item->width() ?? '') ?>" data-media-height="<?= $esc($item->height() ?? '') ?>" data-media-updated="<?= $esc($item->updatedAt()) ?>" data-media-editable="<?= $editable ? '1' : '0' ?>" data-media-public-url="<?= $esc('/media/' . $mediaId) ?>" data-media-title-url="<?= $esc($adminUrl('media/' . $mediaId . '/title')) ?>" data-media-process-url="<?= $esc($adminUrl('media/' . $mediaId . '/process')) ?>" data-media-delete-url="<?= $esc($adminUrl('media/' . $mediaId . '/delete')) ?>" aria-label="Open media <?= $esc($item->title()) ?>">
+                    <article class="admin-media-card" tabindex="0" role="button" data-media-card data-media-index="<?= $esc($index) ?>" data-media-id="<?= $esc($mediaId) ?>" data-media-title="<?= $esc($item->title()) ?>" data-media-filename="<?= $esc($item->originalFilename()) ?>" data-media-kind="<?= $esc($item->kind()) ?>" data-media-mime="<?= $esc($item->mimeType()) ?>" data-media-bytes="<?= $esc($formatBytes($item->byteSize())) ?>" data-media-width="<?= $esc($item->width() ?? '') ?>" data-media-height="<?= $esc($item->height() ?? '') ?>" data-media-updated="<?= $esc($item->updatedAt()) ?>" data-media-editable="<?= $editable ? '1' : '0' ?>" data-media-public-url="<?= $esc('/media/' . $mediaId) ?>" data-media-title-url="<?= $esc($adminUrl('media/' . $mediaId . '/title')) ?>" data-media-delete-url="<?= $esc($adminUrl('media/' . $mediaId . '/delete')) ?>" aria-label="Open media <?= $esc($item->title()) ?>">
                         <div class="admin-media-card__preview">
                             <?php if ($item->kind() === 'image'): ?><img src="<?= $esc('/media/' . $item->id()->value()) ?>" alt="<?= $esc($item->title()) ?>" loading="lazy">
                             <?php else: ?><div class="admin-media-card__document" aria-label="PDF or document"><span class="admin-media-card__document-icon" aria-hidden="true">PDF</span><span>Document</span></div><?php endif; ?>
                         </div>
                         <div class="admin-media-card__body">
-                            <div class="admin-media-card__identity"><h3><?= $esc($item->title()) ?></h3><p><?= $esc($item->originalFilename()) ?></p></div>
-                            <div class="admin-media-card__meta"><span class="admin-badge <?= $item->kind() === 'document' ? 'admin-badge--warning' : 'admin-badge--info' ?>"><?= $esc(ucfirst($item->kind())) ?></span><span><?= $esc($formatBytes($item->byteSize())) ?></span><?php if ($item->width() !== null): ?><span><?= $esc($item->width() . ' × ' . $item->height()) ?></span><?php endif; ?><span><?= $editable ? 'Editable' : 'Manage-only' ?></span></div>
-                            <p class="admin-media-card__timestamp"><time datetime="<?= $esc($item->updatedAt()) ?>">Updated <?= $esc($item->updatedAt()) ?></time></p>
+                            <div class="admin-media-card__identity"><h3><?= $esc($item->title()) ?></h3></div>
+                            <div class="admin-media-card__meta"><?php if ($item->width() !== null): ?><span><?= $esc($item->width() . ' × ' . $item->height()) ?></span><span class="admin-media-card__separator" aria-hidden="true">·</span><?php endif; ?><time datetime="<?= $esc($item->createdAt()) ?>">Uploaded <?= $esc($formatCardDate($item->createdAt())) ?></time></div>
                         </div>
                     </article>
                 <?php endforeach; ?>
@@ -53,22 +55,18 @@ $noticeText = match ($notice ?? null) {
         <div class="admin-media-preview__backdrop" data-media-preview-close></div>
         <section class="admin-media-preview__dialog" role="dialog" aria-modal="true" aria-labelledby="media-preview-title" tabindex="-1">
             <header class="admin-media-preview__header"><h2 id="media-preview-title">Media preview</h2><button class="admin-button admin-button--secondary" type="button" data-media-preview-close aria-label="Close media preview">Close</button></header>
-            <button class="admin-media-preview__nav admin-button admin-button--secondary" type="button" data-media-preview-prev aria-label="Previous media">Previous</button>
+            <button class="admin-media-preview__nav" type="button" data-media-preview-prev aria-label="Previous media"><span aria-hidden="true">‹</span></button>
             <div class="admin-media-preview__stage" data-media-preview-stage></div>
-            <button class="admin-media-preview__nav admin-button admin-button--secondary" type="button" data-media-preview-next aria-label="Next media">Next</button>
+            <button class="admin-media-preview__nav" type="button" data-media-preview-next aria-label="Next media"><span aria-hidden="true">›</span></button>
             <div class="admin-media-preview__details" data-media-preview-details></div>
             <div class="admin-media-preview__actions" data-media-preview-actions></div>
         </section>
     </div>
     <template data-media-preview-actions-template>
-        <a class="admin-button admin-button--secondary" data-preview-public-link href="">Open public view</a>
         <?php if ($canEdit): ?>
-            <form method="post" data-preview-title-form><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><label class="admin-sr-only" data-preview-title-label>Title</label><input name="title" maxlength="190" data-preview-title-input><button class="admin-button admin-button--secondary" type="submit">Save title</button></form>
-            <div class="admin-media-preview__process" data-preview-process-actions>
-                <?php foreach (['square' => 'Square', 'landscape' => 'Landscape', 'contain' => 'Contain'] as $preset => $label): ?><form method="post" data-preview-process-form><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><input type="hidden" name="preset" value="<?= $esc($preset) ?>"><button class="admin-button admin-button--secondary" type="submit"><?= $esc($label) ?></button></form><?php endforeach; ?>
-            </div>
+            <form class="admin-media-preview__title-form" method="post" data-preview-title-form><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><label class="admin-field__label" data-preview-title-label>Title</label><input name="title" maxlength="190" data-preview-title-input><button class="admin-button admin-button--secondary" type="submit">Save changes</button></form>
         <?php endif; ?>
-        <?php if (!empty($canDelete)): ?><form method="post" data-preview-delete-form><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><button class="admin-button admin-button--danger" type="submit">Delete unused Media</button></form><?php endif; ?>
+        <?php if (!empty($canDelete)): ?><div class="admin-media-preview__destructive"><form method="post" data-preview-delete-form><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><button class="admin-button admin-button--danger" type="submit">Delete media</button></form></div><?php endif; ?>
     </template>
     <script src="/admin-assets/js/admin-media.js?v=wu6" defer></script>
 <?php endif; ?>

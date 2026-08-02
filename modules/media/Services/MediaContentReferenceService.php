@@ -11,7 +11,9 @@ final class MediaContentReferenceService
         private Database $database,
         private MediaRepository $media,
         private MediaUsageRepository $usages,
-        private ?MediaVariantRepository $variants = null
+        private ?MediaVariantRepository $variants = null,
+        private ?MediaPendingPreparationService $pending = null,
+        private ?MediaVariantFilesystemStorage $storage = null
     ) {
     }
 
@@ -26,7 +28,7 @@ final class MediaContentReferenceService
         return $media;
     }
 
-    public function sync(int $contentId, ?int $previous, ?int $next): void
+    public function sync(int $contentId, ?int $previous, ?int $next, ?string $pendingToken = null, ?int $userId = null): array
     {
         if ($contentId < 1) throw new InvalidArgumentException('Content identity is invalid.');
         $connection = $this->database->connection();
@@ -37,14 +39,20 @@ final class MediaContentReferenceService
         if ($next !== null) {
             $this->usages->register($next, 'content', $contentId, self::USAGE_KEY);
         }
+        if ($pendingToken !== null && $pendingToken !== '') {
+            if ($next === null || $userId === null || !$this->pending) throw new InvalidArgumentException('Featured Media preparation is unavailable.');
+            return $this->pending->promote($pendingToken, $userId, $contentId, $next);
+        }
+        return [];
     }
 
-    public function descriptor(?int $mediaId): ?array
+    public function descriptor(?int $mediaId, ?int $contentId = null): ?array
     {
         $media = $this->validate($mediaId);
         if (!$media) return null;
+        if ($contentId === null || $contentId < 1) return null;
         $variants = $this->variants?->forMedia($media->id()) ?? [];
-        $prepared = array_values(array_filter($variants, static fn (MediaVariant $variant): bool => str_starts_with($variant->variantKey(), 'content-featured-')));
+        $prepared = array_values(array_filter($variants, static fn (MediaVariant $variant): bool => $variant->variantKey() === MediaVariantKey::contentSlot($media->id(), $contentId, (int) $variant->width())));
         $currentByWidth = [];
         foreach ($prepared as $variant) {
             $width = $variant->width();
@@ -71,4 +79,6 @@ final class MediaContentReferenceService
             'alt' => $media->title() !== '' ? $media->title() : $media->originalFilename(),
         ];
     }
+
+    public function finalize(array $storageKeys): void { if(!$this->storage)return; foreach(array_unique($storageKeys) as $key)try{$this->storage->delete($key);}catch(Throwable){} }
 }
