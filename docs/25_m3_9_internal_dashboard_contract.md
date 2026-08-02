@@ -16,7 +16,10 @@ LOCKED
 M3.9 WU1:
 COMPLETE
 
-M3.9 WU2–WU4:
+M3.9 WU2:
+COMPLETE
+
+M3.9 WU3–WU4:
 NOT STARTED
 
 M3.9 implementation branch:
@@ -83,7 +86,7 @@ multiple materially distinct widgets.
 
 The Content widgets are bounded management information and navigation surfaces.
 `content.recent` is not an activity feed, notification stream, or reporting
-system. WU2 will implement the selected manager contributions through the
+system. WU2 implements the selected manager contributions through the
 existing public Content contract; WU1 does not implement those providers.
 
 ## Ownership and architecture
@@ -272,6 +275,13 @@ source evidence.
 
 ### WU2 — Existing Manager Contributions
 
+Implementation state: COMPLETE. The selected Core, Content, and Taxonomy
+contributions are registered through the existing `AdminDashboardRegistry`.
+The registry now carries optional owner, purpose, semantic footprint, and
+request-scoped provider metadata while preserving the existing shortcut
+registration signature and permission behavior. Provider failures and invalid
+provider payloads fail closed for the affected widget.
+
 Objective: connect only approved, useful widgets from existing manager and
 Core capabilities through explicit public contribution/service boundaries.
 
@@ -287,7 +297,10 @@ cross-module schema ownership.
 
 Validation and completion evidence: contribution tests, permission matrices,
 stable ordering checks, disabled/unavailable-module behavior, and failure
-isolation evidence.
+isolation evidence. Content draft count uses the Content-owned workspace
+service boundary; the recent Content contribution is bounded to five entries
+and retains the repository's `updated_at DESC, id DESC` ordering. No selected
+first-wave contribution uses a bounded quick action.
 
 ### WU3 — Dashboard Presentation and Shell Integration
 
@@ -409,7 +422,7 @@ feature/m3.9-internal-dashboard
 
 The WU1 implementation branch is
 `feature/m3.9-internal-dashboard`, created from the verified preparation
-anchor `d39957fa0e8f3704649c32b1e64dbd3b28cdf0c4`. WU2–WU4 have not started.
+anchor `d39957fa0e8f3704649c32b1e64dbd3b28cdf0c4`. WU3–WU4 have not started.
 Any later implementation branch must branch from the then-current verified
 preparation-complete `main` anchor; this contract does not authorize branching
 from an obsolete historical commit.

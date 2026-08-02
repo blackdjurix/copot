@@ -13,6 +13,29 @@ $adminPermission = trim($adminPermission);
 $adminBase = $adminUrl->baseUrl();
 $documentLocale = $app->adminPageRenderer()->documentLocale();
 
+$app->adminDashboard()->add(
+    'core.system-overview',
+    'System overview',
+    'Application, Admin path, current user, and safe framework status.',
+    null,
+    'admin.access',
+    100,
+    [
+        'owner' => 'core',
+        'purpose' => 'status',
+        'footprint' => 'wide',
+        'provider' => static function ($user) use ($app): array {
+            return [
+                'application' => (string) $app->config()->get('app.name', 'Copot'),
+                'admin_path' => $app->adminUrl()->baseUrl(),
+                'user_name' => $user->name(),
+                'user_email' => $user->email(),
+                'framework_status' => 'M1.4.1 Admin Shell',
+            ];
+        },
+    ]
+);
+
 $renderAdminLogin = function (string $email = '', ?string $error = null) use ($app, $adminBase, $documentLocale): string {
     return $app->view()->render('admin/login', [
         'appName' => $app->config()->get('app.name', 'Copot'),

@@ -31,7 +31,12 @@ $app->adminDashboard()->add(
     'Manage classification types and the terms assigned to content.',
     $app->adminUrl()->childUrl('taxonomy'),
     $taxonomyPermissions,
-    300
+    300,
+    [
+        'owner' => 'taxonomy',
+        'purpose' => 'navigation',
+        'footprint' => 'compact',
+    ]
 );
 
 $taxonomyUserCanAny = function ($user, array $permissions): bool {

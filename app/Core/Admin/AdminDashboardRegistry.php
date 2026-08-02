@@ -15,7 +15,8 @@ class AdminDashboardRegistry
         string $description,
         ?string $url = null,
         string|array|null $permissions = null,
-        int $priority = 100
+        int $priority = 100,
+        array $options = []
     ): void {
         $id = trim($id);
         $title = trim($title);
@@ -42,15 +43,18 @@ class AdminDashboardRegistry
             throw new \InvalidArgumentException("Admin dashboard widget [{$id}] is already registered.");
         }
 
-        $this->widgets[$id] = [
+        $metadata = $this->normalizeOptions($options);
+
+        $this->widgets[$id] = array_merge([
             'id' => $id,
             'title' => $title,
             'description' => $description,
             'url' => $url,
             'permissions' => $this->normalizePermissions($permissions),
             'priority' => $priority,
+        ], $metadata, [
             'registration_order' => $this->registrationOrder++,
-        ];
+        ]);
     }
 
     public function itemsFor(?User $user): array
@@ -66,7 +70,13 @@ class AdminDashboardRegistry
                 continue;
             }
 
+            $content = $this->resolveContent($widget, $user);
+            if ($content === false) {
+                continue;
+            }
+
             $widgets[] = $widget;
+            $widgets[array_key_last($widgets)]['content'] = $content;
         }
 
         usort($widgets, static function (array $left, array $right): int {
@@ -82,7 +92,61 @@ class AdminDashboardRegistry
             'title' => $widget['title'],
             'description' => $widget['description'],
             'url' => $widget['url'],
+            'owner' => $widget['owner'],
+            'purpose' => $widget['purpose'],
+            'footprint' => $widget['footprint'],
+            'content' => $widget['content'],
         ], $widgets);
+    }
+
+    private function normalizeOptions(array $options): array
+    {
+        $owner = $options['owner'] ?? null;
+        if ($owner !== null && (!is_string($owner) || trim($owner) === '')) {
+            throw new \InvalidArgumentException('Admin dashboard widget owner identity is invalid.');
+        }
+
+        $purpose = $options['purpose'] ?? null;
+        if ($purpose !== null && (!is_string($purpose) || trim($purpose) === '')) {
+            throw new \InvalidArgumentException('Admin dashboard widget purpose is invalid.');
+        }
+
+        $footprint = $options['footprint'] ?? 'compact';
+        if (!is_string($footprint) || !in_array($footprint, ['compact', 'standard', 'wide'], true)) {
+            throw new \InvalidArgumentException('Admin dashboard widget footprint is invalid.');
+        }
+
+        $provider = $options['provider'] ?? null;
+        if ($provider !== null && !is_callable($provider)) {
+            throw new \InvalidArgumentException('Admin dashboard widget provider is invalid.');
+        }
+
+        return [
+            'owner' => $owner === null ? null : trim($owner),
+            'purpose' => $purpose === null ? null : trim($purpose),
+            'footprint' => $footprint,
+            'provider' => $provider,
+        ];
+    }
+
+    private function resolveContent(array $widget, User $user): array|null|false
+    {
+        $provider = $widget['provider'];
+        if ($provider === null) {
+            return null;
+        }
+
+        try {
+            $content = $provider($user);
+        } catch (\Throwable) {
+            return false;
+        }
+
+        if ($content === null) {
+            return null;
+        }
+
+        return is_array($content) ? $content : false;
     }
 
     private function normalizePermissions(string|array|null $permissions): array

@@ -87,7 +87,65 @@ $app->adminDashboard()->add(
     [
         'content.read',
     ],
-    200
+    200,
+    [
+        'owner' => 'content',
+        'purpose' => 'navigation',
+        'footprint' => 'compact',
+    ]
+);
+
+$app->adminDashboard()->add(
+    'content.drafts',
+    'Draft Content',
+    'Content entries awaiting publication.',
+    $app->adminUrl()->childUrl('content') . '?status=draft',
+    'content.read',
+    120,
+    [
+        'owner' => 'content',
+        'purpose' => 'status',
+        'footprint' => 'standard',
+        'provider' => static function ($user) use ($contentRepository): array {
+            $workspace = $contentRepository->workspace(['status' => 'draft'], 1, 0);
+
+            return [
+                'draft_count' => (int) ($workspace['total'] ?? 0),
+            ];
+        },
+    ]
+);
+
+$app->adminDashboard()->add(
+    'content.recent',
+    'Recent Content',
+    'Recently updated Content entries.',
+    $app->adminUrl()->childUrl('content'),
+    'content.read',
+    140,
+    [
+        'owner' => 'content',
+        'purpose' => 'management-overview',
+        'footprint' => 'wide',
+        'provider' => static function ($user) use ($contentRepository): array {
+            $workspace = $contentRepository->workspace([], 5, 0);
+            $items = [];
+
+            foreach (($workspace['items'] ?? []) as $content) {
+                $items[] = [
+                    'id' => $content->id(),
+                    'title' => $content->title(),
+                    'type' => $content->type(),
+                    'status' => $content->status(),
+                    'updated_at' => $content->updatedAt(),
+                ];
+            }
+
+            return [
+                'items' => $items,
+            ];
+        },
+    ]
 );
 
 $contentRenderView = function (string $view, array $data = []) use ($contentAdminUrl): string {

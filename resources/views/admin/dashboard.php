@@ -1,3 +1,16 @@
+<?php
+$coreWidget = null;
+$moduleWidgets = [];
+foreach (($widgets ?? []) as $dashboardWidget) {
+    if (($dashboardWidget['id'] ?? null) === 'core.system-overview') {
+        $coreWidget = $dashboardWidget;
+        continue;
+    }
+
+    $moduleWidgets[] = $dashboardWidget;
+}
+$coreContent = is_array($coreWidget['content'] ?? null) ? $coreWidget['content'] : [];
+?>
 <div class="admin-dashboard">
     <p class="admin-dashboard__description">Overview of your Copot Admin workspace.</p>
 
@@ -13,21 +26,21 @@
             <div class="admin-dashboard-overview__grid">
                 <dl>
                     <dt>Application</dt>
-                    <dd><?= htmlspecialchars($appName ?? 'Copot', ENT_QUOTES, 'UTF-8') ?></dd>
+                    <dd><?= htmlspecialchars((string) ($coreContent['application'] ?? $appName ?? 'Copot'), ENT_QUOTES, 'UTF-8') ?></dd>
 
                     <dt>Admin path</dt>
-                    <dd><?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?></dd>
+                    <dd><?= htmlspecialchars((string) ($coreContent['admin_path'] ?? $adminBaseUrl), ENT_QUOTES, 'UTF-8') ?></dd>
 
                     <dt>User</dt>
                     <dd>
-                        <?= htmlspecialchars($userName ?? 'User', ENT_QUOTES, 'UTF-8') ?>
-                        &lt;<?= htmlspecialchars($userEmail ?? '', ENT_QUOTES, 'UTF-8') ?>&gt;
+                        <?= htmlspecialchars((string) ($coreContent['user_name'] ?? $userName ?? 'User'), ENT_QUOTES, 'UTF-8') ?>
+                        &lt;<?= htmlspecialchars((string) ($coreContent['user_email'] ?? $userEmail ?? ''), ENT_QUOTES, 'UTF-8') ?>&gt;
                     </dd>
                 </dl>
 
                 <aside class="admin-dashboard-status" aria-labelledby="framework-status-label">
                     <span class="admin-dashboard-status__label" id="framework-status-label">Framework status</span>
-                    <strong>Post-M3 · Admin UX Refinement 1</strong>
+                    <strong><?= htmlspecialchars((string) ($coreContent['framework_status'] ?? $frameworkStatus ?? 'Admin Shell'), ENT_QUOTES, 'UTF-8') ?></strong>
                     <p>Copot Admin is ready for use.</p>
                 </aside>
             </div>
@@ -40,14 +53,14 @@
             <p>Open enabled modules available to your account.</p>
         </div>
 
-    <?php if (($widgets ?? []) === []): ?>
+    <?php if ($moduleWidgets === []): ?>
         <div class="admin-empty-state">
             <h3 class="admin-empty-state__title">No module shortcuts available</h3>
             <p class="admin-empty-state__description">Enabled modules can register permission-aware dashboard shortcuts here.</p>
         </div>
     <?php else: ?>
         <div class="admin-dashboard-widgets">
-            <?php foreach ($widgets as $widget): ?>
+            <?php foreach ($moduleWidgets as $widget): ?>
                 <?php $widgetHeadingId = 'dashboard-widget-' . ($widget['id'] ?? 'item'); ?>
                 <article class="admin-panel" aria-labelledby="<?= htmlspecialchars($widgetHeadingId, ENT_QUOTES, 'UTF-8') ?>">
                     <header class="admin-panel__header">
@@ -60,6 +73,24 @@
                             </p>
                         </div>
                     </header>
+
+                    <?php if (isset($widget['content']['draft_count'])): ?>
+                        <div class="admin-panel__body">
+                            <p><strong><?= htmlspecialchars((string) $widget['content']['draft_count'], ENT_QUOTES, 'UTF-8') ?></strong> draft Content entries.</p>
+                        </div>
+                    <?php elseif (isset($widget['content']['items']) && is_array($widget['content']['items'])): ?>
+                        <div class="admin-panel__body">
+                            <?php if ($widget['content']['items'] === []): ?>
+                                <p>No recently updated Content entries.</p>
+                            <?php else: ?>
+                                <ul>
+                                    <?php foreach ($widget['content']['items'] as $item): ?>
+                                        <li><?= htmlspecialchars((string) ($item['title'] ?? 'Untitled'), ENT_QUOTES, 'UTF-8') ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
 
                     <?php if (!empty($widget['url'])): ?>
                         <div class="admin-panel__actions">
