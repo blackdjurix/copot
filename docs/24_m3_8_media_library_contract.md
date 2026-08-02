@@ -51,15 +51,17 @@ PACKAGE INCLUSION, AND PACKAGED CLEAN-INSTALL PROVISIONING
 Implementation branch:
 M3.8 WAS FAST-FORWARD INTEGRATED INTO `main` AT
 `d5ce5fb32e3f61014e389f6d0634a29985723e09` WITH NO MERGE COMMIT;
-`feature/m3.8-media-library` REMAINS PRESENT PENDING SEPARATELY AUTHORIZED
-LIFECYCLE CLEANUP; FULL M3.8 IS COMPLETE
+POST-MERGE DOCUMENTATION CLOSURE WAS RECORDED AT
+`e21e7b281fecdb7619022be0457381a5ce31ce85`; VERIFIED CONTAINMENT AND
+LOCAL/REMOTE FEATURE-BRANCH DELETION ARE COMPLETE; FULL M3.8 IS COMPLETE
+AND CLOSED
 ```
 
-The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
-predecessors and are durably delivered. WU4 implementation and focused
+The authoritative branch is `main`. WU2 and WU3 are accepted predecessors
+and are durably delivered. WU4 implementation and focused
 validation are complete and durably delivered. WU5
-presentation refinement is implemented and focused-validated on the active
-feature branch. AI acceptance and human visual/browser acceptance are `PASS`;
+presentation refinement is implemented and focused-validated before closure.
+AI acceptance and human visual/browser acceptance are `PASS`;
 WU5 is finally closed. WU6 delivers the approved Content
 featured-Media picker, usage synchronization, unused-only deletion safety, the
 consumer-requested `content.featured` 16:9 preparation/crop profile, and
@@ -67,8 +69,10 @@ processed featured-image rendering on the single public Content view. Focused
 validation and human functional/browser acceptance are complete. WU7 adds
 closure evidence without expanding Media production scope. Full M3.8 was
 fast-forward integrated into `main` at `d5ce5fb32e3f61014e389f6d0634a29985723e09`
-with no merge commit. The feature branch remains present pending separately
-authorized lifecycle cleanup; release, tag, and publication remain not started.
+with no merge commit. Post-merge documentation closure was recorded at
+`e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
+local/remote feature-branch deletion are complete. Release, tag, and
+publication remain not started.
 
 ## Locked architecture and ownership
 
@@ -662,5 +666,7 @@ does not authorize implementation or determine milestone closure.
 
 WU1–WU7 are complete and accepted. M3.8 was fast-forward integrated into
 `main` at `d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit.
-The feature branch remains present pending separately authorized lifecycle
-cleanup. Release, tag, and publication remain separate and have not started.
+Post-merge documentation closure was recorded at
+`e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
+local/remote feature-branch deletion are complete. Release, tag, and
+publication remain separate and have not started.

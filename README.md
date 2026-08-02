@@ -8,7 +8,7 @@ focused-validated; human functional/browser acceptance has passed on
 `main`. Content is the first active Media consumer;
 Media processing remains generic and is driven by consumer profile requirements.
 PHP GD is required in the serving PHP runtime for image processing. Further
-Media Manager visual refinement remains Deferred / Unscheduled and non-blocking. WU7 closure evidence covers the genuine pre-M3.8 upgrade path, five-action authorization, package inclusion, and packaged clean-install provisioning. Full M3.8 is complete. The feature branch remains present pending separately authorized lifecycle cleanup; release, tag, and publication remain not started.
+Media Manager visual refinement remains Deferred / Unscheduled and non-blocking. WU7 closure evidence covers the genuine pre-M3.8 upgrade path, five-action authorization, package inclusion, and packaged clean-install provisioning. Full M3.8 is complete and closed. M3.9 Internal Dashboard is next; M3.9 preparation is being locked, implementation has not started, and no M3.9 implementation branch exists. Release, tag, and publication remain not started.
 
 ## Current M3.7 post-merge state
 
@@ -25,7 +25,7 @@ below are historical.
 
 M3.8 initial clarification and preparation audit are complete. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
-delivered on `feature/m3.8-media-library`; WU4 is complete. WU5
+delivered on `main`; WU4 is complete. WU5
 presentation refinement implements the accepted visual grid/card management
 direction and centralized filename title fallback; focused validation and AI
 acceptance are `PASS`, and human visual/browser acceptance is `PASS` for
@@ -36,9 +36,10 @@ and multiple-file/batch upload remain unsupported future Media enhancements and
 are not WU5 blockers; video remains outside the current M3.8 contract. WU6
 implementation, focused validation, and human functional/browser acceptance are
 complete on `main`. WU7 closure evidence is complete. Full M3.8 is complete
-after fast-forward integration at `d5ce5fb32e3f61014e389f6d0634a29985723e09`
-with no merge commit. The feature branch remains present pending separately
-authorized lifecycle cleanup. The contract is
+and closed after fast-forward integration at
+`d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit, post-merge
+documentation closure, verified containment, and local/remote feature-branch
+deletion. The contract is
 `docs/24_m3_8_media_library_contract.md`.
 
 The older M3.8 WU6 preparation-only checkpoint paragraphs below are historical
@@ -68,10 +69,19 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
-Current M3.6 state: WU1–WU6 are complete and integrated into `main` at
+Current authoritative state: M3.8 WU1–WU7 and full M3.8 are complete and
+closed on `main`; post-merge documentation closure, verified containment, and
+local/remote feature-branch deletion are complete. M3.9 Internal Dashboard is
+next. M3.9 preparation is being locked; implementation has not started and no
+M3.9 implementation branch exists.
+
+The following detailed milestone summary preserves prior checkpoint context.
+Branch-lifecycle statements inside that retained summary are historical and do
+not describe the current Git state.
+
+Historical M3.6 checkpoint state: WU1–WU6 were complete and integrated into `main` at
 `8deb4f67d47f476e254b36e3802bd250e393921d` by fast-forward, with no merge
-commit. WU1–WU6 are complete; the feature branch lifecycle is closed,
-and full M3.6 is complete. M3.7 WU1–WU6 are complete, objectively accepted, and integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and branch cleanup passed. Full M3.7 is complete. The real-settings Theme Settings/color-control spot-check is deferred and non-blocking because the bundled Default Theme declares no settings. M3.8 WU1–WU7 are complete and fast-forward integrated into `main` at `d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit. Further Media Manager visual refinement remains Deferred / Unscheduled and non-blocking; release, tag, and publication remain not started, and the feature branch remains present pending separately authorized lifecycle cleanup.
+commit. WU1–WU6 were complete; that checkpoint is historical. Current M3.8 is complete and closed with post-merge documentation closure, verified containment, and local/remote feature-branch deletion complete. M3.9 Internal Dashboard is next; M3.9 preparation is being locked, implementation has not started, and no M3.9 implementation branch exists. Further Media Manager visual refinement remains Deferred / Unscheduled and non-blocking; release, tag, and publication remain not started.
 
 M3 Core Modules. M3.1 Users & Access is complete and merged to `main`; M3.2 Settings Manager is complete, validated, and merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; its local and remote feature branches are deleted. M3.3 remains unreleased, untagged, and unpublished.
 
