@@ -49,7 +49,10 @@ IMPLEMENTED AND VALIDATED: PRE-M3.8 UPGRADE, FIVE-ACTION AUTHORIZATION,
 PACKAGE INCLUSION, AND PACKAGED CLEAN-INSTALL PROVISIONING
 
 Implementation branch:
-`feature/m3.8-media-library` REMAINS ACTIVE; FULL M3.8 IS NOT COMPLETE
+M3.8 WAS FAST-FORWARD INTEGRATED INTO `main` AT
+`d5ce5fb32e3f61014e389f6d0634a29985723e09` WITH NO MERGE COMMIT;
+`feature/m3.8-media-library` REMAINS PRESENT PENDING SEPARATELY AUTHORIZED
+LIFECYCLE CLEANUP; FULL M3.8 IS COMPLETE
 ```
 
 The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
@@ -62,8 +65,10 @@ featured-Media picker, usage synchronization, unused-only deletion safety, the
 consumer-requested `content.featured` 16:9 preparation/crop profile, and
 processed featured-image rendering on the single public Content view. Focused
 validation and human functional/browser acceptance are complete. WU7 adds
-closure evidence without expanding Media production scope. Full M3.8 is not
-complete.
+closure evidence without expanding Media production scope. Full M3.8 was
+fast-forward integrated into `main` at `d5ce5fb32e3f61014e389f6d0634a29985723e09`
+with no merge commit. The feature branch remains present pending separately
+authorized lifecycle cleanup; release, tag, and publication remain not started.
 
 ## Locked architecture and ownership
 
@@ -655,7 +660,7 @@ Preparation documentation is locally validated when this contract and its
 directly affected status documentation pass documentation-focused review. This
 does not authorize implementation or determine milestone closure.
 
-WU1–WU6 are accepted predecessors. WU7 is implemented and validated within
-the locked closure scope: it adds no production change and records upgrade,
-authorization, package, and clean-install evidence. Full M3.8 is not complete;
-milestone closure is not implied.
+WU1–WU7 are complete and accepted. M3.8 was fast-forward integrated into
+`main` at `d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit.
+The feature branch remains present pending separately authorized lifecycle
+cleanup. Release, tag, and publication remain separate and have not started.

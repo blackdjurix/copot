@@ -947,11 +947,11 @@ commit. Post-merge documentation closure commit `8dea71c82a4076c8b9d399047031e0a
 review passed; feature containment and local/remote feature-branch cleanup
 passed. Full M3.7 is complete. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
-settings. Release, tag, and publication remain not started. M3.8 WU1–WU6 are
-accepted predecessors, including Content featured-image preparation/crop and
-single public-view rendering. WU7 closure evidence covers the genuine
-existing-install upgrade path, five-action authorization, package inclusion,
-and packaged clean-install provisioning. Full M3.8 remains not complete.
+settings. Release, tag, and publication remain not started. M3.8 WU1–WU7 are
+complete and fast-forward integrated into `main` at
+`d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit. The feature
+branch remains present pending separately authorized lifecycle cleanup. Further
+Media Manager visual refinement remains Deferred / Unscheduled and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.
 
@@ -1034,9 +1034,9 @@ content-domain expansion is outside M3.7. ZIP installation, marketplace,
 uninstall, Media Library, page building, Custom CSS, and other excluded
 capabilities remain outside M3.7. Feature containment and branch cleanup
 passed. Full M3.7 is complete; release, tag, and publication have not
-started. M3.8 WU5 is complete; WU6 implementation, focused validation,
-and human functional/browser acceptance are complete, and full M3.8 remains
-not complete.
+started. M3.8 WU1–WU7 are complete and fast-forward integrated into `main` at
+`d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit; the feature
+branch remains present pending separately authorized lifecycle cleanup.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1102,7 +1102,9 @@ WU6 is an accepted predecessor for the approved Content featured-Media picker,
 consumer-scoped pending preparation and save-time promotion, usage
 synchronization, and unused-only Media deletion safety. Focused validation and
 human functional/browser acceptance are complete. WU7 closure evidence is
-complete; full M3.8 remains not complete.
+complete; full M3.8 was fast-forward integrated into `main` at
+`d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit. The feature
+branch remains present pending separately authorized lifecycle cleanup.
 
 #### Deferred Item — DI-M3.8-WU6-01
 
@@ -1136,8 +1138,10 @@ consumer-scoped pending preparation and save-time promotion, usage
 synchronization, and unused-only Media deletion safety; focused validation and
 human functional/browser acceptance are complete. WU7 closure evidence covers
 upgrade, authorization, package, and packaged clean-install boundaries. Full
-M3.8 is not complete. No merge, release, tag, publication, rebase, or branch deletion has
-started or been authorized. The
+M3.8 is complete and was fast-forward integrated into `main` at
+`d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit. The feature
+branch remains present pending separately authorized lifecycle cleanup. Release,
+tag, and publication have not started. The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.
 
