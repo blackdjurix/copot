@@ -947,11 +947,11 @@ commit. Post-merge documentation closure commit `8dea71c82a4076c8b9d399047031e0a
 review passed; feature containment and local/remote feature-branch cleanup
 passed. Full M3.7 is complete. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
-settings. Release, tag, and publication remain not started. M3.8 WU6
-implementation, focused validation, and human functional/browser acceptance
-are complete, including Content featured-image preparation/crop and single
-public-view rendering; this record makes no final WU6 closure decision. Full M3.8
-remains not complete.
+settings. Release, tag, and publication remain not started. M3.8 WU1–WU6 are
+accepted predecessors, including Content featured-image preparation/crop and
+single public-view rendering. WU7 closure evidence covers the genuine
+existing-install upgrade path, five-action authorization, package inclusion,
+and packaged clean-install provisioning. Full M3.8 remains not complete.
 Older M3.7 preparation
 checkpoint statements below are historical.
 
@@ -1098,11 +1098,11 @@ Media Library is module-owned and provides general media management and selectio
 
 ### M3.8 Media Library preparation status
 
-WU6 is complete for the approved Content featured-Media picker,
+WU6 is an accepted predecessor for the approved Content featured-Media picker,
 consumer-scoped pending preparation and save-time promotion, usage
 synchronization, and unused-only Media deletion safety. Focused validation and
-human functional/browser acceptance are complete; WU7 is not started and full
-M3.8 remains not complete.
+human functional/browser acceptance are complete. WU7 closure evidence is
+complete; full M3.8 remains not complete.
 
 #### Deferred Item — DI-M3.8-WU6-01
 
@@ -1134,8 +1134,9 @@ enhancements and are not WU5 blockers; video remains outside the current M3.8
 contract. WU6 is complete for the approved Content featured-Media picker,
 consumer-scoped pending preparation and save-time promotion, usage
 synchronization, and unused-only Media deletion safety; focused validation and
-human functional/browser acceptance are complete. WU7 is not started and unauthorized.
-Full M3.8 is not complete. No merge, release, tag, publication, rebase, or branch deletion has
+human functional/browser acceptance are complete. WU7 closure evidence covers
+upgrade, authorization, package, and packaged clean-install boundaries. Full
+M3.8 is not complete. No merge, release, tag, publication, rebase, or branch deletion has
 started or been authorized. The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.

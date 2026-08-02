@@ -300,6 +300,14 @@ try {
         $assert((int) $connection->query('SELECT COUNT(*) FROM users')->fetchColumn() === 1, 'Installed database must have one first administrator.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM themes WHERE theme_id = 'default' AND is_active = 1")->fetchColumn() === 1, 'Default theme must be active.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name IN ('content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation', 'theme-manager', 'media') AND status = 'enabled'")->fetchColumn() === 7, 'All seven approved baseline modules must be enabled.');
+        foreach (['media', 'media_variants', 'media_usages'] as $mediaTable) {
+            $assert((int) $connection->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = " . $connection->quote($mediaTable))->fetchColumn() === 1, 'Fresh schema omitted Media table ' . $mediaTable . '.');
+        }
+        $mediaPermissions = ['media.view', 'media.upload', 'media.use', 'media.edit', 'media.delete'];
+        $mediaPermissionList = implode(',', array_map([$connection, 'quote'], $mediaPermissions));
+        $assert((int) $connection->query("SELECT COUNT(*) FROM permissions WHERE slug IN ({$mediaPermissionList})")->fetchColumn() === 5, 'Fresh schema omitted one or more Media permissions.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM role_permissions rp INNER JOIN roles r ON r.id = rp.role_id INNER JOIN permissions p ON p.id = rp.permission_id WHERE r.slug = 'admin' AND p.slug IN ({$mediaPermissionList})")->fetchColumn() === 5, 'Fresh schema omitted one or more administrator Media grants.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM module_permissions WHERE module_name = 'media' AND permission_slug IN ({$mediaPermissionList})")->fetchColumn() === 5, 'Fresh install did not register all Media manifest permissions.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name = 'module-manager'")->fetchColumn() === 1, 'Module Manager must be installed exactly once.');
         $assert((string) $connection->query("SELECT status FROM modules WHERE name = 'module-manager'")->fetchColumn() === 'enabled', 'Module Manager must be enabled after fresh installation.');
         $assert((int) $connection->query("SELECT COUNT(*)

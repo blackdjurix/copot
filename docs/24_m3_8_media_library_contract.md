@@ -39,16 +39,17 @@ AI ACCEPTANCE PASS
 HUMAN VISUAL/BROWSER ACCEPTANCE PASS; FINALLY CLOSED
 
 WU6:
-IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE FOR APPROVED CONTENT FEATURED-MEDIA
+ACCEPTED PREDECESSOR: IMPLEMENTATION, FOCUSED VALIDATION, AND HUMAN
+FUNCTIONAL/BROWSER ACCEPTANCE COMPLETE FOR APPROVED CONTENT FEATURED-MEDIA
 PICKER, USAGE SYNCHRONIZATION, UNUSED-ONLY DELETION SAFETY, CONSUMER-SCOPED
-PREPARATION/CROP, AND SINGLE PUBLIC CONTENT-VIEW RENDERING; HUMAN
-FUNCTIONAL/BROWSER ACCEPTANCE PASS; WU6 FINAL CLOSURE DECISION REMAINS SEPARATE
+PREPARATION/CROP, AND SINGLE PUBLIC CONTENT-VIEW RENDERING
 
 WU7:
-NOT STARTED
+IMPLEMENTED AND VALIDATED: PRE-M3.8 UPGRADE, FIVE-ACTION AUTHORIZATION,
+PACKAGE INCLUSION, AND PACKAGED CLEAN-INSTALL PROVISIONING
 
 Implementation branch:
-`feature/m3.8-media-library` REMAINS ACTIVE; WU7 IS NOT STARTED AND REMAINS UNAUTHORIZED
+`feature/m3.8-media-library` REMAINS ACTIVE; FULL M3.8 IS NOT COMPLETE
 ```
 
 The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
@@ -60,9 +61,9 @@ WU5 is finally closed. WU6 delivers the approved Content
 featured-Media picker, usage synchronization, unused-only deletion safety, the
 consumer-requested `content.featured` 16:9 preparation/crop profile, and
 processed featured-image rendering on the single public Content view. Focused
-validation and human functional/browser acceptance are complete. This record
-does not make a final WU6 closure decision. WU7 remains not started and
-unauthorized. Full M3.8 is not complete.
+validation and human functional/browser acceptance are complete. WU7 adds
+closure evidence without expanding Media production scope. Full M3.8 is not
+complete.
 
 ## Locked architecture and ownership
 
@@ -589,8 +590,8 @@ this image-processing path.
 Focused validation and human functional/browser acceptance are complete for the
 picker, crop/save boundary, same-Media re-crop, shared-Media isolation, public
 rendering, and deletion blocking. Further Media Manager visual/presentation
-refinement is deferred and non-blocking for WU6. WU7 remains `NOT STARTED`; this
-record does not claim full M3.8 completion or make a final WU6 closure decision.
+refinement remains Deferred / Unscheduled and non-blocking. This record does
+not claim full M3.8 completion.
 
 ### WU7 — Security, install/upgrade/package regression, acceptance, and closure
 
@@ -616,31 +617,37 @@ matches implementation, and no unresolved architecture blocker remains.
 **Documentation impact:** Final acceptance, limitations, risks, and lifecycle
 status.
 
-**Human review:** Required for final security, acceptance, documentation, and
-preparation-status review.
+**Human review:** No new human functional, browser, or visual review is
+required: WU5/WU6 acceptance passed, and WU7 criteria are deterministic.
+
+#### WU7 implementation decision record
+
+WU7 adds no production-code change. Its closure test starts from a minimal
+pre-M3.8 installation fixture, applies the controlled upgrade twice, verifies
+the Media schema, Content integration, five permissions, seeded administrator
+grants, and normal ModuleManager install/enable continuation. It also proves
+the five-action route matrix, including `media.use` picker access, inline
+picker upload requiring both `media.use` and `media.upload`, and
+authorization-before-CSRF behavior. Package and packaged clean-install checks
+now inventory Media runtime files, exclude `storage/media/`, and verify Media
+schema, activation, manifest permissions, runtime permissions, and admin
+grants.
 
 ## Open decisions and risks
 
-The following remain implementation-level or final-review decisions:
+Implemented policy is a three-table Media catalogue with `content.featured_media_id`,
+five `media.*` permissions seeded to administrators, route-backed controlled
+original/variant delivery, bounded buffered responses, consumer-owned Content
+featured preparation, and usage rows that block deletion while referenced.
+Theme and Site Settings adoption remain outside M3.8.
 
-- exact column/index design within the locked three-table topology;
-- exact permission identifiers and role provisioning details;
-- route-backed, generated-public-cache, or hybrid delivery topology;
-- MIME/content disposition, caching, and URL-stability policy;
-- pixel, byte, and decompression limits;
-- GIF animation-preservation policy and ICO structure policy;
-- EXIF normalization and metadata-stripping details;
-- synchronous processing cost and shared-hosting limits;
-- stale-variant regeneration and orphan cleanup behavior;
-- usage-row semantics for all approved consumers;
-- exact Content/Theme/Site Settings contract adoption timing.
-
-Primary risks are database/filesystem inconsistency, orphaned records/files,
-unsafe type handling, decompression bombs, GIF animation loss, metadata
-privacy leakage, derivative explosion, stale outputs, referenced deletion,
-path exposure, Core ownership leakage, duplicate upload pipelines,
-install/upgrade incompatibility, shared-hosting limits, synchronous processing
-cost, Admin picker complexity, and responsive-image contract ambiguity.
+Known limitations and residual operational risks are: no checksum-based
+same-size/same-MIME replacement detection; 16 MiB buffered delivery; no Range
+or conditional delivery; cleanup failure can leave unreachable original or
+generated files; output bytes may vary by GD/runtime library version; GD may
+be unavailable on a deployment; and synchronous processing remains subject to
+shared-hosting resource limits. These are documented operational boundaries,
+not unresolved architecture decisions.
 
 ## Completion boundary
 
@@ -648,14 +655,7 @@ Preparation documentation is locally validated when this contract and its
 directly affected status documentation pass documentation-focused review. This
 does not authorize implementation or determine milestone closure.
 
-WU2 implementation and focused validation are complete; its closure is pending
-post-Git documentation review. WU3 implementation and focused validation are
-complete; its closure is pending
-until its post-Git lifecycle review is complete. WU4 is complete. WU5
-presentation refinement and focused validation are complete with AI acceptance
-`PASS`. Human visual/browser acceptance is `PASS` for bounded cards, grid
-presentation, card-to-preview interaction, preview overlay usability, and the
-Admin/public action boundary. WU5 is finally closed. WU6
-is complete within the approved Content featured-Media, usage, and unused-only
-deletion boundary; focused validation and human functional/browser acceptance
-are complete. WU7 remains `NOT STARTED` and unauthorized. Full M3.8 is not complete; milestone closure is not implied.
+WU1–WU6 are accepted predecessors. WU7 is implemented and validated within
+the locked closure scope: it adds no production change and records upgrade,
+authorization, package, and clean-install evidence. Full M3.8 is not complete;
+milestone closure is not implied.

@@ -359,6 +359,8 @@ foreach ([
     'modules/module-manager/Services/ModuleActionPolicy.php',
     'modules/settings-manager/module.json',
     'modules/taxonomy/module.json',
+    'modules/media/module.json',
+    'modules/media/routes.php',
     'public/.htaccess',
     'public/index.php',
     'public/admin-assets/css/admin.css',
@@ -374,6 +376,14 @@ foreach ([
     'README.md',
 ] as $requiredEntry) {
     $assert($contains($requiredEntry), 'Package must contain required file: ' . $requiredEntry);
+}
+
+$mediaSourceOutput = [];
+$mediaSourceExitCode = 0;
+exec('git -C ' . escapeshellarg($basePath) . ' ls-files -- modules/media', $mediaSourceOutput, $mediaSourceExitCode);
+$assert($mediaSourceExitCode === 0 && $mediaSourceOutput !== [], 'Tracked Media runtime inventory must be resolvable.');
+foreach ($mediaSourceOutput as $mediaSource) {
+    $assert($contains($mediaSource), 'Package must contain tracked Media runtime file: ' . $mediaSource);
 }
 
 foreach ([
@@ -401,6 +411,7 @@ foreach ([
     'docs/',
     'modules/example/',
     'storage/site-assets/',
+    'storage/media/',
     'tests/',
 ] as $forbiddenPrefix) {
     $assert(!$containsPrefix($forbiddenPrefix), 'Package must not contain forbidden path prefix: ' . $forbiddenPrefix);
