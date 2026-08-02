@@ -55,7 +55,11 @@ namespace {
     $assert(str_contains($contract, 'No parallel dashboard registry is authorized.'), 'The existing registry evolution boundary is missing.');
     $assert(str_contains($contract, 'DI-M3.9-01') && str_contains($contract, 'User-customizable Dashboard layout'), 'The WU1 contract does not preserve the layout deferral.');
     $assert(!str_contains($contract, 'e21e7b281fecdb7619022be0457381a5ce31ce85'), 'The obsolete preparation anchor remains in the WU1 contract.');
+    $assert((bool) preg_match('/M3\.9 WU1:\s+COMPLETE/', $contract) && (bool) preg_match('/M3\.9 WU2–WU4:\s+NOT STARTED/', $contract), 'WU1 lifecycle status is not recorded correctly.');
     $assert(str_contains($contract, 'feature/m3.9-internal-dashboard') && str_contains($contract, 'WU2–WU4 have not started'), 'WU1 branch status is not recorded correctly.');
+    $assert(str_contains($contract, 'every future') && str_contains($contract, 'module or materially evolved Admin-facing module must explicitly review') && str_contains($contract, '**REQUIRED**') && str_contains($contract, '**OPTIONAL / JUSTIFIED**') && str_contains($contract, '**NOT APPLICABLE**') && str_contains($contract, '**DEFERRED**'), 'The cross-module Dashboard applicability rule is incomplete.');
+    $assert(str_contains($contract, 'Every module must receive an explicit disposition, but every module does not') && str_contains($contract, 'need a widget.'), 'The applicability rule does not distinguish mandatory review from mandatory widget creation.');
+    $assert(str_contains($contract, 'It does not reopen completed milestones') && str_contains($contract, 'applicability review itself is not a Deferred') && str_contains($contract, 'Item.'), 'The applicability rule has an incorrect retroactive or Deferred Item boundary.');
 
     $registry = new AdminDashboardRegistry();
     $registry->add('content.drafts', 'Draft Content', 'Draft count.', '/dapur/content?status=draft', 'content.read', 120);

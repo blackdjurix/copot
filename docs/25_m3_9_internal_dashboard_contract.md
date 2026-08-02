@@ -13,8 +13,8 @@ COMPLETE AND CLOSED
 M3.9 preparation:
 LOCKED
 
-M3.9 WU1 implementation:
-IN PROGRESS
+M3.9 WU1:
+COMPLETE
 
 M3.9 WU2–WU4:
 NOT STARTED
@@ -105,6 +105,43 @@ calculations, persistence, and source data. Dashboard composition must use
 explicit public contribution or service boundaries. Dashboard must not read
 private manager repositories, private module files, or manager-owned database
 tables directly.
+
+## Future cross-module Dashboard Widget Applicability Rule
+
+After M3.9 establishes the Dashboard contribution capability, every future
+module or materially evolved Admin-facing module must explicitly review
+Dashboard integration applicability during its preparation or planning phase.
+The review question is:
+
+> Does this capability own information, status, contextual navigation, or a
+> bounded administrative action that is materially useful at Dashboard
+> overview level?
+
+Every module must receive an explicit disposition, but every module does not
+need a widget. The available dispositions are:
+
+* **REQUIRED** — a Dashboard contribution is part of the milestone or module
+  scope;
+* **OPTIONAL / JUSTIFIED** — a contribution is useful but not inherently
+  required, and adoption must be explicitly justified;
+* **NOT APPLICABLE** — no materially useful Dashboard-level contribution
+  exists;
+* **DEFERRED** — a concrete useful contribution is identified but intentionally
+  postponed through normal Deferred Item governance.
+
+The rule is prospective and applies only after the M3.9 contribution boundary
+exists. It does not reopen completed milestones or retroactively require
+Users & Access, Settings, Module Manager, Navigation Manager, Theme Manager,
+Media Library, or other completed managers to add widgets. For those managers,
+the M3.9 WU1 first-wave inventory remains authoritative.
+
+Contributors may provide `0..n` widgets. Multiple widgets from one owner are
+valid only when they serve materially distinct Dashboard purposes. Placeholder
+widgets are not required, existing permissions and module ownership remain
+authoritative, and widget applicability does not make `widget` a Module
+Manager module type. A concrete postponed contribution must receive its own
+stable Deferred Item record; the applicability review itself is not a Deferred
+Item.
 
 Whether a standalone widget could become a future module/package type is an
 explicit non-decision. M3.9 permits module/manager and Core contributions but

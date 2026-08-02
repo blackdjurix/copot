@@ -710,6 +710,25 @@ Stage 2 locks milestone order and planning envelopes.
 
 Exact batch detail is locked immediately before each milestone starts. This allows evidence from completed milestones to refine batch structure without silently widening scope.
 
+#### Dashboard Widget Applicability Rule
+
+After M3.9 establishes the Dashboard contribution capability, every future
+module or materially evolved Admin-facing module must explicitly review
+Dashboard integration applicability during preparation or planning. The review
+question is whether the capability owns information, status, contextual
+navigation, or a bounded administrative action that is materially useful at
+Dashboard overview level. Each review must record one disposition: `REQUIRED`,
+`OPTIONAL / JUSTIFIED`, `NOT APPLICABLE`, or `DEFERRED`.
+
+The review is mandatory, but widget creation is not. A contributor may provide
+`0..n` widgets, and no placeholder widget is required. Multiple widgets from
+one owner must serve materially distinct purposes. Existing permissions and
+module ownership remain authoritative, and `widget` is not a Module Manager
+module type. A concrete postponed contribution follows normal Deferred Item
+governance. This rule is prospective; it does not reopen completed milestones.
+The M3.9 WU1 first-wave inventory remains authoritative for already-completed
+managers.
+
 ### Stage 3 — Final Review + Entry Audit
 
 Stage 3 is complete. It remained documentation, audit, and entry-contract work only.
