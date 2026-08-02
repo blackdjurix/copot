@@ -26,25 +26,25 @@ was required, and production PHP/schema/install-upgrade state remained unchanged
 Work Unit 2 implementation and primary validation are also complete; focused
 domain validation passed 39 assertions, Work Unit 1 compatibility regression
 passed 25 assertions, and the Content transaction/lifecycle regression passed 37
-assertions. Work Units 1 and 2 are `COMPLETE`; documentation and Git closure
+assertions. Work Units 1 and 2 are complete; documentation and Git closure
 are complete through this integration. Work Unit 3 — Authorization and Route
-Orchestration implementation and primary validation are complete; WU3 is `COMPLETE`. Work Unit 4 implementation is complete in `e092a87..20de704`;
+Orchestration implementation and primary validation are complete; WU3 is complete. Work Unit 4 implementation is complete in `e092a87..20de704`;
 focused presentation validation passed 11 assertions, the required WU3/WU2/WU1
 and Content regressions passed 41/39/25/37 assertions, and isolated browser
 validation passed the configured `/admin` Taxonomy surfaces and responsive checks
 at 1440×900, 390×844, and 320×800. AI Acceptance is `PASS`; Human Acceptance
-is `NOT REQUIRED`; the final browser gap gate passed. WU4 is `COMPLETE`; WU5 is `COMPLETE`. M3.5 was fast-forward integrated into
+is `NOT REQUIRED`; the final browser gap gate passed. WU4 is complete; WU5 is complete. M3.5 was fast-forward integrated into
 `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit;
 feature containment and local/remote feature-branch deletion are confirmed.
-Full M3.5 is `COMPLETE`. M3.6 Navigation Manager is next and not started;
+Full M3.5 is complete. M3.6 Navigation Manager is next and not started;
 release, tag, and publication remain not started and separately authorized.
 
 ## Milestone Position
 
 ```text
-M3.4 Content Manager (COMPLETE)
+M3.4 Content Manager (complete)
 ->
-M3.R1 Admin Shell Retouch 1 (COMPLETE)
+M3.R1 Admin Shell Retouch 1 (complete)
 ->
 M3.5 Taxonomy Manager
 ->
@@ -271,9 +271,9 @@ assertions, existing Content provisioning/transaction regressions passed, the
 baseline schema was sufficient, and no schema upgrade or migration artifact was
 required. Production PHP/schema/install-upgrade state remained unchanged.
 
-Work Unit 1 is `COMPLETE`; documentation and Git closure are complete
-through this integration. Work Unit 2 is also complete and `COMPLETE`;
-Work Unit 3 implementation and primary validation are complete; WU3 is `COMPLETE`.
+Work Unit 1 is complete; documentation and Git closure are complete
+through this integration. Work Unit 2 is also complete;
+Work Unit 3 implementation and primary validation are complete; WU3 is complete.
 
 Responsibility-level file groups: focused Taxonomy compatibility tests and fixtures, with
 `database/schema.sql` only if a verified provisioning defect is found, and
@@ -307,7 +307,7 @@ focused-test harness correction changed the `$rejects` helper from catching only
 `RuntimeException` to catching `Throwable`, so expected `InvalidArgumentException`
 domain rejections are recognized without changing production behavior.
 
-Work Unit 2 is `COMPLETE`; documentation and Git closure are complete
+Work Unit 2 is complete; documentation and Git closure are complete
 through this integration. Work Unit 3 — Authorization and Route Orchestration is
 next and has not started.
 
@@ -348,7 +348,7 @@ baseline reduced to a 960×455 CSS viewport provided the 200%-equivalent layout
 check across all five changed surfaces. Permission-restricted controls and
 direct denial, empty category/tag states, and sanitized unavailable-state
 recovery also pass. AI Acceptance is `PASS`, Human Acceptance is `NOT REQUIRED`,
-and WU4 is `COMPLETE`.
+and WU4 is complete.
 
 ### Work Unit 5 — Integration, Hardening, Documentation, and Closure
 
@@ -375,7 +375,7 @@ accepted authenticated browser evidence covers the configured Admin Taxonomy
 surfaces, responsive and 200%-equivalent layouts, accessibility states,
 permission restriction/denial, empty states, and sanitized unavailable-state
 recovery. AI Acceptance is `PASS`; Human Acceptance is `NOT REQUIRED`; WU5 is
-`COMPLETE`.
+complete.
 
 ## Validation Contract
 
@@ -407,9 +407,9 @@ implementation, focused validation, applicable runtime/browser evidence,
 documentation, Git integration, clean synchronization, branch cleanup, and
 final verification.
 
-Preparation is `COMPLETE`; Work Units 1–5 are `COMPLETE` after
+Preparation is complete; Work Units 1–5 are complete after
 implementation, focused validation, documentation, Git delivery, and final
-verification. Full M3.5 is `COMPLETE` on the clean synchronized feature
+verification. Full M3.5 is complete on the clean synchronized feature
 branch. M3.5 is now integrated and branch-closed; merge to `main` is complete.
 Release, tag, and publication remain separately authorized gates.
 

@@ -8,7 +8,7 @@ WU1–WU6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
 commit. Post-merge documentation closure commit `8dea71c82a4076c8b9d399047031e0a1ad18b0c6` preceded this correction. Objective automated acceptance and reachable browser/presentation
 review passed; feature containment and local/remote feature-branch cleanup
-passed. Full M3.7 is `COMPLETE`. The real-settings Theme Settings/color-control spot-check remains
+passed. Full M3.7 is complete. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
 settings. No known implementation, security, schema, package, or integration
 blocker remains. Release, tag, and publication remain not started. The next
@@ -17,12 +17,12 @@ target is M3.8 Media Library preparation, not implementation.
 M3.7 defines and delivers an official first-party `theme-manager` Admin module over the
 existing Core Theme System. The preparation contract remains the scope
 authority for the implementation work. M3.6 Navigation
-Manager is closed with WU1–WU6 and full M3.6 `COMPLETE`; M3.7 preparation
+Manager is closed with WU1–WU6 and full M3.6 complete; M3.7 preparation
 was independent of that closure. WU1–WU6 implementation and objective automated
 acceptance are complete and fast-forward integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; reachable browser and human
 presentation review passed. Feature containment and branch cleanup passed.
-Full M3.7 is `COMPLETE`.
+Full M3.7 is complete.
 
 ### WU1 implementation state
 
@@ -48,7 +48,7 @@ atomically refreshes the normalized registry snapshot and single active
 frontend state, with rollback preservation on persistence or postcondition
 failure. No Admin workspace, settings persistence, or filesystem mutation is
 included in WU3. At WU3 delivery, full M3.7 had not yet reached closure; the
-final integrated state is recorded above as `COMPLETE`.
+final integrated state is recorded above as complete.
 
 WU4 implementation adds the first-party Theme Manager Admin workspace. The
 enabled module registers configured-path `GET /themes`, protected screenshot
@@ -236,7 +236,7 @@ automation and source/runtime evidence.
 After M3.6 reconciliation, the M3.7 preparation dependency was `INDEPENDENT`.
 The original preparation gate required evidence for project acceptance review and did not
 decide final M3.7 preparation status or authorize implementation. That historical
-gate is closed; the final integrated state is recorded above as `COMPLETE`.
+gate is closed; the final integrated state is recorded above as complete.
 
 No PHP source, tests, schema or upgrade SQL, configuration, package manifest,
 runtime workspace, browser validation, implementation branch, merge, branch

@@ -57,7 +57,7 @@ Design completion does not imply domain, milestone, Git, release, tag, merge, pu
 
 ## Branch and Completion Expectations
 
-M3.R1 and each milestone-specific design-adjustment work unit use their own dedicated branch and lifecycle. Batch 6 used `feature/m3.4-content-manager-batch-6`; its implementation was merged into `main`, the feature branch was deleted locally and remotely after containment verification, and its lifecycle is closed. Batch 6 is `COMPLETE`. Each work unit reaches its own closure review only after documentation, validation, Git integration, final verification, and final changeset requirements are satisfied.
+M3.R1 and each milestone-specific design-adjustment work unit use their own dedicated branch and lifecycle. Batch 6 used `feature/m3.4-content-manager-batch-6`; its implementation was merged into `main`, the feature branch was deleted locally and remotely after containment verification, and its lifecycle is closed. Batch 6 is complete. Each work unit reaches its own closure review only after documentation, validation, Git integration, final verification, and final changeset requirements are satisfied.
 
 ## Exclusions
 

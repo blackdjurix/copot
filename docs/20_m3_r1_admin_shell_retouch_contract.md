@@ -17,7 +17,7 @@ navigation contract.
 The locked sequence is:
 
 ```text
-M3.4 closure (COMPLETE)
+M3.4 closure (complete)
 ->
 M3.R1 Admin Shell Retouch 1
 ->
@@ -46,8 +46,8 @@ Classification is now complete with final outcome `NO MATERIAL RETOUCH
 REQUIRED`. The classification documentation commit
 `c5d27adeba6c1f440f6b9c62309a447f82e43a08` (`docs(m3.r1): record classification
 closure`) is pushed to `origin/main`; local and remote `main` are synchronized
-at `0/0`, the workspace is clean, and full M3.R1 is `COMPLETE`. The
-preparation work unit is historically and operationally `COMPLETE`. No UI
+at `0/0`, the workspace is clean, and full M3.R1 is complete. The
+preparation work unit is historically and operationally complete. No UI
 implementation, implementation batches, implementation branch, production/test
 changes, runtime synchronization, or authenticated browser validation was
 required. M3.5 is next and unblocked from the M3.R1 sequencing gate, subject to
@@ -400,7 +400,7 @@ The classification gate and full M3.R1 lifecycle are complete. The final
 documentation commit is `c5d27adeba6c1f440f6b9c62309a447f82e43a08`
 (`docs(m3.r1): record classification closure`), it is pushed to `origin/main`,
 local and remote `main` are synchronized at `0/0`, and the workspace is clean.
-Full M3.R1 is `COMPLETE`. M3.5 is the next milestone and is unblocked from
+Full M3.R1 is complete. M3.5 is the next milestone and is unblocked from
 the M3.R1 sequencing gate, but has not started and remains subject to its own
 preparation, contract, approval, branch, and validation workflow. Release, tag,
 and publication remain unstarted and separately authorized.

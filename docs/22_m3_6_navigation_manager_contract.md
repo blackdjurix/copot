@@ -6,29 +6,29 @@ M3.6 prepared the existing platform for a Navigation Manager that owns
 navigation data and management behavior without moving presentation ownership
 into Navigation. This remains the preparation contract and scope lock; Work
 Units 1 through 6 implementation, integration, branch lifecycle, and closure
-are complete on `main` and `COMPLETE`.
+are complete on `main`.
 
-M3.5 Taxonomy Manager remains closed and `COMPLETE`. M3.6 preparation is
-`COMPLETE`. Work Unit 1 — Contract, Provisioning, and Compatibility
+M3.5 Taxonomy Manager remains closed. M3.6 preparation is
+complete. Work Unit 1 — Contract, Provisioning, and Compatibility
 Foundation implementation and primary validation are complete on
 `feature/m3.6-navigation-manager` at
 `38d75fa1d676371b5c78e392871649a663e573db`
 (`feat(m3.6): establish navigation WU1 foundation`). Focused WU1 compatibility
-passed 23 assertions. WU1 is `COMPLETE`. Work Unit 2 — Navigation
+passed 23 assertions. WU1 is complete. Work Unit 2 — Navigation
 Domain Service and Hierarchy implementation and primary validation are complete
 at `7e54d0309c8ca75f0f32200394fd2a271c8a9b83`
 (`feat(m3.6): add navigation domain hierarchy service`); focused WU2 domain
-validation passed 44 assertions. WU2 is `COMPLETE`. Work Unit 3 — Content
+validation passed 44 assertions. WU2 is complete. Work Unit 3 — Content
 Target Resolver Integration implementation and primary validation are complete
 at `3e387c5756636d08416880a8d8ec5ca1112cad75`
 (`feat(m3.6): add content navigation target resolver`); focused WU3 resolver
-validation passed 19 assertions. WU3 is `COMPLETE`. Work Unit 4 — Admin
+validation passed 19 assertions. WU3 is complete. Work Unit 4 — Admin
 Management Workspace implementation is complete at
 `43085441a82ecc38941ca880b2dbbd6823f61215`
 (`feat(m3.6): add navigation admin workspace`). Objective/runtime validation,
 provisioning and upgrade rerun safety, source/runtime SHA-256 synchronization,
-HTTP/session validation, and human acceptance passed. WU4 is `COMPLETE`;
-Full M3.6 is `COMPLETE`. Release, tag, and publication remain separately
+HTTP/session validation, and human acceptance passed. WU4 is complete;
+Full M3.6 is complete. Release, tag, and publication remain separately
 authorized.
 
 Work Unit 5 — Theme Consumption and Design-Adjustment Checkpoint is complete
@@ -43,15 +43,15 @@ package-builder smoke passed 891 assertions. Runtime/browser evidence and
 human acceptance passed for public home and Content pages, empty/no-assignment
 states, provider disable/restore, console/network inspection, responsive
 widths, true `200%` zoom, touch targets, and keyboard/focus usability. The WU4
-Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. WU5 is `COMPLETE`. WU6 security closure passed 15 assertions at
+Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. WU5 is complete. WU6 security closure passed 15 assertions at
 `62a2dfb892f06005644c82cba1015ed5dc71b0e7` (`test(m3.6): close navigation
 security gate`). The final documentation correction is
 `8deb4f67d47f476e254b36e3802bd250e393921d` (`docs(m3.6): correct WU6 security
 closure anchor`). M3.6 was fast-forward integrated into `main` at that commit
 with no merge commit; the feature branch lifecycle is closed and local/remote
-`main` are synchronized. Full M3.6 Navigation Manager is `COMPLETE`.
+`main` are synchronized. Full M3.6 Navigation Manager is complete.
 Production Taxonomy targets remain deferred. M3.7 Theme Manager preparation is
-the next independent documentation target; full M3.7 is `NOT COMPLETE`.
+the next independent documentation target; full M3.7 is not complete.
 
 The contract preserves the approved M3 sequence and the ownership decisions in
 `docs/16_m3_core_freeze_and_module_contract.md`. It records the accepted
@@ -62,19 +62,19 @@ and internal tasks remain just-in-time decisions within an approved work unit.
 ## Milestone Position
 
 ```text
-M3.5 Taxonomy Manager (COMPLETE)
+M3.5 Taxonomy Manager (complete)
 ->
-M3.6 Navigation Manager preparation (COMPLETE)
+M3.6 Navigation Manager preparation (complete)
 ->
-M3.6 Work Unit 1 (COMPLETE)
+M3.6 Work Unit 1 (complete)
 ->
-M3.6 Work Unit 2 (COMPLETE)
+M3.6 Work Unit 2 (complete)
 ->
-M3.6 Work Unit 3 (COMPLETE)
+M3.6 Work Unit 3 (complete)
 ->
-M3.6 Work Unit 4 (COMPLETE)
+M3.6 Work Unit 4 (complete)
 ->
-M3.6 Work Unit 5 (COMPLETE)
+M3.6 Work Unit 5 (complete)
 ->
 M3.6 Work Unit 6 (security closure complete; integration gate remains separate)
 ->
@@ -172,7 +172,7 @@ upgrade artifact, fresh-install baseline ModuleManager activation, package
 inclusion, and clean-install expectation update. The hierarchy-capable schema
 records the locked five-level invariant; traversal enforcement, move/reorder
 behavior, and custom-URL validation remain deferred. Focused compatibility
-passed 23 assertions, and WU1 is `COMPLETE`.
+passed 23 assertions, and WU1 is complete.
 
 ### Work Unit 2 — Navigation Domain Service and Hierarchy
 
@@ -183,7 +183,7 @@ rejection; moved-subtree depth validation; deterministic sibling ordering; and
 exact sibling reorder. Provider/custom target payload invariants and the
 accepted custom-URL grammar are enforced. Standalone mutations own their
 transaction and caller-owned transactions receive private savepoint isolation.
-Focused WU2 domain validation passed 44 assertions. WU2 is `COMPLETE`.
+Focused WU2 domain validation passed 44 assertions. WU2 is complete.
 
 ### Work Unit 3 — Content Target Resolver Integration
 
@@ -195,7 +195,7 @@ stored title as label. Title, slug, and publication changes are reflected
 without cross-request caching. Missing, stale, malformed, draft, archived,
 disabled, and unavailable Content targets fail closed. No Core wiring, global
 registry, or service locator was introduced. Focused WU3 resolver validation
-passed 19 assertions. WU3 is `COMPLETE`. Navigation item visibility and
+passed 19 assertions. WU3 is complete. Navigation item visibility and
 Theme rendering remain deferred to WU5; production Taxonomy targets remain
 deferred.
 
@@ -209,7 +209,7 @@ paths, and active Admin navigation. Objective/runtime validation and human
 acceptance passed, including responsive presentation at `1440×900`, `390×844`,
 `320×800`, and `200%` zoom, plus console and network inspection. No source or
 runtime mismatch or accepted defect remains. Keep `AdminNavigation` separate
-from managed public navigation data. WU4 is `COMPLETE`.
+from managed public navigation data. WU4 is complete.
 
 ### Work Unit 5 — Theme Consumption and Design-Adjustment Checkpoint
 
@@ -224,7 +224,7 @@ unavailable or disabled providers are covered. Focused validation passed 15
 assertions, package-builder smoke passed 891 assertions, runtime/browser
 validation passed, and human acceptance passed at `1440×900`, `390×844`,
 `320×800`, true `200%` zoom, touch targets, and keyboard/focus usability. The
-WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. WU5 is `COMPLETE`.
+WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. WU5 is complete.
 
 ### Work Unit 6 — Security, Milestone Regression, Documentation, and Lifecycle Closure
 
@@ -233,34 +233,34 @@ manifest path containment, fail-closed contributor registration and composition,
 safe diagnostics, request/render isolation, deterministic context collisions, and
 representative Navigation Admin scalar payload guards. Full-range containment,
 forbidden-scope audit, documentation closure, fast-forward integration, and
-feature-branch lifecycle closure passed. WU1–WU6 and full M3.6 are `COMPLETE`. Integration and branch lifecycle closure are complete. Release,
+feature-branch lifecycle closure passed. WU1–WU6 and full M3.6 are complete. Integration and branch lifecycle closure are complete. Release,
 tag, and publication remain separate and not started.
 
 ## Validation and Lifecycle Gates
 
-Preparation is `COMPLETE`. WU1 primary validation passed: focused WU1
+Preparation is complete. WU1 primary validation passed: focused WU1
 compatibility (23 assertions), direct Module Manager provisioning, Content
 provisioning, M3.5 WU1 Taxonomy compatibility, package-builder, distribution,
 and clean-install checks, PHP lint, and `git diff --check`. Production Taxonomy
 targets remain deferred. No runtime or browser validation was required for WU1.
 
-Preparation is `COMPLETE`. WU1 is `COMPLETE` after implementation,
+Preparation is complete. WU1 is complete after implementation,
 primary validation, and documentation closure. WU2 primary
 validation passed: focused WU2 domain validation (44 assertions), WU1
 Navigation compatibility, Content transaction and provisioning, and M3.5 WU1
 and WU2 Taxonomy regressions, plus PHP lint and `git diff --check`. WU2 is
-`COMPLETE`. WU3 primary validation passed: focused WU3 resolver validation
+complete. WU3 primary validation passed: focused WU3 resolver validation
 (19 assertions), WU2 Navigation domain, WU1 Navigation compatibility, and
 Content public publication/security regressions, plus PHP lint and `git diff
---check`. WU3 is `COMPLETE`. WU4 is `COMPLETE` after implementation,
+--check`. WU3 is complete. WU4 is complete after implementation,
 objective/runtime validation, source/runtime synchronization, HTTP/session
-validation, and human acceptance. WU5 is `COMPLETE` after implementation,
+validation, and human acceptance. WU5 is complete after implementation,
 focused validation, package smoke, runtime/browser evidence, and human
 acceptance. WU6 security closure passed 15 assertions and Git delivery,
 fast-forward integration, and feature-branch lifecycle closure are complete.
-Full M3.6 Navigation Manager is `COMPLETE`. Production Taxonomy targets
+Full M3.6 Navigation Manager is complete. Production Taxonomy targets
 remain deferred and M3.7 Theme Manager preparation is the next independent
-documentation target. Full M3.7 is `NOT COMPLETE`.
+documentation target. Full M3.7 is not complete.
 
 WU1 is closed to further scope expansion. WU2 delivered only its approved
 Navigation domain behavior; it does not authorize Content resolver

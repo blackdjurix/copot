@@ -31,13 +31,12 @@ WU3:
 IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
 
 WU4:
-IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
-COMPLETE
+IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED; CLOSED
 
 WU5:
 PRESENTATION REFINEMENT IMPLEMENTED; FOCUSED VALIDATION COMPLETE
 AI ACCEPTANCE PASS
-HUMAN VISUAL/BROWSER ACCEPTANCE PASS; COMPLETE; FINALLY CLOSED
+HUMAN VISUAL/BROWSER ACCEPTANCE PASS; FINALLY CLOSED
 
 WU6:
 IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE FOR APPROVED CONTENT FEATURED-MEDIA
@@ -54,16 +53,16 @@ Implementation branch:
 
 The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
 predecessors and are durably delivered. WU4 implementation and focused
-validation are complete, durably delivered, and `COMPLETE`. WU5
+validation are complete and durably delivered. WU5
 presentation refinement is implemented and focused-validated on the active
 feature branch. AI acceptance and human visual/browser acceptance are `PASS`;
-WU5 is finally closed and `COMPLETE`. WU6 delivers the approved Content
+WU5 is finally closed. WU6 delivers the approved Content
 featured-Media picker, usage synchronization, unused-only deletion safety, the
 consumer-requested `content.featured` 16:9 preparation/crop profile, and
 processed featured-image rendering on the single public Content view. Focused
 validation and human functional/browser acceptance are complete. This record
 does not make a final WU6 closure decision. WU7 remains not started and
-unauthorized. Full M3.8 is `NOT COMPLETE`.
+unauthorized. Full M3.8 is not complete.
 
 ## Locked architecture and ownership
 
@@ -527,7 +526,7 @@ explicit-title preservation, unusable fallback rejection, and existing
 security boundaries.
 Human visual/browser acceptance is `PASS` for bounded cards, grid presentation,
 card-to-preview interaction, preview overlay usability, and the Admin/public
-action boundary. WU5 is finally closed and `COMPLETE`. No additional
+action boundary. WU5 is finally closed. No additional
 human-required criterion remains for WU5.
 
 ### WU6 — Media picker, consumer contracts, usage, and deletion safety
@@ -652,11 +651,11 @@ does not authorize implementation or determine milestone closure.
 WU2 implementation and focused validation are complete; its closure is pending
 post-Git documentation review. WU3 implementation and focused validation are
 complete; its closure is pending
-until its post-Git lifecycle review is complete. WU4 is `COMPLETE`. WU5
+until its post-Git lifecycle review is complete. WU4 is complete. WU5
 presentation refinement and focused validation are complete with AI acceptance
 `PASS`. Human visual/browser acceptance is `PASS` for bounded cards, grid
 presentation, card-to-preview interaction, preview overlay usability, and the
-Admin/public action boundary. WU5 is finally closed and `COMPLETE`. WU6
+Admin/public action boundary. WU5 is finally closed. WU6
 is complete within the approved Content featured-Media, usage, and unused-only
 deletion boundary; focused validation and human functional/browser acceptance
-are complete. WU7 remains `NOT STARTED` and unauthorized. Full M3.8 is `NOT COMPLETE`; milestone closure is not implied.
+are complete. WU7 remains `NOT STARTED` and unauthorized. Full M3.8 is not complete; milestone closure is not implied.
