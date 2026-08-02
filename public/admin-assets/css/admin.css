@@ -644,23 +644,71 @@ dd {
 
 .admin-dashboard-widgets {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--admin-space-5);
+    align-items: stretch;
+    grid-auto-flow: row;
 }
 
-.admin-dashboard-widgets > .admin-panel {
+.admin-dashboard-widgets > .admin-dashboard-widget {
     display: flex;
     min-width: 0;
     flex-direction: column;
 }
 
-.admin-dashboard-widgets > .admin-panel .admin-panel__title,
-.admin-dashboard-widgets > .admin-panel .admin-panel__description {
+.admin-dashboard-widget--compact {
+    grid-column: span 1;
+    grid-row: span 1;
+}
+
+.admin-dashboard-widget--standard,
+.admin-dashboard-widget--wide {
+    grid-column: span 2;
+}
+
+.admin-dashboard-widget--standard {
+    grid-row: span 1;
+}
+
+.admin-dashboard-widget--wide {
+    grid-row: span 2;
+}
+
+.admin-dashboard-widgets > .admin-dashboard-widget .admin-panel__title,
+.admin-dashboard-widgets > .admin-dashboard-widget .admin-panel__description {
     overflow-wrap: anywhere;
 }
 
-.admin-dashboard-widgets > .admin-panel .admin-panel__actions {
+.admin-dashboard-widgets > .admin-dashboard-widget .admin-dashboard-widget__actions {
     margin-top: auto;
+}
+
+.admin-dashboard-count {
+    display: grid;
+    gap: var(--admin-space-2);
+    margin: 0;
+}
+
+.admin-dashboard-count strong {
+    color: var(--admin-color-primary);
+    font-size: clamp(32px, 5vw, 48px);
+    line-height: 1;
+}
+
+.admin-dashboard-count span {
+    color: var(--admin-color-muted);
+    font-size: 14px;
+}
+
+.admin-dashboard-recent-list {
+    display: grid;
+    gap: var(--admin-space-3);
+    margin: 0;
+    padding-left: var(--admin-space-5);
+}
+
+.admin-dashboard-recent-list li {
+    overflow-wrap: anywhere;
 }
 
 .admin-panel__body {
@@ -1799,6 +1847,28 @@ html.admin-media-preview-open body {
 
     .admin-dashboard > .admin-panel:first-of-type .admin-dashboard-overview__grid {
         grid-template-columns: 1fr;
+    }
+
+    .admin-dashboard-widgets {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .admin-dashboard-widget--standard,
+    .admin-dashboard-widget--wide {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 720px) {
+    .admin-dashboard-widgets {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-dashboard-widget--compact,
+    .admin-dashboard-widget--standard,
+    .admin-dashboard-widget--wide {
+        grid-column: span 1;
+        grid-row: span 1;
     }
 }
 

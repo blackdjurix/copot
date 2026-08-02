@@ -14,7 +14,7 @@ $coreContent = is_array($coreWidget['content'] ?? null) ? $coreWidget['content']
 <div class="admin-dashboard">
     <p class="admin-dashboard__description">Overview of your Copot Admin workspace.</p>
 
-    <section class="admin-panel" aria-labelledby="framework-status-title">
+    <section class="admin-panel admin-dashboard-widget admin-dashboard-widget--wide" data-widget-id="core.system-overview" data-footprint="wide" aria-labelledby="framework-status-title">
         <header class="admin-panel__header">
             <div class="admin-panel__heading">
                 <h2 class="admin-panel__title" id="framework-status-title">System overview</h2>
@@ -62,7 +62,8 @@ $coreContent = is_array($coreWidget['content'] ?? null) ? $coreWidget['content']
         <div class="admin-dashboard-widgets">
             <?php foreach ($moduleWidgets as $widget): ?>
                 <?php $widgetHeadingId = 'dashboard-widget-' . ($widget['id'] ?? 'item'); ?>
-                <article class="admin-panel" aria-labelledby="<?= htmlspecialchars($widgetHeadingId, ENT_QUOTES, 'UTF-8') ?>">
+                <?php $widgetFootprint = in_array(($widget['footprint'] ?? 'compact'), ['compact', 'standard', 'wide'], true) ? $widget['footprint'] : 'compact'; ?>
+                <article class="admin-panel admin-dashboard-widget admin-dashboard-widget--<?= htmlspecialchars($widgetFootprint, ENT_QUOTES, 'UTF-8') ?>" data-widget-id="<?= htmlspecialchars((string) ($widget['id'] ?? 'item'), ENT_QUOTES, 'UTF-8') ?>" data-footprint="<?= htmlspecialchars($widgetFootprint, ENT_QUOTES, 'UTF-8') ?>" aria-labelledby="<?= htmlspecialchars($widgetHeadingId, ENT_QUOTES, 'UTF-8') ?>">
                     <header class="admin-panel__header">
                         <div class="admin-panel__heading">
                             <h3 class="admin-panel__title" id="<?= htmlspecialchars($widgetHeadingId, ENT_QUOTES, 'UTF-8') ?>">
@@ -75,15 +76,15 @@ $coreContent = is_array($coreWidget['content'] ?? null) ? $coreWidget['content']
                     </header>
 
                     <?php if (isset($widget['content']['draft_count'])): ?>
-                        <div class="admin-panel__body">
-                            <p><strong><?= htmlspecialchars((string) $widget['content']['draft_count'], ENT_QUOTES, 'UTF-8') ?></strong> draft Content entries.</p>
+                        <div class="admin-panel__body admin-dashboard-widget__body">
+                            <p class="admin-dashboard-count"><strong><?= htmlspecialchars((string) $widget['content']['draft_count'], ENT_QUOTES, 'UTF-8') ?></strong><span>draft Content entries</span></p>
                         </div>
                     <?php elseif (isset($widget['content']['items']) && is_array($widget['content']['items'])): ?>
-                        <div class="admin-panel__body">
+                        <div class="admin-panel__body admin-dashboard-widget__body">
                             <?php if ($widget['content']['items'] === []): ?>
                                 <p>No recently updated Content entries.</p>
                             <?php else: ?>
-                                <ul>
+                                <ul class="admin-dashboard-recent-list">
                                     <?php foreach ($widget['content']['items'] as $item): ?>
                                         <li><?= htmlspecialchars((string) ($item['title'] ?? 'Untitled'), ENT_QUOTES, 'UTF-8') ?></li>
                                     <?php endforeach; ?>
@@ -93,7 +94,7 @@ $coreContent = is_array($coreWidget['content'] ?? null) ? $coreWidget['content']
                     <?php endif; ?>
 
                     <?php if (!empty($widget['url'])): ?>
-                        <div class="admin-panel__actions">
+                        <div class="admin-panel__actions admin-dashboard-widget__actions">
                             <a class="admin-button admin-button--secondary" href="<?= htmlspecialchars($widget['url'], ENT_QUOTES, 'UTF-8') ?>">Open</a>
                         </div>
                     <?php endif; ?>

@@ -102,7 +102,7 @@ $assert(str_contains($css, '.admin-panel__header'), 'Panel header pattern is mis
 $assert(str_contains($css, '.admin-panel__description'), 'Panel description pattern is missing.');
 $assert(str_contains($css, '.admin-panel__body'), 'Panel content pattern is missing.');
 $assert(str_contains($css, '.admin-panel__actions'), 'Optional panel action area is missing.');
-$assert(str_contains($dashboard, 'class="admin-panel"'), 'Dashboard does not consume the shared panel pattern.');
+$assert(str_contains($dashboard, 'class="admin-panel') && str_contains($dashboard, 'admin-dashboard-widget'), 'Dashboard does not consume the shared panel pattern.');
 $assert(str_contains($dashboard, 'class="admin-panel__title" id="framework-status-title"'), 'Dashboard panel heading contract is missing.');
 $assert(str_contains($dashboard, 'aria-labelledby="framework-status-title"'), 'Dashboard panel heading is not associated with its region.');
 

@@ -19,7 +19,10 @@ COMPLETE
 M3.9 WU2:
 COMPLETE
 
-M3.9 WU3–WU4:
+M3.9 WU3:
+COMPLETE
+
+M3.9 WU4:
 NOT STARTED
 
 M3.9 implementation branch:
@@ -303,6 +306,16 @@ and retains the repository's `updated_at DESC, id DESC` ordering. No selected
 first-wave contribution uses a bounded quick action.
 
 ### WU3 — Dashboard Presentation and Shell Integration
+
+Implementation state: COMPLETE. WU3 uses a four-column logical grid above
+the existing 900px Admin Shell breakpoint, two columns through the tablet
+range, and one column at 720px and below. Semantic footprints map to compact
+one-column/one-row placement, standard two-column/one-row placement, and wide
+two-column/two-row placement. Placement remains ordinary system-controlled
+row flow in priority and registration order; dense packing is not used.
+Multi-span footprints collapse to one column at the 720px boundary. User
+repositioning and resizing remain excluded. The separate Admin Shell
+design-adjustment checkpoint is still pending and has not been performed.
 
 Objective: render the approved widget composition and dashboard hierarchy
 through the existing Admin Shell.
