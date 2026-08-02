@@ -32,11 +32,11 @@ existing manager capabilities. M3.9 will aggregate real, bounded management
 data through explicit public contribution boundaries while preserving module
 ownership and the existing authorization model.
 
-The exact first-wave information surfaces and the minimal contribution payload
-shape are intentionally finalized in WU1. WU1 may refine those details only
-within this contract's ownership, permission, failure, and exclusion
-boundaries; it does not authorize speculative analytics or generic platform
-infrastructure.
+The exact first-wave widget inventory, minimal contribution payload shape, and
+composition rules are intentionally finalized in WU1. WU1 may refine those
+details only within this contract's ownership, permission, failure, and
+exclusion boundaries; it does not authorize speculative analytics or generic
+platform infrastructure.
 
 ## Accepted existing baseline
 
@@ -77,16 +77,56 @@ explicit public contribution or service boundaries. Dashboard must not read
 private manager repositories, private module files, or manager-owned database
 tables directly.
 
+Whether a standalone widget could become a future module/package type is an
+explicit non-decision. M3.9 permits module/manager and Core contributions but
+does not adopt, defer, or create an installable-widget taxonomy or
+infrastructure.
+
+## Widget composition, permissions, and failure behavior
+
+The Internal Dashboard is a dynamic, permission-aware widget composition
+surface. Dashboard layout must not assume a fixed set or fixed number of
+modules. Each contributor may provide zero or more widgets, and a single
+manager or module may provide multiple widgets when they serve materially
+distinct purposes. Core/Webcore-owned capability may also contribute widgets.
+
+A widget may provide information or status, navigation to an appropriate
+management surface, contextual navigation with an applicable filter or state,
+or a bounded quick administrative action. Complex management workflows remain
+owned by their manager surface and must not be recreated as mini-applications
+inside Dashboard widgets. M3.9 is not an analytics or reporting platform.
+
+The Dashboard uses a responsive bounded grid. Each widget has a bounded
+footprint: the contributor defines a default or preferred footprint, and
+Dashboard validates it against supported minimum, maximum, and allowed sizing
+rules. Exact supported footprints, grid column count, and placement algorithm
+are finalized in WU1/WU3 from existing Admin Shell layout evidence. This
+contract does not lock a particular column count or permit arbitrary
+unrestricted width or height values.
+
+For the M3.9 baseline, layout is system-controlled. Widget priority determines
+the deterministic placement sequence, widget footprint determines occupied
+grid area, and stable registration/order remains the tie-breaker where needed.
+Packing must not silently destroy the intended logical priority hierarchy merely
+to fill every visual gap.
+
+User drag-and-drop repositioning, bounded user resizing, per-user layout
+persistence, default/reset behavior, and responsive reconciliation are
+deliberately deferred from the M3.9 baseline; see `DI-M3.9-01`.
+
 ## Contribution, permissions, and failure behavior
 
 Dashboard contributions are:
 
 * request-scoped;
 * explicitly registered or exposed through a public service contract;
+* cardinality `0..n` per contributor;
 * permission-aware using the existing runtime permission source of truth;
 * identified by stable unique identities;
 * ordered deterministically through explicit priority/order rules;
-* limited to controlled presentation data and approved internal links.
+* bounded by validated footprint rules; and
+* limited to controlled presentation data, approved internal links, contextual
+  navigation, or bounded quick actions.
 
 M3.9 introduces no second dashboard permission system. A contribution is
 hidden when its existing required permission is unavailable. A contribution
@@ -101,11 +141,12 @@ M3.9 does not authorize:
 * analytics, charts, reporting, KPIs, observability, or external monitoring;
 * notifications, activity feeds, queues, workers, schedulers, or event
   infrastructure without a separately proven requirement;
-* user-selectable widgets, drag-and-drop layout, per-user layouts, or a
-  dashboard builder;
+* user-selectable widgets, drag-and-drop layout, per-user layouts, bounded
+  user resizing, or a dashboard builder in the M3.9 baseline;
 * a database-backed dashboard layout or widget configuration model;
 * direct repository or database access across manager boundaries;
 * a dedicated Dashboard module;
+* treating `widget` as a Module Manager module type or installable package;
 * a new generic Core abstraction without a concrete reusable requirement;
 * frontend Theme integration or public dashboard behavior;
 * schema, provisioning, package, installer, or dependency changes unless a
@@ -118,37 +159,45 @@ The approved M3.9 structure contains exactly four domain work units.
 
 ### WU1 — Dashboard Contract and Information Architecture
 
-Objective: finalize the first-wave information surfaces, hierarchy, density
-intent, stable contribution identity/order rules, and minimal contribution
-payload shape.
+Objective: finalize the first-wave widget inventory, hierarchy, density intent,
+widget purpose and interaction boundary, `0..n` contribution cardinality,
+stable contribution identity/order rules, bounded footprint rules,
+grid/composition semantics, responsive collapse/reflow rules, and minimal
+contribution payload/service boundary.
 
 Scope: contract-level decisions and focused boundary tests within the accepted
-Core/Admin Shell ownership model. WU1 must not pretend that concrete data
-fields, manager adapters, or view implementation details are already fixed.
+Core/Admin Shell ownership model, including priority semantics, contributor
+default/preferred footprint validation, permission and failure behavior, and
+the boundary for information, navigation, contextual navigation, and bounded
+quick actions. WU1 must not pretend that concrete data fields, manager
+adapters, exact grid column count, placement algorithm, or view implementation
+details are already fixed.
 
 Dependencies: the completed Admin Shell, authorization model, existing
 dashboard registry, and public manager boundaries.
 
-Exclusions: implementation of manager contributions, analytics, schema, and
-generic platform expansion.
+Exclusions: implementation of manager contributions, user-customizable layout,
+analytics, schema, and generic platform expansion.
 
-Validation and completion evidence: an approved first-wave surface inventory,
-contribution boundary record, permission/failure rules, and focused contract
-tests or source evidence.
+Validation and completion evidence: an approved first-wave widget inventory,
+contribution boundary record, cardinality/purpose/priority/footprint/grid and
+responsive rules, permission/failure rules, and focused contract tests or
+source evidence.
 
 ### WU2 — Existing Manager Contributions
 
-Objective: connect only approved, useful data from existing manager modules
-through explicit public contribution/service boundaries.
+Objective: connect only approved, useful widgets from existing manager and
+Core capabilities through explicit public contribution/service boundaries.
 
-Scope: bounded contributions from proven manager capabilities selected by WU1.
-Each contribution retains its module-owned calculation and authorization
-meaning.
+Scope: bounded `0..n` widget contributions from proven manager and Core
+capabilities selected by WU1. Each contribution retains its owner-defined
+calculation, authorization meaning, purpose, priority, and preferred footprint.
 
 Dependencies: WU1 and the public APIs of the selected manager modules.
 
 Exclusions: private repository access, new manager capabilities, speculative
-metrics, and cross-module schema ownership.
+metrics, complex workflows inside widgets, user layout persistence, and
+cross-module schema ownership.
 
 Validation and completion evidence: contribution tests, permission matrices,
 stable ordering checks, disabled/unavailable-module behavior, and failure
@@ -156,17 +205,19 @@ isolation evidence.
 
 ### WU3 — Dashboard Presentation and Shell Integration
 
-Objective: render the approved dashboard hierarchy through the existing Admin
-Shell.
+Objective: render the approved widget composition and dashboard hierarchy
+through the existing Admin Shell.
 
-Scope: sections, panels/cards, density, headings, empty states, safe failure
-states, navigation placement, escaping, and responsive presentation using
-existing Admin UI patterns.
+Scope: bounded responsive grid, widget footprints, system-controlled priority
+placement, sections/panels/cards, density, headings, empty states, safe
+failure states, navigation placement, escaping, and responsive
+collapse/reflow using existing Admin UI patterns.
 
 Dependencies: WU1, WU2, and the completed Admin Shell presentation contract.
 
-Exclusions: broad Admin redesign, frontend Theme assets, configurable layouts,
-and new shared UI infrastructure without concrete reuse evidence.
+Exclusions: broad Admin redesign, frontend Theme assets, user-customizable
+layouts, exact grid sizing beyond the approved rules, and new shared UI
+infrastructure without concrete reuse evidence.
 
 Validation and completion evidence: focused rendering and accessibility tests,
 configured-path checks, responsive markup/source review, and exact-page
@@ -229,13 +280,28 @@ remain unchanged.
 | `DI-M3.5-01` | NOT APPLICABLE | No dashboard dependency. |
 | M2.3 branding/theme presentation deferrals | NOT APPLICABLE | Dashboard remains independent of frontend Theme and branding expansion. |
 
+### Deferred Item — DI-M3.9-01
+
+- **Title:** User-customizable Dashboard layout
+- **Status:** Deferred
+- **Target:** Unscheduled
+- **Source:** M3.9 Internal Dashboard preparation contract
+- **Detail:** Drag-and-drop placement, bounded user resizing, per-user layout
+  persistence, default/reset behavior, and responsive reconciliation.
+- **Reason:** The baseline composition and widget contracts should stabilize
+  before persistent user customization is introduced.
+- **Impact:** Non-blocking for the M3.9 baseline.
+- **Revisit trigger:** A stable baseline Dashboard composition plus a concrete
+  requirement for persistent user customization.
+
 ## Validation and acceptance strategy
 
-Focused automated validation will cover dashboard authorization, contribution
-permission filtering, stable identity, duplicate handling, deterministic
-ordering, escaping, safe links, empty states, contributor failure isolation,
-disabled-module behavior, configured Admin paths, and affected Admin Shell
-regressions.
+Focused automated validation will cover dashboard authorization, zero-to-many
+widget contribution cardinality, permission filtering, stable identity,
+duplicate handling, deterministic priority/order, bounded footprint validation,
+escaping, safe links, permitted widget purposes, empty states, contributor
+failure isolation, disabled-module behavior, configured Admin paths, and
+affected Admin Shell regressions.
 
 Browser and human review will cover authenticated representative permission
 states, empty and partial-availability states, desktop and narrow mobile
@@ -255,9 +321,10 @@ If preparation is accepted for implementation, create:
 feature/m3.9-internal-dashboard
 ```
 
-The branch point is `main` at
-`e21e7b281fecdb7619022be0457381a5ce31ce85`. No implementation branch exists
-and no M3.9 implementation has started.
+No implementation branch exists and no M3.9 implementation has started. When
+implementation is later authorized, `feature/m3.9-internal-dashboard` must
+branch from the then-current verified preparation-complete `main` anchor; this
+contract does not preselect an obsolete historical commit.
 
 ## Documentation and closure
 

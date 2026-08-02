@@ -515,6 +515,7 @@ authorization, and an `Unscheduled` target does not create future scope.
 | `DI-M3.6-01` — Production Taxonomy Navigation targets | M3.6 Navigation Manager | Navigation provider integration | Deferred | Unscheduled |
 | `DI-M3.7-WU5-01` — Real-settings Theme Settings and color-control spot-check | M3.7 WU5 | Theme validation review | Deferred | Unscheduled |
 | `DI-M3.8-WU6-01` — Further Media Manager visual/presentation refinement | M3.8 WU6 | Presentation refinement | Deferred | Unscheduled |
+| `DI-M3.9-01` — User-customizable Dashboard layout | M3.9 Internal Dashboard preparation | Dashboard capability set | Deferred | Unscheduled |
 
 ### Asset Terminology
 
@@ -1139,6 +1140,20 @@ implementation branch exists.
   concrete, bounded target.
 - **Initial target disposition:** Unscheduled. This item authorizes no future
   milestone or work unit.
+
+#### Deferred Item — DI-M3.9-01
+
+- **Title:** User-customizable Dashboard layout
+- **Status:** Deferred
+- **Target:** Unscheduled
+- **Source:** M3.9 Internal Dashboard preparation contract
+- **Detail:** Drag-and-drop placement, bounded user resizing, per-user layout
+  persistence, default/reset behavior, and responsive reconciliation.
+- **Reason:** The baseline composition and widget contracts should stabilize
+  before persistent user customization is introduced.
+- **Impact:** Non-blocking for the M3.9 baseline.
+- **Revisit trigger:** A stable baseline Dashboard composition plus a concrete
+  requirement for persistent user customization.
 
 M3.8 initial clarification and preparation audit are complete. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
