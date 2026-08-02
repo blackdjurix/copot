@@ -41,15 +41,15 @@ HUMAN VISUAL/BROWSER ACCEPTANCE PASS; NRP CONFIRMED; FINALLY CLOSED
 
 WU6:
 IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE FOR APPROVED CONTENT FEATURED-MEDIA
-PICKER, USAGE SYNCHRONIZATION, UNUSED-ONLY DELETION SAFETY, BOUNDED 16:9
-PREPARATION/CROP, AND SINGLE PUBLIC CONTENT-VIEW RENDERING; HUMAN ACCEPTANCE
-REMAINS SEPARATE; WU6 NRP NOT CONFIRMED
+PICKER, USAGE SYNCHRONIZATION, UNUSED-ONLY DELETION SAFETY, CONSUMER-SCOPED
+PREPARATION/CROP, AND SINGLE PUBLIC CONTENT-VIEW RENDERING; HUMAN
+FUNCTIONAL/BROWSER ACCEPTANCE PASS; WU6 NRP FINAL DECISION REMAINS SEPARATE
 
 WU7:
 NOT STARTED
 
 Implementation branch:
-`feature/m3.8-media-library` CONTINUES FOR WU6; WU7 REMAINS UNAUTHORIZED
+`feature/m3.8-media-library` REMAINS ACTIVE; WU7 IS NOT STARTED AND REMAINS UNAUTHORIZED
 ```
 
 The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
@@ -57,13 +57,13 @@ predecessors and are durably delivered. WU4 implementation and focused
 validation are complete, durably delivered, and `NRP CONFIRMED`. WU5
 presentation refinement is implemented and focused-validated on the active
 feature branch. AI acceptance and human visual/browser acceptance are `PASS`;
-WU5 is finally closed and `NRP CONFIRMED`. WU6 implementation is limited to the
-approved Content featured-Media picker, usage synchronization, unused-only
-deletion safety, the Media-owned `content.featured` 16:9 preparation/crop
-profile, and processed featured-image rendering on the single public Content
-view. Focused validation is complete; human acceptance remains separate and
-WU6 is not `NRP CONFIRMED`. WU7 remains not started and unauthorized. Full M3.8
-is `NRP NOT REACHED`.
+WU5 is finally closed and `NRP CONFIRMED`. WU6 delivers the approved Content
+featured-Media picker, usage synchronization, unused-only deletion safety, the
+consumer-requested `content.featured` 16:9 preparation/crop profile, and
+processed featured-image rendering on the single public Content view. Focused
+validation and human functional/browser acceptance are complete. This record
+does not make a final WU6 NRP decision. WU7 remains not started and
+unauthorized. Full M3.8 is `NRP NOT REACHED`.
 
 ## Locked architecture and ownership
 
@@ -167,11 +167,11 @@ containment, and URL stability.
 Private Media is not part of the baseline; M3.8 does not promise private-media
 authorization semantics.
 
-M3.8 delivers reusable consumer contracts and the picker. Actual production
-field adoption in Content, Theme, and Site Settings remains post-M3.8 unless
-a later approved scope decision changes that boundary. This preserves the
-roadmap direction that consumer integration follows Media through explicit
-contracts.
+M3.8 delivers reusable consumer contracts and the picker. Content featured
+Media is the first active production consumer; Theme and Site Settings field
+adoption remain post-M3.8 unless a later approved scope decision changes that
+boundary. This preserves the roadmap direction that consumer integration follows
+Media through explicit contracts.
 
 The consumer contract must support, where requested, stable Media reference,
 aspect ratio, minimum dimensions, bounded responsive widths, output format,
@@ -415,12 +415,11 @@ performance limits.
 
 #### WU4 implementation decision record
 
-WU4 uses native GD only. GD is not a global installer prerequisite; image
-processing fails closed when GD is unavailable, and JPEG processing also fails
-closed when EXIF support is unavailable. The current bundled PHP runtime has
-`php_gd.dll` and supports JPEG, PNG, WebP, and GIF when enabled through a
-CLI-only override, while the authoritative `php.ini` leaves GD disabled.
-Imagick and third-party dependencies are not introduced.
+WU4 uses native GD only. PHP GD must be enabled in the PHP runtime/SAPI that
+serves image processing (and in the CLI runtime when processing tests run);
+image processing fails closed when GD is unavailable, and JPEG processing also
+fails closed when EXIF support is unavailable. Imagick and third-party
+dependencies are not introduced.
 
 The module-local processing boundary uses typed requests, deterministic
 semantic keys, deterministic physical keys, a GD processor, and a separate
@@ -431,7 +430,8 @@ JPEG output composites transparency on white. GIF, ICO, PDF, SVG, video, and
 audio are rejected from generic processing. Originals remain byte-identical.
 
 Responsive widths are limited to `320, 640, 960, 1280, 1920, 2560`, with at
-most six outputs per call and no upscaling. Generated output is bounded to
+most six outputs per call; upscaling is disabled by default and may be enabled
+only by a bounded consumer profile. Generated output is bounded to
 4096 by 4096 pixels, 16,777,216 pixels, and 16 MiB per variant. Variant
 descriptors use the existing `media_variants` table, deterministic semantic
 keys, and a maximum of 24 semantic descriptors per Media. No schema or
@@ -487,18 +487,19 @@ original filename is secondary metadata, image previews preserve aspect ratio on
 a neutral surface, and PDFs/documents use a clear generic document visual. The
 card is the primary interactive target and opens an accessible Admin
 preview/details overlay with previous/next navigation limited to the current
-filtered page. Overlay actions provide title editing, fixed image processing
-presets, and the existing public view link; Download is intentionally not an
-Admin Media Manager action and remains part of public delivery. Documents use
-no processing controls.
+filtered page. The current overlay provides title editing and navigation;
+consumer-specific transforms and the public delivery link are not Media Manager
+actions. Download is intentionally not an Admin Media Manager action and
+remains part of public delivery. Documents use no processing controls.
 
-Upload, title updates, and processing reuse the existing Media services through
-a module-local Admin orchestration boundary. Processing exposes only the
-square, landscape, and contain presets locked for WU5; arbitrary transform
-inputs are not accepted. No storage key, physical path, temporary path, or
-generated-file location is rendered. WU5 adds no delete route and does not call
-the Media deletion lifecycle. Generated variants remain internal; no public
-variant delivery, picker, or consumer integration is added.
+Upload and title updates reuse the existing Media services through a module-local
+Admin orchestration boundary. The WU5-era fixed Square/Landscape/Contain
+controls were removed in WU6 so transform requirements remain consumer-owned;
+arbitrary global transform inputs are not accepted. No storage key, physical
+path, temporary path, or generated-file location is rendered. WU5 adds no
+delete route and does not call the Media deletion lifecycle. Generated variants
+remain internal; no public variant delivery, picker, or consumer integration is
+added by WU5 itself.
 
 Upload titles are optional. An explicit non-empty title is preserved; a blank
 title derives centrally from the original filename by stripping its final
@@ -535,10 +536,11 @@ human-required criterion remains for WU5.
 Media.
 
 **Production scope:** Existing selection, inline upload, the locked Content
-`content.featured` profile (JPEG/PNG/WebP, minimum 1280×720 source, 16:9 crop,
-640/960/1280 bounded responsive widths, center default), stable-reference
-return contract, processed single-view rendering, descriptor/URL contract,
-usage visibility, and referenced-deletion blocking.
+`content.featured` profile (JPEG/PNG/WebP, 16:9 crop, 640/960/1280 responsive
+widths, and allowed upscale), stable-reference return contract, processed
+single-view rendering, descriptor/URL contract, usage visibility, and
+referenced-deletion blocking. There is no quality-based source or crop minimum:
+any technically valid in-bounds crop may be prepared.
 
 **Validation scope:** Picker selection/upload flows, unauthorized use, stale
 references, usage updates, deletion blocking, consumer contract compatibility,
@@ -558,6 +560,38 @@ reference and controlled descriptor without owning Media internals.
 integration boundary.
 
 **Human review:** Required for cross-module contracts and picker usability.
+
+#### WU6 implementation decision record
+
+WU6 is complete with Content as the first active Media consumer. Content stores
+only `featured_media_id`; the consumer requests the `content.featured` profile,
+while Media owns picker selection, upload, preparation, variants, controlled
+delivery, and deletion safety. The Media Manager does not define global
+Square/Landscape/Contain modes: consumer requirements drive preparation.
+
+Content preparation is consumer/content-scoped. Confirming a crop creates a
+bounded authenticated pending preparation and updates only the edit-form
+preview. Before Content save, it does not switch `media_usages` or the public
+descriptor. On successful Content save, Media validates and promotes that
+pending preparation into stable committed slots for
+`media_id + content + content.id + featured_media + output width`; public
+resolution uses those slots. Re-crop replacement keeps one active committed
+output per slot, removes safely unreferenced replaced files, and prevents stale
+or another Content record's variants from competing with the active consumer
+slot. Pending artifacts are not public delivery identities and have bounded
+cleanup.
+
+The active Content profile supplies its own locked 16:9 crop and responsive
+640/960/1280 output requirements, including allowed upscale. Generic Media
+processing receives the request/profile and must not hardcode Content-specific
+ratio, widths, or crop policy. PHP GD is a runtime/deployment requirement for
+this image-processing path.
+
+Focused validation and human functional/browser acceptance are complete for the
+picker, crop/save boundary, same-Media re-crop, shared-Media isolation, public
+rendering, and deletion blocking. Further Media Manager visual/presentation
+refinement is deferred and non-blocking for WU6. WU7 remains `NOT STARTED`; this
+record does not claim full M3.8 completion or make a final WU6 NRP decision.
 
 ### WU7 — Security, install/upgrade/package regression, acceptance, and closure
 
@@ -623,7 +657,7 @@ presentation refinement and focused validation are complete with AI acceptance
 `PASS`. Human visual/browser acceptance is `PASS` for bounded cards, grid
 presentation, card-to-preview interaction, preview overlay usability, and the
 Admin/public action boundary. WU5 is finally closed and `NRP CONFIRMED`. WU6
-is implemented within the approved Content featured-Media, usage, and
-unused-only deletion boundary; focused validation and human acceptance remain
-separate. WU7 remains `NOT STARTED` and unauthorized. Full M3.8
-is `NRP NOT REACHED`; milestone closure is not implied.
+is complete within the approved Content featured-Media, usage, and unused-only
+deletion boundary; focused validation and human functional/browser acceptance
+are complete. WU7 remains `NOT STARTED` and unauthorized. Full M3.8 is `NRP
+NOT REACHED`; milestone closure is not implied.
