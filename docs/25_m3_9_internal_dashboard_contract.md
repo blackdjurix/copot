@@ -13,11 +13,14 @@ COMPLETE AND CLOSED
 M3.9 preparation:
 LOCKED
 
-M3.9 implementation:
+M3.9 WU1 implementation:
+IN PROGRESS
+
+M3.9 WU2–WU4:
 NOT STARTED
 
 M3.9 implementation branch:
-NOT CREATED
+`feature/m3.9-internal-dashboard`
 ```
 
 M3.8 WU1–WU7 are complete and accepted. Full M3.8 was fast-forward
@@ -56,6 +59,32 @@ The following capabilities are complete and reusable:
 This baseline is not treated as missing merely because M3.9 has not begun. The
 existing registry is a completed M2 extension contract, not the full M3.9
 product capability.
+
+## WU1 locked first-wave widget inventory
+
+WU1 selects the following exact M3.9 baseline widgets. This inventory is based
+on the current Core dashboard status surface, the existing Content and
+Taxonomy registry contributions, and the public Content workspace contract in
+`modules/content/routes.php` and `modules/content/Services/ContentRepository.php`.
+
+| Stable identity | Owner | Purpose | Permission | Destination/action | Default priority | Preferred footprint |
+|---|---|---|---|---|---:|---|
+| `core.system-overview` | Core/Admin Shell | Application, configured Admin path, current user, and safe framework status | `admin.access` | None; information/status only | 100 | `wide` |
+| `content.drafts` | Content Manager | Count of draft Content entries; a status surface, not analytics | `content.read` | Contextual navigation to the existing Content workspace with `status=draft` | 120 | `standard` |
+| `content.recent` | Content Manager | Bounded list of recently updated Content entries using the existing deterministic `updated_at`/`id` ordering | `content.read` | Normal navigation to the Content workspace | 140 | `wide` |
+| `content.overview` | Content Manager | Existing Content management shortcut | `content.read` | Normal navigation to the Content workspace | 200 | `compact` |
+| `taxonomy.overview` | Taxonomy Manager | Existing classification-management shortcut | Any of `taxonomy.create`, `taxonomy.update`, or `taxonomy.delete` | Normal navigation to the Taxonomy workspace | 300 | `compact` |
+
+No first-wave widget is selected for Users & Access, Settings Manager, Module
+Manager, Navigation Manager, Theme Manager, or Media Library. Their absence
+is an evidence-based scope decision, not a requirement that every manager
+appear on Dashboard. A contributor may provide zero widgets, one widget, or
+multiple materially distinct widgets.
+
+The Content widgets are bounded management information and navigation surfaces.
+`content.recent` is not an activity feed, notification stream, or reporting
+system. WU2 will implement the selected manager contributions through the
+existing public Content contract; WU1 does not implement those providers.
 
 ## Ownership and architecture
 
@@ -99,9 +128,16 @@ inside Dashboard widgets. M3.9 is not an analytics or reporting platform.
 The Dashboard uses a responsive bounded grid. Each widget has a bounded
 footprint: the contributor defines a default or preferred footprint, and
 Dashboard validates it against supported minimum, maximum, and allowed sizing
-rules. Exact supported footprints, grid column count, and placement algorithm
-are finalized in WU1/WU3 from existing Admin Shell layout evidence. This
-contract does not lock a particular column count or permit arbitrary
+rules. WU1 locks the representation as a semantic footprint with bounded
+`inline_span` and `block_span` units. The M3.9 baseline permits only the
+semantic presets `compact` `(1,1)`, `standard` `(2,1)`, and `wide` `(2,2)`;
+these are abstract spans, not a desktop CSS column count. Missing legacy
+footprint metadata maps to `compact` for compatibility. Invalid, duplicate,
+non-integer, zero, negative, or out-of-range spans are rejected and the
+affected contribution is not composed. Exact CSS mapping, supported desktop
+grid column count, and placement algorithm are finalized in WU3 from existing
+Admin Shell layout evidence. WU1 does not lock an exact desktop column count.
+This contract does not permit arbitrary
 unrestricted width or height values.
 
 For the M3.9 baseline, layout is system-controlled. Widget priority determines
@@ -109,6 +145,11 @@ the deterministic placement sequence, widget footprint determines occupied
 grid area, and stable registration/order remains the tie-breaker where needed.
 Packing must not silently destroy the intended logical priority hierarchy merely
 to fill every visual gap.
+
+On narrower supported widths, the system preserves logical priority and
+registration order, reflows widgets into the available flow, and collapses
+multi-span footprints to the available single-column presentation when needed.
+Exact breakpoint thresholds and CSS details remain WU3 decisions.
 
 User drag-and-drop repositioning, bounded user resizing, per-user layout
 persistence, default/reset behavior, and responsive reconciliation are
@@ -127,6 +168,14 @@ Dashboard contributions are:
 * bounded by validated footprint rules; and
 * limited to controlled presentation data, approved internal links, contextual
   navigation, or bounded quick actions.
+
+The smallest compatible evolution is to evolve `AdminDashboardRegistry` in
+place. Its existing stable ID, registration, permission, priority, duplicate,
+root-relative URL, and `itemsFor()` behavior remain the foundation. The WU2/WU3
+implementation may add owner identity, widget purpose/content metadata,
+validated footprint, contextual-navigation data, and bounded-action metadata
+to that same registry contract with compatibility defaults for the current
+shortcut entries. No parallel dashboard registry is authorized.
 
 M3.9 introduces no second dashboard permission system. A contribution is
 hidden when its existing required permission is unavailable. A contribution
@@ -321,10 +370,12 @@ If preparation is accepted for implementation, create:
 feature/m3.9-internal-dashboard
 ```
 
-No implementation branch exists and no M3.9 implementation has started. When
-implementation is later authorized, `feature/m3.9-internal-dashboard` must
-branch from the then-current verified preparation-complete `main` anchor; this
-contract does not preselect an obsolete historical commit.
+The WU1 implementation branch is
+`feature/m3.9-internal-dashboard`, created from the verified preparation
+anchor `d39957fa0e8f3704649c32b1e64dbd3b28cdf0c4`. WU2–WU4 have not started.
+Any later implementation branch must branch from the then-current verified
+preparation-complete `main` anchor; this contract does not authorize branching
+from an obsolete historical commit.
 
 ## Documentation and closure
 
