@@ -116,6 +116,11 @@ Taxonomy a required provider, add Taxonomy target resolution, or change the
 closed M3.5 contract. Future providers must opt in through an explicit public
 contract owned by the provider.
 
+Deferred Item: `DI-M3.6-01` — Production Taxonomy Navigation targets. Status:
+Deferred and Unscheduled. It covers production Taxonomy target resolution
+through the Navigation provider contract; it is not authorization to reopen
+M3.5 or make Taxonomy a required Navigation provider.
+
 `AdminNavigation` remains the existing separate Admin Shell navigation
 contract. It is not replaced by public Navigation data, and M3.6 must not
 silently merge Admin management navigation with frontend menu data.

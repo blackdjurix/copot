@@ -506,6 +506,14 @@ authorization, and an `Unscheduled` target does not create future scope.
 | `DI-M2.3-04` — Generic file-management, SVG security, and external storage | M2.3 Deferred from | Media/storage capability set | Deferred | Unscheduled |
 | `DI-M2.3-05` — Media organization and bulk workspace actions | M2.3 Deferred from | Media workspace capability set | Deferred | Unscheduled |
 | `DI-M2.3-06` — Advanced image editing and optimization | M2.3 Deferred from | Image-processing capability set | Deferred | Unscheduled |
+| `DI-M3-ADMIN-UX-01` — Admin UX follow-up refinements | M3 Admin UX Refinement 1 / Shell Foundation | Admin presentation capability set | Deferred | Unscheduled |
+| `DI-M3.4-01` — Advanced Content workflow and ownership features | M3.4 Content Manager | Content workflow capability set | Deferred | Unscheduled |
+| `DI-M3.4-02` — Rich authoring and Content extensibility | M3.4 Content Manager | Content authoring capability set | Deferred | Unscheduled |
+| `DI-M3.4-03` — Content bulk, interchange, and service capabilities | M3.4 Content Manager | Content management capability set | Deferred | Unscheduled |
+| `DI-M3.4-04` — Public Content taxonomy archive integration | M3.4 Content Manager | Public Content integration | Deferred | Unscheduled |
+| `DI-M3.5-01` — Taxonomy term search and filtering | M3.5 Taxonomy Manager | Taxonomy workspace capability | Deferred | Unscheduled |
+| `DI-M3.6-01` — Production Taxonomy Navigation targets | M3.6 Navigation Manager | Navigation provider integration | Deferred | Unscheduled |
+| `DI-M3.7-WU5-01` — Real-settings Theme Settings and color-control spot-check | M3.7 WU5 | Theme validation review | Deferred | Unscheduled |
 | `DI-M3.8-WU6-01` — Further Media Manager visual/presentation refinement | M3.8 WU6 | Presentation refinement | Deferred | Unscheduled |
 
 ### Asset Terminology

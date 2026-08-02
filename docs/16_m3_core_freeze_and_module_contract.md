@@ -712,6 +712,12 @@ M3.1 merged to `main` through `5c4cf8c` and remains unreleased. Post-M3.1 Roadma
 
 Admin UX Refinement 1 and Shell Foundation have completed the approved presentation-only Admin work after M3.3 and before reserved M3.4. The shared shell, responsive drawer, accessibility behavior, navigation, menus, configured-path presentation, and Settings Category 1 presentation remediation passed focused automated, runtime, and authenticated browser validation with documented non-material browser-surface limitations. Deferred non-blocking Admin UX work includes global floating notifications, effective-permission explanation for multi-role users, and reusable dashboard block spacing.
 
+Deferred Item: `DI-M3-ADMIN-UX-01` — Admin UX follow-up refinements. Status:
+Deferred and Unscheduled. It covers the global floating notifications,
+multi-role effective-permission explanation, and reusable dashboard block
+spacing explicitly postponed after the accepted refinement baseline. It is
+non-blocking and authorizes no later milestone or work unit.
+
 M3.2-specific scope, existing Settings foundation evidence, permission reuse, Core approval points, batch gates, and manual verification are authoritative in `docs/17_m3_2_settings_manager_contract.md`. The Core freeze remains active. Batch 1 approved only deterministic registered-definition discovery through `SettingsService`, the Settings route/view ownership transition into `settings-manager`, and the required fresh-install/package lifecycle wiring. `Application`, `SettingsRegistry`, schema, runtime permissions, and generic module-loading semantics remain unchanged.
 
 ## M3.3 Module Manager Entry Contract

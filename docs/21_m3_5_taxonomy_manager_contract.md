@@ -106,6 +106,10 @@ treatment. Simple term search and filtering are:
 DEFERRED — NOT PART OF THE BASELINE M3.5 IMPLEMENTATION
 ```
 
+Deferred Item: `DI-M3.5-01` — Taxonomy term search and filtering. Status:
+Deferred and Unscheduled. It remains outside the accepted M3.5 baseline and
+does not authorize a broader taxonomy search/indexing scope.
+
 ## Domain Invariants
 
 * `category` and `tag` are the only managed types.

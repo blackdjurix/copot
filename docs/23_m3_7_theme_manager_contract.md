@@ -94,6 +94,11 @@ criteria remain visual hierarchy, screenshot usefulness, activation-warning
 comprehension, settings-form clarity, color-control usability, true 200% zoom,
 320px presentation, and final Theme workspace quality.
 
+Deferred Item: `DI-M3.7-WU5-01` — Real-settings Theme Settings and
+color-control spot-check. Status: Deferred and Unscheduled. It is non-blocking
+until a real settings-bearing Theme makes the review materially possible; it
+does not authorize Theme implementation or a future milestone.
+
 Objective WU6 security, regression, documentation, and integration-readiness work
 is complete in the feature branch. Discovery bounds `theme.json` metadata,
 isolates malformed, missing, unavailable, and corrupted Theme inputs with generic

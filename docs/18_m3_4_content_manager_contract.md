@@ -217,6 +217,27 @@ The following remain outside strict M3.4 scope:
 * generic migration runner;
 * Theme Manager or rendering redesign.
 
+Deferred Item: `DI-M3.4-01` — Advanced Content workflow and ownership
+features. Status: Deferred and Unscheduled; it covers revisions, autosave,
+preview, scheduling, workflow approval, author reassignment, and
+object-/author-/team-owned authorization.
+
+Deferred Item: `DI-M3.4-02` — Rich authoring and Content extensibility.
+Status: Deferred and Unscheduled; it covers rich-text/editor abstractions,
+raw HTML/Markdown/sanitization, custom fields, and content-type management.
+
+Deferred Item: `DI-M3.4-03` — Content bulk, interchange, and service
+capabilities. Status: Deferred and Unscheduled; it covers bulk actions,
+import/export, comments, APIs, and SEO.
+
+Deferred Item: `DI-M3.4-04` — Public Content taxonomy archive integration.
+Status: Deferred and Unscheduled; it covers public taxonomy archives. M3.4's
+historical Media Library/featured-image and frontend Navigation portions were
+subsequently adopted by M3.8 and M3.6 respectively; multilingual content
+remains represented by the existing Localization expansion Deferred Item.
+Theme Manager was subsequently adopted by M3.7. Those adopted or
+already-represented portions are not active scope in these M3.4 Deferred Items.
+
 ## Six-Batch Plan
 
 ### Batch 1 — Contract, Permission, and Baseline
