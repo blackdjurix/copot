@@ -205,9 +205,9 @@ M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
 
-M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; local and remote `feature/m3.3-module-manager` branches are deleted. M3.3 remains unreleased, untagged, and unpublished. M3.4 Batch 1 and Batch 2 Foundation are complete and branch-closed; Batch 3 Admin Content Workspace implementation and validation are complete and were fast-forward merged into `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`. Its local and remote feature branches were deleted after verified containment. Batch 3 is NRP CONFIRMED. Batch 4 implementation and validation are complete and fast-forward merged into `main` at `48c1ca12ada0fe813b8efc1f4e8e0b9d52c03ccc` (`feat(m3.4): harden content manager batch 4`). The main push was previously completed and freshly re-verified; the local and remote feature branches were safely deleted after verified containment, and the branch lifecycle is closed. Batch 4 is NRP CONFIRMED after this final documentation commit and verification. Batch 5 implementation, validation, documentation, commit, feature push, fast-forward merge, and main synchronization are complete at `912bec86f2fdc799ab6c554da5341979f6be7cb5`; its local and remote feature branches were deleted after verified containment, and its branch lifecycle is closed. Batch 5 is NRP CONFIRMED. Batch 6 implementation, focused source review, automated validation, targeted runtime synchronization, authenticated browser validation, fast-forward integration, `main` push, feature-branch cleanup, and final verification are complete at final documentation commit `ae2c404be195dbf4395986ad21f7cb0be7da83a8`; no merge commit was created. Batch 6 and full M3.4 are NRP CONFIRMED; M3.R1 is next and must complete before M3.5.
+M2.3 Minimal Site Capabilities is complete and released as v0.11.0. M2.4 Platform Hardening, Post-M2 Distribution & Release Preparation, and the package reproducibility correction are complete and released as v0.12.0. M3 Preparation and M3.1 Users & Access are complete; M3.1 merged to `main` through `5c4cf8c`. Post-M3.1 Roadmap Sync and all five M3.2 Settings Manager batches are complete; M3.2 merged to `main` through `afd82f0`. M3.3 Module Manager Batches 1–5 are complete and were fast-forward merged into `main` at `020f2b2`; local and remote `feature/m3.3-module-manager` branches are deleted. M3.3 remains unreleased, untagged, and unpublished. M3.4 Batch 1 and Batch 2 Foundation are complete and branch-closed; Batch 3 Admin Content Workspace implementation and validation are complete and were fast-forward merged into `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`. Its local and remote feature branches were deleted after verified containment. Batch 3 is COMPLETE. Batch 4 implementation and validation are complete and fast-forward merged into `main` at `48c1ca12ada0fe813b8efc1f4e8e0b9d52c03ccc` (`feat(m3.4): harden content manager batch 4`). The main push was previously completed and freshly re-verified; the local and remote feature branches were safely deleted after verified containment, and the branch lifecycle is closed. Batch 4 is COMPLETE after this final documentation commit and verification. Batch 5 implementation, validation, documentation, commit, feature push, fast-forward merge, and main synchronization are complete at `912bec86f2fdc799ab6c554da5341979f6be7cb5`; its local and remote feature branches were deleted after verified containment, and its branch lifecycle is closed. Batch 5 is COMPLETE. Batch 6 implementation, focused source review, automated validation, targeted runtime synchronization, authenticated browser validation, fast-forward integration, `main` push, feature-branch cleanup, and final verification are complete at final documentation commit `ae2c404be195dbf4395986ad21f7cb0be7da83a8`; no merge commit was created. Batch 6 and full M3.4 are COMPLETE; M3.R1 is next and must complete before M3.5.
 
-The preceding milestone summary records the pre-classification sequence state. The current M3.R1 status is classification and lifecycle closure complete with `NO MATERIAL RETOUCH REQUIRED`; final documentation commit `c5d27adeba6c1f440f6b9c62309a447f82e43a08` is pushed, `main` is clean and synchronized at `0/0`, and full M3.R1 is `NRP CONFIRMED`. M3.5 was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit; Work Units 1–5 and full M3.5 are `NRP CONFIRMED`, feature containment passed, and local/remote feature branches are deleted. M3.6 Navigation Manager is next and not started. Release, tag, and publication remain not started and separately authorized.
+The preceding milestone summary records the pre-classification sequence state. The current M3.R1 status is classification and lifecycle closure complete with `NO MATERIAL RETOUCH REQUIRED`; final documentation commit `c5d27adeba6c1f440f6b9c62309a447f82e43a08` is pushed, `main` is clean and synchronized at `0/0`, and full M3.R1 is `COMPLETE`. M3.5 was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit; Work Units 1–5 and full M3.5 are `COMPLETE`, feature containment passed, and local/remote feature branches are deleted. M3.6 Navigation Manager is next and not started. Release, tag, and publication remain not started and separately authorized.
 
 The approved M2.1 architecture boundaries, completed batch plan, and acceptance criteria remain defined in `docs/10_admin_ui_foundation.md`.
 
@@ -851,25 +851,25 @@ The exact five-batch plan is:
 
 Explicit non-goals include marketplace or remote installation, package download or ZIP upload, signing, automatic updates, rollback, generic version solving, Composer-style dependency resolution, automatic permission or role synchronization, a second authorization system, a generic migration framework, Theme Manager, Media Library, module settings UI, module code editor, Admin UX Refinement 1, M3.4, release, tagging, and package publication.
 
-The M3.3 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification are complete. M3.3 reached its No-Return Point and branch lifecycle closure; it remains unreleased, untagged, and unpublished.
+The M3.3 implementation, validation, documentation synchronization, focused review, commit, push, fast-forward merge, and clean synchronized `main` verification are complete. M3.3 reached implementation completion and branch lifecycle closure; it remains unreleased, untagged, and unpublished.
 
 #### M3.4 Content Manager
 
 Status: Batch 1 and Batch 2 Foundation complete and branch-closed on synchronized `main` at `5b51a1471da63b280e1444cd2f7ba8da4d168f28`. Focused validation passes 99 assertions: provisioning and upgrade (9), transaction/lifecycle/slug/stale-write/Taxonomy atomicity (37), and authorization matrix (53). PHP lint, `git diff --check`, disposable database cleanup, runtime synchronization, and browser validation pass. The foundation feature branch was fast-forward merged, pushed and verified against `origin/main`, and deleted locally and remotely.
 
-Batch 3 Admin Content Workspace implementation and validation are complete and were fast-forward merged into `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`. Batch 3 focused validation passes 33 assertions, for 132 total focused executed M3.4 assertions including the foundation. Runtime synchronization and browser validation pass; the local and remote feature branches were deleted after verified containment, and Batch 3 is NRP CONFIRMED.
+Batch 3 Admin Content Workspace implementation and validation are complete and were fast-forward merged into `main` at `b175098f1afcfa02594706e5bf98886b7887e1b2`. Batch 3 focused validation passes 33 assertions, for 132 total focused executed M3.4 assertions including the foundation. Runtime synchronization and browser validation pass; the local and remote feature branches were deleted after verified containment, and Batch 3 is COMPLETE.
 
-Batch 4 Cross-module Integration and Security Hardening implementation and validation are complete. Commit `48c1ca12ada0fe813b8efc1f4e8e0b9d52c03ccc` (`feat(m3.4): harden content manager batch 4`) was fast-forward merged into `main`; the main push was previously completed and freshly re-verified. The local and remote feature branches were safely deleted after verified containment, and the branch lifecycle is closed. This final documentation commit records Batch 4 as NRP CONFIRMED after final verification. Focused Batch 4 validation passes 33 assertions. Directly affected Content regressions pass: Batch 1 provisioning (9), Batch 1 transaction/lifecycle (37), Batch 2 authorization (53), and Batch 3 workspace (33). Package builder smoke passes 825 assertions and clean-install verification passes 60 assertions. PHP lint, `git diff --check`, source review, and targeted synchronization of the two runtime Content files pass. Browser validation passes with limitations: normal lifecycle, published rendering, Draft/Archived denial, plaintext escaping, malformed read-ID containment, current configured Admin path, and desktop/390 × 844 smoke pass. Browser request replay was unavailable for missing/invalid CSRF, authorization-before-CSRF, malformed mutation payloads/identifiers, duplicate slug, stale write, repeated transitions, and injected persistence-error responses; focused automated tests and source review cover those cases. Optional Taxonomy-disabled browser behavior was not exercised. Batch 5 follows as the runtime acceptance and closure work unit. Release, tag, and publication have not started. The authoritative six-batch M3.4 contract remains defined in `docs/18_m3_4_content_manager_contract.md`.
+Batch 4 Cross-module Integration and Security Hardening implementation and validation are complete. Commit `48c1ca12ada0fe813b8efc1f4e8e0b9d52c03ccc` (`feat(m3.4): harden content manager batch 4`) was fast-forward merged into `main`; the main push was previously completed and freshly re-verified. The local and remote feature branches were safely deleted after verified containment, and the branch lifecycle is closed. This final documentation commit records Batch 4 as COMPLETE after final verification. Focused Batch 4 validation passes 33 assertions. Directly affected Content regressions pass: Batch 1 provisioning (9), Batch 1 transaction/lifecycle (37), Batch 2 authorization (53), and Batch 3 workspace (33). Package builder smoke passes 825 assertions and clean-install verification passes 60 assertions. PHP lint, `git diff --check`, source review, and targeted synchronization of the two runtime Content files pass. Browser validation passes with limitations: normal lifecycle, published rendering, Draft/Archived denial, plaintext escaping, malformed read-ID containment, current configured Admin path, and desktop/390 × 844 smoke pass. Browser request replay was unavailable for missing/invalid CSRF, authorization-before-CSRF, malformed mutation payloads/identifiers, duplicate slug, stale write, repeated transitions, and injected persistence-error responses; focused automated tests and source review cover those cases. Optional Taxonomy-disabled browser behavior was not exercised. Batch 5 follows as the runtime acceptance and closure work unit. Release, tag, and publication have not started. The authoritative six-batch M3.4 contract remains defined in `docs/18_m3_4_content_manager_contract.md`.
 
-The contract keeps the existing `modules/content` module as the sole Content owner, locks fixed `page` and `article` types, defines the draft/published/archived lifecycle with archive-to-draft restore and no hard delete, adds the required `content.read` permission boundary, preserves optional Taxonomy integration and the existing `content::show` Theme boundary, and defers revisions, autosave, preview, scheduling, custom fields, content-type management, Media Library integration, bulk actions, APIs, and other future capabilities. Batches 1–5 implementation and validation remain documented above. Batch 6 implementation, validation, fast-forward integration, `main` push, feature-branch cleanup, and final verification are complete at `ae2c404be195dbf4395986ad21f7cb0be7da83a8`; Batch 6 and full M3.4 are `NRP CONFIRMED`. M3.R1 follows full M3.4 closure and must complete before M3.5 begins.
+The contract keeps the existing `modules/content` module as the sole Content owner, locks fixed `page` and `article` types, defines the draft/published/archived lifecycle with archive-to-draft restore and no hard delete, adds the required `content.read` permission boundary, preserves optional Taxonomy integration and the existing `content::show` Theme boundary, and defers revisions, autosave, preview, scheduling, custom fields, content-type management, Media Library integration, bulk actions, APIs, and other future capabilities. Batches 1–5 implementation and validation remain documented above. Batch 6 implementation, validation, fast-forward integration, `main` push, feature-branch cleanup, and final verification are complete at `ae2c404be195dbf4395986ad21f7cb0be7da83a8`; Batch 6 and full M3.4 are `COMPLETE`. M3.R1 follows full M3.4 closure and must complete before M3.5 begins.
 
 Current branch/state:
 
 ```text
 main at the M3.R1 preparation post-cleanup documentation checkpoint; HEAD 5887da1f612e6edd8c3abc808bd76b4d4af51743 (`docs(m3.r1): record preparation post-merge state`)
 -> Batch 1 and Batch 2 Foundation complete and branch-closed
--> Batch 3 Admin Content Workspace implementation and validation complete (NRP CONFIRMED; branches deleted)
--> Batch 4 Integration and Security Hardening implementation/validation complete and fast-forward merged into main (NRP CONFIRMED; feature branches deleted; branch lifecycle closed)
+-> Batch 3 Admin Content Workspace implementation and validation complete (COMPLETE; branches deleted)
+-> Batch 4 Integration and Security Hardening implementation/validation complete and fast-forward merged into main (COMPLETE; feature branches deleted; branch lifecycle closed)
 -> Main and origin/main are clean and synchronized at 5887da1f612e6edd8c3abc808bd76b4d4af51743 (0/0)
 -> Batch 5 focused, package, clean-install, lint, runtime, and manual acceptance evidence complete
 -> Batch 5 implementation, validation, documentation, commit, feature push, fast-forward merge, main synchronization, branch cleanup, and post-cleanup verification complete
@@ -878,15 +878,15 @@ main at the M3.R1 preparation post-cleanup documentation checkpoint; HEAD 5887da
 -> Focused source review, automated validation, runtime SHA-256 synchronization, and authenticated browser validation complete
 -> Batch 6 feature commit fast-forward merged into main and main pushed; no merge commit created
 -> Batch 6 feature branches were safely deleted after containment verification; only the main worktree remains
--> Batch 6 and full M3.4 are NRP CONFIRMED after final documentation and verification
+-> Batch 6 and full M3.4 are COMPLETE after final documentation and verification
 -> M3.R1 preparation contract integrated, corrected, and branch-closed; classification gate complete with `NO MATERIAL RETOUCH REQUIRED`
--> M3.R1 has no implementation batches or implementation branch; full M3.R1 is `NRP CONFIRMED` after pushed documentation closure and synchronized clean `main`
--> M3.5 was subsequently completed and branch-closed; M3.6 WU1–WU4 are complete, WU4 is `NRP CANDIDATE`, and WU5 is the next separately authorized gate; release, tag, and publication remain separately authorized
+-> M3.R1 has no implementation batches or implementation branch; full M3.R1 is `COMPLETE` after pushed documentation closure and synchronized clean `main`
+-> M3.5 was subsequently completed and branch-closed; M3.6 WU1–WU4 are complete, WU4 is `CLOSURE PENDING`, and WU5 is the next separately authorized gate; release, tag, and publication remain separately authorized
 ```
 
 ### M3.R1 — Admin Shell Retouch 1
 
-M3.4 is complete and `NRP CONFIRMED`. The M3.R1 preparation and scope
+M3.4 is complete and `COMPLETE`. The M3.R1 preparation and scope
 contract is integrated into synchronized `main`; its source review, commit,
 push, fast-forward integration, post-merge documentation correction, and
 feature-branch cleanup are complete after verified containment. The local and
@@ -897,9 +897,9 @@ final documentation commit `c5d27adeba6c1f440f6b9c62309a447f82e43a08`
 `main` are synchronized at `0/0`, and the workspace is clean. No
 implementation batches, implementation branch, production/test changes,
 runtime synchronization, or browser validation were required. Full M3.R1 is
-`NRP CONFIRMED`. M3.5 subsequently completed its approved preparation,
+`COMPLETE`. M3.5 subsequently completed its approved preparation,
 implementation, validation, integration, documentation, and branch-lifecycle
-closure. M3.6 WU1–WU4 are complete, with WU4 an `NRP CANDIDATE` and WU5 the
+closure. M3.6 WU1–WU4 are complete, with WU4 `CLOSURE PENDING` and WU5 the
 next separately authorized gate. The contract is
 `docs/20_m3_r1_admin_shell_retouch_contract.md`.
 M3.R1 is a completed horizontal Admin Shell work unit after full M3.4 closure
@@ -917,7 +917,7 @@ M3.R1 is outside M3.4, Batch 5, Batch 6, and M3.5. It reviews the M3.1 Users & A
 
 Each reviewed page is classified as `redesign required`, `retouch required`, `review only`, or `NO CHANGE REQUIRED`. Product Designer input supports the review and recommendation; it does not authorize domain behavior, permissions, routes, schema, data contracts, ownership, Core architecture, or Git/release actions.
 
-M3.R1 may change approved presentation and Admin navigation ordering within the existing navigation contract. Its accepted outcome required no implementation. M3.5 product scope was accepted, and its dedicated preparation contract is committed to `main` at `1e6c837340b0ea561870b7fe729791edcc0aa9f5` (`docs(m3.5): lock taxonomy manager preparation contract`). M3.5 was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit; its five work units and full M3.5 are `NRP CONFIRMED`, feature containment passed, and the local/remote feature branches are deleted. WU5 confirms 25/39/41/11 Taxonomy assertions, 9/37/53/33/33/31 Content/package-compatible assertions, 825 package assertions, 59 clean-install assertions, and clean PHP lint/diff checks. The scope remains fixed to the existing Taxonomy module's `category` hierarchy and flat `tag` management, with no taxonomy type CRUD, filtering, or Navigation Manager work. M3.6 WU1–WU4 are now complete, WU4 is `NRP CANDIDATE`, and WU5 is the next separately authorized gate. Release, tag, and publication remain not started and separately authorized.
+M3.R1 may change approved presentation and Admin navigation ordering within the existing navigation contract. Its accepted outcome required no implementation. M3.5 product scope was accepted, and its dedicated preparation contract is committed to `main` at `1e6c837340b0ea561870b7fe729791edcc0aa9f5` (`docs(m3.5): lock taxonomy manager preparation contract`). M3.5 was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit; its five work units and full M3.5 are `COMPLETE`, feature containment passed, and the local/remote feature branches are deleted. WU5 confirms 25/39/41/11 Taxonomy assertions, 9/37/53/33/33/31 Content/package-compatible assertions, 825 package assertions, 59 clean-install assertions, and clean PHP lint/diff checks. The scope remains fixed to the existing Taxonomy module's `category` hierarchy and flat `tag` management, with no taxonomy type CRUD, filtering, or Navigation Manager work. M3.6 WU1–WU4 are now complete, WU4 is `CLOSURE PENDING`, and WU5 is the next separately authorized gate. Release, tag, and publication remain not started and separately authorized.
 
 ### M3.5–M3.11 Admin Shell Design-Adjustment Checkpoints
 
@@ -945,19 +945,19 @@ M3.7 Work Units 1–6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
 commit. Post-merge documentation closure commit `8dea71c82a4076c8b9d399047031e0a1ad18b0c6` preceded this correction. Objective automated acceptance and reachable browser/presentation
 review passed; feature containment and local/remote feature-branch cleanup
-passed. Full M3.7 is `NRP CONFIRMED`. The real-settings Theme Settings/color-control spot-check remains
+passed. Full M3.7 is `COMPLETE`. The real-settings Theme Settings/color-control spot-check remains
 deferred and non-blocking because the bundled Default Theme declares no
 settings. Release, tag, and publication remain not started. M3.8 WU6
 implementation, focused validation, and human functional/browser acceptance
 are complete, including Content featured-image preparation/crop and single
-public-view rendering; this record makes no final WU6 NRP decision. Full M3.8
-remains `NRP NOT REACHED`.
+public-view rendering; this record makes no final WU6 closure decision. Full M3.8
+remains `NOT COMPLETE`.
 Older M3.7 preparation
 checkpoint statements below are historical.
 
-M3.6 WU1–WU6 are complete and `NRP CONFIRMED`, fast-forward integrated into `main` at
+M3.6 WU1–WU6 are complete and `COMPLETE`, fast-forward integrated into `main` at
 `8deb4f67d47f476e254b36e3802bd250e393921d` with no merge commit. WU1–WU5 are
-`NRP CONFIRMED`; WU1–WU6 closure evidence includes the WU6 security closure
+`COMPLETE`; WU1–WU6 closure evidence includes the WU6 security closure
 passed 15 assertions after focused validation,
 runtime/browser evidence, and human acceptance. The WU5 implementation commit
 is `b9febc49071d8997a26b0488ecde7bedc1748a72` (`feat(m3.6): consume navigation
@@ -970,8 +970,8 @@ sibling order, visibility, custom targets, published Content targets, and
 fail-closed unavailable/hidden/disabled-provider behavior are accepted. The
 WU4 Admin design-adjustment checkpoint is `NO CHANGE REQUIRED`. Production
 Taxonomy targets remain deferred. The feature branch lifecycle is closed. Full
-M3.6 Navigation Manager is `NRP CONFIRMED`. M3.7 WU1–WU6 are complete and
-full M3.7 is `NRP CONFIRMED`, fast-forward integrated at
+M3.6 Navigation Manager is `COMPLETE`. M3.7 WU1–WU6 are complete and
+full M3.7 is `COMPLETE`, fast-forward integrated at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; M3.8 Media Library preparation is
 the next target, not implementation.
 Release, tag, and publication remain not started and separately authorized.
@@ -1033,10 +1033,10 @@ specific feature configuration belongs to Theme Manager. Global feature or
 content-domain expansion is outside M3.7. ZIP installation, marketplace,
 uninstall, Media Library, page building, Custom CSS, and other excluded
 capabilities remain outside M3.7. Feature containment and branch cleanup
-passed. Full M3.7 is `NRP CONFIRMED`; release, tag, and publication have not
-started. M3.8 WU5 is `NRP CONFIRMED`; WU6 implementation, focused validation,
+passed. Full M3.7 is `COMPLETE`; release, tag, and publication have not
+started. M3.8 WU5 is `COMPLETE`; WU6 implementation, focused validation,
 and human functional/browser acceptance are complete, and full M3.8 remains
-`NRP NOT REACHED`.
+`NOT COMPLETE`.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1102,7 +1102,7 @@ WU6 is complete for the approved Content featured-Media picker,
 consumer-scoped pending preparation and save-time promotion, usage
 synchronization, and unused-only Media deletion safety. Focused validation and
 human functional/browser acceptance are complete; WU7 is not started and full
-M3.8 remains `NRP NOT REACHED`.
+M3.8 remains `NOT COMPLETE`.
 
 #### Deferred Item — DI-M3.8-WU6-01
 
@@ -1122,20 +1122,20 @@ M3.8 remains `NRP NOT REACHED`.
 
 M3.8 initial clarification and preparation audit are `COMPLETE`. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
-delivered on `feature/m3.8-media-library`; WU4 is `NRP CONFIRMED`. WU5
+delivered on `feature/m3.8-media-library`; WU4 is `COMPLETE`. WU5
 presentation refinement implements the accepted visual grid/card management
 direction and centralized filename title fallback; focused validation and AI
 acceptance are `PASS`, and human visual/browser acceptance is `PASS` for
 bounded cards, grid presentation, card-to-preview interaction, preview
 overlay usability, and the Admin/public action boundary. WU5 is finally closed
-and `NRP CONFIRMED`. Manual upload accepts one file per submission;
+and `COMPLETE`. Manual upload accepts one file per submission;
 drag-and-drop and multiple-file/batch upload remain unsupported future Media
 enhancements and are not WU5 blockers; video remains outside the current M3.8
 contract. WU6 is complete for the approved Content featured-Media picker,
 consumer-scoped pending preparation and save-time promotion, usage
 synchronization, and unused-only Media deletion safety; focused validation and
 human functional/browser acceptance are complete. WU7 is not started and unauthorized.
-Full M3.8 is `NRP NOT REACHED`. No merge, release, tag, publication, rebase, or branch deletion has
+Full M3.8 is `NOT COMPLETE`. No merge, release, tag, publication, rebase, or branch deletion has
 started or been authorized. The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.

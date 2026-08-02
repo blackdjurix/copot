@@ -17,7 +17,7 @@ navigation contract.
 The locked sequence is:
 
 ```text
-M3.4 closure (NRP CONFIRMED)
+M3.4 closure (COMPLETE)
 ->
 M3.R1 Admin Shell Retouch 1
 ->
@@ -30,7 +30,7 @@ from that anchor as `feature/m3.r1-admin-shell-retouch-1`.
 
 Entry criteria:
 
-1. Full M3.4 closure and NRP confirmation.
+1. Full M3.4 closure and completion confirmation.
 2. Clean, synchronized `main` at the approved starting anchor.
 3. M3.1 Users & Access, M3.2 Settings Manager, and M3.3 Module Manager Admin
    surfaces available for review.
@@ -46,8 +46,8 @@ Classification is now complete with final outcome `NO MATERIAL RETOUCH
 REQUIRED`. The classification documentation commit
 `c5d27adeba6c1f440f6b9c62309a447f82e43a08` (`docs(m3.r1): record classification
 closure`) is pushed to `origin/main`; local and remote `main` are synchronized
-at `0/0`, the workspace is clean, and full M3.R1 is `NRP CONFIRMED`. The
-preparation work unit is historically and operationally `NRP CONFIRMED`. No UI
+at `0/0`, the workspace is clean, and full M3.R1 is `COMPLETE`. The
+preparation work unit is historically and operationally `COMPLETE`. No UI
 implementation, implementation batches, implementation branch, production/test
 changes, runtime synchronization, or authenticated browser validation was
 required. M3.5 is next and unblocked from the M3.R1 sequencing gate, subject to
@@ -252,7 +252,7 @@ gate. It does not assign a final classification where visual judgment remains.
 
 In scope: prototype inspection, Canonical Style extraction, contract and
 roadmap/current-state documentation, inventory definition, classification,
-acceptance and validation planning, and NRP planning.
+acceptance and validation planning, and closure planning.
 
 Later implementation may change only approved presentation and Admin navigation
 ordering within the current contract. It must preserve domain behavior,
@@ -300,7 +300,7 @@ approval-required proposals or excluded scope.
 For an implementation-bearing work unit, focused automation, source review,
 lint/diff checks, responsive checks, accessibility review, authenticated
 desktop/mobile browser evidence, limitation disposition, and documentation
-closure must pass before NRP evaluation. Because this classification produces
+closure must pass before closure review. Because this classification produces
 no implementation, no production/test changes, runtime synchronization, or
 authenticated browser validation is required for M3.R1; documentation closure
 and final Git verification remain required.
@@ -339,16 +339,16 @@ and field associations, semantic status messaging, permission-aware visibility,
 and contrast measurement where tooling permits. A screenshot alone is not
 complete accessibility evidence.
 
-## Documentation, Git, and NRP
+## Documentation, Git, and Completion
 
 Closure documentation must record scope, every classification, evidence,
 limitations, remediation, remaining approvals, validation, branch state, and
-NRP status. M3.R1 uses its dedicated branch
+completion status. M3.R1 uses its dedicated branch
 `feature/m3.r1-admin-shell-retouch-1` and its own lifecycle. Branch creation,
 integration, push, cleanup, and final changeset operations remain separately
 authorized.
 
-NRP Candidate is reached when approved classifications have been implemented or
+Closure-ready status is reached when approved classifications have been implemented or
 closed as `NO CHANGE REQUIRED`, applicable focused validation and
 browser/accessibility evidence are complete, documentation is synchronized, and
 no unresolved in-scope blocker remains. For this no-implementation outcome,
@@ -356,7 +356,7 @@ source review and Canonical Style verification are the applicable evidence;
 production/test changes, runtime synchronization, and browser validation are
 not required.
 
-NRP Confirmed requires the NRP Candidate record plus separately authorized Git
+Completion requires the Closure-ready status record plus separately authorized Git
 integration, final verification, clean synchronized state, branch-lifecycle
 closure, and final changeset requirements. M3.5 remains blocked until this
 boundary is confirmed.
@@ -400,7 +400,7 @@ The classification gate and full M3.R1 lifecycle are complete. The final
 documentation commit is `c5d27adeba6c1f440f6b9c62309a447f82e43a08`
 (`docs(m3.r1): record classification closure`), it is pushed to `origin/main`,
 local and remote `main` are synchronized at `0/0`, and the workspace is clean.
-Full M3.R1 is `NRP CONFIRMED`. M3.5 is the next milestone and is unblocked from
+Full M3.R1 is `COMPLETE`. M3.5 is the next milestone and is unblocked from
 the M3.R1 sequencing gate, but has not started and remains subject to its own
 preparation, contract, approval, branch, and validation workflow. Release, tag,
 and publication remain unstarted and separately authorized.

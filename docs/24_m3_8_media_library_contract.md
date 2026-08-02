@@ -10,7 +10,7 @@ Current preparation status:
 
 ```text
 M3.7:
-NRP CONFIRMED
+COMPLETE
 
 M3.8 initial clarification:
 COMPLETE
@@ -32,18 +32,18 @@ IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
 
 WU4:
 IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE; DURABLY DELIVERED
-NRP CONFIRMED
+COMPLETE
 
 WU5:
 PRESENTATION REFINEMENT IMPLEMENTED; FOCUSED VALIDATION COMPLETE
 AI ACCEPTANCE PASS
-HUMAN VISUAL/BROWSER ACCEPTANCE PASS; NRP CONFIRMED; FINALLY CLOSED
+HUMAN VISUAL/BROWSER ACCEPTANCE PASS; COMPLETE; FINALLY CLOSED
 
 WU6:
 IMPLEMENTATION AND FOCUSED VALIDATION COMPLETE FOR APPROVED CONTENT FEATURED-MEDIA
 PICKER, USAGE SYNCHRONIZATION, UNUSED-ONLY DELETION SAFETY, CONSUMER-SCOPED
 PREPARATION/CROP, AND SINGLE PUBLIC CONTENT-VIEW RENDERING; HUMAN
-FUNCTIONAL/BROWSER ACCEPTANCE PASS; WU6 NRP FINAL DECISION REMAINS SEPARATE
+FUNCTIONAL/BROWSER ACCEPTANCE PASS; WU6 FINAL CLOSURE DECISION REMAINS SEPARATE
 
 WU7:
 NOT STARTED
@@ -54,16 +54,16 @@ Implementation branch:
 
 The branch is `feature/m3.8-media-library`. WU2 and WU3 are accepted
 predecessors and are durably delivered. WU4 implementation and focused
-validation are complete, durably delivered, and `NRP CONFIRMED`. WU5
+validation are complete, durably delivered, and `COMPLETE`. WU5
 presentation refinement is implemented and focused-validated on the active
 feature branch. AI acceptance and human visual/browser acceptance are `PASS`;
-WU5 is finally closed and `NRP CONFIRMED`. WU6 delivers the approved Content
+WU5 is finally closed and `COMPLETE`. WU6 delivers the approved Content
 featured-Media picker, usage synchronization, unused-only deletion safety, the
 consumer-requested `content.featured` 16:9 preparation/crop profile, and
 processed featured-image rendering on the single public Content view. Focused
 validation and human functional/browser acceptance are complete. This record
-does not make a final WU6 NRP decision. WU7 remains not started and
-unauthorized. Full M3.8 is `NRP NOT REACHED`.
+does not make a final WU6 closure decision. WU7 remains not started and
+unauthorized. Full M3.8 is `NOT COMPLETE`.
 
 ## Locked architecture and ownership
 
@@ -527,7 +527,7 @@ explicit-title preservation, unusable fallback rejection, and existing
 security boundaries.
 Human visual/browser acceptance is `PASS` for bounded cards, grid presentation,
 card-to-preview interaction, preview overlay usability, and the Admin/public
-action boundary. WU5 is finally closed and `NRP CONFIRMED`. No additional
+action boundary. WU5 is finally closed and `COMPLETE`. No additional
 human-required criterion remains for WU5.
 
 ### WU6 — Media picker, consumer contracts, usage, and deletion safety
@@ -591,7 +591,7 @@ Focused validation and human functional/browser acceptance are complete for the
 picker, crop/save boundary, same-Media re-crop, shared-Media isolation, public
 rendering, and deletion blocking. Further Media Manager visual/presentation
 refinement is deferred and non-blocking for WU6. WU7 remains `NOT STARTED`; this
-record does not claim full M3.8 completion or make a final WU6 NRP decision.
+record does not claim full M3.8 completion or make a final WU6 closure decision.
 
 ### WU7 — Security, install/upgrade/package regression, acceptance, and closure
 
@@ -649,15 +649,14 @@ Preparation documentation is locally validated when this contract and its
 directly affected status documentation pass documentation-focused review. This
 does not authorize implementation or determine milestone closure.
 
-WU2 implementation and focused validation are complete. WU2 remains NRP
-CANDIDATE until its post-Git documentation review is complete. WU3
-implementation and focused validation are complete. WU3 remains NRP CANDIDATE
-until its post-Git lifecycle review is complete. WU4 is `NRP CONFIRMED`. WU5
+WU2 implementation and focused validation are complete; its closure is pending
+post-Git documentation review. WU3 implementation and focused validation are
+complete; its closure is pending
+until its post-Git lifecycle review is complete. WU4 is `COMPLETE`. WU5
 presentation refinement and focused validation are complete with AI acceptance
 `PASS`. Human visual/browser acceptance is `PASS` for bounded cards, grid
 presentation, card-to-preview interaction, preview overlay usability, and the
-Admin/public action boundary. WU5 is finally closed and `NRP CONFIRMED`. WU6
+Admin/public action boundary. WU5 is finally closed and `COMPLETE`. WU6
 is complete within the approved Content featured-Media, usage, and unused-only
 deletion boundary; focused validation and human functional/browser acceptance
-are complete. WU7 remains `NOT STARTED` and unauthorized. Full M3.8 is `NRP
-NOT REACHED`; milestone closure is not implied.
+are complete. WU7 remains `NOT STARTED` and unauthorized. Full M3.8 is `NOT COMPLETE`; milestone closure is not implied.
