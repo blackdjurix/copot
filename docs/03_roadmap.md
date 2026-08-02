@@ -360,9 +360,22 @@ external storage. Status: Deferred and Unscheduled; it covers arbitrary
 generic file management, SVG without a security contract, and CDN/external
 storage expansion.
 
-These records do not authorize adoption. Other entries in the following list
-are not normalized here because their scope has been partly adopted by M3.8
-and requires separate governance disposition.
+Deferred Item: `DI-M2.3-05` — Media organization and bulk workspace actions.
+Status: Deferred and Unscheduled; it covers Media folders or organizational
+grouping and bulk Media workspace actions. The historical Media library,
+picker, and search portions were subsequently adopted by M3.8 and are not
+part of this surviving Deferred Item.
+
+Deferred Item: `DI-M2.3-06` — Advanced image editing and optimization.
+Status: Deferred and Unscheduled; it covers broader image-editor capability
+and optimization beyond the accepted Media processing baseline. Bounded
+crop/resize processing was subsequently adopted by M3.8, while CDN/external
+storage remains represented by `DI-M2.3-04`. This item authorizes no generic
+image editor, optimization platform, or M3.8 scope expansion.
+
+These records do not authorize adoption. The following historical list is
+preserved as written; its partially adopted portions are not active Deferred
+scope unless explicitly identified above.
 
 * multilingual content and translation management;
 * per-user or per-module locale and timezone;
@@ -491,6 +504,8 @@ authorization, and an `Unscheduled` target does not create future scope.
 | `DI-M2.3-02` — Localization expansion | M2.3 Deferred from | Localization capability set | Deferred | Unscheduled |
 | `DI-M2.3-03` — Advanced branding and theme presentation | M2.3 Deferred from | Branding/presentation capability set | Deferred | Unscheduled |
 | `DI-M2.3-04` — Generic file-management, SVG security, and external storage | M2.3 Deferred from | Media/storage capability set | Deferred | Unscheduled |
+| `DI-M2.3-05` — Media organization and bulk workspace actions | M2.3 Deferred from | Media workspace capability set | Deferred | Unscheduled |
+| `DI-M2.3-06` — Advanced image editing and optimization | M2.3 Deferred from | Image-processing capability set | Deferred | Unscheduled |
 | `DI-M3.8-WU6-01` — Further Media Manager visual/presentation refinement | M3.8 WU6 | Presentation refinement | Deferred | Unscheduled |
 
 ### Asset Terminology
