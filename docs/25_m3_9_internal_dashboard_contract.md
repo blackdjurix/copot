@@ -2,9 +2,9 @@
 
 ## Purpose and status
 
-This document locks the preparation direction for M3.9 Internal Dashboard. It
-refines the approved M3 sequence and four-domain-work-unit envelope without
-implementing M3.9 runtime behavior.
+This document records the locked preparation direction and implementation
+closure state for M3.9 Internal Dashboard. It preserves the approved M3
+sequence and four-domain-work-unit envelope.
 
 ```text
 M3.8:
@@ -23,7 +23,13 @@ M3.9 WU3:
 COMPLETE
 
 M3.9 WU4:
-NOT STARTED
+COMPLETE
+
+M3.9 implementation:
+COMPLETE
+
+Admin Shell design-adjustment checkpoint:
+NO CHANGE REQUIRED
 
 M3.9 implementation branch:
 `feature/m3.9-internal-dashboard`
@@ -315,7 +321,9 @@ two-column/two-row placement. Placement remains ordinary system-controlled
 row flow in priority and registration order; dense packing is not used.
 Multi-span footprints collapse to one column at the 720px boundary. User
 repositioning and resizing remain excluded. The separate Admin Shell
-design-adjustment checkpoint is still pending and has not been performed.
+design-adjustment checkpoint concluded `NO CHANGE REQUIRED` for the current
+M3.9 baseline; this is not a permanent approval of future Dashboard layouts
+or widget populations.
 
 Objective: render the approved widget composition and dashboard hierarchy
 through the existing Admin Shell.
@@ -354,6 +362,11 @@ Validation and completion evidence: focused M3.9 gate, affected regression
 results, responsive/accessibility acceptance, documented limitations, and
 closure record.
 
+Implementation state: COMPLETE. WU4 closure validation passed for the locked
+M3.9 behavior, and no additional widget, manager capability, schema,
+provisioning, permission system, or generic platform infrastructure was
+required.
+
 ## Separate Admin Shell design-adjustment checkpoint
 
 The required Admin Shell design-adjustment checkpoint is horizontal governance
@@ -364,6 +377,10 @@ The checkpoint reviews dashboard hierarchy, density, placement, responsive
 behavior, accessibility, permission-aware navigation, active state, empty
 states, and failure presentation. It may conclude `NO CHANGE REQUIRED`,
 `review only`, `retouch required`, or `redesign required`.
+
+For the current M3.9 baseline, the human checkpoint result is **NO CHANGE
+REQUIRED**. This result is limited to the reviewed baseline and does not
+approve future Dashboard layouts or future widget populations.
 
 The locked execution sequence is:
 
@@ -422,28 +439,31 @@ consistency with the approved Admin Shell. Existing project conventions,
 including narrow mobile widths, the 720px breakpoint, normal desktop widths,
 and 200% zoom where available, remain applicable.
 
-No runtime, browser, package, install, provisioning, or full M3.8 validation
-is required for this documentation-only preparation task.
+No new browser or subjective visual acceptance was required after the accepted
+design checkpoint. No package, install, provisioning, or full M3.8 validation
+was required for WU4 closure.
 
 ## Implementation branch strategy
 
-If preparation is accepted for implementation, create:
+The implementation branch created for the accepted preparation is:
 
 ```text
 feature/m3.9-internal-dashboard
 ```
 
 The WU1 implementation branch is
-`feature/m3.9-internal-dashboard`, created from the verified preparation
-anchor `d39957fa0e8f3704649c32b1e64dbd3b28cdf0c4`. WU3–WU4 have not started.
-Any later implementation branch must branch from the then-current verified
-preparation-complete `main` anchor; this contract does not authorize branching
-from an obsolete historical commit.
+`feature/m3.9-internal-dashboard`. It remains the contained implementation
+branch for the completed M3.9 work; no merge to `main` is authorized by this
+contract. Any later implementation branch must branch from the then-current
+verified preparation-complete `main` anchor; this contract does not authorize
+branching from an obsolete historical commit.
 
 ## Documentation and closure
 
-Implementation must preserve the four-domain-unit accounting and the separate
-Admin Shell checkpoint. Any discovered requirement for schema, provisioning,
-generic Core capability, new permission semantics, or a materially different
-ownership boundary requires a separately reviewed decision before scope is
-expanded.
+M3.9 implementation preserves the four-domain-unit accounting and the
+separate Admin Shell checkpoint. WU1–WU4 are complete, the current-baseline
+checkpoint result is `NO CHANGE REQUIRED`, and the feature branch remains
+contained pending separately authorized integration. Any future requirement
+for schema, provisioning, generic Core capability, new permission semantics,
+or a materially different ownership boundary requires a separately reviewed
+decision before scope is expanded.

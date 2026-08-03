@@ -8,7 +8,7 @@ focused-validated; human functional/browser acceptance has passed on
 `main`. Content is the first active Media consumer;
 Media processing remains generic and is driven by consumer profile requirements.
 PHP GD is required in the serving PHP runtime for image processing. Further
-Media Manager visual refinement remains Deferred / Unscheduled and non-blocking. WU7 closure evidence covers the genuine pre-M3.8 upgrade path, five-action authorization, package inclusion, and packaged clean-install provisioning. Full M3.8 is complete and closed. M3.9 Internal Dashboard is next; M3.9 preparation is being locked, implementation has not started, and no M3.9 implementation branch exists. Release, tag, and publication remain not started.
+Media Manager visual refinement remains Deferred / Unscheduled and non-blocking. WU7 closure evidence covers the genuine pre-M3.8 upgrade path, five-action authorization, package inclusion, and packaged clean-install provisioning. Full M3.8 is complete and closed. M3.9 Internal Dashboard WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard` branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the current baseline. Integration to `main`, release, tag, and publication remain separately authorized.
 
 ## Current M3.7 post-merge state
 
@@ -71,9 +71,11 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 Current authoritative state: M3.8 WU1–WU7 and full M3.8 are complete and
 closed on `main`; post-merge documentation closure, verified containment, and
-local/remote feature-branch deletion are complete. M3.9 Internal Dashboard is
-next. M3.9 preparation is being locked; implementation has not started and no
-M3.9 implementation branch exists.
+local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
+WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard`
+branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
+for the current baseline. Integration to `main` remains separately
+authorized.
 
 The following detailed milestone summary preserves prior checkpoint context.
 Branch-lifecycle statements inside that retained summary are historical and do

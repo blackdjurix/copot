@@ -963,9 +963,11 @@ These checkpoints are horizontal design-governance work units and are not includ
 
 Current authoritative state: M3.8 WU1–WU7 and full M3.8 are complete and
 closed on `main`; post-merge documentation closure, verified containment, and
-local/remote feature-branch deletion are complete. M3.9 Internal Dashboard is
-next. M3.9 preparation is being locked; implementation has not started and no
-M3.9 implementation branch exists.
+local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
+WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard`
+branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
+for the current baseline. Integration to `main` remains separately
+authorized.
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
@@ -978,10 +980,12 @@ complete and fast-forward integrated into `main` at
 `d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit. Post-merge
 documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
-local/remote feature-branch deletion are complete. M3.9 Internal Dashboard is
-next; preparation is being locked, implementation has not started, and no
-M3.9 implementation branch exists. Further Media Manager visual refinement
-remains Deferred / Unscheduled and non-blocking.
+local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
+WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard`
+branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
+for the current baseline. Integration to `main` remains separately
+authorized. Further Media Manager visual refinement remains Deferred /
+Unscheduled and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.
 
@@ -1069,8 +1073,10 @@ started. M3.8 WU1–WU7 are complete and fast-forward integrated into `main` at
 documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`, verified containment and
 local/remote feature-branch deletion are complete, and the authoritative
-branch is `main`. M3.9 Internal Dashboard preparation is being locked;
-implementation has not started and no M3.9 implementation branch exists.
+branch is `main`. M3.9 Internal Dashboard WU1–WU4 are complete on the
+contained `feature/m3.9-internal-dashboard` branch; the Admin Shell
+design-adjustment checkpoint is `NO CHANGE REQUIRED` for the current baseline.
+Integration to `main` remains separately authorized.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1141,8 +1147,10 @@ complete; full M3.8 was fast-forward integrated into `main` at
 documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
-preparation is being locked; implementation has not started and no M3.9
-implementation branch exists.
+WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard`
+branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
+for the current baseline. Integration to `main` remains separately
+authorized.
 
 #### Deferred Item — DI-M3.8-WU6-01
 
@@ -1195,8 +1203,10 @@ M3.8 is complete and was fast-forward integrated into `main` at
 post-merge documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
-preparation is being locked; implementation has not started and no M3.9
-implementation branch exists. Release, tag, and publication have not started.
+WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard`
+branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
+for the current baseline. Integration to `main` remains separately
+authorized. Release, tag, and publication remain separately authorized.
 The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.
