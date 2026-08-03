@@ -971,8 +971,9 @@ commit. M3.9 feature containment is complete; local and remote
 `feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
-reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT
-STARTED.
+reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
+`docs/26_m3_10_redirect_manager_contract.md`; implementation is NOT STARTED
+and no implementation branch is authorized.
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
@@ -991,8 +992,9 @@ commit. M3.9 feature containment is complete; local and remote
 `feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
-reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT
-STARTED. Further Media Manager visual refinement remains Deferred / Unscheduled
+reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
+`docs/26_m3_10_redirect_manager_contract.md`; implementation is NOT STARTED
+and no implementation branch is authorized. Further Media Manager visual refinement remains Deferred / Unscheduled
 and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.
@@ -1056,7 +1058,8 @@ Core Modules:
 9. M3.9 Internal Dashboard
    * relevant Admin Shell design-adjustment checkpoint before closure
 10. M3.10 Redirect Manager
-   * relevant Admin Shell design-adjustment checkpoint before closure only if Admin UI exists
+   * preparation contract locked before implementation
+   * relevant Admin Shell design-adjustment checkpoint before closure
 11. M3.11 Form Manager
    * relevant Admin Shell design-adjustment checkpoint before closure when Admin UI exists
 
@@ -1087,7 +1090,8 @@ complete; local and remote `feature/m3.9-internal-dashboard` are deleted, and
 the M3.9 feature-branch lifecycle is CLOSED. Full M3.9 Internal Dashboard is
 complete and closed. The Admin Shell design-adjustment checkpoint is `NO
 CHANGE REQUIRED` for the reviewed M3.9 baseline. M3.10 Redirect Manager
-preparation is next and NOT STARTED.
+preparation is LOCKED in `docs/26_m3_10_redirect_manager_contract.md`;
+implementation is NOT STARTED and no implementation branch is authorized.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1163,8 +1167,9 @@ commit. M3.9 feature containment is complete; local and remote
 `feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
-reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT
-STARTED.
+reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
+`docs/26_m3_10_redirect_manager_contract.md`; implementation is NOT STARTED
+and no implementation branch is authorized.
 
 #### Deferred Item — DI-M3.8-WU6-01
 
@@ -1253,8 +1258,9 @@ commit. M3.9 feature containment is complete; local and remote
 `feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
-reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT
-STARTED. Release, tag, and publication remain separately authorized.
+reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
+`docs/26_m3_10_redirect_manager_contract.md`; implementation is NOT STARTED
+and no implementation branch is authorized. Release, tag, and publication remain separately authorized.
 The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.
