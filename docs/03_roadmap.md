@@ -646,6 +646,59 @@ M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
 an automatically sequential execution order. Future work is selected by actual
 product need, dependency, readiness, risk, and architecture boundary.
 
+### Post-M3 lifecycle classification
+
+Post-M3 work is classified before a target is selected. The three outcomes are:
+
+1. **Originating Milestone Re-open** — exceptional repair of an invalid
+   closure. Use only when the originating contract promised X, closure claimed
+   X passed, and new evidence proves X was already unsatisfied at closure.
+   Unfinished scope and unresolved acceptance gaps remain owned by that
+   originating milestone; they are not routed into maintenance or refinement.
+
+2. **MT.x — Maintenance** — restorative work for a previously valid,
+   accepted, complete, and closed baseline that later became broken,
+   incompatible, or outdated. This is project-wide and may cover Webcore,
+   Core Modules, shared platform, delivered M4/M5/M6 domains, package/runtime
+   compatibility, or release-supported surfaces. Numbering is chronological
+   (`MT.1`, `MT.2`, ...), and a closed MT milestone is not reopened for an
+   unrelated later maintenance issue by default.
+
+3. **MR.x — Refinement** — intentional improvement to a still-valid accepted
+   baseline whose originating milestone and integration are complete, whose
+   feature branch is closed, and which has no unresolved milestone-blocking
+   defect. MR.x is limited to Webcore, Core Modules, and shared core/platform/
+   Admin UX concerns; it is not the namespace for domain-specific M4, M5, M6,
+   or independent third-party work. Numbering is chronological (`MR.1`,
+   `MR.2`, ...), and revisiting a surface does not reopen an earlier Work Unit.
+
+The decision rule is:
+
+```text
+Issue / change request
+-> Was the originating closure actually invalid?
+   YES -> Originating Milestone Re-open
+   NO  -> Is a valid accepted baseline now broken, incompatible, or outdated?
+          YES -> MT.x Maintenance
+          NO  -> Is the still-valid baseline intentionally being improved?
+                 YES -> MR.x Refinement
+```
+
+In short: re-open repairs an invalid closure; MT restores a valid closure that
+later degraded; MR improves a valid closure that still works. An original
+milestone defect that violated its contract is re-opened. A later regression,
+compatibility drift, environment change, or obsolete validation assumption is
+an MT.x candidate. Intentional quality, UX, presentation, or interaction
+improvement is an MR.x candidate. Security work follows the same provenance
+test and does not receive a generic security namespace.
+
+Deferred Items remain governed independently: applicability review must first
+result in ADOPT, KEEP DEFERRED, REJECT, SUPERSEDE, or NOT APPLICABLE before an
+execution target is assigned. M3.R1 is historical M3-specific Admin Shell
+refinement governance and remains CLOSED; it is not the general post-M3 MR.x
+namespace. The obsolete `tests/admin_ui_batch2_smoke.php` CSS token guard is a
+separate unselected maintenance candidate, not an automatic MT.1.
+
 Older detailed phase and sequencing paragraphs below are retained historical
 context and do not declare a current active phase or next target.
 
@@ -990,7 +1043,7 @@ These checkpoints are horizontal design-governance work units and are not includ
 
 ---
 
-## M3 Core Modules
+## Historical M3 Core Modules Context
 
 The following M3-era checkpoint summaries are historical records, not the
 current active-phase or next-target declaration.

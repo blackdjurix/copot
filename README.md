@@ -41,11 +41,13 @@ Publication: NOT STARTED
 M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
 an automatically sequential execution order. Future work is selected by actual
 product need, dependency, readiness, risk, and architecture boundary.
+Post-M3 lifecycle classification is defined in `docs/03_roadmap.md`: re-open
+for invalid closure, MT.x for maintenance, and MR.x for eligible refinement.
 
 Older detailed phase and sequencing paragraphs below are retained historical
 context and do not declare a current active phase or next target.
 
-## Current M3.7 post-merge state
+## Historical M3.7 post-merge state
 
 M3.7 WU1–WU6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge

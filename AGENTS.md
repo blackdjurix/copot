@@ -35,13 +35,15 @@ Publication: NOT STARTED
 M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
 an automatically sequential execution order. Future work is selected by actual
 product need, dependency, readiness, risk, and architecture boundary.
+Post-M3 lifecycle classification is defined in `docs/03_roadmap.md`: re-open
+for invalid closure, MT.x for maintenance, and MR.x for eligible refinement.
 
 Older detailed phase and sequencing paragraphs below are retained historical
 context and do not declare a current active phase or next target.
 
 ## Purpose
 
-### Current M3.7 post-merge state
+### Historical M3.7 post-merge state
 
 M3.7 WU1–WU6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
@@ -62,9 +64,9 @@ The Post-M1 Roadmap Review is complete. M2 Platform Capabilities and Post-M2 Dis
 
 ---
 
-## Current Phase
+## Historical M3 Phase Context
 
-### M3 Core Modules
+### Historical M3 Core Modules Context
 
 Current milestone / checkpoint: M3.4 Content Manager final lifecycle closure is complete on `main` at the verified anchor `8bdd48463c26ef8c43683455eba3d1a99c3e4aa7`. Batch 6 and full M3.4 are complete. M3.R1 preparation, classification, and lifecycle closure are complete on synchronized `main`; final classification documentation commit `c5d27adeba6c1f440f6b9c62309a447f82e43a08` (`docs(m3.r1): record classification closure`) is pushed, local and remote `main` are synchronized at `0/0`, and the workspace is clean. Local and remote M3.R1 preparation/classification branches are absent. M3.R1 classification is complete with `NO MATERIAL RETOUCH REQUIRED`; no implementation batches, production/test changes, runtime synchronization, browser validation, or implementation branch were required. Full M3.R1 is complete. M3.5 Taxonomy Manager was fast-forward integrated into `main` at `b09a01ca0a93cfa2eb9eccafd648f7a708df1576` with no merge commit; Work Units 1–5 and full M3.5 are complete, feature containment passed, and local/remote feature branches are deleted. M3.6 WU1–WU6 and full M3.6 are complete, fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d`; feature-branch lifecycle closure passed. M3.7 WU1–WU6 are complete, objectively accepted, and integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and branch lifecycle closure passed. Full M3.7 is complete; the real-settings Theme Settings/color-control spot-check remains deferred non-blockingly because the bundled Default Theme declares no settings. Release, tag, and publication remain not started and separately authorized.
 
@@ -766,7 +768,7 @@ Commit messages should remain clear and milestone-aware.
 
 ---
 
-## Current Immediate Goal
+## Historical Immediate Goal Context
 
 Current authoritative state: M3.8 WU1–WU7 and full M3.8 are complete and
 closed on `main`; post-merge documentation closure, verified containment, and
