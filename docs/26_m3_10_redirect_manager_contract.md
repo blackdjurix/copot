@@ -29,7 +29,7 @@ Feature branch lifecycle:
 CLOSED; local and remote feature/m3.10-redirect-manager ABSENT
 
 Next milestone:
-M3.11 Form Manager preparation — NOT STARTED
+M3.11 Form Manager preparation — LOCKED in docs/27_m3_11_form_manager_contract.md
 ```
 
 The separate Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`.
@@ -492,5 +492,6 @@ human acceptance.
 Preparation closure and implementation entry are historical preparation gates.
 WU1–WU4 are complete; M3.10 is fast-forward integrated into `main` and its
 feature branch lifecycle is closed. The separate Admin Shell design-adjustment
-checkpoint is `NO CHANGE REQUIRED`; M3.11 Form Manager preparation is next
-and not started. Release, tag, and publication remain separately authorized.
+checkpoint is `NO CHANGE REQUIRED`; M3.11 Form Manager preparation is LOCKED
+in `docs/27_m3_11_form_manager_contract.md`. Implementation is NOT STARTED.
+Release, tag, and publication remain separately authorized.

@@ -979,7 +979,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 `feature/m3.10-redirect-manager` are deleted. Its Admin Shell
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
-applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+applicable. M3.11 Form Manager preparation is LOCKED in
+`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
+implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
 tag, and publication remain separately authorized.
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
@@ -1007,7 +1009,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 `feature/m3.10-redirect-manager` are deleted. Its Admin Shell
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
-applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+applicable. M3.11 Form Manager preparation is LOCKED in
+`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
+implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
 tag, and publication remain separately authorized. Further Media Manager visual refinement remains Deferred / Unscheduled and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.
@@ -1074,7 +1078,8 @@ Core Modules:
    * preparation contract locked before implementation
    * relevant Admin Shell design-adjustment checkpoint before closure
 11. M3.11 Form Manager
-   * relevant Admin Shell design-adjustment checkpoint before closure when Admin UI exists
+   * preparation contract locked before implementation
+   * relevant Admin Shell design-adjustment checkpoint before closure
 
 This sequence is approved by M3 Prep Stage 2 as refined by the documented Batch 6, M3.R1, and Admin Shell design-governance decisions. It remains subject to the documented evidence-based Sequence Change Rule and is not silently reordered. The reusable design-adjustment contract is `docs/19_m3_admin_shell_design_adjustment_contract.md`.
 
@@ -1109,7 +1114,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 `feature/m3.10-redirect-manager` are deleted. Its Admin Shell
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
-applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+applicable. M3.11 Form Manager preparation is LOCKED in
+`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
+implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
 tag, and publication remain separately authorized.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
@@ -1194,7 +1201,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 `feature/m3.10-redirect-manager` are deleted. Its Admin Shell
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
-applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+applicable. M3.11 Form Manager preparation is LOCKED in
+`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
+implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
 tag, and publication remain separately authorized.
 
 #### Deferred Item — DI-M3.8-WU6-01
@@ -1292,7 +1301,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 `feature/m3.10-redirect-manager` are deleted. Its Admin Shell
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
-applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+applicable. M3.11 Form Manager preparation is LOCKED in
+`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
+implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
 tag, and publication remain separately authorized.
 The
 authoritative preparation contract is
