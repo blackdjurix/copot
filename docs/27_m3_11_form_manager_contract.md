@@ -3,21 +3,33 @@
 ## Purpose and status
 
 This document locks the M3.11 Form Manager product boundary and records the
-accepted WU1–WU4 implementation and closure state. It does not authorize
-release, tag, merge, or publication work.
+accepted WU1–WU4 implementation and post-merge closure state. It does not
+authorize release, tag, or publication work.
 
 ```text
 M3.10 Redirect Manager:
 COMPLETE AND CLOSED
 
 M3.11 Form Manager preparation:
-LOCKED
+COMPLETE
 
 M3.11 implementation:
-IN PROGRESS
+COMPLETE
 
-M3.11 feature branch:
-ACTIVE FOR IMPLEMENTATION
+M3.11 integration:
+COMPLETE
+
+Integrated main anchor:
+0b86eae4c9bb50d7ed8928f4f4b63f8be572a4f9
+
+Integration method:
+FAST-FORWARD ONLY
+
+Merge commit:
+NONE
+
+Feature containment:
+CONFIRMED
 
 M3.11 Work Unit 1:
 COMPLETE
@@ -284,9 +296,8 @@ as well as release, tag, and publication.
 
 ## Implementation entry and acceptance direction
 
-Implementation may begin only with explicit authorization on a verified branch
-from the accepted baseline. WU1–WU3 are complete; WU4 is the next target,
-pending separate authorization. All implementation must preserve module
+WU1–WU4 are complete and integrated into `main` at the recorded anchor.
+All implementation must preserve module
 ownership, dependency direction, least-privilege permissions, controlled
 failures, and the package/clean-install
 contract. Preparation itself makes no runtime, schema, package, or dependency

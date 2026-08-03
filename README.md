@@ -1,9 +1,10 @@
 # copot
 
-M3.11 Form Manager preparation remains LOCKED. WU1–WU4 are COMPLETE on
-`feature/m3.11-form-manager`; full M3.11 is COMPLETE on the unreleased,
-untagged, unpublished feature branch. Public rendering and bounded submission
-security remain module-owned; deferred integrations remain excluded.
+M3.11 Form Manager preparation is COMPLETE. WU1–WU4 and full M3.11 are
+COMPLETE and integrated into `main` at
+`0b86eae4c9bb50d7ed8928f4f4b63f8be572a4f9` by fast-forward only, with no merge
+commit. Feature containment is confirmed. Release, tag, and publication remain
+NOT STARTED. Deferred integrations remain excluded.
 
 Current M3.8 state: WU1–WU7 are complete and accepted. M3.8 Media Library was fast-forward integrated into `main` at `d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit. The approved Content featured-Media picker, consumer-scoped
 pending preparation and save-time promotion, usage synchronization, unused-only
@@ -15,10 +16,10 @@ Media processing remains generic and is driven by consumer profile requirements.
 PHP GD is required in the serving PHP runtime for image processing. Further
 Media Manager visual refinement remains Deferred / Unscheduled and non-blocking. WU7 closure evidence covers the genuine pre-M3.8 upgrade path, five-action authorization, package inclusion, and packaged clean-install provisioning. Full M3.8 is complete and closed. M3.9 Internal Dashboard WU1–WU4 are complete and integrated into `main` by fast-forward with no merge commit. M3.9 feature containment is complete; local and remote `feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the reviewed M3.9 baseline. M3.10 Redirect Manager WU1–WU4 are COMPLETE AND CLOSED, fast-forward integrated into `main` at `5181b45c7107f4b324f68ed02958623b69e2e5a5`; containment is VERIFIED, its feature-branch lifecycle is CLOSED, and local/remote `feature/m3.10-redirect-manager` are deleted. Its Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug redirects remain deferred; Navigation and Dashboard integration remain not applicable. M3.11 Form Manager preparation is LOCKED in `docs/27_m3_11_form_manager_contract.md`; the M3.11 feature branch is CREATED FOR PREPARATION DOCUMENTATION, its current content is PREPARATION DOCUMENTATION ONLY, and implementation is NOT STARTED. M3.11 Work Unit 1 is NOT STARTED. Release, tag, and publication remain separately authorized.
 
-M3.11 Form Manager preparation is LOCKED in
-`docs/27_m3_11_form_manager_contract.md`. WU1–WU4 and full M3.11 are COMPLETE
-on the active unreleased feature branch. Release, tag, and publication remain
-separately authorized.
+M3.11 Form Manager preparation is COMPLETE. WU1–WU4 and full M3.11 are
+COMPLETE and integrated into `main` at
+`0b86eae4c9bb50d7ed8928f4f4b63f8be572a4f9` by fast-forward only. Release, tag,
+and publication remain NOT STARTED.
 
 ## Current M3.7 post-merge state
 
@@ -79,6 +80,9 @@ Installation and production deployment guidance is in `INSTALL.md`. Source/packa
 
 ## Current Phase
 
+The older milestone summary below is retained as historical checkpoint
+context; the current M3.11 lifecycle is stated in the paragraph that follows.
+
 Current authoritative state: M3.8 WU1–WU7 and full M3.8 are complete and
 closed on `main`; post-merge documentation closure, verified containment, and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
@@ -94,11 +98,11 @@ feature-branch lifecycle is CLOSED, and local/remote
 `feature/m3.10-redirect-manager` are deleted. Its Admin Shell
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
-applicable. M3.11 Form Manager preparation is LOCKED in
-`docs/27_m3_11_form_manager_contract.md`; the M3.11 feature branch is CREATED
-FOR PREPARATION DOCUMENTATION, its current content is PREPARATION DOCUMENTATION
-ONLY, and implementation is NOT STARTED. M3.11 Work Unit 1 is NOT STARTED. Release,
-tag, and publication remain separately authorized.
+applicable. M3.11 Form Manager preparation is COMPLETE. WU1–WU4 and full
+M3.11 are COMPLETE and integrated into `main` at
+`0b86eae4c9bb50d7ed8928f4f4b63f8be572a4f9` by fast-forward only, with no merge
+commit. Feature containment is confirmed. Release, tag, and publication remain
+NOT STARTED.
 
 The following detailed milestone summary preserves prior checkpoint context.
 Branch-lifecycle statements inside that retained summary are historical and do

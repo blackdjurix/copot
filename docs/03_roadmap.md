@@ -618,10 +618,11 @@ The approved implementation sequence is:
 | M3.10 | Redirect Manager | 4 | Medium |
 | M3.11 | Form Manager | 7 | Very High |
 
-M3.11 Form Manager preparation is LOCKED. WU1–WU4 are COMPLETE and full
-M3.11 is COMPLETE on the active feature branch. WU4 adds only the bounded
-public rendering, submission security, rate-limit persistence, regression,
-package, and closure evidence; deferred integrations remain excluded.
+M3.11 Form Manager preparation is COMPLETE. WU1–WU4 and full M3.11 are
+COMPLETE and integrated into `main` at
+`0b86eae4c9bb50d7ed8928f4f4b63f8be572a4f9` by fast-forward only, with no merge
+commit. Feature containment is confirmed. Release, tag, and publication remain
+NOT STARTED. Deferred integrations remain excluded.
 
 Total planning envelope: 59 domain implementation batches. This count is the approved M3.1–M3.11 domain-batch planning envelope and does not count the horizontal M3.R1 Admin Shell Retouch 1 work unit or the required Admin Shell design-adjustment checkpoints attached to M3.5–M3.11. Those design work units are governed separately and do not silently renumber the milestone batch envelopes.
 
