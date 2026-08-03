@@ -50,10 +50,6 @@ final class PackageOwnership
             }
         }
 
-        if (str_starts_with($normalized, 'modules/example/')) {
-            return self::CONDITIONALLY_MANAGED;
-        }
-
         return self::PACKAGE_OWNED;
     }
 

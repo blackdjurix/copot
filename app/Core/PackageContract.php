@@ -23,10 +23,12 @@ final class PackageContract
         array $inventory,
         private PackageMigrationDeclaration $migrationDeclaration
     ) {
-        self::assertOpaqueIdentity($packageType, 'Package type');
+        if ($packageType !== self::WEBCORE_PACKAGE_TYPE) {
+            throw new \InvalidArgumentException('Package type is unsupported.');
+        }
 
-        if ($manifestContractVersion < 1) {
-            throw new \InvalidArgumentException('Manifest contract version is invalid.');
+        if ($manifestContractVersion !== self::CURRENT_MANIFEST_CONTRACT_VERSION) {
+            throw new \InvalidArgumentException('Manifest contract version is unsupported.');
         }
 
         PackageVersion::assertValid($targetWebcoreVersion);

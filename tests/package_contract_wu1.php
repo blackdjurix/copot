@@ -50,9 +50,25 @@ $assert($normalized->byteSize() === 139, 'Package inventory byte size was not re
 $assert($normalized->ownership() === PackageOwnership::PACKAGE_OWNED, 'Package inventory ownership was not retained.');
 
 $assert(PackageVersion::isValid('0.12.0'), 'Valid semantic version was rejected.');
-$assert(PackageVersion::isValid('1.0.0-rc.1'), 'Valid prerelease version was rejected.');
+$assert(PackageVersion::isValid('1.0.0-rc.1+build.7'), 'Valid prerelease/build version was rejected.');
+$assert(PackageVersion::isValid('1.0.0+build.7'), 'Valid build metadata was rejected.');
+$assert(!PackageVersion::isValid('01.2.3'), 'Leading-zero major version was accepted.');
+$assert(!PackageVersion::isValid('1.02.3'), 'Leading-zero minor version was accepted.');
+$assert(!PackageVersion::isValid('1.2.03'), 'Leading-zero patch version was accepted.');
+$assert(!PackageVersion::isValid('1.2.3-01'), 'Leading-zero numeric prerelease was accepted.');
+$assert(!PackageVersion::isValid('1.2.3-'), 'Empty prerelease was accepted.');
+$assert(!PackageVersion::isValid('1.2.3+build..7'), 'Empty build identifier was accepted.');
 $assert(!PackageVersion::isValid('0.12'), 'Incomplete semantic version was accepted.');
 $assert(!PackageVersion::isValid('v0.12.0'), 'Prefixed semantic version was accepted.');
+$assert(PackageVersion::compare('1.0.0+one', '1.0.0+two') === 0, 'Build metadata affected precedence.');
+$assert(PackageVersion::compare('1.0.0-rc.1+one', '1.0.0-rc.1+two') === 0, 'Build metadata affected prerelease precedence.');
+$assert(PackageVersion::compare('1.0.0', '1.0.0-rc.1') > 0, 'Release did not outrank prerelease.');
+$assert(PackageVersion::compare('1.0.0-rc.2', '1.0.0-rc.10') < 0, 'Numeric prerelease ordering was incorrect.');
+$assert(PackageVersion::compare('1.0.0-alpha', '1.0.0-beta') < 0, 'Non-numeric prerelease ordering was incorrect.');
+$assert(PackageVersion::compare('1.0.0-alpha.1', '1.0.0-alpha') > 0, 'Longer equal-prefix prerelease did not outrank shorter.');
+$assert(PackageVersion::compare('2.0.0', '1.99.99') > 0, 'Major precedence was incorrect.');
+$assert(PackageVersion::compare('1.2.0', '1.1.99') > 0, 'Minor precedence was incorrect.');
+$assert(PackageVersion::compare('1.2.3', '1.2.2') > 0, 'Patch precedence was incorrect.');
 $throws(static fn (): bool => PackageVersion::compare('0.12', '1.0.0') === 0, 'Invalid semantic version comparison');
 
 $minimumOnly = new PackageCompatibility('0.12.0');
@@ -113,6 +129,28 @@ $throws(static fn (): PackageContract => new PackageContract(
     $migrationNone
 ), 'Invalid manifest contract version');
 $throws(static fn (): PackageContract => new PackageContract(
+    'copot-module',
+    PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION,
+    '1.0.0',
+    'release-opaque-1',
+    null,
+    $minimumOnly,
+    $runtime,
+    [$normalized],
+    $migrationNone
+), 'Non-Webcore package type');
+$throws(static fn (): PackageContract => new PackageContract(
+    PackageContract::WEBCORE_PACKAGE_TYPE,
+    PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION + 1,
+    '1.0.0',
+    'release-opaque-1',
+    null,
+    $minimumOnly,
+    $runtime,
+    [$normalized],
+    $migrationNone
+), 'Future manifest contract version');
+$throws(static fn (): PackageContract => new PackageContract(
     PackageContract::WEBCORE_PACKAGE_TYPE,
     1,
     '1.0.0',
@@ -146,7 +184,7 @@ $throws(static fn (): PackageContract => new PackageContract(
 ), 'Operator-owned inventory entry');
 $assert(PackageOwnership::classify('.env') === PackageOwnership::OPERATOR_OWNED, 'Environment ownership was misclassified.');
 $assert(PackageOwnership::classify('storage/logs/copot.log') === PackageOwnership::RUNTIME_GENERATED, 'Log ownership was misclassified.');
-$assert(PackageOwnership::classify('modules/example/module.json') === PackageOwnership::CONDITIONALLY_MANAGED, 'Conditional module ownership was misclassified.');
+$assert(PackageOwnership::classify('modules/example/module.json') === PackageOwnership::PACKAGE_OWNED, 'Example-module ownership used an unsupported special case.');
 $assert(count(PackageOwnership::values()) === 4, 'Ownership classifications are incomplete.');
 
 $temporaryStorage = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-wu1-marker-' . bin2hex(random_bytes(6));

@@ -90,6 +90,13 @@ staging, transition planning, migration execution, package application, or
 operator surface. The focused WU1 test is
 `tests/package_contract_wu1.php`.
 
+The WU1 reader boundary accepts only the Webcore package type and the current
+manifest contract version. It uses strict SemVer 2.0.0 validation and
+precedence, including numeric core/prerelease leading-zero rules, prerelease
+ordering, and build-metadata exclusion from precedence. The `modules/example/`
+source fixture remains governed by the build package exclusion policy; WU1 does
+not assign it a separate Module lifecycle ownership rule.
+
 ## Minimum package contract
 
 The logical v1 contract requires, at minimum:
