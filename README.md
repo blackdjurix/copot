@@ -30,12 +30,13 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Current active work unit: NONE
+Next work unit: WU2 — ZIP Intake, Validation & Isolated Staging (NEXT / NOT STARTED)
 Current active implementation branch: NONE
-Selected Post-M3 platform-foundation target: Package Lifecycle & Migration Foundation
-Preparation status: ADOPTED — DOCUMENTATION ONLY
+Package Lifecycle & Migration Foundation: SELECTED / ACTIVE PLATFORM-FOUNDATION TARGET
 Foundation scope: Webcore + independently distributed Module packages
 Current delivery slice: Webcore first
+WU1 — Webcore Package Contract & Release Identity: COMPLETE AND CLOSED
+WU2 implementation: NOT STARTED
 Module package lifecycle: ARCHITECTURAL TARGET ONLY — LATER SLICE
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
@@ -49,7 +50,8 @@ Post-M3 lifecycle classification is defined in `docs/03_roadmap.md`: re-open
 for invalid closure, MT.x for maintenance, and MR.x for eligible refinement.
 The adopted Package Lifecycle & Migration Foundation preparation contract is
 `docs/28_package_lifecycle_migration_foundation_contract.md`. It does not assign
-an authoritative milestone number and authorizes no implementation.
+an authoritative milestone number. WU1 is complete and closed; WU2 is next and
+not started. WU2–WU7 remain unimplemented.
 
 Older detailed phase and sequencing paragraphs below are retained historical
 context and do not declare a current active phase or next target.

@@ -2,7 +2,9 @@
 
 ## Preparation status
 
-Status: WU1 IMPLEMENTED — WU2–WU7 NOT STARTED
+Status: WU1 COMPLETE AND CLOSED — WU2–WU7 NOT STARTED
+
+Next work unit: WU2 — ZIP Intake, Validation & Isolated Staging (NEXT / NOT STARTED)
 
 This document records the selected Post-M3 platform-foundation target and its
 preparation contract. The WU1 implementation is limited to serialization-neutral
