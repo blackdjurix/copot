@@ -16,24 +16,24 @@ LOCKED
 M3.11 implementation:
 NOT STARTED
 
-M3.11 implementation branch:
-NOT CREATED
+M3.11 feature branch:
+CREATED FOR PREPARATION DOCUMENTATION
 
-M3.11 preparation NRP:
-CANDIDATE
+Current branch content:
+PREPARATION DOCUMENTATION ONLY
+
+M3.11 Work Unit 1:
+NOT STARTED
 
 Full M3.11:
-NRP NOT REACHED
+NOT STARTED
 ```
 
 `feature/m3.11-form-manager` is the documentation-only preparation branch. It
-does not start M3.11 implementation or constitute implementation-branch entry.
+contains no implementation changes, and does not start M3.11 implementation.
 
-The preparation lock is an NRP candidate because scope, ownership, security,
-provisioning direction, acceptance direction, and Work Units are explicit. It
-is not NRP confirmed: implementation entry still requires the separately
-authorized branch, implementation evidence, documentation review, commit,
-push, and remote verification required by project governance.
+Preparation documentation is complete and remotely durable. Implementation may
+begin only after explicit authorization.
 
 Release, tag, and publication remain not started and separately authorized.
 

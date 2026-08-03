@@ -980,8 +980,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
 applicable. M3.11 Form Manager preparation is LOCKED in
-`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
-implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
+`docs/27_m3_11_form_manager_contract.md`; the M3.11 feature branch is CREATED
+FOR PREPARATION DOCUMENTATION, its current content is PREPARATION DOCUMENTATION
+ONLY, and implementation is NOT STARTED. M3.11 Work Unit 1 is NOT STARTED. Release,
 tag, and publication remain separately authorized.
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
@@ -1010,8 +1011,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
 applicable. M3.11 Form Manager preparation is LOCKED in
-`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
-implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
+`docs/27_m3_11_form_manager_contract.md`; the M3.11 feature branch is CREATED
+FOR PREPARATION DOCUMENTATION, its current content is PREPARATION DOCUMENTATION
+ONLY, and implementation is NOT STARTED. M3.11 Work Unit 1 is NOT STARTED. Release,
 tag, and publication remain separately authorized. Further Media Manager visual refinement remains Deferred / Unscheduled and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.
@@ -1115,8 +1117,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
 applicable. M3.11 Form Manager preparation is LOCKED in
-`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
-implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
+`docs/27_m3_11_form_manager_contract.md`; the M3.11 feature branch is CREATED
+FOR PREPARATION DOCUMENTATION, its current content is PREPARATION DOCUMENTATION
+ONLY, and implementation is NOT STARTED. M3.11 Work Unit 1 is NOT STARTED. Release,
 tag, and publication remain separately authorized.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
@@ -1202,8 +1205,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
 applicable. M3.11 Form Manager preparation is LOCKED in
-`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
-implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
+`docs/27_m3_11_form_manager_contract.md`; the M3.11 feature branch is CREATED
+FOR PREPARATION DOCUMENTATION, its current content is PREPARATION DOCUMENTATION
+ONLY, and implementation is NOT STARTED. M3.11 Work Unit 1 is NOT STARTED. Release,
 tag, and publication remain separately authorized.
 
 #### Deferred Item — DI-M3.8-WU6-01
@@ -1302,8 +1306,9 @@ feature-branch lifecycle is CLOSED, and local/remote
 design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
 redirects remain deferred; Navigation and Dashboard integration remain not
 applicable. M3.11 Form Manager preparation is LOCKED in
-`docs/27_m3_11_form_manager_contract.md`; implementation is NOT STARTED, the
-implementation branch is NOT CREATED, and preparation is an NRP CANDIDATE. Release,
+`docs/27_m3_11_form_manager_contract.md`; the M3.11 feature branch is CREATED
+FOR PREPARATION DOCUMENTATION, its current content is PREPARATION DOCUMENTATION
+ONLY, and implementation is NOT STARTED. M3.11 Work Unit 1 is NOT STARTED. Release,
 tag, and publication remain separately authorized.
 The
 authoritative preparation contract is
