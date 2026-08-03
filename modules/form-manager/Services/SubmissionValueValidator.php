@@ -10,11 +10,12 @@ final class SubmissionValueValidator
         foreach ($input as $key => $value) {
             if (!is_string($key) || !isset($byKey[$key])) throw new InvalidArgumentException('Submission contains an unknown field.');
             if (isset($result[$key])) throw new InvalidArgumentException('Submission contains a duplicate field.');
-            $result[$key] = $this->value($byKey[$key], $value);
+            try { $result[$key] = $this->value($byKey[$key], $value); }
+            catch (InvalidArgumentException $failure) { throw new FormSubmissionFieldValidationException($key, $failure->getMessage(), $failure); }
         }
         foreach ($byKey as $key => $field) {
             if (!isset($result[$key])) {
-                if ($field->required()) throw new InvalidArgumentException('A required field is missing.');
+                if ($field->required()) throw new FormSubmissionFieldValidationException($key, 'A required field is missing.');
                 $result[$key] = $this->value($field, null);
             }
         }

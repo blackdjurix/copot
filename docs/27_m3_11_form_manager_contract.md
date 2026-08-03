@@ -3,8 +3,8 @@
 ## Purpose and status
 
 This document locks the M3.11 Form Manager product boundary and records the
-accepted WU1–WU3 implementation state. It does not authorize WU4 or later
-work, runtime deployment, release, tag, merge, or publication work.
+accepted WU1–WU4 implementation and closure state. It does not authorize
+release, tag, merge, or publication work.
 
 ```text
 M3.10 Redirect Manager:
@@ -29,18 +29,19 @@ M3.11 Work Unit 3:
 COMPLETE
 
 M3.11 Work Unit 4:
-NOT STARTED
+COMPLETE
 
 Full M3.11:
-NOT COMPLETE
+COMPLETE
 ```
 
 Preparation remains locked. WU1 adds only module-local persistence, domain
 services, schema/upgrade convergence, permissions, package inclusion, and
 focused installation evidence. WU2 adds only the protected Admin definition
 workspace. WU3 adds only the protected Admin submission workspace and the
-module-local spacing correction; it adds no public rendering or rate-limit
-persistence. WU4 remains not started.
+module-local spacing correction. WU4 adds the bounded public rendering,
+submission security, rate-limit persistence, regression, package, and closure
+evidence recorded on this branch.
 
 Release, tag, and publication remain not started and separately authorized.
 

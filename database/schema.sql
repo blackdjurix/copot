@@ -471,6 +471,16 @@ CREATE TABLE form_submission_values (
     CONSTRAINT fk_form_submission_values_field FOREIGN KEY (form_field_id) REFERENCES form_fields(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE form_submission_attempts (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    form_id BIGINT UNSIGNED NOT NULL,
+    client_address VARBINARY(16) NOT NULL,
+    attempted_at DATETIME NOT NULL,
+    INDEX idx_form_submission_attempts_form_client_time (form_id, client_address, attempted_at, id),
+    INDEX idx_form_submission_attempts_cleanup (attempted_at, id),
+    CONSTRAINT fk_form_submission_attempts_form FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 INSERT INTO permissions (name, slug, created_at, updated_at)
 SELECT desired.name, desired.slug, NOW(), NOW()
 FROM (

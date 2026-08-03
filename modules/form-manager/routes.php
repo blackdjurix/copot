@@ -2,15 +2,17 @@
 
 use Copot\Core\Response;
 
-foreach (['FormIds.php', 'FormRecords.php', 'FormDefinitionValidator.php', 'SubmissionValueValidator.php', 'FormRepositories.php', 'FormServices.php'] as $file) {
+foreach (['FormIds.php', 'FormRecords.php', 'FormDefinitionValidator.php', 'SubmissionValueValidator.php', 'FormRepositories.php', 'FormServices.php', 'FormPublicRequestValidator.php', 'FormSubmissionAttemptRepository.php', 'FormPublicSubmissionService.php'] as $file) {
     require_once __DIR__ . '/Services/' . $file;
 }
 
 $formRepository = new FormRepository($app->database());
 $formFields = new FormFieldRepository($app->database());
 $formService = new FormDefinitionService($app->database(), $formRepository, $formFields, new FormDefinitionValidator());
+$formPublicService = new FormPublicSubmissionService($formRepository, $formFields, new FormSubmissionLifecycleService($app->database(), $formRepository, $formFields, new FormSubmissionRepository($app->database()), new SubmissionValueValidator()), new FormSubmissionAttemptRepository($app->database()), new FormDefinitionValidator(), new FormPublicRequestValidator());
 $formAdmin = $app->adminUrl();
 $formPath = $formAdmin->childUrl('forms');
+$formPublicPath = static fn (int $id): string => '/forms/' . $id;
 
 $app->adminNavigation()->addRequired('Forms', $formPath, ['admin.access', 'forms.view'], 'link', 36);
 
@@ -63,6 +65,46 @@ $formFormResponse = static function ($request, $user, array $form, array $errors
     $content=$formRenderView('form',['form'=>$form,'errors'=>$errors,'fieldErrors'=>$fieldErrors,'formMode'=>$mode,'heading'=>$mode==='edit'?'Edit Form':'Create Form','submitLabel'=>$mode==='edit'?'Save changes':'Create Form','formAction'=>$mode==='edit'?$app->adminUrl()->childUrl('forms/'.(int)$form['id'].'/edit'):$formPath,'csrfToken'=>$app->csrf()->token(),'adminUrl'=>static fn(string $path=''):string=>$app->adminUrl()->childUrl($path)]);
     return $formRenderAdmin($mode==='edit'?'Edit Form':'Create Form',$content,$user,$request->path(),$status);
 };
+$formPublicResponse = static function ($request, int $id, array $values = [], array $errors = [], array $fieldErrors = [], ?string $nonce = null, bool $submitted = false, int $status = 200) use ($app, $formPublicService, $formPublicPath): Response {
+    try {
+        $definition = $formPublicService->published($id);
+        $nonce ??= $formPublicService->issueNonce($app->session(), $id);
+        $content = $app->viewRenderer()->renderFile($app->viewResolver()->resolve('form-manager::public.form'), [
+            'form' => $definition['form'], 'fields' => $definition['fields'], 'values' => $values,
+            'errors' => $errors, 'fieldErrors' => $fieldErrors, 'nonce' => $nonce,
+            'csrfToken' => $app->csrf()->token(), 'action' => $formPublicPath($id), 'submitted' => $submitted,
+        ], null, $definition['form']->name());
+        return Response::html($content, $status);
+    } catch (FormPublicUnavailableException) { return Response::html('Page not found.', 404); }
+    catch (FormCorruptDefinitionException) { return Response::html('The form is temporarily unavailable.', 503); }
+    catch (Throwable) { return Response::html('The form is temporarily unavailable.', 503); }
+};
+$app->router()->get('/forms/{id}', static function ($request, array $params) use ($app, $formRouteId, $formPublicResponse): Response {
+    $id = $formRouteId($params['id'] ?? null); if ($id === null) return Response::html('Page not found.', 404);
+    return $formPublicResponse($request, $id, [], [], [], null, $request->input('submitted') === '1');
+});
+$app->router()->post('/forms/{id}', static function ($request, array $params) use ($app, $formRouteId, $formPublicService, $formPublicResponse): Response {
+    $id = $formRouteId($params['id'] ?? null); if ($id === null) return Response::html('Page not found.', 404);
+    try {
+        $formPublicService->published($id);
+        $formPublicService->assertBodySize();
+    } catch (FormPublicUnavailableException) { return Response::html('Page not found.', 404); }
+    catch (FormCorruptDefinitionException) { return Response::html('The form is temporarily unavailable.', 503); }
+    catch (FormPublicRequestException $failure) { return $formPublicResponse($request, $id, [], ['The submission could not be accepted.'], [], (string) $request->post('_form_nonce', ''), false, 422); }
+    if (!$app->csrf()->validate($request)) return Response::html('Invalid CSRF token.', 419);
+    $values = $request->post('values', []); $nonce = is_scalar($request->post('_form_nonce')) ? (string) $request->post('_form_nonce') : '';
+    try {
+        $address = $_SERVER['REMOTE_ADDR'] ?? '';
+        $formPublicService->submit($app->session(), $id, $nonce, $values, $request->post('_form_website'), (string) $address);
+        return Response::redirect('/forms/' . $id . '?submitted=1');
+    } catch (FormSubmissionFieldValidationException $failure) {
+        return $formPublicResponse($request, $id, is_array($values) ? $values : [], ['Please correct the highlighted fields.'], [$failure->fieldKey() => $failure->getMessage()], $nonce, false, 422);
+    } catch (FormPublicRequestException|FormPublicAntiAbuseException) {
+        return $formPublicResponse($request, $id, is_array($values) ? $values : [], ['The submission could not be accepted.'], [], $nonce, false, 422);
+    } catch (FormRateLimitException) { return Response::html('The submission could not be accepted at this time.', 429); }
+    catch (InvalidArgumentException) { return $formPublicResponse($request, $id, is_array($values) ? $values : [], ['Please correct the submitted values.'], [], $nonce, false, 422); }
+    catch (Throwable) { return Response::html('The form is temporarily unavailable.', 503); }
+});
 $formMessage = static function (Throwable $failure): string {
     return match (true) {
         $failure instanceof FormStaleWriteException => 'This form was changed elsewhere. Reload it before saving.',

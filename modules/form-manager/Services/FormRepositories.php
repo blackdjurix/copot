@@ -146,3 +146,11 @@ class FormNotFoundException extends RuntimeException {}
 class FormStaleWriteException extends RuntimeException {}
 class FormInUseException extends RuntimeException {}
 class FormSubmissionNotFoundException extends RuntimeException {}
+class FormSubmissionFieldValidationException extends InvalidArgumentException
+{
+    public function __construct(private string $fieldKey, string $message, ?Throwable $previous = null)
+    {
+        parent::__construct($message, 0, $previous);
+    }
+    public function fieldKey(): string { return $this->fieldKey; }
+}
