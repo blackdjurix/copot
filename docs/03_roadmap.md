@@ -619,9 +619,11 @@ The approved implementation sequence is:
 | M3.11 | Form Manager | 7 | Very High |
 
 M3.11 Form Manager preparation is LOCKED. WU1 — Persistence, Provisioning,
-and Domain Services — is COMPLETE; M3.11 implementation is IN PROGRESS, WU2
-is NOT STARTED, and full M3.11 is NOT COMPLETE. WU1 added no public rendering,
-Admin UI, rate-limit persistence, or cross-module integration.
+and Domain Services — and WU2 — Admin Form Management Workspace — are
+COMPLETE; M3.11 implementation is IN PROGRESS, WU3 is NOT STARTED, and full
+M3.11 is NOT COMPLETE. WU2 added only the protected definition workspace; no
+public rendering, submission management, rate-limit persistence, or cross-module
+integration was added.
 
 Total planning envelope: 59 domain implementation batches. This count is the approved M3.1–M3.11 domain-batch planning envelope and does not count the horizontal M3.R1 Admin Shell Retouch 1 work unit or the required Admin Shell design-adjustment checkpoints attached to M3.5–M3.11. Those design work units are governed separately and do not silently renumber the milestone batch envelopes.
 

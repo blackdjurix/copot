@@ -38,6 +38,19 @@ final class FormRepository
         $statement = $this->database->connection()->prepare('SELECT * FROM forms WHERE status=:status ORDER BY updated_at DESC,id DESC'); $statement->execute(['status' => $status]);
         return array_map(fn(array $row): Form => $this->hydrate($row), $statement->fetchAll());
     }
+    /** @return array{items: Form[], total: int, limit: int, offset: int} */
+    public function workspace(array $filters = [], int $limit = 25, int $offset = 0): array
+    {
+        $limit=max(1,min($limit,100));$offset=max(0,$offset);$where=[];$parameters=[];
+        $search=trim((string)($filters['search']??''));$status=$filters['status']??null;
+        if($search!==''){$where[]='name LIKE :search';$parameters['search']='%'.$search.'%';}
+        if(in_array($status,FormDefinitionValidator::FORM_STATES,true)){$where[]='status=:status';$parameters['status']=$status;}
+        $clause=$where===[]?'':' WHERE '.implode(' AND ',$where);$connection=$this->database->connection();
+        $count=$connection->prepare('SELECT COUNT(*) FROM forms'.$clause);$count->execute($parameters);
+        $statement=$connection->prepare('SELECT * FROM forms'.$clause.' ORDER BY updated_at DESC,id DESC LIMIT :limit OFFSET :offset');
+        foreach($parameters as $key=>$value)$statement->bindValue(':'.$key,$value);$statement->bindValue(':limit',$limit,PDO::PARAM_INT);$statement->bindValue(':offset',$offset,PDO::PARAM_INT);$statement->execute();
+        return ['items'=>array_map(fn(array $row):Form=>$this->hydrate($row),$statement->fetchAll()),'total'=>(int)$count->fetchColumn(),'limit'=>$limit,'offset'=>$offset];
+    }
     private function id(FormId|int $id): FormId { return $id instanceof FormId ? $id : new FormId($id); }
     private function hydrate(array $row): Form { return new Form(new FormId((int)$row['id']), (string)$row['name'], (string)$row['status'], (string)$row['created_at'], (string)$row['updated_at']); }
 }

@@ -1,11 +1,11 @@
 # copot
 
 M3.11 Form Manager preparation remains LOCKED. WU1 — Persistence,
-Provisioning, and Domain Services — is COMPLETE on
-`feature/m3.11-form-manager`; M3.11 implementation is IN PROGRESS, WU2 is NOT
-STARTED, and full M3.11 is NOT COMPLETE. WU1 adds only module-local persistence
-and provisioning; no routes, UI, public rendering, rate-limit persistence, or
-cross-module integration was added.
+Provisioning, and Domain Services — and WU2 — Admin Form Management Workspace
+— are COMPLETE on `feature/m3.11-form-manager`; M3.11 implementation is IN
+PROGRESS, WU3 is NOT STARTED, and full M3.11 is NOT COMPLETE. WU2 adds only
+the protected definition workspace; public rendering, submission management,
+and rate-limit persistence remain deferred.
 
 Current M3.8 state: WU1–WU7 are complete and accepted. M3.8 Media Library was fast-forward integrated into `main` at `d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit. The approved Content featured-Media picker, consumer-scoped
 pending preparation and save-time promotion, usage synchronization, unused-only

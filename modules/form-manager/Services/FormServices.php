@@ -28,8 +28,14 @@ final class FormDefinitionService
         $id=$id instanceof FormId?$id:new FormId($id);$definition=$this->validator->definition($input['name']??null,$input['status']??null,$input['fields']??[]);
         return $this->atomic(function()use($id,$definition,$expectedUpdatedAt):Form{if(!$this->forms->findById($id,true))throw new FormNotFoundException('Form is unavailable.');$this->forms->update($id,$definition['name'],$definition['status'],$expectedUpdatedAt);$this->fields->replace($id,$definition['fields']);return $this->forms->findById($id)??throw new FormNotFoundException('Form is unavailable.');});
     }
-    public function disable(FormId|int $id):Form { $form=$this->forms->findById($id); if(!$form)throw new FormNotFoundException('Form is unavailable.'); return $this->update($form->id(),['name'=>$form->name(),'status'=>'disabled','fields'=>array_map(fn(FormField $field)=>['field_key'=>$field->key(),'label'=>$field->label(),'field_type'=>$field->type(),'sort_order'=>$field->sortOrder(),'is_required'=>$field->required(),'min_length'=>$field->minLength(),'max_length'=>$field->maxLength(),'options'=>array_map(fn(FormFieldOption $option)=>['option_value'=>$option->value(),'option_label'=>$option->label(),'sort_order'=>$option->sortOrder()],$field->options())],$this->fields->forForm($form->id()))],$form->updatedAt()); }
+    public function publish(FormId|int $id):Form { return $this->transition($id,'published',['draft']); }
+    public function disable(FormId|int $id):Form { return $this->transition($id,'disabled',['draft','published']); }
     public function delete(FormId|int $id):void { $id=$id instanceof FormId?$id:new FormId($id);$this->atomic(function()use($id):void{if(!$this->forms->findById($id,true))throw new FormNotFoundException('Form is unavailable.');if($this->forms->hasSubmissions($id,true))throw new FormInUseException('Forms with retained submissions must be disabled.');$this->forms->delete($id);}); }
+    private function transition(FormId|int $id,string $target,array $allowed):Form
+    {
+        $id=$id instanceof FormId?$id:new FormId($id);
+        return $this->atomic(function()use($id,$target,$allowed):Form{$form=$this->forms->findById($id,true);if(!$form)throw new FormNotFoundException('Form is unavailable.');if(!in_array($form->status(),$allowed,true))throw new InvalidArgumentException('Form lifecycle transition is invalid.');$this->forms->update($id,$form->name(),$target,$form->updatedAt());return $this->forms->findById($id)??throw new FormNotFoundException('Form is unavailable.');});
+    }
 }
 
 final class FormSubmissionLifecycleService

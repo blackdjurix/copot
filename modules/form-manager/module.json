@@ -4,6 +4,7 @@
   "description": "Reusable form definitions and retained submission records.",
   "version": "0.1.0",
   "author": "Copot",
+  "routes": "routes.php",
   "requires": { "modules": [] },
   "permissions": [
     { "slug": "forms.view", "name": "View forms" },
