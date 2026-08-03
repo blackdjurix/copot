@@ -972,8 +972,9 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU2 are COMPLETE on
-`feature/m3.10-redirect-manager`; WU3 is NEXT and WU4 is NOT STARTED.
+`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU3 are COMPLETE on
+`feature/m3.10-redirect-manager`; the separate Admin Shell design-adjustment
+checkpoint is required and not passed; WU4 is NOT STARTED.
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
@@ -993,8 +994,9 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU2 are COMPLETE on
-`feature/m3.10-redirect-manager`; WU3 is NEXT and WU4 is NOT STARTED. Further Media Manager visual refinement remains Deferred / Unscheduled
+`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU3 are COMPLETE on
+`feature/m3.10-redirect-manager`; the separate Admin Shell design-adjustment
+checkpoint is required and not passed; WU4 is NOT STARTED. Further Media Manager visual refinement remains Deferred / Unscheduled
 and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.
@@ -1091,8 +1093,9 @@ the M3.9 feature-branch lifecycle is CLOSED. Full M3.9 Internal Dashboard is
 complete and closed. The Admin Shell design-adjustment checkpoint is `NO
 CHANGE REQUIRED` for the reviewed M3.9 baseline. M3.10 Redirect Manager
 preparation is LOCKED in `docs/26_m3_10_redirect_manager_contract.md`;
-WU1–WU2 are COMPLETE on `feature/m3.10-redirect-manager`; WU3 is NEXT and
-WU4 is NOT STARTED.
+WU1–WU3 are COMPLETE on `feature/m3.10-redirect-manager`; the separate Admin
+Shell design-adjustment checkpoint is required and not passed; WU4 is NOT
+STARTED.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1169,8 +1172,9 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU2 are COMPLETE on
-`feature/m3.10-redirect-manager`; WU3 is NEXT and WU4 is NOT STARTED.
+`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU3 are COMPLETE on
+`feature/m3.10-redirect-manager`; the separate Admin Shell design-adjustment
+checkpoint is required and not passed; WU4 is NOT STARTED.
 
 #### Deferred Item — DI-M3.8-WU6-01
 
@@ -1260,8 +1264,8 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU2 are COMPLETE on
-`feature/m3.10-redirect-manager`; WU3 is NEXT and WU4 is NOT STARTED. Release, tag, and publication remain separately authorized.
+`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU3 are COMPLETE on
+`feature/m3.10-redirect-manager`; the separate Admin Shell design-adjustment checkpoint is required and not passed; WU4 is NOT STARTED. Release, tag, and publication remain separately authorized.
 The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.

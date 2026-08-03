@@ -3,8 +3,8 @@
 ## Purpose and status
 
 This document locks the accepted preparation direction for M3.10 Redirect
-Manager and records the completed WU1 and WU2 implementation boundaries. It
-does not authorize WU3, WU4, runtime release, tag, merge, or publication work.
+Manager and records the completed WU1–WU3 implementation boundaries. It does
+not authorize WU4, runtime release, tag, merge, or publication work.
 
 ```text
 M3.9 Internal Dashboard:
@@ -19,7 +19,10 @@ COMPLETE ON feature/m3.10-redirect-manager
 M3.10 WU2:
 COMPLETE ON feature/m3.10-redirect-manager
 
-M3.10 WU3–WU4:
+M3.10 WU3:
+COMPLETE ON feature/m3.10-redirect-manager
+
+M3.10 WU4:
 NOT STARTED
 ```
 
@@ -59,8 +62,10 @@ The smallest explicit module contribution seam is the enabled-module
 `resolver` metadata field loaded by `ModuleLoader::loadResolvers()`. Core only
 depends on `UnresolvedRouteResolver`; it does not import Redirect persistence.
 No Admin workspace, Admin navigation, Content/Navigation integration,
-Dashboard widget, or WU4 closure behavior is included. WU3 is next and not
-started.
+Dashboard widget, or WU4 closure behavior is included. WU3 is complete.
+
+The separate Admin Shell design-adjustment checkpoint is now required before
+WU4/final closure. It has not been run or passed by this implementation.
 
 ## Product definition
 
@@ -457,5 +462,6 @@ human acceptance.
 ## Preparation closure and implementation entry
 
 Preparation closure and implementation entry are historical preparation gates.
-WU1 and WU2 are complete on the feature branch; WU3 is the next separately
-authorized work unit and WU4 remains not started.
+WU1–WU3 are complete on the feature branch; the separate Admin Shell
+design-adjustment checkpoint is required and not yet passed; WU4 remains not
+started.
