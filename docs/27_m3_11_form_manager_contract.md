@@ -3,7 +3,7 @@
 ## Purpose and status
 
 This document locks the M3.11 Form Manager product boundary and records the
-accepted WU1 and WU2 implementation state. It does not authorize WU3 or later
+accepted WU1–WU3 implementation state. It does not authorize WU4 or later
 work, runtime deployment, release, tag, merge, or publication work.
 
 ```text
@@ -26,6 +26,9 @@ M3.11 Work Unit 2:
 COMPLETE
 
 M3.11 Work Unit 3:
+COMPLETE
+
+M3.11 Work Unit 4:
 NOT STARTED
 
 Full M3.11:
@@ -35,8 +38,9 @@ NOT COMPLETE
 Preparation remains locked. WU1 adds only module-local persistence, domain
 services, schema/upgrade convergence, permissions, package inclusion, and
 focused installation evidence. WU2 adds only the protected Admin definition
-workspace; it adds no public rendering, submission workspace, or rate-limit
-persistence. WU3 remains not started.
+workspace. WU3 adds only the protected Admin submission workspace and the
+module-local spacing correction; it adds no public rendering or rate-limit
+persistence. WU4 remains not started.
 
 Release, tag, and publication remain not started and separately authorized.
 
@@ -280,7 +284,7 @@ as well as release, tag, and publication.
 ## Implementation entry and acceptance direction
 
 Implementation may begin only with explicit authorization on a verified branch
-from the accepted baseline. WU1 and WU2 are complete; WU3 is the next target,
+from the accepted baseline. WU1–WU3 are complete; WU4 is the next target,
 pending separate authorization. All implementation must preserve module
 ownership, dependency direction, least-privilege permissions, controlled
 failures, and the package/clean-install

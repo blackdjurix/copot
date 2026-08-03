@@ -47,7 +47,11 @@ final class FormSubmissionLifecycleService
         $formId=$formId instanceof FormId?$formId:new FormId($formId);
         return $this->atomic(function()use($formId,$input):FormSubmission{$form=$this->forms->findById($formId,true);if(!$form)throw new FormNotFoundException('Form is unavailable.');if($form->status() !== 'published')throw new InvalidArgumentException('Only published forms accept submissions.');$fields=$this->fields->forForm($formId,true);$values=$this->validator->values($fields,$input);$id=$this->submissions->create($formId,$values);return $this->submissions->findById($id)??throw new RuntimeException('Created submission is unavailable.');});
     }
-    public function markReviewed(FormSubmissionId|int $id):FormSubmission { return $this->transition($id,'reviewed'); }
+    public function markReviewed(FormSubmissionId|int $id):FormSubmission
+    {
+        $id=$id instanceof FormSubmissionId?$id:new FormSubmissionId($id);
+        return $this->atomic(function()use($id):FormSubmission{$submission=$this->submissions->findById($id,true);if(!$submission)throw new FormSubmissionNotFoundException('Submission is unavailable.');if($submission->status()!=='new')throw new InvalidArgumentException('Only new submissions can be marked reviewed.');$this->submissions->updateStatus($id,'reviewed');return $this->submissions->findById($id)??throw new FormSubmissionNotFoundException('Submission is unavailable.');});
+    }
     public function delete(FormSubmissionId|int $id):void{$id=$id instanceof FormSubmissionId?$id:new FormSubmissionId($id);$this->atomic(function()use($id):void{if(!$this->submissions->findById($id,true))throw new FormSubmissionNotFoundException('Submission is unavailable.');$this->submissions->delete($id);});}
     private function transition(FormSubmissionId|int $id,string $status):FormSubmission{$id=$id instanceof FormSubmissionId?$id:new FormSubmissionId($id);return $this->atomic(function()use($id,$status):FormSubmission{$submission=$this->submissions->findById($id,true);if(!$submission)throw new FormSubmissionNotFoundException('Submission is unavailable.');$this->submissions->updateStatus($id,$status);return $this->submissions->findById($id)??throw new FormSubmissionNotFoundException('Submission is unavailable.');});}
 }

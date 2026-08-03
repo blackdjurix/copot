@@ -111,6 +111,20 @@ final class FormSubmissionRepository
     {
         $id=$this->id($id); $statement=$this->database->connection()->prepare('SELECT * FROM form_submissions WHERE id=:id LIMIT 1'.($forUpdate?' FOR UPDATE':'')); $statement->execute(['id'=>$id->value()]); $row=$statement->fetch(); return is_array($row)?$this->hydrate($row):null;
     }
+    /** @return array{items: array<int, array<string, mixed>>, total: int, limit: int, offset: int} */
+    public function workspace(array $filters = [], int $limit = 25, int $offset = 0): array
+    {
+        $limit=max(1,min($limit,100));$offset=max(0,$offset);$where=[];$parameters=[];
+        $formId=$filters['form_id']??null;$status=$filters['status']??null;$search=trim((string)($filters['search']??''));
+        if($formId instanceof FormId)$formId=$formId->value();if(is_int($formId)&&$formId>0){$where[]='s.form_id=:form_id';$parameters['form_id']=$formId;}
+        if(in_array($status,['new','reviewed'],true)){$where[]='s.status=:status';$parameters['status']=$status;}
+        if($search!==''){$where[]='f.name LIKE :search';$parameters['search']='%'.$search.'%';}
+        $clause=$where===[]?'':' WHERE '.implode(' AND ',$where);$connection=$this->database->connection();
+        $count=$connection->prepare('SELECT COUNT(*) FROM form_submissions s INNER JOIN forms f ON f.id=s.form_id'.$clause);$count->execute($parameters);
+        $statement=$connection->prepare('SELECT s.id,s.form_id,f.name AS form_name,s.status,s.created_at,s.updated_at FROM form_submissions s INNER JOIN forms f ON f.id=s.form_id'.$clause.' ORDER BY s.updated_at DESC,s.id DESC LIMIT :limit OFFSET :offset');
+        foreach($parameters as $key=>$value)$statement->bindValue(':'.$key,$value);$statement->bindValue(':limit',$limit,PDO::PARAM_INT);$statement->bindValue(':offset',$offset,PDO::PARAM_INT);$statement->execute();
+        return ['items'=>$statement->fetchAll(),'total'=>(int)$count->fetchColumn(),'limit'=>$limit,'offset'=>$offset];
+    }
     public function updateStatus(FormSubmissionId|int $id,string $status): void
     {
         $statement=$this->database->connection()->prepare('UPDATE form_submissions SET status=:status,updated_at=GREATEST(NOW(),DATE_ADD(updated_at,INTERVAL 1 SECOND)) WHERE id=:id'); $statement->execute(['id'=>$this->id($id)->value(),'status'=>$status]); if($statement->rowCount()!==1) throw new FormSubmissionNotFoundException('Submission is unavailable.');

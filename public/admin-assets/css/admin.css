@@ -3038,6 +3038,35 @@ html.admin-nav-open body {
     padding: var(--admin-space-5);
 }
 
+/* Form Manager keeps its nested definition controls inside padded local groups. */
+section[aria-labelledby="form-workspace-title"] > .admin-form {
+    padding: var(--admin-space-4);
+}
+
+section[aria-labelledby="form-editor-title"] .form-field-row {
+    display: grid;
+    gap: var(--admin-space-4);
+    margin: 0 0 var(--admin-space-4);
+    padding: var(--admin-space-5);
+    border: 1px solid var(--admin-color-border);
+    border-radius: var(--admin-radius-md);
+}
+
+section[aria-labelledby="form-editor-title"] .form-field-row legend {
+    padding: 0 var(--admin-space-2);
+    color: var(--admin-color-text);
+    font-weight: 800;
+}
+
+section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-options] {
+    display: grid;
+    gap: var(--admin-space-3);
+    margin: 0;
+    padding: var(--admin-space-4);
+    border: 1px solid var(--admin-color-border);
+    border-radius: var(--admin-radius-sm);
+}
+
 #content-form-errors {
     margin-bottom: var(--admin-space-5);
 }
