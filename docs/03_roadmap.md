@@ -201,6 +201,10 @@ M6 supports distribution, tooling, integrations, and the broader extension ecosy
 
 The Post-M1 Roadmap Review is complete.
 
+The older milestone-sequencing narrative below is retained as historical
+context. The current post-M3 planning state is recorded in the authoritative
+block in the M3.11 section.
+
 M2.1 Admin UI Foundation is complete and released as v0.9.0.
 
 M2.2 Extensibility Foundation is complete and released as v0.10.0.
@@ -624,6 +628,27 @@ COMPLETE and integrated into `main` at
 commit. Feature containment is confirmed. Release, tag, and publication remain
 NOT STARTED. Deferred integrations remain excluded.
 
+### Current authoritative post-M3 state
+
+M3 Core Modules: COMPLETE AND CLOSED
+Latest completed milestone: M3.11 Form Manager
+M3.11: COMPLETE AND CLOSED
+Current active milestone: NONE
+Current active work unit: NONE
+Current active implementation branch: NONE
+Post-M3 next target: NOT SELECTED
+Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
+Release: NOT STARTED
+Tag: NOT STARTED
+Publication: NOT STARTED
+
+M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
+an automatically sequential execution order. Future work is selected by actual
+product need, dependency, readiness, risk, and architecture boundary.
+
+Older detailed phase and sequencing paragraphs below are retained historical
+context and do not declare a current active phase or next target.
+
 Total planning envelope: 59 domain implementation batches. This count is the approved M3.1–M3.11 domain-batch planning envelope and does not count the horizontal M3.R1 Admin Shell Retouch 1 work unit or the required Admin Shell design-adjustment checkpoints attached to M3.5–M3.11. Those design work units are governed separately and do not silently renumber the milestone batch envelopes.
 
 The batch envelope is a planning boundary, not an immutable implementation count. Before each milestone begins, a focused milestone preparation step must audit the current repository state, completed dependencies, newly proven consumers, and active risks, then lock the exact batch breakdown for that milestone.
@@ -966,6 +991,9 @@ These checkpoints are horizontal design-governance work units and are not includ
 ---
 
 ## M3 Core Modules
+
+The following M3-era checkpoint summaries are historical records, not the
+current active-phase or next-target declaration.
 
 ### M3.7 and M3.8 post-merge history
 

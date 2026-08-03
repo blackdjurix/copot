@@ -18,6 +18,27 @@ COMPLETE and integrated into `main` at
 commit. Feature containment is confirmed; release, tag, and publication remain
 NOT STARTED. Deferred integrations remain excluded.
 
+### Current authoritative post-M3 state
+
+M3 Core Modules: COMPLETE AND CLOSED
+Latest completed milestone: M3.11 Form Manager
+M3.11: COMPLETE AND CLOSED
+Current active milestone: NONE
+Current active work unit: NONE
+Current active implementation branch: NONE
+Post-M3 next target: NOT SELECTED
+Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
+Release: NOT STARTED
+Tag: NOT STARTED
+Publication: NOT STARTED
+
+M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
+an automatically sequential execution order. Future work is selected by actual
+product need, dependency, readiness, risk, and architecture boundary.
+
+Older detailed phase and sequencing paragraphs below are retained historical
+context and do not declare a current active phase or next target.
+
 ## Purpose
 
 ### Current M3.7 post-merge state

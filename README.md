@@ -6,6 +6,9 @@ COMPLETE and integrated into `main` at
 commit. Feature containment is confirmed. Release, tag, and publication remain
 NOT STARTED. Deferred integrations remain excluded.
 
+The older milestone narrative below is retained as historical checkpoint
+context; it does not override the current post-M3 state recorded below.
+
 Current M3.8 state: WU1–WU7 are complete and accepted. M3.8 Media Library was fast-forward integrated into `main` at `d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit. The approved Content featured-Media picker, consumer-scoped
 pending preparation and save-time promotion, usage synchronization, unused-only
 Media deletion safety, consumer-owned 16:9 preparation/crop, and processed
@@ -20,6 +23,27 @@ M3.11 Form Manager preparation is COMPLETE. WU1–WU4 and full M3.11 are
 COMPLETE and integrated into `main` at
 `0b86eae4c9bb50d7ed8928f4f4b63f8be572a4f9` by fast-forward only. Release, tag,
 and publication remain NOT STARTED.
+
+### Current authoritative post-M3 state
+
+M3 Core Modules: COMPLETE AND CLOSED
+Latest completed milestone: M3.11 Form Manager
+M3.11: COMPLETE AND CLOSED
+Current active milestone: NONE
+Current active work unit: NONE
+Current active implementation branch: NONE
+Post-M3 next target: NOT SELECTED
+Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
+Release: NOT STARTED
+Tag: NOT STARTED
+Publication: NOT STARTED
+
+M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
+an automatically sequential execution order. Future work is selected by actual
+product need, dependency, readiness, risk, and architecture boundary.
+
+Older detailed phase and sequencing paragraphs below are retained historical
+context and do not declare a current active phase or next target.
 
 ## Current M3.7 post-merge state
 
