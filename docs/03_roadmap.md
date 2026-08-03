@@ -972,8 +972,8 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; implementation is NOT STARTED
-and no implementation branch is authorized.
+`docs/26_m3_10_redirect_manager_contract.md`; WU1 is COMPLETE on
+`feature/m3.10-redirect-manager`; WU2–WU4 are NOT STARTED.
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
@@ -993,8 +993,8 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; implementation is NOT STARTED
-and no implementation branch is authorized. Further Media Manager visual refinement remains Deferred / Unscheduled
+`docs/26_m3_10_redirect_manager_contract.md`; WU1 is COMPLETE on
+`feature/m3.10-redirect-manager`; WU2–WU4 are NOT STARTED. Further Media Manager visual refinement remains Deferred / Unscheduled
 and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.

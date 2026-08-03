@@ -3,9 +3,8 @@
 ## Purpose and status
 
 This document locks the accepted preparation direction for M3.10 Redirect
-Manager. It is a preparation and implementation-entry contract only. It does
-not implement M3.10, create an implementation branch, authorize runtime
-synchronization, or authorize release, tag, merge, or publication work.
+Manager and records the completed WU1 implementation boundary. It does not
+authorize WU2–WU4, runtime release, tag, merge, or publication work.
 
 ```text
 M3.9 Internal Dashboard:
@@ -14,19 +13,34 @@ COMPLETE AND CLOSED
 M3.10 preparation:
 LOCKED
 
-M3.10 implementation:
-NOT STARTED
+M3.10 WU1:
+COMPLETE ON feature/m3.10-redirect-manager
 
-M3.10 implementation branch:
-NOT AUTHORIZED / ABSENT
+M3.10 WU2–WU4:
+NOT STARTED
 ```
 
-The authoritative repository baseline for this preparation lock is `main` at
-`2e457c40b4fcdad35e38ce67a4e28e1b7d7bb3a0`:
+The authoritative repository baseline for this implementation branch is
+`main` at `022a2084f9b9202eb2316107b189ebfc914ca4f6`:
 
 ```text
-docs(m3.9): close feature branch lifecycle state
+docs(m3.10): lock redirect manager preparation
 ```
+
+## WU1 implementation state
+
+WU1 is complete on `feature/m3.10-redirect-manager`. Core now exposes the
+typed `Router::dispatchResult()` boundary and the single
+`UnresolvedRouteResolver` seam. Exact and pattern routes, including
+handler-generated 404 responses, are reported as matched and cannot fall
+through to redirect resolution. Only an unmatched GET may reach the optional
+fallback; resolver failure or no resolution fails closed to the normal 404.
+
+The reusable WU1 contract validates canonical source paths, protected
+installer/Admin/asset/Content namespaces, root-relative or absolute http/https
+targets, 301/302 status values with 302 as the default, and the self-redirect
+invariant. It introduces no persistence, schema, repository, permission,
+Admin UI, Content, Navigation, or Dashboard behavior. WU2 is not started.
 
 ## Product definition
 

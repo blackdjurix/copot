@@ -4,6 +4,8 @@ namespace Copot\Core;
 
 class Router
 {
+    private ?UnresolvedRouteResolver $unresolvedRouteResolver = null;
+
     private array $routes = [
         'GET' => [],
         'POST' => [],
@@ -23,10 +25,24 @@ class Router
         $this->addRoute('POST', $path, $handler);
     }
 
+    public function setUnresolvedRouteResolver(UnresolvedRouteResolver $resolver): void
+    {
+        if ($this->unresolvedRouteResolver !== null) {
+            throw new \RuntimeException('An unresolved-route resolver is already registered.');
+        }
+
+        $this->unresolvedRouteResolver = $resolver;
+    }
+
     public function dispatch(Request $request): Response
     {
+        return $this->dispatchResult($request)->response();
+    }
+
+    public function dispatchResult(Request $request): RouteDispatchResult
+    {
         if (!array_key_exists($request->method(), $this->routes)) {
-            return Response::html('404 Not Found', 404);
+            return RouteDispatchResult::unmatched(Response::html('404 Not Found', 404));
         }
 
         $handler = $this->routes[$request->method()][$request->path()] ?? null;
@@ -35,10 +51,10 @@ class Router
             $result = $handler($request);
 
             if ($result instanceof Response) {
-                return $result;
+                return RouteDispatchResult::matched($result);
             }
 
-            return Response::html((string) $result);
+            return RouteDispatchResult::matched(Response::html((string) $result));
         }
 
         foreach ($this->patternRoutes[$request->method()] as $route) {
@@ -55,13 +71,25 @@ class Router
             $result = $route['handler']($request, $params);
 
             if ($result instanceof Response) {
-                return $result;
+                return RouteDispatchResult::matched($result);
             }
 
-            return Response::html((string) $result);
+            return RouteDispatchResult::matched(Response::html((string) $result));
         }
 
-        return Response::html('404 Not Found', 404);
+        if ($request->method() === 'GET' && $this->unresolvedRouteResolver !== null) {
+            try {
+                $fallback = $this->unresolvedRouteResolver->resolve($request);
+
+                if ($fallback instanceof Response) {
+                    return RouteDispatchResult::unmatched($fallback);
+                }
+            } catch (\Throwable) {
+                // Optional fallback resolution fails closed to the normal 404.
+            }
+        }
+
+        return RouteDispatchResult::unmatched(Response::html('404 Not Found', 404));
     }
 
     private function normalizePath(string $path): string
