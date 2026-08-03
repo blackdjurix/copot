@@ -2,11 +2,13 @@
 
 ## Preparation status
 
-Status: ADOPTED — PREPARATION AND DOCUMENTATION ONLY
+Status: WU1 IMPLEMENTED — WU2–WU7 NOT STARTED
 
 This document records the selected Post-M3 platform-foundation target and its
-preparation contract. It authorizes no PHP, schema, migration, package-builder,
-runtime, browser, or Module package implementation.
+preparation contract. The WU1 implementation is limited to serialization-neutral
+Webcore package-contract primitives and focused tests. It does not authorize
+schema, migration, package-builder, runtime, browser, or Module package work
+beyond that WU1 boundary.
 
 No authoritative milestone number is assigned. The existing roadmap does not
 provide an approved post-M3 numbering mechanism for this target.
@@ -69,6 +71,24 @@ remain deferred:
 source for the current repository, but it is not sufficient as the complete
 installed lifecycle state. Exact persistence structures are implementation-
 deferred.
+
+## WU1 implementation boundary
+
+WU1 provides serialization-neutral Core primitives for package version
+validation, package identity, source compatibility, runtime requirements,
+ownership classification, package-owned inventory entries, file size and
+SHA-256 identity, and the migration declaration boundary. The primitives do
+not select a manifest filename or serialization format.
+
+`source_tree_identity` is optional opaque provenance and is never an installed
+compatibility key. `release_identity` is an opaque immutable package/release
+identity whose generation is outside WU1.
+
+WU1 preserves `Version::CURRENT` and the exact two-field
+`storage/installed.lock` contract. It adds no persistence, archive handling,
+staging, transition planning, migration execution, package application, or
+operator surface. The focused WU1 test is
+`tests/package_contract_wu1.php`.
 
 ## Minimum package contract
 
@@ -314,9 +334,9 @@ requires a real restore-capable implementation and integration evidence.
 
 ## Explicit exclusions
 
-This contract does not authorize:
+Outside the delivered WU1 boundary, this contract does not authorize:
 
-- PHP or source implementation;
+- further PHP or source implementation;
 - schema or migration execution;
 - package-builder changes;
 - runtime synchronization or browser validation;

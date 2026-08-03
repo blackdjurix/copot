@@ -26,6 +26,12 @@ build/package_manifest.php
 
 The manifest is a build concern only. It is not runtime configuration and must not create a second version source of truth.
 
+The WU1 package-contract primitives are serialization-neutral and do not turn
+this build manifest into a runtime apply manifest. The existing builder remains
+the deterministic source-package builder. Future lifecycle packaging may reuse
+normalized inventory and ownership primitives, but runtime package identity,
+source compatibility, and installed-state semantics remain separate contracts.
+
 ## Version Source of Truth
 
 The framework release version is defined by:
