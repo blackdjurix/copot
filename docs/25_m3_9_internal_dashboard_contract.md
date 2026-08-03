@@ -37,11 +37,15 @@ NO CHANGE REQUIRED
 M3.9 integration:
 FAST-FORWARD INTO `main`
 
+M3.9 feature containment:
+COMPLETE
+
+M3.9 feature-branch lifecycle:
+CLOSED; local and remote `feature/m3.9-internal-dashboard` DELETED
+
 Next target:
 M3.10 preparation — NOT STARTED
 
-M3.9 implementation branch:
-`feature/m3.9-internal-dashboard`
 ```
 
 M3.8 WU1–WU7 are complete and accepted. Full M3.8 was fast-forward
@@ -486,20 +490,20 @@ No new browser or subjective visual acceptance was required after the accepted
 design checkpoint. No package, install, provisioning, or full M3.8 validation
 was required for WU4 closure.
 
-## Implementation branch strategy
+## Implementation branch strategy and closure
 
-The implementation branch created for the accepted preparation is:
+The implementation branch created for the accepted preparation was:
 
 ```text
 feature/m3.9-internal-dashboard
 ```
 
-The WU1 implementation branch is
-`feature/m3.9-internal-dashboard`. It remains retained after the completed
-M3.9 work, which is integrated into `main` by fast-forward with no merge
-commit. Any later implementation branch must branch from the then-current
-verified `main` anchor; this contract does not authorize branching from an
-obsolete historical commit.
+`feature/m3.9-internal-dashboard`. M3.9 WU1–WU4 are complete and integrated
+into `main` by fast-forward with no merge commit; containment is complete, the
+local and remote implementation branches are deleted, and the M3.9
+feature-branch lifecycle is CLOSED. Any later implementation branch must
+branch from the then-current verified `main` anchor; this contract does not
+authorize branching from an obsolete historical commit.
 
 ## Documentation and closure
 

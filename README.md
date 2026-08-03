@@ -8,7 +8,7 @@ focused-validated; human functional/browser acceptance has passed on
 `main`. Content is the first active Media consumer;
 Media processing remains generic and is driven by consumer profile requirements.
 PHP GD is required in the serving PHP runtime for image processing. Further
-Media Manager visual refinement remains Deferred / Unscheduled and non-blocking. WU7 closure evidence covers the genuine pre-M3.8 upgrade path, five-action authorization, package inclusion, and packaged clean-install provisioning. Full M3.8 is complete and closed. M3.9 Internal Dashboard WU1–WU4 are complete and integrated into `main` by fast-forward with no merge commit. The retained `feature/m3.9-internal-dashboard` branch is the completed implementation branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not started; release, tag, and publication remain separately authorized.
+Media Manager visual refinement remains Deferred / Unscheduled and non-blocking. WU7 closure evidence covers the genuine pre-M3.8 upgrade path, five-action authorization, package inclusion, and packaged clean-install provisioning. Full M3.8 is complete and closed. M3.9 Internal Dashboard WU1–WU4 are complete and integrated into `main` by fast-forward with no merge commit. M3.9 feature containment is complete; local and remote `feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT STARTED; release, tag, and publication remain separately authorized.
 
 ## Current M3.7 post-merge state
 
@@ -73,10 +73,12 @@ Current authoritative state: M3.8 WU1–WU7 and full M3.8 are complete and
 closed on `main`; post-merge documentation closure, verified containment, and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
 WU1–WU4 are complete and integrated into `main` by fast-forward with no merge
-commit. The retained `feature/m3.9-internal-dashboard` branch is the completed
-implementation branch; the Admin Shell design-adjustment checkpoint is `NO
-CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not
-started.
+commit. M3.9 feature containment is complete; local and remote
+`feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch
+lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
+Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
+reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT
+STARTED.
 
 The following detailed milestone summary preserves prior checkpoint context.
 Branch-lifecycle statements inside that retained summary are historical and do

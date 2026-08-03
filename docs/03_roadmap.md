@@ -967,10 +967,12 @@ Current authoritative state: M3.8 WU1–WU7 and full M3.8 are complete and
 closed on `main`; post-merge documentation closure, verified containment, and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
 WU1–WU4 are complete and integrated into `main` by fast-forward with no merge
-commit. The retained `feature/m3.9-internal-dashboard` branch is the completed
-implementation branch; the Admin Shell design-adjustment checkpoint is `NO
-CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not
-started.
+commit. M3.9 feature containment is complete; local and remote
+`feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch
+lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
+Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
+reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT
+STARTED.
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
@@ -985,10 +987,12 @@ documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
 WU1–WU4 are complete and integrated into `main` by fast-forward with no merge
-commit. The retained `feature/m3.9-internal-dashboard` branch is the completed
-implementation branch; the Admin Shell design-adjustment checkpoint is `NO
-CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not
-started. Further Media Manager visual refinement remains Deferred / Unscheduled
+commit. M3.9 feature containment is complete; local and remote
+`feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch
+lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
+Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
+reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT
+STARTED. Further Media Manager visual refinement remains Deferred / Unscheduled
 and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.
@@ -1078,10 +1082,12 @@ documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`, verified containment and
 local/remote feature-branch deletion are complete, and the authoritative
 branch is `main`. M3.9 Internal Dashboard WU1–WU4 are complete and integrated
-into `main` by fast-forward with no merge commit. The retained
-`feature/m3.9-internal-dashboard` branch is the completed implementation
-branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
-for the current baseline. M3.10 preparation is next and not started.
+into `main` by fast-forward with no merge commit. M3.9 feature containment is
+complete; local and remote `feature/m3.9-internal-dashboard` are deleted, and
+the M3.9 feature-branch lifecycle is CLOSED. Full M3.9 Internal Dashboard is
+complete and closed. The Admin Shell design-adjustment checkpoint is `NO
+CHANGE REQUIRED` for the reviewed M3.9 baseline. M3.10 Redirect Manager
+preparation is next and NOT STARTED.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1153,10 +1159,12 @@ documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
 WU1–WU4 are complete and integrated into `main` by fast-forward with no merge
-commit. The retained `feature/m3.9-internal-dashboard` branch is the completed
-implementation branch; the Admin Shell design-adjustment checkpoint is `NO
-CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not
-started.
+commit. M3.9 feature containment is complete; local and remote
+`feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch
+lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
+Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
+reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT
+STARTED.
 
 #### Deferred Item — DI-M3.8-WU6-01
 
@@ -1241,10 +1249,12 @@ post-merge documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
 WU1–WU4 are complete and integrated into `main` by fast-forward with no merge
-commit. The retained `feature/m3.9-internal-dashboard` branch is the completed
-implementation branch; the Admin Shell design-adjustment checkpoint is `NO
-CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not
-started. Release, tag, and publication remain separately authorized.
+commit. M3.9 feature containment is complete; local and remote
+`feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch
+lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
+Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
+reviewed M3.9 baseline. M3.10 Redirect Manager preparation is next and NOT
+STARTED. Release, tag, and publication remain separately authorized.
 The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.
