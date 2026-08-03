@@ -636,7 +636,11 @@ M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
 Current active work unit: NONE
 Current active implementation branch: NONE
-Post-M3 next target: NOT SELECTED
+Selected Post-M3 platform-foundation target: Package Lifecycle & Migration Foundation
+Preparation status: ADOPTED — DOCUMENTATION ONLY
+Foundation scope: Webcore + independently distributed Module packages
+Current delivery slice: Webcore first
+Module package lifecycle: ARCHITECTURAL TARGET ONLY — LATER SLICE
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED
@@ -645,6 +649,13 @@ Publication: NOT STARTED
 M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
 an automatically sequential execution order. Future work is selected by actual
 product need, dependency, readiness, risk, and architecture boundary.
+
+The selected Post-M3 platform-foundation target is Package Lifecycle & Migration
+Foundation. Its preparation contract is
+`docs/28_package_lifecycle_migration_foundation_contract.md`. This selection
+does not assign an authoritative milestone number. The contract is preparation
+and documentation only; implementation is not started. Backup & Recovery is a
+separate platform capability and production-closure dependency.
 
 ### Post-M3 lifecycle classification
 
@@ -892,9 +903,18 @@ Post-M3.1 Roadmap Sync is complete. It preserves the approved M3 sequence, locks
 
 #### Database Upgrade / Migration System Checkpoint
 
-Status: planned. Concept: locked. Implementation: not started and excluded from M3.2.
+Status: superseded as an unselected M3 checkpoint. The Package Lifecycle &
+Migration Foundation preparation contract is adopted in
+`docs/28_package_lifecycle_migration_foundation_contract.md`; implementation is
+not started and no milestone number is assigned.
 
-Fresh installs use the canonical `database/schema.sql`; existing installations currently use ordered SQL artifacts in `database/upgrades/`. The planned system will own ordered execution, migration history, idempotency, explicit failure behavior, supported transaction boundaries, and clear Core/module migration ownership. Implement it before a milestone introduces the second cross-module upgrade dependency or before a third independently ordered upgrade artifact is accepted, whichever comes first.
+Fresh installs use the canonical `database/schema.sql`; existing installations
+currently use ordered SQL artifacts in `database/upgrades/`. Those artifacts are
+inputs and evidence, not a migration system. The adopted foundation will define
+ordered execution, durable migration history, idempotency, explicit failure and
+retry behavior, supported transaction boundaries, and Webcore-owned Core
+migration ownership. Module package lifecycle remains a later architectural
+slice.
 
 #### Admin UX Refinement 1
 

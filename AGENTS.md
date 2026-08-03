@@ -5,7 +5,7 @@
 **copot**
 
 The long milestone narrative below preserves earlier checkpoint context. The
-current M3.11 lifecycle state is recorded in the authoritative paragraph that
+current post-M3 lifecycle state is recorded in the authoritative paragraph that
 follows it.
 
 M3.6 Navigation Manager WU1–WU6 are complete. WU6 security closure passed 15 assertions at `62a2dfb892f06005644c82cba1015ed5dc71b0e7` (`test(m3.6): close navigation security gate`); the final feature-branch documentation correction is `8deb4f67d47f476e254b36e3802bd250e393921d` (`docs(m3.6): correct WU6 security closure anchor`). M3.6 was fast-forward integrated into `main` at `8deb4f67d47f476e254b36e3802bd250e393921d` with no merge commit; the feature branch lifecycle is closed and local/remote `main` are synchronized. Full M3.6 Navigation Manager is complete. M3.7 WU1–WU6 are complete, objectively accepted, and fast-forward integrated into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea`; feature containment and local/remote feature-branch cleanup passed. Reachable browser and human presentation review passed, with only the real-settings Theme Settings/color-control spot-check deferred non-blockingly because the bundled Default Theme declares no settings. Full M3.7 is complete. Theme-specific feature configuration belongs to Theme Manager; global feature or content-domain expansion remains outside M3.7. ZIP installation, marketplace, uninstall, Media Library, page building, Custom CSS, and related excluded capabilities remain outside M3.7. Release, tag, and publication remain not started and separately authorized. The contracts are `docs/22_m3_6_navigation_manager_contract.md` and `docs/23_m3_7_theme_manager_contract.md`.
@@ -26,7 +26,11 @@ M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
 Current active work unit: NONE
 Current active implementation branch: NONE
-Post-M3 next target: NOT SELECTED
+Selected Post-M3 platform-foundation target: Package Lifecycle & Migration Foundation
+Preparation status: ADOPTED — DOCUMENTATION ONLY
+Foundation scope: Webcore + independently distributed Module packages
+Current delivery slice: Webcore first
+Module package lifecycle: ARCHITECTURAL TARGET ONLY — LATER SLICE
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED
@@ -37,6 +41,9 @@ an automatically sequential execution order. Future work is selected by actual
 product need, dependency, readiness, risk, and architecture boundary.
 Post-M3 lifecycle classification is defined in `docs/03_roadmap.md`: re-open
 for invalid closure, MT.x for maintenance, and MR.x for eligible refinement.
+The adopted Package Lifecycle & Migration Foundation preparation contract is
+`docs/28_package_lifecycle_migration_foundation_contract.md`. It does not assign
+an authoritative milestone number and authorizes no implementation.
 
 Older detailed phase and sequencing paragraphs below are retained historical
 context and do not declare a current active phase or next target.
