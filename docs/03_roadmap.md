@@ -516,6 +516,8 @@ authorization, and an `Unscheduled` target does not create future scope.
 | `DI-M3.7-WU5-01` — Real-settings Theme Settings and color-control spot-check | M3.7 WU5 | Theme validation review | Deferred | Unscheduled |
 | `DI-M3.8-WU6-01` — Further Media Manager visual/presentation refinement | M3.8 WU6 | Presentation refinement | Deferred | Unscheduled |
 | `DI-M3.9-01` — User-customizable Dashboard layout | M3.9 Internal Dashboard preparation | Dashboard capability set | Deferred | Unscheduled |
+| `DI-M3.9-02` — Admin Media CSS token normalization | M3.9 WU4 affected Admin regression audit | Design-system technical debt | Deferred | Unscheduled |
+| `DI-M3.9-03` — Admin UI Batch 4 regression-contract modernization | M3.9 WU4 affected Admin regression audit | Regression-test contract debt | Deferred | Unscheduled |
 
 ### Asset Terminology
 
@@ -964,10 +966,11 @@ These checkpoints are horizontal design-governance work units and are not includ
 Current authoritative state: M3.8 WU1–WU7 and full M3.8 are complete and
 closed on `main`; post-merge documentation closure, verified containment, and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
-WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard`
-branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
-for the current baseline. Integration to `main` remains separately
-authorized.
+WU1–WU4 are complete and integrated into `main` by fast-forward with no merge
+commit. The retained `feature/m3.9-internal-dashboard` branch is the completed
+implementation branch; the Admin Shell design-adjustment checkpoint is `NO
+CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not
+started.
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
@@ -981,11 +984,12 @@ complete and fast-forward integrated into `main` at
 documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
-WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard`
-branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
-for the current baseline. Integration to `main` remains separately
-authorized. Further Media Manager visual refinement remains Deferred /
-Unscheduled and non-blocking.
+WU1–WU4 are complete and integrated into `main` by fast-forward with no merge
+commit. The retained `feature/m3.9-internal-dashboard` branch is the completed
+implementation branch; the Admin Shell design-adjustment checkpoint is `NO
+CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not
+started. Further Media Manager visual refinement remains Deferred / Unscheduled
+and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.
 
@@ -1073,10 +1077,11 @@ started. M3.8 WU1–WU7 are complete and fast-forward integrated into `main` at
 documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`, verified containment and
 local/remote feature-branch deletion are complete, and the authoritative
-branch is `main`. M3.9 Internal Dashboard WU1–WU4 are complete on the
-contained `feature/m3.9-internal-dashboard` branch; the Admin Shell
-design-adjustment checkpoint is `NO CHANGE REQUIRED` for the current baseline.
-Integration to `main` remains separately authorized.
+branch is `main`. M3.9 Internal Dashboard WU1–WU4 are complete and integrated
+into `main` by fast-forward with no merge commit. The retained
+`feature/m3.9-internal-dashboard` branch is the completed implementation
+branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
+for the current baseline. M3.10 preparation is next and not started.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1147,10 +1152,11 @@ complete; full M3.8 was fast-forward integrated into `main` at
 documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
-WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard`
-branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
-for the current baseline. Integration to `main` remains separately
-authorized.
+WU1–WU4 are complete and integrated into `main` by fast-forward with no merge
+commit. The retained `feature/m3.9-internal-dashboard` branch is the completed
+implementation branch; the Admin Shell design-adjustment checkpoint is `NO
+CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not
+started.
 
 #### Deferred Item — DI-M3.8-WU6-01
 
@@ -1182,6 +1188,37 @@ authorized.
 - **Revisit trigger:** A stable baseline Dashboard composition plus a concrete
   requirement for persistent user customization.
 
+#### Deferred Item — DI-M3.9-02
+
+- **Title:** Admin Media CSS token normalization
+- **Status:** Deferred
+- **Target:** Unscheduled
+- **Source:** M3.9 WU4 affected Admin regression audit
+- **Classification:** Design-system technical debt; non-fatal and non-blocking.
+- **Detail:** Admin UI Batch 2 detects hardcoded Media/Media-picker color values
+  outside the Admin design-token definitions.
+- **Impact:** Design-system consistency and maintainability; future Admin
+  color/theme changes may not propagate consistently.
+- **Revisit trigger:** Future work materially touching Admin design tokens,
+  Admin visual-system normalization, Media Admin presentation, or Admin
+  baseline remediation.
+
+#### Deferred Item — DI-M3.9-03
+
+- **Title:** Admin UI Batch 4 regression-contract modernization
+- **Status:** Deferred
+- **Target:** Unscheduled
+- **Source:** M3.9 WU4 affected Admin regression audit
+- **Classification:** Stale regression-test contract; non-fatal and non-blocking.
+- **Detail:** The older Batch 4 guard prohibits JavaScript in Content Admin
+  views, but M3.8 legitimately introduced the approved Content contextual
+  Media-picker script.
+- **Impact:** Persistent false-negative regression signal and reduced trust in
+  the Admin regression baseline.
+- **Revisit trigger:** Future work materially touching the Content Media
+  picker, Admin regression-suite maintenance, Content Admin presentation, or
+  Admin baseline remediation.
+
 M3.8 initial clarification and preparation audit are complete. WU1–WU4
 are accepted predecessors, implemented, focused-validated, and durably
 delivered on `main`; WU4 is complete. WU5
@@ -1203,10 +1240,11 @@ M3.8 is complete and was fast-forward integrated into `main` at
 post-merge documentation closure was recorded at
 `e21e7b281fecdb7619022be0457381a5ce31ce85`; verified containment and
 local/remote feature-branch deletion are complete. M3.9 Internal Dashboard
-WU1–WU4 are complete on the contained `feature/m3.9-internal-dashboard`
-branch; the Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`
-for the current baseline. Integration to `main` remains separately
-authorized. Release, tag, and publication remain separately authorized.
+WU1–WU4 are complete and integrated into `main` by fast-forward with no merge
+commit. The retained `feature/m3.9-internal-dashboard` branch is the completed
+implementation branch; the Admin Shell design-adjustment checkpoint is `NO
+CHANGE REQUIRED` for the current baseline. M3.10 preparation is next and not
+started. Release, tag, and publication remain separately authorized.
 The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.

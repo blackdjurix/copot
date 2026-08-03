@@ -28,8 +28,17 @@ COMPLETE
 M3.9 implementation:
 COMPLETE
 
+Full M3.9 Internal Dashboard:
+COMPLETE
+
 Admin Shell design-adjustment checkpoint:
 NO CHANGE REQUIRED
+
+M3.9 integration:
+FAST-FORWARD INTO `main`
+
+Next target:
+M3.10 preparation — NOT STARTED
 
 M3.9 implementation branch:
 `feature/m3.9-internal-dashboard`
@@ -397,8 +406,9 @@ architecture, or manager behavior changes.
 
 ## Deferred Item dispositions
 
-No Deferred Item is adopted for M3.9 preparation. Registry status and target
-remain unchanged.
+No Deferred Item is adopted into M3.9 implementation scope. Existing registry
+status and target remain unchanged; the two post-merge baseline debts below
+are recorded as Deferred / Unscheduled outside M3.9 scope.
 
 | Item | Disposition | M3.9 finding |
 |---|---|---|
@@ -408,6 +418,8 @@ remain unchanged.
 | `DI-M3.6-01` | NOT APPLICABLE | No dashboard dependency. |
 | `DI-M3.5-01` | NOT APPLICABLE | No dashboard dependency. |
 | M2.3 branding/theme presentation deferrals | NOT APPLICABLE | Dashboard remains independent of frontend Theme and branding expansion. |
+| `DI-M3.9-02` | KEEP DEFERRED | Admin Media CSS token normalization is non-fatal baseline design-system debt. |
+| `DI-M3.9-03` | KEEP DEFERRED | Admin UI Batch 4 regression-contract modernization is non-fatal baseline test debt. |
 
 ### Deferred Item — DI-M3.9-01
 
@@ -422,6 +434,37 @@ remain unchanged.
 - **Impact:** Non-blocking for the M3.9 baseline.
 - **Revisit trigger:** A stable baseline Dashboard composition plus a concrete
   requirement for persistent user customization.
+
+### Deferred Item — DI-M3.9-02
+
+- **Title:** Admin Media CSS token normalization
+- **Status:** Deferred
+- **Target:** Unscheduled
+- **Source:** M3.9 WU4 affected Admin regression audit
+- **Classification:** Design-system technical debt; non-fatal and non-blocking.
+- **Detail:** Admin UI Batch 2 detects hardcoded Media/Media-picker color values
+  outside the Admin design-token definitions.
+- **Impact:** Design-system consistency and maintainability; future Admin
+  color/theme changes may not propagate consistently.
+- **Revisit trigger:** Future work materially touching Admin design tokens,
+  Admin visual-system normalization, Media Admin presentation, or Admin
+  baseline remediation.
+
+### Deferred Item — DI-M3.9-03
+
+- **Title:** Admin UI Batch 4 regression-contract modernization
+- **Status:** Deferred
+- **Target:** Unscheduled
+- **Source:** M3.9 WU4 affected Admin regression audit
+- **Classification:** Stale regression-test contract; non-fatal and non-blocking.
+- **Detail:** The older Batch 4 guard prohibits JavaScript in Content Admin
+  views, but M3.8 legitimately introduced the approved Content contextual
+  Media-picker script.
+- **Impact:** Persistent false-negative regression signal and reduced trust in
+  the Admin regression baseline.
+- **Revisit trigger:** Future work materially touching the Content Media
+  picker, Admin regression-suite maintenance, Content Admin presentation, or
+  Admin baseline remediation.
 
 ## Validation and acceptance strategy
 
@@ -452,18 +495,18 @@ feature/m3.9-internal-dashboard
 ```
 
 The WU1 implementation branch is
-`feature/m3.9-internal-dashboard`. It remains the contained implementation
-branch for the completed M3.9 work; no merge to `main` is authorized by this
-contract. Any later implementation branch must branch from the then-current
-verified preparation-complete `main` anchor; this contract does not authorize
-branching from an obsolete historical commit.
+`feature/m3.9-internal-dashboard`. It remains retained after the completed
+M3.9 work, which is integrated into `main` by fast-forward with no merge
+commit. Any later implementation branch must branch from the then-current
+verified `main` anchor; this contract does not authorize branching from an
+obsolete historical commit.
 
 ## Documentation and closure
 
 M3.9 implementation preserves the four-domain-unit accounting and the
 separate Admin Shell checkpoint. WU1–WU4 are complete, the current-baseline
-checkpoint result is `NO CHANGE REQUIRED`, and the feature branch remains
-contained pending separately authorized integration. Any future requirement
+checkpoint result is `NO CHANGE REQUIRED`, and the completed implementation is
+integrated into `main` by fast-forward with the feature branch retained. Any future requirement
 for schema, provisioning, generic Core capability, new permission semantics,
 or a materially different ownership boundary requires a separately reviewed
 decision before scope is expanded.
