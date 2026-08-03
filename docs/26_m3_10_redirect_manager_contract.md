@@ -10,26 +10,30 @@ not authorize runtime release, tag, merge, or publication work.
 M3.9 Internal Dashboard:
 COMPLETE AND CLOSED
 
-M3.10 preparation:
-LOCKED
+M3.10 Redirect Manager:
+COMPLETE AND CLOSED
 
-M3.10 WU1:
-COMPLETE ON feature/m3.10-redirect-manager
+WU1–WU4:
+COMPLETE
 
-M3.10 WU2:
-COMPLETE ON feature/m3.10-redirect-manager
+Admin Shell design-adjustment checkpoint:
+NO CHANGE REQUIRED
 
-M3.10 WU3:
-COMPLETE ON feature/m3.10-redirect-manager
+Integration:
+FAST-FORWARD INTEGRATED INTO main at 5181b45c7107f4b324f68ed02958623b69e2e5a5
 
-M3.10 WU4:
-COMPLETE ON feature/m3.10-redirect-manager
+Feature containment:
+VERIFIED
+
+Feature branch lifecycle:
+CLOSED; local and remote feature/m3.10-redirect-manager ABSENT
+
+Next milestone:
+M3.11 Form Manager preparation — NOT STARTED
 ```
 
 The separate Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`.
-Full M3.10 implementation is complete and technically merge-ready on the
-feature branch. The feature remains unmerged; containment, branch closure,
-release, tag, and publication are not started.
+Release, tag, and publication remain not started and separately authorized.
 
 The authoritative repository baseline for this implementation branch is
 `main` at `022a2084f9b9202eb2316107b189ebfc914ca4f6`:
@@ -40,7 +44,8 @@ docs(m3.10): lock redirect manager preparation
 
 ## WU1 implementation state
 
-WU1 is complete on `feature/m3.10-redirect-manager`. Core now exposes the
+WU1 was completed during feature implementation and is now integrated into
+`main`. Core now exposes the
 typed `Router::dispatchResult()` boundary and the single
 `UnresolvedRouteResolver` seam. Exact and pattern routes, including
 handler-generated 404 responses, are reported as matched and cannot fall
@@ -54,7 +59,8 @@ invariant.
 
 ## WU2 implementation state
 
-WU2 is complete on `feature/m3.10-redirect-manager`. The `redirects` module
+WU2 was completed during feature implementation and is now integrated into
+`main`. The `redirects` module
 provides the Redirect entity, repository, transactional lifecycle service,
 stale-write protection using `updated_at`, persisted one-hop source/target
 conflict checks, and the production `UnresolvedRouteResolver` contribution.
@@ -454,7 +460,8 @@ and release/tag/publication.
 
 ## WU4 closure evidence
 
-WU4 is complete on `feature/m3.10-redirect-manager`. The focused closure suite
+WU4 was completed during feature implementation and is now integrated into
+`main`. The focused closure suite
 covers end-to-end unmatched-GET resolution, exact/pattern and handler-404
 precedence, 301/302 internal and external targets, configured Admin and other
 reserved namespaces, disabled-module fail-closed behavior, one-hop protection,
@@ -464,10 +471,9 @@ baseline module activation, and Admin workspace. Package build evidence is
 `copot-v0.12.0.zip` with 339 files.
 
 Content historical-slug redirects remain deferred. Navigation and Dashboard
-integration remain not applicable. Full M3.10 implementation is complete on
-the feature branch and technically ready for a separately authorized merge;
-it is not integrated into `main`, its feature branch is not closed, and
-release, tag, and publication remain not started.
+integration remain not applicable. Full M3.10 is fast-forward integrated into
+`main`; containment is verified and the local/remote feature branch lifecycle
+is closed. Release, tag, and publication remain not started.
 
 ## AI and human acceptance
 
@@ -484,6 +490,7 @@ human acceptance.
 ## Preparation closure and implementation entry
 
 Preparation closure and implementation entry are historical preparation gates.
-WU1–WU4 are complete on the feature branch. The separate Admin Shell
-design-adjustment checkpoint is `NO CHANGE REQUIRED`; M3.10 is technically
-merge-ready but remains unmerged, unreleased, untagged, and unpublished.
+WU1–WU4 are complete; M3.10 is fast-forward integrated into `main` and its
+feature branch lifecycle is closed. The separate Admin Shell design-adjustment
+checkpoint is `NO CHANGE REQUIRED`; M3.11 Form Manager preparation is next
+and not started. Release, tag, and publication remain separately authorized.

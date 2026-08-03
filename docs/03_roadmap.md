@@ -972,12 +972,15 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU4 are COMPLETE on
-`feature/m3.10-redirect-manager`; its Admin Shell design-adjustment checkpoint
-is `NO CHANGE REQUIRED`; full M3.10 implementation is technically merge-ready
-but remains unmerged. Content historical-slug redirects remain deferred;
-Navigation and Dashboard integration remain not applicable; release, tag, and
-publication remain separately authorized.
+`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU4 are COMPLETE AND
+CLOSED, fast-forward integrated into `main` at
+`5181b45c7107f4b324f68ed02958623b69e2e5a5`; containment is VERIFIED, its
+feature-branch lifecycle is CLOSED, and local/remote
+`feature/m3.10-redirect-manager` are deleted. Its Admin Shell
+design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
+redirects remain deferred; Navigation and Dashboard integration remain not
+applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+tag, and publication remain separately authorized.
 
 M3.7 Work Units 1–6 are complete and integrated into `main` at
 `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge
@@ -997,12 +1000,15 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU4 are COMPLETE on
-`feature/m3.10-redirect-manager`; its Admin Shell design-adjustment checkpoint
-is `NO CHANGE REQUIRED`; full M3.10 implementation is technically merge-ready
-but remains unmerged. Content historical-slug redirects remain deferred;
-Navigation and Dashboard integration remain not applicable; release, tag, and
-publication remain separately authorized. Further Media Manager visual refinement remains Deferred / Unscheduled and non-blocking.
+`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU4 are COMPLETE AND
+CLOSED, fast-forward integrated into `main` at
+`5181b45c7107f4b324f68ed02958623b69e2e5a5`; containment is VERIFIED, its
+feature-branch lifecycle is CLOSED, and local/remote
+`feature/m3.10-redirect-manager` are deleted. Its Admin Shell
+design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
+redirects remain deferred; Navigation and Dashboard integration remain not
+applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+tag, and publication remain separately authorized. Further Media Manager visual refinement remains Deferred / Unscheduled and non-blocking.
 Older M3.7 preparation
 checkpoint statements below are historical.
 
@@ -1097,11 +1103,14 @@ complete; local and remote `feature/m3.9-internal-dashboard` are deleted, and
 the M3.9 feature-branch lifecycle is CLOSED. Full M3.9 Internal Dashboard is
 complete and closed. The Admin Shell design-adjustment checkpoint is `NO
 CHANGE REQUIRED` for the reviewed M3.9 baseline. M3.10 Redirect Manager
-WU1–WU4 are COMPLETE on `feature/m3.10-redirect-manager`; its Admin Shell
-design-adjustment checkpoint is `NO CHANGE REQUIRED`; full M3.10
-implementation is technically merge-ready but remains unmerged. Content
-historical-slug redirects remain deferred; Navigation and Dashboard integration
-remain not applicable; release, tag, and publication remain separately authorized.
+WU1–WU4 are COMPLETE AND CLOSED, fast-forward integrated into `main` at
+`5181b45c7107f4b324f68ed02958623b69e2e5a5`; containment is VERIFIED, its
+feature-branch lifecycle is CLOSED, and local/remote
+`feature/m3.10-redirect-manager` are deleted. Its Admin Shell
+design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
+redirects remain deferred; Navigation and Dashboard integration remain not
+applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+tag, and publication remain separately authorized.
 
 Content and Taxonomy are evolved before Navigation so resolver integration can be proven against real domain owners. Theme Manager follows Navigation so presentation management can consume a stable navigation contract. Media Library follows those consumers so general media behavior is driven by proven need instead of hypothetical platform expansion.
 
@@ -1178,12 +1187,15 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU4 are COMPLETE on
-`feature/m3.10-redirect-manager`; its Admin Shell design-adjustment checkpoint
-is `NO CHANGE REQUIRED`; full M3.10 implementation is technically merge-ready
-but remains unmerged. Content historical-slug redirects remain deferred;
-Navigation and Dashboard integration remain not applicable; release, tag, and
-publication remain separately authorized.
+`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU4 are COMPLETE AND
+CLOSED, fast-forward integrated into `main` at
+`5181b45c7107f4b324f68ed02958623b69e2e5a5`; containment is VERIFIED, its
+feature-branch lifecycle is CLOSED, and local/remote
+`feature/m3.10-redirect-manager` are deleted. Its Admin Shell
+design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
+redirects remain deferred; Navigation and Dashboard integration remain not
+applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+tag, and publication remain separately authorized.
 
 #### Deferred Item — DI-M3.8-WU6-01
 
@@ -1273,12 +1285,15 @@ commit. M3.9 feature containment is complete; local and remote
 lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The
 Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the
 reviewed M3.9 baseline. M3.10 Redirect Manager preparation is LOCKED in
-`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU4 are COMPLETE on
-`feature/m3.10-redirect-manager`; its Admin Shell design-adjustment checkpoint
-is `NO CHANGE REQUIRED`; full M3.10 implementation is technically merge-ready
-but remains unmerged. Content historical-slug redirects remain deferred;
-Navigation and Dashboard integration remain not applicable; release, tag, and
-publication remain separately authorized.
+`docs/26_m3_10_redirect_manager_contract.md`; WU1–WU4 are COMPLETE AND
+CLOSED, fast-forward integrated into `main` at
+`5181b45c7107f4b324f68ed02958623b69e2e5a5`; containment is VERIFIED, its
+feature-branch lifecycle is CLOSED, and local/remote
+`feature/m3.10-redirect-manager` are deleted. Its Admin Shell
+design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug
+redirects remain deferred; Navigation and Dashboard integration remain not
+applicable. M3.11 Form Manager preparation is next and NOT STARTED. Release,
+tag, and publication remain separately authorized.
 The
 authoritative preparation contract is
 `docs/24_m3_8_media_library_contract.md`.

@@ -43,7 +43,8 @@ COMPLETE
 M3.9 feature-branch lifecycle:
 CLOSED; local and remote `feature/m3.9-internal-dashboard` DELETED
 
-Next target:
+Historical next-target checkpoint at M3.9 closure (superseded by the current
+M3.10 post-merge closure record):
 M3.10 preparation — NOT STARTED
 
 ```
