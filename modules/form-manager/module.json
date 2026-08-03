@@ -1,0 +1,14 @@
+{
+  "name": "form-manager",
+  "title": "Form Manager",
+  "description": "Reusable form definitions and retained submission records.",
+  "version": "0.1.0",
+  "author": "Copot",
+  "requires": { "modules": [] },
+  "permissions": [
+    { "slug": "forms.view", "name": "View forms" },
+    { "slug": "forms.manage", "name": "Manage forms" },
+    { "slug": "forms.submissions.view", "name": "View form submissions" },
+    { "slug": "forms.submissions.delete", "name": "Delete form submissions" }
+  ]
+}

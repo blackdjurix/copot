@@ -618,6 +618,11 @@ The approved implementation sequence is:
 | M3.10 | Redirect Manager | 4 | Medium |
 | M3.11 | Form Manager | 7 | Very High |
 
+M3.11 Form Manager preparation is LOCKED. WU1 — Persistence, Provisioning,
+and Domain Services — is COMPLETE; M3.11 implementation is IN PROGRESS, WU2
+is NOT STARTED, and full M3.11 is NOT COMPLETE. WU1 added no public rendering,
+Admin UI, rate-limit persistence, or cross-module integration.
+
 Total planning envelope: 59 domain implementation batches. This count is the approved M3.1–M3.11 domain-batch planning envelope and does not count the horizontal M3.R1 Admin Shell Retouch 1 work unit or the required Admin Shell design-adjustment checkpoints attached to M3.5–M3.11. Those design work units are governed separately and do not silently renumber the milestone batch envelopes.
 
 The batch envelope is a planning boundary, not an immutable implementation count. Before each milestone begins, a focused milestone preparation step must audit the current repository state, completed dependencies, newly proven consumers, and active risks, then lock the exact batch breakdown for that milestone.

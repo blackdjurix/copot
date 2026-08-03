@@ -386,6 +386,18 @@ foreach ($mediaSourceOutput as $mediaSource) {
     $assert($contains($mediaSource), 'Package must contain tracked Media runtime file: ' . $mediaSource);
 }
 
+$formManagerSourceOutput = [];
+$formManagerDirectory = new RecursiveDirectoryIterator($basePath . '/modules/form-manager', FilesystemIterator::SKIP_DOTS);
+foreach (new RecursiveIteratorIterator($formManagerDirectory) as $file) {
+    if ($file->isFile()) {
+        $formManagerSourceOutput[] = 'modules/form-manager/' . str_replace('\\', '/', substr($file->getPathname(), strlen($basePath . '/modules/form-manager/')));
+    }
+}
+$assert($formManagerSourceOutput !== [], 'Form Manager runtime inventory must be resolvable.');
+foreach ($formManagerSourceOutput as $formManagerSource) {
+    $assert($contains($formManagerSource), 'Package must contain tracked Form Manager runtime file: ' . $formManagerSource);
+}
+
 foreach ([
     '.env',
     'AGENTS.md',

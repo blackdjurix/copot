@@ -16,6 +16,7 @@ return [
         'modules/taxonomy',
         'modules/media',
         'modules/redirects',
+        'modules/form-manager',
         'public',
         'resources',
         'routes',

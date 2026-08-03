@@ -1,5 +1,12 @@
 # copot
 
+M3.11 Form Manager preparation remains LOCKED. WU1 — Persistence,
+Provisioning, and Domain Services — is COMPLETE on
+`feature/m3.11-form-manager`; M3.11 implementation is IN PROGRESS, WU2 is NOT
+STARTED, and full M3.11 is NOT COMPLETE. WU1 adds only module-local persistence
+and provisioning; no routes, UI, public rendering, rate-limit persistence, or
+cross-module integration was added.
+
 Current M3.8 state: WU1–WU7 are complete and accepted. M3.8 Media Library was fast-forward integrated into `main` at `d5ce5fb32e3f61014e389f6d0634a29985723e09` with no merge commit. The approved Content featured-Media picker, consumer-scoped
 pending preparation and save-time promotion, usage synchronization, unused-only
 Media deletion safety, consumer-owned 16:9 preparation/crop, and processed
@@ -11,11 +18,9 @@ PHP GD is required in the serving PHP runtime for image processing. Further
 Media Manager visual refinement remains Deferred / Unscheduled and non-blocking. WU7 closure evidence covers the genuine pre-M3.8 upgrade path, five-action authorization, package inclusion, and packaged clean-install provisioning. Full M3.8 is complete and closed. M3.9 Internal Dashboard WU1–WU4 are complete and integrated into `main` by fast-forward with no merge commit. M3.9 feature containment is complete; local and remote `feature/m3.9-internal-dashboard` are deleted, and the M3.9 feature-branch lifecycle is CLOSED. Full M3.9 Internal Dashboard is complete and closed. The Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED` for the reviewed M3.9 baseline. M3.10 Redirect Manager WU1–WU4 are COMPLETE AND CLOSED, fast-forward integrated into `main` at `5181b45c7107f4b324f68ed02958623b69e2e5a5`; containment is VERIFIED, its feature-branch lifecycle is CLOSED, and local/remote `feature/m3.10-redirect-manager` are deleted. Its Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`. Content historical-slug redirects remain deferred; Navigation and Dashboard integration remain not applicable. M3.11 Form Manager preparation is LOCKED in `docs/27_m3_11_form_manager_contract.md`; the M3.11 feature branch is CREATED FOR PREPARATION DOCUMENTATION, its current content is PREPARATION DOCUMENTATION ONLY, and implementation is NOT STARTED. M3.11 Work Unit 1 is NOT STARTED. Release, tag, and publication remain separately authorized.
 
 M3.11 Form Manager preparation is LOCKED in
-`docs/27_m3_11_form_manager_contract.md`. M3.11 implementation is NOT STARTED,
-the M3.11 feature branch is CREATED FOR PREPARATION DOCUMENTATION, its content
-is PREPARATION DOCUMENTATION ONLY, M3.11 Work Unit 1 is NOT STARTED, and full
-M3.11 is NOT STARTED. Release, tag, and publication remain
-separately authorized.
+`docs/27_m3_11_form_manager_contract.md`. WU1 is COMPLETE, implementation is
+IN PROGRESS, WU2 is NOT STARTED, and full M3.11 is NOT COMPLETE. Release, tag,
+and publication remain separately authorized.
 
 ## Current M3.7 post-merge state
 

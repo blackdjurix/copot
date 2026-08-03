@@ -2,9 +2,9 @@
 
 ## Purpose and status
 
-This document locks the M3.11 Form Manager preparation contract. It authorizes
-no implementation, schema, package, runtime, release, tag, merge, or
-publication work.
+This document locks the M3.11 Form Manager product boundary and records the
+accepted WU1 implementation state. It does not authorize WU2 or later work,
+runtime deployment, release, tag, merge, or publication work.
 
 ```text
 M3.10 Redirect Manager:
@@ -14,26 +14,24 @@ M3.11 Form Manager preparation:
 LOCKED
 
 M3.11 implementation:
-NOT STARTED
+IN PROGRESS
 
 M3.11 feature branch:
-CREATED FOR PREPARATION DOCUMENTATION
-
-Current branch content:
-PREPARATION DOCUMENTATION ONLY
+ACTIVE FOR IMPLEMENTATION
 
 M3.11 Work Unit 1:
+COMPLETE
+
+M3.11 Work Unit 2:
 NOT STARTED
 
 Full M3.11:
-NOT STARTED
+NOT COMPLETE
 ```
 
-`feature/m3.11-form-manager` is the documentation-only preparation branch. It
-contains no implementation changes, and does not start M3.11 implementation.
-
-Preparation documentation is complete and remotely durable. Implementation may
-begin only after explicit authorization.
+Preparation remains locked. WU1 adds only module-local persistence, domain
+services, schema/upgrade convergence, permissions, package inclusion, and
+focused installation evidence. WU2 remains not started.
 
 Release, tag, and publication remain not started and separately authorized.
 
@@ -226,6 +224,14 @@ evidence.
 
 Excludes: Admin presentation, public rendering, notifications, uploads,
 conditional logic, and Dashboard integration.
+
+WU1 is complete. It provides `modules/form-manager` with fixed-vocabulary form
+and submission records, positive identifiers, PDO repositories, bounded
+validators, caller-safe transaction/savepoint services, canonical schema,
+idempotent `m3_11_form_manager.sql` provisioning, permissions and
+Administrator grants, baseline activation, package inclusion, and focused
+domain/provisioning evidence. It adds no routes, UI, public rendering,
+rate-limit persistence, or cross-module integration.
 
 ### WU2 — Admin Form Management Workspace
 
