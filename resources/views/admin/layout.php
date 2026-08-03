@@ -29,7 +29,7 @@ $isAdminRoot = $normalizedCurrentPath !== '' && $normalizedCurrentPath === $norm
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?> | <?= htmlspecialchars($siteName ?? 'copot', ENT_QUOTES, 'UTF-8') ?></title>
-    <link rel="stylesheet" href="/admin-assets/css/admin.css">
+    <link rel="stylesheet" href="/admin-assets/css/admin.css?v=m311-wu3-acceptance">
     <script defer src="/admin-assets/js/admin-shell.js"></script>
 </head>
 <body class="admin-shell-page">

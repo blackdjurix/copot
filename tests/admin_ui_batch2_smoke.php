@@ -160,7 +160,7 @@ try {
     $layout = (string) file_get_contents($layoutFile);
     $login = (string) file_get_contents($loginFile);
 
-    $assert(substr_count($layout, '<link rel="stylesheet" href="/admin-assets/css/admin.css">') === 1, 'Admin Shell must link exactly one Admin CSS asset.');
+    $assert(substr_count($layout, '<link rel="stylesheet" href="/admin-assets/css/admin.css?v=m311-wu3-acceptance">') === 1, 'Admin Shell must link exactly one versioned Admin CSS asset.');
     $assert(substr_count($login, '<link rel="stylesheet" href="/admin-assets/css/admin.css">') === 1, 'Admin login must link exactly one Admin CSS asset.');
     $assert(!str_contains($layout, '<style>'), 'Old large inline stylesheet remains in Admin Shell layout.');
     $assert(!str_contains($login, '<style>'), 'Old large inline stylesheet remains in Admin login.');
