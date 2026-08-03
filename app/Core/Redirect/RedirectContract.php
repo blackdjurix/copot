@@ -10,7 +10,7 @@ final class RedirectContract
 
     public static function source(string $source, string $adminBase = '/admin'): string
     {
-        $normalized = self::normalizePath($source);
+        $normalized = self::canonicalPath($source);
 
         if ($normalized === '/' || str_contains($normalized, '//') || self::containsInvalidCharacters($source) || str_contains($source, '?') || str_contains($source, '#') || str_contains($source, '\\')) {
             throw new InvalidArgumentException('Redirect source must be a non-root path without query, fragment, controls, or backslash.');
@@ -77,14 +77,19 @@ final class RedirectContract
 
         $targetPath = parse_url($target, PHP_URL_PATH) ?: '/';
 
-        if (self::normalizePath($source) === self::normalizePath($targetPath)) {
+        if (self::canonicalPath($source) === self::canonicalPath($targetPath)) {
             throw new InvalidArgumentException('A redirect must not target its own source.');
         }
     }
 
+    public static function canonicalPath(string $path): string
+    {
+        return self::normalizePath($path);
+    }
+
     public static function isReservedSource(string $source, string $adminBase = '/admin'): bool
     {
-        $adminPrefix = self::normalizePath($adminBase);
+        $adminPrefix = self::canonicalPath($adminBase);
         $prefixes = ['/install', $adminPrefix, '/admin-assets', '/theme-assets', '/site-assets', '/content'];
         $exact = ['/login', '/protected'];
 

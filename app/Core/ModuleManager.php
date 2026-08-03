@@ -289,7 +289,7 @@ class ModuleManager
             throw new \RuntimeException("Module [{$module->name()}] path is unavailable.");
         }
 
-        foreach (['routes' => 'route', 'listeners' => 'listener'] as $field => $label) {
+        foreach (['routes' => 'route', 'listeners' => 'listener', 'resolver' => 'resolver'] as $field => $label) {
             $relative = $module->{$field}();
 
             if ($relative === null || $relative === '') {

@@ -17,6 +17,7 @@ require $basePath . '/routes/auth.php';
 require $basePath . '/routes/admin.php';
 
 $app->moduleLoader()->loadListeners($app);
+$app->moduleLoader()->loadResolvers($app);
 $app->moduleLoader()->loadFrontendContextContributors($app);
 $app->moduleLoader()->loadRoutes($app);
 $app->frontendThemeContext()->freeze();

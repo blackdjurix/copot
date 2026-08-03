@@ -15,6 +15,7 @@ return [
         'modules/theme-manager',
         'modules/taxonomy',
         'modules/media',
+        'modules/redirects',
         'public',
         'resources',
         'routes',

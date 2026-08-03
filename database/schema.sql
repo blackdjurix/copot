@@ -76,7 +76,8 @@ INSERT INTO permissions (name, slug, created_at, updated_at) VALUES
     ('Manage role permissions', 'roles.permissions.manage', NOW(), NOW()),
     ('Manage modules', 'modules.manage', NOW(), NOW()),
     ('Manage navigation', 'navigation.manage', NOW(), NOW()),
-    ('Manage themes', 'themes.manage', NOW(), NOW());
+    ('Manage themes', 'themes.manage', NOW(), NOW()),
+    ('Manage redirects', 'redirects.manage', NOW(), NOW());
 
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
@@ -150,6 +151,12 @@ INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
 FROM roles
 INNER JOIN permissions ON permissions.slug = 'themes.manage'
+WHERE roles.slug = 'admin';
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT roles.id, permissions.id
+FROM roles
+INNER JOIN permissions ON permissions.slug = 'redirects.manage'
 WHERE roles.slug = 'admin';
 
 CREATE TABLE settings (
@@ -366,6 +373,16 @@ CREATE TABLE media_usages (
     CONSTRAINT fk_media_usages_media
         FOREIGN KEY (media_id) REFERENCES media(id)
         ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE redirects (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    source_path VARCHAR(512) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+    target VARCHAR(2048) NOT NULL,
+    status_code SMALLINT UNSIGNED NOT NULL DEFAULT 302,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    UNIQUE KEY uq_redirects_source_path (source_path)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO permissions (name, slug, created_at, updated_at)

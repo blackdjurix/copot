@@ -3,8 +3,8 @@
 ## Purpose and status
 
 This document locks the accepted preparation direction for M3.10 Redirect
-Manager and records the completed WU1 implementation boundary. It does not
-authorize WU2–WU4, runtime release, tag, merge, or publication work.
+Manager and records the completed WU1 and WU2 implementation boundaries. It
+does not authorize WU3, WU4, runtime release, tag, merge, or publication work.
 
 ```text
 M3.9 Internal Dashboard:
@@ -16,7 +16,10 @@ LOCKED
 M3.10 WU1:
 COMPLETE ON feature/m3.10-redirect-manager
 
-M3.10 WU2–WU4:
+M3.10 WU2:
+COMPLETE ON feature/m3.10-redirect-manager
+
+M3.10 WU3–WU4:
 NOT STARTED
 ```
 
@@ -39,8 +42,25 @@ fallback; resolver failure or no resolution fails closed to the normal 404.
 The reusable WU1 contract validates canonical source paths, protected
 installer/Admin/asset/Content namespaces, root-relative or absolute http/https
 targets, 301/302 status values with 302 as the default, and the self-redirect
-invariant. It introduces no persistence, schema, repository, permission,
-Admin UI, Content, Navigation, or Dashboard behavior. WU2 is not started.
+invariant.
+
+## WU2 implementation state
+
+WU2 is complete on `feature/m3.10-redirect-manager`. The `redirects` module
+provides the Redirect entity, repository, transactional lifecycle service,
+stale-write protection using `updated_at`, persisted one-hop source/target
+conflict checks, and the production `UnresolvedRouteResolver` contribution.
+The canonical `redirects` table uses a binary-collated, full-unique
+`source_path`; fresh-install schema, idempotent existing-install upgrade,
+`redirects.manage` permission, Administrator mapping, baseline activation, and
+package inclusion are delivered.
+
+The smallest explicit module contribution seam is the enabled-module
+`resolver` metadata field loaded by `ModuleLoader::loadResolvers()`. Core only
+depends on `UnresolvedRouteResolver`; it does not import Redirect persistence.
+No Admin workspace, Admin navigation, Content/Navigation integration,
+Dashboard widget, or WU4 closure behavior is included. WU3 is next and not
+started.
 
 ## Product definition
 
@@ -436,8 +456,6 @@ human acceptance.
 
 ## Preparation closure and implementation entry
 
-Preparation closure requires this contract, focused contract checks,
-`git diff --check`, and a clean synchronized `main`.
-
-Implementation entry requires separate authorization after preparation closure.
-No WU1 implementation begins as part of this contract-lock task.
+Preparation closure and implementation entry are historical preparation gates.
+WU1 and WU2 are complete on the feature branch; WU3 is the next separately
+authorized work unit and WU4 remains not started.

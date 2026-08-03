@@ -15,7 +15,8 @@ class ModuleDefinition
         private ?string $listeners = null,
         private array $requires = [],
         private array $permissions = [],
-        private ?string $frontendContext = null
+        private ?string $frontendContext = null,
+        private ?string $resolver = null
     ) {
     }
 
@@ -64,6 +65,11 @@ class ModuleDefinition
         return $this->frontendContext;
     }
 
+    public function resolver(): ?string
+    {
+        return $this->resolver;
+    }
+
     public function requires(): array
     {
         return $this->requires;
@@ -86,6 +92,7 @@ class ModuleDefinition
             'routes' => $this->routes,
             'listeners' => $this->listeners,
             'frontend_context' => $this->frontendContext,
+            'resolver' => $this->resolver,
             'requires' => $this->requires,
             'permissions' => $this->permissions,
         ];

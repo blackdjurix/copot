@@ -39,6 +39,48 @@ class ModuleLoader
         }
     }
 
+    public function loadResolvers(Application $app): void
+    {
+        $this->errors = [];
+        $discovered = $this->discoveredByName();
+
+        try {
+            $enabled = $this->repository->enabled();
+        } catch (\Throwable) {
+            throw new \RuntimeException('Unable to load enabled module resolver contributions.');
+        }
+
+        foreach ($enabled as $moduleRow) {
+            $name = (string) ($moduleRow['name'] ?? '');
+            $module = $discovered[$name] ?? null;
+
+            if (!$module instanceof ModuleDefinition || $module->resolver() === null) {
+                continue;
+            }
+
+            $modulePath = realpath($module->path());
+            $relative = $module->resolver();
+            $path = $modulePath === false ? '' : $modulePath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $relative);
+            $resolved = $path === '' ? false : realpath($path);
+
+            if ($modulePath === false || $resolved === false || !is_file($resolved) || !$this->isInsideModule($resolved, $modulePath)) {
+                throw new \RuntimeException("Module [{$name}] resolver contribution is unavailable.");
+            }
+
+            try {
+                $resolver = require $resolved;
+            } catch (\Throwable $failure) {
+                throw new \RuntimeException("Module [{$name}] resolver contribution could not be loaded.", 0, $failure);
+            }
+
+            if (!$resolver instanceof UnresolvedRouteResolver) {
+                throw new \RuntimeException("Module [{$name}] resolver contribution must return an UnresolvedRouteResolver.");
+            }
+
+            $app->router()->setUnresolvedRouteResolver($resolver);
+        }
+    }
+
     public function loadRoutes(Application $app): void
     {
         $this->errors = [];
