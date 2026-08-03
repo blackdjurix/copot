@@ -3,8 +3,8 @@
 ## Purpose and status
 
 This document locks the accepted preparation direction for M3.10 Redirect
-Manager and records the completed WU1–WU3 implementation boundaries. It does
-not authorize WU4, runtime release, tag, merge, or publication work.
+Manager and records the completed WU1–WU4 implementation boundaries. It does
+not authorize runtime release, tag, merge, or publication work.
 
 ```text
 M3.9 Internal Dashboard:
@@ -23,8 +23,13 @@ M3.10 WU3:
 COMPLETE ON feature/m3.10-redirect-manager
 
 M3.10 WU4:
-NOT STARTED
+COMPLETE ON feature/m3.10-redirect-manager
 ```
+
+The separate Admin Shell design-adjustment checkpoint is `NO CHANGE REQUIRED`.
+Full M3.10 implementation is complete and technically merge-ready on the
+feature branch. The feature remains unmerged; containment, branch closure,
+release, tag, and publication are not started.
 
 The authoritative repository baseline for this implementation branch is
 `main` at `022a2084f9b9202eb2316107b189ebfc914ca4f6`:
@@ -64,8 +69,8 @@ depends on `UnresolvedRouteResolver`; it does not import Redirect persistence.
 No Admin workspace, Admin navigation, Content/Navigation integration,
 Dashboard widget, or WU4 closure behavior is included. WU3 is complete.
 
-The separate Admin Shell design-adjustment checkpoint is now required before
-WU4/final closure. It has not been run or passed by this implementation.
+The separate Admin Shell design-adjustment checkpoint passed with `NO CHANGE
+REQUIRED` for the reviewed M3.10 Redirect Manager Admin workspace.
 
 ## Product definition
 
@@ -447,6 +452,23 @@ result, documentation closure, and containment readiness.
 It excludes automatic Content redirects, Navigation changes, Dashboard widget,
 and release/tag/publication.
 
+## WU4 closure evidence
+
+WU4 is complete on `feature/m3.10-redirect-manager`. The focused closure suite
+covers end-to-end unmatched-GET resolution, exact/pattern and handler-404
+precedence, 301/302 internal and external targets, configured Admin and other
+reserved namespaces, disabled-module fail-closed behavior, one-hop protection,
+and two-pass existing-install upgrade convergence. Fresh package installation
+also verifies the Redirect Manager table, permission, Administrator grant,
+baseline module activation, and Admin workspace. Package build evidence is
+`copot-v0.12.0.zip` with 339 files.
+
+Content historical-slug redirects remain deferred. Navigation and Dashboard
+integration remain not applicable. Full M3.10 implementation is complete on
+the feature branch and technically ready for a separately authorized merge;
+it is not integrated into `main`, its feature branch is not closed, and
+release, tag, and publication remain not started.
+
 ## AI and human acceptance
 
 AI/objective acceptance covers entity and schema invariants, route precedence,
@@ -462,6 +484,6 @@ human acceptance.
 ## Preparation closure and implementation entry
 
 Preparation closure and implementation entry are historical preparation gates.
-WU1–WU3 are complete on the feature branch; the separate Admin Shell
-design-adjustment checkpoint is required and not yet passed; WU4 remains not
-started.
+WU1–WU4 are complete on the feature branch. The separate Admin Shell
+design-adjustment checkpoint is `NO CHANGE REQUIRED`; M3.10 is technically
+merge-ready but remains unmerged, unreleased, untagged, and unpublished.

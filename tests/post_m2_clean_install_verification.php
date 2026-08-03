@@ -115,6 +115,12 @@ try {
         'bootstrap/app.php',
         'bootstrap/installer.php',
         'database/schema.sql',
+        'database/upgrades/m3_10_redirect_manager.sql',
+        'modules/redirects/module.json',
+        'modules/redirects/resolver.php',
+        'modules/redirects/routes.php',
+        'modules/redirects/views/admin/list.php',
+        'modules/redirects/views/admin/form.php',
         'storage/cache/.gitkeep',
         'storage/logs/.gitkeep',
     ];
@@ -299,7 +305,7 @@ try {
         $connection = $database->connection();
         $assert((int) $connection->query('SELECT COUNT(*) FROM users')->fetchColumn() === 1, 'Installed database must have one first administrator.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM themes WHERE theme_id = 'default' AND is_active = 1")->fetchColumn() === 1, 'Default theme must be active.');
-        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name IN ('content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation', 'theme-manager', 'media') AND status = 'enabled'")->fetchColumn() === 7, 'All seven approved baseline modules must be enabled.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name IN ('content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation', 'theme-manager', 'media', 'redirects') AND status = 'enabled'")->fetchColumn() === 8, 'All eight approved baseline modules must be enabled.');
         foreach (['media', 'media_variants', 'media_usages'] as $mediaTable) {
             $assert((int) $connection->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = " . $connection->quote($mediaTable))->fetchColumn() === 1, 'Fresh schema omitted Media table ' . $mediaTable . '.');
         }
@@ -314,11 +320,16 @@ try {
             FROM module_permissions
             INNER JOIN modules ON modules.name = module_permissions.module_name
             WHERE modules.name = 'module-manager' AND module_permissions.permission_slug = 'modules.manage'")->fetchColumn() === 1, 'Module Manager permission metadata must be registered from its manifest.');
-        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE status = 'enabled' AND name NOT IN ('content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation', 'theme-manager', 'media')")->fetchColumn() === 0, 'Fresh installation must not enable an unrelated module.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE status = 'enabled' AND name NOT IN ('content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation', 'theme-manager', 'media', 'redirects')")->fetchColumn() === 0, 'Fresh installation must not enable an unrelated module.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM permissions WHERE slug = 'themes.manage'")->fetchColumn() === 1, 'Fresh schema omitted themes.manage.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM role_permissions INNER JOIN roles ON roles.id = role_permissions.role_id INNER JOIN permissions ON permissions.id = role_permissions.permission_id WHERE roles.slug = 'admin' AND permissions.slug = 'themes.manage'")->fetchColumn() === 1, 'Fresh schema omitted the admin themes.manage mapping.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name = 'theme-manager' AND status = 'enabled'")->fetchColumn() === 1, 'Theme Manager must be enabled after fresh installation.');
         $assert((int) $connection->query("SELECT COUNT(*) FROM module_permissions WHERE module_name = 'theme-manager' AND permission_slug = 'themes.manage'")->fetchColumn() === 1, 'Theme Manager permission metadata must be registered from its manifest.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE() AND table_name = 'redirects'")->fetchColumn() === 1, 'Fresh schema omitted redirects table.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM permissions WHERE slug = 'redirects.manage'")->fetchColumn() === 1, 'Fresh schema omitted redirects.manage permission.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM role_permissions rp INNER JOIN roles r ON r.id = rp.role_id INNER JOIN permissions p ON p.id = rp.permission_id WHERE r.slug = 'admin' AND p.slug = 'redirects.manage'")->fetchColumn() === 1, 'Fresh schema omitted Administrator redirect grant.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM modules WHERE name = 'redirects' AND status = 'enabled'")->fetchColumn() === 1, 'Redirect Manager must be enabled after fresh installation.');
+        $assert((int) $connection->query("SELECT COUNT(*) FROM module_permissions WHERE module_name = 'redirects' AND permission_slug = 'redirects.manage'")->fetchColumn() === 1, 'Fresh install did not register Redirect Manager permission metadata.');
         $assert($settings->get('site', 'name') === 'Copot D4 Clean Install', 'Initial site name must be persisted.');
 
         $app = require $installTarget . '/bootstrap/app.php';
@@ -353,6 +364,9 @@ try {
 
         $settingsResponse = $app->run(new Copot\Core\Request('GET', '/admin/settings'));
         $assert($responseValue($settingsResponse, 'status') === 200, 'Authenticated Admin settings route must render.');
+
+        $redirectsResponse = $app->run(new Copot\Core\Request('GET', '/admin/redirects'));
+        $assert($responseValue($redirectsResponse, 'status') === 200, 'Authenticated Redirect Manager workspace must render after fresh installation.');
 
         $logoResponse = $app->run(new Copot\Core\Request('GET', '/site-assets/logo'));
         $assert($responseValue($logoResponse, 'status') === 404, 'Missing Logo site asset must return controlled 404.');
