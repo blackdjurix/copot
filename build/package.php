@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+use Copot\Core\PackageContract;
+use Copot\Core\PackageManifestReader;
+use Copot\Core\PackageOwnership;
 use Copot\Core\Version;
 
 $basePath = dirname(__DIR__);
@@ -270,6 +273,8 @@ if (!preg_match('/^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?$/', $version)) {
     fail('invalid Version::CURRENT value: ' . $version);
 }
 
+$sourceTreeIdentity = null;
+
 $distPath = $basePath . DIRECTORY_SEPARATOR . 'dist';
 
 if (!is_dir($distPath) && !mkdir($distPath, 0775, true)) {
@@ -284,20 +289,69 @@ $packageName = 'copot-v' . $version . '.zip';
 $targetPath = $distPath . DIRECTORY_SEPARATOR . $packageName;
 $temporaryPath = $distPath . DIRECTORY_SEPARATOR . '.' . $packageName . '.tmp';
 
-if (file_exists($temporaryPath) && !unlink($temporaryPath)) {
-    fail('unable to remove stale temporary package.');
+/* The manifest is metadata, not package-owned inventory. It is added after
+ * the inventory is calculated so WU7 can remove it before live-tree apply. */
+$inventory = [];
+foreach ($files as $relative => $source) {
+    $size = filesize($source);
+    $sha256 = hash_file('sha256', $source);
+    if (!is_int($size) || !is_string($sha256)) {
+        fail('unable to identify package file: ' . $relative);
+    }
+    $inventory[] = [
+        'path' => normalizePath($relative),
+        'byte_size' => $size,
+        'sha256' => $sha256,
+        'ownership' => PackageOwnership::PACKAGE_OWNED,
+    ];
 }
 
-writeStoredZip($temporaryPath, $files);
+$manifestPath = tempnam(sys_get_temp_dir(), 'copot-package-manifest-');
+if ($manifestPath === false) {
+    fail('unable to prepare package metadata.');
+}
 
-if (file_exists($targetPath) && !unlink($targetPath)) {
+$manifestData = [
+    'package_type' => PackageContract::WEBCORE_PACKAGE_TYPE,
+    'manifest_contract_version' => PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION,
+    'target_webcore_version' => $version,
+    'release_identity' => 'copot-v' . $version,
+    'source_tree_identity' => $sourceTreeIdentity !== '' ? $sourceTreeIdentity : null,
+    'source_compatibility' => ['minimum_source_version' => '0.0.0', 'maximum_source_version' => null],
+    'runtime_compatibility' => [
+        'minimum_php_version' => '8.2.0',
+        'minimum_database_versions' => ['mysql' => '8.0.0'],
+        'required_extensions' => ['json', 'pdo', 'pdo_mysql', 'session', 'filter', 'zip'],
+    ],
+    'inventory' => $inventory,
+    'migration_declaration' => ['declares_core_migrations' => false, 'declaration_identity' => null],
+];
+
+try {
+    $encodedManifest = json_encode($manifestData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . PHP_EOL;
+    if (file_put_contents($manifestPath, $encodedManifest) !== strlen($encodedManifest)) {
+        fail('unable to write package metadata.');
+    }
+    $files[PackageManifestReader::PATH] = $manifestPath;
+    ksort($files, SORT_STRING);
+
+    if (file_exists($temporaryPath) && !unlink($temporaryPath)) {
+    fail('unable to remove stale temporary package.');
+    }
+
+    writeStoredZip($temporaryPath, $files);
+
+    if (file_exists($targetPath) && !unlink($targetPath)) {
     @unlink($temporaryPath);
     fail('unable to replace existing package.');
-}
+    }
 
-if (!rename($temporaryPath, $targetPath)) {
+    if (!rename($temporaryPath, $targetPath)) {
     @unlink($temporaryPath);
     fail('unable to move package into place.');
+    }
+} finally {
+    @unlink($manifestPath);
 }
 
 echo 'Built dist/' . $packageName . ' with ' . count($files) . ' files.' . PHP_EOL;

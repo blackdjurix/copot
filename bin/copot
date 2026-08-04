@@ -1,0 +1,65 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Copot\Core\PackageLifecycleFactory;
+
+require dirname(__DIR__) . '/bootstrap/autoload.php';
+
+function usage(): void
+{
+    fwrite(STDERR, "Usage: bin/copot package:(plan|apply|repair) <zip> [--format=human|json]\n       bin/copot package:status [--format=human|json]\n");
+}
+
+function emit(array $data, string $format, int $code): never
+{
+    if ($format === 'json') {
+        echo json_encode($data, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . PHP_EOL;
+    } else {
+        echo ($data['status'] ?? 'unknown') . ': ' . ($data['reason'] ?? '') . PHP_EOL;
+        if (isset($data['classification']) && $data['classification'] !== null) { echo 'classification: ' . $data['classification'] . PHP_EOL; }
+    }
+    exit($code);
+}
+
+$args = array_slice($argv, 1);
+if ($args === [] || in_array($args[0], ['--help', '-h'], true)) { usage(); exit(2); }
+$command = array_shift($args);
+$format = 'human';
+foreach ($args as $key => $arg) {
+    if (str_starts_with($arg, '--format=')) { $format = substr($arg, 9); unset($args[$key]); continue; }
+    if (str_starts_with($arg, '--')) { usage(); exit(2); }
+}
+if (!in_array($format, ['human', 'json'], true)) { usage(); exit(2); }
+$args = array_values($args);
+$needsZip = in_array($command, ['package:plan', 'package:apply', 'package:repair'], true);
+if (!in_array($command, ['package:plan', 'package:apply', 'package:repair', 'package:status'], true) || count($args) !== ($needsZip ? 1 : 0)) { usage(); exit(2); }
+if ($needsZip && (!is_file($args[0]) || is_link($args[0]) || !is_readable($args[0]))) {
+    emit(['accepted' => false, 'status' => 'invalid_input', 'reason' => 'Local package ZIP path is invalid.'], $format, 2);
+}
+
+try {
+    $service = PackageLifecycleFactory::forProject(dirname(__DIR__));
+    if ($command === 'package:status') {
+        $status = $service->status();
+        emit($status, $format, $status['accepted'] ? 0 : 5);
+    }
+    $result = $command === 'package:plan'
+        ? $service->plan($args[0])
+        : $service->apply($args[0], $command === 'package:repair');
+    $data = $result->toArray();
+    $code = $result->accepted() ? 0 : match ($result->status()) {
+        'rejected', 'invalid_package' => 3,
+        'unavailable' => 7,
+        'blocked', 'cleanup_pending' => 5,
+        default => 8,
+    };
+    emit($data, $format, $code);
+} catch (InvalidArgumentException $exception) {
+    emit(['accepted' => false, 'status' => 'invalid_input', 'reason' => $exception->getMessage()], $format, 2);
+} catch (RuntimeException $exception) {
+    emit(['accepted' => false, 'status' => 'unavailable', 'reason' => $exception->getMessage()], $format, 7);
+} catch (Throwable $exception) {
+    emit(['accepted' => false, 'status' => 'failed', 'reason' => 'Unexpected lifecycle failure.'], $format, 8);
+}

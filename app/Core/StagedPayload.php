@@ -32,6 +32,19 @@ final class StagedPayload
     public function archiveSha256(): string { return $this->archiveSha256; }
     public function files(): array { return array_values($this->files); }
 
+    /** @param list<string> $excludedPaths */
+    public function withoutPaths(array $excludedPaths): self
+    {
+        $excluded = [];
+        foreach ($excludedPaths as $path) {
+            $excluded[ArchiveEntryPath::normalize($path)] = true;
+        }
+
+        $files = array_filter($this->files, static fn (StagedFile $file): bool => !isset($excluded[$file->path()]));
+
+        return new self($this->session, $this->archiveSha256, $files);
+    }
+
     public function cleanup(): void
     {
         $this->session->cleanup();

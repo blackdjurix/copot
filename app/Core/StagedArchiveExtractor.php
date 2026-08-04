@@ -41,7 +41,9 @@ final class StagedArchiveExtractor
                 throw new \RuntimeException('Archive extraction would overwrite an existing path.');
             }
 
-            $input = $archive->getStreamIndex($entry['index']);
+            // WU2 uses entry streams only. getStream() is the portable
+            // ZipArchive API across the supported PHP ext-zip runtimes.
+            $input = $archive->getStream($entry['path']);
             $output = @fopen($destination, 'xb');
 
             if (!is_resource($input) || !is_resource($output)) {
