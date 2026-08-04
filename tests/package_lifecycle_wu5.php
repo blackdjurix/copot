@@ -63,6 +63,7 @@ $stagingRoot = $root . DIRECTORY_SEPARATOR . 'staging';
 $applyRoot = $root . DIRECTORY_SEPARATOR . 'apply';
 mkdir($storage, 0700, true);
 mkdir($stagingRoot, 0700, true);
+mkdir($applyRoot, 0700, true);
 
 try {
     $store = new LifecycleOperationStore($storage);
@@ -101,6 +102,22 @@ try {
         $assert(false, 'Apply temporary root overlapping the live root was accepted.');
     } catch (Throwable) {
         $assert(true, 'Apply temporary root overlapping the live root was rejected.');
+    }
+    try {
+        new PackageOwnedFileApplier($guard, new LiveFileActivationCapability(true, true), $live . DIRECTORY_SEPARATOR . 'temporary');
+        $assert(false, 'Apply temporary root inside the live root was accepted.');
+    } catch (Throwable) {
+        $assert(true, 'Apply temporary root inside the live root was rejected.');
+    }
+    $outerRoot = $root . DIRECTORY_SEPARATOR . 'outer-live-parent';
+    mkdir($outerRoot, 0700);
+    $nestedLive = $outerRoot . DIRECTORY_SEPARATOR . 'live';
+    mkdir($nestedLive, 0700);
+    try {
+        new PackageOwnedFileApplier(new LiveTreePathGuard($nestedLive), new LiveFileActivationCapability(true, true), $outerRoot);
+        $assert(false, 'Apply temporary root containing the live root was accepted.');
+    } catch (Throwable) {
+        $assert(true, 'Apply temporary root containing the live root was rejected.');
     }
     $applier = new PackageOwnedFileApplier($guard, new LiveFileActivationCapability(true, true), $applyRoot);
     $result = $applier->apply($plan);

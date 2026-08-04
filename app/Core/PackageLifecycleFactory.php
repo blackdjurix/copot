@@ -21,7 +21,8 @@ final class PackageLifecycleFactory
         $installationState = new InstallationState($storage);
         $committedStore = new CommittedLifecycleStateStore($storage);
         $migrationRunner = new CoreMigrationRunner($ledger);
-        $applier = new PackageOwnedFileApplier($liveGuard, LiveFileActivationCapability::current(), $storage . DIRECTORY_SEPARATOR . '.copot-apply');
+        $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath);
+        $applier = new PackageOwnedFileApplier($liveGuard, LiveFileActivationCapability::current(), $applyTemporaryRoot);
         $applyCoordinator = new WebcoreApplyCoordinator($mutex, $maintenance, $applier, static function (CoreMigrationPlan $plan) use ($database, $migrationRunner): MigrationRunResult {
             return $migrationRunner->run($database->connection(), $plan);
         });

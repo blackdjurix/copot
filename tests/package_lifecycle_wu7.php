@@ -6,6 +6,8 @@ use Copot\Core\PackageInventoryVerifier;
 use Copot\Core\PackageManifestReader;
 use Copot\Core\PackageLifecycleResult;
 use Copot\Core\PackageLifecycleStatus;
+use Copot\Core\PackageLifecycleFactory;
+use Copot\Core\PackageApplyTemporaryRoot;
 use Copot\Core\InstalledStateInspection;
 use Copot\Core\InstalledStateSnapshot;
 use Copot\Core\InstalledStateStatus;
@@ -37,6 +39,18 @@ $staging = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-wu7-staging-' . bin
 mkdir($staging, 0700, true);
 $payload = null;
 try {
+    $factoryService = PackageLifecycleFactory::forProject($basePath);
+    $assert($factoryService instanceof Copot\Core\PackageLifecycleService, 'Production lifecycle factory could not be constructed.');
+
+    $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath);
+    $canonicalBasePath = realpath($basePath);
+    $assert(is_string($canonicalBasePath) && !str_starts_with($applyTemporaryRoot . DIRECTORY_SEPARATOR, $canonicalBasePath . DIRECTORY_SEPARATOR), 'Factory apply temporary root overlaps the live Webcore root.');
+
+    $otherProject = $staging . DIRECTORY_SEPARATOR . 'other-project';
+    mkdir($otherProject, 0700);
+    $otherApplyTemporaryRoot = PackageApplyTemporaryRoot::forProject($otherProject);
+    $assert($otherApplyTemporaryRoot !== $applyTemporaryRoot, 'Different projects shared an apply temporary namespace.');
+
     $payload = (new ZipIntakeService($basePath, $staging))->intake($package);
     $manifest = (new PackageManifestReader())->read($payload);
     (new PackageInventoryVerifier())->verify($manifest->payload(), $manifest->contract()->inventory());
