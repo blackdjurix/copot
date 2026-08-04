@@ -40,7 +40,7 @@ final class HealthIntegrityCommitCoordinator
             }
 
             if ($record->phase() === LifecycleOperationRecord::CLEANUP_PENDING) {
-                return $this->retryCleanup($record, $package, $operationId);
+                return $this->retryCleanup($record, $package, $applyPlan, $migrationPlan, $connection, $operationId);
             }
             if ($record->phase() !== LifecycleOperationRecord::AWAITING_WU6) {
                 return $this->failure('operation', 'Lifecycle operation is not awaiting WU6.', $operationId);
@@ -94,14 +94,41 @@ final class HealthIntegrityCommitCoordinator
         }
     }
 
-    private function retryCleanup(LifecycleOperationRecord $record, PackageContract $package, string $operationId): HealthIntegrityCommitResult
+    private function retryCleanup(
+        LifecycleOperationRecord $record,
+        PackageContract $package,
+        WebcoreApplyPlan $applyPlan,
+        CoreMigrationPlan $migrationPlan,
+        PDO $connection,
+        string $operationId
+    ): HealthIntegrityCommitResult
     {
-        $state = $this->committedStore->read();
-        if (!$state instanceof CommittedLifecycleState || $state->webcoreVersion() !== $package->targetWebcoreVersion() || $state->releaseIdentity() !== $package->releaseIdentity()) {
-            return $this->failure('cleanup', 'Committed target does not match cleanup-pending operation.', $operationId);
+        try {
+            $identityGates = $this->identityGates($record, $package, $applyPlan, $migrationPlan);
+            $migrationGates = $this->migrationHealth->verify($connection, $this->migrationRegistry, null);
+            $gates = new HealthGateMatrix(array_merge($identityGates->gates(), $migrationGates->gates()));
+            if (!$gates->passed()) {
+                return $this->failure('cleanup', $gates->failureReason(), $operationId, $gates);
+            }
+
+            $state = $this->committedStore->read();
+            $migrationIdentity = $this->migrationHealth->identity($connection);
+            $expectedSchema = $migrationPlan->virtualFinalSchemaIdentity() ?? 'canonical-current';
+            if (!$state instanceof CommittedLifecycleState
+                || $state->webcoreVersion() !== $package->targetWebcoreVersion()
+                || $state->releaseIdentity() !== $package->releaseIdentity()
+                || $state->sourceTreeIdentity() !== $package->sourceTreeIdentity()
+                || $state->manifestContractVersion() !== $package->manifestContractVersion()
+                || $state->schemaStateIdentity() !== $expectedSchema
+                || $state->migrationStateIdentity() !== $migrationIdentity) {
+                return $this->failure('cleanup', 'Committed target does not exactly match the cleanup-pending operation.', $operationId, new HealthGateMatrix([HealthGateResult::fail('committed-target', 'Committed target identity mismatch.')]));
+            }
+
+            $this->maintenance->clear($record->advance(LifecycleOperationRecord::COMPLETED, $record->fileCursor(), $record->lastVerifiedPath()));
+            return new HealthIntegrityCommitResult(HealthIntegrityCommitResult::COMPLETED, $gates, '', $operationId);
+        } catch (\Throwable $exception) {
+            return $this->failure('cleanup', $exception->getMessage(), $operationId);
         }
-        $this->maintenance->clear($record->advance(LifecycleOperationRecord::COMPLETED, $record->fileCursor(), $record->lastVerifiedPath()));
-        return new HealthIntegrityCommitResult(HealthIntegrityCommitResult::COMPLETED, new HealthGateMatrix([HealthGateResult::pass('cleanup-retry')]), '', $operationId);
     }
 
     private function identityGates(LifecycleOperationRecord $record, PackageContract $package, WebcoreApplyPlan $applyPlan, CoreMigrationPlan $migrationPlan): HealthGateMatrix
@@ -118,6 +145,7 @@ final class HealthIntegrityCommitCoordinator
             $record->targetWebcoreVersion() === $package->targetWebcoreVersion() ? HealthGateResult::pass('target-version') : HealthGateResult::fail('target-version', 'Operation target version does not match package.'),
             $record->releaseIdentity() === $package->releaseIdentity() ? HealthGateResult::pass('release-identity') : HealthGateResult::fail('release-identity', 'Operation release identity does not match package.'),
             $record->archiveSha256() === $applyPlan->payload()->archiveSha256() ? HealthGateResult::pass('archive-identity') : HealthGateResult::fail('archive-identity', 'Archive identity does not match operation.'),
+            $record->stagingPath() === $applyPlan->payload()->stagingPath() ? HealthGateResult::pass('staging-identity') : HealthGateResult::fail('staging-identity', 'Staging identity does not match operation.'),
             $record->payloadIdentity() === $payloadIdentity ? HealthGateResult::pass('payload-identity') : HealthGateResult::fail('payload-identity', 'Payload identity does not match operation.'),
             $record->applyPlanIdentity() === $applyPlan->identity() ? HealthGateResult::pass('apply-plan-identity') : HealthGateResult::fail('apply-plan-identity', 'Apply-plan identity does not match operation.'),
             $record->migrationPlanIdentity() === $migrationPlanIdentity ? HealthGateResult::pass('migration-plan-identity') : HealthGateResult::fail('migration-plan-identity', 'Migration-plan identity does not match operation.'),

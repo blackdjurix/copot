@@ -4,13 +4,23 @@ declare(strict_types=1);
 
 use Copot\Core\CommittedLifecycleState;
 use Copot\Core\CommittedLifecycleStateStore;
+use Copot\Core\CoreMigrationHealthVerifier;
+use Copot\Core\CoreMigrationRegistry;
+use Copot\Core\CoreMigrationPlan;
+use Copot\Core\CoreMigrationStateIdentity;
+use Copot\Core\DatabaseHealthVerifier;
 use Copot\Core\ExistingInstallEvidence;
 use Copot\Core\HealthGateMatrix;
 use Copot\Core\InstalledStateInspection;
 use Copot\Core\InstalledStateInspector;
 use Copot\Core\InstalledStateStatus;
 use Copot\Core\InstallationState;
+use Copot\Core\InstallationMutex;
+use Copot\Core\LifecycleOperationRecord;
+use Copot\Core\LifecycleOperationStore;
 use Copot\Core\LiveTreePathGuard;
+use Copot\Core\MaintenanceCoordinator;
+use Copot\Core\MigrationRunResult;
 use Copot\Core\PackageCompatibility;
 use Copot\Core\PackageContract;
 use Copot\Core\PackageInventoryEntry;
@@ -19,7 +29,42 @@ use Copot\Core\PackageOwnership;
 use Copot\Core\PackageRuntimeCompatibility;
 use Copot\Core\RuntimeCompatibilityContext;
 use Copot\Core\RuntimeHealthVerifier;
+use Copot\Core\StagedFile;
+use Copot\Core\StagedPayload;
+use Copot\Core\StagingSession;
 use Copot\Core\TargetPackageIntegrityVerifier;
+use Copot\Core\HealthIntegrityCommitCoordinator;
+use Copot\Core\WebcoreApplyPlan;
+
+final class Wu6FakeStatement
+{
+    public function __construct(private array $rows = [], private mixed $column = null) {}
+    public function fetchAll(...$arguments): array { return $this->rows; }
+    public function fetchColumn(...$arguments): mixed { return $this->column; }
+}
+
+final class Wu6FakePdo extends PDO
+{
+    public function __construct() {}
+    public function query($query, ...$arguments)
+    {
+        if (str_contains($query, 'SELECT 1')) { return new Wu6FakeStatement([], 1); }
+        if (str_contains($query, 'information_schema.tables')) {
+            return new Wu6FakeStatement([
+                'users', 'roles', 'permissions', 'user_roles', 'role_permissions', 'settings',
+                'modules', 'module_permissions', 'themes', 'content', 'taxonomy_types',
+                'taxonomy_terms', 'taxonomy_assignments', 'core_migration_history',
+            ]);
+        }
+        if (str_contains($query, 'DESCRIBE core_migration_history')) {
+            return new Wu6FakeStatement([
+                'migration_id', 'sequence_number', 'target_webcore_version', 'target_schema_identity', 'migration_checksum', 'applied_at',
+            ]);
+        }
+        if (str_contains($query, 'FROM core_migration_history')) { return new Wu6FakeStatement([]); }
+        throw new RuntimeException('Unexpected fake database query: ' . $query);
+    }
+}
 
 $basePath = dirname(__DIR__);
 chdir($basePath);
@@ -99,6 +144,88 @@ try {
     $assert($runtime->passed(), 'Deterministic runtime health checks did not pass.');
     $failedRuntime = (new RuntimeHealthVerifier())->verify(['theme' => static fn (): bool => false]);
     $assert(!$failedRuntime->passed(), 'Failed runtime health check passed.');
+
+    $makeCleanupScenario = static function (array $stateOverrides = []) use ($root): array {
+        $scenario = $root . DIRECTORY_SEPARATOR . 'cleanup-' . bin2hex(random_bytes(4));
+        $storage = $scenario . DIRECTORY_SEPARATOR . 'storage';
+        $live = $scenario . DIRECTORY_SEPARATOR . 'live';
+        $stagingRoot = $scenario . DIRECTORY_SEPARATOR . 'staging';
+        mkdir($storage, 0700, true);
+        mkdir($live . DIRECTORY_SEPARATOR . 'app', 0700, true);
+        mkdir($stagingRoot, 0700, true);
+        file_put_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'target.txt', 'target');
+        $session = StagingSession::create($live, $stagingRoot);
+        mkdir($session->payloadPath(), 0700, true);
+        mkdir($session->payloadPath() . DIRECTORY_SEPARATOR . 'app', 0700, true);
+        file_put_contents($session->payloadPath() . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'target.txt', 'target');
+        $file = new StagedFile('app/target.txt', 6, hash('sha256', 'target'));
+        $payload = new StagedPayload($session, str_repeat('b', 64), [$file]);
+        $applyPlan = WebcoreApplyPlan::fromPayload($payload);
+        $package = new PackageContract(
+            PackageContract::WEBCORE_PACKAGE_TYPE,
+            PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION,
+            '0.12.0',
+            'release-12',
+            'tree-12',
+            new PackageCompatibility('0.0.0'),
+            new PackageRuntimeCompatibility('8.0', ['mysql' => '8.0'], ['json']),
+            [new PackageInventoryEntry('app/target.txt', 6, hash('sha256', 'target'), PackageOwnership::PACKAGE_OWNED)],
+            new PackageMigrationDeclaration(false)
+        );
+        $migrationPlan = CoreMigrationPlan::allow('0.12.0', '0.12.0', 'schema-final', 'schema-final', []);
+        $installation = new InstallationState($storage);
+        $installation->createMarker('0.12.0');
+        $marker = $installation->readMarker();
+        $stateData = [
+            'webcoreVersion' => '0.12.0',
+            'releaseIdentity' => 'release-12',
+            'sourceTreeIdentity' => 'tree-12',
+            'manifestContractVersion' => 1,
+            'schemaStateIdentity' => 'schema-final',
+            'migrationStateIdentity' => CoreMigrationStateIdentity::fromRecords([]),
+        ];
+        foreach ($stateOverrides as $key => $value) { $stateData[$key] = $value; }
+        $committedStore = new CommittedLifecycleStateStore($storage);
+        $committedStore->write(new CommittedLifecycleState(
+            $stateData['webcoreVersion'], $stateData['releaseIdentity'], $stateData['sourceTreeIdentity'],
+            $stateData['manifestContractVersion'], $stateData['schemaStateIdentity'], $stateData['migrationStateIdentity'],
+            new DateTimeImmutable($marker['installed_at'])
+        ));
+        $now = gmdate(DATE_ATOM);
+        $operation = new LifecycleOperationRecord(
+            'cleanup-operation', 'repair', '0.12.0', 'release-12', str_repeat('b', 64), $payload->stagingPath(),
+            hash('sha256', $file->path() . ':' . $file->sha256()), $applyPlan->identity(), LifecycleOperationRecord::CLEANUP_PENDING,
+            1, $file->path(), hash('sha256', ''), MigrationRunResult::NOOP, $now, $now, 'cleanup pending'
+        );
+        $operationStore = new LifecycleOperationStore($storage);
+        $maintenance = new MaintenanceCoordinator($operationStore);
+        $maintenance->enter($operation);
+        $coordinator = new HealthIntegrityCommitCoordinator(
+            new InstallationMutex($storage), $maintenance, $installation, $committedStore,
+            new TargetPackageIntegrityVerifier(), new DatabaseHealthVerifier(), new CoreMigrationHealthVerifier(),
+            new RuntimeHealthVerifier(), new CoreMigrationRegistry('registry', [])
+        );
+        return [$scenario, $coordinator, $package, $applyPlan, $migrationPlan, $live, $maintenance, new Wu6FakePdo()];
+    };
+
+    [$scenario, $coordinator, $package, $applyPlan, $migrationPlan, $live, $maintenance, $connection] = $makeCleanupScenario();
+    $callbackCalls = 0;
+    $result = $coordinator->finalize('cleanup-operation', $package, $applyPlan, $migrationPlan, new LiveTreePathGuard($live), $connection, ['must-not-run' => static function () use (&$callbackCalls): bool { $callbackCalls++; return false; }]);
+    $assert($result->status() === 'completed' && !$maintenance->isActive(), 'Exact cleanup-pending reconciliation did not complete.');
+    $assert($callbackCalls === 0, 'Cleanup retry reran runtime health work.');
+    $remove($scenario);
+
+    foreach ([
+        ['schemaStateIdentity', 'different-schema', 'schema mismatch'],
+        ['migrationStateIdentity', str_repeat('c', 64), 'migration mismatch'],
+        ['sourceTreeIdentity', 'different-tree', 'source-tree mismatch'],
+        ['manifestContractVersion', 2, 'manifest mismatch'],
+    ] as [$field, $value, $label]) {
+        [$scenario, $coordinator, $package, $applyPlan, $migrationPlan, $live, $maintenance, $connection] = $makeCleanupScenario([$field => $value]);
+        $result = $coordinator->finalize('cleanup-operation', $package, $applyPlan, $migrationPlan, new LiveTreePathGuard($live), $connection);
+        $assert($result->status() === 'failed' && $maintenance->isActive(), 'Cleanup ' . $label . ' was accepted.');
+        $remove($scenario);
+    }
 } finally {
     $remove($root);
 }
