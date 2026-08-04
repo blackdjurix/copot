@@ -30,7 +30,7 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: WU3 — Installed-State Registry & Transition Planner (NEXT / NOT STARTED)
+Next work unit: WU4 — Core Migration Registry & Runner (NEXT / NOT STARTED)
 Current active implementation branch: NONE
 Package Lifecycle & Migration Foundation: SELECTED / ACTIVE PLATFORM-FOUNDATION TARGET
 Foundation scope: Webcore + independently distributed Module packages
@@ -43,6 +43,17 @@ payload/inventory verification, and cleanup. Focused WU2 validation passed;
 ext-zip-disabled execution requires a separate executor, and the filesystem
 symlink cleanup fixture was unavailable on Windows. Both limitations are
 non-blocking for the accepted WU2 boundary.
+WU3 — Installed-State Registry & Transition Planner: COMPLETE AND CLOSED
+WU3 delivered a serialization-neutral installed-state status/snapshot model,
+explicit existing-installation evidence inspection, FRESH/LEGACY/COMMITTED/
+INCONSISTENT/INVALID state handling, and one shared INSTALL/PATCH/UPDATE/
+UPGRADE/REPAIR transition planner. It enforces the canonical-current
+fresh-install policy, evaluates source/runtime compatibility, rejects
+downgrades, requires explicit bootstrap for legacy state, and hands opaque
+schema/migration identity information toward WU4. WU3 preserves the exact
+two-field `storage/installed.lock` format and selects no new installed-state
+persistence format. Durable interrupted-operation persistence remains outside
+WU3 and is a later WU5 concern.
 Module package lifecycle: ARCHITECTURAL TARGET ONLY — LATER SLICE
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
@@ -56,8 +67,8 @@ Post-M3 lifecycle classification is defined in `docs/03_roadmap.md`: re-open
 for invalid closure, MT.x for maintenance, and MR.x for eligible refinement.
 The adopted Package Lifecycle & Migration Foundation contract is
 `docs/28_package_lifecycle_migration_foundation_contract.md`. It does not assign
-an authoritative milestone number. WU1 and WU2 are complete and closed; WU3 is
-next and not started. WU3–WU7 remain unimplemented.
+an authoritative milestone number. WU1, WU2, and WU3 are complete and closed;
+WU4 is next and not started. WU4–WU7 remain unimplemented.
 
 Older detailed phase and sequencing paragraphs below are retained historical
 context and do not declare a current active phase or next target.

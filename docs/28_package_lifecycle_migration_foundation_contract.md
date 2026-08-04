@@ -2,9 +2,9 @@
 
 ## Preparation status
 
-Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3–WU7 NOT STARTED
+Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND CLOSED — WU4–WU7 NOT STARTED
 
-Next work unit: WU3 — Installed-State Registry & Transition Planner (NEXT / NOT STARTED)
+Next work unit: WU4 — Core Migration Registry & Runner (NEXT / NOT STARTED)
 
 This document records the selected Post-M3 platform-foundation target and its
 contract. WU1 is limited to serialization-neutral Webcore package-contract
@@ -274,21 +274,34 @@ to exercise the fail-closed capability branch.
 
 ### WU3 — Installed-State Registry & Transition Planner
 
-**Status:** NEXT / NOT STARTED.
+**Status:** COMPLETE AND CLOSED.
 
-**Objective:** Define installed-state inspection and one shared forward
-transition planner.
+**Objective:** Deliver serialization-neutral installed-state inspection and one
+shared forward transition planner without selecting a new persistence format.
 
-**Principal deliverables:** Release/installed/source/schema/manifest identity
-boundaries, INSTALL/PATCH/UPDATE/UPGRADE/REPAIR classification, compatibility
-and downgrade rejection rules.
+**Principal deliverables:** Serialization-neutral installed-state
+status/snapshot model; explicit existing-installation evidence inspection;
+FRESH, LEGACY, COMMITTED, INCONSISTENT, and INVALID state handling; shared
+INSTALL/PATCH/UPDATE/UPGRADE/REPAIR classification; canonical-current
+fresh-install policy; source/runtime compatibility evaluation; strict
+downgrade rejection; legacy bootstrap-required behavior; and opaque
+schema/migration identity handoff toward WU4.
+
+WU3 preserves the exact existing two-field `storage/installed.lock` format and
+selects no new installed-state serialization or persistence format. Durable
+interrupted-operation persistence, operation records, and recovery behavior are
+outside WU3 and remain later WU5 concerns. WU3 does not apply package files,
+execute migrations, or change Module package lifecycle or Backup & Recovery
+boundaries.
 
 **Direct dependencies:** WU1 and WU2.
 
 **Important exclusions:** Persistence schema, apply execution, generic rollback.
 
-**Acceptance evidence:** State matrix covering fresh, supported forward,
-same-version repair, incomplete operation, incompatible, and downgrade cases.
+**Acceptance evidence:** Focused state and transition tests covering absent
+marker with and without existing-install evidence, valid legacy and malformed
+markers, supported forward transitions, same-version repair, legacy bootstrap
+rejection, incompatible runtime/source state, and downgrade rejection.
 
 **Runtime/browser/human validation:** Not materially required.
 
