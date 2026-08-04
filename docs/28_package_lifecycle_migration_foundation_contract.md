@@ -31,6 +31,12 @@ architectural slice. Shared lifecycle abstractions must remain capable of
 supporting that later slice, but the first slice must not implement Module
 package intake, distribution, migration, or update behavior.
 
+Module Package Lifecycle preparation is now complete and contract-locked in
+`docs/29_module_package_lifecycle_contract.md`. It is the second target over
+this foundation and uses shared primitives through reuse, generalization, or
+target adapters as documented there. Module Package Lifecycle implementation
+and WU1 remain not started.
+
 The first package source is a local or operator-provided ZIP containing a full
 target package. Differential packages, remote discovery, official update
 services, signing, channels, marketplaces, automatic updates, generic

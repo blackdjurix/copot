@@ -32,6 +32,15 @@ the deterministic source-package builder. Future lifecycle packaging may reuse
 normalized inventory and ownership primitives, but runtime package identity,
 source compatibility, and installed-state semantics remain separate contracts.
 
+Module Package Lifecycle preparation is complete and contract-locked in
+`docs/29_module_package_lifecycle_contract.md`. The baseline shape is one
+package to one technical module, with a package type distinct from Webcore.
+Module package identity, Webcore compatibility, Module-owned inventory, and
+installed lifecycle state are separate runtime contracts; the existing source
+builder manifest is not itself the Module lifecycle contract. Remote discovery,
+signing/trust, marketplace distribution, and multi-module packages remain
+excluded.
+
 ## Version Source of Truth
 
 The framework release version is defined by:

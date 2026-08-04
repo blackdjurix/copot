@@ -26,6 +26,7 @@ M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
 Next work unit: NONE — WU1–WU7 COMPLETE AND CLOSED
 Current active implementation branch: NONE
+Current preparation documentation branch: feature/module-package-lifecycle
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
 Completed delivery slice: Webcore first
@@ -127,10 +128,13 @@ download, signing/trust, channels, automatic updates, Admin upload, and
 differential packages remain excluded; downgrade/reverse migration remains
 unsupported.
 Server-empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED under
-`DI-PACKAGE-LIFECYCLE-WU7-01`; Module Package Lifecycle remains a later
-architectural slice, Backup & Recovery remains separate, and destructive
+`DI-PACKAGE-LIFECYCLE-WU7-01`; Module Package Lifecycle preparation is complete
+and contract-locked, implementation remains not started, Backup & Recovery remains separate, and destructive
 rollback/restore remains unavailable.
-Module package lifecycle: ARCHITECTURAL TARGET ONLY — LATER SLICE
+Module Package Lifecycle: PREPARATION COMPLETE / CONTRACT LOCKED
+Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
+Module Package Lifecycle implementation: NOT STARTED
+Module Package Lifecycle WU1: NOT STARTED
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED

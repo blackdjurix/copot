@@ -336,3 +336,24 @@ Recommended implementation order:
 5. Enabled module route loading and simple duplicate detection.
 6. Sample module test and manual test documentation.
 7. README, CHANGELOG, architecture, and roadmap updates.
+
+## Module Package Lifecycle preparation
+
+The Module Package Lifecycle is the second lifecycle target over the completed
+shared Package Lifecycle & Migration Foundation. Its preparation is complete
+and contract-locked in:
+
+```text
+docs/29_module_package_lifecycle_contract.md
+```
+
+The contract preserves the current `module.json.name` and module-folder
+invariant, but separates package identity from technical module identity. The
+first package shape is one package to one technical module. Module Manager is
+the operator/Admin consumer, not the lifecycle engine.
+
+The preparation does not authorize runtime implementation, a migration runner
+inside Module Manager, remote package distribution, multi-module packages,
+automatic dependency mutation, capability/provider arbitration, or automatic
+permission grants. Module Package Lifecycle implementation and WU1 remain not
+started.
