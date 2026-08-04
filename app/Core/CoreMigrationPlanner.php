@@ -53,55 +53,45 @@ final class CoreMigrationPlanner
         }
 
         $descriptors = $registry->migrations();
-        $byId = [];
 
-        foreach ($descriptors as $descriptor) {
-            $byId[$descriptor->id()] = $descriptor;
-        }
-
-        $applied = [];
-        $lastAppliedSequence = 0;
-
-        foreach ($records as $record) {
-            $descriptor = $byId[$record->migrationId()] ?? null;
+        foreach ($records as $index => $record) {
+            $descriptor = $descriptors[$index] ?? null;
 
             if (!$descriptor instanceof CoreMigrationDescriptor
+                || $record->migrationId() !== $descriptor->id()
                 || $record->sequence() !== $descriptor->sequence()
                 || $record->checksum() !== $descriptor->checksum()
                 || $record->targetWebcoreVersion() !== $descriptor->targetWebcoreVersion()
                 || $record->targetSchemaIdentity() !== $descriptor->targetSchemaIdentity()
-                || $record->sequence() <= $lastAppliedSequence
             ) {
-                return CoreMigrationPlan::rejected('Applied migration history is unknown, reordered, or modified.');
+                return CoreMigrationPlan::rejected('Applied migration history is not a known ordered registry prefix or was modified.');
             }
 
             if (PackageVersion::compare($record->targetWebcoreVersion(), $package->targetWebcoreVersion()) > 0) {
                 return CoreMigrationPlan::rejected('Applied migration history is ahead of the package target.');
             }
-
-            $applied[$record->migrationId()] = true;
-            $lastAppliedSequence = $record->sequence();
         }
 
+        if (CoreMigrationStateIdentity::fromRecords($records) !== $snapshot->migrationStateIdentity()) {
+            return CoreMigrationPlan::rejected('Committed migration identity does not match applied migration history.');
+        }
+
+        if ($records !== []) {
+            $lastRecord = $records[count($records) - 1];
+
+            if ($lastRecord->targetWebcoreVersion() !== $snapshot->webcoreVersion() || $lastRecord->targetSchemaIdentity() !== $snapshot->schemaStateIdentity()) {
+                return CoreMigrationPlan::rejected('Committed Webcore/schema state contradicts applied migration history.');
+            }
+        }
+
+        $appliedCount = count($records);
         $virtualVersion = $snapshot->webcoreVersion();
         $virtualSchema = $snapshot->schemaStateIdentity();
         $planned = [];
 
-        foreach ($descriptors as $descriptor) {
+        foreach (array_slice($descriptors, $appliedCount) as $descriptor) {
             if (PackageVersion::compare($descriptor->targetWebcoreVersion(), $package->targetWebcoreVersion()) > 0) {
                 break;
-            }
-
-            if (isset($applied[$descriptor->id()])) {
-                if (PackageVersion::compare($descriptor->targetWebcoreVersion(), $virtualVersion) > 0) {
-                    $virtualVersion = $descriptor->targetWebcoreVersion();
-                    $virtualSchema = $descriptor->targetSchemaIdentity();
-                }
-                continue;
-            }
-
-            if ($descriptor->sequence() < $lastAppliedSequence) {
-                return CoreMigrationPlan::rejected('Applied migration history is missing an earlier migration.');
             }
 
             if (!$descriptor->appliesTo($virtualVersion)) {
