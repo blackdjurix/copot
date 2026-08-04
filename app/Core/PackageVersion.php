@@ -76,6 +76,20 @@ final class PackageVersion
     }
 
     /**
+     * @return array{major:int, minor:int, patch:int}
+     */
+    public static function coreComponents(string $version): array
+    {
+        $parts = self::parse($version);
+
+        return [
+            'major' => (int) $parts['core'][0],
+            'minor' => (int) $parts['core'][1],
+            'patch' => (int) $parts['core'][2],
+        ];
+    }
+
+    /**
      * @return array{core: list<string>, prerelease: list<string>, build: list<string>}
      */
     private static function parse(string $version): array

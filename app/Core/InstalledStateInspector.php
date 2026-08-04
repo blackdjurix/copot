@@ -1,0 +1,26 @@
+<?php
+
+namespace Copot\Core;
+
+use DateTimeImmutable;
+
+final class InstalledStateInspector
+{
+    public function inspect(InstallationState $state): InstalledStateInspection
+    {
+        try {
+            $marker = $state->readMarker();
+        } catch (InstallationException $exception) {
+            return InstalledStateInspection::invalid($exception->getMessage());
+        }
+
+        if ($marker === null) {
+            return InstalledStateInspection::fresh();
+        }
+
+        return InstalledStateInspection::legacy(new InstalledStateSnapshot(
+            $marker['version'],
+            new DateTimeImmutable($marker['installed_at'])
+        ));
+    }
+}
