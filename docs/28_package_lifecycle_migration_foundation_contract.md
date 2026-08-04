@@ -2,9 +2,9 @@
 
 ## Preparation status
 
-Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND CLOSED — WU4 COMPLETE AND CLOSED — WU5 COMPLETE AND CLOSED — WU6–WU7 NOT STARTED
+Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND CLOSED — WU4 COMPLETE AND CLOSED — WU5 COMPLETE AND CLOSED — WU6 COMPLETE AND CLOSED — WU7 NEXT / NOT STARTED
 
-Next work unit: WU6 — Health, Integrity & Commit-State Closure (NEXT / NOT STARTED)
+Next work unit: WU7 — CLI Operator Surface & End-to-End Non-Recovery Acceptance (NEXT / NOT STARTED)
 
 This document records the selected Post-M3 platform-foundation target and its
 contract. WU1 is limited to serialization-neutral Webcore package-contract
@@ -393,27 +393,43 @@ limitations are recorded above as execution-environment evidence limitations.
 
 ### WU6 — Health, Integrity & Commit-State Closure
 
-**Status:** NEXT / NOT STARTED.
+**Status:** COMPLETE AND CLOSED.
 
-**Objective:** Define the mandatory gates before installed state advances.
+**Objective:** Deliver the mandatory health, integrity, and finalization gates before installed state advances.
 
-**Principal deliverables:** File integrity, runtime/bootstrap, database/schema,
-migration, module/theme, public/Admin smoke, maintenance-clear, and final
-commit conditions.
+**Principal deliverables:** Bounded rich committed lifecycle state under the
+private lifecycle storage namespace; exact preservation of the two-field
+`storage/installed.lock`; WU3 inspection integration producing COMMITTED only
+when rich state and the legacy marker agree; target package-owned live-tree
+integrity without stale ownership inference from arbitrary extra paths;
+database/schema health; WU4 migration-ledger prefix and integrity verification;
+final migration-state identity derivation; deterministic runtime/bootstrap,
+module/theme, public, and Admin health gates; `InstallationMutex` finalization;
+committed-state persistence before operation completion and maintenance
+clearing; cleanup-pending state and exact identity reconciliation for idempotent
+cleanup retry.
 
 **Direct dependencies:** WU3, WU4, and WU5.
 
-**Important exclusions:** Health implementation, browser automation, release
-publication.
+**Important exclusions:** Package application, migration execution, stale-file
+deletion, rollback/restore, Backup & Recovery, Module package lifecycle, browser
+automation, and release publication.
 
-**Acceptance evidence:** Gate matrix proving every failed gate leaves the prior
-committed target unchanged.
+**Acceptance evidence:** Focused health/integrity/commit-state validation proves
+that failed pre-commit gates preserve the prior committed target, and that
+cleanup retry requires exact committed/package/operation/apply-plan/
+migration-plan/ledger reconciliation without rerunning file application,
+migrations, or full health gates. The WU4 PDO SQLite regression could not
+execute because the available executor lacked the PDO SQLite driver; this is an
+environment evidence limitation, not an observed regression.
 
-**Runtime/browser/human validation:** Runtime and browser validation are not
-materially required during preparation; they become required for implementation
-acceptance where the gate requires them.
+**Runtime/browser/human validation:** Deterministic runtime/bootstrap and HTTP
+health-gate boundaries were implemented; browser validation is not required for
+WU6.
 
 ### WU7 — CLI Operator Surface & End-to-End Non-Recovery Acceptance
+
+**Status:** NEXT / NOT STARTED.
 
 **Objective:** Define the first operator surface over the shared lifecycle
 service and its non-recovery acceptance boundary.

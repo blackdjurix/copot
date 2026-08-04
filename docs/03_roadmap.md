@@ -634,7 +634,7 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: WU6 — Health, Integrity & Commit-State Closure (NEXT / NOT STARTED)
+Next work unit: WU7 — CLI Operator Surface & End-to-End Non-Recovery Acceptance (NEXT / NOT STARTED)
 Current active implementation branch: NONE
 Package Lifecycle & Migration Foundation: SELECTED / ACTIVE PLATFORM-FOUNDATION TARGET
 Foundation scope: Webcore + independently distributed Module packages
@@ -692,6 +692,29 @@ validation passed. The WU2 regression could not execute because the available
 XAMPP ZipArchive API was insufficient, and the WU4 regression could not execute
 because PDO SQLite was unavailable; both are execution-environment limitations,
 not observed regressions.
+WU6 — Health, Integrity & Commit-State Closure: COMPLETE AND CLOSED
+WU6 delivered bounded rich committed lifecycle state under the private lifecycle
+storage namespace while preserving the exact two-field `storage/installed.lock`.
+WU3 inspection now produces COMMITTED only when the rich state and legacy marker
+are consistent. WU6 verifies target package-owned live-tree files without
+inferring stale ownership from arbitrary extra paths, verifies Core database and
+schema health, validates the WU4 migration-ledger prefix and integrity, and
+derives the final migration-state identity from the verified ledger. It provides
+deterministic runtime/bootstrap/module/theme/public/Admin health gates, finalizes
+under `InstallationMutex`, and persists committed state before operation
+completion or maintenance clearing. If committed persistence succeeds but
+operation cleanup fails, cleanup-pending state is retained. Cleanup retry
+requires exact committed/package/operation/apply-plan/migration-plan/ledger
+reconciliation and does not rerun file application, migrations, or full health
+gates. Failed pre-commit gates preserve the prior committed state. WU6 performs
+no package application or migration execution; stale-file deletion remains
+unavailable, Module package lifecycle remains later, and destructive rollback or
+restore remains unavailable without Backup & Recovery. The WU4 PDO SQLite
+regression could not execute in the available executor because the driver was
+unavailable; this is an environment evidence limitation, not an observed
+regression.
+WU7 — CLI Operator Surface & End-to-End Non-Recovery Acceptance: NEXT / NOT STARTED
+WU7 owns the operator surface and end-to-end non-recovery acceptance.
 Module package lifecycle: ARCHITECTURAL TARGET ONLY — LATER SLICE
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
@@ -705,8 +728,8 @@ product need, dependency, readiness, risk, and architecture boundary.
 The selected Post-M3 platform-foundation target is Package Lifecycle & Migration
 Foundation. Its contract is
 `docs/28_package_lifecycle_migration_foundation_contract.md`. This selection
-does not assign an authoritative milestone number. WU1–WU5 are complete and
-closed; WU6 is next and not started. WU6–WU7 remain unimplemented.
+does not assign an authoritative milestone number. WU1–WU6 are complete and
+closed; WU7 is next and not started. WU7 remains unimplemented.
 Backup & Recovery is a separate platform capability and production-closure
 dependency.
 
