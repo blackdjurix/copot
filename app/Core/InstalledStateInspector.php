@@ -6,7 +6,7 @@ use DateTimeImmutable;
 
 final class InstalledStateInspector
 {
-    public function inspect(InstallationState $state): InstalledStateInspection
+    public function inspect(InstallationState $state, ExistingInstallEvidence $evidence): InstalledStateInspection
     {
         try {
             $marker = $state->readMarker();
@@ -15,7 +15,9 @@ final class InstalledStateInspector
         }
 
         if ($marker === null) {
-            return InstalledStateInspection::fresh();
+            return $evidence->hasMaterialInstallationEvidence()
+                ? InstalledStateInspection::inconsistent('Installation evidence exists without an installation marker.')
+                : InstalledStateInspection::fresh();
         }
 
         return InstalledStateInspection::legacy(new InstalledStateSnapshot(

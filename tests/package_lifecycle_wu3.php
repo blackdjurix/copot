@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Copot\Core\InstallationState;
+use Copot\Core\ExistingInstallEvidence;
 use Copot\Core\InstalledStateInspection;
 use Copot\Core\InstalledStateInspector;
 use Copot\Core\InstalledStateStatus;
@@ -121,13 +122,15 @@ $removeDirectory = static function (string $path) use (&$removeDirectory): void 
 try {
     $state = new InstallationState($temporaryStorage);
     $inspection = new InstalledStateInspector();
-    $assert($inspection->inspect($state)->status() === InstalledStateStatus::FRESH, 'Absent marker was not FRESH.');
+    $assert($inspection->inspect($state, new ExistingInstallEvidence())->status() === InstalledStateStatus::FRESH, 'Absent marker without evidence was not FRESH.');
+    $assert($inspection->inspect($state, new ExistingInstallEvidence(true))->status() === InstalledStateStatus::INCONSISTENT, 'Schema evidence without marker was not INCONSISTENT.');
+    $assert($inspection->inspect($state, new ExistingInstallEvidence(false, true))->status() === InstalledStateStatus::INCONSISTENT, 'Environment evidence without marker was not INCONSISTENT.');
     $state->createMarker('0.12.0');
-    $legacyInspection = $inspection->inspect($state);
+    $legacyInspection = $inspection->inspect($state, new ExistingInstallEvidence(true, true));
     $assert($legacyInspection->status() === InstalledStateStatus::LEGACY, 'Existing two-field marker was not LEGACY.');
     $assert($legacyInspection->snapshot()?->releaseIdentity() === null, 'Legacy release identity was inferred.');
     file_put_contents($temporaryStorage . DIRECTORY_SEPARATOR . 'installed.lock', '{invalid');
-    $assert($inspection->inspect($state)->status() === InstalledStateStatus::INVALID, 'Malformed marker was not INVALID.');
+    $assert($inspection->inspect($state, new ExistingInstallEvidence())->status() === InstalledStateStatus::INVALID, 'Malformed marker was not INVALID.');
 } finally {
     $removeDirectory($temporaryStorage);
 }
