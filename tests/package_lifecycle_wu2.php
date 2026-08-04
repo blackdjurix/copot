@@ -127,8 +127,25 @@ try {
         $throws(static fn () => ArchiveEntryPath::normalize($raw), 'Invalid archive path was accepted.');
     }
 
+    foreach (['CON', 'con.txt', 'LPT1.php', 'aux.data', 'COM9.log', 'segment.'] as $raw) {
+        $throws(static fn () => ArchiveEntryPath::normalize($raw), 'Windows-unsafe archive path was accepted: ' . $raw);
+    }
+
+    $assert(ArchiveEntryPath::normalize('console.txt') === 'console.txt', 'A valid device-name near-match was rejected.');
+    $assert(ArchiveEntryPath::normalize('com10.txt') === 'com10.txt', 'A valid COM10 near-match was rejected.');
+
     $fixtureRoot = $temporaryDirectory('fixtures');
     $stagingRoot = $temporaryDirectory('staging');
+
+    $topologyLive = $temporaryDirectory('topology-live');
+    $throws(static fn () => StagingSession::create($topologyLive, $topologyLive . DIRECTORY_SEPARATOR . 'nested-staging'), 'Staging inside the live root was accepted.');
+    $topologyNamespace = $temporaryDirectory('topology-namespace');
+    $liveInsideNamespace = $topologyNamespace . DIRECTORY_SEPARATOR . 'live';
+    mkdir($liveInsideNamespace, 0700);
+    $throws(static fn () => StagingSession::create($liveInsideNamespace, $topologyNamespace), 'Live root inside staging was accepted.');
+    $topologySame = $temporaryDirectory('topology-same');
+    $throws(static fn () => StagingSession::create($topologySame, $topologySame), 'Identical live and staging roots were accepted.');
+
     $source = $fixtureRoot . DIRECTORY_SEPARATOR . 'valid.zip';
     $makeZip($source, [
         'app/Core/Version.php' => "<?php return '0.12.0';\n",
@@ -167,6 +184,18 @@ try {
     $conflictPath = $fixtureRoot . DIRECTORY_SEPARATOR . 'conflict.zip';
     $makeZip($conflictPath, ['a/' => 'not-a-directory']);
     $throws(static fn () => $service->intake($conflictPath), 'File/directory conflict was accepted.');
+
+    $directoryMetadataPath = $fixtureRoot . DIRECTORY_SEPARATOR . 'directory-metadata.zip';
+    $makeZip($directoryMetadataPath, ['directory' => 'data'], [], static function (ZipArchive $zip, string $name): void {
+        $zip->setExternalAttributesName($name, ZipArchive::OPSYS_UNIX, 0040777 << 16);
+    });
+    $throws(static fn () => $service->intake($directoryMetadataPath), 'Directory metadata without directory syntax was accepted.');
+
+    $regularMetadataPath = $fixtureRoot . DIRECTORY_SEPARATOR . 'regular-metadata.zip';
+    $makeZip($regularMetadataPath, ['directory/' => 'data'], [], static function (ZipArchive $zip, string $name): void {
+        $zip->setExternalAttributesName($name, ZipArchive::OPSYS_UNIX, 0100666 << 16);
+    });
+    $throws(static fn () => $service->intake($regularMetadataPath), 'Regular metadata with directory syntax was accepted.');
 
     $symlinkPath = $fixtureRoot . DIRECTORY_SEPARATOR . 'symlink.zip';
     $makeZip($symlinkPath, ['link' => 'outside'], [], static function (ZipArchive $zip, string $name): void {
@@ -243,6 +272,18 @@ try {
     $throws(static fn () => (new StagedArchiveExtractor())->extract($overwriteArchive, $overwriteEntries, $overwriteSession, str_repeat('0', 64), new ArchiveLimits()), 'Existing destination was overwritten.');
     $overwriteArchive->close();
     $overwriteSession->cleanup();
+
+    $ancestorPath = $fixtureRoot . DIRECTORY_SEPARATOR . 'ancestor-file.zip';
+    $makeZip($ancestorPath, ['app/file.txt' => 'new']);
+    $ancestorSession = StagingSession::create($basePath, $stagingRoot);
+    mkdir($ancestorSession->payloadPath(), 0700);
+    file_put_contents($ancestorSession->payloadPath() . DIRECTORY_SEPARATOR . 'app', 'ancestor-file');
+    $ancestorArchive = new ZipArchive();
+    $ancestorArchive->open($ancestorPath, ZipArchive::RDONLY);
+    $ancestorEntries = (new ZipArchiveInspector())->inspect($ancestorArchive, new ArchiveLimits());
+    $throws(static fn () => (new StagedArchiveExtractor())->extract($ancestorArchive, $ancestorEntries, $ancestorSession, str_repeat('0', 64), new ArchiveLimits()), 'Non-directory ancestor was followed during extraction.');
+    $ancestorArchive->close();
+    $ancestorSession->cleanup();
 
     $inventoryPath = $fixtureRoot . DIRECTORY_SEPARATOR . 'inventory.zip';
     $makeZip($inventoryPath, ['app/a.txt' => 'alpha', 'app/b.txt' => 'beta']);

@@ -40,8 +40,12 @@ final class StagingSession
 
         $namespacePath = realpath($namespace);
 
-        if ($namespacePath === false || self::isInside($namespacePath, $livePath)) {
-            throw new \RuntimeException('Package staging root must be outside the live Webcore tree.');
+        if (
+            $namespacePath === false
+            || self::isInside($namespacePath, $livePath)
+            || self::isInside($livePath, $namespacePath)
+        ) {
+            throw new \RuntimeException('Package staging root must be structurally separate from the live Webcore tree.');
         }
 
         @chmod($namespacePath, 0700);

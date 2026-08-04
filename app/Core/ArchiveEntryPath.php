@@ -35,6 +35,16 @@ final class ArchiveEntryPath
                 throw new \InvalidArgumentException('Archive entry path cannot escape its root.');
             }
 
+            if (str_ends_with($segment, '.')) {
+                throw new \InvalidArgumentException('Archive entry path cannot contain a segment ending in a dot.');
+            }
+
+            $deviceName = strtolower(explode('.', $segment, 2)[0]);
+
+            if (in_array($deviceName, ['con', 'prn', 'aux', 'nul', 'com1', 'com2', 'com3', 'com4', 'com5', 'com6', 'com7', 'com8', 'com9', 'lpt1', 'lpt2', 'lpt3', 'lpt4', 'lpt5', 'lpt6', 'lpt7', 'lpt8', 'lpt9'], true)) {
+                throw new \InvalidArgumentException('Archive entry path contains a Windows device name.');
+            }
+
             $segments[] = $segment;
         }
 

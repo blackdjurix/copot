@@ -27,7 +27,8 @@ final class ZipArchiveInspector
             $rawName = $stat['name'];
             $path = ArchiveEntryPath::normalize((string) $rawName);
             $segments = ArchiveEntryPath::segments($path);
-            $isDirectory = str_ends_with((string) $rawName, '/') || str_ends_with((string) $rawName, '\\');
+            $hasDirectorySyntax = str_ends_with((string) $rawName, '/') || str_ends_with((string) $rawName, '\\');
+            $isDirectory = $hasDirectorySyntax;
             $externalType = $this->externalType($archive, $index);
 
             if ($externalType === 'symlink' || $externalType === 'special') {
@@ -35,7 +36,15 @@ final class ZipArchiveInspector
             }
 
             if ($externalType === 'directory') {
+                if (!$hasDirectorySyntax) {
+                    throw new \RuntimeException('Archive directory metadata contradicts its entry name.');
+                }
+
                 $isDirectory = true;
+            }
+
+            if ($hasDirectorySyntax && $externalType === 'regular') {
+                throw new \RuntimeException('Archive directory name contradicts regular-file metadata.');
             }
 
             if (($stat['encryption_method'] ?? 0) !== 0) {

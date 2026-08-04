@@ -29,11 +29,13 @@ final class StagedArchiveExtractor
             $destination = $this->containedPath($payloadRoot, $entry['path']);
 
             if ($entry['directory']) {
-                $this->ensureDirectory($destination, $payloadRoot);
+                $this->ensureDirectory($payloadRoot, $entry['path']);
                 continue;
             }
 
-            $this->ensureDirectory(dirname($destination), $payloadRoot);
+            $segments = ArchiveEntryPath::segments($entry['path']);
+            array_pop($segments);
+            $this->ensureDirectory($payloadRoot, implode('/', $segments));
 
             if (file_exists($destination) || is_link($destination)) {
                 throw new \RuntimeException('Archive extraction would overwrite an existing path.');
@@ -104,31 +106,32 @@ final class StagedArchiveExtractor
         return new StagedPayload($session, $archiveSha256, $files);
     }
 
-    private function ensureDirectory(string $directory, string $root): void
+    private function ensureDirectory(string $root, string $relativeDirectory): void
     {
-        if (!$this->insideLexical($directory, $root)) {
-            throw new \RuntimeException('Archive parent directory escaped staging.');
-        }
+        $current = $root;
+        $relative = '';
 
-        if (strtolower(rtrim($directory, DIRECTORY_SEPARATOR)) === strtolower(rtrim($root, DIRECTORY_SEPARATOR))) {
-            $directory = $root;
-        } else {
-            $relative = substr($directory, strlen(rtrim($root, DIRECTORY_SEPARATOR)) + 1);
-            $directory = $this->containedPath($root, str_replace(DIRECTORY_SEPARATOR, '/', $relative));
-        }
+        foreach ($relativeDirectory === '' ? [] : ArchiveEntryPath::segments($relativeDirectory) as $segment) {
+            $relative = $relative === '' ? $segment : $relative . '/' . $segment;
+            $current = $this->containedPath($root, $relative);
 
-        if (file_exists($directory)) {
-            if (!is_dir($directory) || is_link($directory)) {
+            if (is_link($current) || (file_exists($current) && !is_dir($current))) {
                 throw new \RuntimeException('Archive parent path is not a real directory.');
             }
-        } elseif (!mkdir($directory, 0700, true) && !is_dir($directory)) {
-            throw new \RuntimeException('Archive parent directory could not be created.');
-        }
 
-        $resolved = realpath($directory);
+            if (!file_exists($current) && !mkdir($current, 0700) && !is_dir($current)) {
+                throw new \RuntimeException('Archive parent directory could not be created.');
+            }
 
-        if ($resolved === false || is_link($directory) || !$this->inside($resolved, $root)) {
-            throw new \RuntimeException('Archive parent directory escaped staging.');
+            if (is_link($current) || !is_dir($current)) {
+                throw new \RuntimeException('Archive parent path is not a real directory.');
+            }
+
+            $resolved = realpath($current);
+
+            if ($resolved === false || is_link($current) || !$this->inside($resolved, $root)) {
+                throw new \RuntimeException('Archive parent directory escaped staging.');
+            }
         }
     }
 
