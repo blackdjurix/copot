@@ -43,7 +43,7 @@ final class StagedArchiveExtractor
 
             // WU2 uses entry streams only. getStream() is the portable
             // ZipArchive API across the supported PHP ext-zip runtimes.
-            $input = $archive->getStream($entry['path']);
+            $input = $archive->getStream($entry['raw_name']);
             $output = @fopen($destination, 'xb');
 
             if (!is_resource($input) || !is_resource($output)) {

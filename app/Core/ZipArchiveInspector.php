@@ -89,6 +89,7 @@ final class ZipArchiveInspector
 
             $entries[] = [
                 'index' => $index,
+                'raw_name' => $rawName,
                 'path' => $path,
                 'directory' => $isDirectory,
                 'size' => $size,

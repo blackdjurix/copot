@@ -18,6 +18,19 @@ final class PackageLifecycleResult
     public function status(): string { return $this->status; }
     public function reason(): string { return $this->reason; }
 
+    public function exitCode(): int
+    {
+        if ($this->accepted) { return 0; }
+        return match ($this->status) {
+            'invalid_package' => 3,
+            'rejected' => 4,
+            'blocked', 'indeterminate', 'cleanup_pending' => 5,
+            'failed' => 6,
+            'unavailable' => 7,
+            default => 8,
+        };
+    }
+
     public function toArray(): array
     {
         $migrations = [];

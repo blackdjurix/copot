@@ -49,13 +49,7 @@ try {
         ? $service->plan($args[0])
         : $service->apply($args[0], $command === 'package:repair');
     $data = $result->toArray();
-    $code = $result->accepted() ? 0 : match ($result->status()) {
-        'rejected', 'invalid_package' => 3,
-        'unavailable' => 7,
-        'blocked', 'cleanup_pending' => 5,
-        default => 8,
-    };
-    emit($data, $format, $code);
+    emit($data, $format, $result->exitCode());
 } catch (InvalidArgumentException $exception) {
     emit(['accepted' => false, 'status' => 'invalid_input', 'reason' => $exception->getMessage()], $format, 2);
 } catch (RuntimeException $exception) {

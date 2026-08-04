@@ -30,6 +30,8 @@ final class PackageLifecycleService
         private WebcoreApplyCoordinator $applyCoordinator,
         private HealthIntegrityCommitCoordinator $healthCoordinator,
         private LiveTreePathGuard $liveGuard,
+        private MaintenanceCoordinator $maintenance,
+        private InstallationMutex $mutex,
         callable $runtime,
         callable $runtimeChecks
     ) {
@@ -89,7 +91,26 @@ final class PackageLifecycleService
     {
         try {
             $inspection = $this->installedInspector->inspect($this->installationState, ($this->evidence)());
-            return ['accepted' => true, 'status' => $inspection->status(), 'reason' => $inspection->reason()];
+            $record = $this->maintenance->record();
+            $operationState = 'inactive';
+            $operation = null;
+            if ($record instanceof LifecycleOperationRecord) {
+                $lock = $this->mutex->acquire();
+                if ($lock instanceof InstallationLock) {
+                    $operationState = 'interrupted';
+                    $lock->release();
+                } else {
+                    $operationState = 'active';
+                }
+                $operation = [
+                    'state' => $operationState,
+                    'phase' => $record->phase(),
+                    'operation_id' => $record->operationId(),
+                    'classification' => $record->classification(),
+                ];
+            }
+
+            return PackageLifecycleStatus::describe($inspection, $record, $operationState);
         } catch (\Throwable $exception) {
             return ['accepted' => false, 'status' => 'invalid', 'reason' => $exception->getMessage()];
         }

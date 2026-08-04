@@ -26,6 +26,9 @@ class Response
         return new self($content, $status, $headers);
     }
 
+    public function statusCode(): int { return $this->status; }
+    public function body(): string { return $this->content; }
+
     public function send(): void
     {
         if ($this->status === 419) {
