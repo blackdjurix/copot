@@ -2,9 +2,9 @@
 
 ## Preparation status
 
-Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND CLOSED — WU4 COMPLETE AND CLOSED — WU5–WU7 NOT STARTED
+Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND CLOSED — WU4 COMPLETE AND CLOSED — WU5 COMPLETE AND CLOSED — WU6–WU7 NOT STARTED
 
-Next work unit: WU5 — Webcore Apply, Maintenance & Interrupted-Operation Boundary (NEXT / NOT STARTED)
+Next work unit: WU6 — Health, Integrity & Commit-State Closure (NEXT / NOT STARTED)
 
 This document records the selected Post-M3 platform-foundation target and its
 contract. WU1 is limited to serialization-neutral Webcore package-contract
@@ -207,10 +207,24 @@ where possible, and cleaned on success, failure, and interruption.
 
 ## Apply, maintenance, and commit boundary
 
-Application must protect against partial writes, unsuitable permissions,
-shared-hosting limitations, concurrent requests, and replacement of the
-currently running Webcore. Package-owned files may be changed only inside the
-approved apply boundary. Operator-owned paths remain untouched.
+WU5 provides bounded in-place package-owned application with normalized
+live-root containment and component-wise ancestor validation. Safe activation
+is an explicit platform capability; replacement fails closed when atomic
+semantics cannot be proven. The complete staged payload is preflighted before
+the first live mutation, and files are revalidated by streamed size and SHA-256
+checks while copying. WU5 performs no stale package-owned deletion.
+
+`InstallationMutex` provides lifecycle exclusion. One private file-backed
+durable lifecycle-operation record is created before mutation; maintenance is
+derived from its non-terminal state, and interruption is classified from that
+state plus mutex ownership. The record binds operation, package, staging,
+apply-plan, migration, and deterministic progress identities. WU5 coordinates
+WU4 migration execution and blocks `INDETERMINATE` outcomes, then hands off to
+WU6 without advancing committed installed state.
+
+Package-owned files may be changed only inside the approved apply boundary.
+Operator-owned and runtime-owned paths remain untouched. Destructive rollback
+and restore remain unavailable without Backup & Recovery.
 
 The installed target version/state is committed last. Any failed apply,
 migration, reconciliation, health, or integrity gate leaves the prior committed
@@ -345,27 +359,41 @@ preparation.
 
 ### WU5 — Webcore Apply, Maintenance & Interrupted-Operation Boundary
 
-**Status:** NEXT / NOT STARTED.
+**Status:** COMPLETE AND CLOSED.
 
-**Objective:** Define package-owned file application, maintenance, concurrency,
-permissions, interruption, and recovery-interface boundaries.
+**Objective:** Deliver bounded package-owned file application, maintenance,
+concurrency, interruption, and recovery-interface boundaries without advancing
+committed installed state.
 
-**Principal deliverables:** Apply ownership contract, maintenance state,
-partial-write behavior, interrupted-operation handling, and bounded recovery
-interface.
+**Principal deliverables:** Guarded in-place apply; explicit activation
+capability; complete staged-payload preflight; streamed file identity checks;
+no stale-file deletion; `InstallationMutex` lifecycle exclusion; private
+file-backed durable operation state; derived maintenance and interruption
+classification; deterministic progress/apply-plan/package identity binding;
+WU4 migration coordination including `INDETERMINATE` blocking; and WU6
+handoff without installed-state advancement.
 
 **Direct dependencies:** WU2, WU3, WU4, and the separately approved bounded
 recovery interface decision.
 
 **Important exclusions:** Backup & Recovery implementation, destructive
-rollback, Module package application.
+rollback/restore, stale package-owned deletion, generic job infrastructure,
+Module package application, WU6 health gates, and installed-state commit.
 
-**Acceptance evidence:** Failure-mode matrix and restore dependency gate.
+**Acceptance evidence:** Focused apply, preflight, containment, activation,
+operation-state, interruption, maintenance, migration-handoff, and WU6-boundary
+tests passed. The WU2 regression was unavailable because the local XAMPP
+ZipArchive API lacked the required capability, and the WU4 regression was
+unavailable because PDO SQLite was unavailable; these are execution-environment
+limitations, not observed regressions.
 
-**Runtime/browser/human validation:** Runtime validation becomes material when
-implementation begins; browser validation is not required for preparation.
+**Runtime/browser/human validation:** Focused runtime validation passed for the
+WU5 boundary; browser validation was not required. The WU2 and WU4 regression
+limitations are recorded above as execution-environment evidence limitations.
 
 ### WU6 — Health, Integrity & Commit-State Closure
+
+**Status:** NEXT / NOT STARTED.
 
 **Objective:** Define the mandatory gates before installed state advances.
 
@@ -413,9 +441,9 @@ requires a real restore-capable implementation and integration evidence.
 
 ## Explicit exclusions
 
-Outside the delivered WU1–WU4 boundaries, this contract does not authorize:
+Outside the delivered WU1–WU5 boundaries, this contract does not authorize:
 
-- further PHP or source implementation beyond the accepted WU4 boundary;
+- further PHP or source implementation beyond the accepted WU5 boundary;
 - package-builder changes;
 - runtime synchronization or browser validation;
 - Module package lifecycle implementation;
