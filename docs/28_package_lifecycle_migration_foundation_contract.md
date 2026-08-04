@@ -2,9 +2,9 @@
 
 ## Preparation status
 
-Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND CLOSED — WU4 COMPLETE AND CLOSED — WU5 COMPLETE AND CLOSED — WU6 COMPLETE AND CLOSED — WU7 NEXT / NOT STARTED
+Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND CLOSED — WU4 COMPLETE AND CLOSED — WU5 COMPLETE AND CLOSED — WU6 COMPLETE AND CLOSED — WU7 COMPLETE AND CLOSED
 
-Next work unit: WU7 — CLI Operator Surface & End-to-End Non-Recovery Acceptance (NEXT / NOT STARTED)
+Next work unit: NONE — WU1–WU7 COMPLETE AND CLOSED
 
 This document records the selected Post-M3 platform-foundation target and its
 contract. WU1 is limited to serialization-neutral Webcore package-contract
@@ -429,25 +429,62 @@ WU6.
 
 ### WU7 — CLI Operator Surface & End-to-End Non-Recovery Acceptance
 
-**Status:** NEXT / NOT STARTED.
+**Status:** COMPLETE AND CLOSED.
 
-**Objective:** Define the first operator surface over the shared lifecycle
+**Objective:** Deliver the first operator surface over the shared lifecycle
 service and its non-recovery acceptance boundary.
 
-**Principal deliverables:** Local ZIP path, plan/status/apply/repair direction,
-safe diagnostics, and end-to-end acceptance scope excluding real restore.
+**Principal deliverables:** `bin/copot` with `package:plan`, `package:apply`,
+`package:repair`, and `package:status`; human/JSON output; deterministic
+exit-code mapping; strict `.copot/package.json` metadata; official
+package-builder lifecycle manifest/inventory emission; staged metadata
+exclusion from the live payload; shared `PackageLifecycleService` orchestration
+over WU1–WU6; planner-derived PATCH/UPDATE/UPGRADE classifications; bounded
+installed-state/operation/maintenance status reporting; materially real
+runtime/bootstrap/module/theme/public/Admin health probes; and an external
+project-isolated apply-temporary namespace.
 
 **Direct dependencies:** WU1–WU6.
 
 **Important exclusions:** Admin upload as lifecycle authority, automatic update,
 remote source, production recovery closure.
 
-**Acceptance evidence:** End-to-end fresh and forward-package scenarios using a
-shared service, with recovery-dependent cases explicitly blocked.
+**Acceptance evidence:** Linux Cloud runtime acceptance consumed the official
+builder artifact through the actual WU7 CLI/shared lifecycle path, performed
+real package-owned live-file replacement and database-backed lifecycle
+behavior, reached WU6 committed target state, cleaned the lifecycle operation,
+made maintenance inactive, and reported the committed result through
+`package:status`. A tampered package/inventory was rejected safely through the
+same CLI surface. Repository source remained unchanged during final E2E
+acceptance.
 
-**Runtime/browser/human validation:** Runtime validation is materially required
-for implementation acceptance; browser/human validation is not required for the
-preparation contract.
+**Runtime/browser/human validation:** Runtime validation passed in the Linux
+Cloud acceptance environment; browser/human validation is not required.
+
+The accepted Webcore package lifecycle first delivery slice is complete and
+closed for local/operator-provided package operation over an existing Copot
+runtime. It does not claim all possible Webcore installation or distribution
+capability. Remote discovery/download, signing/trust, channels, automatic
+updates, Admin upload, differential packages, downgrade/reverse migration,
+Module Package Lifecycle, and destructive rollback/restore remain excluded;
+Backup & Recovery remains separate.
+
+### Deferred Item — DI-PACKAGE-LIFECYCLE-WU7-01
+
+- **Title:** Server-Empty Bootstrap & Package Clean Install
+- **Status:** Deferred
+- **Detail:** Provide a standalone bootstrap path for a server where Copot
+  source/runtime is not yet present, capable of acquiring/receiving a Webcore
+  package, validating it, establishing the Copot runtime, and handing off into
+  the canonical installation/lifecycle path.
+- **Reason:** Official Copot package hosting/release source and a stable
+  release-metadata/download contract do not yet exist.
+- **Impact:** WU7 and the existing-runtime local-package Webcore lifecycle
+  remain accepted. True server-empty package-driven installation is not
+  delivered and must not be implied by current closure wording.
+- **Revisit trigger:** An official Copot package hosting/release source exists
+  with a stable package metadata and download contract.
+- **Initial target disposition:** Unscheduled / KEEP DEFERRED
 
 ## Separate dependency: Backup & Recovery Foundation
 

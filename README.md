@@ -30,7 +30,7 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: WU7 — CLI Operator Surface & End-to-End Non-Recovery Acceptance (NEXT / NOT STARTED)
+Next work unit: NONE — WU1–WU7 COMPLETE AND CLOSED
 Current active implementation branch: NONE
 Package Lifecycle & Migration Foundation: SELECTED / ACTIVE PLATFORM-FOUNDATION TARGET
 Foundation scope: Webcore + independently distributed Module packages
@@ -109,8 +109,33 @@ restore remains unavailable without Backup & Recovery. The WU4 PDO SQLite
 regression could not execute in the available executor because the driver was
 unavailable; this is an environment evidence limitation, not an observed
 regression.
-WU7 — CLI Operator Surface & End-to-End Non-Recovery Acceptance: NEXT / NOT STARTED
-WU7 owns the operator surface and end-to-end non-recovery acceptance.
+WU7 — CLI Operator Surface & End-to-End Non-Recovery Acceptance: COMPLETE AND CLOSED
+WU7 delivered the `bin/copot` local-package operator surface with
+`package:plan`, `package:apply`, `package:repair`, and `package:status`, human
+and JSON output, deterministic exit-code mapping, strict `.copot/package.json`
+metadata, official package-builder lifecycle manifest/inventory emission, and
+staged metadata exclusion from the live payload. `PackageLifecycleService`
+orchestrates the shared WU1–WU6 lifecycle; PATCH, UPDATE, and UPGRADE remain
+planner-derived classifications. Status reporting is bounded to installed
+state, operation state, and maintenance state. WU7 binds materially real
+runtime/bootstrap/module/theme/public/Admin health probes and an external
+project-isolated apply-temporary namespace. The accepted local-package-only
+delivery slice covers operation over an existing Copot runtime; server-empty
+package bootstrap remains deferred.
+Linux Cloud runtime acceptance consumed the official builder artifact through
+the actual CLI/shared lifecycle path, performed real package-owned live-file
+replacement and database-backed lifecycle behavior, reached WU6 committed
+target state, cleaned the lifecycle operation, made maintenance inactive, and
+reported the committed result through `package:status`. A tampered
+package/inventory was rejected safely through the same CLI surface. Repository
+source remained unchanged during final E2E acceptance. Remote discovery or
+download, signing/trust, channels, automatic updates, Admin upload, and
+differential packages remain excluded; downgrade/reverse migration remains
+unsupported.
+Server-empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED under
+`DI-PACKAGE-LIFECYCLE-WU7-01`; Module Package Lifecycle remains a later
+architectural slice, Backup & Recovery remains separate, and destructive
+rollback/restore remains unavailable.
 Module package lifecycle: ARCHITECTURAL TARGET ONLY — LATER SLICE
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
@@ -124,8 +149,10 @@ Post-M3 lifecycle classification is defined in `docs/03_roadmap.md`: re-open
 for invalid closure, MT.x for maintenance, and MR.x for eligible refinement.
 The adopted Package Lifecycle & Migration Foundation contract is
 `docs/28_package_lifecycle_migration_foundation_contract.md`. It does not assign
-an authoritative milestone number. WU1–WU6 are complete and closed; WU7 is next
-and not started. WU7 remains unimplemented.
+an authoritative milestone number. WU1–WU7 are complete and closed. The Webcore
+package lifecycle first delivery slice is complete and closed for
+local/operator-provided package operation over an existing Copot runtime; it
+does not claim all possible Webcore installation/distribution capability.
 
 Older detailed phase and sequencing paragraphs below are retained historical
 context and do not declare a current active phase or next target.
