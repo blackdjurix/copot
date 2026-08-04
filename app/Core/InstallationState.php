@@ -107,9 +107,26 @@ class InstallationState
             throw new InstallationException('Installation marker already exists.');
         }
 
+        $this->writeMarker($version, gmdate(DATE_ATOM), false);
+    }
+
+    public function replaceMarker(string $version, string $installedAt): void
+    {
+        if (!preg_match(self::VERSION_PATTERN, $version) || DateTimeImmutable::createFromFormat(DATE_ATOM, $installedAt) === false) {
+            throw new InstallationException('Installation marker is invalid.');
+        }
+        if (!$this->storageIsWritable()) {
+            throw new InstallationException('Installer storage is unavailable.');
+        }
+        $this->writeMarker($version, $installedAt, true);
+    }
+
+    private function writeMarker(string $version, string $installedAt, bool $replace): void
+    {
+
         try {
             $contents = json_encode([
-                'installed_at' => gmdate(DATE_ATOM),
+                'installed_at' => $installedAt,
                 'version' => $version,
             ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . PHP_EOL;
         } catch (JsonException) {
@@ -126,7 +143,7 @@ class InstallationState
             @chmod($temporaryPath, 0644);
             $this->writeComplete($temporaryPath, $contents);
 
-            if (file_exists($this->markerPath()) || !@rename($temporaryPath, $this->markerPath())) {
+            if ((!$replace && file_exists($this->markerPath())) || !@rename($temporaryPath, $this->markerPath())) {
                 throw new InstallationException('Installation marker could not be finalized.');
             }
 

@@ -12,11 +12,12 @@ final class LifecycleOperationRecord
     public const AWAITING_WU6 = 'awaiting_wu6';
     public const BLOCKED = 'blocked';
     public const INDETERMINATE = 'indeterminate';
+    public const CLEANUP_PENDING = 'cleanup_pending';
     public const COMPLETED = 'completed';
 
     private const ACTIVE_STATUSES = [
         self::PREPARING, self::APPLYING, self::MIGRATING,
-        self::AWAITING_WU6, self::BLOCKED, self::INDETERMINATE,
+        self::AWAITING_WU6, self::BLOCKED, self::INDETERMINATE, self::CLEANUP_PENDING,
     ];
 
     public function __construct(
@@ -95,9 +96,18 @@ final class LifecycleOperationRecord
     }
 
     public function operationId(): string { return $this->operationId; }
+    public function classification(): string { return $this->classification; }
+    public function targetWebcoreVersion(): string { return $this->targetWebcoreVersion; }
+    public function releaseIdentity(): string { return $this->releaseIdentity; }
+    public function archiveSha256(): string { return $this->archiveSha256; }
+    public function stagingPath(): string { return $this->stagingPath; }
+    public function payloadIdentity(): string { return $this->payloadIdentity; }
+    public function applyPlanIdentity(): string { return $this->applyPlanIdentity; }
     public function phase(): string { return $this->phase; }
     public function fileCursor(): int { return $this->fileCursor; }
     public function lastVerifiedPath(): ?string { return $this->lastVerifiedPath; }
+    public function migrationPlanIdentity(): ?string { return $this->migrationPlanIdentity; }
+    public function migrationOutcome(): ?string { return $this->migrationOutcome; }
     public function isTerminal(): bool { return $this->phase === self::COMPLETED; }
 
     public function advance(string $phase, int $cursor, ?string $lastPath = null, ?string $migrationOutcome = null, string $reason = ''): self
