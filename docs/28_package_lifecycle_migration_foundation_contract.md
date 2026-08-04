@@ -2,15 +2,18 @@
 
 ## Preparation status
 
-Status: WU1 COMPLETE AND CLOSED — WU2–WU7 NOT STARTED
+Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3–WU7 NOT STARTED
 
-Next work unit: WU2 — ZIP Intake, Validation & Isolated Staging (NEXT / NOT STARTED)
+Next work unit: WU3 — Installed-State Registry & Transition Planner (NEXT / NOT STARTED)
 
 This document records the selected Post-M3 platform-foundation target and its
-preparation contract. The WU1 implementation is limited to serialization-neutral
-Webcore package-contract primitives and focused tests. It does not authorize
-schema, migration, package-builder, runtime, browser, or Module package work
-beyond that WU1 boundary.
+contract. WU1 is limited to serialization-neutral Webcore package-contract
+primitives and focused tests. WU2 delivers safe local ZIP intake, bounded
+archive validation, private isolated staging, streamed extraction,
+package-ownership enforcement, staged payload/inventory verification, and
+cleanup. WU2 does not authorize installed-state persistence, transition
+planning, schema, migration, package application, operator UX, or Module
+package lifecycle work.
 
 No authoritative milestone number is assigned. The existing roadmap does not
 provide an approved post-M3 numbering mechanism for this target.
@@ -118,6 +121,33 @@ the contract Work Unit provides evidence requiring those choices. The existing
 build manifest remains a source-package allowlist; it is not by itself the
 runtime package contract.
 
+## WU2 delivered implementation boundary
+
+WU2 accepts a local filesystem ZIP path, copies the source archive into a
+private immutable staging namespace, inspects the staged archive before
+extraction, and produces an isolated staged payload. The boundary includes:
+
+- bounded archive bytes, entry count, extracted bytes, individual-file bytes,
+  compression-ratio, canonical-path, and nesting limits;
+- normalized portable archive paths with traversal, absolute, device-name,
+  control-character, non-ASCII, collision, type-conflict, and ownership checks;
+- external-attribute checks for symlinks and special files, with fail-closed
+  contradictory directory metadata handling;
+- component-wise parent-directory creation and exclusive regular-file writes;
+- streamed byte counting and SHA-256 identity for the copied archive and each
+  staged regular file;
+- comparison of a supplied WU1 inventory against staged regular files; and
+- immediate failure cleanup plus bounded stale-staging reconciliation.
+
+The package manifest filename and serialization remain unselected. The WU2
+output is the normalized staged regular-file set; directories and the deferred
+package metadata artifact are not `PackageInventoryEntry` members.
+
+Focused WU2 validation passed. The ext-zip-disabled capability branch requires
+a separate executor, and the filesystem symlink cleanup fixture was unavailable
+on Windows; both are non-blocking evidence limitations for the accepted WU2
+boundary.
+
 ## Shared lifecycle boundaries
 
 The planned pipeline is:
@@ -167,10 +197,10 @@ must reject traversal, absolute or escaping paths, symlinks, special files,
 duplicate entries, case-colliding paths, manifest/payload mismatches, and
 integrity mismatches.
 
-Archive size, extracted-size, file-count, individual-file, and compression-ratio
-limits are required controls, but exact numeric values remain proposals only.
-They must not be treated as repository standards until implementation evidence
-and an explicit decision establish them.
+WU2 v1 locks these hard safety limits: 64 MiB maximum archive bytes, 5,000
+entries, 256 MiB total extracted bytes, 64 MiB per regular file, 100:1 per-file
+and aggregate compression ratio, 240 canonical relative-path bytes, and 32
+path segments. Tests may inject lower limits for deterministic small fixtures.
 
 Staging must be private, separately identified from the live tree, quota-aware
 where possible, and cleaned on success, failure, and interruption.
@@ -222,22 +252,29 @@ and consistency with distribution documentation.
 
 ### WU2 — ZIP Intake, Validation & Isolated Staging
 
-**Objective:** Define safe receipt, inspection, extraction, bounds, and cleanup.
+**Status:** COMPLETE AND CLOSED.
+
+**Objective:** Deliver safe receipt, inspection, extraction, bounds, and cleanup.
 
 **Principal deliverables:** ZIP security rules, staging boundary, ownership
-checks, manifest/payload consistency rules, and proposed-limit disposition.
+checks, manifest/payload consistency rules, and locked-limit disposition.
 
 **Direct dependencies:** WU1.
 
 **Important exclusions:** File application, remote download, signing.
 
-**Acceptance evidence:** Focused archive threat and cleanup cases; exact limits
-remain separately approved if implementation requires them.
+**Acceptance evidence:** Focused archive threat, staging, inventory, and cleanup
+cases passed. The ext-zip-disabled executor and Windows filesystem
+symlink-cleanup limitations remain non-blocking evidence limitations.
 
-**Runtime/browser/human validation:** Runtime validation is not required during
-preparation; browser validation is not materially required.
+**Runtime/browser/human validation:** Browser validation is not materially
+required. Runtime capability evidence established the required local
+`ZipArchive` boundary; a separate ext-zip-disabled executor is still required
+to exercise the fail-closed capability branch.
 
 ### WU3 — Installed-State Registry & Transition Planner
+
+**Status:** NEXT / NOT STARTED.
 
 **Objective:** Define installed-state inspection and one shared forward
 transition planner.
@@ -343,9 +380,10 @@ requires a real restore-capable implementation and integration evidence.
 
 ## Explicit exclusions
 
-Outside the delivered WU1 boundary, this contract does not authorize:
+Outside the delivered WU1 and WU2 boundaries, this contract does not authorize:
 
-- further PHP or source implementation;
+- installed-state registry or transition-planner implementation;
+- further PHP or source implementation beyond the accepted WU2 boundary;
 - schema or migration execution;
 - package-builder changes;
 - runtime synchronization or browser validation;
