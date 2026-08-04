@@ -637,9 +637,9 @@ M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
 Next work unit: NONE — WU1–WU7 COMPLETE AND CLOSED
 Current active implementation branch: NONE
-Package Lifecycle & Migration Foundation: SELECTED / ACTIVE PLATFORM-FOUNDATION TARGET
+Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
-Current delivery slice: Webcore first
+Completed delivery slice: Webcore first
 WU1 — Webcore Package Contract & Release Identity: COMPLETE AND CLOSED
 WU2 — ZIP Intake, Validation & Isolated Staging: COMPLETE AND CLOSED
 WU2 delivered safe local ZIP intake, bounded archive validation, private isolated
@@ -751,7 +751,7 @@ M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
 an automatically sequential execution order. Future work is selected by actual
 product need, dependency, readiness, risk, and architecture boundary.
 
-The selected Post-M3 platform-foundation target is Package Lifecycle & Migration
+The latest completed Post-M3 platform-foundation target is Package Lifecycle & Migration
 Foundation. Its contract is
 `docs/28_package_lifecycle_migration_foundation_contract.md`. This selection
 does not assign an authoritative milestone number. WU1–WU7 are complete and

@@ -26,9 +26,9 @@ M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
 Next work unit: NONE — WU1–WU7 COMPLETE AND CLOSED
 Current active implementation branch: NONE
-Package Lifecycle & Migration Foundation: SELECTED / ACTIVE PLATFORM-FOUNDATION TARGET
+Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
-Current delivery slice: Webcore first
+Completed delivery slice: Webcore first
 WU1 — Webcore Package Contract & Release Identity: COMPLETE AND CLOSED
 WU2 — ZIP Intake, Validation & Isolated Staging: COMPLETE AND CLOSED
 WU2 delivered safe local ZIP intake, bounded archive validation, private isolated

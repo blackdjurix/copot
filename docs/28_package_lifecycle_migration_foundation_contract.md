@@ -6,7 +6,7 @@ Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND
 
 Next work unit: NONE — WU1–WU7 COMPLETE AND CLOSED
 
-This document records the selected Post-M3 platform-foundation target and its
+This document records the completed Post-M3 platform-foundation target and its
 contract. WU1 is limited to serialization-neutral Webcore package-contract
 primitives and focused tests. WU2 delivers safe local ZIP intake, bounded
 archive validation, private isolated staging, streamed extraction,
