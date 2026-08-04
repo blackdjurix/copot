@@ -634,7 +634,7 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: WU4 — Core Migration Registry & Runner (NEXT / NOT STARTED)
+Next work unit: WU5 — Webcore Apply, Maintenance & Interrupted-Operation Boundary (NEXT / NOT STARTED)
 Current active implementation branch: NONE
 Package Lifecycle & Migration Foundation: SELECTED / ACTIVE PLATFORM-FOUNDATION TARGET
 Foundation scope: Webcore + independently distributed Module packages
@@ -658,6 +658,19 @@ schema/migration identity information toward WU4. WU3 preserves the exact
 two-field `storage/installed.lock` format and selects no new installed-state
 persistence format. Durable interrupted-operation persistence remains outside
 WU3 and is a later WU5 concern.
+WU4 — Core Migration Registry & Runner: COMPLETE AND CLOSED
+WU4 delivered explicit immutable Core migration IDs with monotonic sequence
+ordering, an explicit code-defined registry, checksum-protected descriptor and
+executable identity, a database-backed durable applied-migration ledger,
+deterministic migration-state identity binding, exact registry-prefix
+validation, and evolving virtual planning for unapplied forward migrations.
+It also delivered TRANSACTIONAL and NON_TRANSACTIONAL execution modes,
+deterministic preconditions/postconditions, bounded retry semantics, canonical
+fresh-install ledger/schema baseline behavior without historical replay, and
+strict downgrade/reverse rejection. Legacy installations without an approved
+migration baseline remain blocked. Ambiguous non-transactional outcomes remain
+for later WU5 handling; WU4 adds no durable interrupted-operation/job
+persistence, package-file application, or maintenance behavior.
 Module package lifecycle: ARCHITECTURAL TARGET ONLY — LATER SLICE
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
@@ -671,8 +684,8 @@ product need, dependency, readiness, risk, and architecture boundary.
 The selected Post-M3 platform-foundation target is Package Lifecycle & Migration
 Foundation. Its contract is
 `docs/28_package_lifecycle_migration_foundation_contract.md`. This selection
-does not assign an authoritative milestone number. WU1, WU2, and WU3 are
-complete and closed; WU4 is next and not started. WU4–WU7 remain unimplemented.
+does not assign an authoritative milestone number. WU1–WU4 are complete and
+closed; WU5 is next and not started. WU5–WU7 remain unimplemented.
 Backup & Recovery is a separate platform capability and production-closure
 dependency.
 

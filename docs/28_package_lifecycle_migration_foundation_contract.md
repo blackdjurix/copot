@@ -2,9 +2,9 @@
 
 ## Preparation status
 
-Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND CLOSED — WU4–WU7 NOT STARTED
+Status: WU1 COMPLETE AND CLOSED — WU2 COMPLETE AND CLOSED — WU3 COMPLETE AND CLOSED — WU4 COMPLETE AND CLOSED — WU5–WU7 NOT STARTED
 
-Next work unit: WU4 — Core Migration Registry & Runner (NEXT / NOT STARTED)
+Next work unit: WU5 — Webcore Apply, Maintenance & Interrupted-Operation Boundary (NEXT / NOT STARTED)
 
 This document records the selected Post-M3 platform-foundation target and its
 contract. WU1 is limited to serialization-neutral Webcore package-contract
@@ -307,25 +307,45 @@ rejection, incompatible runtime/source state, and downgrade rejection.
 
 ### WU4 — Core Migration Registry & Runner
 
-**Objective:** Define ordered forward Core migration semantics and durable
+**Status:** COMPLETE AND CLOSED.
+
+**Objective:** Deliver ordered forward Core migration semantics and durable
 applied-state requirements.
 
-**Principal deliverables:** Migration identity, ordering, applicability,
-pre/postconditions, retry behavior, checksum meaning, and canonical-schema
-convergence rules.
+**Principal deliverables:** Explicit immutable Core migration IDs and permanent
+monotonic sequence ordering; an explicit code-defined registry rather than
+filename discovery or ordering; checksum-protected descriptor/executable
+identity; a database-backed durable applied-migration ledger; deterministic
+migration-state identity binding committed state to applied history; exact
+registry-prefix validation; evolving virtual Webcore/schema/migration state for
+unapplied forward migrations; TRANSACTIONAL and NON_TRANSACTIONAL execution
+modes; deterministic preconditions/postconditions and bounded retry semantics;
+canonical fresh-install ledger/schema baseline without historical migration
+replay; and strict downgrade/reverse rejection.
+
+Legacy installations without an approved migration baseline remain blocked.
+Ambiguous non-transactional outcomes remain for later WU5 handling. WU4 does
+not add durable interrupted-operation/job persistence, package-file application,
+or maintenance behavior. The WU3 `storage/installed.lock` boundary remains
+unchanged; Module migration lifecycle remains later, and Backup & Recovery
+remains separate.
 
 **Direct dependencies:** WU1 and WU3.
 
 **Important exclusions:** Module migrations, downgrade/reverse migration,
 execution of existing upgrade files during preparation.
 
-**Acceptance evidence:** Migration lifecycle matrix and failure/retry cases;
-existing upgrade files explicitly classified as inputs, not a system.
+**Acceptance evidence:** Focused migration lifecycle and failure/retry tests;
+committed-state/applied-ledger consistency and identity cases; evolving virtual
+suffix planning; canonical fresh-install baseline evidence; and existing
+upgrade files explicitly classified as inputs, not a migration system.
 
 **Runtime/browser/human validation:** Not materially required during
 preparation.
 
 ### WU5 — Webcore Apply, Maintenance & Interrupted-Operation Boundary
+
+**Status:** NEXT / NOT STARTED.
 
 **Objective:** Define package-owned file application, maintenance, concurrency,
 permissions, interruption, and recovery-interface boundaries.
@@ -393,11 +413,9 @@ requires a real restore-capable implementation and integration evidence.
 
 ## Explicit exclusions
 
-Outside the delivered WU1 and WU2 boundaries, this contract does not authorize:
+Outside the delivered WU1–WU4 boundaries, this contract does not authorize:
 
-- installed-state registry or transition-planner implementation;
-- further PHP or source implementation beyond the accepted WU2 boundary;
-- schema or migration execution;
+- further PHP or source implementation beyond the accepted WU4 boundary;
 - package-builder changes;
 - runtime synchronization or browser validation;
 - Module package lifecycle implementation;
