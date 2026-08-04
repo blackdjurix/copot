@@ -108,6 +108,44 @@ try {
     $assert(file_get_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt') === 'new-content', 'Applied file contents were incorrect.');
     $assert(hash_file('sha256', $live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt') === $file->sha256(), 'Applied file hash was not preserved.');
 
+    file_put_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt', 'old-content');
+    $corruptSession = StagingSession::create($live, $stagingRoot);
+    mkdir($corruptSession->payloadPath() . DIRECTORY_SEPARATOR . 'app', 0700, true);
+    file_put_contents($corruptSession->payloadPath() . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt', 'replacement-a');
+    $corruptA = new StagedFile('app/a.txt', 12, hash('sha256', 'replacement-a'));
+    $corruptB = new StagedFile('app/b.txt', 12, hash('sha256', 'replacement-b'));
+    $corruptPayload = new StagedPayload($corruptSession, $hash, [$corruptA, $corruptB]);
+    $corruptResult = $applier->apply(WebcoreApplyPlan::fromPayload($corruptPayload));
+    $assert($corruptResult->status() === WebcoreApplyResult::FAILED && $corruptResult->appliedPaths() === [], 'A later corrupt staged file was not rejected during complete preflight.');
+    $assert(file_get_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt') === 'old-content', 'Complete staged preflight allowed an earlier live file to change.');
+
+    $validMultiSession = StagingSession::create($live, $stagingRoot);
+    mkdir($validMultiSession->payloadPath() . DIRECTORY_SEPARATOR . 'multi', 0700, true);
+    file_put_contents($validMultiSession->payloadPath() . DIRECTORY_SEPARATOR . 'multi' . DIRECTORY_SEPARATOR . 'a.txt', 'multi-a');
+    file_put_contents($validMultiSession->payloadPath() . DIRECTORY_SEPARATOR . 'multi' . DIRECTORY_SEPARATOR . 'b.txt', 'multi-b');
+    $multiA = new StagedFile('multi/a.txt', 7, hash('sha256', 'multi-a'));
+    $multiB = new StagedFile('multi/b.txt', 7, hash('sha256', 'multi-b'));
+    $multiPayload = new StagedPayload($validMultiSession, $hash, [$multiA, $multiB]);
+    $multiResult = $applier->apply(WebcoreApplyPlan::fromPayload($multiPayload));
+    $assert($multiResult->status() === WebcoreApplyResult::COMPLETED && count($multiResult->appliedPaths()) === 2, 'Valid multi-file staged payload did not apply normally.');
+    $assert(file_get_contents($live . DIRECTORY_SEPARATOR . 'multi' . DIRECTORY_SEPARATOR . 'b.txt') === 'multi-b', 'Valid multi-file staged payload was incomplete.');
+
+    $raceSession = StagingSession::create($live, $stagingRoot);
+    mkdir($raceSession->payloadPath() . DIRECTORY_SEPARATOR . 'race', 0700, true);
+    $raceAPath = $raceSession->payloadPath() . DIRECTORY_SEPARATOR . 'race' . DIRECTORY_SEPARATOR . 'a.txt';
+    $raceBPath = $raceSession->payloadPath() . DIRECTORY_SEPARATOR . 'race' . DIRECTORY_SEPARATOR . 'b.txt';
+    file_put_contents($raceAPath, 'race-a');
+    file_put_contents($raceBPath, 'race-b');
+    $raceA = new StagedFile('race/a.txt', 6, hash('sha256', 'race-a'));
+    $raceB = new StagedFile('race/b.txt', 6, hash('sha256', 'race-b'));
+    $racePayload = new StagedPayload($raceSession, $hash, [$raceA, $raceB]);
+    $raceResult = $applier->apply(WebcoreApplyPlan::fromPayload($racePayload), static function (int $cursor) use ($raceBPath): void {
+        if ($cursor === 1) {
+            file_put_contents($raceBPath, 'changed');
+        }
+    });
+    $assert($raceResult->status() === WebcoreApplyResult::BLOCKED && count($raceResult->appliedPaths()) === 1, 'A staged file changed after preflight was not caught during streamed apply.');
+
     file_put_contents($live . DIRECTORY_SEPARATOR . 'keep.txt', 'operator-data');
     $assert($applier->apply($plan)->status() === WebcoreApplyResult::COMPLETED, 'Repeat apply did not complete.');
     $assert(file_get_contents($live . DIRECTORY_SEPARATOR . 'keep.txt') === 'operator-data', 'Apply removed an unrelated live-tree file.');

@@ -27,6 +27,18 @@ final class PackageOwnedFileApplier
         $files = $plan->files();
         $hasReplacement = false;
 
+        $payloadRoot = realpath($plan->payload()->payloadPath());
+
+        if ($payloadRoot === false || is_link($plan->payload()->payloadPath()) || !is_dir($payloadRoot)) {
+            return new WebcoreApplyResult(WebcoreApplyResult::FAILED, [], 'Staged payload root is unavailable.');
+        }
+
+        foreach ($files as $file) {
+            if (!$file instanceof StagedFile || !$this->verifyStagedSource($payloadRoot, $file)) {
+                return new WebcoreApplyResult(WebcoreApplyResult::FAILED, [], 'Staged payload preflight failed.');
+            }
+        }
+
         foreach ($files as $file) {
             if (!$file instanceof StagedFile) {
                 return new WebcoreApplyResult(WebcoreApplyResult::FAILED, [], 'Apply plan contains an invalid staged file.');
@@ -64,8 +76,7 @@ final class PackageOwnedFileApplier
         try {
             foreach ($files as $file) {
                 $destination = $this->guard->destination($file->path());
-                $source = $plan->payload()->payloadPath() . DIRECTORY_SEPARATOR
-                    . str_replace('/', DIRECTORY_SEPARATOR, $file->path());
+                $source = $this->stagedSourcePath($payloadRoot, $file->path());
 
                 if (!is_file($source) || is_link($source)) {
                     return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $applied, 'Staged source identity is unavailable.');
@@ -164,6 +175,45 @@ final class PackageOwnedFileApplier
             }
         }
         @rmdir($workspace);
+    }
+
+    private function verifyStagedSource(string $payloadRoot, StagedFile $file): bool
+    {
+        $source = $this->stagedSourcePath($payloadRoot, $file->path());
+
+        if (!is_file($source) || is_link($source)) {
+            return false;
+        }
+
+        $resolved = realpath($source);
+
+        if ($resolved === false || is_link($source) || !$this->inside($resolved, $payloadRoot)) {
+            return false;
+        }
+
+        $size = @filesize($resolved);
+        $hash = @hash_file('sha256', $resolved);
+
+        return is_int($size) && $size === $file->byteSize() && $hash === $file->sha256();
+    }
+
+    private function stagedSourcePath(string $payloadRoot, string $relativePath): string
+    {
+        $candidate = $payloadRoot . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relativePath);
+
+        if (!$this->inside($candidate, $payloadRoot)) {
+            throw new \RuntimeException('Staged source escaped the payload root.');
+        }
+
+        return $candidate;
+    }
+
+    private function inside(string $path, string $root): bool
+    {
+        $path = strtolower(rtrim(str_replace('/', DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR));
+        $root = strtolower(rtrim(str_replace('/', DIRECTORY_SEPARATOR, $root), DIRECTORY_SEPARATOR));
+
+        return $path === $root || str_starts_with($path, $root . DIRECTORY_SEPARATOR);
     }
 
     private static function overlaps(string $path, string $root): bool
