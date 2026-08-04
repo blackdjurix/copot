@@ -18,6 +18,7 @@ class InstallerSchemaState
         'taxonomy_types',
         'taxonomy_terms',
         'taxonomy_assignments',
+        'core_migration_history',
     ];
 
     public function __construct(private Database $database)

@@ -385,6 +385,15 @@ CREATE TABLE redirects (
     UNIQUE KEY uq_redirects_source_path (source_path)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE core_migration_history (
+    migration_id VARCHAR(191) NOT NULL PRIMARY KEY,
+    sequence_number INT UNSIGNED NOT NULL UNIQUE,
+    target_webcore_version VARCHAR(64) NOT NULL,
+    target_schema_identity VARCHAR(191) NOT NULL,
+    migration_checksum CHAR(64) NOT NULL,
+    applied_at DATETIME NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 INSERT INTO permissions (name, slug, created_at, updated_at)
 SELECT desired.name, desired.slug, NOW(), NOW()
 FROM (
