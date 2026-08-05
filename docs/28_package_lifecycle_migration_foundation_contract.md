@@ -243,12 +243,15 @@ repair or operator recovery.
 
 Backup & Recovery is a separate platform capability consumed by Package
 Lifecycle. It is not a Package Lifecycle Work Unit and is not implemented by
-this contract.
+this contract. Its preparation contract is locked in
+`docs/31_backup_recovery_foundation_contract.md`; implementation has not
+started.
 
-Package Lifecycle preparation may define and consume a bounded recovery
-interface. Production-grade acceptance of destructive or in-place file/schema
-transitions requires an approved restore-capable Backup & Recovery
-implementation. Without that capability, planning, validation, dry-run,
+The first Backup & Recovery delivery slice is narrowly scoped to the physical
+recovery domains required by Existing-Runtime Webcore Lifecycle Adoption IU2.
+Production-grade acceptance of destructive or in-place file/schema transitions
+still requires an accepted restore-capable implementation and integration
+evidence. Without that capability, planning, validation, dry-run,
 non-destructive checks, and test doubles may proceed, but production closure of
 irreversible apply and migration behavior is not accepted.
 
@@ -475,8 +478,9 @@ runtime. It does not claim all possible Webcore installation or distribution
 capability. Remote discovery/download, signing/trust, channels, automatic
 updates, Admin upload, differential packages, downgrade/reverse migration,
 Module Package Lifecycle, and destructive rollback/restore remain excluded;
-Backup & Recovery remains separate. Existing-Runtime Webcore Lifecycle
-Adoption is a separate prerequisite capability documented in
+Backup & Recovery remains separate, with preparation/contract locked and
+implementation not started. Existing-Runtime Webcore Lifecycle Adoption is a
+separate prerequisite capability documented in
 `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`; it does not
 reopen this completed WU1–WU7 foundation slice.
 
@@ -499,8 +503,9 @@ reopen this completed WU1–WU7 foundation slice.
 
 ## Separate dependency: Backup & Recovery Foundation
 
-Backup & Recovery is a separate platform capability. Package Lifecycle may
-prepare against its bounded interface, but production-grade lifecycle closure
+Backup & Recovery is a separate platform capability with a locked preparation
+contract in `docs/31_backup_recovery_foundation_contract.md`. Package Lifecycle
+may consume its bounded interface, but production-grade lifecycle closure
 requires a real restore-capable implementation and integration evidence.
 
 ## Explicit exclusions

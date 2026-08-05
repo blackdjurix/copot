@@ -635,7 +635,8 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: Existing-Runtime Webcore Lifecycle Adoption IU2 — NOT STARTED
+Next work unit: Backup & Recovery Foundation implementation preparation
+Current dependency: Existing-Runtime Webcore Lifecycle Adoption IU2 — BLOCKED
 Current active implementation branch: feature/module-package-lifecycle
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
@@ -743,9 +744,14 @@ and contract-locked, WU1–WU7 implementation is complete for its accepted scope
 and Existing-Runtime Webcore Lifecycle Adoption is a separate prerequisite for
 current WU7 acceptance under
 `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`. Backup &
-Recovery remains separate, and destructive rollback/restore remains unavailable.
+Recovery preparation is contract-locked in
+`docs/31_backup_recovery_foundation_contract.md`; implementation is not
+started, destructive rollback/restore remains unavailable, and IU2 remains
+blocked pending an accepted restore-capable implementation.
 Existing-Runtime Webcore Lifecycle Adoption Implementation Unit 1: COMPLETE;
 legacy reconciliation remains NOT STARTED.
+Backup & Recovery Foundation: PREPARATION / CONTRACT LOCKED; implementation NOT
+STARTED.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
 Full Module Package Lifecycle: NOT YET CLOSED — Webcore adoption prerequisite and browser acceptance pending
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
@@ -774,13 +780,15 @@ Lifecycle preparation is complete and contract-locked in
 complete for its accepted scope, final WU7 human/E2E acceptance is blocked on
 the Webcore adoption prerequisite, and full Module Package Lifecycle completion
 is unreached. Existing-Runtime Webcore Lifecycle Adoption IU1 is complete and
-IU2 remains not started. No
+IU2 remains blocked and not started pending the Backup & Recovery Foundation
+implementation. No
 milestone number is assigned. The Webcore package lifecycle
 first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all
 possible Webcore installation/distribution capability.
-Backup & Recovery is a separate platform capability and production-closure
-dependency.
+Backup & Recovery is a separate platform capability with preparation/contract
+locked in `docs/31_backup_recovery_foundation_contract.md`; implementation is
+not started and remains a production-closure dependency.
 
 ### Post-M3 lifecycle classification
 

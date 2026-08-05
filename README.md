@@ -30,7 +30,8 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: Existing-Runtime Webcore Lifecycle Adoption IU2 — NOT STARTED
+Next work unit: Backup & Recovery Foundation implementation preparation
+Current dependency: Existing-Runtime Webcore Lifecycle Adoption IU2 — BLOCKED
 Current active implementation branch: feature/module-package-lifecycle
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
@@ -138,9 +139,14 @@ and contract-locked, WU1–WU7 implementation is complete for its accepted scope
 and Existing-Runtime Webcore Lifecycle Adoption is a separate prerequisite for
 current WU7 acceptance under
 `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`. Backup &
-Recovery remains separate, and destructive rollback/restore remains unavailable.
+Recovery preparation is contract-locked in
+`docs/31_backup_recovery_foundation_contract.md`; implementation is not
+started, destructive rollback/restore remains unavailable, and IU2 remains
+blocked pending an accepted restore-capable implementation.
 Existing-Runtime Webcore Lifecycle Adoption Implementation Unit 1: COMPLETE;
 legacy reconciliation remains NOT STARTED.
+Backup & Recovery Foundation: PREPARATION / CONTRACT LOCKED; implementation NOT
+STARTED.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
 Full Module Package Lifecycle: NOT YET CLOSED — Webcore adoption prerequisite and browser acceptance pending
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
