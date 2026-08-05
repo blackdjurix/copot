@@ -24,7 +24,7 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: NONE — WU1–WU7 COMPLETE AND CLOSED
+Next work unit: Existing-Runtime Webcore Lifecycle Adoption IU2 — NOT STARTED
 Current active implementation branch: feature/module-package-lifecycle
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
@@ -145,7 +145,7 @@ Module Package Lifecycle WU3: COMPLETE
 Module Package Lifecycle WU4: COMPLETE
 Module Package Lifecycle WU5: COMPLETE
 Module Package Lifecycle WU6: COMPLETE
-Module Package Lifecycle WU7: COMPLETE — browser acceptance PENDING
+Module Package Lifecycle WU7: IMPLEMENTATION COMPLETE — final human/E2E acceptance BLOCKED on Webcore adoption prerequisite
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED

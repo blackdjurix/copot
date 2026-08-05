@@ -635,7 +635,7 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: NONE — WU1–WU7 COMPLETE AND CLOSED
+Next work unit: Existing-Runtime Webcore Lifecycle Adoption IU2 — NOT STARTED
 Current active implementation branch: feature/module-package-lifecycle
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
@@ -756,7 +756,7 @@ Module Package Lifecycle WU3: COMPLETE
 Module Package Lifecycle WU4: COMPLETE
 Module Package Lifecycle WU5: COMPLETE
 Module Package Lifecycle WU6: COMPLETE
-Module Package Lifecycle WU7: COMPLETE — browser acceptance PENDING
+Module Package Lifecycle WU7: IMPLEMENTATION COMPLETE — final human/E2E acceptance BLOCKED on Webcore adoption prerequisite
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED
@@ -770,9 +770,11 @@ The latest completed Post-M3 platform-foundation target is Package Lifecycle & M
 Foundation. Its contract is
 `docs/28_package_lifecycle_migration_foundation_contract.md`. Module Package
 Lifecycle preparation is complete and contract-locked in
-`docs/29_module_package_lifecycle_contract.md`; WU1, WU2, WU3, WU4, and WU5 are
-complete, WU6 is complete, WU7 is not started, full Module Package Lifecycle completion is
-unreached, and no
+`docs/29_module_package_lifecycle_contract.md`; WU1–WU7 implementation is
+complete for its accepted scope, final WU7 human/E2E acceptance is blocked on
+the Webcore adoption prerequisite, and full Module Package Lifecycle completion
+is unreached. Existing-Runtime Webcore Lifecycle Adoption IU1 is complete and
+IU2 remains not started. No
 milestone number is assigned. The Webcore package lifecycle
 first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all

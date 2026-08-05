@@ -12,8 +12,9 @@ WU3: COMPLETE
 WU4: COMPLETE
 WU5: COMPLETE
 WU6: COMPLETE
-WU7: COMPLETE — automated/runtime validation PASS; browser acceptance PENDING
-Implementation: COMPLETE — WU1–WU7 COMPLETE
+WU7: IMPLEMENTATION COMPLETE — automated/runtime validation PASS; final
+human/E2E acceptance BLOCKED on Webcore adoption prerequisite
+Implementation: COMPLETE — WU1–WU7 implementation complete; final acceptance blocked
 ```
 
 This document records the locked architecture and delivered WU1–WU7 contract for the second
@@ -699,7 +700,7 @@ This contract is the authoritative preparation artifact. Concise project-state
 references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
-WU1–WU7 are complete on the authorized implementation branch with automated and local
-runtime validation passed. Browser/Admin acceptance remains pending, and the current
+WU1–WU7 implementation is complete on the authorized implementation branch with automated and local
+runtime validation passed. Final human/E2E acceptance remains blocked, and the current
 legacy Webcore runtime also lacks the prerequisite adoption capability; therefore the
 full Module Package Lifecycle is not yet closed.
