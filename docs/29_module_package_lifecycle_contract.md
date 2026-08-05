@@ -4,7 +4,8 @@
 
 ```text
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
-Full Module Package Lifecycle: NOT YET CLOSED — browser acceptance pending
+Full Module Package Lifecycle: NOT YET CLOSED — Webcore adoption prerequisite
+and browser acceptance pending
 WU1: COMPLETE
 WU2: COMPLETE
 WU3: COMPLETE
@@ -656,8 +657,11 @@ A package may be registered even when its corresponding installed Module is
 legacy or lacks sufficient lifecycle identity/history. Such a Module remains
 blocked from lifecycle Patch, Update, Upgrade, or Repair; WU7 does not silently
 adopt legacy state into committed lifecycle state. Legacy Module lifecycle
-adoption/bootstrap is a separate deferred and unscheduled item and is distinct
-from DI-PACKAGE-LIFECYCLE-WU7-01.
+adoption/bootstrap remains separate and unscheduled. Existing-Runtime Webcore
+Lifecycle Adoption is a distinct Webcore prerequisite for the current WU7
+acceptance runtime and is documented in
+`docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`; it does not
+authorize Module legacy adoption.
 
 Remote package discovery and download remain KEEP DEFERRED. WU7 is the final
 Module Package Lifecycle Work Unit; no WU8 is created for this approved
@@ -696,5 +700,6 @@ references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
 WU1–WU7 are complete on the authorized implementation branch with automated and local
-runtime validation passed. Browser/Admin acceptance remains pending; therefore the full
-Module Package Lifecycle is not yet closed.
+runtime validation passed. Browser/Admin acceptance remains pending, and the current
+legacy Webcore runtime also lacks the prerequisite adoption capability; therefore the
+full Module Package Lifecycle is not yet closed.

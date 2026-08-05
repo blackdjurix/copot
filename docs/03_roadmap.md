@@ -739,12 +739,15 @@ differential packages remain excluded; downgrade/reverse migration remains
 unsupported.
 Server-empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED under
 `DI-PACKAGE-LIFECYCLE-WU7-01`; Module Package Lifecycle preparation is complete
-and contract-locked, implementation is in progress through WU6 only, Backup & Recovery remains separate, and destructive
-rollback/restore remains unavailable.
+and contract-locked, WU1–WU7 implementation is complete for its accepted scope,
+and Existing-Runtime Webcore Lifecycle Adoption is a separate prerequisite for
+current WU7 acceptance under
+`docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`. Backup &
+Recovery remains separate, and destructive rollback/restore remains unavailable.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
-Full Module Package Lifecycle: NOT YET CLOSED — browser acceptance pending
+Full Module Package Lifecycle: NOT YET CLOSED — Webcore adoption prerequisite and browser acceptance pending
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
-Module Package Lifecycle implementation: COMPLETE — automated/runtime validation PASS; browser acceptance PENDING
+Module Package Lifecycle implementation: COMPLETE — WU1–WU7 automated/runtime validation PASS; current WU7 acceptance is blocked on Webcore adoption prerequisite and browser acceptance PENDING
 Module Package Lifecycle WU1: COMPLETE
 Module Package Lifecycle WU2: COMPLETE
 Module Package Lifecycle WU3: COMPLETE

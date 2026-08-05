@@ -473,7 +473,10 @@ runtime. It does not claim all possible Webcore installation or distribution
 capability. Remote discovery/download, signing/trust, channels, automatic
 updates, Admin upload, differential packages, downgrade/reverse migration,
 Module Package Lifecycle, and destructive rollback/restore remain excluded;
-Backup & Recovery remains separate.
+Backup & Recovery remains separate. Existing-Runtime Webcore Lifecycle
+Adoption is a separate prerequisite capability documented in
+`docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`; it does not
+reopen this completed WU1–WU7 foundation slice.
 
 ### Deferred Item — DI-PACKAGE-LIFECYCLE-WU7-01
 
