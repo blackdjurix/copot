@@ -3,8 +3,10 @@
 ## Preparation status
 
 ```text
-Backup & Recovery Foundation: PREPARATION / CONTRACT LOCKED
-Backup & Recovery implementation: NOT STARTED
+Backup & Recovery Foundation: IMPLEMENTATION IN PROGRESS
+Backup & Recovery WU1: COMPLETE
+Backup & Recovery WU2: NOT STARTED
+Backup & Recovery implementation overall: IN PROGRESS
 Existing-Runtime Webcore Lifecycle Adoption IU2: BLOCKED ON THIS DEPENDENCY
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMMITTED WEBCORE STATE
 ```
@@ -310,9 +312,10 @@ IU2 must remain blocked until acceptance evidence proves:
 
 ## Dependency consequence
 
-Backup & Recovery Foundation is **PREPARATION / CONTRACT LOCKED** and its
-implementation is **NOT STARTED**. Existing-Runtime Webcore Lifecycle Adoption
-IU2 remains **BLOCKED** pending an accepted restore-capable implementation.
+Backup & Recovery Foundation is **IMPLEMENTATION IN PROGRESS**; WU1 is
+**COMPLETE**, WU2 is **NOT STARTED**, and implementation overall is **IN
+PROGRESS**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
+**BLOCKED** pending an accepted restore-capable implementation.
 Module Package Lifecycle WU7 human/E2E acceptance remains **BLOCKED** pending
 authoritative COMMITTED Webcore runtime state. WU7 is not resumed by this
 contract.
