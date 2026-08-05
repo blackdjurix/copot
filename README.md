@@ -140,13 +140,13 @@ and Existing-Runtime Webcore Lifecycle Adoption is a separate prerequisite for
 current WU7 acceptance under
 `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`. Backup &
 Recovery preparation is contract-locked in
-`docs/31_backup_recovery_foundation_contract.md`; implementation is not
-started, destructive rollback/restore remains unavailable, and IU2 remains
-blocked pending an accepted restore-capable implementation.
+`docs/31_backup_recovery_foundation_contract.md`; WU1 and WU2 are complete,
+WU3 is not started, destructive rollback/restore remains unavailable, and IU2
+remains blocked pending an accepted restore-capable implementation.
 Existing-Runtime Webcore Lifecycle Adoption Implementation Unit 1: COMPLETE;
 legacy reconciliation remains NOT STARTED.
 Backup & Recovery Foundation: IMPLEMENTATION IN PROGRESS — WU1 COMPLETE; WU2
-NOT STARTED.
+COMPLETE; WU3 NOT STARTED.
 Backup & Recovery implementation overall: IN PROGRESS.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
 Full Module Package Lifecycle: NOT YET CLOSED — Webcore adoption prerequisite and browser acceptance pending

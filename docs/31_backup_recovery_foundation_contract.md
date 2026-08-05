@@ -5,7 +5,8 @@
 ```text
 Backup & Recovery Foundation: IMPLEMENTATION IN PROGRESS
 Backup & Recovery WU1: COMPLETE
-Backup & Recovery WU2: NOT STARTED
+Backup & Recovery WU2: COMPLETE
+Backup & Recovery WU3: NOT STARTED
 Backup & Recovery implementation overall: IN PROGRESS
 Existing-Runtime Webcore Lifecycle Adoption IU2: BLOCKED ON THIS DEPENDENCY
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMMITTED WEBCORE STATE
@@ -18,8 +19,9 @@ Lifecycle. It does not implement Backup & Recovery, IU2, Module Package
 Lifecycle, Server-Empty Bootstrap, or Module legacy adoption.
 
 The proposed implementation namespace is `Copot\\Core\\BackupRecovery`.
-Exact class names, serialization, schema, and provider implementation remain
-implementation-deferred unless later evidence requires them to be locked.
+WU2 uses bounded canonical JSON for the immutable manifest and artifact
+metadata. Schema and provider implementation remain implementation-deferred
+unless later evidence requires them to be locked.
 
 ## Capability ownership and boundary
 
@@ -74,11 +76,12 @@ Once successfully published, these facts do not mutate. Any incomplete
 capture, identity mismatch, or artifact-integrity failure blocks reconciliation
 before the first live mutation.
 
-Exact serialization and persistence schema are implementation-deferred. The
-manifest must nevertheless be durable, independently readable, integrity
-verifiable, and separate from lifecycle state being restored. WU2 must not make
-the immutable manifest own mutable restore, post-restore verification, cleanup,
-or interruption/retry state.
+The WU2 serialization is bounded canonical JSON: fixed field ordering,
+UTF-8, `JSON_UNESCAPED_SLASHES`, `JSON_THROW_ON_ERROR`, no pretty printing,
+and strict required/unknown-field validation. The manifest must be durable,
+independently readable, integrity verifiable, and separate from lifecycle state
+being restored. WU2 must not make the immutable manifest own mutable restore,
+post-restore verification, cleanup, or interruption/retry state.
 
 WU6 owns the mutable durable recovery lifecycle/state-machine record, including
 the following states and statuses:
@@ -341,8 +344,8 @@ IU2 must remain blocked until acceptance evidence proves:
 
 ## Dependency consequence
 
-Backup & Recovery Foundation is **IMPLEMENTATION IN PROGRESS**; WU1 is
-**COMPLETE**, WU2 is **NOT STARTED**, and implementation overall is **IN
+Backup & Recovery Foundation is **IMPLEMENTATION IN PROGRESS**; WU1 and WU2 are
+**COMPLETE**, WU3 is **NOT STARTED**, and implementation overall is **IN
 PROGRESS**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
 **BLOCKED** pending an accepted restore-capable implementation.
 Module Package Lifecycle WU7 human/E2E acceptance remains **BLOCKED** pending
