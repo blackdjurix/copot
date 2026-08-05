@@ -8,13 +8,14 @@ Full Module Package Lifecycle: IN PROGRESS / NOT COMPLETE
 WU1: COMPLETE
 WU2: COMPLETE
 WU3: COMPLETE
-WU4: NOT STARTED
-Implementation: IN PROGRESS — WU1–WU3 COMPLETE ONLY
+WU4: COMPLETE
+WU5: NOT STARTED
+Implementation: IN PROGRESS — WU1–WU4 COMPLETE ONLY
 ```
 
-This document records the locked architecture and delivered WU1–WU2 contract for the second
+This document records the locked architecture and delivered WU1–WU4 contract for the second
 lifecycle target over the completed shared Package Lifecycle & Migration
-Foundation. It authorizes no WU4 or later implementation, schema change,
+Foundation. It authorizes no WU5 or later implementation, schema change,
 package builder change, Admin upload UI, or remote distribution.
 
 No milestone number is assigned. Module Manager is the operator/Admin
@@ -374,6 +375,29 @@ SemVer/compatibility cases, and consistency with Module and distribution docs.
 
 **Runtime/browser/human validation:** Not materially required.
 
+### WU4 delivery boundary
+
+WU4 consumes WU3 transition plans and the per-Module lifecycle registry. It
+uses the registry and runtime Module status for installed dependency identity,
+version, and enabled-state evidence, while transitive dependency declarations
+come from an explicit authoritative installed-package contract reader. Missing
+contract evidence fails closed; the existing name-only Module Manager dependency
+behavior is not promoted into the package contract.
+
+Dependency constraints are evaluated with the shared SemVer range primitive.
+The planner deterministically handles satisfied, missing, disabled,
+incompatible, update-required, cyclic, and unresolvable dependencies. It emits
+ordered prerequisite targets when a supplied candidate package can satisfy a
+forward dependency update, but marks cross-Module action as requiring explicit
+operator action.
+
+Declared conflicts and package/technical identity conflicts are classified from
+installed lifecycle evidence. Path, schema/migration, and
+permission/provisioning conflicts are classified only when an authoritative
+ownership-evidence adapter supplies them; they are otherwise reported as an
+explicit limitation. WU4 performs no installation, enablement, update,
+replacement, file, schema, permission, or lifecycle-state mutation.
+
 ### WU3 delivery boundary
 
 WU3 adds a bounded file-backed per-Module registry under the existing
@@ -571,6 +595,6 @@ This contract is the authoritative preparation artifact. Concise project-state
 references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
-WU1, WU2, and WU3 are complete on the authorized implementation branch. WU4 is
-not started. Full Module Package Lifecycle implementation remains in progress
-and is not complete or closed.
+WU1, WU2, WU3, and WU4 are complete on the authorized implementation branch.
+WU5 is not started. Full Module Package Lifecycle implementation remains in
+progress and is not complete or closed.

@@ -139,11 +139,12 @@ rollback/restore remains unavailable.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
 Full Module Package Lifecycle: IN PROGRESS / NOT COMPLETE
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
-Module Package Lifecycle implementation: IN PROGRESS — WU1–WU3 COMPLETE ONLY
+Module Package Lifecycle implementation: IN PROGRESS — WU1–WU4 COMPLETE ONLY
 Module Package Lifecycle WU1: COMPLETE
 Module Package Lifecycle WU2: COMPLETE
 Module Package Lifecycle WU3: COMPLETE
-Module Package Lifecycle WU4: NOT STARTED
+Module Package Lifecycle WU4: COMPLETE
+Module Package Lifecycle WU5: NOT STARTED
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED

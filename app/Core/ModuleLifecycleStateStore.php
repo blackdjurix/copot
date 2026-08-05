@@ -51,5 +51,17 @@ final class ModuleLifecycleStateStore
         if ($this->read($state->moduleIdentity())?->toArray() !== $state->toArray()) throw new \RuntimeException('Module lifecycle state could not be verified.');
     }
 
+    /** @return list<ModuleLifecycleState> */
+    public function all(): array
+    {
+        $states = [];
+        foreach (glob($this->root . DIRECTORY_SEPARATOR . '*.json') ?: [] as $path) {
+            $name = basename($path, '.json');
+            $states[] = $this->read(new ModuleIdentity($name));
+        }
+        usort($states, static fn (ModuleLifecycleState $left, ModuleLifecycleState $right): int => strcmp($left->moduleIdentity()->value(), $right->moduleIdentity()->value()));
+        return array_values(array_filter($states, static fn (?ModuleLifecycleState $state): bool => $state instanceof ModuleLifecycleState));
+    }
+
     private function path(ModuleIdentity $module): string { return $this->root . DIRECTORY_SEPARATOR . $module->value() . '.json'; }
 }
