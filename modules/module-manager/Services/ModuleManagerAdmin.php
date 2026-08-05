@@ -261,7 +261,12 @@ final class ModuleManagerAdmin
             new ModuleDiscovery($this->app->path('modules')),
             new ModuleRepository($this->app->database())
         );
-        $items = (new ModulePackageOperator($this->app))->enrich($builder->build());
+        $items = $builder->build();
+        try {
+            $items = (new ModulePackageOperator($this->app))->enrich($items);
+        } catch (Throwable) {
+            // Package-library availability must not hide the ordinary Module Manager surface.
+        }
 
         foreach ($items as &$item) {
             if (($item['name'] ?? null) !== 'module-manager') {
