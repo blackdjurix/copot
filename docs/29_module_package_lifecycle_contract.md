@@ -15,10 +15,10 @@ WU7: NOT STARTED
 Implementation: IN PROGRESS — WU1–WU6 COMPLETE ONLY
 ```
 
-This document records the locked architecture and delivered WU1–WU5 contract for the second
+This document records the locked architecture and delivered WU1–WU6 contract for the second
 lifecycle target over the completed shared Package Lifecycle & Migration
 Foundation. It authorizes no WU7 or later implementation, schema change,
-package builder change, Admin upload UI, or remote distribution.
+package builder change, remote distribution, or unrelated Admin upload surface.
 
 No milestone number is assigned. Module Manager is the operator/Admin
 consumer; it is not the lifecycle engine. Generic archive handling, staging,
@@ -588,24 +588,77 @@ automatic activation, cross-Module mutation, rollback, or Backup & Recovery.
 ### WU7 — Module Manager Operator Surface & End-to-End Acceptance
 
 **Objective:** Make Module Manager the operator/Admin consumer of the shared
-Module Package Lifecycle and prove the first Module-package slice end-to-end.
+Module Package Lifecycle, provide the bounded local Add Module package-library
+entry, and prove the first Module-package slice end-to-end.
 
 **Direct dependencies:** WU1–WU6.
 
-**Principal deliverables:** Deterministic plan/apply/repair/status integration,
-dependency/conflict explanations, explicit resolution requirements, Module
-Manager inventory integration, and representative package acceptance.
+**Principal deliverables:** Add Module local ZIP intake and immutable
+package/release registration, installed-versus-available Module inventory
+presentation, deterministic plan/apply/repair/status integration,
+dependency/conflict explanations, explicit resolution requirements, temporary
+runtime suspension semantics where required for enabled mutation, and
+representative package acceptance.
 
-**Important exclusions:** Admin ZIP upload unless separately authorized,
-remote discovery/download, automatic updates, marketplace, signing/trust,
-channels.
+**Important exclusions:** Remote discovery/download, remote package distribution,
+automatic updates, marketplace, signing/trust, channels, legacy lifecycle
+adoption, and Server-Empty Bootstrap.
 
-**Acceptance evidence:** Real representative package plan/apply/repair/status,
-enabled and disabled preservation, tamper rejection, operator-resolution
-cases, and unchanged repository source during acceptance.
+**Acceptance evidence:** Add Module registration without runtime mutation,
+same-identity package candidate de-duplication, real representative package
+plan/apply/repair/status, installed-versus-available presentation, enabled and
+disabled preservation, tamper rejection, operator-resolution cases, legacy
+fail-closed lifecycle behavior, and unchanged repository source during
+acceptance.
 
 **Runtime/browser/human validation:** Runtime validation materially required;
 browser/human validation required only for changed Admin Module Manager flows.
+
+### WU7 corrected operator/package boundary
+
+Add Module is the Module Manager entry point for selecting a local Module
+package ZIP. It uses the existing lifecycle intake and inspection boundary,
+then registers the accepted immutable package/release candidate in a bounded
+local Module package library. Registration does not install, repair, patch,
+update, upgrade, enable, disable, or otherwise mutate the runtime Module.
+
+The local package library is separate from installed Module lifecycle state. It
+stores available package/release candidates and de-duplicates candidates by
+package identity and technical Module identity. Module Manager may show the
+installed version and available version together, but lifecycle action is
+determined separately by the existing WU3 transition planner:
+
+    Add Module
+    → local package registration
+    → installed-versus-available comparison
+    → WU3 transition classification and WU4 conflict/dependency planning
+    → explicit operator action
+    → WU1–WU6 lifecycle execution
+
+An incoming lower version, identity rebinding, or unresolved dependency/conflict
+remains blocked. A same-identity newer package does not create a duplicate
+Module inventory item. A same committed target may be offered for REPAIR when
+the existing lifecycle semantics permit it.
+
+For an enabled Module undergoing REPAIR, PATCH, UPDATE, or UPGRADE, persistent
+operator-owned enabled state remains enabled. WU7 may temporarily suspend or
+quiesce runtime execution during unsafe live mutation when the audited runtime
+boundary requires it; this is not a persistent Disable action. Successful
+finalization restores runtime availability. An indeterminate operation does not
+automatically resume execution until safe reconciliation or operator
+intervention is possible. Disabled Modules remain disabled, and fresh INSTALL
+finishes disabled.
+
+A package may be registered even when its corresponding installed Module is
+legacy or lacks sufficient lifecycle identity/history. Such a Module remains
+blocked from lifecycle Patch, Update, Upgrade, or Repair; WU7 does not silently
+adopt legacy state into committed lifecycle state. Legacy Module lifecycle
+adoption/bootstrap is a separate deferred and unscheduled item and is distinct
+from DI-PACKAGE-LIFECYCLE-WU7-01.
+
+Remote package discovery and download remain KEEP DEFERRED. WU7 is the final
+Module Package Lifecycle Work Unit; no WU8 is created for this approved
+boundary.
 
 ## Deferred and explicit exclusions
 
@@ -631,6 +684,7 @@ The following remain excluded:
 - automatic dependency mutation;
 - automatic provider selection;
 - multi-module package orchestration.
+- legacy Module lifecycle adoption/bootstrap.
 
 ## Documentation and next gate
 
