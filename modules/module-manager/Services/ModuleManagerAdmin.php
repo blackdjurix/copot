@@ -111,6 +111,24 @@ final class ModuleManagerAdmin
         return Response::redirect($target . '?notice=' . rawurlencode($action . '_success'));
     }
 
+    public function addPackageResponse(Request $request): Response
+    {
+        $user = $this->authorize($request); if ($user instanceof Response) return $user;
+        if ($this->app->csrf()->validateOrReject($request) instanceof Response) return $this->app->adminErrors()->response($request, 419);
+        try { $file = $request->file('module_package'); if ($file === null) throw new InvalidArgumentException('A local Module package ZIP is required.'); (new ModulePackageOperator($this->app))->registerUpload($file); return Response::redirect($this->modulesPath() . '?notice=module_package_registered'); }
+        catch (Throwable $exception) { return $this->renderInventory($request, $user, $exception instanceof InvalidArgumentException ? $exception->getMessage() : 'The Module package could not be registered.', null, 422); }
+    }
+
+    public function lifecycleResponse(Request $request): Response
+    {
+        $user = $this->authorize($request); if ($user instanceof Response) return $user;
+        if ($this->app->csrf()->validateOrReject($request) instanceof Response) return $this->app->adminErrors()->response($request, 419);
+        $candidate = $request->post('candidate');
+        if (!is_string($candidate) || preg_match('/^[a-f0-9]{64}$/', $candidate) !== 1) return $this->renderInventory($request, $user, 'The selected Module package candidate is invalid.', null, 422);
+        try { $classification = (new ModulePackageOperator($this->app))->execute($candidate); return Response::redirect($this->modulesPath() . '?notice=module_' . rawurlencode($classification) . '_success'); }
+        catch (Throwable $exception) { return $this->renderInventory($request, $user, 'The Module lifecycle operation could not be completed.', null, 422); }
+    }
+
     private function authorize(Request $request): User|Response
     {
         if (!$this->app->auth()->check()) {
@@ -149,6 +167,8 @@ final class ModuleManagerAdmin
                 'inventoryPath' => $this->modulesPath(),
                 'detailPath' => fn (string $name): string => $this->modulePath($name),
                 'actionPaths' => $this->actionPaths(),
+                'addPath' => $this->app->adminUrl()->childUrl('modules/add'),
+                'lifecyclePath' => $this->app->adminUrl()->childUrl('modules/lifecycle'),
                 'error' => $this->messageFor($error),
                 'notice' => $notice ?? $this->noticeFor($request->input('notice')),
             ]);
@@ -241,7 +261,7 @@ final class ModuleManagerAdmin
             new ModuleDiscovery($this->app->path('modules')),
             new ModuleRepository($this->app->database())
         );
-        $items = $builder->build();
+        $items = (new ModulePackageOperator($this->app))->enrich($builder->build());
 
         foreach ($items as &$item) {
             if (($item['name'] ?? null) !== 'module-manager') {
@@ -330,6 +350,12 @@ final class ModuleManagerAdmin
             'enable_success' => 'Module enabled successfully.',
             'disable_success' => 'Module disabled successfully.',
             'uninstall_success' => 'Module uninstalled successfully.',
+            'module_package_registered' => 'Module package registered. Review it before starting a lifecycle operation.',
+            'module_install_success' => 'Module installed successfully through Package Lifecycle.',
+            'module_repair_success' => 'Module repaired successfully through Package Lifecycle.',
+            'module_patch_success' => 'Module patched successfully through Package Lifecycle.',
+            'module_update_success' => 'Module updated successfully through Package Lifecycle.',
+            'module_upgrade_success' => 'Module upgraded successfully through Package Lifecycle.',
             default => null,
         };
     }

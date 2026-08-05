@@ -33,6 +33,12 @@ $visibleActions = static function (string $lifecycle, string $action): bool {
             <h2 class="admin-panel__title" id="modules-list-title">Modules</h2>
             <p class="admin-panel__description">Review discovered modules and manage their lifecycle.</p>
         </div>
+        <form method="post" action="<?= $escape($addPath ?? '') ?>" enctype="multipart/form-data" class="admin-form admin-module-package-form">
+            <input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>">
+            <label for="module-package">Add Module package (ZIP)</label>
+            <input id="module-package" type="file" name="module_package" accept=".zip,application/zip" required>
+            <button class="admin-button admin-button--primary" type="submit">Add Module</button>
+        </form>
     </header>
 
     <div class="admin-panel__body">
@@ -93,6 +99,7 @@ $visibleActions = static function (string $lifecycle, string $action): bool {
                             </th>
                             <td class="admin-module-version">
                                 <span class="admin-module-version__primary"><?= $escape($item['version'] ?? '') ?></span>
+                                <?php if (!empty($item['available_package_version'])): ?><div class="admin-text-muted">Available: <?= $escape($item['available_package_version']) ?></div><?php endif; ?>
                             </td>
                             <td class="admin-module-lifecycle">
                                 <span class="admin-badge<?= $lifecycle[1] !== '' ? ' ' . $lifecycle[1] : '' ?>"><?= $escape($lifecycle[0]) ?></span>
@@ -126,6 +133,14 @@ $visibleActions = static function (string $lifecycle, string $action): bool {
                                         <?php endif; ?>
                                     <?php endforeach; ?>
                                 </div>
+                                <?php if (!empty($item['available_package_candidate']) && empty($item['lifecycle_blocker'])): ?>
+                                    <form method="post" action="<?= $escape($lifecyclePath ?? '') ?>" class="admin-form admin-form--inline">
+                                        <input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>">
+                                        <input type="hidden" name="candidate" value="<?= $escape($item['available_package_candidate']) ?>">
+                                        <button class="admin-button admin-button--primary" type="submit">Run Package Lifecycle</button>
+                                    </form>
+                                <?php endif; ?>
+                                <?php if (!empty($item['lifecycle_blocker'])): ?><div class="admin-text-muted"><?= $escape($item['lifecycle_blocker']) ?></div><?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

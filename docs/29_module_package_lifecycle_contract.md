@@ -4,26 +4,29 @@
 
 ```text
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
-Full Module Package Lifecycle: IN PROGRESS / NOT COMPLETE
+Full Module Package Lifecycle: NOT YET CLOSED — browser acceptance pending
 WU1: COMPLETE
 WU2: COMPLETE
 WU3: COMPLETE
 WU4: COMPLETE
 WU5: COMPLETE
 WU6: COMPLETE
-WU7: NOT STARTED
-Implementation: IN PROGRESS — WU1–WU6 COMPLETE ONLY
+WU7: COMPLETE — automated/runtime validation PASS; browser acceptance PENDING
+Implementation: COMPLETE — WU1–WU7 COMPLETE
 ```
 
-This document records the locked architecture and delivered WU1–WU6 contract for the second
+This document records the locked architecture and delivered WU1–WU7 contract for the second
 lifecycle target over the completed shared Package Lifecycle & Migration
-Foundation. It authorizes no WU7 or later implementation, schema change,
-package builder change, remote distribution, or unrelated Admin upload surface.
+Foundation. It records the bounded WU7 implementation and authorizes no later
+schema change, package-builder change, remote distribution, or unrelated Admin surface.
 
 No milestone number is assigned. Module Manager is the operator/Admin
 consumer; it is not the lifecycle engine. Generic archive handling, staging,
 locking, operation persistence, integrity primitives, and migration
-infrastructure remain shared lifecycle responsibilities.
+infrastructure remain shared lifecycle responsibilities. WU7 supplies local Add Module
+registration, immutable package candidates under `.copot-lifecycle/module-packages`,
+installed-versus-available inventory data, and explicit lifecycle execution routing through
+the existing WU1–WU6 services. Browser/Admin visual acceptance remains pending separately.
 
 The first lifecycle delivery remains Webcore-first and complete:
 `docs/28_package_lifecycle_migration_foundation_contract.md`.
@@ -692,6 +695,6 @@ This contract is the authoritative preparation artifact. Concise project-state
 references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
-WU1, WU2, WU3, WU4, WU5, and WU6 are complete on the authorized implementation
-branch. WU7 is not started. Full Module Package Lifecycle implementation
-remains in progress and is not complete or closed.
+WU1–WU7 are complete on the authorized implementation branch with automated and local
+runtime validation passed. Browser/Admin acceptance remains pending; therefore the full
+Module Package Lifecycle is not yet closed.

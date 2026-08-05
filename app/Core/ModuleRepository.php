@@ -132,6 +132,18 @@ class ModuleRepository
         return $statement->fetchAll();
     }
 
+    public function upsertPermissionMetadata(string $moduleName, string $slug, string $name): void
+    {
+        $check = $this->database->connection()->prepare('SELECT permission_slug FROM module_permissions WHERE module_name = :module_name AND permission_slug = :permission_slug LIMIT 1');
+        $check->execute(['module_name' => $moduleName, 'permission_slug' => $slug]);
+        if ($check->fetch() !== false) {
+            $update = $this->database->connection()->prepare('UPDATE module_permissions SET permission_name = :permission_name WHERE module_name = :module_name AND permission_slug = :permission_slug');
+            $update->execute(['module_name' => $moduleName, 'permission_slug' => $slug, 'permission_name' => $name]);
+            return;
+        }
+        $this->createPermission($moduleName, $slug, $name);
+    }
+
     public function deletePermissions(string $moduleName): void
     {
         $statement = $this->database->connection()->prepare(

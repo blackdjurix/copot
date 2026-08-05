@@ -5,6 +5,7 @@ use Copot\Core\Response;
 require_once __DIR__ . '/Services/ModuleActionPolicy.php';
 require_once __DIR__ . '/Services/ModuleInventoryBuilder.php';
 require_once __DIR__ . '/Services/ModuleManagerAdmin.php';
+require_once __DIR__ . '/Services/ModulePackageOperator.php';
 
 $modulesAdmin = new ModuleManagerAdmin($app);
 $modulesPath = $app->adminUrl()->childUrl('modules');
@@ -26,3 +27,8 @@ foreach (['install', 'enable', 'disable', 'uninstall'] as $action) {
         return $modulesAdmin->mutationResponse($request, $action);
     });
 }
+
+$addPath = $app->adminUrl()->childUrl('modules/add');
+$app->router()->post($addPath, static fn ($request): Response => $modulesAdmin->addPackageResponse($request));
+$lifecyclePath = $app->adminUrl()->childUrl('modules/lifecycle');
+$app->router()->post($lifecyclePath, static fn ($request): Response => $modulesAdmin->lifecycleResponse($request));
