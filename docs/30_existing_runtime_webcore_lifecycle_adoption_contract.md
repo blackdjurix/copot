@@ -4,7 +4,8 @@
 
 ```text
 Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
-Implementation: NOT STARTED
+Implementation Unit 1: COMPLETE
+Implementation Unit 2 — Legacy Reconciliation: NOT STARTED
 Module Package Lifecycle WU7 acceptance: BLOCKED ON THIS PREREQUISITE
 Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED
 ```
@@ -146,8 +147,22 @@ The current runtime is not an acceptance fixture for Unit 1 or Unit 2 until
 the six drifted files and the missing schema/migration evidence are addressed
 through an explicitly authorized process.
 
+## Implementation Unit 1 delivery
+
+Implementation Unit 1 provides the explicit `package:adopt` operator command.
+It reuses shared ZIP intake, inventory verification, WU6 integrity/health
+finalization, committed-state persistence, and operation cleanup. It verifies
+the canonical Core table shape and empty migration ledger without applying
+package files or replaying migrations. It is independently tested for success,
+repeat adoption, version/hash/schema mismatch, failed health gates, and
+committed package-integrity identity persistence.
+
+The current XAMPP runtime remains legacy and is rejected because its installed
+evidence does not match the supplied target package. It was not normalized.
+
 ## Recommended next gate
 
-Authorize implementation preparation for **Implementation Unit 1 — Exact-Match
-Webcore Runtime Adoption**. Do not begin reconciliation, Server-Empty Bootstrap,
+Authorize implementation preparation for **Implementation Unit 2 — Legacy
+Webcore Runtime Reconciliation** only after the required restore-capable
+recovery boundary is approved. Do not begin reconciliation, Server-Empty Bootstrap,
 Module legacy adoption, or Module WU7 browser acceptance under this contract.

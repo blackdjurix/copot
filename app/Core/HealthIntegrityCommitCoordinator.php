@@ -73,7 +73,8 @@ final class HealthIntegrityCommitCoordinator
                 $package->manifestContractVersion(),
                 $migrationPlan->virtualFinalSchemaIdentity() ?? 'canonical-current',
                 $migrationIdentity,
-                $committedAt
+                $committedAt,
+                $package->integrityIdentity()
             );
             $this->committedStore->commit($this->installationState, $state);
 
@@ -120,7 +121,8 @@ final class HealthIntegrityCommitCoordinator
                 || $state->sourceTreeIdentity() !== $package->sourceTreeIdentity()
                 || $state->manifestContractVersion() !== $package->manifestContractVersion()
                 || $state->schemaStateIdentity() !== $expectedSchema
-                || $state->migrationStateIdentity() !== $migrationIdentity) {
+                || $state->migrationStateIdentity() !== $migrationIdentity
+                || ($state->packageIntegrityIdentity() !== null && $state->packageIntegrityIdentity() !== $package->integrityIdentity())) {
                 return $this->failure('cleanup', 'Committed target does not exactly match the cleanup-pending operation.', $operationId, new HealthGateMatrix([HealthGateResult::fail('committed-target', 'Committed target identity mismatch.')]));
             }
 

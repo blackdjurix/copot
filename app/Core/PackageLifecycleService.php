@@ -33,7 +33,9 @@ final class PackageLifecycleService
         private MaintenanceCoordinator $maintenance,
         private InstallationMutex $mutex,
         callable $runtime,
-        callable $runtimeChecks
+        callable $runtimeChecks,
+        private CanonicalSchemaBaselineVerifier $canonicalSchema,
+        private string $canonicalSchemaPath
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -87,6 +89,59 @@ final class PackageLifecycleService
         }
     }
 
+    public function adopt(string $zip): PackageLifecycleResult
+    {
+        $payload = null;
+        $operation = null;
+        try {
+            [$payload, $manifest, $installed] = $this->prepareAdoption($zip);
+            $schemaGates = $this->canonicalSchema->verify(($this->connection)(), $this->canonicalSchemaPath);
+            if (!$schemaGates->passed()) {
+                $payload->cleanup();
+                return new PackageLifecycleResult(false, 'rejected', $schemaGates->failureReason());
+            }
+
+            $schemaIdentity = $this->canonicalSchema->identity($this->canonicalSchemaPath);
+            $migration = CoreMigrationPlan::allow($installed->snapshot()?->webcoreVersion() ?? '', $manifest->contract()->targetWebcoreVersion(), null, $schemaIdentity, [], true);
+            $applyPlan = WebcoreApplyPlan::fromPayload($manifest->payload());
+            $lock = $this->mutex->acquire();
+            if (!$lock instanceof InstallationLock) {
+                $payload->cleanup();
+                return new PackageLifecycleResult(false, 'blocked', 'Another lifecycle operation is already running.');
+            }
+
+            try {
+                if ($this->maintenance->record() !== null) {
+                    $payload->cleanup();
+                    return new PackageLifecycleResult(false, 'blocked', 'Another lifecycle operation or maintenance state is active.');
+                }
+                $now = gmdate(DATE_ATOM);
+                $operation = new LifecycleOperationRecord(
+                    bin2hex(random_bytes(16)), 'adopt', $manifest->contract()->targetWebcoreVersion(),
+                    $manifest->contract()->releaseIdentity(), $payload->archiveSha256(), $payload->stagingPath(),
+                    hash('sha256', implode(':', array_map(static fn (StagedFile $file): string => $file->path() . ':' . $file->sha256(), $manifest->payload()->files()))),
+                    $applyPlan->identity(), LifecycleOperationRecord::AWAITING_WU6, 0, null,
+                    hash('sha256', ''), MigrationRunResult::NOOP, $now, $now
+                );
+                $this->maintenance->enter($operation);
+            } finally {
+                $lock->release();
+            }
+
+            $final = $this->healthCoordinator->finalize($operation->operationId(), $manifest->contract(), $applyPlan, $migration, $this->liveGuard, ($this->connection)(), ($this->runtimeChecks)());
+            if ($final->status() === HealthIntegrityCommitResult::COMPLETED) {
+                $payload->cleanup();
+                return new PackageLifecycleResult(true, 'completed', '', null, $migration, $operation->operationId());
+            }
+            return new PackageLifecycleResult(false, $final->status(), $final->reason(), null, $migration, $operation->operationId());
+        } catch (\Throwable $exception) {
+            if ($payload instanceof StagedPayload && !$operation instanceof LifecycleOperationRecord) {
+                try { $payload->cleanup(); } catch (\Throwable) { }
+            }
+            return new PackageLifecycleResult(false, $this->isCapabilityFailure($exception) ? 'unavailable' : 'invalid_package', $exception->getMessage());
+        }
+    }
+
     public function status(): array
     {
         try {
@@ -127,6 +182,32 @@ final class PackageLifecycleService
             $transition = $this->transitionPlanner->plan($installed, $manifest->contract(), $runtime);
             $migration = $this->migrationPlanner->plan($installed, $manifest->contract(), $this->migrationRegistry, $this->ledger, ($this->connection)());
             return [$payload, $manifest, $transition, $migration];
+        } catch (\Throwable $exception) {
+            $payload->cleanup();
+            throw $exception;
+        }
+    }
+
+    private function prepareAdoption(string $zip): array
+    {
+        $payload = $this->intake->intake($zip);
+        try {
+            $manifest = $this->manifestReader->read($payload);
+            $this->inventoryVerifier->verify($manifest->payload(), $manifest->contract()->inventory());
+            $installed = $this->installedInspector->inspect($this->installationState, ($this->evidence)());
+            if ($installed->status() !== InstalledStateStatus::LEGACY || $installed->snapshot() === null) {
+                throw new \RuntimeException('Exact-match adoption requires LEGACY installed state.');
+            }
+            if (PackageVersion::compare($manifest->contract()->targetWebcoreVersion(), $installed->snapshot()->webcoreVersion()) !== 0) {
+                throw new \RuntimeException('Exact-match adoption requires package version equality with installed evidence.');
+            }
+            if ($manifest->contract()->migrationDeclaration()->declaresCoreMigrations()) {
+                throw new \RuntimeException('Exact-match adoption cannot establish unknown historical migration state.');
+            }
+            if (!($this->runtime)()->supports($manifest->contract()->runtimeCompatibility())) {
+                throw new \RuntimeException('Runtime requirements are not satisfied.');
+            }
+            return [$payload, $manifest, $installed];
         } catch (\Throwable $exception) {
             $payload->cleanup();
             throw $exception;

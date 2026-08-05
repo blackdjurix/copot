@@ -94,7 +94,9 @@ final class PackageLifecycleFactory
                         return $application->run(new Request('GET', $application->adminUrl()->baseUrl()))->statusCode() < 500;
                     },
                 ];
-            }
+            },
+            new CanonicalSchemaBaselineVerifier(),
+            $basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql'
         );
     }
 }

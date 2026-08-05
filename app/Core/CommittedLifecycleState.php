@@ -13,13 +13,15 @@ final class CommittedLifecycleState
         private int $manifestContractVersion,
         private string $schemaStateIdentity,
         private string $migrationStateIdentity,
-        private DateTimeImmutable $committedAt
+        private DateTimeImmutable $committedAt,
+        private ?string $packageIntegrityIdentity = null
     ) {
         PackageVersion::assertValid($webcoreVersion);
         self::assertIdentity($releaseIdentity, 'Release identity');
         self::assertIdentity($sourceTreeIdentity, 'Source-tree identity');
         self::assertIdentity($schemaStateIdentity, 'Schema-state identity');
         self::assertIdentity($migrationStateIdentity, 'Migration-state identity');
+        self::assertIdentity($packageIntegrityIdentity, 'Package-integrity identity');
         if ($manifestContractVersion < 1) {
             throw new \InvalidArgumentException('Manifest contract version is invalid.');
         }
@@ -32,6 +34,7 @@ final class CommittedLifecycleState
     public function schemaStateIdentity(): string { return $this->schemaStateIdentity; }
     public function migrationStateIdentity(): string { return $this->migrationStateIdentity; }
     public function committedAt(): DateTimeImmutable { return $this->committedAt; }
+    public function packageIntegrityIdentity(): ?string { return $this->packageIntegrityIdentity; }
 
     public function snapshot(): InstalledStateSnapshot
     {
@@ -56,13 +59,15 @@ final class CommittedLifecycleState
             'schema_state_identity' => $this->schemaStateIdentity,
             'migration_state_identity' => $this->migrationStateIdentity,
             'committed_at' => $this->committedAt->format(DATE_ATOM),
+            'package_integrity_identity' => $this->packageIntegrityIdentity,
         ];
     }
 
     public static function fromArray(array $data): self
     {
         $keys = ['webcore_version', 'release_identity', 'source_tree_identity', 'manifest_contract_version', 'schema_state_identity', 'migration_state_identity', 'committed_at'];
-        if (array_keys($data) !== $keys
+        $extendedKeys = [...$keys, 'package_integrity_identity'];
+        if (!in_array(array_keys($data), [$keys, $extendedKeys], true)
             || !is_string($data['webcore_version'])
             || !is_string($data['release_identity'])
             || ($data['source_tree_identity'] !== null && !is_string($data['source_tree_identity']))
@@ -85,7 +90,8 @@ final class CommittedLifecycleState
             $data['manifest_contract_version'],
             $data['schema_state_identity'],
             $data['migration_state_identity'],
-            $committedAt
+            $committedAt,
+            $data['package_integrity_identity'] ?? null
         );
     }
 

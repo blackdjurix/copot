@@ -139,6 +139,8 @@ and Existing-Runtime Webcore Lifecycle Adoption is a separate prerequisite for
 current WU7 acceptance under
 `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`. Backup &
 Recovery remains separate, and destructive rollback/restore remains unavailable.
+Existing-Runtime Webcore Lifecycle Adoption Implementation Unit 1: COMPLETE;
+legacy reconciliation remains NOT STARTED.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
 Full Module Package Lifecycle: NOT YET CLOSED — Webcore adoption prerequisite and browser acceptance pending
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`

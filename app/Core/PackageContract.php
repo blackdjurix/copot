@@ -113,6 +113,16 @@ final class PackageContract
         return $this->migrationDeclaration;
     }
 
+    public function integrityIdentity(): string
+    {
+        $entries = array_map(static fn (PackageInventoryEntry $entry): string => implode(':', [
+            $entry->path(), $entry->byteSize(), $entry->sha256(), $entry->ownership(),
+        ]), $this->inventory());
+        sort($entries, SORT_STRING);
+
+        return hash('sha256', implode("\n", $entries));
+    }
+
     public function versionRelation(string $installedVersion): string
     {
         $comparison = PackageVersion::compare($this->targetWebcoreVersion, $installedVersion);
