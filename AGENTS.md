@@ -128,18 +128,19 @@ differential packages remain excluded; downgrade/reverse migration remains
 unsupported.
 Server-empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED under
 `DI-PACKAGE-LIFECYCLE-WU7-01`; Module Package Lifecycle preparation is complete
-and contract-locked, implementation is in progress through WU5 only, Backup & Recovery remains separate, and destructive
+and contract-locked, implementation is in progress through WU6 only, Backup & Recovery remains separate, and destructive
 rollback/restore remains unavailable.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
 Full Module Package Lifecycle: IN PROGRESS / NOT COMPLETE
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
-Module Package Lifecycle implementation: IN PROGRESS — WU1–WU5 COMPLETE ONLY
+Module Package Lifecycle implementation: IN PROGRESS — WU1–WU6 COMPLETE ONLY
 Module Package Lifecycle WU1: COMPLETE
 Module Package Lifecycle WU2: COMPLETE
 Module Package Lifecycle WU3: COMPLETE
 Module Package Lifecycle WU4: COMPLETE
 Module Package Lifecycle WU5: COMPLETE
-Module Package Lifecycle WU6: NOT STARTED
+Module Package Lifecycle WU6: COMPLETE
+Module Package Lifecycle WU7: NOT STARTED
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED

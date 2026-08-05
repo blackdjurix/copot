@@ -10,13 +10,14 @@ WU2: COMPLETE
 WU3: COMPLETE
 WU4: COMPLETE
 WU5: COMPLETE
-WU6: NOT STARTED
-Implementation: IN PROGRESS — WU1–WU5 COMPLETE ONLY
+WU6: COMPLETE
+WU7: NOT STARTED
+Implementation: IN PROGRESS — WU1–WU6 COMPLETE ONLY
 ```
 
 This document records the locked architecture and delivered WU1–WU5 contract for the second
 lifecycle target over the completed shared Package Lifecycle & Migration
-Foundation. It authorizes no WU6 or later implementation, schema change,
+Foundation. It authorizes no WU7 or later implementation, schema change,
 package builder change, Admin upload UI, or remote distribution.
 
 No milestone number is assigned. Module Manager is the operator/Admin
@@ -564,6 +565,26 @@ committed-state-last, and cleanup-retry cases.
 required; browser only if the selected health gate changes the Admin/runtime
 flow.
 
+### WU6 delivery boundary
+
+WU6 applies only the inspected package payload below
+modules/<technical-module-name>/, using the shared streamed file applier,
+containment guard, SHA-256/size verification, and lifecycle mutex. Package
+metadata remains outside the live payload and stale-file deletion remains
+unsupported. INSTALL commits disabled state; REPAIR, PATCH, UPDATE, and
+UPGRADE preserve the prior enabled state.
+
+The Module operation record and committed state are Module-specific artifacts
+under .copot-lifecycle/. The operation records the package, release, staging,
+apply-plan, migration, and committed-state identities. WU6 consumes the
+accepted WU3/WU4/WU5 boundaries, then runs Module inventory integrity,
+manifest/discovery viability, provisioning and permission-result gates, and the
+bounded Module health probe before writing committed Module state last. Failed
+pre-commit gates retain the previous committed state. Cleanup-pending state is
+retryable without repeating successful file application or migrations;
+indeterminate migration or operation outcomes fail closed. WU6 performs no
+automatic activation, cross-Module mutation, rollback, or Backup & Recovery.
+
 ### WU7 — Module Manager Operator Surface & End-to-End Acceptance
 
 **Objective:** Make Module Manager the operator/Admin consumer of the shared
@@ -617,6 +638,6 @@ This contract is the authoritative preparation artifact. Concise project-state
 references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
-WU1, WU2, WU3, WU4, and WU5 are complete on the authorized implementation
-branch. WU6 is not started. Full Module Package Lifecycle implementation
+WU1, WU2, WU3, WU4, WU5, and WU6 are complete on the authorized implementation
+branch. WU7 is not started. Full Module Package Lifecycle implementation
 remains in progress and is not complete or closed.
