@@ -9,13 +9,14 @@ WU1: COMPLETE
 WU2: COMPLETE
 WU3: COMPLETE
 WU4: COMPLETE
-WU5: NOT STARTED
-Implementation: IN PROGRESS — WU1–WU4 COMPLETE ONLY
+WU5: COMPLETE
+WU6: NOT STARTED
+Implementation: IN PROGRESS — WU1–WU5 COMPLETE ONLY
 ```
 
-This document records the locked architecture and delivered WU1–WU4 contract for the second
+This document records the locked architecture and delivered WU1–WU5 contract for the second
 lifecycle target over the completed shared Package Lifecycle & Migration
-Foundation. It authorizes no WU5 or later implementation, schema change,
+Foundation. It authorizes no WU6 or later implementation, schema change,
 package builder change, Admin upload UI, or remote distribution.
 
 No milestone number is assigned. Module Manager is the operator/Admin
@@ -519,6 +520,27 @@ authorization-preservation cases.
 **Runtime/browser/human validation:** Focused database/runtime validation;
 browser not materially required.
 
+### WU5 delivery boundary
+
+WU5 adds a Module-specific forward migration registry and durable ledger under
+`.copot-lifecycle/module-migrations/`. The ledger is separate from the runtime
+`modules` table and the WU3 committed lifecycle state. It records the immutable
+Module owner, migration identity, sequence, target package/schema identities,
+checksum, executable identity, and applied timestamp. Fresh baseline
+establishment records only the canonical baseline and never replays historical
+migrations. Existing installations apply only the ordered forward suffix;
+transactional failures roll back, while a non-transactional effect whose ledger
+record cannot be committed is reported indeterminate.
+
+The WU5 descriptor extends the logical WU1 migration declaration with bounded
+execution metadata: transaction mode, executable identity, checksum,
+precondition, postcondition, and retryability. Provisioning is callback-bounded
+to the target Module and verifies its postcondition. Permission reconciliation
+adds or updates Module permission metadata and preserves removed declarations;
+it does not grant or revoke role authorization. WU5 does not advance committed
+Module lifecycle state, apply live package files, activate Modules, resolve
+dependencies, or execute cross-Module private-state changes.
+
 ### WU6 — Module Apply, Integrity & Commit-State Closure
 
 **Objective:** Apply Module-owned files through the shared lifecycle boundary
@@ -595,6 +617,6 @@ This contract is the authoritative preparation artifact. Concise project-state
 references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
-WU1, WU2, WU3, and WU4 are complete on the authorized implementation branch.
-WU5 is not started. Full Module Package Lifecycle implementation remains in
-progress and is not complete or closed.
+WU1, WU2, WU3, WU4, and WU5 are complete on the authorized implementation
+branch. WU6 is not started. Full Module Package Lifecycle implementation
+remains in progress and is not complete or closed.
