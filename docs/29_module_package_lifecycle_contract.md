@@ -3,15 +3,17 @@
 ## Preparation status
 
 ```text
-Module Package Lifecycle preparation: PREPARATION COMPLETE / CONTRACT LOCKED
-Implementation: NOT STARTED
-WU1: NOT STARTED
+Module Package Lifecycle preparation: NRP CONFIRMED
+Full Module Package Lifecycle: NRP NOT REACHED
+WU1: COMPLETE
+WU2: NOT STARTED
+Implementation: IN PROGRESS — WU1 COMPLETE ONLY
 ```
 
-This document records the preparation-only architecture for the second
+This document records the locked architecture and WU1 contract for the second
 lifecycle target over the completed shared Package Lifecycle & Migration
-Foundation. It authorizes no runtime implementation, schema change, package
-builder change, Admin upload UI, remote distribution, or WU1 implementation.
+Foundation. It authorizes no WU2 or later implementation, schema change,
+package builder change, Admin upload UI, or remote distribution.
 
 No milestone number is assigned. Module Manager is the operator/Admin
 consumer; it is not the lifecycle engine. Generic archive handling, staging,
@@ -529,6 +531,6 @@ This contract is the authoritative preparation artifact. Concise project-state
 references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
-The next authorized gate is architecture approval of the locked preparation
-contract, followed by separately authorized implementation planning or WU1
-implementation. This document itself does not start WU1.
+WU1 is complete on the authorized implementation branch. The next authorized
+gate is WU2 planning/implementation approval. Full Module Package Lifecycle
+completion and NRP remain unreached.

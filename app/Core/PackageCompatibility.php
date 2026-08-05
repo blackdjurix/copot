@@ -29,6 +29,16 @@ final class PackageCompatibility
         return $this->maximumSourceVersion;
     }
 
+    public function minimumVersion(): string
+    {
+        return $this->minimumSourceVersion;
+    }
+
+    public function maximumVersion(): ?string
+    {
+        return $this->maximumSourceVersion;
+    }
+
     public function supports(string $sourceVersion): bool
     {
         PackageVersion::assertValid($sourceVersion);

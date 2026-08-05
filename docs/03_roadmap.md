@@ -636,8 +636,7 @@ Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
 Next work unit: NONE — WU1–WU7 COMPLETE AND CLOSED
-Current active implementation branch: NONE
-Current preparation documentation branch: feature/module-package-lifecycle
+Current active implementation branch: feature/module-package-lifecycle
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
 Completed delivery slice: Webcore first
@@ -742,10 +741,12 @@ Server-empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED under
 `DI-PACKAGE-LIFECYCLE-WU7-01`; Module Package Lifecycle preparation is complete
 and contract-locked, implementation remains not started, Backup & Recovery remains separate, and destructive
 rollback/restore remains unavailable.
-Module Package Lifecycle: PREPARATION COMPLETE / CONTRACT LOCKED
+Module Package Lifecycle preparation: NRP CONFIRMED
+Full Module Package Lifecycle: NRP NOT REACHED
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
-Module Package Lifecycle implementation: NOT STARTED
-Module Package Lifecycle WU1: NOT STARTED
+Module Package Lifecycle implementation: IN PROGRESS — WU1 COMPLETE ONLY
+Module Package Lifecycle WU1: COMPLETE
+Module Package Lifecycle WU2: NOT STARTED
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED
@@ -759,8 +760,9 @@ The latest completed Post-M3 platform-foundation target is Package Lifecycle & M
 Foundation. Its contract is
 `docs/28_package_lifecycle_migration_foundation_contract.md`. Module Package
 Lifecycle preparation is complete and contract-locked in
-`docs/29_module_package_lifecycle_contract.md`; implementation remains not
-started and no milestone number is assigned. The Webcore package lifecycle
+`docs/29_module_package_lifecycle_contract.md`; WU1 is complete, WU2 is not
+started, full Module Package Lifecycle completion is unreached, and no
+milestone number is assigned. The Webcore package lifecycle
 first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all
 possible Webcore installation/distribution capability.
