@@ -7,13 +7,14 @@ Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
 Full Module Package Lifecycle: IN PROGRESS / NOT COMPLETE
 WU1: COMPLETE
 WU2: COMPLETE
-WU3: NOT STARTED
-Implementation: IN PROGRESS — WU1–WU2 COMPLETE ONLY
+WU3: COMPLETE
+WU4: NOT STARTED
+Implementation: IN PROGRESS — WU1–WU3 COMPLETE ONLY
 ```
 
 This document records the locked architecture and delivered WU1–WU2 contract for the second
 lifecycle target over the completed shared Package Lifecycle & Migration
-Foundation. It authorizes no WU3 or later implementation, schema change,
+Foundation. It authorizes no WU4 or later implementation, schema change,
 package builder change, Admin upload UI, or remote distribution.
 
 No milestone number is assigned. Module Manager is the operator/Admin
@@ -373,6 +374,24 @@ SemVer/compatibility cases, and consistency with Module and distribution docs.
 
 **Runtime/browser/human validation:** Not materially required.
 
+### WU3 delivery boundary
+
+WU3 adds a bounded file-backed per-Module registry under the existing
+`.copot-lifecycle/modules/` namespace. It supplements the runtime `modules`
+registration/status table and does not replace or mutate that unrelated runtime
+authority. Inspection distinguishes `FRESH`, `LEGACY`, `COMMITTED`,
+`INCONSISTENT`, and `INVALID` states; legacy installations are explicitly
+blocked pending lifecycle bootstrap rather than being silently adopted.
+
+The Module transition adapter reuses the existing SemVer, runtime requirement,
+and committed-Webcore state primitives. It plans `INSTALL`, `REPAIR`, `PATCH`,
+`UPDATE`, and `UPGRADE` through one forward planner, rejects downgrade and
+identity rebinding, evaluates compatibility against committed Webcore state,
+and preserves enabled state for non-install transitions. `INSTALL` plans a
+disabled final state. WU3 performs no file application, registration mutation,
+activation, dependency/conflict resolution, migration execution, permission
+reconciliation, or committed-state advancement.
+
 ### WU2 — Module Package Intake, Ownership & Conflict Inspection
 
 **Objective:** Adapt shared ZIP, staging, inventory, and safety checks to Module
@@ -552,6 +571,6 @@ This contract is the authoritative preparation artifact. Concise project-state
 references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
-WU1 and WU2 are complete on the authorized implementation branch. WU3 is not
-started. Full Module Package Lifecycle implementation remains in progress and
-is not complete or closed.
+WU1, WU2, and WU3 are complete on the authorized implementation branch. WU4 is
+not started. Full Module Package Lifecycle implementation remains in progress
+and is not complete or closed.
