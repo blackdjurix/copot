@@ -268,15 +268,24 @@ state boundaries.
 
 ## Proposed implementation units
 
-1. Recovery identity, manifest, namespace, and domain registry.
-2. Private durable recovery storage and integrity handling.
-3. Package-owned filesystem capture and restore.
-4. MySQL recovery-provider implementation and round-trip proof.
-5. Lifecycle-state and migration-identity verification integration.
-6. Locking, maintenance, durable state, interruption, and retry behavior.
-7. Restore ordering, post-restore verification, operator confirmation, and
-   controlled cleanup.
-8. IU2 integration and complete failure-injection acceptance.
+1. WU1 — Recovery identity, manifest, namespace, and domain registry.
+2. WU2 — Private durable recovery storage and integrity handling.
+3. WU3 — Package-owned filesystem capture and restore.
+4. WU4 — MySQL recovery-provider implementation and round-trip proof.
+5. WU5 — Lifecycle-state and migration-identity verification integration.
+6. WU6 — Locking, maintenance, durable state, interruption, and retry behavior.
+7. WU7 — Independent Foundation Acceptance:
+   - Package Lifecycle adapters, interfaces, test doubles, and recovery seams;
+   - restore ordering and post-restore WU6-compatible verification;
+   - failure-injection and interruption/retry acceptance for Backup & Recovery;
+   - tamper and partial-restore handling;
+   - cleanup and operator-confirmation behavior.
+
+Actual Existing-Runtime Webcore Lifecycle Adoption IU2 implementation,
+production legacy reconciliation, target selection, reconciliation planning,
+and convergence policy remain outside Backup & Recovery Foundation scope.
+Backup & Recovery Foundation must be independently accepted as restore-capable
+before IU2 implementation begins.
 
 ## Acceptance prerequisite for IU2
 
