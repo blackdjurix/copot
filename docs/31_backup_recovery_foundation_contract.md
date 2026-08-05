@@ -54,7 +54,8 @@ restore ownership must not overlap.
 ## Recovery identity and manifest
 
 Each reconciliation operation must have one durable, immutable recovery-set
-identity and manifest. At minimum, the manifest binds:
+identity and manifest. WU2 owns the manifest's immutable recovery-set identity
+and publication/integrity facts. At minimum, it binds:
 
 - recovery identity;
 - lifecycle/reconciliation operation identity;
@@ -64,18 +65,46 @@ identity and manifest. At minimum, the manifest binds:
 - captured domain identities;
 - pre-operation lifecycle identity;
 - pre-operation migration-ledger identity;
-- capture status;
-- restore status;
-- verification status;
-- cleanup status.
+- artifact identities;
+- artifact sizes and hashes;
+- canonical manifest identity;
+- capture/publication completeness.
 
-The recovery set is immutable after capture succeeds. Any incomplete capture,
-identity mismatch, or artifact-integrity failure blocks reconciliation before
-the first live mutation.
+Once successfully published, these facts do not mutate. Any incomplete
+capture, identity mismatch, or artifact-integrity failure blocks reconciliation
+before the first live mutation.
 
 Exact serialization and persistence schema are implementation-deferred. The
 manifest must nevertheless be durable, independently readable, integrity
-verifiable, and separate from lifecycle state being restored.
+verifiable, and separate from lifecycle state being restored. WU2 must not make
+the immutable manifest own mutable restore, post-restore verification, cleanup,
+or interruption/retry state.
+
+WU6 owns the mutable durable recovery lifecycle/state-machine record, including
+the following states and statuses:
+
+```text
+CREATED
+CAPTURING
+CAPTURED
+READY
+RESTORING
+VERIFYING
+RESTORED
+CLEANUP_PENDING
+CLEANED
+
+FAILED_BEFORE_MUTATION
+RESTORE_REQUIRED
+RESTORE_INDETERMINATE
+VERIFICATION_FAILED
+```
+
+WU6 also owns restore status, post-restore verification status, cleanup status,
+and interruption/retry state. The WU6 lifecycle record references the immutable
+WU2 recovery manifest; it must not duplicate or rewrite immutable
+artifact/manifest identity. Recovery evidence remains independent from the
+lifecycle state being restored.
 
 ## Recovery-domain contract
 
@@ -84,9 +113,9 @@ domains have distinct capture, restore, and verification rules. Each domain
 must provide a stable identifier, scope descriptor, artifact identity, capture
 result, restore result, and verification result.
 
-The coordinator owns ordering and recovery-set state. A domain owns only its
-declared persisted state. Future domains may be added through the same boundary
-only after separate authorization.
+The recovery coordinator owns ordering. WU6 owns mutable recovery-set lifecycle
+state. A domain owns only its declared persisted state. Future domains may be
+added through the same boundary only after separate authorization.
 
 ## Private storage and containment
 
