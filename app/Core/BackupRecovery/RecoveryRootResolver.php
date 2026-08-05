@@ -61,7 +61,7 @@ final class RecoveryRootResolver
         }
         $this->assertPathComponents($path, $label);
         $resolved = realpath($path);
-        if ($resolved === false || self::identityPath($resolved) !== self::identityPath($path)) {
+        if ($resolved === false || is_link($resolved) || !is_dir($resolved)) {
             throw new RecoveryStorageException($label . ' is not canonically resolvable.');
         }
         return $resolved;

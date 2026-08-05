@@ -6,7 +6,8 @@
 Backup & Recovery Foundation: IMPLEMENTATION IN PROGRESS
 Backup & Recovery WU1: COMPLETE
 Backup & Recovery WU2: COMPLETE
-Backup & Recovery WU3: NOT STARTED
+Backup & Recovery WU3: COMPLETE
+Backup & Recovery WU4: NOT STARTED
 Backup & Recovery implementation overall: IN PROGRESS
 Existing-Runtime Webcore Lifecycle Adoption IU2: BLOCKED ON THIS DEPENDENCY
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMMITTED WEBCORE STATE
@@ -15,10 +16,11 @@ Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMM
 This contract defines the smallest reusable Backup & Recovery Foundation
 required before mutating Existing-Runtime Webcore Lifecycle Adoption IU2 may
 be implemented. It is a separate Core/platform capability consumed by Package
-Lifecycle. It does not implement Backup & Recovery, IU2, Module Package
-Lifecycle, Server-Empty Bootstrap, or Module legacy adoption.
+Lifecycle. Its WU1–WU3 implementation is recorded separately from this
+contract; it does not implement IU2, Module Package Lifecycle, Server-Empty
+Bootstrap, or Module legacy adoption.
 
-The proposed implementation namespace is `Copot\\Core\\BackupRecovery`.
+The implementation namespace is `Copot\\Core\\BackupRecovery`.
 WU2 uses bounded canonical JSON for the immutable manifest and artifact
 metadata. Schema and provider implementation remain implementation-deferred
 unless later evidence requires them to be locked.
@@ -344,8 +346,8 @@ IU2 must remain blocked until acceptance evidence proves:
 
 ## Dependency consequence
 
-Backup & Recovery Foundation is **IMPLEMENTATION IN PROGRESS**; WU1 and WU2 are
-**COMPLETE**, WU3 is **NOT STARTED**, and implementation overall is **IN
+Backup & Recovery Foundation is **IMPLEMENTATION IN PROGRESS**; WU1, WU2, and
+WU3 are **COMPLETE**, WU4 is **NOT STARTED**, and implementation overall is **IN
 PROGRESS**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
 **BLOCKED** pending an accepted restore-capable implementation.
 Module Package Lifecycle WU7 human/E2E acceptance remains **BLOCKED** pending

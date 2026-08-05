@@ -69,6 +69,33 @@ final class RecoveryArtifactStore
         return $decoded;
     }
 
+    public function readArtifact(RecoveryIdentity $identity, RecoveryArtifactRecord $artifact): string
+    {
+        $decoded = $this->readManifest($identity);
+        $referenced = false;
+        foreach ($decoded['artifacts'] as $candidate) {
+            if ($candidate->domainIdentifier() === $artifact->domainIdentifier()
+                && $candidate->artifactIdentity() === $artifact->artifactIdentity()
+                && $candidate->byteSize() === $artifact->byteSize()) {
+                $referenced = true;
+                break;
+            }
+        }
+        if (!$referenced) {
+            throw new RecoveryStorageException('Requested recovery artifact is not referenced by the immutable manifest.');
+        }
+
+        $path = (new RecoveryStoragePathPolicy($this->root))->artifactPath($identity, $artifact);
+        if (is_link($path) || !is_file($path) || !is_readable($path)) {
+            throw new RecoveryStorageException('Recovery artifact is unavailable.');
+        }
+        $contents = @file_get_contents($path);
+        if (!is_string($contents) || strlen($contents) !== $artifact->byteSize() || hash('sha256', $contents) !== $artifact->artifactIdentity()) {
+            throw new RecoveryStorageException('Recovery artifact failed integrity verification.');
+        }
+        return $contents;
+    }
+
     private function writeOrReuse(string $path, string $contents): void
     {
         if (file_exists($path) || is_link($path)) {
