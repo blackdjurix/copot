@@ -7,7 +7,8 @@ Backup & Recovery Foundation: IMPLEMENTATION IN PROGRESS
 Backup & Recovery WU1: COMPLETE
 Backup & Recovery WU2: COMPLETE
 Backup & Recovery WU3: COMPLETE
-Backup & Recovery WU4: NOT STARTED
+Backup & Recovery WU4: COMPLETE
+Backup & Recovery WU5: NOT STARTED
 Backup & Recovery implementation overall: IN PROGRESS
 Existing-Runtime Webcore Lifecycle Adoption IU2: BLOCKED ON THIS DEPENDENCY
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMMITTED WEBCORE STATE
@@ -22,8 +23,8 @@ Bootstrap, or Module legacy adoption.
 
 The implementation namespace is `Copot\\Core\\BackupRecovery`.
 WU2 uses bounded canonical JSON for the immutable manifest and artifact
-metadata. Schema and provider implementation remain implementation-deferred
-unless later evidence requires them to be locked.
+metadata. WU4 provides the MySQL/MariaDB database recovery provider and its
+disposable round-trip proof; WU5 remains implementation-deferred.
 
 ## Capability ownership and boundary
 
@@ -346,8 +347,8 @@ IU2 must remain blocked until acceptance evidence proves:
 
 ## Dependency consequence
 
-Backup & Recovery Foundation is **IMPLEMENTATION IN PROGRESS**; WU1, WU2, and
-WU3 are **COMPLETE**, WU4 is **NOT STARTED**, and implementation overall is **IN
+Backup & Recovery Foundation is **IMPLEMENTATION IN PROGRESS**; WU1, WU2, WU3,
+and WU4 are **COMPLETE**, WU5 is **NOT STARTED**, and implementation overall is **IN
 PROGRESS**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
 **BLOCKED** pending an accepted restore-capable implementation.
 Module Package Lifecycle WU7 human/E2E acceptance remains **BLOCKED** pending

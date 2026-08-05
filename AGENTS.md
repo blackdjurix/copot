@@ -24,7 +24,7 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: Backup & Recovery Foundation WU2 — NOT STARTED
+Next work unit: Backup & Recovery Foundation WU5 — NOT STARTED
 Current dependency: Existing-Runtime Webcore Lifecycle Adoption IU2 — BLOCKED
 Current active implementation branch: feature/module-package-lifecycle
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
