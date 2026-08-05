@@ -15,6 +15,7 @@ $lifecyclePresentation = [
 $discoveryPresentation = [
     'valid' => ['Valid', 'admin-badge--success'],
     'missing' => ['Missing', 'admin-badge--warning'],
+    'ready' => ['Ready', 'admin-badge--info'],
     'malformed' => ['Malformed', 'admin-badge--warning'],
     'invalid_metadata' => ['Invalid metadata', 'admin-badge--warning'],
 ];
@@ -137,7 +138,7 @@ $visibleActions = static function (string $lifecycle, string $action): bool {
                                     <form method="post" action="<?= $escape($lifecyclePath ?? '') ?>" class="admin-form admin-form--inline">
                                         <input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>">
                                         <input type="hidden" name="candidate" value="<?= $escape($item['available_package_candidate']) ?>">
-                                        <button class="admin-button admin-button--primary" type="submit">Run Package Lifecycle</button>
+                                        <button class="admin-button admin-button--primary" type="submit"><?= $escape(ucfirst((string) ($item['lifecycle_action'] ?? 'Install'))) ?></button>
                                     </form>
                                 <?php endif; ?>
                                 <?php if (!empty($item['lifecycle_blocker'])): ?><div class="admin-text-muted"><?= $escape($item['lifecycle_blocker']) ?></div><?php endif; ?>
