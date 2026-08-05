@@ -6,13 +6,14 @@
 Module Package Lifecycle preparation: NRP CONFIRMED
 Full Module Package Lifecycle: NRP NOT REACHED
 WU1: COMPLETE
-WU2: NOT STARTED
-Implementation: IN PROGRESS — WU1 COMPLETE ONLY
+WU2: COMPLETE
+WU3: NOT STARTED
+Implementation: IN PROGRESS — WU1–WU2 COMPLETE ONLY
 ```
 
-This document records the locked architecture and WU1 contract for the second
+This document records the locked architecture and delivered WU1–WU2 contract for the second
 lifecycle target over the completed shared Package Lifecycle & Migration
-Foundation. It authorizes no WU2 or later implementation, schema change,
+Foundation. It authorizes no WU3 or later implementation, schema change,
 package builder change, Admin upload UI, or remote distribution.
 
 No milestone number is assigned. Module Manager is the operator/Admin
@@ -392,6 +393,26 @@ manifest, path, migration/schema, permission, and provisioning conflict cases.
 
 **Runtime/browser/human validation:** Focused runtime/filesystem validation;
 browser not materially required.
+
+### WU2 delivery boundary
+
+WU2 reuses `ZipIntakeService`, `StagingSession`, staged extraction,
+`ArchiveEntryPath`, and `PackageInventoryVerifier` without a parallel Module
+archive or hashing implementation. The concrete Module package metadata path is
+the shared package-only `.copot/package.json` path. Its strict Module contract
+fields are serialized separately from the runtime
+`modules/<technical-module-name>/module.json`; the runtime manifest remains the
+existing discovery contract and is validated against the folder/name invariant.
+
+The Module package inventory contains only live files under exactly
+`modules/<technical-module-name>/`. `.copot/package.json` is excluded from that
+live inventory. WU2 validates normalized paths, staged byte size and SHA-256,
+one-root ownership, runtime manifest identity, and static package/path
+consistency before returning immutable inspection evidence. It performs no live
+mutation and does not inspect installed lifecycle state, classify transitions,
+resolve dependencies, execute migrations, reconcile permissions, or update
+committed state. Cross-Module schema, permission, and provisioning ownership
+remain an explicit limitation until an authoritative ownership source exists.
 
 ### WU3 — Module Installed-State & Transition Planner
 

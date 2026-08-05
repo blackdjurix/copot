@@ -744,9 +744,10 @@ rollback/restore remains unavailable.
 Module Package Lifecycle preparation: NRP CONFIRMED
 Full Module Package Lifecycle: NRP NOT REACHED
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
-Module Package Lifecycle implementation: IN PROGRESS — WU1 COMPLETE ONLY
+Module Package Lifecycle implementation: IN PROGRESS — WU1–WU2 COMPLETE ONLY
 Module Package Lifecycle WU1: COMPLETE
-Module Package Lifecycle WU2: NOT STARTED
+Module Package Lifecycle WU2: COMPLETE
+Module Package Lifecycle WU3: NOT STARTED
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED
@@ -760,8 +761,8 @@ The latest completed Post-M3 platform-foundation target is Package Lifecycle & M
 Foundation. Its contract is
 `docs/28_package_lifecycle_migration_foundation_contract.md`. Module Package
 Lifecycle preparation is complete and contract-locked in
-`docs/29_module_package_lifecycle_contract.md`; WU1 is complete, WU2 is not
-started, full Module Package Lifecycle completion is unreached, and no
+`docs/29_module_package_lifecycle_contract.md`; WU1 and WU2 are complete, WU3
+is not started, full Module Package Lifecycle completion is unreached, and no
 milestone number is assigned. The Webcore package lifecycle
 first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all
