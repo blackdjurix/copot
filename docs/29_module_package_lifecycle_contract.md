@@ -3,8 +3,8 @@
 ## Preparation status
 
 ```text
-Module Package Lifecycle preparation: NRP CONFIRMED
-Full Module Package Lifecycle: NRP NOT REACHED
+Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
+Full Module Package Lifecycle: IN PROGRESS / NOT COMPLETE
 WU1: COMPLETE
 WU2: COMPLETE
 WU3: NOT STARTED
@@ -552,6 +552,6 @@ This contract is the authoritative preparation artifact. Concise project-state
 references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
-WU1 is complete on the authorized implementation branch. The next authorized
-gate is WU2 planning/implementation approval. Full Module Package Lifecycle
-completion and NRP remain unreached.
+WU1 and WU2 are complete on the authorized implementation branch. WU3 is not
+started. Full Module Package Lifecycle implementation remains in progress and
+is not complete or closed.
