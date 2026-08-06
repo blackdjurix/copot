@@ -5,22 +5,25 @@
 ```text
 Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
 Implementation Unit 1: COMPLETE
-Implementation Unit 2 — Legacy Reconciliation: NOT STARTED
+Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: NOT STARTED
 Backup & Recovery Foundation: COMPLETE AND CLOSED
-Module Package Lifecycle WU7 acceptance: BLOCKED pending authoritative committed Webcore state
-Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED
+Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED pending authoritative committed Webcore state
+Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED — KEEP DEFERRED
 ```
 
 This contract defines the smallest safe capability for converting an already
 running legacy Webcore installation into authoritative committed lifecycle
-state. It is a newly discovered Webcore prerequisite for Module Package
-Lifecycle WU7 acceptance. It does not reopen the completed Webcore WU1–WU7
-delivery slice, and it does not implement the capability.
+state. It is a Webcore prerequisite for Module Package Lifecycle WU7
+acceptance. It locks preparation architecture only; IU2 runtime/source
+implementation remains **NOT STARTED**.
 
 The current acceptance runtime is evidence for this contract, not an adoption
 target. It is `LEGACY`, reports `0.8.0` through `storage/installed.lock`, has
 no committed lifecycle state or Core migration-history ledger, and differs
-from the inspected `copot-v0.12.0` package in six package-owned files.
+from the inspected package evidence in six package-owned files. This current
+XAMPP evidence is not production-grade reconciliation readiness; in
+particular, `docs/31_backup_recovery_foundation_contract.md` records that its
+optional MariaDB quiescence profile is not satisfied.
 
 ## Boundary and actions
 
@@ -37,135 +40,185 @@ operator actions, have durable operation identity, are idempotent after
 success, and commit lifecycle state last. Failure before commit leaves the
 runtime legacy or otherwise explicitly non-committed.
 
-## Exact-match adoption
+## Trusted target and exact-match adoption
 
-Exact-match adoption is permitted only when a trusted package contract or
-another already-authoritative release source proves all of the following:
+IU2 reconciles toward an explicit trusted Webcore package. The intended current
+target version is `0.13.0`, but `Version::CURRENT`, Git state, a timestamp, or
+operator text alone is not trusted release/package identity. Git tags, GitHub
+Releases, public publication, and remote distribution are not prerequisites
+unless an existing authoritative source independently requires them.
 
-- package type and manifest contract version are supported;
-- target Webcore version exactly matches the compatible existing runtime state;
-- release/package identity comes from the trusted package, never from Git,
-  `Version::CURRENT`, a timestamp, or operator-supplied fabrication;
-- every package-owned live file has the declared byte size and SHA-256, with
-  zero package-owned drift;
-- package-owned and operator/runtime-owned paths are completely separated;
-- runtime/bootstrap and required WU6 health gates pass;
-- the database matches an authoritative canonical schema baseline;
-- the migration-state identity is deterministically established as the
-  canonical baseline without replaying historical migrations or marking
-  unknown migrations applied;
-- the existing `storage/installed.lock` is valid and compatible with the
-  adopted target.
+Mutating reconciliation requires an authoritative package artifact carrying
+the existing package/release identity, archive identity, package-owned
+inventory, compatibility requirements, and migration contract defined by
+`docs/28_package_lifecycle_migration_foundation_contract.md`.
+
+Exact-match adoption is permitted only when that trusted package contract (or
+another already-authoritative release source) proves all of the following:
+
+- supported package type and manifest contract version;
+- exact target compatibility with the existing runtime;
+- trusted package/release identity, archive identity, and complete package-owned
+  inventory;
+- zero package-owned drift and complete separation from operator/runtime-owned
+  paths;
+- required WU6 health and integrity gates;
+- authoritative canonical schema baseline;
+- deterministic canonical migration-state identity without reconstructing or
+  replaying historical migrations or marking unknown migrations applied;
+- valid, target-compatible `storage/installed.lock`.
 
 Version equality alone is never sufficient. Any mismatch rejects exact-match
 adoption without mutation. Successful adoption records the trusted package's
 release identity as the verified lifecycle target; it does not claim to recover
 unknown historical provenance.
 
-## Legacy reconciliation
+## Deterministic legacy classification
 
-Reconciliation is a distinct operation with this bounded shape:
+Before planning, IU2 must classify the existing database using only objective,
+deterministic evidence. The supported classifications are exactly:
 
-```text
-legacy runtime
-→ inspect
-→ select explicit trusted target package
-→ plan reconciliation
-→ explicit operator confirmation
-→ guarded package-owned convergence
-→ canonical schema-baseline verification or ordered forward migration
-→ WU6 health/integrity gates
-→ committed lifecycle state last
-```
+- **PROVABLE_CANONICAL_SCHEMA_BASELINE** — authoritative canonical schema
+  evidence is proven;
+- **KNOWN_MIGRATION_PREFIX** — an authoritative known migration prefix is
+  proven and ordered forward migration is available;
+- **UNKNOWN_OR_UNPROVABLE** — state cannot be proven and reconciliation fails
+  closed;
+- **COMMITTED_LIFECYCLE_STATE** — already lifecycle-managed state, which is not
+  an IU2 legacy candidate.
 
-It may replace only package-owned files through the existing WU5 guarded apply
-boundary. Stale-file deletion remains unsupported. Operator/runtime-owned
-paths are untouched. It must not silently become an ordinary lifecycle
-classification, fabricate release or migration history, replay historical
-migrations solely to manufacture a ledger, or mark unknown migrations applied.
+IU2 must not infer state from version labels, application behavior, approximate
+table presence, empty migration history, or operator assertion. A committed
+runtime is not reclassified as legacy.
 
-If canonical schema-baseline verification cannot deterministically prove the
-database state, reconciliation fails closed. A version string, application
-behavior, or empty migration ledger is not schema proof.
+## Immutable reconciliation plan
 
-## Schema and migration baseline
+For a legacy candidate, IU2 must produce an immutable deterministic
+reconciliation plan before any mutation. The plan binds:
 
-The implementation must provide an authoritative canonical schema-baseline
-verification boundary before establishing initial migration-state identity.
-That verifier must use deterministic schema descriptors/checksums and the
-approved Webcore schema contract. It must distinguish a verified canonical
-baseline from an unknown or merely version-labelled database.
+- operation identity;
+- trusted target, package/release, and archive identities;
+- source classification;
+- package-owned filesystem actions;
+- database baseline and ordered forward-migration plan;
+- relevant pre-operation state identities; and
+- expected post-operation state identities.
 
-Historical migration records are not reconstructed. Existing forward Core
-migrations remain applicable only when a known committed migration prefix
-exists. A legacy database without a provable canonical baseline is not
-reconciled by this contract.
+Package-owned convergence may create, replace, or leave unchanged only within
+the existing WU5 ownership and guarded apply boundaries. Operator/runtime-owned
+paths remain untouched. Stale-file deletion is not introduced.
 
-## Safety and recovery
+## Recovery, confirmation, and quiescence
 
-Exact-match adoption is non-mutating apart from the lifecycle operation and
-final committed-state records, so it does not require Backup & Recovery.
+Mutating reconciliation must bind the exact immutable reconciliation plan and
+trusted target to one accepted Backup & Recovery recovery identity. The
+recovery set must be complete, integrity-verified, and `READY` before mutation.
+The four accepted recovery domains remain intact:
 
-Mutating reconciliation is subject to the existing WU5/WU6 safety boundary.
-Planning, inspection, and test doubles may proceed without Backup & Recovery,
-but production-grade acceptance of irreversible file/schema convergence
-requires the accepted restore-capable foundation defined in
-`docs/31_backup_recovery_foundation_contract.md`. This contract does not
-implement or absorb Backup & Recovery.
+1. configured Webcore database, including migration history;
+2. affected package-owned filesystem;
+3. committed Webcore lifecycle state; and
+4. `storage/installed.lock`.
 
-## Relationship to deferred and excluded work
+The pre-operation `storage/installed.lock` is preserved in recovery evidence.
+Explicit operator confirmation must bind the exact operation, plan, recovery,
+and target identities. Any material plan change invalidates that confirmation.
 
-`DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`
-remains **DEFERRED / UNSCHEDULED — KEEP DEFERRED**. It concerns a server where
-Copot source/runtime does not yet exist; this contract concerns an existing
-legacy runtime.
+`DatabaseQuiescenceCapability` is mandatory for production-grade mutating
+reconciliation and must cover the accepted recovery and reconciliation
+boundary. If suitable quiescence is unavailable or cannot be proven, IU2 fails
+closed before mutation.
 
-Module legacy adoption remains separate and is not solved by this Webcore
-capability. Remote distribution, signing/trust, channels, automatic updates,
-downgrades, reverse migration, destructive rollback/restore, and Module
-Manager changes remain outside this preparation.
+## Migration semantics
 
-## Candidate implementation decomposition
+IU2 never fabricates or reconstructs historical migration records, replays
+historical migrations merely to manufacture a ledger, or marks unknown
+migrations applied. A legacy database without migration history may establish
+an initial migration-state identity only from deterministically proven
+authoritative canonical schema baseline evidence. Otherwise it fails closed.
+
+After an authoritative baseline or known prefix is proven, IU2 runs only
+objectively applicable, ordered, forward Core migrations under the WU4
+contract. Downgrade and reverse migration remain unsupported.
+
+## Finalization ordering
+
+IU2 must not advance installed state merely because package files or migrations
+started. It must verify package-owned filesystem identity, schema and migration
+identity, integrity, and required health gates before final installed-state
+reconciliation. Authoritative committed Webcore lifecycle state is written
+last and must be consistent with the final `storage/installed.lock`.
+
+## Failure and retry
+
+IU2 reuses the accepted Backup & Recovery failure and recovery semantics. After
+mutation may have begun, it must never recapture the uncertain state. Recovery
+uses the same immutable recovery identity and manifest. A new reconciliation
+must not bypass unresolved `RESTORE_REQUIRED`, `RESTORE_INDETERMINATE`,
+verification-failed, or equivalent recovery-required state.
+
+A successfully reconciled committed runtime must no longer be processed as
+uncommitted legacy state. Restore does not rerun package application, Core
+migrations, or legacy reconciliation planning; it restores and verifies the
+same four accepted recovery domains under the `docs/31` ordering and retains
+recovery-required state when verification does not pass.
+
+## Acceptance boundary
+
+Successful IU2 must leave deterministic evidence sufficient to unblock the
+separate Module Package Lifecycle final acceptance:
+
+- trusted reconciled Webcore target identity;
+- verified package-owned runtime;
+- verified schema and migration identity;
+- target-consistent `storage/installed.lock`;
+- authoritative committed Webcore lifecycle state;
+- required health and integrity gates PASS; and
+- no unresolved recovery-required state.
+
+This task does not perform the separate human/E2E acceptance. It also does not
+adopt `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean
+Install`; that item remains **DEFERRED / UNSCHEDULED — KEEP DEFERRED**.
+
+## Relationship to completed and excluded work
+
+IU2 consumes the accepted package identity, ownership, WU5 apply, WU4
+migration, WU6 finalization, and Backup & Recovery boundaries. It does not
+reopen Package Lifecycle, Backup & Recovery, or IU1 without a concrete
+regression or contract inconsistency relevant to this task.
+
+Module legacy adoption, remote distribution, signing/trust infrastructure,
+channels, automatic updates, downgrade, reverse migration, destructive
+rollback/restore implementation, and Module Manager changes remain outside
+this preparation.
+
+## Implementation decomposition
 
 ### Implementation Unit 1 — Exact-Match Webcore Runtime Adoption
 
-Deliver the explicit non-mutating action, authoritative identity/inventory
-proof, canonical schema-baseline verification, WU6 health gates, durable
-operation/idempotency behavior, and committed-state-last finalization.
-
-Acceptance must prove that exact matches adopt, every mismatch fails closed,
-legacy state remains unchanged on failure, and committed state is visible to
-normal status/planning afterward.
+Complete. The explicit non-mutating action, authoritative identity/inventory
+proof, canonical schema-baseline verification, WU6 health gates,
+durable operation/idempotency behavior, and committed-state-last finalization
+are implemented and accepted under the existing boundaries.
 
 ### Implementation Unit 2 — Legacy Webcore Runtime Reconciliation
 
-Deliver only after Unit 1 and an approved restore-capable recovery boundary.
-Implement explicit target selection/confirmation, guarded package-owned
-convergence, deterministic schema/migration handling, interruption/retry, and
-WU6 finalization. This unit must not add generic legacy migration inference or
-silently normalize unknown runtimes.
+**NOT STARTED.** Separate implementation authorization is required. It may
+implement only the trusted-target selection, deterministic classification,
+immutable planning, guarded package-owned convergence, accepted recovery and
+quiescence boundary, deterministic migration handling, interruption/retry, and
+WU6 finalization locked above. It must not add generic legacy migration
+inference, stale-file deletion, a new recovery subsystem, or silent
+normalization of unknown runtimes.
 
-The current runtime is not an acceptance fixture for Unit 1 or Unit 2 until
-the six drifted files and the missing schema/migration evidence are addressed
-through an explicitly authorized process.
-
-## Implementation Unit 1 delivery
-
-Implementation Unit 1 provides the explicit `package:adopt` operator command.
-It reuses shared ZIP intake, inventory verification, WU6 integrity/health
-finalization, committed-state persistence, and operation cleanup. It verifies
-the canonical Core table shape and empty migration ledger without applying
-package files or replaying migrations. It is independently tested for success,
-repeat adoption, version/hash/schema mismatch, failed health gates, and
-committed package-integrity identity persistence.
-
-The current XAMPP runtime remains legacy and is rejected because its installed
-evidence does not match the supplied target package. It was not normalized.
+The current runtime is not an acceptance fixture until its drift and missing
+schema/migration evidence are addressed through an explicitly authorized
+process.
 
 ## Recommended next gate
 
 The Backup & Recovery Foundation is independently accepted and closed.
 Authorize **Implementation Unit 2 — Legacy Webcore Runtime Reconciliation**
-only through a separate implementation decision. Do not begin reconciliation,
-Server-Empty Bootstrap, Module legacy adoption, or Module WU7 browser
-acceptance under this contract.
+only through a separate implementation decision. Do not begin IU2
+implementation, Server-Empty Bootstrap, Module legacy adoption, or Module WU7
+browser acceptance under this preparation lock.
