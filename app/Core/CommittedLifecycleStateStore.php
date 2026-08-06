@@ -104,10 +104,17 @@ final class CommittedLifecycleStateStore
         }
     }
 
-    private function remove(): void
+    public function remove(): void
     {
-        if (file_exists($this->path) && (is_link($this->path) || !@unlink($this->path))) {
+        if (!file_exists($this->path)) {
+            return;
+        }
+        if (is_link($this->path) || !@unlink($this->path)) {
             throw new \RuntimeException('Committed lifecycle state could not be removed.');
         }
+        if ($this->read() !== null) {
+            throw new \RuntimeException('Committed lifecycle state remained after removal.');
+        }
     }
+
 }
