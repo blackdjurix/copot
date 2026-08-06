@@ -52,7 +52,7 @@ $remove = static function (string $path) use (&$remove): void {
 
 $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-iu2-wu1-' . bin2hex(random_bytes(6));
 $storage = $root . DIRECTORY_SEPARATOR . 'storage';
-$stagingRoot = $root . DIRECTORY_SEPARATOR . 'staging';
+$stagingRoot = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-iu2-wu1-staging-' . bin2hex(random_bytes(6));
 $schemaPath = $root . DIRECTORY_SEPARATOR . 'schema.sql';
 mkdir($storage, 0700, true);
 mkdir($stagingRoot, 0700, true);
@@ -129,6 +129,7 @@ SQL;
     throw $exception;
 } finally {
     $remove($root);
+    $remove($stagingRoot);
 }
 
 echo "IU2 WU1 classification and planning: {$assertions} assertions passed\n";
