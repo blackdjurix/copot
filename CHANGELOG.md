@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Backup & Recovery Foundation lifecycle closure
+
+- Recorded Backup & Recovery WU1–WU7, implementation, acceptance, and
+  lifecycle closure as complete after Version & Release Reconciliation.
+- Preserved IU2 as not started and separately authorized, and preserved the
+  Module Package Lifecycle final human/E2E acceptance blocker.
+
 ### Version & Release Reconciliation
 
 - Reconciled the Webcore source version to `0.13.0` as the next consolidated

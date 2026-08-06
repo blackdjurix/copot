@@ -231,8 +231,9 @@ WU4 migration execution and blocks `INDETERMINATE` outcomes, then hands off to
 WU6 without advancing committed installed state.
 
 Package-owned files may be changed only inside the approved apply boundary.
-Operator-owned and runtime-owned paths remain untouched. Destructive rollback
-and restore remain unavailable without Backup & Recovery.
+Operator-owned and runtime-owned paths remain untouched. Package Lifecycle does
+not own destructive rollback or restore; those operations belong to the closed
+Backup & Recovery Foundation.
 
 The installed target version/state is committed last. Any failed apply,
 migration, reconciliation, health, or integrity gate leaves the prior committed
@@ -243,17 +244,14 @@ repair or operator recovery.
 
 Backup & Recovery is a separate platform capability consumed by Package
 Lifecycle. It is not a Package Lifecycle Work Unit and is not implemented by
-this contract. Its preparation contract is locked in
-`docs/31_backup_recovery_foundation_contract.md`; implementation has not
-started.
+this contract. Its implementation, acceptance, and lifecycle closure are
+complete under `docs/31_backup_recovery_foundation_contract.md`.
 
 The first Backup & Recovery delivery slice is narrowly scoped to the physical
 recovery domains required by Existing-Runtime Webcore Lifecycle Adoption IU2.
 Production-grade acceptance of destructive or in-place file/schema transitions
-still requires an accepted restore-capable implementation and integration
-evidence. Without that capability, planning, validation, dry-run,
-non-destructive checks, and test doubles may proceed, but production closure of
-irreversible apply and migration behavior is not accepted.
+is separately gated by the accepted foundation and by the caller's own
+reconciliation authorization.
 
 ## Work Unit decomposition
 
@@ -478,8 +476,8 @@ runtime. It does not claim all possible Webcore installation or distribution
 capability. Remote discovery/download, signing/trust, channels, automatic
 updates, Admin upload, differential packages, downgrade/reverse migration,
 Module Package Lifecycle, and destructive rollback/restore remain excluded;
-Backup & Recovery remains separate, with preparation/contract locked and
-implementation not started. Existing-Runtime Webcore Lifecycle Adoption is a
+Backup & Recovery remains separate, with implementation, acceptance, and
+lifecycle closure complete. Existing-Runtime Webcore Lifecycle Adoption is a
 separate prerequisite capability documented in
 `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`; it does not
 reopen this completed WU1–WU7 foundation slice.
@@ -503,10 +501,11 @@ reopen this completed WU1–WU7 foundation slice.
 
 ## Separate dependency: Backup & Recovery Foundation
 
-Backup & Recovery is a separate platform capability with a locked preparation
-contract in `docs/31_backup_recovery_foundation_contract.md`. Package Lifecycle
-may consume its bounded interface, but production-grade lifecycle closure
-requires a real restore-capable implementation and integration evidence.
+Backup & Recovery is a separate platform capability with implementation,
+acceptance, and lifecycle closure recorded in
+`docs/31_backup_recovery_foundation_contract.md`. Package Lifecycle may
+consume its bounded interface; IU2 remains separately authorized and not
+started.
 
 ## Explicit exclusions
 

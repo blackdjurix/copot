@@ -79,8 +79,9 @@ state, and interruption is classified from that state plus mutex ownership.
 The record binds deterministic progress, apply-plan, package, staging, and
 migration identity. WU5 coordinates WU4 migrations, blocks on
 `INDETERMINATE` outcomes, and hands off to WU6 without advancing committed
-installed state. Destructive rollback or restore remains unavailable without
-Backup & Recovery. WU2 retains staging ownership; WU3 retains transition and
+installed state. Package Lifecycle does not own destructive rollback or
+restore; those operations belong to the closed Backup & Recovery Foundation.
+WU2 retains staging ownership; WU3 retains transition and
 installed-state boundaries; WU4 retains migration identity and ledger
 semantics; no new installed-state persistence, stale-file deletion, generic job
 infrastructure, or Module package application was introduced. Focused WU5
@@ -104,8 +105,8 @@ requires exact committed/package/operation/apply-plan/migration-plan/ledger
 reconciliation and does not rerun file application, migrations, or full health
 gates. Failed pre-commit gates preserve the prior committed state. WU6 performs
 no package application or migration execution; stale-file deletion remains
-unavailable, Module package lifecycle remains later, and destructive rollback or
-restore remains unavailable without Backup & Recovery. The WU4 PDO SQLite
+unavailable, Module package lifecycle remains later, and Package Lifecycle does
+not own destructive rollback or restore. The WU4 PDO SQLite
 regression could not execute in the available executor because the driver was
 unavailable; this is an environment evidence limitation, not an observed
 regression.
@@ -138,14 +139,13 @@ and contract-locked, WU1–WU7 implementation is complete for its accepted scope
 and Existing-Runtime Webcore Lifecycle Adoption is a separate prerequisite for
 current WU7 acceptance under
 `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`. Backup &
-Recovery preparation is contract-locked in
-`docs/31_backup_recovery_foundation_contract.md`; WU1–WU7 are complete,
-Backup & Recovery Foundation implementation/acceptance is complete, and IU2
+Recovery implementation, acceptance, and lifecycle closure are recorded in
+`docs/31_backup_recovery_foundation_contract.md`; WU1–WU7 are complete, and IU2
 remains blocked pending separately authorized implementation.
 Existing-Runtime Webcore Lifecycle Adoption Implementation Unit 1: COMPLETE;
 legacy reconciliation remains NOT STARTED.
-Backup & Recovery Foundation: IMPLEMENTATION/ACCEPTANCE COMPLETE — WU1–WU7 COMPLETE.
-Backup & Recovery implementation overall: IN PROGRESS — pending Version & Release Reconciliation and final closure.
+Backup & Recovery Foundation: COMPLETE AND CLOSED — WU1–WU7 COMPLETE.
+Version & Release Reconciliation closure gate: COMPLETE.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
 Full Module Package Lifecycle: NOT YET CLOSED — Webcore adoption prerequisite and browser acceptance pending
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`

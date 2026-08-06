@@ -6,8 +6,8 @@
 Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
 Implementation Unit 1: COMPLETE
 Implementation Unit 2 — Legacy Reconciliation: NOT STARTED
-Backup & Recovery Foundation: PREPARATION / CONTRACT LOCKED; IMPLEMENTATION NOT STARTED
-Module Package Lifecycle WU7 acceptance: BLOCKED ON THIS PREREQUISITE
+Backup & Recovery Foundation: COMPLETE AND CLOSED
+Module Package Lifecycle WU7 acceptance: BLOCKED pending authoritative committed Webcore state
 Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED
 ```
 
@@ -109,9 +109,9 @@ final committed-state records, so it does not require Backup & Recovery.
 Mutating reconciliation is subject to the existing WU5/WU6 safety boundary.
 Planning, inspection, and test doubles may proceed without Backup & Recovery,
 but production-grade acceptance of irreversible file/schema convergence
-requires the restore-capable implementation defined by the separate preparation
-contract in `docs/31_backup_recovery_foundation_contract.md`. This contract does
-not implement or absorb Backup & Recovery.
+requires the accepted restore-capable foundation defined in
+`docs/31_backup_recovery_foundation_contract.md`. This contract does not
+implement or absorb Backup & Recovery.
 
 ## Relationship to deferred and excluded work
 
@@ -164,9 +164,8 @@ evidence does not match the supplied target package. It was not normalized.
 
 ## Recommended next gate
 
-Authorize Backup & Recovery Foundation implementation preparation against
-`docs/31_backup_recovery_foundation_contract.md`. Authorize **Implementation
-Unit 2 — Legacy Webcore Runtime Reconciliation** only after that implementation
-is accepted as restore-capable. Do not begin reconciliation, Server-Empty
-Bootstrap, Module legacy adoption, or Module WU7 browser acceptance under this
-contract.
+The Backup & Recovery Foundation is independently accepted and closed.
+Authorize **Implementation Unit 2 — Legacy Webcore Runtime Reconciliation**
+only through a separate implementation decision. Do not begin reconciliation,
+Server-Empty Bootstrap, Module legacy adoption, or Module WU7 browser
+acceptance under this contract.

@@ -3,7 +3,7 @@
 ## Preparation status
 
 ```text
-Backup & Recovery Foundation: IMPLEMENTATION/ACCEPTANCE COMPLETE; FINAL LIFECYCLE CLOSURE PENDING
+Backup & Recovery Foundation: COMPLETE AND CLOSED
 Backup & Recovery WU1: COMPLETE
 Backup & Recovery WU2: COMPLETE
 Backup & Recovery WU3: COMPLETE
@@ -12,7 +12,8 @@ Backup & Recovery WU5: COMPLETE
 Backup & Recovery WU6: COMPLETE
 Backup & Recovery WU7: COMPLETE
 Backup & Recovery Foundation implementation/acceptance: COMPLETE
-Existing-Runtime Webcore Lifecycle Adoption IU2: BLOCKED ON THIS DEPENDENCY
+Version & Release Reconciliation closure gate: COMPLETE
+Existing-Runtime Webcore Lifecycle Adoption IU2: NOT STARTED / SEPARATELY AUTHORIZED
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMMITTED WEBCORE STATE
 ```
 
@@ -27,7 +28,9 @@ The implementation namespace is `Copot\\Core\\BackupRecovery`.
 WU2 uses bounded canonical JSON for the immutable manifest and artifact
 metadata. WU4 provides the MySQL/MariaDB database recovery provider and its
 disposable round-trip proof. WU5 lifecycle-state and migration-identity
-verification integration is complete; WU6 remains implementation-deferred.
+verification integration is complete. WU6 locking, maintenance, durable
+recovery state, interruption, retry, and WU7 independent acceptance are
+complete and closed.
 
 ## Capability ownership and boundary
 
@@ -433,9 +436,9 @@ IU2 must remain blocked until acceptance evidence proves:
 
 ## Dependency consequence
 
-Backup & Recovery Foundation implementation/acceptance is **COMPLETE**; WU1, WU2, WU3,
-WU4, WU5, WU6, and WU7 are **COMPLETE**, and Backup & Recovery Foundation
-implementation/acceptance is **COMPLETE**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
+Backup & Recovery Foundation implementation and acceptance are **COMPLETE**;
+WU1, WU2, WU3, WU4, WU5, WU6, and WU7 are **COMPLETE**, and the Backup &
+Recovery Foundation lifecycle is **CLOSED**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
 **BLOCKED** pending separately authorized IU2 implementation.
 Module Package Lifecycle WU7 human/E2E acceptance remains **BLOCKED** pending
 authoritative COMMITTED Webcore runtime state. WU7 is not resumed by this
