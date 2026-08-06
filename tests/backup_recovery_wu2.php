@@ -34,22 +34,36 @@ $fixture = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-wu2-' . bin2hex(ran
 $mkdir($fixture . DIRECTORY_SEPARATOR . 'project' . DIRECTORY_SEPARATOR . 'staging');
 $mkdir($fixture . DIRECTORY_SEPARATOR . 'project' . DIRECTORY_SEPARATOR . 'storage');
 $mkdir($fixture . DIRECTORY_SEPARATOR . 'project-2');
+$mkdir($fixture . DIRECTORY_SEPARATOR . 'recovery-root');
+$mkdir($fixture . DIRECTORY_SEPARATOR . 'document-root');
 
 try {
     $project = realpath($fixture . DIRECTORY_SEPARATOR . 'project');
     $projectTwo = realpath($fixture . DIRECTORY_SEPARATOR . 'project-2');
-    $root = (new RecoveryRootResolver($project, [$project . DIRECTORY_SEPARATOR . 'staging', $project . DIRECTORY_SEPARATOR . 'storage']))->resolve();
-    $rootTwo = (new RecoveryRootResolver($projectTwo))->resolve();
+    $recoveryRoot = realpath($fixture . DIRECTORY_SEPARATOR . 'recovery-root');
+    $documentRoot = realpath($fixture . DIRECTORY_SEPARATOR . 'document-root');
+    $root = (new RecoveryRootResolver($project, $recoveryRoot, [$project . DIRECTORY_SEPARATOR . 'staging', $project . DIRECTORY_SEPARATOR . 'storage'], [$documentRoot]))->resolve();
+    $rootTwo = (new RecoveryRootResolver($projectTwo, $recoveryRoot, [], [$documentRoot]))->resolve();
     $assert($root->projectIdentity() !== $rootTwo->projectIdentity(), 'Distinct projects shared a recovery identity.');
-    $assert(str_contains($root->path(), '.copot-recovery'), 'Recovery root did not use the sibling namespace.');
+    $assert(str_starts_with(strtolower($root->path()), strtolower($recoveryRoot . DIRECTORY_SEPARATOR)), 'Recovery root escaped the configured base.');
     $assert(!str_starts_with(strtolower($root->path()), strtolower($project . DIRECTORY_SEPARATOR)), 'Recovery root overlapped the project.');
     $assert(RecoveryRootResolver::identityPath('C:\\Site\\COPOT') === RecoveryRootResolver::identityPath('c:/site/copot'), 'Windows identity normalization was not deterministic.');
-    $throws(static fn () => (new RecoveryRootResolver($project . DIRECTORY_SEPARATOR . 'missing'))->resolve(), 'Missing project root was accepted.');
-    $throws(static fn () => (new RecoveryRootResolver($project, [dirname($project)]))->resolve(), 'Overlapping excluded root was accepted.');
+    $throws(static fn () => (new RecoveryRootResolver($project, null))->resolve(), 'Missing configured recovery root was accepted.');
+    $throws(static fn () => (new RecoveryRootResolver($project, 'relative-recovery-root'))->resolve(), 'Relative configured recovery root was accepted.');
+    $throws(static fn () => (new RecoveryRootResolver($project, $project))->resolve(), 'Project-local recovery root was accepted.');
+    $throws(static fn () => (new RecoveryRootResolver($project, $documentRoot, [], [$documentRoot]))->resolve(), 'HTTP document-root recovery root was accepted.');
+    $throws(static fn () => (new RecoveryRootResolver($project, $project . DIRECTORY_SEPARATOR . 'storage', [$project . DIRECTORY_SEPARATOR . 'storage']))->resolve(), 'Lifecycle-storage recovery root was accepted.');
+    $throws(static fn () => (new RecoveryRootResolver($project, $fixture . DIRECTORY_SEPARATOR . 'missing-recovery-root'))->resolve(), 'Missing configured recovery root was accepted.');
+    $throws(static fn () => (new RecoveryRootResolver($project, $recoveryRoot . DIRECTORY_SEPARATOR . '..'))->resolve(), 'Traversal in configured recovery root was accepted.');
+    $throws(static fn () => (new RecoveryRootResolver($project, $recoveryRoot, [dirname($project)]))->resolve(), 'Overlapping excluded root was accepted.');
+    $recoveryLink = $fixture . DIRECTORY_SEPARATOR . 'recovery-link';
+    if (@symlink($recoveryRoot, $recoveryLink)) {
+        $throws(static fn () => (new RecoveryRootResolver($project, $recoveryLink))->resolve(), 'Symlink configured recovery root was accepted.');
+    }
     $junction = getenv('COPOT_WU2_JUNCTION_PATH');
     if (is_string($junction) && $junction !== '') {
-        $throws(static fn () => (new RecoveryRootResolver($junction))->resolve(), 'Junction project root was accepted.');
-        $throws(static fn () => (new RecoveryRootResolver($junction . DIRECTORY_SEPARATOR . 'nested'))->resolve(), 'Nested path traversing a junction was accepted.');
+        $throws(static fn () => (new RecoveryRootResolver($junction, $recoveryRoot))->resolve(), 'Junction project root was accepted.');
+        $throws(static fn () => (new RecoveryRootResolver($junction . DIRECTORY_SEPARATOR . 'nested', $recoveryRoot))->resolve(), 'Nested path traversing a junction was accepted.');
     }
 
     $hash = static fn (string $value): string => hash('sha256', $value);

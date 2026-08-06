@@ -47,10 +47,12 @@ $live = $fixture . DIRECTORY_SEPARATOR . 'live';
 $storage = $live . DIRECTORY_SEPARATOR . 'storage';
 $stagingRoot = $fixture . DIRECTORY_SEPARATOR . 'staging';
 $applyRoot = $fixture . DIRECTORY_SEPARATOR . 'apply';
+$recoveryRoot = $fixture . DIRECTORY_SEPARATOR . 'recovery-root';
 $mkdir($live . DIRECTORY_SEPARATOR . 'app');
 $mkdir($storage);
 $mkdir($stagingRoot);
 $mkdir($applyRoot);
+$mkdir($recoveryRoot);
 file_put_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'existing.txt', 'old-content');
 file_put_contents($live . DIRECTORY_SEPARATOR . 'unrelated.txt', 'operator-data');
 
@@ -70,7 +72,7 @@ try {
     $assert(file_get_contents($live . DIRECTORY_SEPARATOR . 'unrelated.txt') === 'operator-data', 'Unrelated live state was changed during plan preparation.');
     $throws(static fn () => FilesystemRecoveryPlan::fromApplyPlan(WebcoreApplyPlan::fromPayload(new StagedPayload($session, $hash('other'), [new StagedFile('.env', 1, $hash('x'))]))), 'Non-package-owned scope was accepted.');
 
-    $root = (new RecoveryRootResolver($live, [$stagingRoot, $applyRoot]))->resolve();
+    $root = (new RecoveryRootResolver($live, realpath($recoveryRoot), [$stagingRoot, $applyRoot]))->resolve();
     $store = new RecoveryArtifactStore($root);
     $domain = new FilesystemRecoveryDomain(new FilesystemRecoveryPathGuard(new LiveTreePathGuard($live)), $store);
     $capture = $domain->capture($plan);

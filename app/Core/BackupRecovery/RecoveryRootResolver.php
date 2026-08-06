@@ -9,40 +9,51 @@ final class RecoveryRootResolver
 
     /**
      * @param array<int, string> $excludedRoots
+     * @param array<int, string> $documentRoots
      */
-    public function __construct(private string $projectRoot, array $excludedRoots = [])
+    public function __construct(
+        private string $projectRoot,
+        private ?string $configuredRoot,
+        array $excludedRoots = [],
+        private array $documentRoots = []
+    )
     {
         $this->excludedRoots = $excludedRoots;
     }
 
     public function resolve(): RecoveryStorageRoot
     {
-        $projectRoot = $this->canonicalDirectory($this->projectRoot, 'Project root');
-        $parent = dirname($projectRoot);
-        $canonicalParent = $this->canonicalDirectory($parent, 'Project parent');
-        $projectIdentity = hash('sha256', self::identityPath($projectRoot));
-        $recoveryBase = $canonicalParent . DIRECTORY_SEPARATOR . '.copot-recovery';
-
-        if (file_exists($recoveryBase) && is_link($recoveryBase)) {
-            throw new RecoveryStorageException('Recovery root contains a symlink boundary.');
+        if ($this->configuredRoot === null || trim($this->configuredRoot) === '') {
+            throw new RecoveryStorageException('A configured private recovery root is required.');
         }
 
-        $root = $recoveryBase . DIRECTORY_SEPARATOR . $projectIdentity;
-        self::assertOutside($root, $projectRoot, 'Recovery root overlaps the live project root.');
+        $projectRoot = $this->canonicalDirectory($this->projectRoot, 'Project root');
+        $configuredRoot = $this->canonicalDirectory($this->configuredRoot, 'Configured recovery root');
+        $projectIdentity = hash('sha256', self::identityPath($projectRoot));
+
+        self::assertOutside($configuredRoot, $projectRoot, 'Configured recovery root overlaps the live project root.');
 
         foreach ($this->excludedRoots as $excludedRoot) {
             if ($excludedRoot === '') {
                 continue;
             }
             $canonicalExcluded = $this->canonicalDirectory($excludedRoot, 'Excluded root');
-            self::assertOutside($root, $canonicalExcluded, 'Recovery root overlaps an excluded root.');
+            self::assertOutside($configuredRoot, $canonicalExcluded, 'Configured recovery root overlaps an excluded root.');
         }
 
-        if (!is_writable($canonicalParent)) {
-            throw new RecoveryStorageException('Project parent is not writable.');
+        foreach ($this->documentRoots as $documentRoot) {
+            if ($documentRoot === '') {
+                continue;
+            }
+            $canonicalDocumentRoot = $this->canonicalDirectory($documentRoot, 'HTTP document root');
+            self::assertOutside($configuredRoot, $canonicalDocumentRoot, 'Configured recovery root overlaps an HTTP document root.');
         }
 
-        return new RecoveryStorageRoot($projectRoot, $root, $projectIdentity);
+        if (!is_writable($configuredRoot)) {
+            throw new RecoveryStorageException('Configured recovery root is not writable.');
+        }
+
+        return new RecoveryStorageRoot($projectRoot, $configuredRoot . DIRECTORY_SEPARATOR . $projectIdentity, $projectIdentity);
     }
 
     public static function identityPath(string $canonicalPath): string
