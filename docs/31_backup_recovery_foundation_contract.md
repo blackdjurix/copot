@@ -13,16 +13,17 @@ Backup & Recovery WU6: COMPLETE
 Backup & Recovery WU7: COMPLETE
 Backup & Recovery Foundation implementation/acceptance: COMPLETE
 Version & Release Reconciliation closure gate: COMPLETE
-Existing-Runtime Webcore Lifecycle Adoption IU2: NOT STARTED / SEPARATELY AUTHORIZED
+Existing-Runtime Webcore Lifecycle Adoption IU2 technical WU1–WU6: COMPLETE AND CLOSED
+Production reconciliation: NOT STARTED / SEPARATELY AUTHORIZED
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMMITTED WEBCORE STATE
 ```
 
 This contract defines the smallest reusable Backup & Recovery Foundation
-required before mutating Existing-Runtime Webcore Lifecycle Adoption IU2 may
-be implemented. It is a separate Core/platform capability consumed by Package
-Lifecycle. Its WU1–WU3 implementation is recorded separately from this
-contract; it does not implement IU2, Module Package Lifecycle, Server-Empty
-Bootstrap, or Module legacy adoption.
+required for mutating Existing-Runtime Webcore Lifecycle Adoption IU2. It is a
+separate Core/platform capability consumed by Package Lifecycle. Its WU1–WU3
+implementation is recorded separately from this contract; it does not own IU2
+policy or production reconciliation, and it does not implement Module Package
+Lifecycle, Server-Empty Bootstrap, or Module legacy adoption.
 
 The implementation namespace is `Copot\\Core\\BackupRecovery`.
 WU2 uses bounded canonical JSON for the immutable manifest and artifact
@@ -413,9 +414,10 @@ and convergence policy remain outside Backup & Recovery Foundation scope.
 Backup & Recovery Foundation must be independently accepted as restore-capable
 before IU2 implementation begins.
 
-## Acceptance prerequisite for IU2
+## Production-reconciliation prerequisite for IU2
 
-IU2 must remain blocked until acceptance evidence proves:
+Before production reconciliation may begin, the accepted foundation evidence
+must remain available and must prove:
 
 - complete capture before mutation;
 - tamper and incomplete-capture rejection;
@@ -438,8 +440,10 @@ IU2 must remain blocked until acceptance evidence proves:
 
 Backup & Recovery Foundation implementation and acceptance are **COMPLETE**;
 WU1, WU2, WU3, WU4, WU5, WU6, and WU7 are **COMPLETE**, and the Backup &
-Recovery Foundation lifecycle is **CLOSED**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
-**BLOCKED** pending separately authorized IU2 implementation.
+Recovery Foundation lifecycle is **CLOSED**. Existing-Runtime Webcore Lifecycle
+Adoption IU2 technical WU1–WU6 implementation and acceptance are **COMPLETE AND
+CLOSED**; production reconciliation remains **NOT STARTED** and separately
+authorized.
 Module Package Lifecycle WU7 human/E2E acceptance remains **BLOCKED** pending
 authoritative COMMITTED Webcore runtime state. WU7 is not resumed by this
 contract.

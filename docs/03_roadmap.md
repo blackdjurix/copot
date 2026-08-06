@@ -787,8 +787,10 @@ Lifecycle preparation is complete and contract-locked in
 `docs/29_module_package_lifecycle_contract.md`; WU1–WU7 implementation is
 complete for its accepted scope, final WU7 human/E2E acceptance is blocked on
 the Webcore adoption prerequisite, and full Module Package Lifecycle completion
-is unreached. Existing-Runtime Webcore Lifecycle Adoption IU1 and IU2 WU1 are
-complete; IU2 WU2+ remains blocked pending separate authorization. No
+is unreached. Existing-Runtime Webcore Lifecycle Adoption IU1 and IU2 WU1–WU6
+are complete and technically closed; production reconciliation remains NOT
+STARTED and requires separate explicit authorization and eligible
+runtime/quiescence evidence. No
 milestone number is assigned. The Webcore package lifecycle
 first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all

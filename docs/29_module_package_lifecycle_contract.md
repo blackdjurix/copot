@@ -30,6 +30,14 @@ registration, immutable package candidates under `.copot-lifecycle/module-packag
 installed-versus-available inventory data, and explicit lifecycle execution routing through
 the existing WU1–WU6 services. Browser/Admin visual acceptance remains pending separately.
 
+Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU6 is technically complete
+and closed, but production reconciliation remains NOT STARTED and requires
+separate explicit authorization and eligible runtime/quiescence evidence. The
+current inspected XAMPP runtime is not automatically an adoption target merely
+because the technical capability exists. The separate Module Package Lifecycle
+WU7 human/E2E acceptance remains blocked until authoritative committed Webcore
+runtime state exists.
+
 The first lifecycle delivery remains Webcore-first and complete:
 `docs/28_package_lifecycle_migration_foundation_contract.md`.
 

@@ -4,8 +4,8 @@
 
 ```text
 Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
-Implementation Unit 1: COMPLETE
-Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU6 COMPLETE; production reconciliation NOT STARTED
+Implementation Unit 1: COMPLETE / ACCEPTED
+Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU6 COMPLETE AND CLOSED; technical acceptance COMPLETE; production reconciliation NOT STARTED
 Backup & Recovery Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED pending authoritative committed Webcore state
 Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED — KEEP DEFERRED
