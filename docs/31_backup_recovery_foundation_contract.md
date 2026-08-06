@@ -123,6 +123,32 @@ The recovery coordinator owns ordering. WU6 owns mutable recovery-set lifecycle
 state. A domain owns only its declared persisted state. Future domains may be
 added through the same boundary only after separate authorization.
 
+## Committed lifecycle-state recovery boundary
+
+The committed Webcore lifecycle-state domain must represent one of two explicit
+pre-operation states:
+
+- `PRESENT_COMMITTED_STATE`, binding the exact canonical committed lifecycle
+  state and its deterministic identity;
+- `ABSENT_BEFORE_OPERATION`, binding explicit canonical absence as a recovery
+  fact.
+
+Absence must not be represented by an empty string, an omitted manifest field,
+or an accidental null. The selected state and identity are immutable facts
+bound by the recovery manifest.
+
+When committed lifecycle state is present before the operation, restore must
+reproduce that committed state exactly. When it is authoritatively absent,
+restore must reproduce absence; already-absent state is idempotent success.
+Removal of an operation-created committed state is allowed only when its
+current identity matches the explicitly expected mutated identity supplied by
+later orchestration. Unrelated, malformed, or ambiguous state fails closed.
+
+The `storage/installed.lock` domain remains separately owned. For the IU2
+source-runtime boundary, a committed lifecycle state requires an existing
+valid marker whose version and timestamp are consistent with that state.
+WU5 verifies this relationship but does not merge the two physical domains.
+
 ## Private storage and containment
 
 Recovery artifacts must be stored in a private, durable recovery namespace
