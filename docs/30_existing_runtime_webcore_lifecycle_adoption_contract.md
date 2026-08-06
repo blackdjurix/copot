@@ -5,7 +5,7 @@
 ```text
 Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
 Implementation Unit 1: COMPLETE
-Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU2 COMPLETE; WU3+ NOT STARTED
+Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU3 COMPLETE; WU4+ NOT STARTED
 Backup & Recovery Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED pending authoritative committed Webcore state
 Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED — KEEP DEFERRED
@@ -205,14 +205,16 @@ are implemented and accepted under the existing boundaries.
 
 ### Implementation Unit 2 — Legacy Webcore Runtime Reconciliation
 
-**WU1–WU2 COMPLETE; WU3+ NOT STARTED.** Separate authorization is required for
+**WU1–WU3 COMPLETE; WU4+ NOT STARTED.** Separate authorization is required for
 each later implementation unit. WU1 provides the non-mutating trusted-target,
 deterministic-classification, and immutable-planning boundary. WU2 provides
 only the accepted recovery binding, exact confirmation, database quiescence,
-and mutation-eligibility boundary; it does not start mutation. WU2 reuses the
-accepted Backup & Recovery lifecycle and does not add a parallel recovery
-subsystem. It must not add generic legacy migration inference, stale-file
-deletion, or silent normalization of unknown runtimes.
+and mutation-eligibility boundary; it does not start mutation. WU3 consumes
+that boundary and reuses the accepted WU5 guarded package-owned apply path for
+CREATE, REPLACE, and UNCHANGED actions only. WU3 does not perform schema,
+migration, installed-state, or committed-lifecycle mutation. IU2 must not add
+generic legacy migration inference, stale-file deletion, or silent
+normalization of unknown runtimes.
 
 The current runtime is not an acceptance fixture until its drift and missing
 schema/migration evidence are addressed through an explicitly authorized
@@ -221,7 +223,7 @@ process.
 ## Recommended next gate
 
 The Backup & Recovery Foundation is independently accepted and closed.
-Authorize **IU2 WU3 or later** only through a separate implementation
-decision. Do not begin filesystem convergence, schema/migration mutation,
-finalization, Server-Empty Bootstrap, Module legacy adoption, or Module WU7
-browser acceptance under this preparation lock.
+Authorize **IU2 WU4 or later** only through a separate implementation
+decision. Do not begin schema/migration mutation, finalization, Server-Empty
+Bootstrap, Module legacy adoption, or Module WU7 browser acceptance under this
+preparation lock.

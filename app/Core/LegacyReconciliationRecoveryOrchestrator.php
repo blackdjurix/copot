@@ -94,6 +94,7 @@ final class LegacyReconciliationRecoveryOrchestrator
                 $plan->identity(),
                 $manifest->identity(),
                 $plan->target()->packageIdentity(),
+                $confirmation->bindingIdentity(),
                 $lease,
                 function () use ($identity, $maintenanceActive): void {
                     if ($maintenanceActive) {

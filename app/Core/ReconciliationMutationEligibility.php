@@ -15,6 +15,7 @@ final class ReconciliationMutationEligibility
         private string $planIdentity,
         private string $manifestIdentity,
         private string $targetIdentity,
+        private string $confirmationIdentity,
         private DatabaseQuiescenceLease $lease,
         private \Closure $onRelease
     ) {}
@@ -24,6 +25,7 @@ final class ReconciliationMutationEligibility
     public function planIdentity(): string { return $this->planIdentity; }
     public function manifestIdentity(): string { return $this->manifestIdentity; }
     public function targetIdentity(): string { return $this->targetIdentity; }
+    public function confirmationIdentity(): string { return $this->confirmationIdentity; }
     public function isValid(): bool { return !$this->released && $this->lease->isActive(); }
 
     public function release(): void

@@ -123,12 +123,15 @@ final class LegacyReconciliationPlanner
                 throw new \RuntimeException('Package-owned target path is not a regular file.');
             }
             $action = FilesystemReconciliationAction::CREATE;
+            $expectedLiveSha256 = null;
             if (is_file($path)) {
-                $action = ((int) @filesize($path) === $entry->byteSize() && @hash_file('sha256', $path) === $entry->sha256())
+                $liveHash = @hash_file('sha256', $path);
+                $action = ((int) @filesize($path) === $entry->byteSize() && $liveHash === $entry->sha256())
                     ? FilesystemReconciliationAction::UNCHANGED
                     : FilesystemReconciliationAction::REPLACE;
+                $expectedLiveSha256 = $action === FilesystemReconciliationAction::UNCHANGED ? $entry->sha256() : $liveHash;
             }
-            $actions[] = new FilesystemReconciliationAction($action, $entry->path(), $entry->byteSize(), $entry->sha256());
+            $actions[] = new FilesystemReconciliationAction($action, $entry->path(), $entry->byteSize(), $entry->sha256(), $expectedLiveSha256);
         }
         usort($actions, static fn (FilesystemReconciliationAction $left, FilesystemReconciliationAction $right): int => strcmp($left->path(), $right->path()));
         return $actions;

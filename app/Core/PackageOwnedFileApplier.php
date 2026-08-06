@@ -22,7 +22,7 @@ final class PackageOwnedFileApplier
         }
     }
 
-    public function apply(WebcoreApplyPlan $plan, ?callable $progress = null): WebcoreApplyResult
+    public function apply(WebcoreApplyPlan $plan, ?callable $progress = null, ?callable $beforeActivation = null): WebcoreApplyResult
     {
         $files = $plan->files();
         $hasReplacement = false;
@@ -135,6 +135,10 @@ final class PackageOwnedFileApplier
                 $mode = $existing ? ((int) @fileperms($destination) & 0777) : 0644;
                 @chmod($temporary, $mode > 0 ? $mode : 0644);
                 $this->guard->verifyDestination($file->path(), $existing);
+
+                if ($beforeActivation !== null) {
+                    $beforeActivation($file->path());
+                }
 
                 if (!@rename($temporary, $destination)) {
                     @unlink($temporary);
