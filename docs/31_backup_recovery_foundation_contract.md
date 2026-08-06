@@ -25,7 +25,8 @@ Bootstrap, or Module legacy adoption.
 The implementation namespace is `Copot\\Core\\BackupRecovery`.
 WU2 uses bounded canonical JSON for the immutable manifest and artifact
 metadata. WU4 provides the MySQL/MariaDB database recovery provider and its
-disposable round-trip proof; WU5 remains implementation-deferred.
+disposable round-trip proof. WU5 lifecycle-state and migration-identity
+verification integration is complete; WU6 remains implementation-deferred.
 
 ## Capability ownership and boundary
 
@@ -157,6 +158,17 @@ owned by the Backup & Recovery capability. The namespace must be structurally
 separate from the live Webcore tree, package staging, and apply-temporary
 storage. It must not be restored as part of the captured lifecycle state.
 
+The durable recovery root must be supplied by explicit deployment
+configuration, such as `COPOT_RECOVERY_ROOT`. It must be an absolute,
+canonically resolvable, writable, symlink/reparse-safe path outside the live
+project, staging and lifecycle storage, and every HTTP-served document root.
+The project-identity and recovery-set-key structure remains beneath that
+configured root. No implicit sibling-root, live-storage, or system-temporary
+fallback is permitted when HTTP privacy or containment cannot be proven.
+Existing sibling recovery roots must not be silently adopted as writable
+storage; migration requires explicit authorization followed by containment and
+integrity validation.
+
 Storage must enforce real-path containment, reject symlinks and path escapes,
 use restrictive permissions, write artifacts atomically, and verify complete
 artifact identity before the recovery set becomes `READY`.
@@ -221,7 +233,24 @@ Capture and reconciliation require:
 If sufficiently quiescent and exclusive access to the configured database
 cannot be established or reasonably proven, capture must fail closed before
 reconciliation mutation begins. External database writers must not be assumed
-to be excluded silently.
+to be excluded silently. WU6 owns the `DatabaseQuiescenceCapability` and its
+lease across capture, `READY`, operator confirmation, reconciliation mutation,
+and post-reconciliation verification. The capability must exclude arbitrary
+external writers and DDL while allowing the designated Copot reconciliation
+writer. If it is unavailable, reconciliation fails closed before mutation.
+
+`MariaDbReadOnlyQuiescence` is an optional deployment profile, not a universal
+provider guarantee. For MariaDB 10.4, the ordinary runtime credentials must
+not have `SUPER` or an equivalent `read_only` bypass, while a separately
+configured designated reconciliation credential must have the required
+administrative/bypass privilege. Uncontrolled privileged sessions must be
+absent, and database/server ownership and unrelated workloads must be
+controlled sufficiently for a server-global `read_only` boundary. Lease
+identity, server/database identity, prior state, acquisition, interruption,
+crash handling, and release must be verified. Ambiguous ownership fails closed
+and requires operator or database-administrator resolution. The inspected
+XAMPP/MariaDB deployment does not satisfy this optional profile and is not
+recovery-ready for mutating reconciliation under it.
 
 ## Durable recovery lifecycle
 
@@ -299,11 +328,40 @@ Retry may resume capture only before mutation and may resume restoration only
 against the same recovery identity and manifest. It must not create a new
 recovery point over an uncertain mutated state.
 
+Database restore table locks must be acquired and released by the same owning
+connection. WU6 owns durable recovery and restore-attempt lineage; WU4
+consumes an explicit attempt/retry context. A provider-created partial database
+may be rebuilt only when the durable attempt lineage, recovery identity,
+expected source identity, and validated provider-created object scope match.
+An exact restored artifact identity is idempotent success. Unrelated,
+malformed, or ambiguous target state fails closed. Force restore, recapture,
+Core migration rerun, package reapplication, and reconciliation replanning are
+not authorized.
+
 Cleanup is controlled and occurs only after successful post-restore or
 post-reconciliation verification. Cleanup failure produces
 `CLEANUP_PENDING`; it must not invalidate already verified state or erase
 recovery evidence. Retention-management product behavior is outside this
-slice.
+slice. A successful reconciliation may follow
+`READY → CLEANUP_PENDING → CLEANED` only when the exact recovery identity and
+manifest match, persisted operator confirmation matches, the mutation boundary
+has been crossed where applicable, caller-supplied post-reconciliation
+verification succeeds, and no restore-required, verification-failed, or
+indeterminate condition remains. `RESTORED` is reserved for actual successful
+restore followed by deterministic verification.
+
+`CLEANED` means mutable, temporary, and operation cleanup is complete with no
+cleanup-required condition remaining. Successfully published immutable
+manifests and artifacts, together with the durable WU6 lifecycle record,
+remain until separately authorized retention or deletion removes them.
+
+The mutation permission is durable: WU6 must persist the mutation-may-begin
+fact, complete fsync and read-back verification, and only then return the
+permit to the caller. A valid persisted `mutation_started=false` record with
+no permit returned proves a pre-mutation failure. A valid persisted
+`mutation_started=true` record conservatively routes later interruption or
+failure to restore-required handling. Malformed, unreadable, or ambiguous
+boundary state routes to `RESTORE_INDETERMINATE`.
 
 IU2 operator confirmation must cover the explicit trusted target and the
 completed recovery-set identity before mutation. Destructive cleanup requires
