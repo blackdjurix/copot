@@ -32,7 +32,8 @@ final class LegacyReconciliationFinalizer
         PDO $connection,
         CoreMigrationRegistry $migrationRegistry,
         array $runtimeChecks,
-        ?callable $beforeLifecycleWrite = null
+        ?callable $beforeLifecycleWrite = null,
+        ?callable $afterLifecycleWrite = null
     ): LegacyReconciliationFinalizationResult {
         try {
             $this->assertBinding($plan, $manifest, $eligibility, $filesystemResult, $databaseResult);
@@ -92,6 +93,10 @@ final class LegacyReconciliationFinalizer
                 $plan->target()->inventoryIdentity()
             );
             $committedStore->write($state);
+
+            if ($afterLifecycleWrite !== null) {
+                $afterLifecycleWrite();
+            }
 
             $finalMarker = $installation->readMarker();
             $finalState = $committedStore->read();
