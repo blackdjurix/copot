@@ -5,7 +5,7 @@
 ```text
 Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
 Implementation Unit 1: COMPLETE
-Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1 COMPLETE; WU2+ NOT STARTED
+Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU2 COMPLETE; WU3+ NOT STARTED
 Backup & Recovery Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED pending authoritative committed Webcore state
 Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED — KEEP DEFERRED
@@ -14,8 +14,10 @@ Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED — KEEP 
 This contract defines the smallest safe capability for converting an already
 running legacy Webcore installation into authoritative committed lifecycle
 state. It is a Webcore prerequisite for Module Package Lifecycle WU7
-acceptance. WU1 establishes only the non-mutating classification and planning
-decision layer; production runtime reconciliation remains **NOT STARTED**.
+acceptance. WU1 establishes the non-mutating classification/planning decision
+layer and WU2 establishes the recovery, confirmation, quiescence, and
+mutation-eligibility boundary; production runtime reconciliation remains
+**NOT STARTED**.
 
 The current acceptance runtime is evidence for this contract, not an adoption
 target. It is `LEGACY`, reports `0.8.0` through `storage/installed.lock`, has
@@ -203,16 +205,14 @@ are implemented and accepted under the existing boundaries.
 
 ### Implementation Unit 2 — Legacy Webcore Runtime Reconciliation
 
-**WU1 COMPLETE; WU2+ NOT STARTED.** Separate authorization is required for
-each later implementation unit. WU1 provides only the non-mutating
-trusted-target, deterministic-classification, and immutable-planning boundary.
-It may
-implement only the trusted-target selection, deterministic classification,
-immutable planning, guarded package-owned convergence, accepted recovery and
-quiescence boundary, deterministic migration handling, interruption/retry, and
-WU6 finalization locked above. It must not add generic legacy migration
-inference, stale-file deletion, a new recovery subsystem, or silent
-normalization of unknown runtimes.
+**WU1–WU2 COMPLETE; WU3+ NOT STARTED.** Separate authorization is required for
+each later implementation unit. WU1 provides the non-mutating trusted-target,
+deterministic-classification, and immutable-planning boundary. WU2 provides
+only the accepted recovery binding, exact confirmation, database quiescence,
+and mutation-eligibility boundary; it does not start mutation. WU2 reuses the
+accepted Backup & Recovery lifecycle and does not add a parallel recovery
+subsystem. It must not add generic legacy migration inference, stale-file
+deletion, or silent normalization of unknown runtimes.
 
 The current runtime is not an acceptance fixture until its drift and missing
 schema/migration evidence are addressed through an explicitly authorized
@@ -221,7 +221,7 @@ process.
 ## Recommended next gate
 
 The Backup & Recovery Foundation is independently accepted and closed.
-Authorize **IU2 WU2 or later** only through a separate implementation
-decision. Do not begin recovery orchestration, mutating reconciliation,
-Server-Empty Bootstrap, Module legacy adoption, or Module WU7 browser
-acceptance under this preparation lock.
+Authorize **IU2 WU3 or later** only through a separate implementation
+decision. Do not begin filesystem convergence, schema/migration mutation,
+finalization, Server-Empty Bootstrap, Module legacy adoption, or Module WU7
+browser acceptance under this preparation lock.
