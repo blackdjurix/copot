@@ -10,7 +10,7 @@ final class CoreMigrationRunner
     {
     }
 
-    public function run(PDO $connection, CoreMigrationPlan $plan): MigrationRunResult
+    public function run(PDO $connection, CoreMigrationPlan $plan, ?callable $beforeMigration = null): MigrationRunResult
     {
         if (!$plan->isAccepted()) {
             return new MigrationRunResult(MigrationRunResult::FAILED, [], $plan->reason());
@@ -28,6 +28,9 @@ final class CoreMigrationRunner
             }
 
             try {
+                if ($beforeMigration !== null) {
+                    $beforeMigration($migration);
+                }
                 if (!$migration->checkPrecondition($connection)) {
                     return new MigrationRunResult(MigrationRunResult::FAILED, $applied, 'Migration precondition failed.');
                 }
