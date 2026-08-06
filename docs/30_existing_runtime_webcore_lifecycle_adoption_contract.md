@@ -5,7 +5,7 @@
 ```text
 Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
 Implementation Unit 1: COMPLETE
-Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU4 COMPLETE; WU5+ NOT STARTED
+Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU5 COMPLETE; WU6 NOT STARTED
 Backup & Recovery Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED pending authoritative committed Webcore state
 Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED — KEEP DEFERRED
@@ -205,7 +205,7 @@ are implemented and accepted under the existing boundaries.
 
 ### Implementation Unit 2 — Legacy Webcore Runtime Reconciliation
 
-**WU1–WU4 COMPLETE; WU5+ NOT STARTED.** Separate authorization is required for
+**WU1–WU5 COMPLETE; WU6 NOT STARTED.** Separate authorization is required for
 each later implementation unit. WU1 provides the non-mutating trusted-target,
 deterministic-classification, and immutable-planning boundary. WU2 provides
 only the accepted recovery binding, exact confirmation, database quiescence,
@@ -215,7 +215,9 @@ CREATE, REPLACE, and UNCHANGED actions only. WU3 does not perform schema,
 migration, installed-state, or committed-lifecycle mutation. WU4 consumes the
 same boundary and executes only proven forward Core migrations with existing
 ledger and transaction semantics. WU4 does not write installed state or
-committed lifecycle state. IU2 must not add
+committed lifecycle state. WU5 verifies the reconciled filesystem and
+database, writes `storage/installed.lock` before writing committed lifecycle
+state, and verifies the final committed identities. IU2 must not add
 generic legacy migration inference, stale-file deletion, or silent
 normalization of unknown runtimes.
 
@@ -226,7 +228,7 @@ process.
 ## Recommended next gate
 
 The Backup & Recovery Foundation is independently accepted and closed.
-Authorize **IU2 WU5 or later** only through a separate implementation
-decision. Do not begin installed-state/finalization work, Server-Empty
-Bootstrap, Module legacy adoption, or Module WU7 browser acceptance under this
-preparation lock.
+Authorize **IU2 WU6 or later** only through a separate implementation
+decision. Do not begin interruption/restore integrated acceptance,
+Server-Empty Bootstrap, Module legacy adoption, or Module WU7 browser
+acceptance under this preparation lock.
