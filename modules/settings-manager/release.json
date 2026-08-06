@@ -1,0 +1,6 @@
+{
+  "transition": "INSTALL",
+  "whats_new": [
+    "Module-owned settings definitions and Admin settings management workflows."
+  ]
+}

@@ -217,6 +217,6 @@ try {
     $removeDirectory($temporaryStorage);
 }
 
-$assert(Version::CURRENT === '0.12.0', 'Version::CURRENT changed during WU1.');
+$assert(Version::CURRENT === '0.13.0', 'Version::CURRENT is not the reconciled 0.13.0 source version.');
 
 echo "WU1 package contract focused tests passed ({$assertions} assertions)." . PHP_EOL;

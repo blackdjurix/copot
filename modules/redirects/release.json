@@ -1,0 +1,6 @@
+{
+  "transition": "INSTALL",
+  "whats_new": [
+    "Persistent redirect management and controlled redirect routing."
+  ]
+}

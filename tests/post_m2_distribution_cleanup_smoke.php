@@ -18,7 +18,7 @@ $assert = static function (bool $condition, string $message) use (&$assertions, 
     }
 };
 
-$assert(Version::CURRENT === '0.12.0', 'Framework version source must be 0.12.0 for the M2 final release candidate.');
+$assert(Version::CURRENT === '0.13.0', 'Framework version source must be the reconciled 0.13.0 source version.');
 
 $finalizerSource = (string) file_get_contents($basePath . '/app/Core/InstallerFinalizer.php');
 $assert(str_contains($finalizerSource, 'Version::CURRENT'), 'InstallerFinalizer must consume Version::CURRENT.');

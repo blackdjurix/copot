@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Version & Release Reconciliation
+
+- Reconciled the Webcore source version to `0.13.0` as the next consolidated
+  release after the released `v0.12.0` baseline.
+- Recorded current Webcore What's New metadata in the package-owned
+  `release.json` and current independent release metadata for the ten product
+  Core Modules under their module directories.
+- Preserved independent Module version authority at `0.1.0`; the sample
+  `modules/example` module remains excluded.
+- Preserved release-based advancement: completed features do not create
+  intermediate public versions, and Package Lifecycle `REPAIR` is not a
+  release event.
+- Existing-Runtime Webcore Lifecycle Adoption remains blocked and is not part
+  of the reconciled `0.13.0` contents.
+
 ### M3.7 post-merge closure
 
 - Integrated all intended M3.7 WU1–WU6 changes into `main` at `667ae1f0dbb8079ea0420a107bc1795c43cc5bea` by fast-forward with no merge commit.

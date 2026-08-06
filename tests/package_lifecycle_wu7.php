@@ -14,6 +14,7 @@ use Copot\Core\InstalledStateStatus;
 use Copot\Core\LifecycleOperationRecord;
 use Copot\Core\MigrationRunResult;
 use Copot\Core\ZipIntakeService;
+use Copot\Core\Version;
 
 $basePath = dirname(__DIR__);
 chdir($basePath);
@@ -30,7 +31,7 @@ if (!class_exists(ZipArchive::class) || !extension_loaded('zip')) {
     exit(0);
 }
 
-$package = $basePath . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . 'copot-v0.12.0.zip';
+$package = $basePath . DIRECTORY_SEPARATOR . 'dist' . DIRECTORY_SEPARATOR . 'copot-v' . Version::CURRENT . '.zip';
 if (!is_file($package)) {
     throw new RuntimeException('Official package artifact is missing; run build/package.php first.');
 }
@@ -54,7 +55,7 @@ try {
     $payload = (new ZipIntakeService($basePath, $staging))->intake($package);
     $manifest = (new PackageManifestReader())->read($payload);
     (new PackageInventoryVerifier())->verify($manifest->payload(), $manifest->contract()->inventory());
-    $assert($manifest->contract()->targetWebcoreVersion() === '0.12.0', 'Official manifest target is incorrect.');
+    $assert($manifest->contract()->targetWebcoreVersion() === Version::CURRENT, 'Official manifest target is incorrect.');
     $assert($manifest->contract()->packageType() === 'copot-webcore', 'Official manifest package type is incorrect.');
     $assert(count($manifest->payload()->files()) + 1 === count($payload->files()), 'Manifest was not excluded from apply payload.');
     $assert($manifest->payload()->archiveSha256() === $payload->archiveSha256(), 'Archive identity changed while reading metadata.');

@@ -1,0 +1,8 @@
+{
+  "transition": "UPDATE",
+  "whats_new": [
+    "Package Lifecycle & Migration Foundation",
+    "Module Package Lifecycle Foundation",
+    "Backup & Recovery Foundation"
+  ]
+}

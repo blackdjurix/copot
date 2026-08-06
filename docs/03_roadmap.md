@@ -635,7 +635,11 @@ M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current active milestone: NONE
-Next work unit: Version & Release Reconciliation — NOT STARTED
+Version & Release Reconciliation: COMPLETE
+Webcore reconciled source version: 0.13.0 (next consolidated release; not tagged or published)
+Current Core Module versions: 0.1.0 independently owned; modules/example excluded
+Current release metadata: Webcore release.json and per-module release.json files
+Release advancement policy: release-based, not feature-based; REPAIR is not a release event
 Current dependency: Existing-Runtime Webcore Lifecycle Adoption IU2 — BLOCKED
 Current active implementation branch: feature/module-package-lifecycle
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice

@@ -57,11 +57,22 @@ Current released stable Webcore version:
 0.12.0
 ```
 
+The reconciled source version for the next consolidated Webcore release is
+`0.13.0`. It includes the completed Package Lifecycle & Migration Foundation,
+Module Package Lifecycle Foundation, and Backup & Recovery Foundation. It is
+not tagged, published, or installed by this change. The current release
+communication metadata is stored in the package-owned root `release.json`;
+`Version::CURRENT` remains the sole current-version authority.
+
 The official package output for this release is:
 
 ```text
 dist/copot-v0.12.0.zip
 ```
+
+The next package builder output will derive its filename and manifest version
+from `Copot\Core\Version::CURRENT`; no package artifact is published by this
+reconciliation.
 
 ## Environment Contract
 

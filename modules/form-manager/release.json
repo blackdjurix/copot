@@ -1,0 +1,6 @@
+{
+  "transition": "INSTALL",
+  "whats_new": [
+    "Form management, submissions, public rendering, and submission security."
+  ]
+}

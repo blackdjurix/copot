@@ -1,0 +1,6 @@
+{
+  "transition": "INSTALL",
+  "whats_new": [
+    "Core module discovery, lifecycle management, inventory, and dependency-aware administration."
+  ]
+}

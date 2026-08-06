@@ -76,10 +76,10 @@ try {
 
     [$buildExitCode] = $run(escapeshellarg($phpBinary) . ' ' . escapeshellarg($sourcePath . '/build/package.php'), $sourcePath);
 
-    $version = '0.12.0';
+    $version = Copot\Core\Version::CURRENT;
     $packagePath = $sourcePath . '/dist/copot-v' . $version . '.zip';
     $assert($buildExitCode === 0, 'Official package builder must run successfully.');
-    $assert(is_file($packagePath), 'D4 package input must exist at dist/copot-v0.12.0.zip.');
+    $assert(is_file($packagePath), 'D4 package input must exist at the reconciled current-version package path.');
 
     $installTarget = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-d4-clean-install-' . bin2hex(random_bytes(8));
 

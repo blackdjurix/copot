@@ -1,0 +1,6 @@
+{
+  "transition": "INSTALL",
+  "whats_new": [
+    "User administration, roles, assignments, and administrator-managed access workflows."
+  ]
+}

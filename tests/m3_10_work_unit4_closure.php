@@ -124,7 +124,7 @@ try {
     $legacyManager->enable('redirects');
     $assert($legacyConnection->query("SELECT status FROM modules WHERE name = 'redirects'")->fetchColumn() === 'enabled', 'Existing-install module lifecycle did not converge.');
 
-    $package = $basePath . '/dist/copot-v0.12.0.zip';
+    $package = $basePath . '/dist/copot-v' . \Copot\Core\Version::CURRENT . '.zip';
     $contents = (string) file_get_contents($package);
     foreach (['modules/redirects/module.json', 'modules/redirects/resolver.php', 'modules/redirects/routes.php', 'modules/redirects/views/admin/list.php', 'modules/redirects/views/admin/form.php', 'database/upgrades/m3_10_redirect_manager.sql'] as $entry) {
         $assert(str_contains($contents, $entry), 'Package omitted Redirect Manager artifact: ' . $entry);
