@@ -36,7 +36,7 @@ Current Core Module versions: 0.1.0 independently owned; modules/example exclude
 Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based; REPAIR is not a release event
 Current dependency: Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU6 technical acceptance is complete; production reconciliation and separate Module WU7 acceptance remain pending.
-Current active implementation branch: feature/module-package-lifecycle
+Current active implementation branch: main
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
 Completed delivery slice: Webcore first
