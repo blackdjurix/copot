@@ -640,7 +640,7 @@ Webcore reconciled source version: 0.13.0 (next consolidated release; not tagged
 Current Core Module versions: 0.1.0 independently owned; modules/example excluded
 Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based; REPAIR is not a release event
-Current dependency: Existing-Runtime Webcore Lifecycle Adoption IU2 WU6 — NEXT SEPARATE GATE
+Current dependency: Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU6 technical acceptance is complete; production reconciliation and separate Module WU7 acceptance remain pending.
 Current active implementation branch: feature/module-package-lifecycle
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
@@ -751,12 +751,13 @@ current WU7 acceptance under
 `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`. Backup &
 Recovery preparation is contract-locked in
 `docs/31_backup_recovery_foundation_contract.md`; WU1–WU7 are complete, and IU2
-remains blocked pending separately authorized implementation.
-Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU5: COMPLETE;
+WU1–WU6 are complete for the technical adoption slice.
+Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU6: COMPLETE;
 classification/planning, recovery/confirmation/quiescence eligibility, guarded
 package-owned filesystem convergence, schema/migration reconciliation, and
-installed-state/lifecycle finalization are implemented; IU2 WU6 and production
-legacy reconciliation remain NOT STARTED.
+installed-state/lifecycle finalization and interruption/restore/retry
+acceptance are implemented; production legacy reconciliation remains NOT
+STARTED.
 Backup & Recovery Foundation: COMPLETE AND CLOSED — WU1–WU7 COMPLETE.
 Version & Release Reconciliation closure gate: COMPLETE.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED

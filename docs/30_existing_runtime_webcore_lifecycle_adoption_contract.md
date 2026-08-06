@@ -5,7 +5,7 @@
 ```text
 Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
 Implementation Unit 1: COMPLETE
-Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU5 COMPLETE; WU6 NOT STARTED
+Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU6 COMPLETE; production reconciliation NOT STARTED
 Backup & Recovery Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED pending authoritative committed Webcore state
 Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED — KEEP DEFERRED
@@ -16,8 +16,9 @@ running legacy Webcore installation into authoritative committed lifecycle
 state. It is a Webcore prerequisite for Module Package Lifecycle WU7
 acceptance. WU1 establishes the non-mutating classification/planning decision
 layer and WU2 establishes the recovery, confirmation, quiescence, and
-mutation-eligibility boundary; production runtime reconciliation remains
-**NOT STARTED**.
+mutation-eligibility boundary. WU6 integrates interruption, restore, retry,
+and technical acceptance across WU1–WU5; production runtime reconciliation
+remains **NOT STARTED**.
 
 The current acceptance runtime is evidence for this contract, not an adoption
 target. It is `LEGACY`, reports `0.8.0` through `storage/installed.lock`, has
@@ -205,8 +206,7 @@ are implemented and accepted under the existing boundaries.
 
 ### Implementation Unit 2 — Legacy Webcore Runtime Reconciliation
 
-**WU1–WU5 COMPLETE; WU6 NOT STARTED.** Separate authorization is required for
-each later implementation unit. WU1 provides the non-mutating trusted-target,
+**WU1–WU6 COMPLETE; production reconciliation NOT STARTED.** WU1 provides the non-mutating trusted-target,
 deterministic-classification, and immutable-planning boundary. WU2 provides
 only the accepted recovery binding, exact confirmation, database quiescence,
 and mutation-eligibility boundary; it does not start mutation. WU3 consumes
@@ -217,7 +217,9 @@ same boundary and executes only proven forward Core migrations with existing
 ledger and transaction semantics. WU4 does not write installed state or
 committed lifecycle state. WU5 verifies the reconciled filesystem and
 database, writes `storage/installed.lock` before writing committed lifecycle
-state, and verifies the final committed identities. IU2 must not add
+state, and verifies the final committed identities. WU6 integrates the
+accepted interruption, restore, retry, and final identity checks without
+replanning or recapturing uncertain state. IU2 must not add
 generic legacy migration inference, stale-file deletion, or silent
 normalization of unknown runtimes.
 
@@ -228,7 +230,7 @@ process.
 ## Recommended next gate
 
 The Backup & Recovery Foundation is independently accepted and closed.
-Authorize **IU2 WU6 or later** only through a separate implementation
-decision. Do not begin interruption/restore integrated acceptance,
+Technical IU2 WU1–WU6 is complete. Do not begin production reconciliation,
 Server-Empty Bootstrap, Module legacy adoption, or Module WU7 browser
-acceptance under this preparation lock.
+acceptance under this preparation lock; the separate Module Package Lifecycle
+human/E2E acceptance remains independently scoped.
