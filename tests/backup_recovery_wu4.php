@@ -2,6 +2,7 @@
 
 use Copot\Core\BackupRecovery\DatabaseCaptureContext;
 use Copot\Core\BackupRecovery\DatabaseRestoreContext;
+use Copot\Core\BackupRecovery\DatabaseRestoreAttemptContext;
 use Copot\Core\BackupRecovery\MySqlRecoveryProvider;
 use Copot\Core\BackupRecovery\RecoveryArtifactStore;
 use Copot\Core\BackupRecovery\RecoveryDomainIdentity;
@@ -73,19 +74,68 @@ try {
     $db->exec('DELETE FROM child'); $db->exec('DELETE FROM parent'); $db->exec('DELETE FROM core_migration_history');
     $db->exec('ALTER TABLE parent MODIFY label VARCHAR(80) NOT NULL');
     $db->exec('ALTER TABLE parent AUTO_INCREMENT=99');
-    $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, new DatabaseRestoreContext($make(), $make(), $name));
+    $expectedStateIdentity = $provider->stateIdentity($db, $name);
+    $expectedTableSetIdentity = $provider->tableSetIdentity($db, $name);
+    $stages = [];
+    $attempt = new DatabaseRestoreAttemptContext($recoveryIdentity, 'attempt-1', $expectedStateIdentity, $expectedTableSetIdentity, DatabaseRestoreAttemptContext::PREPARED, ['child', 'core_migration_history', 'parent'], static function (string $stage) use (&$stages): void { $stages[] = $stage; });
+    $restoreContext = static fn (): DatabaseRestoreContext => new DatabaseRestoreContext($make(), $make(), $name, $attempt);
+    $lockCheck = $restoreContext();
+    $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, $lockCheck);
+    $lockProbe = $make();
+    $lockProbe->exec('SET SESSION lock_wait_timeout=1');
+    $lockProbe->exec('LOCK TABLES parent WRITE');
+    $lockProbe->exec('UNLOCK TABLES');
+    $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, $restoreContext());
+    $assert(in_array(DatabaseRestoreAttemptContext::DROPPING, $stages, true) && in_array(DatabaseRestoreAttemptContext::COMPLETED, $stages, true), 'Restore did not expose durable destructive stages.');
+    $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, $restoreContext());
     $verified = $provider->verifyRestored($artifact, new DatabaseRestoreContext($make(), $make(), $name));
     $assert($verified->isValid(), 'Restored database must semantically match the captured artifact.');
-    $db->exec("UPDATE parent SET label='unexpected-drift' WHERE id=1");
-    $drift = $provider->verifyRestored($artifact, new DatabaseRestoreContext($make(), $make(), $name));
-    $assert(!$drift->isValid(), 'Post-restore data drift must be detected.');
-    $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, new DatabaseRestoreContext($make(), $make(), $name));
     $assert((string) $db->query("SELECT label FROM parent WHERE id=1")->fetchColumn() === 'α', 'UTF-8 row data must round-trip.');
     $assert((string) $db->query('SELECT payload FROM parent WHERE id=1')->fetchColumn() === "\x00\x01\xFF", 'Binary row data must round-trip.');
     $assert((string) $db->query('SELECT amount FROM parent WHERE id=1')->fetchColumn() === '12345678901234.123456', 'Decimal precision must round-trip.');
     $db->exec("INSERT INTO parent(label,amount,created_at) VALUES ('next', '1.000000', '2026-08-06 12:36:00.000000')");
     $assert((int) $db->lastInsertId() === 3, 'Material auto-increment state must round-trip.');
     $assert((int) $db->query('SELECT COUNT(*) FROM core_migration_history')->fetchColumn() === 1, 'Migration ledger must be restored exactly once.');
+    $db->exec("UPDATE parent SET label='unexpected-drift' WHERE id=1");
+    $drift = $provider->verifyRestored($artifact, new DatabaseRestoreContext($make(), $make(), $name));
+    $assert(!$drift->isValid(), 'Post-restore data drift must be detected.');
+    try { $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, $restoreContext()); $assert(false, 'Unexpected database drift was accepted for restore.'); } catch (Throwable) { $assert(true, 'Unexpected database drift rejected for restore.'); }
+
+    $resetExpectedTarget = static function () use ($db): void {
+        $db->exec('SET FOREIGN_KEY_CHECKS=0');
+        $db->exec('DELETE FROM child');
+        $db->exec('DELETE FROM parent');
+        $db->exec('DELETE FROM core_migration_history');
+        $db->exec('ALTER TABLE parent MODIFY label VARCHAR(80) NOT NULL');
+        $db->exec('ALTER TABLE parent AUTO_INCREMENT=99');
+        $db->exec('SET FOREIGN_KEY_CHECKS=1');
+    };
+    foreach ([
+        DatabaseRestoreAttemptContext::DROPPING,
+        DatabaseRestoreAttemptContext::CREATING,
+        DatabaseRestoreAttemptContext::LOADING,
+        DatabaseRestoreAttemptContext::RESTORING_METADATA,
+        DatabaseRestoreAttemptContext::VERIFYING,
+    ] as $faultStage) {
+        $resetExpectedTarget();
+        $faultState = false;
+        $expectedState = $provider->stateIdentity($db, $name);
+        $expectedTables = $provider->tableSetIdentity($db, $name);
+        $faultAttemptId = 'fault-' . strtolower($faultStage);
+        $faultAttempt = new DatabaseRestoreAttemptContext($recoveryIdentity, $faultAttemptId, $expectedState, $expectedTables, DatabaseRestoreAttemptContext::PREPARED, ['child', 'core_migration_history', 'parent'], static function (string $stage) use (&$faultState, $faultStage): void {
+            if (!$faultState && $stage === $faultStage) { $faultState = true; throw new RuntimeException('Injected restore-stage interruption.'); }
+        });
+        $faultContext = new DatabaseRestoreContext($make(), $make(), $name, $faultAttempt);
+        try { $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, $faultContext); $assert(false, 'Injected failure at ' . $faultStage . ' was accepted.'); } catch (Throwable) { $assert(true, 'Injected failure at ' . $faultStage . ' was surfaced.'); }
+        if ($faultStage !== DatabaseRestoreAttemptContext::DROPPING) {
+            try { $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, new DatabaseRestoreContext($make(), $make(), $name)); $assert(false, 'Partial restore without attempt context was accepted.'); } catch (Throwable) { $assert(true, 'Partial restore without attempt context rejected.'); }
+        }
+        $badAttempt = new DatabaseRestoreAttemptContext(new RecoveryIdentity('wrong-recovery'), 'wrong-attempt', $expectedState, $expectedTables, $faultStage, ['child', 'core_migration_history', 'parent'], static function (string $stage): void {});
+        try { $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, new DatabaseRestoreContext($make(), $make(), $name, $badAttempt)); $assert(false, 'Mismatched restore lineage was accepted.'); } catch (Throwable) { $assert(true, 'Mismatched restore lineage rejected.'); }
+        $retryAttempt = new DatabaseRestoreAttemptContext($recoveryIdentity, $faultAttemptId, $expectedState, $expectedTables, $faultStage, ['child', 'core_migration_history', 'parent'], static function (string $stage): void {});
+        $provider->restoreFromStore($recoveryIdentity, $artifact->record(), $storage, new DatabaseRestoreContext($make(), $make(), $name, $retryAttempt));
+        $assert($provider->verifyRestored($artifact, new DatabaseRestoreContext($make(), $make(), $name))->isValid(), 'Retry after ' . $faultStage . ' did not restore the artifact.');
+    }
 
     $tampered = $storedBytes;
     $tampered = substr($tampered, 0, -1) . ($tampered[-1] === '}' ? ']' : '}');

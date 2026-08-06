@@ -82,54 +82,178 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
         if ($artifact->databaseIdentity() !== $context->databaseIdentity()) { throw new DatabaseRecoveryException('Database recovery target identity does not match the artifact.'); }
 
         $restore = $context->restoreConnection();
-        $lock = $context->lockConnection();
         $locked = false;
         $foreignKeys = null;
-        $created = false;
         try {
             $this->assertConnectionDatabase($restore, $context->databaseIdentity());
-            $this->assertConnectionDatabase($lock, $context->databaseIdentity());
             $bundle = $this->codec->decode($artifact->bytes());
             $tableNames = array_map(static fn (array $table): string => $table['name'], $bundle['schema']['tables']);
-            $this->assertTargetTableSet($restore, $tableNames);
-            $restore->exec('LOCK TABLES ' . implode(', ', array_map(fn (string $name): string => $this->quoteIdentifier($name) . ' WRITE', $tableNames)));
-            $locked = true;
+
+            $attempt = $context->attempt();
+            $current = $this->classifyRestoreTarget($restore, $context->databaseIdentity(), $artifact, $attempt, $tableNames);
+            if ($current === 'restored') {
+                return;
+            }
+            if ($attempt === null) {
+                throw new DatabaseRecoveryException('Database restore requires a recovery-bound attempt context.');
+            }
+
+            $currentNames = $this->baseTableNames($restore);
+            if ($current === 'partial') {
+                $this->validatePartialState($restore, $bundle, $currentNames, $attempt, $tableNames);
+            } else {
+                $this->validateExpectedTarget($restore, $context->databaseIdentity(), $attempt);
+            }
+
+            if ($currentNames !== []) {
+                $restore->exec('LOCK TABLES ' . implode(', ', array_map(fn (string $name): string => $this->quoteIdentifier($name) . ' WRITE', $currentNames)));
+                $locked = true;
+            }
+            $attempt->recordStage(DatabaseRestoreAttemptContext::LOCKED);
             $foreignKeys = (int) $restore->query('SELECT @@FOREIGN_KEY_CHECKS')->fetchColumn();
             $restore->exec('SET FOREIGN_KEY_CHECKS=0');
-            $currentNames = $this->baseTableNames($restore);
+            $attempt->recordStage(DatabaseRestoreAttemptContext::DROPPING);
             foreach (array_reverse($currentNames) as $name) {
                 $restore->exec('DROP TABLE ' . $this->quoteIdentifier($name));
             }
+            $attempt->recordStage(DatabaseRestoreAttemptContext::CREATING);
             foreach ($bundle['schema']['tables'] as $table) {
                 $restore->exec($table['create_sql']);
-                $created = true;
             }
+            $attempt->recordStage(DatabaseRestoreAttemptContext::LOADING);
             foreach ($bundle['data']['tables'] as $table) {
                 $this->insertRows($restore, $table);
             }
+            $attempt->recordStage(DatabaseRestoreAttemptContext::RESTORING_METADATA);
             foreach ($bundle['schema']['tables'] as $table) {
                 if ($table['auto_increment'] !== null) {
                     $restore->exec('ALTER TABLE ' . $this->quoteIdentifier($table['name']) . ' AUTO_INCREMENT=' . (int) $table['auto_increment']);
                 }
             }
             $restore->exec('SET FOREIGN_KEY_CHECKS=1');
-            $created = false;
+            $attempt->recordStage(DatabaseRestoreAttemptContext::VERIFYING);
             $result = $this->compareBundleToArtifact($this->captureBundle($restore, $context->databaseIdentity()), $artifact);
             if (!$result->isValid()) { throw new DatabaseRecoveryException($result->failure() ?? 'Restored database verification failed.'); }
+            $attempt->recordStage(DatabaseRestoreAttemptContext::COMPLETED);
         } catch (DatabaseRecoveryException $exception) {
-            if ($created) { $this->cleanupCreatedTables($restore, $bundle['schema']['tables'] ?? []); }
             throw $exception;
         } catch (\Throwable $exception) {
-            if ($created) { $this->cleanupCreatedTables($restore, $bundle['schema']['tables'] ?? []); }
             throw new DatabaseRecoveryException('Database recovery restore failed.', 0, $exception);
         } finally {
             if ($foreignKeys !== null) { try { $restore->exec('SET FOREIGN_KEY_CHECKS=' . ($foreignKeys === 0 ? '0' : '1')); } catch (\Throwable) {} }
-            if ($locked) { try { $lock->exec('UNLOCK TABLES'); } catch (\Throwable) {} }
+            if ($locked) { try { $restore->exec('UNLOCK TABLES'); } catch (\Throwable) {} }
         }
+    }
+
+    public function stateIdentity(PDO $connection, string $database): string
+    {
+        $this->assertConnectionDatabase($connection, $database);
+        return $this->stateIdentityFromBundle($this->captureBundle($connection, $database));
+    }
+
+    public function tableSetIdentity(PDO $connection, string $database): string
+    {
+        $this->assertConnectionDatabase($connection, $database);
+        return $this->tableSetIdentityFromNames($this->baseTableNames($connection));
+    }
+
+    /** @param array<string, mixed> $bundle */
+    private function classifyRestoreTarget(PDO $connection, string $database, DatabaseRecoveryArtifact $artifact, ?DatabaseRestoreAttemptContext $attempt, array $tableNames): string
+    {
+        try {
+            $current = $this->captureBundle($connection, $database);
+            if ($this->stateIdentityFromBundle($current) === $this->stateIdentityFromArtifact($artifact)) {
+                return 'restored';
+            }
+            if ($attempt !== null && $this->tableSetIdentityFromNames($current['schema']['tables'] !== [] ? array_map(static fn (array $table): string => $table['name'], $current['schema']['tables']) : []) === $attempt->expectedTableSetIdentity()
+                && $this->stateIdentityFromBundle($current) === $attempt->expectedDatabaseStateIdentity()) {
+                return 'expected';
+            }
+        } catch (\Throwable) {
+            // An incomplete table set cannot produce a complete semantic bundle;
+            // partial-state validation below handles only a bound retry stage.
+        }
+
+        if ($attempt !== null && $attempt->provesDestructiveRestoreBegan()) {
+            return 'partial';
+        }
+
+        return 'unexpected';
+    }
+
+    /** @param array<string, mixed> $bundle @param array<int, string> $currentNames @param array<int, string> $tableNames */
+    private function validatePartialState(PDO $connection, array $bundle, array $currentNames, DatabaseRestoreAttemptContext $attempt, array $tableNames): void
+    {
+        $scope = $attempt->providerCreatedObjectScope();
+        sort($scope, SORT_STRING);
+        $expected = $tableNames;
+        sort($expected, SORT_STRING);
+        if ($scope !== $expected) {
+            throw new DatabaseRecoveryException('Database restore provider scope is not bound to the artifact.');
+        }
+        foreach ($currentNames as $name) {
+            if (!in_array($name, $expected, true)) {
+                throw new DatabaseRecoveryException('Database partial restore contains an unexpected table.');
+            }
+            $current = $this->schemaTable($connection, $name);
+            $artifactTable = null;
+            foreach ($bundle['schema']['tables'] as $candidate) {
+                if ($candidate['name'] === $name) { $artifactTable = $candidate; break; }
+            }
+            if (!is_array($artifactTable) || $this->schemaIdentity($current) !== $this->schemaIdentity($artifactTable)) {
+                throw new DatabaseRecoveryException('Database partial restore contains an unexpected schema identity.');
+            }
+        }
+    }
+
+    private function validateExpectedTarget(PDO $connection, string $database, DatabaseRestoreAttemptContext $attempt): void
+    {
+        if ($this->tableSetIdentity($connection, $database) !== $attempt->expectedTableSetIdentity()
+            || $this->stateIdentity($connection, $database) !== $attempt->expectedDatabaseStateIdentity()) {
+            throw new DatabaseRecoveryException('Database target identity is unexpected or ambiguous.');
+        }
+    }
+
+    /** @param array<string, mixed> $bundle */
+    private function stateIdentityFromBundle(array $bundle): string
+    {
+        return hash('sha256', json_encode([
+            'database_identity' => $bundle['database_identity'],
+            'schema' => $bundle['identities']['schema'],
+            'data' => $bundle['identities']['data'],
+            'migration_ledger' => $bundle['identities']['migration_ledger'],
+        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+    }
+
+    private function stateIdentityFromArtifact(DatabaseRecoveryArtifact $artifact): string
+    {
+        return hash('sha256', json_encode([
+            'database_identity' => $artifact->databaseIdentity(),
+            'schema' => $artifact->schemaIdentity(),
+            'data' => $artifact->dataIdentity(),
+            'migration_ledger' => $artifact->migrationLedgerIdentity(),
+        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+    }
+
+    /** @param array<int, string> $names */
+    private function tableSetIdentityFromNames(array $names): string
+    {
+        sort($names, SORT_STRING);
+        return hash('sha256', json_encode(array_values($names), JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+    }
+
+    /** @param array<string, mixed> $table */
+    private function schemaIdentity(array $table): string
+    {
+        unset($table['auto_increment']);
+        return hash('sha256', json_encode($table, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 
     public function restoreFromStore(RecoveryIdentity $identity, RecoveryArtifactRecord $record, RecoveryArtifactStore $store, DatabaseRestoreContext $context): void
     {
+        if ($context->attempt() !== null && $context->attempt()->recoveryIdentity()->value() !== $identity->value()) {
+            throw new DatabaseRecoveryException('Database restore recovery identity does not match the attempt context.');
+        }
         $this->restore($this->artifactFromBytes($store->readArtifact($identity, $record)), $context);
     }
 
@@ -273,14 +397,6 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
         if ($actual !== $expected) { throw new DatabaseRecoveryException('Database connection identity does not match the requested database.'); }
     }
 
-    /** @param array<int, string> $expected */
-    private function assertTargetTableSet(PDO $connection, array $expected): void
-    {
-        $actual = $this->baseTableNames($connection);
-        sort($expected, SORT_STRING); sort($actual, SORT_STRING);
-        if ($actual !== $expected) { throw new DatabaseRecoveryException('Target database table set is unexpected or incomplete.'); }
-    }
-
     /** @param array<string, mixed> $table */
     private function insertRows(PDO $connection, array $table): void
     {
@@ -295,12 +411,6 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
             }, $row);
             $statement->execute($values);
         }
-    }
-
-    /** @param array<int, array<string, mixed>> $tables */
-    private function cleanupCreatedTables(PDO $connection, array $tables): void
-    {
-        try { $connection->exec('SET FOREIGN_KEY_CHECKS=0'); foreach (array_reverse($tables) as $table) { $connection->exec('DROP TABLE IF EXISTS ' . $this->quoteIdentifier($table['name'])); } } catch (\Throwable) {} finally { try { $connection->exec('SET FOREIGN_KEY_CHECKS=1'); } catch (\Throwable) {} }
     }
 
     private function quoteIdentifier(string $identifier): string
