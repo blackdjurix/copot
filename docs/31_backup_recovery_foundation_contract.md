@@ -9,7 +9,8 @@ Backup & Recovery WU2: COMPLETE
 Backup & Recovery WU3: COMPLETE
 Backup & Recovery WU4: COMPLETE
 Backup & Recovery WU5: COMPLETE
-Backup & Recovery WU6: NOT STARTED
+Backup & Recovery WU6: COMPLETE
+Backup & Recovery WU7: NOT STARTED
 Backup & Recovery implementation overall: IN PROGRESS
 Existing-Runtime Webcore Lifecycle Adoption IU2: BLOCKED ON THIS DEPENDENCY
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMMITTED WEBCORE STATE
@@ -433,7 +434,7 @@ IU2 must remain blocked until acceptance evidence proves:
 ## Dependency consequence
 
 Backup & Recovery Foundation is **IMPLEMENTATION IN PROGRESS**; WU1, WU2, WU3,
-WU4, and WU5 are **COMPLETE**, WU6 is **NOT STARTED**, and implementation overall is **IN
+WU4, WU5, and WU6 are **COMPLETE**, WU7 is **NOT STARTED**, and implementation overall is **IN
 PROGRESS**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
 **BLOCKED** pending an accepted restore-capable implementation.
 Module Package Lifecycle WU7 human/E2E acceptance remains **BLOCKED** pending
