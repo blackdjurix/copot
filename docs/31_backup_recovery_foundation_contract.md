@@ -3,15 +3,15 @@
 ## Preparation status
 
 ```text
-Backup & Recovery Foundation: IMPLEMENTATION IN PROGRESS
+Backup & Recovery Foundation: IMPLEMENTATION/ACCEPTANCE COMPLETE; FINAL LIFECYCLE CLOSURE PENDING
 Backup & Recovery WU1: COMPLETE
 Backup & Recovery WU2: COMPLETE
 Backup & Recovery WU3: COMPLETE
 Backup & Recovery WU4: COMPLETE
 Backup & Recovery WU5: COMPLETE
 Backup & Recovery WU6: COMPLETE
-Backup & Recovery WU7: NOT STARTED
-Backup & Recovery implementation overall: IN PROGRESS
+Backup & Recovery WU7: COMPLETE
+Backup & Recovery Foundation implementation/acceptance: COMPLETE
 Existing-Runtime Webcore Lifecycle Adoption IU2: BLOCKED ON THIS DEPENDENCY
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMMITTED WEBCORE STATE
 ```
@@ -433,10 +433,10 @@ IU2 must remain blocked until acceptance evidence proves:
 
 ## Dependency consequence
 
-Backup & Recovery Foundation is **IMPLEMENTATION IN PROGRESS**; WU1, WU2, WU3,
-WU4, WU5, and WU6 are **COMPLETE**, WU7 is **NOT STARTED**, and implementation overall is **IN
-PROGRESS**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
-**BLOCKED** pending an accepted restore-capable implementation.
+Backup & Recovery Foundation implementation/acceptance is **COMPLETE**; WU1, WU2, WU3,
+WU4, WU5, WU6, and WU7 are **COMPLETE**, and Backup & Recovery Foundation
+implementation/acceptance is **COMPLETE**. Existing-Runtime Webcore Lifecycle Adoption IU2 remains
+**BLOCKED** pending separately authorized IU2 implementation.
 Module Package Lifecycle WU7 human/E2E acceptance remains **BLOCKED** pending
 authoritative COMMITTED Webcore runtime state. WU7 is not resumed by this
 contract.
