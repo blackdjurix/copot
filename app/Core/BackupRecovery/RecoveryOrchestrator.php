@@ -37,15 +37,20 @@ final class RecoveryOrchestrator
             $captured = $captured->withCaptureComplete(); $this->store->save($captured);
             $this->store->transition($identity, RecoveryLifecycleState::READY);
             $this->store->read($identity);
-            // Confirmation is deliberately supplied by the caller after READY.
             $ready = $this->store->read($identity);
-            $confirmed = $ready->withConfirmation($identity, $ready->manifestIdentity(), $targetIdentity); $this->store->save($confirmed);
+            if (!$ready->confirmationMatches($identity, $ready->manifestIdentity(), $targetIdentity)) throw new RecoveryLifecycleException('Explicit recovery confirmation is required before mutation.');
             $lease = $this->quiescence->acquire();
             if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable; mutation is blocked.');
             try {
                 $this->store->markMutationStarting($identity);
                 $mutate(new RecoveryMutationPermit($lease));
                 $verifyMutation();
+                $verified = $this->store->read($identity);
+                if (!$verified->confirmationMatches($identity, $verified->manifestIdentity(), $targetIdentity)) throw new RecoveryLifecycleException('Recovery confirmation changed during mutation.');
+                $this->store->save($verified->withPostReconciliationVerified());
+                $verified = $this->store->read($identity);
+                if (!$verified->postReconciliationVerified()) throw new RecoveryLifecycleException('Post-reconciliation verification was not durably recorded.');
+                if ($verified->state() !== RecoveryLifecycleState::READY || !$verified->mutationStarted() || !$verified->confirmationMatches($identity, $verified->manifestIdentity(), $targetIdentity)) throw new RecoveryLifecycleException('Forward-reconciliation cleanup prerequisites are not satisfied.');
                 $this->store->transition($identity, RecoveryLifecycleState::CLEANUP_PENDING);
                 $this->store->transition($identity, RecoveryLifecycleState::CLEANED);
             } finally { if ($lease->isActive()) $lease->release(); }
