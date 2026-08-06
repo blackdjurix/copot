@@ -35,13 +35,20 @@ final class PackageLifecycleService
         callable $runtime,
         callable $runtimeChecks,
         private CanonicalSchemaBaselineVerifier $canonicalSchema,
-        private string $canonicalSchemaPath
+        private string $canonicalSchemaPath,
+        ?LegacyRuntimeClassifier $legacyClassifier = null,
+        ?LegacyReconciliationPlanner $reconciliationPlanner = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
         $this->runtime = $runtime;
         $this->runtimeChecks = $runtimeChecks;
+        $this->legacyClassifier = $legacyClassifier ?? new LegacyRuntimeClassifier($canonicalSchema);
+        $this->reconciliationPlanner = $reconciliationPlanner ?? new LegacyReconciliationPlanner();
     }
+
+    private LegacyRuntimeClassifier $legacyClassifier;
+    private LegacyReconciliationPlanner $reconciliationPlanner;
 
     public function plan(string $zip): PackageLifecycleResult
     {
@@ -139,6 +146,37 @@ final class PackageLifecycleService
                 try { $payload->cleanup(); } catch (\Throwable) { }
             }
             return new PackageLifecycleResult(false, $this->isCapabilityFailure($exception) ? 'unavailable' : 'invalid_package', $exception->getMessage());
+        }
+    }
+
+    public function reconcilePlan(string $zip): PackageLifecycleResult
+    {
+        $payload = null;
+        try {
+            $payload = $this->intake->intake($zip);
+            $manifest = $this->manifestReader->read($payload);
+            $target = TrustedWebcorePackageTarget::fromManifest($manifest, $this->inventoryVerifier);
+            $installed = $this->installedInspector->inspect($this->installationState, ($this->evidence)());
+            $classification = $this->legacyClassifier->classify(
+                $installed,
+                ($this->connection)(),
+                $this->canonicalSchemaPath,
+                $this->migrationRegistry
+            );
+            $plan = $this->reconciliationPlanner->plan(
+                $target,
+                $classification,
+                ($this->runtime)(),
+                $this->migrationRegistry,
+                $this->liveGuard
+            );
+            $payload->cleanup();
+            return new PackageLifecycleResult(true, 'planned', '', null, $plan->migrationPlan(), null, $plan);
+        } catch (\Throwable $exception) {
+            if ($payload instanceof StagedPayload) {
+                try { $payload->cleanup(); } catch (\Throwable) { }
+            }
+            return new PackageLifecycleResult(false, $this->isCapabilityFailure($exception) ? 'unavailable' : 'rejected', $exception->getMessage());
         }
     }
 

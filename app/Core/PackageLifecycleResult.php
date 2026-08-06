@@ -10,7 +10,8 @@ final class PackageLifecycleResult
         private string $reason = '',
         private ?TransitionPlan $transition = null,
         private ?CoreMigrationPlan $migration = null,
-        private ?string $operationId = null
+        private ?string $operationId = null,
+        private ?LegacyReconciliationPlan $reconciliationPlan = null
     ) {
     }
 
@@ -47,6 +48,8 @@ final class PackageLifecycleResult
             'target_webcore_version' => $this->transition?->package()->targetWebcoreVersion(),
             'operation_id' => $this->operationId,
             'migrations' => $migrations,
+            'legacy_classification' => $this->reconciliationPlan?->classification()->classification(),
+            'reconciliation_plan' => $this->reconciliationPlan?->toArray(),
             'reason' => $this->reason,
         ];
     }
