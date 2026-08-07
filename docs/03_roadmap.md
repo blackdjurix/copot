@@ -636,15 +636,14 @@ Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current selected Post-M3 track: Webcore Deployment & Portability Foundation
 Portability preparation: COMPLETE / CONTRACT LOCKED
-Portability WU1–WU5: COMPLETE
-Portability WU6: NOT STARTED
-Next gate: WU6 — Shared-Host-Like/XAMPP Compatibility & Regression Acceptance
+Portability WU1–WU6: COMPLETE AND CLOSED
+Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (next consolidated release; not tagged or published)
 Current Core Module versions: 0.1.0 independently owned; modules/example excluded
 Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based; REPAIR is not a release event
-Current dependency: Webcore Deployment & Portability Foundation WU6 implementation authorization.
+Current dependency: none for the completed Portability foundation; release, tag, and publication remain separately unauthorized.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains separate operational work.
 Module Package Lifecycle WU1–WU7 implementation: COMPLETE; final human/E2E acceptance: BLOCKED / PARKED.
 Current active implementation branch: main

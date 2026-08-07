@@ -4,15 +4,15 @@
 
 Preparation: COMPLETE / CONTRACT LOCKED
 
-Implementation: WU1–WU5 COMPLETE / WU6 NOT STARTED
+Implementation: WU1–WU6 COMPLETE AND CLOSED
 
 Adoption: PROMOTED FOR POST-M3 PLATFORM FOUNDATION PREPARATION
 
 Release / tag / publication: NOT AUTHORIZED
 
-This contract adopts Webcore Deployment & Portability Foundation as a Post-M3 Platform Foundation workstream. It does not reopen M2.4 Platform Hardening. WU1–WU5 implementation is recorded below; downstream WU6 remains separately bounded work.
+This contract adopts Webcore Deployment & Portability Foundation as a Post-M3 Platform Foundation workstream. It does not reopen M2.4 Platform Hardening. WU1–WU6 implementation and acceptance are recorded below.
 
-Downstream WU6 implementation must be explicitly authorized after preparation continuity is verified.
+The Portability implementation and acceptance boundary is closed. No downstream Portability work is implied by this contract.
 
 ---
 
@@ -308,11 +308,12 @@ Audit findings must distinguish:
 The focused repository audit is accepted and locks the following implementation seams:
 
 - APP_ROOT was previously inferred from the project directory and PUBLIC_ROOT was implicitly `<APP_ROOT>/public`; neither deployment root was a first-class runtime value.
-- The public entrypoint and Admin public-asset reader now consume one deployment context. URL generation is closed in WU3; installer/runtime/package/recovery/CLI integration is closed in WU5, while shared-host-like runtime acceptance remains downstream WU6 work.
+- The public entrypoint and Admin public-asset reader now consume one deployment context. URL generation is closed in WU3; installer/runtime/package/recovery/CLI integration is closed in WU5, and shared-host-like runtime acceptance is closed in WU6.
 - WU4 defines PUBLIC_ROOT as the boundary for `index.php`, `.htaccess`, and explicitly public static trees such as `admin-assets`; private APP_ROOT directories are not copied or exposed there. Media, theme, and site assets that are intentionally PHP-served remain application routes.
 - Same-root deployments remain supported, while split-root deployments require explicit, readable, absolute roots with APP_ROOT outside PUBLIC_ROOT and fail closed for invalid relationships.
 - Existing package, recovery, media, theme, installer, and lifecycle ownership boundaries remain intact; Server-Empty Bootstrap remains deferred.
 - WU5 consumers now receive the resolved deployment context. Package lifecycle probes use the context for bootstrap and logical Admin requests, recovery excludes the resolved PUBLIC_ROOT, and CLI root resolution does not require web-server globals. WU5 does not expand package, recovery, installer, or Server-Empty Bootstrap ownership.
+- WU6 acceptance passed against the Apache-matched XAMPP PHP 8.5.7 runtime. The default document-root deployment remained functional; a generic `localhost` document root served a subdirectory public root with `/copot`-equivalent base-path behavior; a private APP_ROOT outside `htdocs` remained readable to PHP but was not directly served. Installer redirects, public Admin assets, package lifecycle CLI operation, recovery-root exclusion, and the previously blocked DB-dependent reconciliation and Backup & Recovery checks passed. No COPOT-specific host entry, VirtualHost, or global DocumentRoot change was used for the generic subdirectory acceptance.
 
 ---
 
@@ -329,11 +330,11 @@ WU5 — Installer, Runtime, Package, Recovery & CLI Integration
 WU6 — Shared-Host-Like/XAMPP Compatibility & Regression Acceptance
 ```
 
-WU1–WU5 are complete. WU2 establishes the authoritative deployment context and
-root resolution boundary while preserving the current default deployment. WU3 adds
-base-path-aware request normalization and URL generation without prefixing
-logical route definitions. WU5 is complete. WU6 is not started and requires its
-own implementation authorization.
+WU1–WU6 are complete and closed. WU2 establishes the authoritative deployment
+context and root resolution boundary while preserving the current default
+deployment. WU3 adds base-path-aware request normalization and URL generation
+without prefixing logical route definitions. WU6 acceptance closes the foundation
+against the required generic Apache/XAMPP compatibility matrix.
 
 ---
 
@@ -402,13 +403,11 @@ Webcore Deployment & Portability Foundation
 Implementation state:
 
 ```text
-WU1–WU5 COMPLETE / WU6 NOT STARTED
+WU1–WU6 COMPLETE AND CLOSED
 ```
 
-Next gate:
+Portability foundation closure:
 
 ```text
-WU6 — Shared-Host-Like/XAMPP Compatibility & Regression Acceptance
+ACCEPTED — no downstream Portability WU remains
 ```
-
-No downstream WU6 implementation should start until its scope is separately authorized after continuity and repository freshness verification.
