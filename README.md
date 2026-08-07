@@ -146,9 +146,11 @@ unsupported.
 Server-empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED under
 `DI-PACKAGE-LIFECYCLE-WU7-01`; Module Package Lifecycle preparation is complete
 and contract-locked, WU1–WU7 implementation is complete for its accepted scope,
-and Existing-Runtime Webcore Lifecycle Adoption is a separate prerequisite for
-current WU7 acceptance under
-`docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`. Backup &
+and Existing-Runtime Webcore Lifecycle Adoption technical work is closed;
+final WU7 acceptance remains BLOCKED / PARKED pending an authoritative
+committed Webcore lifecycle state on a sufficiently representative intended
+acceptance runtime. The current selected track establishes that deployment
+and runtime boundary. Backup &
 Recovery implementation, acceptance, and lifecycle closure are recorded in
 `docs/31_backup_recovery_foundation_contract.md`; WU1–WU7 are complete, and
 IU2 WU1–WU6 are complete for the technical adoption slice.
@@ -161,16 +163,16 @@ STARTED.
 Backup & Recovery Foundation: COMPLETE AND CLOSED — WU1–WU7 COMPLETE.
 Version & Release Reconciliation closure gate: COMPLETE.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
-Full Module Package Lifecycle: NOT YET CLOSED — Webcore adoption prerequisite and browser acceptance pending
+Full Module Package Lifecycle: NOT YET CLOSED — final human/E2E acceptance BLOCKED / PARKED pending an authoritative committed Webcore lifecycle state on a sufficiently representative intended acceptance runtime
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
-Module Package Lifecycle implementation: COMPLETE — WU1–WU7 automated/runtime validation PASS; current WU7 acceptance is blocked on Webcore adoption prerequisite and browser acceptance PENDING
+Module Package Lifecycle implementation: COMPLETE — WU1–WU7 automated/runtime validation PASS; current WU7 acceptance remains BLOCKED / PARKED pending an authoritative committed Webcore lifecycle state on a sufficiently representative intended acceptance runtime
 Module Package Lifecycle WU1: COMPLETE
 Module Package Lifecycle WU2: COMPLETE
 Module Package Lifecycle WU3: COMPLETE
 Module Package Lifecycle WU4: COMPLETE
 Module Package Lifecycle WU5: COMPLETE
 Module Package Lifecycle WU6: COMPLETE
-Module Package Lifecycle WU7: IMPLEMENTATION COMPLETE — final human/E2E acceptance BLOCKED on Webcore adoption prerequisite
+Module Package Lifecycle WU7: IMPLEMENTATION COMPLETE — final human/E2E acceptance BLOCKED / PARKED pending an authoritative committed Webcore lifecycle state on a sufficiently representative intended acceptance runtime
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED
