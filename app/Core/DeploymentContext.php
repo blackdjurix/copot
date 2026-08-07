@@ -48,6 +48,15 @@ final class DeploymentContext
         return new self($resolvedAppRoot, $publicRoot, $basePath ?? '/');
     }
 
+    public static function forCli(string $defaultAppRoot): self
+    {
+        $appRoot = self::environment('COPOT_APP_ROOT') ?? $defaultAppRoot;
+        $publicRoot = self::environment('COPOT_PUBLIC_ROOT') ?? $appRoot . DIRECTORY_SEPARATOR . 'public';
+        $basePath = self::environment('COPOT_BASE_PATH') ?? '/';
+
+        return new self($appRoot, $publicRoot, $basePath);
+    }
+
     /**
      * Compatibility adapter for in-process application fixtures that do not
      * expose a web document root. Web entrypoints must use a strict context.

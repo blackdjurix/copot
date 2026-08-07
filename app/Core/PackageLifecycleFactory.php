@@ -15,10 +15,13 @@ use PDO;
 
 final class PackageLifecycleFactory
 {
-    public static function forProject(string $basePath): PackageLifecycleService
+    public static function forProject(DeploymentContext|string $deployment): PackageLifecycleService
     {
-        $deploymentContext = DeploymentContext::forApplicationRoot($basePath);
+        $deploymentContext = is_string($deployment)
+            ? DeploymentContext::forApplicationRoot($deployment)
+            : $deployment;
         $basePath = $deploymentContext->appRoot();
+        $publicRoot = $deploymentContext->publicRoot();
         $storage = $basePath . DIRECTORY_SEPARATOR . 'storage';
         $database = new Database(new Config($basePath . DIRECTORY_SEPARATOR . 'config'));
         $baselineCatalog = CanonicalSchemaBaselineCatalog::forProject($basePath);
@@ -51,6 +54,8 @@ final class PackageLifecycleFactory
 
         [$reconciliationOperator, $reconciliationUnavailableReason] = self::reconciliationOperator(
             $basePath,
+            $deploymentContext,
+            $publicRoot,
             $storage,
             $database,
             $registry,
@@ -115,7 +120,7 @@ final class PackageLifecycleFactory
                     },
                     'admin' => static function () use ($bootstrap): bool {
                         $application = $bootstrap();
-                        return $application->run(new Request('GET', $application->adminUrl()->baseUrl()))->statusCode() < 500;
+                        return $application->run(new Request('GET', $application->adminUrl()->routeBaseUrl()))->statusCode() < 500;
                     },
                 ];
             },
@@ -131,6 +136,8 @@ final class PackageLifecycleFactory
 
     private static function reconciliationOperator(
         string $basePath,
+        DeploymentContext $deploymentContext,
+        string $publicRoot,
         string $storage,
         Database $database,
         CoreMigrationRegistry $registry,
@@ -184,7 +191,7 @@ final class PackageLifecycleFactory
                 $quiescence = new MariaDbReadOnlyQuiescence($admin, $reconciliationConnection, $evidence, $databaseName);
             }
 
-            $rootResolver = new RecoveryRootResolver($basePath, $configuredRoot, [$storage, $basePath . DIRECTORY_SEPARATOR . 'storage'], [$basePath . DIRECTORY_SEPARATOR . 'public']);
+            $rootResolver = new RecoveryRootResolver($basePath, $configuredRoot, [$storage, $basePath . DIRECTORY_SEPARATOR . 'storage'], [$publicRoot]);
             $root = $rootResolver->resolve();
             $recoveryStore = new RecoveryLifecycleStore($root);
             $artifactStore = new RecoveryArtifactStore($root);
@@ -203,9 +210,9 @@ final class PackageLifecycleFactory
                 preg_match('/(\\d+\\.\\d+(?:\\.\\d+)?)/', $version, $match);
                 return new RuntimeCompatibilityContext(PHP_VERSION, ['mysql' => $match[1] ?? '0.0.0'], get_loaded_extensions());
             };
-            $runtimeChecks = static function () use ($basePath): array {
+            $runtimeChecks = static function () use ($basePath, $deploymentContext): array {
                 $app = null;
-                $bootstrap = static function () use (&$app, $basePath): Application {
+                $bootstrap = static function () use (&$app, $basePath, $deploymentContext): Application {
                     if (!$app instanceof Application) { $loaded = require $basePath . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'app.php'; if (!$loaded instanceof Application) throw new \RuntimeException('Application bootstrap did not return an application.'); $app = $loaded; }
                     return $app;
                 };
@@ -215,7 +222,7 @@ final class PackageLifecycleFactory
                     'modules' => static function () use ($bootstrap): bool { return $bootstrap()->moduleLoader()->errors() === []; },
                     'theme' => static function () use ($bootstrap, $basePath): bool { $application = $bootstrap(); return (new ThemeLoader(new ThemeRepository($application->database()), $basePath))->layoutPath() !== ''; },
                     'public' => static function () use ($bootstrap): bool { return $bootstrap()->run(new Request('GET', '/'))->statusCode() < 500; },
-                    'admin' => static function () use ($bootstrap): bool { $application = $bootstrap(); return $application->run(new Request('GET', $application->adminUrl()->baseUrl()))->statusCode() < 500; },
+                    'admin' => static function () use ($bootstrap): bool { $application = $bootstrap(); return $application->run(new Request('GET', $application->adminUrl()->routeBaseUrl()))->statusCode() < 500; },
                 ];
             };
             return [new LegacyReconciliationOperator(

@@ -4,15 +4,15 @@
 
 Preparation: COMPLETE / CONTRACT LOCKED
 
-Implementation: WU1–WU4 COMPLETE / WU5–WU6 NOT STARTED
+Implementation: WU1–WU5 COMPLETE / WU6 NOT STARTED
 
 Adoption: PROMOTED FOR POST-M3 PLATFORM FOUNDATION PREPARATION
 
 Release / tag / publication: NOT AUTHORIZED
 
-This contract adopts Webcore Deployment & Portability Foundation as a Post-M3 Platform Foundation workstream. It does not reopen M2.4 Platform Hardening. WU1–WU4 implementation is recorded below; downstream WU5–WU6 remain separately bounded work.
+This contract adopts Webcore Deployment & Portability Foundation as a Post-M3 Platform Foundation workstream. It does not reopen M2.4 Platform Hardening. WU1–WU5 implementation is recorded below; downstream WU6 remains separately bounded work.
 
-Downstream WU5–WU6 implementation must be explicitly authorized after preparation continuity is verified.
+Downstream WU6 implementation must be explicitly authorized after preparation continuity is verified.
 
 ---
 
@@ -308,10 +308,11 @@ Audit findings must distinguish:
 The focused repository audit is accepted and locks the following implementation seams:
 
 - APP_ROOT was previously inferred from the project directory and PUBLIC_ROOT was implicitly `<APP_ROOT>/public`; neither deployment root was a first-class runtime value.
-- The public entrypoint and Admin public-asset reader now consume one deployment context. URL generation is closed in WU3; broad installer/package/recovery adaptation and runtime acceptance remain downstream WU5–WU6 work.
+- The public entrypoint and Admin public-asset reader now consume one deployment context. URL generation is closed in WU3; installer/runtime/package/recovery/CLI integration is closed in WU5, while shared-host-like runtime acceptance remains downstream WU6 work.
 - WU4 defines PUBLIC_ROOT as the boundary for `index.php`, `.htaccess`, and explicitly public static trees such as `admin-assets`; private APP_ROOT directories are not copied or exposed there. Media, theme, and site assets that are intentionally PHP-served remain application routes.
 - Same-root deployments remain supported, while split-root deployments require explicit, readable, absolute roots with APP_ROOT outside PUBLIC_ROOT and fail closed for invalid relationships.
 - Existing package, recovery, media, theme, installer, and lifecycle ownership boundaries remain intact; Server-Empty Bootstrap remains deferred.
+- WU5 consumers now receive the resolved deployment context. Package lifecycle probes use the context for bootstrap and logical Admin requests, recovery excludes the resolved PUBLIC_ROOT, and CLI root resolution does not require web-server globals. WU5 does not expand package, recovery, installer, or Server-Empty Bootstrap ownership.
 
 ---
 
@@ -328,11 +329,11 @@ WU5 — Installer, Runtime, Package, Recovery & CLI Integration
 WU6 — Shared-Host-Like/XAMPP Compatibility & Regression Acceptance
 ```
 
-WU1 is complete. WU2 establishes the authoritative deployment context and root
-resolution boundary while preserving the current default deployment. WU3 adds
+WU1–WU5 are complete. WU2 establishes the authoritative deployment context and
+root resolution boundary while preserving the current default deployment. WU3 adds
 base-path-aware request normalization and URL generation without prefixing
-logical route definitions. WU5–WU6 are not started and require their own
-implementation authorization.
+logical route definitions. WU5 is complete. WU6 is not started and requires its
+own implementation authorization.
 
 ---
 
@@ -401,13 +402,13 @@ Webcore Deployment & Portability Foundation
 Implementation state:
 
 ```text
-WU1–WU4 COMPLETE / WU5–WU6 NOT STARTED
+WU1–WU5 COMPLETE / WU6 NOT STARTED
 ```
 
 Next gate:
 
 ```text
-WU5 — Installer, Runtime, Package, Recovery & CLI Integration
+WU6 — Shared-Host-Like/XAMPP Compatibility & Regression Acceptance
 ```
 
-No downstream WU5–WU6 implementation should start until its scope is separately authorized after continuity and repository freshness verification.
+No downstream WU6 implementation should start until its scope is separately authorized after continuity and repository freshness verification.

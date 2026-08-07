@@ -4,9 +4,24 @@
 declare(strict_types=1);
 
 use Copot\Core\Env;
+use Copot\Core\DeploymentContext;
 use Copot\Core\PackageLifecycleFactory;
 
-require dirname(__DIR__) . '/bootstrap/autoload.php';
+$defaultAppRoot = dirname(__DIR__);
+$configuredAppRoot = getenv('COPOT_APP_ROOT');
+$autoloadRoot = is_string($configuredAppRoot) && trim($configuredAppRoot) !== '' ? trim($configuredAppRoot) : $defaultAppRoot;
+$resolvedAutoloadRoot = realpath($autoloadRoot);
+if ($resolvedAutoloadRoot === false || is_link($autoloadRoot) || !is_dir($resolvedAutoloadRoot) || !is_readable($resolvedAutoloadRoot)) {
+    fwrite(STDERR, "unavailable: Configured APP_ROOT is invalid.\n");
+    exit(7);
+}
+$autoloadPath = $resolvedAutoloadRoot . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'autoload.php';
+if (!is_file($autoloadPath) || !is_readable($autoloadPath)) {
+    fwrite(STDERR, "unavailable: Application autoload target is invalid.\n");
+    exit(7);
+}
+$autoloadRoot = $resolvedAutoloadRoot;
+require $autoloadPath;
 
 function usage(): void
 {
@@ -43,8 +58,9 @@ if ($needsZip && (!is_file($args[0]) || is_link($args[0]) || !is_readable($args[
 }
 
 try {
-    Env::load(dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env');
-    $service = PackageLifecycleFactory::forProject(dirname(__DIR__));
+    Env::load($autoloadRoot . DIRECTORY_SEPARATOR . '.env');
+    $deploymentContext = DeploymentContext::forCli($defaultAppRoot);
+    $service = PackageLifecycleFactory::forProject($deploymentContext);
     if ($command === 'package:status') {
         $status = $service->status();
         emit($status, $format, $status['accepted'] ? 0 : 5);
