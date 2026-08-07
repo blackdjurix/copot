@@ -5,7 +5,7 @@
 ```text
 Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
 Implementation Unit 1: COMPLETE / ACCEPTED
-Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU6 COMPLETE AND CLOSED; technical acceptance COMPLETE; production reconciliation NOT STARTED
+Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU6 COMPLETE AND CLOSED; technical acceptance COMPLETE; production execution path operationally available; live production reconciliation NOT STARTED
 Backup & Recovery Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED pending authoritative committed Webcore state
 Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED — KEEP DEFERRED
@@ -206,7 +206,7 @@ are implemented and accepted under the existing boundaries.
 
 ### Implementation Unit 2 — Legacy Webcore Runtime Reconciliation
 
-**WU1–WU6 COMPLETE; production reconciliation NOT STARTED.** WU1 provides the non-mutating trusted-target,
+**WU1–WU6 COMPLETE; production execution composition available; live production reconciliation NOT STARTED.** WU1 provides the non-mutating trusted-target,
 deterministic-classification, and immutable-planning boundary. WU2 provides
 only the accepted recovery binding, exact confirmation, database quiescence,
 and mutation-eligibility boundary; it does not start mutation. WU3 consumes

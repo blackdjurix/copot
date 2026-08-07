@@ -37,7 +37,9 @@ final class PackageLifecycleService
         private CanonicalSchemaBaselineVerifier $canonicalSchema,
         private string $canonicalSchemaPath,
         ?LegacyRuntimeClassifier $legacyClassifier = null,
-        ?LegacyReconciliationPlanner $reconciliationPlanner = null
+        ?LegacyReconciliationPlanner $reconciliationPlanner = null,
+        private ?LegacyReconciliationOperator $reconciliationOperator = null,
+        private ?string $reconciliationUnavailableReason = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -180,6 +182,20 @@ final class PackageLifecycleService
         }
     }
 
+    public function reconcile(string $zip, bool $confirmed): PackageLifecycleResult
+    {
+        if (!$this->reconciliationOperator instanceof LegacyReconciliationOperator) {
+            return new PackageLifecycleResult(false, 'unavailable', 'Production reconciliation composition is unavailable.');
+        }
+
+        return $this->reconciliationOperator->reconcile($zip, $confirmed);
+    }
+
+    public function reconciliationAvailable(): bool
+    {
+        return $this->reconciliationOperator instanceof LegacyReconciliationOperator;
+    }
+
     public function status(): array
     {
         try {
@@ -203,7 +219,12 @@ final class PackageLifecycleService
                 ];
             }
 
-            return PackageLifecycleStatus::describe($inspection, $record, $operationState);
+            $status = PackageLifecycleStatus::describe($inspection, $record, $operationState);
+            $status['reconciliation_available'] = $this->reconciliationAvailable();
+            if (!$this->reconciliationAvailable() && $this->reconciliationUnavailableReason !== null) {
+                $status['reconciliation_reason'] = $this->reconciliationUnavailableReason;
+            }
+            return $status;
         } catch (\Throwable $exception) {
             return ['accepted' => false, 'status' => 'invalid', 'reason' => $exception->getMessage()];
         }

@@ -3,13 +3,14 @@
 
 declare(strict_types=1);
 
+use Copot\Core\Env;
 use Copot\Core\PackageLifecycleFactory;
 
 require dirname(__DIR__) . '/bootstrap/autoload.php';
 
 function usage(): void
 {
-    fwrite(STDERR, "Usage: bin/copot package:(plan|reconcile-plan|apply|repair|adopt) <zip> [--format=human|json]\n       bin/copot package:status [--format=human|json]\n");
+    fwrite(STDERR, "Usage: bin/copot package:(plan|reconcile-plan|reconcile|apply|repair|adopt) <zip> [--confirm] [--format=human|json]\n       bin/copot package:status [--format=human|json]\n");
 }
 
 function emit(array $data, string $format, int $code): never
@@ -27,19 +28,22 @@ $args = array_slice($argv, 1);
 if ($args === [] || in_array($args[0], ['--help', '-h'], true)) { usage(); exit(2); }
 $command = array_shift($args);
 $format = 'human';
+$confirmed = false;
 foreach ($args as $key => $arg) {
     if (str_starts_with($arg, '--format=')) { $format = substr($arg, 9); unset($args[$key]); continue; }
+    if ($arg === '--confirm') { $confirmed = true; unset($args[$key]); continue; }
     if (str_starts_with($arg, '--')) { usage(); exit(2); }
 }
 if (!in_array($format, ['human', 'json'], true)) { usage(); exit(2); }
 $args = array_values($args);
-$needsZip = in_array($command, ['package:plan', 'package:reconcile-plan', 'package:apply', 'package:repair', 'package:adopt'], true);
-if (!in_array($command, ['package:plan', 'package:reconcile-plan', 'package:apply', 'package:repair', 'package:adopt', 'package:status'], true) || count($args) !== ($needsZip ? 1 : 0)) { usage(); exit(2); }
+$needsZip = in_array($command, ['package:plan', 'package:reconcile-plan', 'package:reconcile', 'package:apply', 'package:repair', 'package:adopt'], true);
+if (!in_array($command, ['package:plan', 'package:reconcile-plan', 'package:reconcile', 'package:apply', 'package:repair', 'package:adopt', 'package:status'], true) || count($args) !== ($needsZip ? 1 : 0)) { usage(); exit(2); }
 if ($needsZip && (!is_file($args[0]) || is_link($args[0]) || !is_readable($args[0]))) {
     emit(['accepted' => false, 'status' => 'invalid_input', 'reason' => 'Local package ZIP path is invalid.'], $format, 2);
 }
 
 try {
+    Env::load(dirname(__DIR__) . DIRECTORY_SEPARATOR . '.env');
     $service = PackageLifecycleFactory::forProject(dirname(__DIR__));
     if ($command === 'package:status') {
         $status = $service->status();
@@ -48,6 +52,7 @@ try {
     $result = match ($command) {
         'package:plan' => $service->plan($args[0]),
         'package:reconcile-plan' => $service->reconcilePlan($args[0]),
+        'package:reconcile' => $service->reconcile($args[0], $confirmed),
         'package:adopt' => $service->adopt($args[0]),
         default => $service->apply($args[0], $command === 'package:repair'),
     };

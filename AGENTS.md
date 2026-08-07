@@ -30,7 +30,7 @@ Current Core Module versions: 0.1.0 independently owned; modules/example exclude
 Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based
 REPAIR remains an operational classification and is not a release event
-Current dependency: Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU6 technical acceptance is complete; production reconciliation and separate Module WU7 acceptance remain pending.
+Current dependency: Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU6 technical acceptance and production execution composition are complete; live production reconciliation and separate Module WU7 acceptance remain pending.
 Current active implementation branch: main
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
@@ -142,7 +142,7 @@ current WU7 acceptance under
 Recovery implementation, acceptance, and lifecycle closure are recorded in
 `docs/31_backup_recovery_foundation_contract.md`; WU1–WU7 are complete, and IU2
 WU1–WU6 are complete for the technical adoption slice.
-Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU6: COMPLETE;
+Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU6 and production execution composition: COMPLETE;
 classification/planning, recovery/confirmation/quiescence eligibility, guarded
 package-owned filesystem convergence, schema/migration reconciliation, and
 installed-state/lifecycle finalization and interruption/restore/retry
