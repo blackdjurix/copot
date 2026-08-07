@@ -18,6 +18,7 @@ use Copot\Core\PackageOwnership;
 use Copot\Core\RuntimeCompatibilityContext;
 use Copot\Core\TransitionPlan;
 use Copot\Core\TransitionPlanner;
+use Copot\Core\Version;
 
 $basePath = dirname(__DIR__);
 chdir($basePath);
@@ -51,7 +52,7 @@ $package = static function (string $version, string $minimumSource = '0.0.0') us
 };
 
 $planner = new TransitionPlanner();
-$fresh = $planner->plan(InstalledStateInspection::fresh(), $package('0.12.0'), $runtime);
+$fresh = $planner->plan(InstalledStateInspection::fresh(), $package(Version::CURRENT), $runtime);
 $assert($fresh->accepted() && $fresh->classification() === TransitionPlan::INSTALL, 'Fresh state was not classified as canonical INSTALL.');
 $historicalInstall = $planner->plan(InstalledStateInspection::fresh(), $package('0.11.0'), $runtime);
 $assert(!$historicalInstall->accepted() && str_contains($historicalInstall->reason(), 'canonical current'), 'Historical fresh target was accepted.');
