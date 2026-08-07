@@ -17,7 +17,8 @@ final class PackageLifecycleFactory
 {
     public static function forProject(string $basePath): PackageLifecycleService
     {
-        $basePath = rtrim($basePath, '/\\');
+        $deploymentContext = DeploymentContext::forApplicationRoot($basePath);
+        $basePath = $deploymentContext->appRoot();
         $storage = $basePath . DIRECTORY_SEPARATOR . 'storage';
         $database = new Database(new Config($basePath . DIRECTORY_SEPARATOR . 'config'));
         $baselineCatalog = CanonicalSchemaBaselineCatalog::forProject($basePath);
@@ -87,9 +88,9 @@ final class PackageLifecycleFactory
                 preg_match('/(\\d+\\.\\d+(?:\\.\\d+)?)/', $version, $match);
                 return new RuntimeCompatibilityContext(PHP_VERSION, ['mysql' => $match[1] ?? '0.0.0'], get_loaded_extensions());
             },
-            static function () use ($basePath): array {
+            static function () use ($basePath, $deploymentContext): array {
                 $app = null;
-                $bootstrap = static function () use (&$app, $basePath): Application {
+                $bootstrap = static function () use (&$app, $basePath, $deploymentContext): Application {
                     if (!$app instanceof Application) {
                         $loaded = require $basePath . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'app.php';
                         if (!$loaded instanceof Application) { throw new \RuntimeException('Application bootstrap did not return an application.'); }

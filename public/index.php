@@ -1,5 +1,6 @@
 <?php
 
+use Copot\Core\DeploymentContext;
 use Copot\Core\Diagnostics;
 use Copot\Core\InstallationState;
 use Copot\Core\InstallerGate;
@@ -7,7 +8,11 @@ use Copot\Core\Request;
 use Copot\Core\Response;
 use Copot\Core\ServerErrorResponse;
 
-$basePath = dirname(__DIR__);
+$publicRoot = dirname(__DIR__);
+$configuredAppRoot = $_SERVER['COPOT_APP_ROOT'] ?? getenv('COPOT_APP_ROOT');
+$autoloadRoot = is_string($configuredAppRoot) && trim($configuredAppRoot) !== ''
+    ? trim($configuredAppRoot)
+    : dirname($publicRoot);
 $initialOutputLevel = ob_get_level();
 $discardOutputBuffersTo = static function (int $initialLevel): void {
     while (ob_get_level() > $initialLevel) {
@@ -40,7 +45,9 @@ if (!@ob_start()) {
 }
 
 try {
-    require_once $basePath . '/bootstrap/autoload.php';
+    require_once $autoloadRoot . '/bootstrap/autoload.php';
+    $deploymentContext = DeploymentContext::fromEntrypoint(__FILE__);
+    $basePath = $deploymentContext->appRoot();
 } catch (Throwable) {
     $discardOutputBuffersTo($initialOutputLevel);
     $sendEmergencyResponse();

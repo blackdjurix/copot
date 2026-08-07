@@ -1,15 +1,19 @@
 <?php
 
 use Copot\Core\Application;
+use Copot\Core\DeploymentContext;
 use Copot\Core\Env;
 
 $basePath = dirname(__DIR__);
 
 require_once $basePath . '/bootstrap/autoload.php';
 
+$deploymentContext ??= DeploymentContext::forApplicationRoot($basePath);
+$basePath = $deploymentContext->appRoot();
+
 Env::load($basePath . '/.env');
 
-$app = new Application($basePath);
+$app = new Application($deploymentContext);
 $app->session()->start();
 
 require $basePath . '/routes/web.php';

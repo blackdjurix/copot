@@ -4,15 +4,15 @@
 
 Preparation: COMPLETE / CONTRACT LOCKED
 
-Implementation: NOT STARTED
+Implementation: WU1–WU2 COMPLETE / WU3–WU6 NOT STARTED
 
 Adoption: PROMOTED FOR POST-M3 PLATFORM FOUNDATION PREPARATION
 
 Release / tag / publication: NOT AUTHORIZED
 
-This contract adopts Webcore Deployment & Portability Foundation as a Post-M3 Platform Foundation workstream. It does not reopen M2.4 Platform Hardening and does not authorize implementation merely by existing in the repository.
+This contract adopts Webcore Deployment & Portability Foundation as a Post-M3 Platform Foundation workstream. It does not reopen M2.4 Platform Hardening. WU1–WU2 implementation is authorized and recorded below; downstream WU3–WU6 remain separately bounded work.
 
-The implementation target must be explicitly authorized after preparation continuity is verified.
+Downstream WU3–WU6 implementation must be explicitly authorized after preparation continuity is verified.
 
 ---
 
@@ -303,24 +303,33 @@ Audit findings must distinguish:
 - package lifecycle concern;
 - unrelated historical behavior.
 
+### WU1 audit lock
+
+The focused repository audit is accepted and locks the following implementation seams:
+
+- APP_ROOT was previously inferred from the project directory and PUBLIC_ROOT was implicitly `<APP_ROOT>/public`; neither deployment root was a first-class runtime value.
+- The public entrypoint, application bootstrap, installer, and lifecycle bootstrap seam are the bounded WU2 consumers of one deployment context. URL generation, routing migration, public asset migration, broad installer/package/recovery adaptation, and runtime acceptance remain downstream WU3–WU6 work.
+- Same-root deployments remain supported, while split-root deployments require explicit, readable, absolute roots with APP_ROOT outside PUBLIC_ROOT and fail closed for invalid relationships.
+- Existing package, recovery, media, theme, installer, and lifecycle ownership boundaries remain intact; Server-Empty Bootstrap remains deferred.
+
 ---
 
-## 12. Candidate work-unit shape
+## 12. Final work-unit shape
 
-This shape is provisional until the focused repository audit locks it.
+The focused audit retains the six-unit order and refines the ownership seams:
 
 ```text
-WU1 — Root & Base-Path Audit / Contract Confirmation
-WU2 — Application Root / Public Root Resolution Boundary
+WU1 — Repository Portability Audit & Implementation Contract Lock
+WU2 — Deployment Context & APP_ROOT/PUBLIC_ROOT Resolution Boundary
 WU3 — Base-Path-Aware Routing, Redirect & URL Generation
 WU4 — Split-Root Public Entrypoint and Public Asset Boundary
-WU5 — Existing Installer / Runtime Integration
-WU6 — Shared-Host-Like Compatibility & Regression Acceptance
+WU5 — Installer, Runtime, Package, Recovery & CLI Integration
+WU6 — Shared-Host-Like/XAMPP Compatibility & Regression Acceptance
 ```
 
-The audit may merge, split, reorder, rename, or reject candidate units.
-
-Implementation must not start merely because this candidate list exists.
+WU1 is complete. WU2 establishes the authoritative deployment context and root
+resolution boundary while preserving the current default deployment. WU3–WU6
+are not started and require their own implementation authorization.
 
 ---
 
@@ -389,13 +398,13 @@ Webcore Deployment & Portability Foundation
 Implementation state:
 
 ```text
-NOT STARTED
+WU1–WU2 COMPLETE / WU3–WU6 NOT STARTED
 ```
 
 Next gate:
 
 ```text
-Focused repository portability audit and implementation-contract confirmation
+WU3 — Base-Path-Aware Request, Routing, Redirect & URL Generation
 ```
 
-No implementation branch should be created from this preparation state until the next session/task explicitly authorizes implementation after continuity and repository freshness verification.
+No downstream WU3–WU6 implementation should start until its scope is separately authorized after continuity and repository freshness verification.

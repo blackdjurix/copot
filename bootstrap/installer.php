@@ -4,6 +4,7 @@ use Copot\Core\Admin\AdminUrl;
 use Copot\Core\Config;
 use Copot\Core\Csrf;
 use Copot\Core\Database;
+use Copot\Core\DeploymentContext;
 use Copot\Core\Env;
 use Copot\Core\InstallationException;
 use Copot\Core\InstallationMutex;
@@ -32,6 +33,8 @@ use Copot\Core\ThemeRepository;
 use Copot\Core\UserProvider;
 use Copot\Core\View;
 
+$deploymentContext ??= DeploymentContext::forApplicationRoot($basePath);
+$basePath = $deploymentContext->appRoot();
 $storageReady = $installationState->storageIsWritable();
 $sessionReady = false;
 $csrf = null;

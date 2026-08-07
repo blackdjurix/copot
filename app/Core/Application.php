@@ -11,6 +11,7 @@ use Throwable;
 
 class Application
 {
+    private DeploymentContext $deployment;
     private string $basePath;
     private Diagnostics $diagnostics;
     private Config $config;
@@ -44,8 +45,12 @@ class Application
     private AdminPageRenderer $adminPageRenderer;
     private AdminErrorRenderer $adminErrors;
 
-    public function __construct(string $basePath)
+    public function __construct(DeploymentContext|string $deployment)
     {
+        $this->deployment = is_string($deployment)
+            ? DeploymentContext::forLegacyApplication($deployment)
+            : $deployment;
+        $basePath = $this->deployment->appRoot();
         $this->basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
         $this->diagnostics = new Diagnostics($this->basePath);
         $this->config = new Config($this->path('config'));
@@ -127,13 +132,12 @@ class Application
 
     public function path(string $path = ''): string
     {
-        $path = trim($path, '/\\');
+        return $this->deployment->path($path);
+    }
 
-        if ($path === '') {
-            return $this->basePath;
-        }
-
-        return $this->basePath . DIRECTORY_SEPARATOR . str_replace(['/', '\\'], DIRECTORY_SEPARATOR, $path);
+    public function deployment(): DeploymentContext
+    {
+        return $this->deployment;
     }
 
     public function config(): Config
