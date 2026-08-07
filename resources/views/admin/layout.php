@@ -29,8 +29,8 @@ $isAdminRoot = $normalizedCurrentPath !== '' && $normalizedCurrentPath === $norm
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?> | <?= htmlspecialchars($siteName ?? 'copot', ENT_QUOTES, 'UTF-8') ?></title>
-    <link rel="stylesheet" href="/admin-assets/css/admin.css?v=m311-wu3-acceptance">
-    <script defer src="/admin-assets/js/admin-shell.js"></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin-assets/css/admin.css?v=m311-wu3-acceptance') : '/admin-assets/css/admin.css?v=m311-wu3-acceptance', ENT_QUOTES, 'UTF-8') ?>">
+    <script defer src="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin-assets/js/admin-shell.js') : '/admin-assets/js/admin-shell.js', ENT_QUOTES, 'UTF-8') ?>"></script>
 </head>
 <body class="admin-shell-page">
     <a class="admin-skip-link" href="#admin-main">Skip to main content</a>

@@ -4,7 +4,7 @@
 
 Preparation: COMPLETE / CONTRACT LOCKED
 
-Implementation: WU1–WU2 COMPLETE / WU3–WU6 NOT STARTED
+Implementation: WU1–WU3 COMPLETE / WU4–WU6 NOT STARTED
 
 Adoption: PROMOTED FOR POST-M3 PLATFORM FOUNDATION PREPARATION
 
@@ -328,8 +328,10 @@ WU6 — Shared-Host-Like/XAMPP Compatibility & Regression Acceptance
 ```
 
 WU1 is complete. WU2 establishes the authoritative deployment context and root
-resolution boundary while preserving the current default deployment. WU3–WU6
-are not started and require their own implementation authorization.
+resolution boundary while preserving the current default deployment. WU3 adds
+base-path-aware request normalization and URL generation without prefixing
+logical route definitions. WU4–WU6 are not started and require their own
+implementation authorization.
 
 ---
 
@@ -398,13 +400,13 @@ Webcore Deployment & Portability Foundation
 Implementation state:
 
 ```text
-WU1–WU2 COMPLETE / WU3–WU6 NOT STARTED
+WU1–WU3 COMPLETE / WU4–WU6 NOT STARTED
 ```
 
 Next gate:
 
 ```text
-WU3 — Base-Path-Aware Request, Routing, Redirect & URL Generation
+WU4 — Split-Root Public Entrypoint and Public Asset Boundary
 ```
 
-No downstream WU3–WU6 implementation should start until its scope is separately authorized after continuity and repository freshness verification.
+No downstream WU4–WU6 implementation should start until its scope is separately authorized after continuity and repository freshness verification.

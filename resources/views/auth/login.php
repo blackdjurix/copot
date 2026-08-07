@@ -68,7 +68,7 @@
             <div class="error"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>
         <?php endif; ?>
 
-        <form method="post" action="/login">
+        <form method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/login') : '/login', ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
             <label for="email">Email</label>

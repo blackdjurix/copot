@@ -4,6 +4,10 @@ namespace Copot\Core;
 
 class Router
 {
+    public function __construct(private ?DeploymentContext $deployment = null)
+    {
+    }
+
     private ?UnresolvedRouteResolver $unresolvedRouteResolver = null;
 
     private array $routes = [
@@ -95,6 +99,18 @@ class Router
     private function normalizePath(string $path): string
     {
         $path = '/' . trim($path, '/');
+
+        if ($this->deployment !== null && $this->deployment->basePath() !== '/') {
+            $basePath = $this->deployment->basePath();
+
+            if ($path === $basePath) {
+                return '/';
+            }
+
+            if (str_starts_with($path, $basePath . '/')) {
+                $path = substr($path, strlen($basePath));
+            }
+        }
 
         return $path === '/' ? '/' : rtrim($path, '/');
     }

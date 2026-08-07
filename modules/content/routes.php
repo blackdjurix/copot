@@ -43,7 +43,7 @@ $contentSlugger = new Slugger();
 $contentTaxonomyRepository = $contentTaxonomyEnabled ? new TaxonomyRepository($app->database()) : null;
 $contentTaxonomyAssignments = $contentTaxonomyEnabled ? new TaxonomyAssignmentRepository($app->database()) : null;
 $contentMediaReferences = class_exists('MediaContentReferenceService') && class_exists('MediaRepository') && class_exists('MediaUsageRepository')
-    ? new MediaContentReferenceService($app->database(), new MediaRepository($app->database()), new MediaUsageRepository($app->database()), class_exists('MediaVariantRepository') ? new MediaVariantRepository($app->database()) : null, class_exists('MediaPendingPreparationService') ? new MediaPendingPreparationService(null, new MediaVariantRepository($app->database()), new MediaVariantFilesystemStorage($app->path('storage/media')), $app->session()) : null, new MediaVariantFilesystemStorage($app->path('storage/media')))
+    ? new MediaContentReferenceService($app->database(), new MediaRepository($app->database()), new MediaUsageRepository($app->database()), class_exists('MediaVariantRepository') ? new MediaVariantRepository($app->database()) : null, class_exists('MediaPendingPreparationService') ? new MediaPendingPreparationService(null, new MediaVariantRepository($app->database()), new MediaVariantFilesystemStorage($app->path('storage/media')), $app->session()) : null, new MediaVariantFilesystemStorage($app->path('storage/media')), method_exists($app, 'url') ? static fn (string $path): string => $app->url($path) : null)
     : null;
 $contentService = new ContentService($app->database(), $contentRepository, $contentTaxonomyAssignments, $contentMediaReferences);
 $contentValidationMessage = static function (InvalidArgumentException $exception): string {
@@ -148,7 +148,7 @@ $app->adminDashboard()->add(
     ]
 );
 
-$contentRenderView = function (string $view, array $data = []) use ($contentAdminUrl): string {
+$contentRenderView = function (string $view, array $data = []) use ($contentAdminUrl, $app): string {
     $file = __DIR__ . '/views/admin/' . $view . '.php';
 
     if (!is_file($file)) {
@@ -156,6 +156,7 @@ $contentRenderView = function (string $view, array $data = []) use ($contentAdmi
     }
 
     $data['adminUrl'] = $contentAdminUrl;
+    $data['url'] = static fn (string $path): string => method_exists($app, 'url') ? $app->url($path) : $path;
 
     extract($data, EXTR_SKIP);
 

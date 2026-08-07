@@ -263,7 +263,7 @@
 
                 <p id="database_test_result" class="pass" hidden></p>
 
-                <form id="database_form" method="post" action="/install" autocomplete="off">
+                <form id="database_form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
                     <label for="database_host">Host</label>
@@ -292,13 +292,13 @@
                 </form>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
                 <h2>Administrator and Site</h2>
-                <p><a class="text-link" href="/install?step=database">Change Database</a></p>
+                <p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Change Database</a></p>
 
                 <?php if (!empty($setupErrors['storage'])): ?>
                     <p class="field-error"><?= htmlspecialchars($setupErrors['storage'], ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
 
-                <form method="post" action="/install" autocomplete="off">
+                <form method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                         <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="create_administrator">
 
@@ -346,7 +346,7 @@
                 </form>
             <?php else: ?>
                 <h2>Finalize Installation</h2>
-                <p><a class="text-link" href="/install?step=database">Change Database</a></p>
+                <p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Change Database</a></p>
 
                 <?php if (is_string($finalizationError ?? null) && $finalizationError !== ''): ?>
                     <p class="field-error"><?= htmlspecialchars($finalizationError, ENT_QUOTES, 'UTF-8') ?></p>
@@ -359,7 +359,7 @@
                     <li><span>Baseline module</span><strong>Taxonomy</strong></li>
                 </ul>
 
-                <form method="post" action="/install">
+                <form method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="action" value="finalize_installation">
                     <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Finalize Installation</button>
@@ -417,7 +417,7 @@
                 data.set('response_mode', 'json');
 
                 try {
-                    const response = await fetch('/install', {
+                    const response = await fetch(<?= json_encode(is_callable($url ?? null) ? $url('/install') : '/install', JSON_THROW_ON_ERROR) ?>, {
                         method: 'POST',
                         body: data,
                         headers: { Accept: 'application/json' },

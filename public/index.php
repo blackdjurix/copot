@@ -60,13 +60,13 @@ $diagnostics = null;
 
 try {
     $diagnostics = new Diagnostics($basePath);
-    $request = Request::capture();
+    $request = Request::capture($deploymentContext);
     $installationState = new InstallationState($basePath . '/storage');
     $gate = new InstallerGate($installationState);
     $decision = $gate->decide($request);
 
     if ($decision === InstallerGate::REDIRECT_TO_INSTALLER) {
-        $response = Response::redirect('/install');
+        $response = Response::redirect($deploymentContext->url('/install'));
     } elseif ($decision === InstallerGate::BLOCK_INSTALLER) {
         $response = Response::html('404 Not Found', 404);
     } elseif ($decision === InstallerGate::INSTALLER || $decision === InstallerGate::INSTALLATION_STATE_ERROR) {

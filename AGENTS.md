@@ -25,16 +25,16 @@ Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Current selected Post-M3 track: Webcore Deployment & Portability Foundation
 Portability preparation: COMPLETE / CONTRACT LOCKED
-Portability WU1–WU2: COMPLETE
-Portability WU3–WU6: NOT STARTED
-Next gate: WU3 — Base-Path-Aware Request, Routing, Redirect & URL Generation
+Portability WU1–WU3: COMPLETE
+Portability WU4–WU6: NOT STARTED
+Next gate: WU4 — Split-Root Public Entrypoint and Public Asset Boundary
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (next consolidated release; not tagged or published)
 Current Core Module versions: 0.1.0 independently owned; modules/example excluded
 Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based
 REPAIR remains an operational classification and is not a release event
-Current dependency: Webcore Deployment & Portability Foundation WU3 implementation authorization.
+Current dependency: Webcore Deployment & Portability Foundation WU4 implementation authorization.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains separate operational work.
 Module Package Lifecycle WU1–WU7 implementation: COMPLETE; final human/E2E acceptance: BLOCKED / PARKED.
 Current active implementation branch: main

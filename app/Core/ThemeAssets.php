@@ -19,7 +19,7 @@ class ThemeAssets
         'ttf' => 'font/ttf',
     ];
 
-    public function __construct(private ThemeLoader $themes)
+    public function __construct(private ThemeLoader $themes, private ?DeploymentContext $deployment = null)
     {
     }
 
@@ -28,7 +28,9 @@ class ThemeAssets
         $theme = $this->themes->activeTheme();
         $assetPath = $this->normalizeAssetPath($assetPath);
 
-        return '/theme-assets/' . rawurlencode($theme['theme_id']) . '/' . $this->encodePath($assetPath);
+        $path = '/theme-assets/' . rawurlencode($theme['theme_id']) . '/' . $this->encodePath($assetPath);
+
+        return $this->deployment?->url($path) ?? $path;
     }
 
     public function serve(string $themeId, string $assetPath): Response

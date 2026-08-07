@@ -12,7 +12,7 @@ $formService = new FormDefinitionService($app->database(), $formRepository, $for
 $formPublicService = new FormPublicSubmissionService($formRepository, $formFields, new FormSubmissionLifecycleService($app->database(), $formRepository, $formFields, new FormSubmissionRepository($app->database()), new SubmissionValueValidator()), new FormSubmissionAttemptRepository($app->database()), new FormDefinitionValidator(), new FormPublicRequestValidator());
 $formAdmin = $app->adminUrl();
 $formPath = $formAdmin->childUrl('forms');
-$formPublicPath = static fn (int $id): string => '/forms/' . $id;
+$formPublicPath = static fn (int $id): string => $app->url('/forms/' . $id);
 
 $app->adminNavigation()->addRequired('Forms', $formPath, ['admin.access', 'forms.view'], 'link', 36);
 
@@ -96,7 +96,7 @@ $app->router()->post('/forms/{id}', static function ($request, array $params) us
     try {
         $address = $_SERVER['REMOTE_ADDR'] ?? '';
         $formPublicService->submit($app->session(), $id, $nonce, $values, $request->post('_form_website'), (string) $address);
-        return Response::redirect('/forms/' . $id . '?submitted=1');
+        return Response::redirect($app->url('/forms/' . $id . '?submitted=1'));
     } catch (FormSubmissionFieldValidationException $failure) {
         return $formPublicResponse($request, $id, is_array($values) ? $values : [], ['Please correct the highlighted fields.'], [$failure->fieldKey() => $failure->getMessage()], $nonce, false, 422);
     } catch (FormPublicRequestException|FormPublicAntiAbuseException) {

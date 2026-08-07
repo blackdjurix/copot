@@ -32,13 +32,14 @@ $settingsManager = new SettingsManager(
     $app->database()
 );
 
-$settingsRenderView = static function (array $data): string {
+$settingsRenderView = static function (array $data) use ($app): string {
     $file = __DIR__ . '/views/admin/settings.php';
 
     if (!is_file($file)) {
         throw new RuntimeException('Settings Manager view was not found.');
     }
 
+    $data['url'] = static fn (string $path): string => method_exists($app, 'url') ? $app->url($path) : $path;
     extract($data, EXTR_SKIP);
     $initialOutputLevel = ob_get_level();
 

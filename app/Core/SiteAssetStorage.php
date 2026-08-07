@@ -37,7 +37,8 @@ final class SiteAssetStorage
     public function __construct(
         string $storageRoot,
         private SettingsService $settings,
-        private ?Diagnostics $diagnostics = null
+        private ?Diagnostics $diagnostics = null,
+        private ?DeploymentContext $deployment = null
     ) {
         $this->storageRoot = rtrim($storageRoot, '/\\');
     }
@@ -119,7 +120,13 @@ final class SiteAssetStorage
 
     public function url(string $slot): ?string
     {
-        return $this->resolveActive($slot) === null ? null : '/site-assets/' . $slot;
+        if ($this->resolveActive($slot) === null) {
+            return null;
+        }
+
+        $path = '/site-assets/' . $slot;
+
+        return $this->deployment?->url($path) ?? $path;
     }
 
     public function serve(string $slot): Response

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Login | <?= htmlspecialchars($siteName ?? 'copot', ENT_QUOTES, 'UTF-8') ?></title>
-    <link rel="stylesheet" href="/admin-assets/css/admin.css">
+    <link rel="stylesheet" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin-assets/css/admin.css') : '/admin-assets/css/admin.css', ENT_QUOTES, 'UTF-8') ?>">
 </head>
 <body class="admin-login-body">
     <main class="admin-login-main">

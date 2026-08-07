@@ -42,6 +42,7 @@ $renderAdminLogin = function (string $email = '', ?string $error = null) use ($a
         'siteName' => $app->siteName(),
         'documentLocale' => $documentLocale,
         'adminBaseUrl' => $adminBase,
+        'url' => fn (string $path): string => $app->url($path),
         'csrfToken' => $app->session()->csrfToken(),
         'email' => $email,
         'error' => $error,
@@ -97,7 +98,7 @@ $app->router()->post($adminBase, function ($request) use ($app, $adminBase, $ren
         return Response::html($renderAdminLogin($email, 'Invalid credentials or inactive account.'), 422);
     }
 
-    return Response::redirect($adminBase);
+    return Response::redirect($app->url($adminBase));
 });
 
 $app->router()->post($adminUrl->childUrl('logout'), function ($request) use ($app, $adminBase): Response {
@@ -109,5 +110,5 @@ $app->router()->post($adminUrl->childUrl('logout'), function ($request) use ($ap
 
     $app->auth()->logout();
 
-    return Response::redirect($adminBase);
+    return Response::redirect($app->url($adminBase));
 });

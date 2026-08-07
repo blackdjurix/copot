@@ -71,6 +71,36 @@ final class DeploymentContext
         return $this->basePath;
     }
 
+    public function url(string $path): string
+    {
+        $path = trim($path);
+
+        if ($path === '' || $path === '/') {
+            return $this->basePath;
+        }
+
+        if (str_starts_with($path, '#') || preg_match('#^(?:[a-z][a-z0-9+.-]*:|//)#i', $path)) {
+            return $path;
+        }
+
+        $suffix = '';
+        $pathOnly = $path;
+        $suffixPosition = strcspn($path, '?#');
+
+        if ($suffixPosition < strlen($path)) {
+            $pathOnly = substr($path, 0, $suffixPosition);
+            $suffix = substr($path, $suffixPosition);
+        }
+
+        $pathOnly = self::normalizeUrlPath($pathOnly);
+
+        if ($this->basePath === '/' || $pathOnly === $this->basePath || str_starts_with($pathOnly, $this->basePath . '/')) {
+            return $pathOnly . $suffix;
+        }
+
+        return rtrim($this->basePath, '/') . $pathOnly . $suffix;
+    }
+
     public function isSplitRoot(): bool
     {
         return !self::isInside($this->publicRoot, $this->appRoot);
@@ -165,13 +195,38 @@ final class DeploymentContext
 
         $basePath = '/' . trim($basePath, '/');
 
-        foreach (explode('/', trim($basePath, '/')) as $segment) {
-            if ($segment === '' || $segment === '.' || $segment === '..' || preg_match('/[\x00-\x1F\x7F]/', $segment)) {
+        $segments = trim($basePath, '/') === '' ? [] : explode('/', trim($basePath, '/'));
+
+        foreach ($segments as $segment) {
+            if ($segment === '.' || $segment === '..' || preg_match('/[\x00-\x1F\x7F]/', $segment)) {
                 throw new InvalidArgumentException('Deployment base path contains an unsafe segment.');
             }
         }
 
         return $basePath === '/' ? '/' : rtrim($basePath, '/');
+    }
+
+    private static function normalizeUrlPath(string $path): string
+    {
+        $path = str_replace('\\', '/', trim($path));
+
+        if ($path === '') {
+            return '/';
+        }
+
+        if (!str_starts_with($path, '/')) {
+            $path = '/' . $path;
+        }
+
+        $path = preg_replace('#/+#', '/', $path) ?? $path;
+
+        foreach (explode('/', trim($path, '/')) as $segment) {
+            if ($segment === '' || $segment === '.' || $segment === '..' || preg_match('/[\x00-\x1F\x7F]/', $segment)) {
+                throw new InvalidArgumentException('Internal URL contains an unsafe path segment.');
+            }
+        }
+
+        return $path === '/' ? '/' : rtrim($path, '/');
     }
 
     private static function normalizeRelativePath(string $relativePath): string

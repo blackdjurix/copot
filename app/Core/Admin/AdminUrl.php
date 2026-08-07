@@ -3,12 +3,13 @@
 namespace Copot\Core\Admin;
 
 use Copot\Core\Config;
+use Copot\Core\DeploymentContext;
 
 class AdminUrl
 {
     private string $path;
 
-    public function __construct(Config $config)
+    public function __construct(Config $config, ?DeploymentContext $deployment = null)
     {
         $path = $config->get('admin.path', 'admin');
 
@@ -17,7 +18,10 @@ class AdminUrl
         }
 
         $this->path = $path;
+        $this->deployment = $deployment;
     }
+
+    private ?DeploymentContext $deployment = null;
 
     public function path(): string
     {
@@ -25,6 +29,11 @@ class AdminUrl
     }
 
     public function baseUrl(): string
+    {
+        return $this->url('/' . $this->path);
+    }
+
+    public function routeBaseUrl(): string
     {
         return '/' . $this->path;
     }
@@ -59,6 +68,47 @@ class AdminUrl
             }
         }
 
-        return $this->baseUrl() . '/' . implode('/', $segments);
+        return $this->url('/' . $this->path . '/' . implode('/', $segments));
+    }
+
+    public function routeChildUrl(string $childPath): string
+    {
+        $generated = $this->childUrl($childPath);
+        $base = $this->baseUrl();
+
+        if ($generated === $base) {
+            return $this->routeBaseUrl();
+        }
+
+        return $this->routeBaseUrl() . substr($generated, strlen($base));
+    }
+
+    public function routePath(string $url): string
+    {
+        $path = parse_url($url, PHP_URL_PATH);
+
+        if (!is_string($path) || $path === '') {
+            return $url;
+        }
+
+        $base = $this->baseUrl();
+
+        if ($path === $base) {
+            return $this->routeBaseUrl();
+        }
+
+        return str_starts_with($path, $base . '/')
+            ? $this->routeBaseUrl() . substr($path, strlen($base))
+            : $path;
+    }
+
+    public function url(string $path): string
+    {
+        return $this->urlPath($path);
+    }
+
+    private function urlPath(string $path): string
+    {
+        return $this->deployment?->url($path) ?? $path;
     }
 }

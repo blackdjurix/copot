@@ -184,7 +184,7 @@ if ($installationStateError) {
 
                     $finalizer->finalize();
 
-                    return Response::redirect($adminUrl->baseUrl());
+                    return Response::redirect($deploymentContext->url($adminUrl->baseUrl()));
                 } catch (\Throwable) {
                     $status = 503;
                     $message = 'Installation could not be finalized.';
@@ -192,7 +192,7 @@ if ($installationStateError) {
                 }
             } elseif ($action === 'create_administrator') {
                 if ($administratorExists) {
-                    return Response::redirect('/install');
+                    return Response::redirect($deploymentContext->url('/install'));
                 }
 
                 $input = [
@@ -213,7 +213,7 @@ if ($installationStateError) {
 
                     $administratorSetup->install($input, $requirementsPassed);
 
-                    return Response::redirect('/install');
+                    return Response::redirect($deploymentContext->url('/install'));
                 } catch (InstallerValidationException $exception) {
                     $status = 422;
                     $message = 'Correct the administrator and site settings fields.';
@@ -270,7 +270,7 @@ if ($installationStateError) {
                         );
                         $setup->install($configuration, $requirementsPassed);
 
-                        return Response::redirect('/install');
+                        return Response::redirect($deploymentContext->url('/install'));
                     } else {
                         $databaseResult = $probe->test($configuration);
                         $message = 'Database connection verified. The database is supported and empty.';
@@ -366,4 +366,5 @@ return Response::html($view->render('installer/index', [
     'timezones' => array_values(array_unique(array_merge(['UTC'], timezone_identifiers_list()))),
     'locales' => ['en_US', 'id_ID'],
     'steps' => $steps,
+    'url' => fn (string $path): string => $deploymentContext->url($path),
 ]), $status);

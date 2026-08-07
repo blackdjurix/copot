@@ -50,7 +50,7 @@
             (<?= htmlspecialchars($user?->email() ?? '', ENT_QUOTES, 'UTF-8') ?>).
         </p>
 
-        <form method="post" action="/logout">
+        <form method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/logout') : '/logout', ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
             <button type="submit">Logout</button>
         </form>

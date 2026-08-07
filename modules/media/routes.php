@@ -43,6 +43,8 @@ $mediaLifecycle = new MediaLifecycleService($app->database(), $mediaRepository, 
 $mediaDelivery = new MediaDeliveryService($mediaRepository, $mediaInspector, $mediaOriginalStorage);
 $mediaVariantDelivery = new MediaVariantDeliveryService($mediaRepository, $mediaVariants, $mediaVariantStorage, $mediaInspector);
 $mediaId = static function (string $value): ?int { return preg_match('/^[1-9][0-9]*$/', $value) ? (int) $value : null; };
+$mediaUrl = static fn (string $path): string => method_exists($app, 'url') ? $app->url($path) : $path;
+$mediaUrl = static fn (string $path): string => method_exists($app, 'url') ? $app->url($path) : $path;
 $notFound = static fn (): \Copot\Core\Response => \Copot\Core\Response::content('404 Not Found', 404, ['Content-Type' => 'text/plain; charset=UTF-8', 'Cache-Control' => 'no-store', 'X-Content-Type-Options' => 'nosniff']);
 $app->router()->get('/media/{id}/download', static function ($request, array $params) use ($mediaDelivery, $mediaId, $notFound) { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); try { return $mediaDelivery->download($id); } catch (Throwable) { return $notFound(); } });
 $app->router()->get('/media/{id}/variant/{key}', static function ($request, array $params) use ($mediaVariantDelivery, $mediaId, $notFound): Response { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); return $mediaVariantDelivery->inline($id, (string) ($params['key'] ?? '')); });
@@ -69,6 +71,7 @@ $mediaRenderView = static function (string $view, array $data = []) use ($app, $
     $file = __DIR__ . '/views/admin/' . $view . '.php';
     if (!is_file($file)) throw new RuntimeException("Media admin view [{$view}] was not found.");
     $data['adminUrl'] = static fn (string $path = ''): string => $mediaAdminUrl->childUrl($path);
+    $data['url'] = static fn (string $path): string => method_exists($app, 'url') ? $app->url($path) : $path;
     extract($data, EXTR_SKIP);
     ob_start();
     try { require $file; return (string) ob_get_clean(); }
@@ -97,13 +100,13 @@ $app->router()->get($mediaPickerPath, function ($request) use ($mediaRequireAdmi
     if ($user instanceof Response) return $user;
     if ((string) $request->input('consumer', '') !== 'content') return Response::content(json_encode(['error' => 'Unavailable picker context.']), 422, ['Content-Type' => 'application/json; charset=UTF-8']);
     $workspace = $mediaRepository->workspace(['search' => trim((string) $request->input('q', '')), 'capability' => 'editable'], 24, max(0, ((int) $request->input('page', 1) - 1) * 24));
-    $items = array_map(static fn (Media $media): array => ['id' => $media->id()->value(), 'title' => $media->title(), 'original_filename' => $media->originalFilename(), 'mime_type' => $media->mimeType(), 'url' => '/media/' . $media->id()->value()], $workspace['items']);
+    $items = array_map(fn (Media $media): array => ['id' => $media->id()->value(), 'title' => $media->title(), 'original_filename' => $media->originalFilename(), 'mime_type' => $media->mimeType(), 'url' => $mediaUrl('/media/' . $media->id()->value())], $workspace['items']);
     $currentId = (string) $request->input('current', ''); $contentId=(int)$request->input('content_id',0);
     $current = preg_match('/^[1-9][0-9]*$/', $currentId) ? $mediaRepository->findById((int) $currentId) : null;
     $currentAllowed = $current && in_array($current->mimeType(), ['image/jpeg', 'image/png', 'image/webp'], true);
     $prepared = $currentAllowed && $contentId > 0 ? array_values(array_filter($mediaVariants->forMedia($current->id()), static fn (MediaVariant $variant): bool => $variant->variantKey() === MediaVariantKey::contentSlot($current->id(), $contentId, (int)$variant->width()))) : [];
     usort($prepared, static fn (MediaVariant $a, MediaVariant $b): int => ($b->width() ?? 0) <=> ($a->width() ?? 0));
-    $descriptor = $currentAllowed && $prepared !== [] ? ['id' => $current->id()->value(), 'title' => $current->title(), 'original_filename' => $current->originalFilename(), 'url' => '/media/' . $current->id()->value() . '/variant/' . rawurlencode($prepared[0]->variantKey()), 'srcset' => implode(', ', array_map(static fn (MediaVariant $variant): string => '/media/' . $current->id()->value() . '/variant/' . rawurlencode($variant->variantKey()) . ' ' . (int) $variant->width() . 'w', $prepared)), 'width' => $prepared[0]->width(), 'height' => $prepared[0]->height(), 'alt' => $current->title() !== '' ? $current->title() : $current->originalFilename()] : null;
+    $descriptor = $currentAllowed && $prepared !== [] ? ['id' => $current->id()->value(), 'title' => $current->title(), 'original_filename' => $current->originalFilename(), 'url' => $mediaUrl('/media/' . $current->id()->value() . '/variant/' . rawurlencode($prepared[0]->variantKey())), 'srcset' => implode(', ', array_map(fn (MediaVariant $variant): string => $mediaUrl('/media/' . $current->id()->value() . '/variant/' . rawurlencode($variant->variantKey())) . ' ' . (int) $variant->width() . 'w', $prepared)), 'width' => $prepared[0]->width(), 'height' => $prepared[0]->height(), 'alt' => $current->title() !== '' ? $current->title() : $current->originalFilename()] : null;
     return Response::content(json_encode(['items' => $items, 'total' => $workspace['total'], 'page' => max(1, (int) $request->input('page', 1)), 'per_page' => 24, 'current' => $descriptor, 'stale' => $currentId !== '' && (!$currentAllowed || $descriptor === null)], JSON_THROW_ON_ERROR), 200, ['Content-Type' => 'application/json; charset=UTF-8', 'Cache-Control' => 'no-store']);
 });
 $app->router()->post($app->adminUrl()->childUrl('media/{id}/delete'), function ($request, array $params) use ($app, $mediaRequireAdmin, $mediaValidateCsrf, $mediaLifecycle, $mediaRepository, $mediaUsages, $mediaId, $mediaAdminPath): Response {

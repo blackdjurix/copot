@@ -13,7 +13,7 @@ class Request
     ) {
     }
 
-    public static function capture(): self
+    public static function capture(?DeploymentContext $deployment = null): self
     {
         $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
         $uri = $_SERVER['REQUEST_URI'] ?? '/';
@@ -21,7 +21,7 @@ class Request
 
         return new self(
             $method,
-            self::normalizePath(self::stripBasePath($path)),
+            self::normalizePath(self::stripBasePath($path, $deployment?->basePath())),
             $_GET,
             $_POST,
             $_FILES
@@ -77,10 +77,14 @@ class Request
         return $path === '/' ? '/' : rtrim($path, '/');
     }
 
-    private static function stripBasePath(string $path): string
+    private static function stripBasePath(string $path, ?string $configuredBasePath = null): string
     {
-        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
-        $basePath = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+        $basePath = $configuredBasePath;
+
+        if ($basePath === null) {
+            $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+            $basePath = rtrim(str_replace('\\', '/', dirname($scriptName)), '/');
+        }
 
         if ($basePath === '' || $basePath === '.') {
             return $path;

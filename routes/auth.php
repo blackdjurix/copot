@@ -4,12 +4,13 @@ use Copot\Core\Response;
 
 $app->router()->get('/login', function () use ($app): Response|string {
     if ($app->auth()->check()) {
-        return Response::redirect($app->config()->get('auth.after_login', '/protected'));
+        return Response::redirect($app->url((string) $app->config()->get('auth.after_login', '/protected')));
     }
 
     return $app->view()->render('auth/login', [
         'appName' => $app->config()->get('app.name', 'Copot'),
         'csrfToken' => $app->session()->csrfToken(),
+        'url' => fn (string $path): string => $app->url($path),
         'email' => '',
         'error' => null,
     ]);
@@ -28,12 +29,13 @@ $app->router()->post('/login', function ($request) use ($app): Response|string {
         return Response::html($app->view()->render('auth/login', [
             'appName' => $app->config()->get('app.name', 'Copot'),
             'csrfToken' => $app->session()->csrfToken(),
+            'url' => fn (string $path): string => $app->url($path),
             'email' => $email,
             'error' => 'Invalid credentials or inactive account.',
         ]), 422);
     }
 
-    return Response::redirect($app->config()->get('auth.after_login', '/protected'));
+    return Response::redirect($app->url((string) $app->config()->get('auth.after_login', '/protected')));
 });
 
 $app->router()->post('/logout', function ($request) use ($app): Response {
@@ -45,12 +47,12 @@ $app->router()->post('/logout', function ($request) use ($app): Response {
 
     $app->auth()->logout();
 
-    return Response::redirect($app->config()->get('auth.after_logout', '/'));
+    return Response::redirect($app->url((string) $app->config()->get('auth.after_logout', '/')));
 });
 
 $app->router()->get('/protected', function () use ($app): Response|string {
     if (!$app->auth()->check()) {
-        return Response::redirect($app->config()->get('auth.login_path', '/login'));
+        return Response::redirect($app->url((string) $app->config()->get('auth.login_path', '/login')));
     }
 
     $user = $app->auth()->user();
@@ -62,6 +64,7 @@ $app->router()->get('/protected', function () use ($app): Response|string {
     return $app->view()->render('auth/protected', [
         'appName' => $app->config()->get('app.name', 'Copot'),
         'csrfToken' => $app->session()->csrfToken(),
+        'url' => fn (string $path): string => $app->url($path),
         'user' => $user,
     ]);
 });

@@ -54,7 +54,7 @@ class Application
         $this->basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
         $this->diagnostics = new Diagnostics($this->basePath);
         $this->config = new Config($this->path('config'));
-        $this->router = new Router();
+        $this->router = new Router($this->deployment);
         $this->events = new SynchronousEventDispatcher();
         $this->view = new View($this->path('resources/views'));
         $this->database = new Database($this->config);
@@ -66,7 +66,8 @@ class Application
         $this->siteAssets = new SiteAssetStorage(
             $this->path('storage/site-assets'),
             $this->settings,
-            $this->diagnostics
+            $this->diagnostics,
+            $this->deployment
         );
         $this->initializeRuntimeSettings($settingsRegistry);
         $this->session = new Session($this->config);
@@ -93,16 +94,16 @@ class Application
             $this->database
         );
         $this->themeLoader = new ThemeLoader($themeRepository, $this->basePath);
-        $this->themeAssets = new ThemeAssets($this->themeLoader);
+        $this->themeAssets = new ThemeAssets($this->themeLoader, $this->deployment);
         $this->themeSettingsResolver = new ThemeSettingsResolver($themeRepository, new ThemeSettingsService(new SettingsRepository($this->database), $this->database));
         $this->frontendThemeContext = new FrontendThemeContextRegistry($this->diagnostics);
-        $this->viewRenderer = new ViewRenderer($this->themeLoader, $this->themeAssets, $this->branding, $this->frontendThemeContext, $this->themeSettingsResolver);
+        $this->viewRenderer = new ViewRenderer($this->themeLoader, $this->themeAssets, $this->branding, $this->frontendThemeContext, $this->themeSettingsResolver, $this->deployment);
         $this->viewResolver = new ViewResolver(
             $this->themeLoader,
             $this->path('resources/views'),
             $this->path('modules')
         );
-        $this->adminUrl = new AdminUrl($this->config);
+        $this->adminUrl = new AdminUrl($this->config, $this->deployment);
         $this->adminNavigation = new AdminNavigation();
         $this->adminDashboard = new AdminDashboardRegistry();
         $this->adminNavigation->add('Dashboard', $this->adminUrl->baseUrl(), null, 'dashboard', 10);
@@ -133,6 +134,11 @@ class Application
     public function path(string $path = ''): string
     {
         return $this->deployment->path($path);
+    }
+
+    public function url(string $path): string
+    {
+        return $this->deployment->url($path);
     }
 
     public function deployment(): DeploymentContext

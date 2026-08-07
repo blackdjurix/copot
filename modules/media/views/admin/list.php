@@ -36,9 +36,9 @@ $noticeText = match ($notice ?? null) {
         <div class="admin-panel__body">
             <div class="admin-media-grid">
                 <?php foreach ($mediaItems as $index => $item): $editable = $isEditable($item); $mediaId = $item->id()->value(); ?>
-                    <article class="admin-media-card" tabindex="0" role="button" data-media-card data-media-index="<?= $esc($index) ?>" data-media-id="<?= $esc($mediaId) ?>" data-media-title="<?= $esc($item->title()) ?>" data-media-filename="<?= $esc($item->originalFilename()) ?>" data-media-kind="<?= $esc($item->kind()) ?>" data-media-mime="<?= $esc($item->mimeType()) ?>" data-media-bytes="<?= $esc($formatBytes($item->byteSize())) ?>" data-media-width="<?= $esc($item->width() ?? '') ?>" data-media-height="<?= $esc($item->height() ?? '') ?>" data-media-updated="<?= $esc($item->updatedAt()) ?>" data-media-editable="<?= $editable ? '1' : '0' ?>" data-media-public-url="<?= $esc('/media/' . $mediaId) ?>" data-media-title-url="<?= $esc($adminUrl('media/' . $mediaId . '/title')) ?>" data-media-delete-url="<?= $esc($adminUrl('media/' . $mediaId . '/delete')) ?>" aria-label="Open media <?= $esc($item->title()) ?>">
+                    <article class="admin-media-card" tabindex="0" role="button" data-media-card data-media-index="<?= $esc($index) ?>" data-media-id="<?= $esc($mediaId) ?>" data-media-title="<?= $esc($item->title()) ?>" data-media-filename="<?= $esc($item->originalFilename()) ?>" data-media-kind="<?= $esc($item->kind()) ?>" data-media-mime="<?= $esc($item->mimeType()) ?>" data-media-bytes="<?= $esc($formatBytes($item->byteSize())) ?>" data-media-width="<?= $esc($item->width() ?? '') ?>" data-media-height="<?= $esc($item->height() ?? '') ?>" data-media-updated="<?= $esc($item->updatedAt()) ?>" data-media-editable="<?= $editable ? '1' : '0' ?>" data-media-public-url="<?= $esc($url('/media/' . $mediaId)) ?>" data-media-title-url="<?= $esc($adminUrl('media/' . $mediaId . '/title')) ?>" data-media-delete-url="<?= $esc($adminUrl('media/' . $mediaId . '/delete')) ?>" aria-label="Open media <?= $esc($item->title()) ?>">
                         <div class="admin-media-card__preview">
-                            <?php if ($item->kind() === 'image'): ?><img src="<?= $esc('/media/' . $item->id()->value()) ?>" alt="<?= $esc($item->title()) ?>" loading="lazy">
+                            <?php if ($item->kind() === 'image'): ?><img src="<?= $esc($url('/media/' . $item->id()->value())) ?>" alt="<?= $esc($item->title()) ?>" loading="lazy">
                             <?php else: ?><div class="admin-media-card__document" aria-label="PDF or document"><span class="admin-media-card__document-icon" aria-hidden="true">PDF</span><span>Document</span></div><?php endif; ?>
                         </div>
                         <div class="admin-media-card__body">
@@ -68,5 +68,5 @@ $noticeText = match ($notice ?? null) {
         <?php endif; ?>
         <?php if (!empty($canDelete)): ?><div class="admin-media-preview__destructive"><form method="post" data-preview-delete-form><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><button class="admin-button admin-button--danger" type="submit">Delete media</button></form></div><?php endif; ?>
     </template>
-    <script src="/admin-assets/js/admin-media.js?v=wu6" defer></script>
+    <script src="<?= $esc($url('/admin-assets/js/admin-media.js?v=wu6')) ?>" defer></script>
 <?php endif; ?>

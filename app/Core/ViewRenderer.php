@@ -11,7 +11,8 @@ class ViewRenderer
         private ThemeAssets $themeAssets,
         private SiteBranding $branding,
         private ?FrontendThemeContextRegistry $frontendThemeContext = null,
-        private ?ThemeSettingsResolver $themeSettingsResolver = null
+        private ?ThemeSettingsResolver $themeSettingsResolver = null,
+        private ?DeploymentContext $deployment = null
     )
     {
     }
@@ -29,6 +30,7 @@ class ViewRenderer
             'title' => $title,
             'theme' => $theme,
             'themeAsset' => $themeAsset,
+            'url' => fn (string $path): string => $this->deployment?->url($path) ?? $path,
             'branding' => $this->branding,
             'context' => $context,
             'themeSettings' => $this->themeSettingsResolver?->resolve() ?? [],
@@ -62,6 +64,7 @@ class ViewRenderer
             $title = $__variables['title'] ?? null;
             $theme = $__variables['theme'] ?? [];
             $themeAsset = $__variables['themeAsset'] ?? null;
+            $url = $__variables['url'] ?? null;
             $branding = $__variables['branding'] ?? null;
             $context = $__variables['context'] ?? [];
             $themeSettings = $__variables['themeSettings'] ?? [];

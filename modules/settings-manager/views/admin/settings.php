@@ -319,4 +319,4 @@ $renderSettingsFields = static function ($section) use (
         </section>
     </div>
 </section>
-<script src="/admin-assets/js/admin-settings.js" defer></script>
+<script src="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin-assets/js/admin-settings.js') : '/admin-assets/js/admin-settings.js', ENT_QUOTES, 'UTF-8') ?>" defer></script>

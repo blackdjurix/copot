@@ -38,10 +38,11 @@ class AdminPageRenderer
             'documentLocale' => $this->documentLocale(),
             'adminBaseUrl' => $this->adminUrl->baseUrl(),
             'adminLogoutUrl' => $this->adminUrl->childUrl('logout'),
+            'url' => fn (string $path): string => $this->adminUrl->url($path),
             'csrfToken' => $csrfToken,
             'userName' => $user->name(),
             'userEmail' => $user->email(),
-            'currentPath' => $currentPath,
+            'currentPath' => $currentPath === null ? null : $this->adminUrl->url($currentPath),
             'navigation' => $navigation,
             'renderAdminIcon' => fn (?string $key, string $class = 'admin-icon'): string => $this->icons->render($key, $class),
             'content' => $content,
@@ -51,10 +52,10 @@ class AdminPageRenderer
     private function resolveNavigation(array $items, ?string $currentPath): array
     {
         $currentPath = $this->normalizePath($currentPath ?? '');
-        $baseUrl = $this->adminUrl->baseUrl();
+        $baseUrl = $this->adminUrl->routeBaseUrl();
 
         foreach ($items as $index => $item) {
-            $url = $this->normalizePath((string) ($item['url'] ?? ''));
+            $url = $this->normalizePath($this->adminUrl->routePath((string) ($item['url'] ?? '')));
             $items[$index]['active'] = $this->isActiveNavigationItem($url, $currentPath, $baseUrl);
         }
 

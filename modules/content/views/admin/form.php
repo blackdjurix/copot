@@ -138,7 +138,7 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
                 </fieldset>
 
                 <div class="admin-content-form-sidebar">
-                    <fieldset class="admin-content-form-section" data-media-picker data-content-id="<?= htmlspecialchars((string) ($content['id'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-picker-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker'), ENT_QUOTES, 'UTF-8') ?>" data-upload-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker/upload'), ENT_QUOTES, 'UTF-8') ?>" data-csrf-token="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <fieldset class="admin-content-form-section" data-media-picker data-content-id="<?= htmlspecialchars((string) ($content['id'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-picker-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker'), ENT_QUOTES, 'UTF-8') ?>" data-upload-url="<?= htmlspecialchars($contentAdminUrl('media/context-picker/upload'), ENT_QUOTES, 'UTF-8') ?>" data-media-url="<?= htmlspecialchars($url('/media/'), ENT_QUOTES, 'UTF-8') ?>" data-csrf-token="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                         <legend>Featured Media</legend>
                         <input type="hidden" name="featured_media_id" value="<?= htmlspecialchars((string) ($content['featured_media_id'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-media-picker-input>
                         <input type="hidden" name="featured_media_pending_token" value="" data-media-picker-pending-input>
@@ -231,4 +231,4 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
         </div>
     </div>
 </section>
-<script src="/admin-assets/js/content-media-picker.js" defer></script>
+<script src="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin-assets/js/content-media-picker.js') : '/admin-assets/js/content-media-picker.js', ENT_QUOTES, 'UTF-8') ?>" defer></script>
