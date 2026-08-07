@@ -634,10 +634,11 @@ NOT STARTED. Deferred integrations remain excluded.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Current selected Post-M3 track: Webcore Deployment & Portability Foundation
+Latest completed Post-M3 track: Webcore Deployment & Portability Foundation
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
+No active Portability WU remains; the next MPL WU7 lifecycle step requires separate authorization.
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (next consolidated release; not tagged or published)
 Current Core Module versions: 0.1.0 independently owned; modules/example excluded
@@ -645,7 +646,7 @@ Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based; REPAIR is not a release event
 Current dependency: none for the completed Portability foundation; release, tag, and publication remain separately unauthorized.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains separate operational work.
-Module Package Lifecycle WU1–WU7 implementation: COMPLETE; final human/E2E acceptance: BLOCKED / PARKED.
+Module Package Lifecycle WU1–WU7 implementation: COMPLETE; final human/E2E acceptance: PENDING / PARKED for separate authorization and execution.
 Current active implementation branch: main
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
@@ -752,10 +753,10 @@ Server-empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED under
 `DI-PACKAGE-LIFECYCLE-WU7-01`; Module Package Lifecycle preparation is complete
 and contract-locked, WU1–WU7 implementation is complete for its accepted scope,
 and Existing-Runtime Webcore Lifecycle Adoption technical work is closed;
-final WU7 acceptance remains BLOCKED / PARKED pending an authoritative
-committed Webcore lifecycle state on a sufficiently representative intended
-acceptance runtime. The current selected track establishes that deployment
-and runtime boundary. Backup &
+final WU7 acceptance remains PENDING / PARKED for separate authorization and
+execution; the completed Portability foundation satisfies the authoritative
+committed Webcore lifecycle-state and representative-runtime prerequisite.
+Backup &
 Recovery preparation is contract-locked in
 `docs/31_backup_recovery_foundation_contract.md`; WU1–WU7 are complete, and IU2
 WU1–WU6 are complete for the technical adoption slice.
@@ -768,16 +769,16 @@ STARTED.
 Backup & Recovery Foundation: COMPLETE AND CLOSED — WU1–WU7 COMPLETE.
 Version & Release Reconciliation closure gate: COMPLETE.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
-Full Module Package Lifecycle: NOT YET CLOSED — final human/E2E acceptance BLOCKED / PARKED pending an authoritative committed Webcore lifecycle state on a sufficiently representative intended acceptance runtime
+Full Module Package Lifecycle: NOT YET CLOSED solely because final WU7 human/E2E acceptance remains PENDING / PARKED for separate authorization and execution; the Webcore lifecycle-state and representative-runtime prerequisite is satisfied
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
-Module Package Lifecycle implementation: COMPLETE — WU1–WU7 automated/runtime validation PASS; current WU7 acceptance remains BLOCKED / PARKED pending an authoritative committed Webcore lifecycle state on a sufficiently representative intended acceptance runtime
+Module Package Lifecycle implementation: COMPLETE — WU1–WU7 automated/runtime validation PASS; final WU7 acceptance remains PENDING / PARKED for separate authorization and execution
 Module Package Lifecycle WU1: COMPLETE
 Module Package Lifecycle WU2: COMPLETE
 Module Package Lifecycle WU3: COMPLETE
 Module Package Lifecycle WU4: COMPLETE
 Module Package Lifecycle WU5: COMPLETE
 Module Package Lifecycle WU6: COMPLETE
-Module Package Lifecycle WU7: IMPLEMENTATION COMPLETE — final human/E2E acceptance BLOCKED / PARKED pending an authoritative committed Webcore lifecycle state on a sufficiently representative intended acceptance runtime
+Module Package Lifecycle WU7: IMPLEMENTATION COMPLETE — final human/E2E acceptance PENDING / PARKED for separate authorization and execution
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED
@@ -787,14 +788,13 @@ M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
 an automatically sequential execution order. Future work is selected by actual
 product need, dependency, readiness, risk, and architecture boundary.
 
-The latest completed Post-M3 platform-foundation target is Package Lifecycle & Migration
-Foundation. Its contract is
-`docs/28_package_lifecycle_migration_foundation_contract.md`. Module Package
+The latest completed Post-M3 platform-foundation target is Webcore Deployment &
+Portability Foundation. Its contract is
+`docs/32_webcore_deployment_portability_foundation_contract.md`. Module Package
 Lifecycle preparation is complete and contract-locked in
 `docs/29_module_package_lifecycle_contract.md`; WU1–WU7 implementation is
 complete for its accepted scope, final WU7 human/E2E acceptance remains
-BLOCKED / PARKED pending an authoritative committed Webcore lifecycle state on
-a sufficiently representative intended acceptance runtime, and full Module
+PENDING / PARKED for separate authorization and execution, and full Module
 Package Lifecycle completion is unreached. Existing-Runtime Webcore Lifecycle
 Adoption IU1 and IU2 WU1–WU6
 are complete and technically closed; production reconciliation remains NOT

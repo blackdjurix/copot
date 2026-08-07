@@ -6,7 +6,7 @@ Preparation: COMPLETE / CONTRACT LOCKED
 
 Implementation: WU1–WU6 COMPLETE AND CLOSED
 
-Adoption: PROMOTED FOR POST-M3 PLATFORM FOUNDATION PREPARATION
+Adoption: ADOPTED / COMPLETE AND CLOSED AS THE POST-M3 PLATFORM FOUNDATION
 
 Release / tag / publication: NOT AUTHORIZED
 
@@ -214,13 +214,13 @@ Portability must not fabricate migration history or silently normalize an unknow
 
 Module Package Lifecycle WU1-WU7 implementation remains complete for its accepted implementation scope.
 
-Final WU7 human/E2E acceptance remains BLOCKED / PARKED until an authoritative committed Webcore lifecycle state exists on an intended acceptance runtime.
+Final WU7 human/E2E acceptance remains PENDING / PARKED for separate authorization and execution. The completed Portability foundation satisfies the authoritative committed Webcore lifecycle-state and representative-runtime prerequisite.
 
-This portability foundation is selected while WU7 is parked because the current investigation showed that the deployment model of the acceptance/runtime environment must be explicit and representative rather than made COPOT-specific merely to satisfy acceptance.
+This portability foundation established and accepted the explicit, representative deployment model required by the WU7 acceptance/runtime environment without making it COPOT-specific.
 
 This contract does not reopen Module Package Lifecycle implementation and does not perform WU7 acceptance.
 
-Broader portability work must not be invented as an unlimited WU7 prerequisite. When a sufficiently representative committed Webcore runtime exists and the actual WU7 prerequisite is satisfied, WU7 may resume through separate authorization even if unrelated portability tails remain.
+Broader portability work must not be invented as an unlimited WU7 prerequisite. The actual WU7 prerequisite is now satisfied; WU7 may proceed only through separate authorization and execution, while unrelated portability work remains closed and out of scope.
 
 ---
 
@@ -252,7 +252,7 @@ Independent Multi-Installation preparation/audit may continue, but overlapping b
 
 ## 9. Relationship to System Health & Status
 
-Dependency classification: INDEPENDENT for preparation.
+Dependency classification: INDEPENDENT.
 
 System Health may later report deployment capability/health findings, but this foundation does not require System Health in order to establish deployment-root portability.
 
@@ -374,7 +374,7 @@ Where the hosting capability cannot provide an acceptable private/public securit
 
 ## 14. Non-goals
 
-This preparation does not authorize:
+The completed foundation does not include:
 
 - Server-Empty Bootstrap & Package Clean Install;
 - generic hosting-panel integrations;
