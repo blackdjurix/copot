@@ -4,6 +4,7 @@ namespace Copot\Core;
 
 use Copot\Core\Admin\AdminDashboardRegistry;
 use Copot\Core\Admin\AdminErrorRenderer;
+use Copot\Core\Admin\AdminIcon;
 use Copot\Core\Admin\AdminPageRenderer;
 use Copot\Core\Admin\AdminUrl;
 use RuntimeException;
@@ -113,7 +114,8 @@ class Application
             $this->adminNavigation,
             (string) $this->config->get('app.name', 'Copot'),
             $this->siteName,
-            $this->locale
+            $this->locale,
+            new AdminIcon($this->deployment->publicPath('admin-assets/icons'))
         );
         $adminPermission = $this->config->get('admin.permission', 'admin.access');
 

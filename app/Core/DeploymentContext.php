@@ -31,7 +31,13 @@ final class DeploymentContext
         $basePath = self::environment('COPOT_BASE_PATH')
             ?? self::basePathFromScript($_SERVER['SCRIPT_NAME'] ?? '', basename($entrypointPath));
 
-        return new self($appRoot, $publicRoot, $basePath);
+        $context = new self($appRoot, $publicRoot, $basePath);
+
+        if (!self::samePath(dirname($entrypointPath), $context->publicRoot())) {
+            throw new InvalidArgumentException('Public entrypoint must reside directly under PUBLIC_ROOT.');
+        }
+
+        return $context;
     }
 
     public static function forApplicationRoot(string $appRoot, ?string $basePath = null): self

@@ -45,9 +45,32 @@ if (!@ob_start()) {
 }
 
 try {
-    require_once $autoloadRoot . '/bootstrap/autoload.php';
+    if (is_link($autoloadRoot) || !is_dir($autoloadRoot) || !is_readable($autoloadRoot)) {
+        throw new RuntimeException('Configured APP_ROOT is unavailable or unsafe.');
+    }
+
+    $resolvedAutoloadRoot = realpath($autoloadRoot);
+
+    if ($resolvedAutoloadRoot === false) {
+        throw new RuntimeException('Configured APP_ROOT could not be resolved.');
+    }
+
+    $autoloadRoot = $resolvedAutoloadRoot;
+    $autoloadPath = $autoloadRoot . '/bootstrap/autoload.php';
+
+    if (!is_file($autoloadPath) || !is_readable($autoloadPath)) {
+        throw new RuntimeException('Application bootstrap autoload target is unavailable.');
+    }
+
+    require_once $autoloadPath;
     $deploymentContext = DeploymentContext::fromEntrypoint(__FILE__);
     $basePath = $deploymentContext->appRoot();
+
+    $applicationBootstrap = $deploymentContext->path('bootstrap/app.php');
+
+    if (!is_file($applicationBootstrap) || !is_readable($applicationBootstrap)) {
+        throw new RuntimeException('Application bootstrap target is unavailable.');
+    }
 } catch (Throwable) {
     $discardOutputBuffersTo($initialOutputLevel);
     $sendEmergencyResponse();
