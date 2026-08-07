@@ -6,7 +6,10 @@ use PDO;
 
 final class LegacyRuntimeClassifier
 {
-    public function __construct(private CanonicalSchemaBaselineVerifier $canonicalSchema)
+    public function __construct(
+        private CanonicalSchemaBaselineVerifier $canonicalSchema,
+        private ?CanonicalSchemaBaselineCatalog $baselineCatalog = null
+    )
     {
     }
 
@@ -27,13 +30,25 @@ final class LegacyRuntimeClassifier
         try {
             $records = (new CoreMigrationLedger())->records($connection);
         } catch (\Throwable) {
+            $baseline = $this->baselineCatalog?->verify($connection, $this->canonicalSchema);
+            if ($baseline instanceof CanonicalSchemaBaselineDescriptor && !$baseline->migrationLedgerPresent()) {
+                return LegacyClassificationResult::canonicalBaseline($baseline->identity(), $baseline->webcoreVersion(), $installed->snapshot());
+            }
             return LegacyClassificationResult::unknown('Applied migration history could not be read authoritatively.');
         }
 
         if ($records === []) {
             try {
-                $verification = $this->canonicalSchema->verify($connection, $canonicalSchemaPath);
-                if (!$verification->passed()) {
+                $baseline = $this->baselineCatalog?->verify($connection, $this->canonicalSchema);
+                if ($baseline instanceof CanonicalSchemaBaselineDescriptor) {
+                    return LegacyClassificationResult::canonicalBaseline(
+                        $baseline->identity(),
+                        $baseline->webcoreVersion(),
+                        $installed->snapshot()
+                    );
+                }
+
+                if (!$this->canonicalSchema->verify($connection, $canonicalSchemaPath)->passed()) {
                     return LegacyClassificationResult::unknown('Canonical schema baseline could not be proven.');
                 }
 

@@ -9,12 +9,19 @@ use PDO;
  */
 final class CanonicalSchemaBaselineVerifier
 {
-    public function verify(PDO $connection, string $schemaPath): HealthGateMatrix
+    public function verify(PDO $connection, string $schemaPath, bool $requireMigrationLedger = true): HealthGateMatrix
     {
         try {
             $expected = $this->expectedColumns($schemaPath);
             if ($expected === []) {
                 return new HealthGateMatrix([HealthGateResult::fail('canonical-schema', 'Canonical schema contains no Core tables.')]);
+            }
+
+            $actualTables = $this->actualTables($connection);
+            $expectedTables = array_keys($expected);
+            sort($expectedTables);
+            if ($actualTables !== $expectedTables) {
+                return new HealthGateMatrix([HealthGateResult::fail('canonical-schema:tables', 'Database tables do not exactly match the canonical schema.')]);
             }
 
             $actual = $this->actualColumns($connection, array_keys($expected));
@@ -26,9 +33,11 @@ final class CanonicalSchemaBaselineVerifier
                     : HealthGateResult::fail('canonical-schema:' . $table, 'Core table columns do not match the canonical schema: expected ' . json_encode($columns) . ', actual ' . json_encode($actualColumns));
             }
 
-            $gates[] = $this->ledgerIsEmpty($connection)
-                ? HealthGateResult::pass('canonical-migration-baseline')
-                : HealthGateResult::fail('canonical-migration-baseline', 'Canonical baseline requires an empty Core migration ledger.');
+            if ($requireMigrationLedger) {
+                $gates[] = $this->ledgerIsEmpty($connection)
+                    ? HealthGateResult::pass('canonical-migration-baseline')
+                    : HealthGateResult::fail('canonical-migration-baseline', 'Canonical baseline requires an empty Core migration ledger.');
+            }
 
             return new HealthGateMatrix($gates);
         } catch (\Throwable $exception) {
@@ -78,7 +87,7 @@ final class CanonicalSchemaBaselineVerifier
                     }
                     $nullable = preg_match('/\bNOT\s+NULL\b/i', $definition) === 1
                         || preg_match('/\bPRIMARY\s+KEY\b/i', $definition) === 1 ? 'no' : 'yes';
-                    $columns[] = strtolower($column[1]) . '|' . strtolower(preg_replace('/\s+/', ' ', $type[1])) . '|' . $nullable;
+                    $columns[] = strtolower($column[1]) . '|' . $this->normalizeType($type[1]) . '|' . $nullable;
                 }
             }
             if ($columns !== []) {
@@ -98,13 +107,13 @@ final class CanonicalSchemaBaselineVerifier
             if ($driver === 'sqlite') {
                 $statement = $connection->query('PRAGMA table_info(' . $table . ')');
                 $rows = $statement->fetchAll(PDO::FETCH_ASSOC);
-                $actual[$table] = array_map(static fn (array $row): string => strtolower((string) $row['name']) . '|' . strtolower((string) $row['type']) . '|' . ((int) $row['notnull'] === 1 ? 'no' : 'yes'), $rows);
+                $actual[$table] = array_map(fn (array $row): string => strtolower((string) $row['name']) . '|' . $this->normalizeType((string) $row['type']) . '|' . ((int) $row['notnull'] === 1 ? 'no' : 'yes'), $rows);
                 continue;
             }
 
             $statement = $connection->prepare('SELECT column_name, column_type, is_nullable FROM information_schema.columns WHERE table_schema = DATABASE() AND table_name = :table ORDER BY ordinal_position');
             $statement->execute(['table' => $table]);
-            $actual[$table] = array_map(static fn (array $row): string => strtolower((string) $row['column_name']) . '|' . strtolower((string) $row['column_type']) . '|' . (strtoupper((string) $row['is_nullable']) === 'NO' ? 'no' : 'yes'), $statement->fetchAll(PDO::FETCH_ASSOC));
+            $actual[$table] = array_map(fn (array $row): string => strtolower((string) $row['column_name']) . '|' . $this->normalizeType((string) $row['column_type']) . '|' . (strtoupper((string) $row['is_nullable']) === 'NO' ? 'no' : 'yes'), $statement->fetchAll(PDO::FETCH_ASSOC));
         }
 
         return $actual;
@@ -114,5 +123,25 @@ final class CanonicalSchemaBaselineVerifier
     {
         $statement = $connection->query('SELECT COUNT(*) FROM ' . CoreMigrationLedger::TABLE);
         return (int) $statement->fetchColumn() === 0;
+    }
+
+    private function normalizeType(string $type): string
+    {
+        $type = strtolower(preg_replace('/\s+/', ' ', trim($type)));
+        return preg_replace('/\b(bigint|int|mediumint|smallint)\(\d+\)(\s+unsigned)?/', '$1$2', $type) ?? $type;
+    }
+
+    /** @return list<string> */
+    private function actualTables(PDO $connection): array
+    {
+        $driver = (string) $connection->getAttribute(PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'sqlite') {
+            $statement = $connection->query("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name");
+        } else {
+            $statement = $connection->query("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE' ORDER BY table_name");
+        }
+        $tables = array_map(static fn (array $row): string => strtolower((string) ($row['name'] ?? $row['table_name'])), $statement->fetchAll(PDO::FETCH_ASSOC));
+        sort($tables);
+        return $tables;
     }
 }

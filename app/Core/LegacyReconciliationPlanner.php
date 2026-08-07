@@ -90,10 +90,6 @@ final class LegacyReconciliationPlanner
             $virtualSchema = $descriptor->targetSchemaIdentity();
         }
 
-        if ($classification->classification() === LegacyClassification::CANONICAL_SCHEMA_BASELINE
-            && PackageVersion::compare($sourceVersion, $canonicalCurrentVersion) !== 0) {
-            return CoreMigrationPlan::rejected('Canonical schema baseline version is inconsistent with the authoritative current schema contract.');
-        }
         if (!$package->migrationDeclaration()->declaresCoreMigrations() && $planned !== []) {
             return CoreMigrationPlan::rejected('Package omitted a required Core migration declaration.');
         }

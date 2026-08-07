@@ -13,7 +13,8 @@ final class LegacyReconciliationDatabaseReconciler
         private CoreMigrationLedger $ledger,
         private CoreMigrationRunner $runner,
         private CanonicalSchemaBaselineVerifier $canonicalSchema,
-        private CoreMigrationHealthVerifier $health
+        private CoreMigrationHealthVerifier $health,
+        private ?CanonicalSchemaBaselineCatalog $baselineCatalog = null
     ) {}
 
     /**
@@ -127,7 +128,11 @@ final class LegacyReconciliationDatabaseReconciler
         }
 
         if ($classification->classification() === LegacyClassification::CANONICAL_SCHEMA_BASELINE) {
-            if ($records !== [] || $classification->sourceSchemaIdentity() !== $this->canonicalSchema->identity($canonicalSchemaPath) || !$this->canonicalSchema->verify($connection, $canonicalSchemaPath)->passed()) {
+            $baselineVerified = $this->baselineCatalog instanceof CanonicalSchemaBaselineCatalog
+                ? $this->baselineCatalog->verifyIdentity($connection, $this->canonicalSchema, (string) $classification->sourceSchemaIdentity())
+                : $classification->sourceSchemaIdentity() === $this->canonicalSchema->identity($canonicalSchemaPath)
+                    && $this->canonicalSchema->verify($connection, $canonicalSchemaPath)->passed();
+            if ($records !== [] || !$baselineVerified) {
                 throw new \RuntimeException('Authoritative canonical schema baseline is not proven by the current database.');
             }
         } else {

@@ -39,13 +39,14 @@ final class PackageLifecycleService
         ?LegacyRuntimeClassifier $legacyClassifier = null,
         ?LegacyReconciliationPlanner $reconciliationPlanner = null,
         private ?LegacyReconciliationOperator $reconciliationOperator = null,
-        private ?string $reconciliationUnavailableReason = null
+        private ?string $reconciliationUnavailableReason = null,
+        ?CanonicalSchemaBaselineCatalog $baselineCatalog = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
         $this->runtime = $runtime;
         $this->runtimeChecks = $runtimeChecks;
-        $this->legacyClassifier = $legacyClassifier ?? new LegacyRuntimeClassifier($canonicalSchema);
+        $this->legacyClassifier = $legacyClassifier ?? new LegacyRuntimeClassifier($canonicalSchema, $baselineCatalog);
         $this->reconciliationPlanner = $reconciliationPlanner ?? new LegacyReconciliationPlanner();
     }
 

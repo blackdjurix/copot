@@ -94,6 +94,20 @@ IU2 must not infer state from version labels, application behavior, approximate
 table presence, empty migration history, or operator assertion. A committed
 runtime is not reclassified as legacy.
 
+The supported canonical-baseline set is explicit and bounded. Current source
+ships the immutable Webcore `v0.8.0` schema artifact from the authoritative
+M1.8 installer baseline with its fixed schema-file identity, alongside the
+current canonical schema identity. Classification may accept a baseline only
+when the selected immutable artifact identity matches and the live database
+exactly matches its material table and column shape. The historical `v0.8.0`
+baseline may have no migration-ledger table; the current baseline requires its
+empty ledger. Missing, extra, or materially altered tables or columns fail
+closed. The installed marker remains corroborating evidence only. Historical
+Git availability is not required at runtime, and arbitrary historical commits
+are not implicitly supported. The inspected mixed 25-table XAMPP database
+does not match either supported baseline and remains
+`UNKNOWN_OR_UNPROVABLE`.
+
 ## Immutable reconciliation plan
 
 For a legacy candidate, IU2 must produce an immutable deterministic

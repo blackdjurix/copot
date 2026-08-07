@@ -20,6 +20,7 @@ final class PackageLifecycleFactory
         $basePath = rtrim($basePath, '/\\');
         $storage = $basePath . DIRECTORY_SEPARATOR . 'storage';
         $database = new Database(new Config($basePath . DIRECTORY_SEPARATOR . 'config'));
+        $baselineCatalog = CanonicalSchemaBaselineCatalog::forProject($basePath);
         $registry = new CoreMigrationRegistry('copot-core-current', []);
         $ledger = new CoreMigrationLedger();
         $mutex = new InstallationMutex($storage);
@@ -122,7 +123,8 @@ final class PackageLifecycleFactory
             null,
             null,
             $reconciliationOperator,
-            $reconciliationUnavailableReason
+            $reconciliationUnavailableReason,
+            $baselineCatalog
         );
     }
 
@@ -194,6 +196,7 @@ final class PackageLifecycleFactory
             $installedLockRecovery = new BackupRecovery\InstalledLockRecoveryDomain($installation, new BackupRecovery\FilesystemRecoveryPathGuard($liveGuard));
             $migrationRunner = new CoreMigrationRunner($ledger);
             $schemaPath = $basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql';
+            $baselineCatalog = CanonicalSchemaBaselineCatalog::forProject($basePath);
             $runtime = static function () use ($database): RuntimeCompatibilityContext {
                 $version = (string) $database->connection()->query('SELECT VERSION()')->fetchColumn();
                 preg_match('/(\\d+\\.\\d+(?:\\.\\d+)?)/', $version, $match);
@@ -221,7 +224,7 @@ final class PackageLifecycleFactory
                 new InstalledStateInspector($committedStore),
                 $installation,
                 static function () use ($database, $basePath): ExistingInstallEvidence { $schema = false; try { $schema = (new InstallerSchemaState($database))->isReady(); } catch (\Throwable) {} return new ExistingInstallEvidence($schema, is_file($basePath . DIRECTORY_SEPARATOR . '.env')); },
-                new LegacyRuntimeClassifier(new CanonicalSchemaBaselineVerifier()),
+                new LegacyRuntimeClassifier(new CanonicalSchemaBaselineVerifier(), $baselineCatalog),
                 new LegacyReconciliationPlanner(),
                 $registry,
                 $ledger,
@@ -235,7 +238,7 @@ final class PackageLifecycleFactory
                 new CanonicalSchemaBaselineVerifier(),
                 $liveGuard,
                 $applier,
-                new LegacyReconciliationDatabaseReconciler($ledger, $migrationRunner, new CanonicalSchemaBaselineVerifier(), new CoreMigrationHealthVerifier()),
+                new LegacyReconciliationDatabaseReconciler($ledger, $migrationRunner, new CanonicalSchemaBaselineVerifier(), new CoreMigrationHealthVerifier(), $baselineCatalog),
                 new LegacyReconciliationFinalizer($recoveryStore, new TargetPackageIntegrityVerifier(), new DatabaseHealthVerifier(), new CoreMigrationHealthVerifier(), new RuntimeHealthVerifier()),
                 $recoveryOrchestrator,
                 $integrated,
