@@ -18,12 +18,20 @@ This contract owns the bounded release-readiness path for the reconciled Webcore
 
 The release-readiness baseline is the exact authoritative source state selected from `main` after continuity verification.
 
-Initial contract baseline:
+Original contract baseline (historical):
 
 ```text
 main
 6011f0efae1a23611b31ef1b0f00c9513948d42c
 docs: reconcile post-portability lifecycle state
+```
+
+Current reconciled release-readiness baseline:
+
+```text
+main
+c1bd06be77f738d40767adbee01587877d66aaf9
+docs: reconcile post-MPL current state
 ```
 
 If `main` advances before a release artifact is built, the newer authoritative state must be inspected and explicitly classified before the artifact is accepted. A release artifact must be traceable to one exact source commit.
@@ -70,7 +78,9 @@ Excluded unless separately adopted:
 
 ## Relationship to Module Package Lifecycle WU7
 
-Module Package Lifecycle WU1-WU7 implementation remains separately owned.
+Module Package Lifecycle WU1-WU7 implementation and final human/E2E acceptance
+remain separately owned; authoritative `main` records them as COMPLETE AND
+CLOSED with final acceptance PASS.
 
 The release-readiness relationship is:
 
@@ -78,14 +88,18 @@ The release-readiness relationship is:
 release-readiness preparation: INDEPENDENT
 internal v0.13.0 acceptance artifact: INDEPENDENT / MPL-WU7 ENABLING
 fresh-install acceptance: INDEPENDENT / MPL-WU7 SUPPORTING EVIDENCE
-MPL WU7 final human/E2E acceptance: OWNED BY THE PARALLEL MPL SESSION
-final v0.13.0 release-candidate closure: CLOSURE-dependent on authoritative MPL closure
+MPL WU7 final human/E2E acceptance: COMPLETE / PASS on authoritative main
+final v0.13.0 release-candidate closure: MPL closure dependency SATISFIED; remaining release gates still apply
 release/tag/publication: CLOSURE-dependent and separately gated by this contract
 ```
 
-The release-readiness track may produce a fresh current runtime or acceptance artifact that the parallel MPL WU7 session uses. Doing so does not transfer ownership of WU7 acceptance or Full Module Package Lifecycle closure.
+The release-readiness track may produce a fresh current runtime or acceptance
+artifact that consumes the already-accepted MPL WU7 result. Doing so does not
+transfer ownership of WU7 acceptance or Full Module Package Lifecycle closure.
 
-Final v0.13.0 release-candidate readiness must not be declared while authoritative repository state still reports Full Module Package Lifecycle as not closed.
+Final v0.13.0 release-candidate readiness must not be declared until the
+remaining release gates pass, including exact-source artifact revalidation
+against the current reconciled release baseline.
 
 ## Deferred server-empty bootstrap disposition
 
@@ -183,6 +197,12 @@ fixed `InstallerFinalizer.php` and `bootstrap/installer.php` files from
 `dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf`; both differ from their
 pre-fix `6011f0efae1a23611b31ef1b0f00c9513948d42c` counterparts. The official
 builder reads the current checkout and atomically replaces `dist/copot-v0.13.0.zip`.
+
+The recorded acceptance artifact remains evidence for its exact source commit
+`dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf`. The reconciled release baseline
+`c1bd06be77f738d40767adbee01587877d66aaf9` is newer, so that artifact is not
+the final candidate artifact for the current baseline and must be rebuilt or
+revalidated at the later release gate before tag or publication.
 
 The current package-builder smoke validation passed 1,826 assertions. The
 package-based clean-install verification passed 113 assertions against the
@@ -461,7 +481,8 @@ If source changes after artifact acceptance, the artifact becomes stale and must
 After this contract is durably committed and remotely verified, the next eligible action is:
 
 ```text
-build and validate the internal v0.13.0 acceptance artifact from the exact authoritative source selected for release readiness
+rebuild or revalidate the internal v0.13.0 acceptance artifact from the exact
+current authoritative source selected for release readiness
 ```
 
 No release tag or public publication should occur before the acceptance artifact, browser clean-install evidence, documentation reconciliation, and authoritative MPL closure dependency are complete.
