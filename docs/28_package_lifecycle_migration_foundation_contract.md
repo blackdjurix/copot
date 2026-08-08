@@ -34,9 +34,10 @@ package intake, distribution, migration, or update behavior.
 Module Package Lifecycle preparation is now complete and contract-locked in
 `docs/29_module_package_lifecycle_contract.md`. It is the second target over
 this foundation and uses shared primitives through reuse, generalization, or
-target adapters as documented there. Module WU1–WU7 implementation is complete
-for its accepted scope; final WU7 human/E2E acceptance remains blocked on the
-separate Existing-Runtime Webcore Lifecycle Adoption prerequisite documented in
+target adapters as documented there. Module WU1–WU7 implementation and final
+human/E2E acceptance are complete and closed for the accepted scope. Production
+reconciliation, release readiness, tag, and publication remain separate gates;
+the Existing-Runtime Webcore Lifecycle Adoption prerequisite is documented in
 `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`.
 
 The first package source is a local or operator-provided ZIP containing a full

@@ -36,7 +36,7 @@ Release advancement policy: release-based, not feature-based
 REPAIR remains an operational classification and is not a release event
 Current dependency: none for the completed Portability foundation; release, tag, and publication remain separately unauthorized.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains separate operational work.
-Module Package Lifecycle WU1–WU7 implementation: COMPLETE; final human/E2E acceptance: PENDING / PARKED for separate authorization and execution.
+Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
 Current active implementation branch: main
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
@@ -141,11 +141,12 @@ differential packages remain excluded; downgrade/reverse migration remains
 unsupported.
 Server-empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED under
 `DI-PACKAGE-LIFECYCLE-WU7-01`; Module Package Lifecycle preparation is complete
-and contract-locked, WU1–WU7 implementation is complete for its accepted scope,
-and Existing-Runtime Webcore Lifecycle Adoption technical work is closed;
-final WU7 acceptance remains PENDING / PARKED for separate authorization and
-execution; the completed Portability foundation satisfies the authoritative
-committed Webcore lifecycle-state and representative-runtime prerequisite.
+and contract-locked, WU1–WU7 implementation and final human/E2E acceptance are
+complete and closed for the accepted scope. Existing-Runtime Webcore Lifecycle
+Adoption technical work is closed; the completed Portability foundation
+satisfied the authoritative committed Webcore lifecycle-state and
+representative-runtime prerequisite. Production reconciliation, release
+readiness, tag, and publication remain separate gates.
 Backup &
 Recovery implementation, acceptance, and lifecycle closure are recorded in
 `docs/31_backup_recovery_foundation_contract.md`; WU1–WU7 are complete, and IU2
@@ -159,16 +160,16 @@ STARTED.
 Backup & Recovery Foundation: COMPLETE AND CLOSED — WU1–WU7 COMPLETE.
 Version & Release Reconciliation closure gate: COMPLETE.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
-Full Module Package Lifecycle: NOT YET CLOSED solely because final WU7 human/E2E acceptance remains PENDING / PARKED for separate authorization and execution; the Webcore lifecycle-state and representative-runtime prerequisite is satisfied
+Full Module Package Lifecycle: COMPLETE AND CLOSED for the accepted WU1–WU7 scope; production reconciliation, release readiness, tag, and publication remain separate gates
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
-Module Package Lifecycle implementation: COMPLETE — WU1–WU7 automated/runtime validation PASS; final WU7 acceptance remains PENDING / PARKED for separate authorization and execution
+Module Package Lifecycle implementation and acceptance: COMPLETE AND CLOSED — WU1–WU7 automated/runtime validation and final human/E2E acceptance PASS
 Module Package Lifecycle WU1: COMPLETE
 Module Package Lifecycle WU2: COMPLETE
 Module Package Lifecycle WU3: COMPLETE
 Module Package Lifecycle WU4: COMPLETE
 Module Package Lifecycle WU5: COMPLETE
 Module Package Lifecycle WU6: COMPLETE
-Module Package Lifecycle WU7: IMPLEMENTATION COMPLETE — final human/E2E acceptance PENDING / PARKED for separate authorization and execution
+Module Package Lifecycle WU7: COMPLETE AND CLOSED — implementation, automated validation, and final human/E2E acceptance PASS
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
 Release: NOT STARTED
 Tag: NOT STARTED
