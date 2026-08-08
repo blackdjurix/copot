@@ -165,17 +165,24 @@ The superseding internal acceptance artifact was rebuilt from exact authoritativ
 source commit
 `dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf` (`fix(installer): commit canonical webcore lifecycle state`).
 The official builder passed and produced `dist/copot-v0.13.0.zip` with 565
-package-owned payload files plus `.copot/package.json`, size 2,250,433 bytes,
+package-owned payload files plus `.copot/package.json`, size 2,250,170 bytes,
 and SHA-256
-`f97971634ee71479bb131d7a1af9f70b4b7f71e1b40a52b5be233966e4a33f9c`.
+`1483a9927893bd3fa19f2d45c30c6d4926bd400798b7c8c7e08fd4ce71ff11b7`.
 The regenerated package inventory identity is
-`f27b52602afae164a0037a6862a542468cac0fbdacaa22757b71f9c7b13fd88d` across
+`712883dde6dc1fb3d6658ddd10049582616ebf7f7ec27231291056b5e276b88d` across
 565 payload entries; the archive contains 566 entries including its manifest.
 The package inventory matched all payload entries, byte sizes, and SHA-256
 values; required and forbidden-content checks passed. The generated manifest
 reports target `0.13.0`, package type `copot-webcore`, minimum PHP `8.2.0`,
 minimum MySQL `8.0.0`, and required extensions `json`, `pdo`, `pdo_mysql`,
 `session`, `filter`, and `zip`.
+
+The earlier recorded `f9797163...` artifact identity was stale and was not
+retained by the authoritative rebuild. The rebuilt ZIP contains byte-exact
+fixed `InstallerFinalizer.php` and `bootstrap/installer.php` files from
+`dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf`; both differ from their
+pre-fix `6011f0efae1a23611b31ef1b0f00c9513948d42c` counterparts. The official
+builder reads the current checkout and atomically replaces `dist/copot-v0.13.0.zip`.
 
 The current package-builder smoke validation passed 1,826 assertions. The
 package-based clean-install verification passed 113 assertions against the
