@@ -24,6 +24,10 @@ $finalizerSource = (string) file_get_contents($basePath . '/app/Core/InstallerFi
 $assert(str_contains($finalizerSource, 'Version::CURRENT'), 'InstallerFinalizer must consume Version::CURRENT.');
 $assert(!str_contains($finalizerSource, "private const VERSION = '0.8.0'"), 'InstallerFinalizer must not keep the stale 0.8.0 literal.');
 
+$installerBootstrap = (string) file_get_contents($basePath . '/bootstrap/installer.php');
+$assert(str_contains($installerBootstrap, 'use Copot\\Core\\CommittedLifecycleStateStore;'), 'Installer bootstrap must import the committed Webcore lifecycle store.');
+$assert(str_contains($installerBootstrap, 'new CommittedLifecycleStateStore($basePath . \'/storage\')'), 'Installer bootstrap must construct the committed Webcore lifecycle store from the application storage root.');
+
 $envExample = (string) file_get_contents($basePath . '/.env.example');
 $assert(str_contains($envExample, 'The installer writes only the DB_* keys'), '.env.example must state its installer relationship.');
 $assert(str_contains($envExample, 'SESSION_SECURE=false'), '.env.example must document the local HTTP Secure-cookie default.');

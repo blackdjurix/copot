@@ -6,6 +6,7 @@ use Copot\Core\Csrf;
 use Copot\Core\Database;
 use Copot\Core\DeploymentContext;
 use Copot\Core\Env;
+use Copot\Core\CommittedLifecycleStateStore;
 use Copot\Core\InstallationException;
 use Copot\Core\InstallationMutex;
 use Copot\Core\InstallerAdministratorSetup;
