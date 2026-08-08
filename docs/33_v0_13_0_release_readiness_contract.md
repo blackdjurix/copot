@@ -181,12 +181,38 @@ administrator, default Theme, nine approved baseline Modules, marker `0.13.0`,
 installer blocking, normal bootstrap, public response, Admin login/dashboard,
 Settings, Redirects, and controlled Site Asset behavior.
 
-Browser/web-installer acceptance was attempted through an isolated local HTTP
-server and did not pass: the packaged front controller returned its controlled
-HTTP 500 response before rendering the installer. No browser acceptance claim
-is made. The local PHP environment has a mismatched configured extension
-directory; the accepted non-HTTP validation used PHP 8.5.7 with explicit
-`pdo_mysql` and `zip` extensions.
+The initial HTTP 500 was classified as an acceptance-topology configuration
+mismatch, not a PHP extension or database failure. With no
+`COPOT_APP_ROOT`, the packaged `public/index.php` fallback resolved
+`autoloadRoot` to the parent of the extracted package (`C:\\Git`) and then
+failed because `C:\\Git\\bootstrap\\autoload.php` did not exist. The PHP
+server itself was PHP 8.5.7 with no loaded php.ini and explicit `pdo_mysql` and
+`zip` extensions; required extensions were present. This was corrected only in
+the isolated acceptance environment by setting `COPOT_APP_ROOT` to the
+extracted package root, `COPOT_PUBLIC_ROOT` to its `public/` directory, and
+`COPOT_BASE_PATH=/`. COPOT source and the accepted artifact were not changed
+or rebuilt.
+
+Browser/web-installer acceptance then passed through the unchanged
+`copot-v0.13.0.zip` artifact on the canonical configurable public-root
+topology. The clean extracted target had no `.env` or `storage/installed.lock`;
+the dedicated empty `copot_browser_0130` database was accepted; the installer
+rendered; database configuration and canonical schema installation succeeded;
+the first administrator and site settings were saved; finalization completed
+with installed marker version `0.13.0`; `/install` returned controlled 404;
+the public site rendered; Admin login and dashboard rendered; and browser
+logout returned to the Admin login screen. The resulting database contained
+one administrator, one active Default Theme, and nine enabled baseline
+Modules.
+
+A second representative browser run passed through the unchanged artifact
+using a disposable split-root/base-path topology: private `APP_ROOT` outside
+the served public tree, separate `PUBLIC_ROOT`, and `COPOT_BASE_PATH=/copot`.
+The installer redirected within `/copot`, database/schema installation and
+finalization completed, the Admin dashboard rendered with `/copot/admin`
+links, `/copot/install` returned controlled 404, and `/copot/` rendered the
+configured public site. The separate split-root database used one
+administrator, one active Default Theme, and nine enabled baseline Modules.
 
 ## Runtime compatibility contract
 
