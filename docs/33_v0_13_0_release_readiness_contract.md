@@ -159,6 +159,35 @@ The acceptance artifact record must capture at minimum:
 
 The artifact must be built from exact authoritative source with no local runtime state, `.env`, source-only documentation/tests, build output recursion, or other forbidden material leaking into the ZIP.
 
+### Recorded acceptance evidence
+
+The internal acceptance artifact was built from exact source commit
+`fb48c0974e74bc8b3a3846131142265063a95f97` (`docs(release): lock v0.13.0 readiness contract`).
+The official builder passed and produced `dist/copot-v0.13.0.zip` with 565
+package-owned payload files plus `.copot/package.json`, size 2,250,433 bytes,
+and SHA-256
+`f97971634ee71479bb131d7a1af9f70b4b7f71e1b40a52b5be233966e4a33f9c`.
+The package inventory matched all payload entries, byte sizes, and SHA-256
+values; required and forbidden-content checks passed. The generated manifest
+reports target `0.13.0`, package type `copot-webcore`, minimum PHP `8.2.0`,
+minimum MySQL `8.0.0`, and required extensions `json`, `pdo`, `pdo_mysql`,
+`session`, `filter`, and `zip`.
+
+The current package-builder smoke validation passed 1,826 assertions. The
+package-based clean-install verification passed 105 assertions against the
+dedicated `copot_d4_clean_install_test` database, including extraction,
+installer requirements, generated `.env`, canonical schema, first
+administrator, default Theme, nine approved baseline Modules, marker `0.13.0`,
+installer blocking, normal bootstrap, public response, Admin login/dashboard,
+Settings, Redirects, and controlled Site Asset behavior.
+
+Browser/web-installer acceptance was attempted through an isolated local HTTP
+server and did not pass: the packaged front controller returned its controlled
+HTTP 500 response before rendering the installer. No browser acceptance claim
+is made. The local PHP environment has a mismatched configured extension
+directory; the accepted non-HTTP validation used PHP 8.5.7 with explicit
+`pdo_mysql` and `zip` extensions.
+
 ## Runtime compatibility contract
 
 Release documentation must state the actual runtime compatibility encoded by the package and verified by release acceptance.

@@ -51,7 +51,7 @@ Copot\Core\Version::CURRENT
 
 Installer finalization uses that value when writing `storage/installed.lock`. Package and release tooling must consume the same version source instead of duplicating release numbers.
 
-Current released stable Webcore version:
+Historical released stable Webcore version:
 
 ```text
 0.12.0
@@ -64,10 +64,10 @@ not tagged, published, or installed by this change. The current release
 communication metadata is stored in the package-owned root `release.json`;
 `Version::CURRENT` remains the sole current-version authority.
 
-The official package output for this release is:
+The current v0.13.0 acceptance/release package output is:
 
 ```text
-dist/copot-v0.12.0.zip
+dist/copot-v0.13.0.zip
 ```
 
 The next package builder output will derive its filename and manifest version
@@ -151,10 +151,11 @@ Site Asset storage is created by runtime behavior as needed and must remain excl
 
 ## Deterministic Package Builder
 
-The deterministic package builder is implemented and produces:
+The deterministic package builder is implemented and produces a filename
+derived from `Version::CURRENT`, currently:
 
 ```text
-dist/copot-v0.12.0.zip
+dist/copot-v0.13.0.zip
 ```
 
 Builder behavior:
@@ -205,7 +206,7 @@ Verification must cover:
 12. controlled error behavior and no sensitive-detail leakage;
 13. final package contents against the include/exclude contract.
 
-The released v0.12.0 package passed automated clean-install verification from the built package ZIP. Verification extracts `dist/copot-v0.12.0.zip` into an isolated temporary target, uses a dedicated guarded D4 database, runs the installer service flow from the extracted artifact, validates the installed marker version as `0.12.0`, boots the installed application, and checks minimal public, Admin, Settings, and controlled Site Asset behavior.
+The historical released v0.12.0 package passed automated clean-install verification from its built package ZIP. Current v0.13.0 acceptance evidence is recorded in `docs/33_v0_13_0_release_readiness_contract.md`; it uses the v0.13.0 artifact, an isolated extracted target, and a dedicated guarded D4 database.
 
 The verification proves the package does not depend on the source repository `.env`, source runtime locks, source logs, source cache content, local Site Asset data, `tests/`, `build/`, or `docs/`.
 
@@ -213,6 +214,6 @@ Deployment-environment verification remains separate and pending for real deploy
 
 ## Deferred Distribution Work
 
-The v0.12.0 release artifact has been published through the completed release workflow.
+The historical v0.12.0 release artifact was published through the completed release workflow. v0.13.0 remains untagged and unpublished until its release gates pass.
 
 Patch distribution, remote updates, package repositories, signing, delta updates, and multi-version maintenance infrastructure remain deferred beyond the v0.12.0 distribution contract.
