@@ -253,11 +253,61 @@ final class PackageOwnedFileApplier
     {
         $activationTemporary = dirname($destination) . DIRECTORY_SEPARATOR . '.copot-activation-' . bin2hex(random_bytes(16)) . '.tmp';
 
-        if (!@copy($source, $activationTemporary)) {
+        $input = @fopen($source, 'rb');
+        $output = @fopen($activationTemporary, 'xb');
+
+        if (!is_resource($input) || !is_resource($output)) {
+            if (is_resource($input)) {
+                fclose($input);
+            }
+            if (is_resource($output)) {
+                fclose($output);
+            }
+            @unlink($activationTemporary);
             throw new \RuntimeException('Windows destination activation staging failed.');
         }
 
-        if (@filesize($activationTemporary) !== $expectedSize || @hash_file('sha256', $activationTemporary) !== $expectedHash) {
+        $hash = hash_init('sha256');
+        $written = 0;
+
+        try {
+            while (!feof($input)) {
+                $chunk = fread($input, 8192);
+                if ($chunk === false) {
+                    throw new \RuntimeException('Windows destination activation source could not be read.');
+                }
+                if ($chunk === '') {
+                    continue;
+                }
+
+                $written += strlen($chunk);
+                hash_update($hash, $chunk);
+                $offset = 0;
+                while ($offset < strlen($chunk)) {
+                    $count = fwrite($output, substr($chunk, $offset));
+                    if (!is_int($count) || $count < 1) {
+                        throw new \RuntimeException('Windows destination activation staging could not be written.');
+                    }
+                    $offset += $count;
+                }
+            }
+
+            if (!fflush($output) || (function_exists('fsync') && !fsync($output))) {
+                throw new \RuntimeException('Windows destination activation staging could not be finalized.');
+            }
+        } catch (\Throwable $exception) {
+            fclose($input);
+            fclose($output);
+            @unlink($activationTemporary);
+            throw $exception;
+        }
+
+        fclose($input);
+        fclose($output);
+
+        if ($written !== $expectedSize || hash_final($hash) !== $expectedHash
+            || @filesize($activationTemporary) !== $expectedSize
+            || @hash_file('sha256', $activationTemporary) !== $expectedHash) {
             @unlink($activationTemporary);
             throw new \RuntimeException('Windows destination activation staging identity could not be verified.');
         }
