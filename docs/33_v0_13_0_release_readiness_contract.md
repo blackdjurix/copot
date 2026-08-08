@@ -161,12 +161,16 @@ The artifact must be built from exact authoritative source with no local runtime
 
 ### Recorded acceptance evidence
 
-The internal acceptance artifact was built from exact source commit
-`210e406c74d222ce7d276bec7db375f2846cc43f` (`docs(release): record v0.13.0 acceptance evidence`).
+The superseding internal acceptance artifact was rebuilt from exact authoritative
+source commit
+`dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf` (`fix(installer): commit canonical webcore lifecycle state`).
 The official builder passed and produced `dist/copot-v0.13.0.zip` with 565
 package-owned payload files plus `.copot/package.json`, size 2,250,433 bytes,
 and SHA-256
 `f97971634ee71479bb131d7a1af9f70b4b7f71e1b40a52b5be233966e4a33f9c`.
+The regenerated package inventory identity is
+`f27b52602afae164a0037a6862a542468cac0fbdacaa22757b71f9c7b13fd88d` across
+565 payload entries; the archive contains 566 entries including its manifest.
 The package inventory matched all payload entries, byte sizes, and SHA-256
 values; required and forbidden-content checks passed. The generated manifest
 reports target `0.13.0`, package type `copot-webcore`, minimum PHP `8.2.0`,
@@ -174,12 +178,18 @@ minimum MySQL `8.0.0`, and required extensions `json`, `pdo`, `pdo_mysql`,
 `session`, `filter`, and `zip`.
 
 The current package-builder smoke validation passed 1,826 assertions. The
-package-based clean-install verification passed 105 assertions against the
+package-based clean-install verification passed 113 assertions against the
 dedicated `copot_d4_clean_install_test` database, including extraction,
 installer requirements, generated `.env`, canonical schema, first
 administrator, default Theme, nine approved baseline Modules, marker `0.13.0`,
 installer blocking, normal bootstrap, public response, Admin login/dashboard,
-Settings, Redirects, and controlled Site Asset behavior.
+Settings, Redirects, and controlled Site Asset behavior. The fresh-install
+finalizer also committed canonical Webcore lifecycle state with version
+`0.13.0`, release identity `copot-v0.13.0`, schema identity
+`canonical-current`, and empty canonical migration identity
+`CoreMigrationStateIdentity::fromRecords([])`; its timestamp matched
+`storage/installed.lock`. The fixture reached Module `INSTALL` planning rather
+than the former unavailable-committed-state rejection.
 
 The initial HTTP 500 was classified as an acceptance-topology configuration
 mismatch, not a PHP extension or database failure. With no
@@ -190,11 +200,12 @@ server itself was PHP 8.5.7 with no loaded php.ini and explicit `pdo_mysql` and
 `zip` extensions; required extensions were present. This was corrected only in
 the isolated acceptance environment by setting `COPOT_APP_ROOT` to the
 extracted package root, `COPOT_PUBLIC_ROOT` to its `public/` directory, and
-`COPOT_BASE_PATH=/`. COPOT source and the accepted artifact were not changed
-or rebuilt.
+`COPOT_BASE_PATH=/`. COPOT source and the retained installed acceptance
+runtime were not changed. The current release-readiness artifact was rebuilt
+from the authoritative installer fix above.
 
-Browser/web-installer acceptance then passed through the unchanged
-`copot-v0.13.0.zip` artifact on the canonical configurable public-root
+The previously accepted browser/web-installer run passed through the
+canonical configurable public-root
 topology. The clean extracted target had no `.env` or `storage/installed.lock`;
 the dedicated empty `copot_browser_0130` database was accepted; the installer
 rendered; database configuration and canonical schema installation succeeded;
@@ -205,8 +216,8 @@ logout returned to the Admin login screen. The resulting database contained
 one administrator, one active Default Theme, and nine enabled baseline
 Modules.
 
-A second representative browser run passed through the unchanged artifact
-using a disposable split-root/base-path topology: private `APP_ROOT` outside
+A second representative browser run passed through the previously accepted
+artifact using a disposable split-root/base-path topology: private `APP_ROOT` outside
 the served public tree, separate `PUBLIC_ROOT`, and `COPOT_BASE_PATH=/copot`.
 The installer redirected within `/copot`, database/schema installation and
 finalization completed, the Admin dashboard rendered with `/copot/admin`
@@ -323,7 +334,11 @@ A successful fresh v0.13.0 installation must establish, at minimum:
 - current required permissions/provisioning are present;
 - installer gate blocks further installation after finalization;
 - normal application bootstrap succeeds;
-- current lifecycle/migration state required by the existing implementation is internally consistent.
+- committed Webcore lifecycle state exists and is internally consistent with
+  the installed marker, trusted release identity, canonical-current schema,
+  and empty canonical fresh-install migration state;
+- the state is consumable by `ModuleTransitionPlanner` for a compatible Module
+  `INSTALL` target.
 
 The release-readiness track must validate current lifecycle state. It must not invent a second installed-state format or silently fabricate migration history to make a clean install appear healthy.
 
