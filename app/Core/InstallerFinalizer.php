@@ -21,6 +21,7 @@ class InstallerFinalizer
         private ThemeManager $themes,
         private ModuleManager $modules,
         private InstallationState $installationState,
+        private CommittedLifecycleStateStore $committedLifecycleState,
         private InstallationMutex $mutex
     ) {
     }
@@ -46,7 +47,18 @@ class InstallerFinalizer
             $this->validateInitialSettings();
             $this->activateDefaultTheme();
             $this->enableBaselineModules();
-            $this->installationState->createMarker(Version::CURRENT);
+            $this->committedLifecycleState->commit(
+                $this->installationState,
+                new CommittedLifecycleState(
+                    Version::CURRENT,
+                    'copot-v' . Version::CURRENT,
+                    null,
+                    PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION,
+                    'canonical-current',
+                    CoreMigrationStateIdentity::fromRecords([]),
+                    new \DateTimeImmutable('now')
+                )
+            );
 
             return [
                 'version' => Version::CURRENT,

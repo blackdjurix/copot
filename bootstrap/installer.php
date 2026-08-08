@@ -121,6 +121,7 @@ $loadAdministratorSetup = function () use ($basePath, $installationState): array
             new ModuleRepository($database)
         ),
         $installationState,
+        new CommittedLifecycleStateStore($basePath . '/storage'),
         new InstallationMutex($basePath . '/storage')
     );
 
