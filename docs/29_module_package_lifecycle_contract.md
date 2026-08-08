@@ -4,18 +4,19 @@
 
 ```text
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
-Full Module Package Lifecycle: NOT YET CLOSED solely because final WU7
-human/E2E acceptance remains PENDING / PARKED for separate authorization and
-execution; the Webcore adoption/runtime prerequisite is satisfied
+Full Module Package Lifecycle: COMPLETE AND CLOSED for the accepted WU1–WU7
+scope; production reconciliation, release readiness, tag, and publication
+remain separate gates
 WU1: COMPLETE
 WU2: COMPLETE
 WU3: COMPLETE
 WU4: COMPLETE
 WU5: COMPLETE
 WU6: COMPLETE
-WU7: IMPLEMENTATION COMPLETE — automated/runtime validation PASS; final
-human/E2E acceptance PENDING / PARKED for separate authorization and execution
-Implementation: COMPLETE — WU1–WU7 implementation complete; final acceptance pending
+WU7: COMPLETE AND CLOSED — implementation, automated/runtime validation, and
+final human/E2E acceptance PASS
+Implementation and acceptance: COMPLETE AND CLOSED — WU1–WU7 complete for the
+accepted scope
 ```
 
 This document records the locked architecture and delivered WU1–WU7 contract for the second
@@ -29,7 +30,8 @@ locking, operation persistence, integrity primitives, and migration
 infrastructure remain shared lifecycle responsibilities. WU7 supplies local Add Module
 registration, immutable package candidates under `.copot-lifecycle/module-packages`,
 installed-versus-available inventory data, and explicit lifecycle execution routing through
-the existing WU1–WU6 services. Browser/Admin visual acceptance remains pending separately.
+the existing WU1–WU6 services. Browser/Admin visual acceptance was completed through
+the accepted human/E2E review; no broader Admin redesign is implied.
 
 Existing-Runtime Webcore Lifecycle Adoption IU2 WU1–WU6 is technically complete
 and closed, but production reconciliation remains NOT STARTED and requires
@@ -38,8 +40,8 @@ inspected XAMPP validation evidence does not itself authorize production
 reconciliation. The completed Portability foundation
 provides the authoritative committed Webcore runtime state and representative
 deployment evidence required by the separate Module Package Lifecycle WU7
-human/E2E acceptance. WU7 remains pending/parked until that acceptance is
-separately authorized and executed.
+human/E2E acceptance. That acceptance is complete for the accepted WU1–WU7
+scope; production reconciliation and release work remain separate gates.
 
 The first lifecycle delivery remains Webcore-first and complete:
 `docs/28_package_lifecycle_migration_foundation_contract.md`.
@@ -711,7 +713,7 @@ This contract is the authoritative preparation artifact. Concise project-state
 references point here; the full contract is not duplicated in `AGENTS.md`,
 `README.md`, or the roadmap.
 
-WU1–WU7 implementation is complete on the authorized implementation branch with automated and local
-runtime validation passed. Final human/E2E acceptance remains pending/parked for
-separate authorization and execution; therefore the full Module Package Lifecycle
-is not yet closed.
+WU1–WU7 implementation is complete with automated, local-runtime, and final
+human/E2E acceptance passed. Full Module Package Lifecycle is COMPLETE AND
+CLOSED for the accepted scope. Production reconciliation, Server-Empty
+Bootstrap, release readiness, tag, and publication remain separate gates.

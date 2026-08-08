@@ -7,7 +7,7 @@ Existing-Runtime Webcore Lifecycle Adoption: ARCHITECTURE LOCKED
 Implementation Unit 1: COMPLETE / ACCEPTED
 Implementation Unit 2 — Legacy Webcore Runtime Reconciliation: WU1–WU6 COMPLETE AND CLOSED; technical acceptance COMPLETE; production execution path operationally available; live production reconciliation NOT STARTED
 Backup & Recovery Foundation: COMPLETE AND CLOSED
-Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED pending authoritative committed Webcore state
+Module Package Lifecycle WU7 human/E2E acceptance: COMPLETE AND CLOSED for the accepted WU1–WU7 scope
 Server-Empty Bootstrap & Package Clean Install: DEFERRED / UNSCHEDULED — KEEP DEFERRED
 ```
 
@@ -244,7 +244,7 @@ process.
 ## Recommended next gate
 
 The Backup & Recovery Foundation is independently accepted and closed.
-Technical IU2 WU1–WU6 is complete. Do not begin production reconciliation,
-Server-Empty Bootstrap, Module legacy adoption, or Module WU7 browser
-acceptance under this preparation lock; the separate Module Package Lifecycle
-human/E2E acceptance remains independently scoped.
+Technical IU2 WU1–WU6 and the separate Module Package Lifecycle WU7
+human/E2E acceptance are complete for their accepted scopes. Do not begin
+production reconciliation, Server-Empty Bootstrap, or Module legacy adoption
+under this preparation lock.

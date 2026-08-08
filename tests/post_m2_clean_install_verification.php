@@ -276,6 +276,8 @@ try {
         $assert(($administrator['email'] ?? null) === 'd4-admin@example.test', 'Installer administrator setup must create the first admin.');
 
         $installationState = new Copot\Core\InstallationState($installTarget . '/storage');
+        $committedLifecycleState = new Copot\Core\CommittedLifecycleStateStore($installTarget . '/storage');
+        $assert($committedLifecycleState->read() === null, 'Fresh install regression fixture must begin without committed Webcore lifecycle state.');
         $finalizer = new Copot\Core\InstallerFinalizer(
             $database,
             $schema,
@@ -288,6 +290,7 @@ try {
                 new Copot\Core\ModuleRepository($database)
             ),
             $installationState,
+            $committedLifecycleState,
             new Copot\Core\InstallationMutex($installTarget . '/storage')
         );
         $finalized = $finalizer->finalize();
@@ -305,6 +308,36 @@ try {
         $assert(($marker['version'] ?? null) === Copot\Core\Version::CURRENT, 'Installed marker version must equal Version::CURRENT.');
         $assert(($marker['version'] ?? null) !== '0.8.0', 'Installed marker must not contain stale 0.8.0 version.');
         $assert(array_keys($marker ?? []) === ['version', 'installed_at'] || array_keys($marker ?? []) === ['installed_at', 'version'], 'Installed marker must contain only installed_at and version.');
+
+        $committed = $committedLifecycleState->read();
+        $assert($committed instanceof Copot\Core\CommittedLifecycleState, 'Fresh install must establish committed Webcore lifecycle state.');
+        $assert($committed->webcoreVersion() === Copot\Core\Version::CURRENT, 'Committed Webcore version must equal Version::CURRENT.');
+        $assert($committed->releaseIdentity() === 'copot-v' . Copot\Core\Version::CURRENT, 'Committed Webcore release identity must match the canonical current package identity.');
+        $assert($committed->schemaStateIdentity() === 'canonical-current', 'Fresh install must commit the canonical schema identity.');
+        $assert($committed->migrationStateIdentity() === Copot\Core\CoreMigrationStateIdentity::fromRecords([]), 'Fresh install must commit the empty canonical migration state without historical records.');
+        $assert($committed->committedAt()->format(DATE_ATOM) === $marker['installed_at'], 'Committed lifecycle timestamp must match installed.lock.');
+
+        $moduleContract = new Copot\Core\ModulePackageContract(
+            Copot\Core\ModulePackageContract::MODULE_PACKAGE_TYPE,
+            Copot\Core\ModulePackageContract::CURRENT_CONTRACT_VERSION,
+            new Copot\Core\PackageIdentity('copot-wu7-acceptance-package'),
+            new Copot\Core\ModuleIdentity('wu7-acceptance'),
+            'WU7 Acceptance Module',
+            '0.1.0',
+            'wu7-acceptance-release-1',
+            new Copot\Core\PackageCompatibility(Copot\Core\Version::CURRENT),
+            null,
+            new Copot\Core\ModulePackageOwnership(new Copot\Core\ModuleIdentity('wu7-acceptance'), 'modules/wu7-acceptance'),
+            [],
+            [],
+            new Copot\Core\ModuleMigrationDeclaration(new Copot\Core\ModuleIdentity('wu7-acceptance')),
+            new Copot\Core\ModuleProvisioningDeclaration()
+        );
+        $modulePlan = (new Copot\Core\ModuleTransitionPlanner($committedLifecycleState, new Copot\Core\RuntimeCompatibilityContext(PHP_VERSION, [], get_loaded_extensions())))->plan(
+            Copot\Core\ModuleLifecycleInspection::fresh(),
+            new Copot\Core\ModuleLifecycleTarget($moduleContract, str_repeat('a', 64))
+        );
+        $assert($modulePlan->accepted() && $modulePlan->classification() === Copot\Core\ModuleTransitionPlan::INSTALL, 'Compatible fresh Module target must reach INSTALL planning after Webcore finalization.');
 
         $gate = new Copot\Core\InstallerGate($installationState);
         $assert($gate->decide(new Copot\Core\Request('GET', '/install')) === Copot\Core\InstallerGate::BLOCK_INSTALLER, 'Installed package must block /install.');

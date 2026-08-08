@@ -214,13 +214,18 @@ Portability must not fabricate migration history or silently normalize an unknow
 
 Module Package Lifecycle WU1-WU7 implementation remains complete for its accepted implementation scope.
 
-Final WU7 human/E2E acceptance remains PENDING / PARKED for separate authorization and execution. The completed Portability foundation satisfies the authoritative committed Webcore lifecycle-state and representative-runtime prerequisite.
+Final WU7 human/E2E acceptance is COMPLETE AND CLOSED for the accepted Module
+Package Lifecycle scope. The completed Portability foundation and committed
+Webcore runtime evidence supported that acceptance.
 
 This portability foundation established and accepted the explicit, representative deployment model required by the WU7 acceptance/runtime environment without making it COPOT-specific.
 
-This contract does not reopen Module Package Lifecycle implementation and does not perform WU7 acceptance.
+This contract does not reopen Module Package Lifecycle implementation. WU7
+acceptance is recorded in the Module Package Lifecycle contract.
 
-Broader portability work must not be invented as an unlimited WU7 prerequisite. The actual WU7 prerequisite is now satisfied; WU7 may proceed only through separate authorization and execution, while unrelated portability work remains closed and out of scope.
+Broader portability work must not be invented as an unlimited WU7 prerequisite.
+The accepted WU7 scope is complete; unrelated portability work remains closed
+and out of scope.
 
 ---
 

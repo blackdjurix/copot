@@ -136,18 +136,18 @@ final class PackageOwnedFileApplier
                 @chmod($temporary, $mode > 0 ? $mode : 0644);
                 $this->guard->verifyDestination($file->path(), $existing);
 
-                if ($beforeActivation !== null) {
-                    $beforeActivation($file->path());
-                }
-
-                if (!@rename($temporary, $destination)) {
-                    @unlink($temporary);
-                    return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $applied, 'Live-file activation failed.');
-                }
-
-                $this->guard->verifyDestination($file->path(), true);
-                if (filesize($destination) !== $written || hash_file('sha256', $destination) !== $actualHash) {
-                    return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $applied, 'Activated live-file identity could not be verified.');
+                $activationFailure = $this->activate(
+                    $temporary,
+                    $destination,
+                    $file->path(),
+                    $existing,
+                    $written,
+                    $actualHash,
+                    $workspace,
+                    $beforeActivation
+                );
+                if ($activationFailure !== null) {
+                    return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $applied, $activationFailure);
                 }
 
                 $applied[] = $file->path();
@@ -162,6 +162,157 @@ final class PackageOwnedFileApplier
         }
 
         return new WebcoreApplyResult(WebcoreApplyResult::COMPLETED, $applied);
+    }
+
+    private function activate(
+        string $temporary,
+        string $destination,
+        string $relativePath,
+        bool $existing,
+        int $written,
+        string $actualHash,
+        string $workspace,
+        ?callable $beforeActivation
+    ): ?string {
+        if (DIRECTORY_SEPARATOR !== '\\') {
+            try {
+                if ($beforeActivation !== null) {
+                    $beforeActivation($relativePath);
+                }
+                if (!@rename($temporary, $destination)) {
+                    throw new \RuntimeException('Live-file activation failed.');
+                }
+                $this->guard->verifyDestination($relativePath, true);
+                if (filesize($destination) !== $written || hash_file('sha256', $destination) !== $actualHash) {
+                    throw new \RuntimeException('Activated live-file identity could not be verified.');
+                }
+            } catch (\Throwable $exception) {
+                @unlink($temporary);
+                return $exception->getMessage();
+            }
+
+            return null;
+        }
+
+        $existingSize = $existing ? @filesize($destination) : null;
+        $existingHash = $existing ? @hash_file('sha256', $destination) : null;
+        if ($existing && (!is_int($existingSize) || !is_string($existingHash))) {
+            @unlink($temporary);
+            return 'Existing live-file identity could not be verified.';
+        }
+
+        $backup = $workspace . DIRECTORY_SEPARATOR . 'backup-' . bin2hex(random_bytes(16));
+        if ($existing && !@rename($destination, $backup)) {
+            @unlink($temporary);
+            return 'Existing live-file could not be preserved for replacement.';
+        }
+
+        $activationTemporary = null;
+        try {
+            if ($beforeActivation !== null) {
+                $beforeActivation($relativePath);
+            }
+
+            // Windows renames preserve the source security descriptor. Stage
+            // the activation sibling inside the guarded destination directory
+            // so it inherits that directory's normal access semantics instead
+            // of inheriting the apply-workspace ACL.
+            $activationTemporary = $this->stageWindowsDestination($temporary, $destination, $written, $actualHash);
+            if (!@rename($activationTemporary, $destination)) {
+                throw new \RuntimeException('Live-file activation failed.');
+            }
+            $activationTemporary = null;
+            $this->guard->verifyDestination($relativePath, true);
+            if (filesize($destination) !== $written || hash_file('sha256', $destination) !== $actualHash) {
+                throw new \RuntimeException('Activated live-file identity could not be verified.');
+            }
+            if ($existing && !@unlink($backup)) {
+                throw new \RuntimeException('Replacement backup could not be removed.');
+            }
+        } catch (\Throwable $exception) {
+            if ($activationTemporary !== null) {
+                @unlink($activationTemporary);
+            }
+            @unlink($destination);
+            $restored = !$existing || (
+                @rename($backup, $destination)
+                && @filesize($destination) === $existingSize
+                && @hash_file('sha256', $destination) === $existingHash
+            );
+            @unlink($temporary);
+
+            return $restored
+                ? $exception->getMessage()
+                : $exception->getMessage() . ' Original live file could not be restored.';
+        }
+
+        return null;
+    }
+
+    private function stageWindowsDestination(string $source, string $destination, int $expectedSize, string $expectedHash): string
+    {
+        $activationTemporary = dirname($destination) . DIRECTORY_SEPARATOR . '.copot-activation-' . bin2hex(random_bytes(16)) . '.tmp';
+
+        $input = @fopen($source, 'rb');
+        $output = @fopen($activationTemporary, 'xb');
+
+        if (!is_resource($input) || !is_resource($output)) {
+            if (is_resource($input)) {
+                fclose($input);
+            }
+            if (is_resource($output)) {
+                fclose($output);
+            }
+            @unlink($activationTemporary);
+            throw new \RuntimeException('Windows destination activation staging failed.');
+        }
+
+        $hash = hash_init('sha256');
+        $written = 0;
+
+        try {
+            while (!feof($input)) {
+                $chunk = fread($input, 8192);
+                if ($chunk === false) {
+                    throw new \RuntimeException('Windows destination activation source could not be read.');
+                }
+                if ($chunk === '') {
+                    continue;
+                }
+
+                $written += strlen($chunk);
+                hash_update($hash, $chunk);
+                $offset = 0;
+                while ($offset < strlen($chunk)) {
+                    $count = fwrite($output, substr($chunk, $offset));
+                    if (!is_int($count) || $count < 1) {
+                        throw new \RuntimeException('Windows destination activation staging could not be written.');
+                    }
+                    $offset += $count;
+                }
+            }
+
+            if (!fflush($output) || (function_exists('fsync') && !fsync($output))) {
+                throw new \RuntimeException('Windows destination activation staging could not be finalized.');
+            }
+        } catch (\Throwable $exception) {
+            fclose($input);
+            fclose($output);
+            @unlink($activationTemporary);
+            throw $exception;
+        }
+
+        fclose($input);
+        fclose($output);
+
+        if ($written !== $expectedSize || hash_final($hash) !== $expectedHash
+            || @filesize($activationTemporary) !== $expectedSize
+            || @hash_file('sha256', $activationTemporary) !== $expectedHash) {
+            @unlink($activationTemporary);
+            throw new \RuntimeException('Windows destination activation staging identity could not be verified.');
+        }
+
+        return $activationTemporary;
     }
 
     private function removeWorkspace(string $workspace): void

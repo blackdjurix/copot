@@ -15,7 +15,7 @@ Backup & Recovery Foundation implementation/acceptance: COMPLETE
 Version & Release Reconciliation closure gate: COMPLETE
 Existing-Runtime Webcore Lifecycle Adoption IU2 technical WU1–WU6: COMPLETE AND CLOSED
 Production reconciliation execution composition: AVAILABLE / live reconciliation NOT STARTED / SEPARATELY AUTHORIZED
-Module Package Lifecycle WU7 human/E2E acceptance: BLOCKED ON AUTHORITATIVE COMMITTED WEBCORE STATE
+Module Package Lifecycle WU7 human/E2E acceptance: COMPLETE AND CLOSED for the accepted WU1–WU7 scope
 ```
 
 This contract defines the smallest reusable Backup & Recovery Foundation
@@ -444,6 +444,6 @@ Recovery Foundation lifecycle is **CLOSED**. Existing-Runtime Webcore Lifecycle
 Adoption IU2 technical WU1–WU6 implementation and acceptance are **COMPLETE AND
 CLOSED**; production reconciliation remains **NOT STARTED** and separately
 authorized.
-Module Package Lifecycle WU7 human/E2E acceptance remains **BLOCKED** pending
-authoritative COMMITTED Webcore runtime state. WU7 is not resumed by this
-contract.
+Module Package Lifecycle WU7 human/E2E acceptance is **COMPLETE AND CLOSED**
+for the accepted scope. Production reconciliation and release work remain
+separate gates and are not resumed by this contract.
