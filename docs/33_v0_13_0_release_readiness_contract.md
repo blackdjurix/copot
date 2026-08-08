@@ -204,8 +204,41 @@ The recorded acceptance artifact remains evidence for its exact source commit
 the final candidate artifact for the current baseline and must be rebuilt or
 revalidated at the later release gate before tag or publication.
 
-The current package-builder smoke validation passed 1,826 assertions. The
-package-based clean-install verification passed 113 assertions against the
+### Current reconciled candidate artifact
+
+The current release-readiness candidate was rebuilt from exact source commit
+`c27be5d3ac225b3fa6ae26b50d3423b9a38a5d3c` (`docs(release): align readiness
+with current main`) using the official `build/package.php` builder. The output
+is `dist/copot-v0.13.0.zip`, size 2,257,115 bytes, with SHA-256
+`54c569f6c7927e482be63f51e87227cb18812ac816f9127f0465058d34d5c8c5`.
+The ZIP contains 566 entries: 565 package-owned inventory entries plus
+`.copot/package.json`. The inventory identity is
+`ac55a582607844aebc84a9b713ae3cc1b25b3f203e95a9524c9cb409971964c2`.
+The manifest reports target `0.13.0` and release identity `copot-v0.13.0`.
+
+Required package entries were present and forbidden entries were absent. The
+packaged `app/Core/InstallerFinalizer.php` and `bootstrap/installer.php` bytes
+matched the current checkout. `bootstrap/installer.php` differs from its
+historical `dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf` source, confirming that
+the rebuilt artifact is bound to the current release-readiness source rather
+than merely retaining the historical artifact bytes.
+
+The package-builder smoke validation passed 1,826 assertions. Package-based
+clean-install verification passed 113 assertions using PHP 8.5.7, including
+extraction, requirements, canonical schema, committed fresh-install lifecycle
+state, installed marker `0.13.0`, and post-install runtime checks.
+
+Browser acceptance passed the canonical configurable public-root topology from
+the rebuilt artifact with PHP 8.5.7 and MariaDB 10.4.32: requirements and empty
+database verification passed; schema installation, first administrator/site
+settings, finalization, Admin dashboard login, public rendering, and the
+post-finalization `/install` 404 all passed. No source defect or regression was
+observed. Tag and publication gates remain unexecuted.
+
+The following details are retained as historical evidence for the superseded
+`dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf` artifact. Its package-builder smoke
+validation passed 1,826 assertions. Its package-based clean-install
+verification passed 113 assertions against the
 dedicated `copot_d4_clean_install_test` database, including extraction,
 installer requirements, generated `.env`, canonical schema, first
 administrator, default Theme, nine approved baseline Modules, marker `0.13.0`,
@@ -481,8 +514,8 @@ If source changes after artifact acceptance, the artifact becomes stale and must
 After this contract is durably committed and remotely verified, the next eligible action is:
 
 ```text
-rebuild or revalidate the internal v0.13.0 acceptance artifact from the exact
-current authoritative source selected for release readiness
+complete the remaining release-readiness gates and freeze the exact validated
+source-commit/artifact pair before any tag or publication action
 ```
 
 No release tag or public publication should occur before the acceptance artifact, browser clean-install evidence, documentation reconciliation, and authoritative MPL closure dependency are complete.
