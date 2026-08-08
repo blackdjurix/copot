@@ -162,7 +162,7 @@ The artifact must be built from exact authoritative source with no local runtime
 ### Recorded acceptance evidence
 
 The internal acceptance artifact was built from exact source commit
-`fb48c0974e74bc8b3a3846131142265063a95f97` (`docs(release): lock v0.13.0 readiness contract`).
+`210e406c74d222ce7d276bec7db375f2846cc43f` (`docs(release): record v0.13.0 acceptance evidence`).
 The official builder passed and produced `dist/copot-v0.13.0.zip` with 565
 package-owned payload files plus `.copot/package.json`, size 2,250,433 bytes,
 and SHA-256
