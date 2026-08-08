@@ -29,18 +29,20 @@ and publication remain NOT STARTED.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 track: Webcore Deployment & Portability Foundation
+Latest completed Post-M3 track: Module Package Lifecycle WU1–WU7
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
-No active Portability WU remains; the next MPL WU7 lifecycle step requires separate authorization.
+Webcore Deployment & Portability Foundation: COMPLETE AND CLOSED
+Module Package Lifecycle WU1–WU7: COMPLETE AND CLOSED; final human/E2E acceptance: PASS
+Current next target: v0.13.0 Release Readiness
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (next consolidated release; not tagged or published)
 Current Core Module versions: 0.1.0 independently owned; modules/example excluded
 Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based; REPAIR is not a release event
-Current dependency: none for the completed Portability foundation; release, tag, and publication remain separately unauthorized.
-Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains separate operational work.
+Current dependency: v0.13.0 Release Readiness is the immediate cross-track follow-on; production Webcore reconciliation remains NOT STARTED and separately authorized; Server-empty Bootstrap remains DEFERRED / UNSCHEDULED; release, tag, and publication remain separately controlled.
+Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
 Current active implementation branch: main
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
@@ -116,8 +118,9 @@ requires exact committed/package/operation/apply-plan/migration-plan/ledger
 reconciliation and does not rerun file application, migrations, or full health
 gates. Failed pre-commit gates preserve the prior committed state. WU6 performs
 no package application or migration execution; stale-file deletion remains
-unavailable, Module package lifecycle remains later, and Package Lifecycle does
-not own destructive rollback or restore. The WU4 PDO SQLite
+unavailable. The subsequent WU7 Module Package Lifecycle work is complete and
+closed, and Package Lifecycle does not own destructive rollback or restore. The
+WU4 PDO SQLite
 regression could not execute in the available executor because the driver was
 unavailable; this is an environment evidence limitation, not an observed
 regression.
