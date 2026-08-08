@@ -180,6 +180,16 @@ try {
     $assert($blocked->status() === WebcoreApplyResult::FAILED, 'Unsupported replacement capability was not rejected before mutation.');
     $assert(file_get_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt') === 'old-content', 'Unsupported replacement changed the live file.');
 
+    $assert(LiveFileActivationCapability::current()->supportsReplacement(), 'Current platform capability did not expose the implemented safe replacement strategy.');
+    file_put_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt', 'old-content');
+    $interruptedReplacement = new PackageOwnedFileApplier($guard, LiveFileActivationCapability::current(), $applyRoot);
+    $interrupted = $interruptedReplacement->apply($plan, null, static function (): void {
+        throw new RuntimeException('test interruption before activation');
+    });
+    $assert($interrupted->status() === WebcoreApplyResult::BLOCKED, 'Interrupted replacement was not blocked.');
+    $assert(file_get_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt') === 'old-content', 'Interrupted replacement did not restore the original live file.');
+    $assert(count(glob($applyRoot . DIRECTORY_SEPARATOR . 'apply-*' . DIRECTORY_SEPARATOR . 'backup-*') ?: []) === 0, 'Interrupted replacement left a stale backup artifact.');
+
     try {
         $badSession = StagingSession::create($live, $stagingRoot);
         $badPayload = new StagedPayload($badSession, $hash, [new StagedFile('.env', 1, $hash)]);
@@ -205,7 +215,7 @@ try {
     $mutex = new InstallationMutex($storage);
     $coordinatorStore = new LifecycleOperationStore($storage);
     $coordinatorMaintenance = new MaintenanceCoordinator($coordinatorStore);
-    $coordinatorApplier = new PackageOwnedFileApplier($guard, new LiveFileActivationCapability(true, true), $applyRoot);
+    $coordinatorApplier = new PackageOwnedFileApplier($guard, LiveFileActivationCapability::current(), $applyRoot);
     $coordinator = new WebcoreApplyCoordinator($mutex, $coordinatorMaintenance, $coordinatorApplier, static fn (CoreMigrationPlan $plan): MigrationRunResult => new MigrationRunResult(MigrationRunResult::NOOP));
     file_put_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt', 'old-content');
     $operationResult = $coordinator->execute($plan, $transition, CoreMigrationPlan::allow('0.12.0', '0.12.0', 'schema', 'schema', []));

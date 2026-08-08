@@ -136,18 +136,18 @@ final class PackageOwnedFileApplier
                 @chmod($temporary, $mode > 0 ? $mode : 0644);
                 $this->guard->verifyDestination($file->path(), $existing);
 
-                if ($beforeActivation !== null) {
-                    $beforeActivation($file->path());
-                }
-
-                if (!@rename($temporary, $destination)) {
-                    @unlink($temporary);
-                    return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $applied, 'Live-file activation failed.');
-                }
-
-                $this->guard->verifyDestination($file->path(), true);
-                if (filesize($destination) !== $written || hash_file('sha256', $destination) !== $actualHash) {
-                    return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $applied, 'Activated live-file identity could not be verified.');
+                $activationFailure = $this->activate(
+                    $temporary,
+                    $destination,
+                    $file->path(),
+                    $existing,
+                    $written,
+                    $actualHash,
+                    $workspace,
+                    $beforeActivation
+                );
+                if ($activationFailure !== null) {
+                    return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $applied, $activationFailure);
                 }
 
                 $applied[] = $file->path();
@@ -162,6 +162,78 @@ final class PackageOwnedFileApplier
         }
 
         return new WebcoreApplyResult(WebcoreApplyResult::COMPLETED, $applied);
+    }
+
+    private function activate(
+        string $temporary,
+        string $destination,
+        string $relativePath,
+        bool $existing,
+        int $written,
+        string $actualHash,
+        string $workspace,
+        ?callable $beforeActivation
+    ): ?string {
+        if (!$existing || DIRECTORY_SEPARATOR !== '\\') {
+            try {
+                if ($beforeActivation !== null) {
+                    $beforeActivation($relativePath);
+                }
+                if (!@rename($temporary, $destination)) {
+                    throw new \RuntimeException('Live-file activation failed.');
+                }
+                $this->guard->verifyDestination($relativePath, true);
+                if (filesize($destination) !== $written || hash_file('sha256', $destination) !== $actualHash) {
+                    throw new \RuntimeException('Activated live-file identity could not be verified.');
+                }
+            } catch (\Throwable $exception) {
+                @unlink($temporary);
+                return $exception->getMessage();
+            }
+
+            return null;
+        }
+
+        $existingSize = @filesize($destination);
+        $existingHash = @hash_file('sha256', $destination);
+        if (!is_int($existingSize) || !is_string($existingHash)) {
+            @unlink($temporary);
+            return 'Existing live-file identity could not be verified.';
+        }
+
+        $backup = $workspace . DIRECTORY_SEPARATOR . 'backup-' . bin2hex(random_bytes(16));
+        if (!@rename($destination, $backup)) {
+            @unlink($temporary);
+            return 'Existing live-file could not be preserved for replacement.';
+        }
+
+        try {
+            if ($beforeActivation !== null) {
+                $beforeActivation($relativePath);
+            }
+            if (!@rename($temporary, $destination)) {
+                throw new \RuntimeException('Live-file activation failed.');
+            }
+            $this->guard->verifyDestination($relativePath, true);
+            if (filesize($destination) !== $written || hash_file('sha256', $destination) !== $actualHash) {
+                throw new \RuntimeException('Activated live-file identity could not be verified.');
+            }
+            if (!@unlink($backup)) {
+                throw new \RuntimeException('Replacement backup could not be removed.');
+            }
+        } catch (\Throwable $exception) {
+            @unlink($destination);
+            $restored = @rename($backup, $destination)
+                && @filesize($destination) === $existingSize
+                && @hash_file('sha256', $destination) === $existingHash;
+            @unlink($temporary);
+
+            return $restored
+                ? $exception->getMessage()
+                : $exception->getMessage() . ' Original live file could not be restored.';
+        }
+
+        return null;
     }
 
     private function removeWorkspace(string $workspace): void

@@ -12,9 +12,7 @@ final class LiveFileActivationCapability
 
     public static function current(): self
     {
-        $windows = DIRECTORY_SEPARATOR === '\\';
-
-        return new self(true, !$windows);
+        return new self(true, true);
     }
 
     public function supportsCreation(): bool { return $this->supportsCreation; }
