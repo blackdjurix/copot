@@ -174,7 +174,7 @@ final class PackageOwnedFileApplier
         string $workspace,
         ?callable $beforeActivation
     ): ?string {
-        if (!$existing || DIRECTORY_SEPARATOR !== '\\') {
+        if (DIRECTORY_SEPARATOR !== '\\') {
             try {
                 if ($beforeActivation !== null) {
                     $beforeActivation($relativePath);
@@ -194,38 +194,51 @@ final class PackageOwnedFileApplier
             return null;
         }
 
-        $existingSize = @filesize($destination);
-        $existingHash = @hash_file('sha256', $destination);
-        if (!is_int($existingSize) || !is_string($existingHash)) {
+        $existingSize = $existing ? @filesize($destination) : null;
+        $existingHash = $existing ? @hash_file('sha256', $destination) : null;
+        if ($existing && (!is_int($existingSize) || !is_string($existingHash))) {
             @unlink($temporary);
             return 'Existing live-file identity could not be verified.';
         }
 
         $backup = $workspace . DIRECTORY_SEPARATOR . 'backup-' . bin2hex(random_bytes(16));
-        if (!@rename($destination, $backup)) {
+        if ($existing && !@rename($destination, $backup)) {
             @unlink($temporary);
             return 'Existing live-file could not be preserved for replacement.';
         }
 
+        $activationTemporary = null;
         try {
             if ($beforeActivation !== null) {
                 $beforeActivation($relativePath);
             }
-            if (!@rename($temporary, $destination)) {
+
+            // Windows renames preserve the source security descriptor. Stage
+            // the activation sibling inside the guarded destination directory
+            // so it inherits that directory's normal access semantics instead
+            // of inheriting the apply-workspace ACL.
+            $activationTemporary = $this->stageWindowsDestination($temporary, $destination, $written, $actualHash);
+            if (!@rename($activationTemporary, $destination)) {
                 throw new \RuntimeException('Live-file activation failed.');
             }
+            $activationTemporary = null;
             $this->guard->verifyDestination($relativePath, true);
             if (filesize($destination) !== $written || hash_file('sha256', $destination) !== $actualHash) {
                 throw new \RuntimeException('Activated live-file identity could not be verified.');
             }
-            if (!@unlink($backup)) {
+            if ($existing && !@unlink($backup)) {
                 throw new \RuntimeException('Replacement backup could not be removed.');
             }
         } catch (\Throwable $exception) {
+            if ($activationTemporary !== null) {
+                @unlink($activationTemporary);
+            }
             @unlink($destination);
-            $restored = @rename($backup, $destination)
+            $restored = !$existing || (
+                @rename($backup, $destination)
                 && @filesize($destination) === $existingSize
-                && @hash_file('sha256', $destination) === $existingHash;
+                && @hash_file('sha256', $destination) === $existingHash
+            );
             @unlink($temporary);
 
             return $restored
@@ -234,6 +247,22 @@ final class PackageOwnedFileApplier
         }
 
         return null;
+    }
+
+    private function stageWindowsDestination(string $source, string $destination, int $expectedSize, string $expectedHash): string
+    {
+        $activationTemporary = dirname($destination) . DIRECTORY_SEPARATOR . '.copot-activation-' . bin2hex(random_bytes(16)) . '.tmp';
+
+        if (!@copy($source, $activationTemporary)) {
+            throw new \RuntimeException('Windows destination activation staging failed.');
+        }
+
+        if (@filesize($activationTemporary) !== $expectedSize || @hash_file('sha256', $activationTemporary) !== $expectedHash) {
+            @unlink($activationTemporary);
+            throw new \RuntimeException('Windows destination activation staging identity could not be verified.');
+        }
+
+        return $activationTemporary;
     }
 
     private function removeWorkspace(string $workspace): void

@@ -124,6 +124,7 @@ try {
     $assert($result->status() === WebcoreApplyResult::COMPLETED, 'Nested package-owned file creation failed.');
     $assert(file_get_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt') === 'new-content', 'Applied file contents were incorrect.');
     $assert(hash_file('sha256', $live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt') === $file->sha256(), 'Applied file hash was not preserved.');
+    $assert(is_readable($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt'), 'Activated package-owned file was not readable after creation.');
 
     file_put_contents($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt', 'old-content');
     $corruptSession = StagingSession::create($live, $stagingRoot);
@@ -165,6 +166,7 @@ try {
 
     file_put_contents($live . DIRECTORY_SEPARATOR . 'keep.txt', 'operator-data');
     $assert($applier->apply($plan)->status() === WebcoreApplyResult::COMPLETED, 'Repeat apply did not complete.');
+    $assert(is_readable($live . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'a.txt'), 'Activated package-owned file was not readable after replacement.');
     $assert(file_get_contents($live . DIRECTORY_SEPARATOR . 'keep.txt') === 'operator-data', 'Apply removed an unrelated live-tree file.');
     file_put_contents($live . DIRECTORY_SEPARATOR . 'blocked', 'not-a-directory');
     try {
