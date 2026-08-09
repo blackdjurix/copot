@@ -82,6 +82,12 @@ The following capabilities are complete and reusable:
 * existing Content and Taxonomy shortcut contributions;
 * current dashboard status and user/application overview rendering.
 
+The current Framework Status value is presentation content from the completed
+Dashboard baseline, not a System Health report. System Health & Status is now
+promoted as a separate locked preparation contract in
+`docs/35_system_health_status_contract.md`; Dashboard consumption remains a
+future WU6 implementation boundary.
+
 This baseline is not treated as missing merely because M3.9 has not begun. The
 existing registry is a completed M2 extension contract, not the full M3.9
 product capability.
