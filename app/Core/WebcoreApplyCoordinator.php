@@ -11,7 +11,8 @@ final class WebcoreApplyCoordinator
         private InstallationMutex $mutex,
         private MaintenanceCoordinator $maintenance,
         private PackageOwnedFileApplier $applier,
-        callable $migrationRunner
+        callable $migrationRunner,
+        private ?RuntimeRegistry $runtimeRegistry = null
     ) {
         $this->migrationRunner = $migrationRunner;
     }
@@ -63,6 +64,8 @@ final class WebcoreApplyCoordinator
                 $this->maintenance->clear($record);
                 return new WebcoreApplyResult(WebcoreApplyResult::FAILED, [], $reason, $record->operationId());
             }
+
+            $this->runtimeRegistry?->assertTransitionAllowed();
 
             $record = $record->advance(LifecycleOperationRecord::APPLYING, 0);
             $this->maintenance->update($record);

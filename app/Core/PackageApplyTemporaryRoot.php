@@ -4,7 +4,7 @@ namespace Copot\Core;
 
 final class PackageApplyTemporaryRoot
 {
-    public static function forProject(string $projectRoot): string
+    public static function forProject(string $projectRoot, ?string $installationId = null): string
     {
         $canonicalProjectRoot = realpath($projectRoot);
         if ($canonicalProjectRoot === false || !is_dir($canonicalProjectRoot) || is_link($projectRoot)) {
@@ -30,7 +30,7 @@ final class PackageApplyTemporaryRoot
             throw new \RuntimeException('Package apply temporary namespace identity is invalid.');
         }
 
-        $projectIdentity = hash('sha256', str_replace('\\', '/', $canonicalProjectRoot));
+        $projectIdentity = hash('sha256', str_replace('\\', '/', $canonicalProjectRoot) . '|' . ($installationId ?? 'default'));
         $projectNamespace = $canonicalNamespace . DIRECTORY_SEPARATOR . $projectIdentity;
         if (!file_exists($projectNamespace) && !mkdir($projectNamespace, 0700)) {
             throw new \RuntimeException('Project package apply temporary namespace could not be created.');

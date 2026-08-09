@@ -4,16 +4,18 @@
 
 - Multi-Installation Isolation Foundation: **PROMOTED / PREPARATION CONTRACT LOCKED**
 - Preparation: **COMPLETE / CONTRACT LOCKED**
-- Implementation: **IN PROGRESS — WU2–WU3 COMPLETE; WU4–WU6 NOT STARTED**
+- Implementation: **IN PROGRESS — WU2–WU4 COMPLETE; WU5–WU6 NOT STARTED**
 - WU1 — Installation Identity, Database Namespace, Compatibility & Runtime
   Contract: **COMPLETE AND CLOSED — contract/evidence closure only**
 - WU2 — Core Logical/Physical Table Naming, Schema Generation & Core
   Compatibility: **COMPLETE AND CLOSED — implementation/evidence scope**
 - WU3 — Module Persistence, Provisioning, Migration & Lifecycle Namespace
   Adoption: **COMPLETE AND CLOSED — implementation/evidence scope**
-- Next technical target: **WU4 — Runtime, Session, Cookie, Filesystem &
-  Coordination Isolation — implementation NOT STARTED**
-- Scope: locked architecture, WU1 contract closure, and WU2–WU3 implementation only
+- WU4 — Runtime, Session, Cookie, Filesystem & Coordination Isolation:
+  **COMPLETE AND CLOSED — implementation/evidence scope**
+- Next technical target: **WU5 — Installer Database Occupancy Classification,
+  Namespace Selection & Existing-Installation Routing — implementation NOT STARTED**
+- Scope: locked architecture, WU1 contract closure, and WU2–WU4 implementation only
 - Production Webcore reconciliation: **NOT STARTED / separately authorized**
 - `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`: **DEFERRED / UNSCHEDULED**
 
@@ -244,8 +246,9 @@ The authoritative contract now explicitly defines every WU1 requirement:
 | Operational authorization | Explicit lifecycle authorization, existing coordination/exclusion reuse, and bounded runtime metadata responsibility |
 
 No WU1 runtime implementation is claimed or authorized. WU1 contract/evidence
-closure, WU2 Core implementation, and WU3 Module implementation are complete;
-the next technical target is WU4, whose implementation remains NOT STARTED.
+closure, WU2 Core implementation, WU3 Module implementation, and WU4 Runtime
+implementation are complete; the next technical target is WU5, whose
+implementation remains NOT STARTED.
 
 ### WU2 — Core Logical/Physical Table Naming, Schema Generation & Core Compatibility
 
@@ -275,9 +278,15 @@ WU3.
 
 ### WU4 — Runtime, Session, Cookie, Filesystem & Coordination Isolation
 
-Prepare runtime registration and compatibility evidence, session/cookie
-isolation, writable filesystem state isolation, cache/temp/lock/staging
-isolation, and lifecycle coordination for shared state.
+**Objective status: COMPLETE AND CLOSED — implementation/evidence scope.**
+
+WU4 delivered durable installation identity, installation-scoped Runtime
+Registry participants and lifecycle states, compatibility evaluation and
+fail-closed transition coordination through `InstallationMutex`, installation-
+derived session/cookie identity, and isolated runtime cache/temp/lock/staging
+and package-apply temporary paths. Runtime/process orchestration remains out
+of scope; WU5 installer occupancy/routing and WU6 cross-subsystem acceptance
+remain NOT STARTED.
 
 ### WU5 — Installer Database Occupancy Classification, Namespace Selection & Existing-Installation Routing
 
@@ -308,13 +317,13 @@ authorized. It is not a prerequisite silently absorbed by this foundation.
 The completed Package Lifecycle, Module Package Lifecycle, Existing-Runtime
 Webcore Lifecycle Adoption, Backup & Recovery, and Webcore Deployment &
 Portability foundations remain complete and closed for their accepted scopes.
-This preparation does not reopen historical checkpoints or claim runtime,
-installer, package, release, or publication completion.
+This preparation does not reopen historical checkpoints or claim installer,
+package, release, or publication completion.
 
 The Multi-Installation Isolation Foundation remains **PROMOTED / PREPARATION
 CONTRACT LOCKED** with implementation **IN PROGRESS**: WU1 contract/evidence
-closure, WU2 Core implementation, and WU3 Module implementation are complete;
-WU4–WU6 remain NOT STARTED.
+closure, WU2 Core implementation, WU3 Module implementation, and WU4 Runtime
+implementation are complete; WU5–WU6 remain NOT STARTED.
 Subsequent implementation planning must cite this contract and provide
 evidence for any amendment to its topology, ownership, compatibility, runtime,
 namespace, or deferred boundaries.

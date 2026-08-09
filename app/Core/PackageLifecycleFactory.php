@@ -23,6 +23,7 @@ final class PackageLifecycleFactory
         $basePath = $deploymentContext->appRoot();
         $publicRoot = $deploymentContext->publicRoot();
         $storage = $basePath . DIRECTORY_SEPARATOR . 'storage';
+        $installationIdentity = (new InstallationIdentityStore($storage))->getOrCreate();
         $database = new Database(new Config($basePath . DIRECTORY_SEPARATOR . 'config'));
         $baselineCatalog = CanonicalSchemaBaselineCatalog::forProject($basePath);
         $registry = new CoreMigrationRegistry('copot-core-current', []);
@@ -31,15 +32,15 @@ final class PackageLifecycleFactory
         $operationStore = new LifecycleOperationStore($storage);
         $maintenance = new MaintenanceCoordinator($operationStore);
         $liveGuard = new LiveTreePathGuard($basePath);
-        $intake = new ZipIntakeService($basePath);
+        $intake = new ZipIntakeService($basePath, null, null, null, null, $installationIdentity->value());
         $installationState = new InstallationState($storage);
         $committedStore = new CommittedLifecycleStateStore($storage);
         $migrationRunner = new CoreMigrationRunner($ledger);
-        $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath);
+        $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath, $installationIdentity->value());
         $applier = new PackageOwnedFileApplier($liveGuard, LiveFileActivationCapability::current(), $applyTemporaryRoot);
         $applyCoordinator = new WebcoreApplyCoordinator($mutex, $maintenance, $applier, static function (CoreMigrationPlan $plan) use ($database, $migrationRunner): MigrationRunResult {
             return $migrationRunner->run($database->connection(), $plan);
-        });
+        }, new RuntimeRegistry($storage, $installationIdentity, $mutex));
         $healthCoordinator = new HealthIntegrityCommitCoordinator(
             $mutex,
             $maintenance,

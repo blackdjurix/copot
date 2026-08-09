@@ -40,8 +40,9 @@ Multi-Installation Isolation Foundation: PROMOTED / PREPARATION CONTRACT LOCKED
 Multi-Installation WU1 contract/evidence closure: COMPLETE AND CLOSED
 Multi-Installation WU2 Core implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU3 Module implementation/evidence: COMPLETE AND CLOSED
-Multi-Installation implementation beyond WU3: NOT STARTED
-Next technical target: WU4 — Runtime, Session, Cookie, Filesystem & Coordination Isolation
+Multi-Installation WU4 Runtime implementation/evidence: COMPLETE AND CLOSED
+Multi-Installation implementation beyond WU4: NOT STARTED
+Next technical target: WU5 — Installer Database Occupancy Classification, Namespace Selection & Existing-Installation Routing
 Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (released and published; production reconciliation remains separate)
@@ -51,7 +52,7 @@ Release advancement policy: release-based, not feature-based; REPAIR is not a re
 Current boundary: production Webcore reconciliation remains NOT STARTED and separately authorized; Server-empty Bootstrap remains DEFERRED / UNSCHEDULED; v0.13.0 tag and publication are complete, while future release actions remain separately controlled.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
-Current active implementation branch: feature/multi-installation-wu3-module-namespace
+Current active implementation branch: feature/multi-installation-wu4-runtime-isolation
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
 Completed delivery slice: Webcore first

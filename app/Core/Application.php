@@ -20,6 +20,8 @@ class Application
     private EventDispatcher $events;
     private View $view;
     private Database $database;
+    private InstallationIdentity $installationIdentity;
+    private RuntimeRegistry $runtimeRegistry;
     private SettingsService $settings;
     private string $siteName;
     private string $timezone;
@@ -55,6 +57,8 @@ class Application
         $this->basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
         $this->diagnostics = new Diagnostics($this->basePath);
         $this->config = new Config($this->path('config'));
+        $this->installationIdentity = (new InstallationIdentityStore($this->path('storage')))->getOrCreate();
+        $this->runtimeRegistry = new RuntimeRegistry($this->path('storage'), $this->installationIdentity, new InstallationMutex($this->path('storage')));
         $this->router = new Router($this->deployment);
         $this->events = new SynchronousEventDispatcher();
         $this->view = new View($this->path('resources/views'));
@@ -71,7 +75,7 @@ class Application
             $this->deployment
         );
         $this->initializeRuntimeSettings($settingsRegistry);
-        $this->session = new Session($this->config);
+        $this->session = new Session($this->config, $this->installationIdentity);
         $this->csrf = new Csrf($this->session);
         $this->auth = new Auth(
             $this->config,
@@ -216,6 +220,16 @@ class Application
     public function session(): Session
     {
         return $this->session;
+    }
+
+    public function installationIdentity(): InstallationIdentity
+    {
+        return $this->installationIdentity;
+    }
+
+    public function runtimeRegistry(): RuntimeRegistry
+    {
+        return $this->runtimeRegistry;
     }
 
     public function csrf(): Csrf

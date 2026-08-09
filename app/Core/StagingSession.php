@@ -12,7 +12,7 @@ final class StagingSession
     ) {
     }
 
-    public static function create(string $liveRoot, ?string $configuredRoot = null): self
+    public static function create(string $liveRoot, ?string $configuredRoot = null, ?string $installationId = null): self
     {
         $livePath = realpath($liveRoot);
 
@@ -20,8 +20,11 @@ final class StagingSession
             throw new \RuntimeException('Live Webcore root is unavailable.');
         }
 
-        $namespace = $configuredRoot
-            ?? sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-package-staging';
+        $namespace = $configuredRoot;
+        if ($namespace === null && $installationId !== null) {
+            $namespace = InstallationRuntimePaths::forInstallation($installationId)->packageStaging();
+        }
+        $namespace ??= sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-package-staging';
         $namespace = rtrim($namespace, '/\\');
 
         if ($namespace === '' || str_contains($namespace, "\0")) {

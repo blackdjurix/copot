@@ -9,7 +9,8 @@ final class ZipIntakeService
         private ?string $configuredStagingRoot = null,
         private ?ArchiveLimits $limits = null,
         private ?ZipArchiveInspector $inspector = null,
-        private ?StagedArchiveExtractor $extractor = null
+        private ?StagedArchiveExtractor $extractor = null,
+        private ?string $installationId = null
     ) {
         $this->limits ??= new ArchiveLimits();
         $this->inspector ??= new ZipArchiveInspector();
@@ -27,7 +28,7 @@ final class ZipIntakeService
         }
 
         $limits = $this->limits;
-        $session = StagingSession::create($this->liveRoot, $this->configuredStagingRoot);
+        $session = StagingSession::create($this->liveRoot, $this->configuredStagingRoot, $this->installationId);
 
         try {
             $archiveSha256 = $this->copyArchive($sourcePath, $session, $limits);

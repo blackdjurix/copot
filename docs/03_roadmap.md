@@ -650,7 +650,7 @@ Release advancement policy: release-based, not feature-based; REPAIR is not a re
 Current boundary: production Webcore reconciliation remains NOT STARTED and separately authorized; Server-empty Bootstrap remains DEFERRED / UNSCHEDULED; v0.13.0 tag and publication are complete, while future release actions remain separately controlled.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
-Current active implementation branch: feature/multi-installation-wu3-module-namespace
+Current active implementation branch: feature/multi-installation-wu4-runtime-isolation
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
 Completed delivery slice: Webcore first
@@ -812,10 +812,12 @@ documentation reconciliation is complete; Multi-Installation Isolation
 Foundation is PROMOTED / PREPARATION CONTRACT LOCKED in
 `docs/34_multi_installation_isolation_foundation_contract.md`, with
 WU1 contract/evidence closure COMPLETE AND CLOSED, WU2 Core
-implementation/evidence COMPLETE AND CLOSED, and WU3 Module
-implementation/evidence COMPLETE AND CLOSED. Implementation beyond WU3 is NOT
-STARTED. WU4 — Runtime, Session, Cookie, Filesystem & Coordination Isolation
-— is the next technical target and its implementation is NOT STARTED. Any other candidate work requires separate
+implementation/evidence COMPLETE AND CLOSED, WU3 Module
+implementation/evidence COMPLETE AND CLOSED, and WU4 Runtime
+implementation/evidence COMPLETE AND CLOSED. Implementation beyond WU4 is NOT
+STARTED. WU5 — Installer Database Occupancy Classification, Namespace Selection
+& Existing-Installation Routing — is the next technical target and its
+implementation is NOT STARTED. Any other candidate work requires separate
 planning and contract authorization. Server-Empty Bootstrap remains DEFERRED /
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.

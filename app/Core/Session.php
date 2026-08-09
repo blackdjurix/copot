@@ -4,7 +4,7 @@ namespace Copot\Core;
 
 class Session
 {
-    public function __construct(private Config $config)
+    public function __construct(private Config $config, private ?InstallationIdentity $installation = null)
     {
     }
 
@@ -14,20 +14,33 @@ class Session
             return;
         }
 
-        session_name($this->config->get('session.name', 'COPOTSESSID'));
+        session_name($this->cookieName());
 
         $lifetimeSeconds = (int) $this->config->get('session.lifetime', 120) * 60;
         ini_set('session.gc_maxlifetime', (string) $lifetimeSeconds);
 
         session_set_cookie_params([
             'lifetime' => $lifetimeSeconds,
-            'path' => $this->config->get('session.path', '/'),
+            'path' => $this->cookiePath(),
             'secure' => $this->config->get('session.secure', false),
             'httponly' => $this->config->get('session.http_only', true),
             'samesite' => $this->config->get('session.same_site', 'Lax'),
         ]);
 
         session_start();
+    }
+
+    public function cookieName(): string
+    {
+        $base = (string) $this->config->get('session.name', 'COPOTSESSID');
+        return $this->installation === null
+            ? $base
+            : $base . '_' . substr(hash('sha256', $this->installation->value()), 0, 16);
+    }
+
+    public function cookiePath(): string
+    {
+        return (string) $this->config->get('session.path', '/');
     }
 
     public function get(string $key, mixed $default = null): mixed

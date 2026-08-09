@@ -6,7 +6,7 @@ use PDO;
 
 final class ModuleApplyCoordinator
 {
-    public function __construct(private InstallationMutex $mutex, private ModuleLifecycleOperationStore $operations, private PackageOwnedFileApplier $applier, private ModuleLifecycleStateStore $states, private ModuleTargetIntegrityVerifier $integrity, private string $liveRoot) {}
+    public function __construct(private InstallationMutex $mutex, private ModuleLifecycleOperationStore $operations, private PackageOwnedFileApplier $applier, private ModuleLifecycleStateStore $states, private ModuleTargetIntegrityVerifier $integrity, private string $liveRoot, private ?RuntimeRegistry $runtimeRegistry = null) {}
 
     /** @param callable(PDO,ModuleTransitionPlan,ModulePackageInspection):ModuleMigrationReconciliationResult $migrationRunner @param callable(ModuleTransitionPlan,ModulePackageInspection):ModuleProvisioningReconciliationResult $provisioningRunner @param callable(ModuleTransitionPlan,ModulePackageInspection):ModulePermissionReconciliationResult $permissionRunner */
     public function execute(ModulePackageInspection $inspection, ModuleTransitionPlan $transition, ModuleDependencyConflictPlan $conflicts, PDO $connection, callable $migrationRunner, callable $provisioningRunner, callable $permissionRunner, ?callable $moduleHealthProbe = null): ModuleApplyResult
@@ -20,6 +20,7 @@ final class ModuleApplyCoordinator
             if ($target->contract()->moduleIdentity()->value() !== $contract->moduleIdentity()->value() || $target->contract()->packageIdentity()->value() !== $contract->packageIdentity()->value()) return new ModuleApplyResult(ModuleApplyResult::FAILED,'Inspection and transition target identities do not match.');
             if(!$transition->accepted()) return new ModuleApplyResult(ModuleApplyResult::FAILED,$transition->reason());
             if(!$conflicts->accepted() || $conflicts->target()->contract()->moduleIdentity()->value()!==$contract->moduleIdentity()->value()) return new ModuleApplyResult(ModuleApplyResult::FAILED,'Dependency/conflict plan is not accepted for this Module target.');
+            $this->runtimeRegistry?->assertTransitionAllowed();
             $this->assertOwnedPayload($inspection);
             $plan=WebcoreApplyPlan::fromPayload($inspection->livePayload());
             $operationId=bin2hex(random_bytes(16)); $pendingMigration=hash('sha256','pending:'.$contract->moduleIdentity()->value()); $now=gmdate(DATE_ATOM);
