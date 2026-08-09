@@ -4,7 +4,7 @@
 
 - Multi-Installation Isolation Foundation: **PROMOTED / PREPARATION CONTRACT LOCKED**
 - Preparation: **COMPLETE / CONTRACT LOCKED**
-- Implementation: **WU1–WU5 COMPLETE; WU6 NOT STARTED**
+- Implementation: **WU1–WU6 COMPLETE; WU6 acceptance PASS**
 - WU1 — Installation Identity, Database Namespace, Compatibility & Runtime
   Contract: **COMPLETE AND CLOSED — contract/evidence closure only**
 - WU2 — Core Logical/Physical Table Naming, Schema Generation & Core
@@ -13,19 +13,19 @@
   Adoption: **COMPLETE AND CLOSED — implementation/evidence scope**
 - WU4 — Runtime, Session, Cookie, Filesystem & Coordination Isolation:
   **COMPLETE AND CLOSED — implementation/evidence scope**
-- Next technical target: **WU6 — Cross-Subsystem Integration &
-  Multi-Installation / Multi-Runtime Acceptance — implementation NOT STARTED**
-- Scope: locked architecture, WU1 contract closure, and WU2–WU5 implementation only
+- WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime
+  Acceptance: **COMPLETE AND ACCEPTED — implementation/evidence scope**
+- Scope: locked architecture, WU1 contract closure, WU2–WU5 implementation,
+  and WU6 cross-subsystem acceptance
 - Production Webcore reconciliation: **NOT STARTED / separately authorized**
 - `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`: **DEFERRED / UNSCHEDULED**
 
 This contract promotes Multi-Installation Isolation Foundation into the
 authoritative Post-M3 work stream. WU1 contract/evidence closure and WU2–WU5
 implementation/evidence are complete and accepted for their defined scopes;
-WU5 is integrated into authoritative `main`. WU6 is the next technical target
-and WU6 implementation remains NOT STARTED; any later implementation
-authorization must preserve this contract or document an evidence-backed
-amendment.
+WU5 is integrated into authoritative `main`. WU6 is complete and accepted on
+the dedicated WU6 feature branch; any later implementation authorization must
+preserve this contract or document an evidence-backed amendment.
 
 ## Relationship to completed foundations
 
@@ -331,8 +331,19 @@ and Backup/Recovery. Acceptance must prove disjoint ownership, compatibility
 gates, explicit intent routing, collision handling, and preservation of the
 completed predecessor boundaries.
 
-No work unit authorizes implementation by itself. Implementation requires a
-separate explicit scope and validation decision.
+**Objective status: COMPLETE AND ACCEPTED — implementation/evidence scope.**
+
+WU6 delivered the focused cross-subsystem acceptance at
+`tests/multi_installation_wu6_cross_subsystem_acceptance.php`. The acceptance
+uses two real MySQL namespaces in one temporary database and verifies complete
+disjoint Core/Module ownership sets, installation-scoped Core schema-generation
+metadata, multi-runtime compatibility and fail-closed transition behavior,
+installer intent/collision routing, session/runtime/package staging isolation,
+Module migration state, Backup/Recovery identity and root separation, and
+Portability deployment-root separation. The impacted WU2–WU5, Package
+Lifecycle, Module Package Lifecycle, Backup/Recovery, and Portability focused
+tests passed under the supported PHP 8.5 runtime with PDO MySQL, PDO SQLite,
+GD, and ZipArchive capabilities.
 
 ## Boundaries and preparation closure
 
@@ -356,7 +367,8 @@ integrated into authoritative `main` at
 `a83c780cf7c5e1ca614ab4dc51a30b44c3aff53c`**: WU1 contract/evidence closure,
 WU2 Core implementation, WU3 Module implementation, WU4 Runtime
 implementation, and WU5 Installer implementation/evidence are complete and
-accepted; WU6 remains NOT STARTED.
+accepted; WU6 cross-subsystem acceptance is complete and accepted on the
+dedicated feature branch.
 Subsequent implementation planning must cite this contract and provide
 evidence for any amendment to its topology, ownership, compatibility, runtime,
 namespace, or deferred boundaries.
