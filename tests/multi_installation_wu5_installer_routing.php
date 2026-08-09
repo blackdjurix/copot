@@ -9,6 +9,8 @@ use Copot\Core\InstallerIntent;
 use Copot\Core\InstallerNamespaceAvailability;
 use Copot\Core\InstallerNamespaceAnalyzer;
 use Copot\Core\InstallerRoutingPlanner;
+use Copot\Core\InstallationIdentity;
+use Copot\Core\InstallerOwnershipProof;
 
 $basePath = dirname(__DIR__);
 chdir($basePath);
@@ -33,13 +35,21 @@ $assert($empty->classification() === InstallerDatabaseOccupancy::EMPTY, 'Empty d
 $foreign = $classifier->classify(['external_orders']);
 $assert($foreign->classification() === InstallerDatabaseOccupancy::FOREIGN_ONLY, 'Foreign-only database was not classified as FOREIGN_ONLY.');
 $assert($classifier->classify(['users'])->classification() === InstallerDatabaseOccupancy::FOREIGN_ONLY, 'A generic physical collision falsely proved COPOT ownership.');
-$copotEmpty = $classifier->classify($objects());
+$unprovenComplete = $classifier->classify($objects());
+$assert($unprovenComplete->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'A complete COPOT-shaped foreign table set falsely proved ownership.');
+$proof = static function (string $namespace, string $hex): InstallerOwnershipProof {
+    return new InstallerOwnershipProof(new InstallationIdentity('inst_' . $hex), $namespace, 'core-schema-generation:test', str_repeat($hex[0], 64));
+};
+$emptyProof = $proof('', 'a123456789abcdef123456789abcdef1');
+$alphaProof = $proof('alpha', 'b123456789abcdef123456789abcdef1');
+$betaProof = $proof('beta', 'c123456789abcdef123456789abcdef1');
+$copotEmpty = $classifier->classify($objects(), [$emptyProof]);
 $assert($copotEmpty->classification() === InstallerDatabaseOccupancy::COPOT && $copotEmpty->copotNamespaces() === [''], 'Existing COPOT empty namespace was not detected.');
-$copotAlpha = $classifier->classify($objects('alpha'));
+$copotAlpha = $classifier->classify($objects('alpha'), [$alphaProof]);
 $assert($copotAlpha->classification() === InstallerDatabaseOccupancy::COPOT && $copotAlpha->copotNamespaces() === ['alpha'], 'Existing non-empty COPOT namespace was not detected.');
-$multiple = $classifier->classify(array_merge($objects('alpha'), $objects('beta')));
+$multiple = $classifier->classify(array_merge($objects('alpha'), $objects('beta')), [$alphaProof, $betaProof]);
 $assert($multiple->classification() === InstallerDatabaseOccupancy::MULTIPLE_COPOT, 'Multiple COPOT installations were not classified.');
-$mixed = $classifier->classify(array_merge($objects('alpha'), ['external_orders']));
+$mixed = $classifier->classify(array_merge($objects('alpha'), ['external_orders']), [$alphaProof]);
 $assert($mixed->classification() === InstallerDatabaseOccupancy::MIXED, 'Mixed COPOT and foreign objects were not classified.');
 $ambiguous = $classifier->classify(['users', 'roles']);
 $assert($ambiguous->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Incomplete COPOT-shaped evidence did not fail closed.');
@@ -65,6 +75,11 @@ $blocked = static function (callable $operation) use ($assert): void {
 $blocked(fn () => $planner->plan($foreign, InstallerIntent::FRESH));
 $blocked(fn () => $planner->plan($foreign, InstallerIntent::COEXIST, ''));
 $blocked(fn () => $planner->plan($copotAlpha, InstallerIntent::FRESH, 'beta'));
+$blocked(fn () => $planner->plan($unprovenComplete, InstallerIntent::ADOPT));
+$contradictory = $classifier->classify($objects('alpha'), [$proof('', 'd123456789abcdef123456789abcdef1')]);
+$assert($contradictory->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Contradictory namespace ownership evidence did not fail closed.');
+$duplicateProof = $classifier->classify($objects('alpha'), [$alphaProof, $proof('alpha', 'e123456789abcdef123456789abcdef1')]);
+$assert($duplicateProof->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Conflicting COPOT ownership evidence did not fail closed.');
 $assert($planner->plan($copotEmpty, InstallerIntent::ADOPT)->namespace() === '', 'Adoption did not preserve the legitimate empty namespace.');
 $assert($planner->plan($copotAlpha, InstallerIntent::ADOPT)->namespace() === 'alpha', 'Adoption did not preserve the non-empty namespace.');
 $assert($planner->plan($copotAlpha, InstallerIntent::MIGRATE)->route() === InstallerRoutingPlanner::MIGRATE, 'Migration/update routing failed.');

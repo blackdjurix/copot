@@ -12,7 +12,8 @@ class InstallerDatabaseSetup
     ) {
     }
 
-    public function install(array $configuration, bool $requirementsPassed, string $intent = InstallerIntent::FRESH): array
+    /** @param list<InstallerOwnershipProof> $ownershipProofs */
+    public function install(array $configuration, bool $requirementsPassed, string $intent = InstallerIntent::FRESH, array $ownershipProofs = []): array
     {
         if (!$requirementsPassed) {
             throw new InstallationException('Installer requirements are not satisfied.');
@@ -25,7 +26,7 @@ class InstallerDatabaseSetup
         }
 
         try {
-            $inspection = $this->probe->inspect($configuration);
+            $inspection = $this->probe->inspect($configuration, $ownershipProofs);
             $server = $inspection['server'];
             $requestedNamespace = array_key_exists('namespace', $configuration) ? (string) $configuration['namespace'] : null;
             $routing = (new InstallerRoutingPlanner())->plan($inspection['occupancy'], $intent, $requestedNamespace);

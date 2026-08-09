@@ -110,7 +110,10 @@ and foreign keys where material. WU5 owns installer-time namespace
 availability, collision analysis against the complete COPOT-owned object set,
 explicit intent routing, and fail-closed adoption/coexistence decisions.
 Foreign objects remain observational evidence and are never claimed by
-routing.
+routing. COPOT ownership is accepted only when a transient proof assembled
+from existing installation identity, Core schema-generation, migration-ledger,
+and schema-health evidence matches the observed complete object set; physical
+table shape alone is ambiguous.
 
 Routing rules:
 

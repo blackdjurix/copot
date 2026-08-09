@@ -24,7 +24,8 @@ class InstallerDatabaseProbe
     }
 
     /** @return array{server: array, occupancy: InstallerDatabaseOccupancyResult} */
-    public function inspect(array $configuration): array
+    /** @param list<InstallerOwnershipProof> $proofs */
+    public function inspect(array $configuration, array $proofs = []): array
     {
         foreach (['host', 'port', 'database', 'username', 'password'] as $field) {
             if (!array_key_exists($field, $configuration)) {
@@ -66,7 +67,7 @@ class InstallerDatabaseProbe
             throw new InstallationException('Database connection could not be verified.');
         }
 
-        return ['server' => $server, 'occupancy' => (new InstallerDatabaseOccupancyClassifier())->classify($objects)];
+        return ['server' => $server, 'occupancy' => (new InstallerDatabaseOccupancyClassifier())->classify($objects, $proofs)];
     }
 
     public function validateServerVersion(string $serverVersion): array
