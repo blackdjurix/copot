@@ -20,9 +20,11 @@
 - `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`: **DEFERRED / UNSCHEDULED**
 
 This contract promotes Multi-Installation Isolation Foundation into the
-authoritative Post-M3 work stream. WU2 implementation is limited to the Core
-boundaries recorded below. Later WU4–WU6 implementation authorization must
-preserve this contract or document an evidence-backed amendment.
+authoritative Post-M3 work stream. WU1 contract/evidence closure and WU2–WU4
+implementation are complete for their accepted scopes. WU5 is the next
+technical target and WU5–WU6 implementation remains NOT STARTED; any later
+implementation authorization must preserve this contract or document an
+evidence-backed amendment.
 
 ## Relationship to completed foundations
 
@@ -35,37 +37,45 @@ It does not reopen them. Portability continues to own generic `APP_ROOT`,
 Server-empty package bootstrap and production Webcore reconciliation remain
 separate boundaries.
 
-## Current repository evidence
+## Preparation-time repository evidence
 
-The focused preparation audit establishes this baseline:
+The focused preparation audit established the following pre-WU2
+implementation baseline. These findings are retained as historical evidence;
+they do not describe the current WU2–WU4 implementation state.
 
 1. `app/Core/Database.php`, `database/schema.sql`, Core repositories, Module
-   repositories, and upgrade SQL use fixed physical table names. No centralized
-   logical-to-physical table naming boundary or table-prefix implementation
-   currently exists.
-2. `app/Core/InstallerDatabaseProbe.php` classifies a database only by the
-   total count of information-schema objects and rejects every non-empty
-   database. `app/Core/InstallerSchemaRunner.php` executes the fixed schema
-   without namespace substitution.
-3. `core_migration_history` is the fixed Core migration ledger table. Module
-   migration state is maintained by the existing Module migration ledger under
-   the private `.copot-lifecycle` storage namespace. These ledgers and the
-   shared lifecycle/mutex machinery are the integration points; this contract
-   does not create a second migration framework.
-4. `InstallationMutex`, lifecycle operation state, committed lifecycle state,
-   package-apply temporary storage, and recovery storage are installation-root
-   or configured-root scoped today. Their future installation/runtime scope
-   must be made explicit before implementation.
-5. `config/session.php` and `app/Core/Session.php` configure one session name,
-   cookie path, and CSRF namespace from deployment configuration. Session,
-   cookie, cache, temporary, lock, and staging isolation therefore require an
-   explicit Multi-Installation boundary in later work.
+   repositories, and upgrade SQL used fixed physical table names. No
+   centralized logical-to-physical table naming boundary or table-prefix
+   implementation existed at the preparation audit checkpoint.
+2. At the preparation audit checkpoint, `app/Core/InstallerDatabaseProbe.php`
+   classified a database only by the total count of information-schema
+   objects and rejected every non-empty database. The then-current
+   `app/Core/InstallerSchemaRunner.php` executed the fixed schema without
+   namespace substitution.
+3. At the preparation audit checkpoint, `core_migration_history` was the fixed
+   Core migration ledger table and Module migration state was maintained by
+   the existing Module migration ledger under the private `.copot-lifecycle`
+   storage namespace. WU2 and WU3 subsequently applied the accepted namespace
+   boundary to those existing ledger semantics. These ledgers and the shared
+   lifecycle/mutex machinery remain the integration points; this contract does
+   not create a second migration framework.
+4. At the preparation audit checkpoint, `InstallationMutex`, lifecycle
+   operation state, committed lifecycle state, package-apply temporary
+   storage, and recovery storage were installation-root or configured-root
+   scoped. WU4 subsequently made the accepted installation/runtime scope
+   explicit while preserving the existing coordination boundaries.
+5. At the preparation audit checkpoint, `config/session.php` and
+   `app/Core/Session.php` configured one session name, cookie path, and CSRF
+   namespace from deployment configuration. WU4 subsequently added the
+   accepted installation-derived session/cookie and runtime-path isolation;
+   WU5 remains responsible for installer routing and namespace selection.
 6. Existing information-schema inspection in installer, schema health, and
    Backup/Recovery code is available for ownership and compatibility evidence,
    but a generic physical table collision is not ownership proof.
 
-These findings describe current implementation limits. They do not authorize
-implementation in this preparation branch.
+WU2–WU4 subsequently superseded the implementation limitations recorded in
+items 1–5 within their accepted scopes. The historical findings did not, and
+do not, authorize WU5 or WU6 implementation.
 
 ## Locked architecture
 
@@ -93,10 +103,12 @@ orchestration is outside this foundation.
 ### Database namespace and ownership
 
 Table prefix/namespace is an isolation mechanism, not installation identity.
-Later implementation must provide one logical-to-physical database-object
-naming boundary used by Core and Modules, preserve empty-prefix backward
-compatibility, and analyze collisions against the complete COPOT-owned object
-set, including constraints, indexes, and foreign keys where material.
+WU2 and WU3 provide one logical-to-physical database-object naming boundary
+for Core and Module-owned objects, preserve empty-prefix backward
+compatibility, and apply namespace-sensitive naming to constraints, indexes,
+and foreign keys where material. WU5 remains responsible for installer-time
+namespace availability and collision analysis against the complete
+COPOT-owned object set.
 
 Routing rules:
 
