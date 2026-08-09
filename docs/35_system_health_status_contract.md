@@ -5,20 +5,20 @@
 ```text
 System Health & Status: PROMOTED / PREPARATION
 Contract: LOCKED
-Implementation: WU1 COMPLETE / WU2–WU6 NOT STARTED
-WU1: IMPLEMENTATION COMPLETE / VALIDATION COMPLETE
+Implementation: WU1–WU2 COMPLETE / WU3–WU6 NOT STARTED
+WU1–WU2: IMPLEMENTATION COMPLETE / VALIDATION COMPLETE
 Dependency: INDEPENDENT
 Operational consequence: CONTINUE
 ```
 
 This contract promotes System Health & Status from planning concept into
-authoritative repository preparation. WU1 implementation is recorded below;
-the contract authorizes no WU2–WU6, schema, Dashboard, Module, permission,
+authoritative repository preparation. WU1 and WU2 implementation are recorded
+below; the contract authorizes no WU3–WU6, schema, Dashboard, Module, permission,
 production-reconciliation, release, or publication work.
 
-WU1 implementation and focused validation are complete. The delivered
-foundation is producer-agnostic and does not implement WU2 or later producer
-or consumer behavior. WU2 remains the next separately authorized work unit.
+WU1 and WU2 implementation and focused validation are complete. The delivered
+foundation is producer-agnostic and WU2 adapts only existing Webcore evidence;
+WU3 remains the next separately authorized work unit.
 
 System Health does not depend on Production Webcore Reconciliation,
 Server-Empty Bootstrap & Package Clean Install, broad MR.x refinement, or
@@ -229,21 +229,23 @@ isolation boundaries. This contract does not reopen Multi-Installation.
 
 ## 15. Work units
 
-WU1 is complete for the reusable foundation. WU2–WU6 remain `NOT STARTED`:
+WU1–WU2 are complete for the reusable foundation. WU3–WU6 remain `NOT STARTED`:
 
 1. **WU1 — System Health Contract & Aggregation Foundation** — **COMPLETE**
-2. **WU2 — Webcore Lifecycle Health Producer**
+2. **WU2 — Webcore Lifecycle Health Producer** — **COMPLETE**
 3. **WU3 — Bundled Core Module Health Adoption**
 4. **WU4 — Server / Runtime Baseline Producer**
 5. **WU5 — Cross-Producer Acceptance & Report Hardening**
 6. **WU6 — Dashboard System Status Consumer**
 
-WU2 is the next technical target only after separate implementation
-authorization. This WU1 delivery does not authorize WU2 implementation.
+WU3 is the next technical target only after separate implementation
+authorization. This WU2 delivery does not authorize WU3 implementation.
 
 Focused validation: `tests/system_health_wu1.php` passed 23 assertions under
 the supported XAMPP PHP 8.5 runtime. PHP lint passed for all WU1 source and
-test files.
+test files. WU2 validation: `tests/system_health_wu2.php` passed 14 assertions;
+the WU1 predecessor suite passed again with 23 assertions. PHP lint passed for
+all WU2 source and test files.
 
 ## 16. Acceptance criteria for later implementation
 

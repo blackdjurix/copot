@@ -57,6 +57,7 @@ final class SystemHealthSanitizer
             || preg_match('~[A-Za-z]:[\\\\/]~', $value) === 1
             || preg_match('~(?:^|[\s(])/(?:[A-Za-z0-9._-]+/)+~', $value) === 1
             || preg_match('~(?:^|[\s(])(?:app|storage|modules|vendor|\.copot-lifecycle)[\\\\/]~i', $value) === 1
+            || preg_match('/\b[a-z][a-z0-9]*_[a-z0-9_]+\b/i', $value) === 1
             || preg_match('/(?:stack trace|lifecycle operation|package internals?)/i', $value) === 1;
     }
 }
