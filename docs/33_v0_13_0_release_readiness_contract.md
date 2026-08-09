@@ -212,8 +212,12 @@ documentation gate`) using the official `build/package.php` builder. The
 output is `dist/copot-v0.13.0.zip`, size 2,257,838 bytes, with SHA-256
 `0ebdd8541ee5f4652f5ec976391394ca38cf413ee2459f5ceff7b821b2e629f8`.
 The ZIP contains 566 entries: 565 package-owned inventory entries plus
-`.copot/package.json`. The inventory identity is
-`b2d4bcc7192fcaa02e94a6a8faebb8a832484a6454e76f50f8590d7dcdca0c3c`.
+`.copot/package.json`. The authoritative runtime inventory identity is
+`3e48b4c00e07c1a9c5f572477c69a7e0154ac3547dea7755399691deb6bd8855`, as
+defined by `PackageContract::integrityIdentity()` over the sorted
+`path:byte_size:sha256:ownership` records. The earlier
+`b2d4bcc7192fcaa02e94a6a8faebb8a832484a6454e76f50f8590d7dcdca0c3c` value was
+a compact-JSON aggregate calculation and is non-authoritative.
 The manifest reports target `0.13.0` and release identity `copot-v0.13.0`.
 
 Required package entries were present and forbidden entries were absent. The
@@ -495,7 +499,7 @@ Gate 7: PASS. The exact validated source/artifact pair is frozen:
 source:    dddb87e2afce2224e14c1ec31c39932b39e1b274
 artifact:  dist/copot-v0.13.0.zip
 sha256:    0ebdd8541ee5f4652f5ec976391394ca38cf413ee2459f5ceff7b821b2e629f8
-inventory: b2d4bcc7192fcaa02e94a6a8faebb8a832484a6454e76f50f8590d7dcdca0c3c
+inventory: 3e48b4c00e07c1a9c5f572477c69a7e0154ac3547dea7755399691deb6bd8855
 ```
 
 This establishes v0.13.0 release-candidate readiness only. It does not create
