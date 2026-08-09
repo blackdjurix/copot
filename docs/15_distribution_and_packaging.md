@@ -214,6 +214,6 @@ Deployment-environment verification remains separate and pending for real deploy
 
 ## Deferred Distribution Work
 
-The historical v0.12.0 release artifact was published through the completed release workflow. v0.13.0 remains untagged and unpublished until its release gates pass.
+The historical v0.12.0 release artifact was published through the completed release workflow. v0.13.0 release-candidate readiness is complete, but v0.13.0 remains untagged and unpublished until separately controlled release execution.
 
 Patch distribution, remote updates, package repositories, signing, delta updates, and multi-version maintenance infrastructure remain deferred beyond the v0.12.0 distribution contract.

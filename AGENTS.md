@@ -29,14 +29,15 @@ Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
 Webcore Deployment & Portability Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU1–WU7: COMPLETE AND CLOSED; final human/E2E acceptance: PASS
-Current next target: v0.13.0 Release Readiness
+v0.13.0 Release Readiness: COMPLETE AND CLOSED / RELEASE CANDIDATE READY
+Frozen release documentation baseline: current branch commit after this reconciliation
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (next consolidated release; not tagged or published)
 Current Core Module versions: 0.1.0 independently owned; modules/example excluded
 Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based
 REPAIR remains an operational classification and is not a release event
-Current dependency: v0.13.0 Release Readiness is the immediate cross-track follow-on; production Webcore reconciliation remains NOT STARTED and separately authorized; Server-empty Bootstrap remains DEFERRED / UNSCHEDULED; release, tag, and publication remain separately controlled.
+Current boundary: production Webcore reconciliation remains NOT STARTED and separately authorized; Server-empty Bootstrap remains DEFERRED / UNSCHEDULED; tag and publication remain separately controlled and unexecuted.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
 Current active implementation branch: main
@@ -148,8 +149,9 @@ and contract-locked, WU1–WU7 implementation and final human/E2E acceptance are
 complete and closed for the accepted scope. Existing-Runtime Webcore Lifecycle
 Adoption technical work is closed; the completed Portability foundation
 satisfied the authoritative committed Webcore lifecycle-state and
-representative-runtime prerequisite. Production reconciliation, release
-readiness, tag, and publication remain separate gates.
+representative-runtime prerequisite. Production reconciliation remains NOT
+STARTED and separately authorized; release-candidate readiness is complete;
+tag and publication remain separate gates.
 Backup &
 Recovery implementation, acceptance, and lifecycle closure are recorded in
 `docs/31_backup_recovery_foundation_contract.md`; WU1–WU7 are complete, and IU2
@@ -163,7 +165,7 @@ STARTED.
 Backup & Recovery Foundation: COMPLETE AND CLOSED — WU1–WU7 COMPLETE.
 Version & Release Reconciliation closure gate: COMPLETE.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
-Full Module Package Lifecycle: COMPLETE AND CLOSED for the accepted WU1–WU7 scope; production reconciliation, release readiness, tag, and publication remain separate gates
+Full Module Package Lifecycle: COMPLETE AND CLOSED for the accepted WU1–WU7 scope; production reconciliation remains NOT STARTED; release-candidate readiness is complete; tag and publication remain separate gates
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
 Module Package Lifecycle implementation and acceptance: COMPLETE AND CLOSED — WU1–WU7 automated/runtime validation and final human/E2E acceptance PASS
 Module Package Lifecycle WU1: COMPLETE
