@@ -54,7 +54,7 @@ Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based
 REPAIR remains an operational classification and is not a release event
 Current boundary: production Webcore reconciliation remains NOT STARTED and separately authorized; Server-empty Bootstrap remains DEFERRED / UNSCHEDULED; v0.13.0 tag and publication are complete, while future release actions remain separately controlled.
-System Health & Status: PROMOTED / PREPARATION / CONTRACT LOCKED at `docs/35_system_health_status_contract.md`; implementation and WU1–WU6 remain NOT STARTED. WU1 is the next technical target only after separate implementation authorization.
+System Health & Status: PROMOTED / PREPARATION / CONTRACT LOCKED at `docs/35_system_health_status_contract.md`; WU1 implementation and validation are COMPLETE, while WU2–WU6 remain NOT STARTED. WU2 is the next technical target only after separate implementation authorization.
 Module Permission Dependency / Base Access: separate planning concern; not a System Health dependency.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
