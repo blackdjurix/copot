@@ -2,9 +2,9 @@
 
 ## Purpose
 
-M1.8 Installer Foundation provides a web-based fresh installation flow for copot on PHP/MySQL shared hosting. It prepares one new installation from the canonical project files and existing Core services.
+M1.8 Installer Foundation provides the original web-based fresh installation flow for copot on PHP/MySQL shared hosting. It prepares one new installation from the canonical project files and existing Core services. The later Multi-Installation WU5 extension adds occupancy classification, namespace selection, explicit coexistence, and proven existing-installation adoption/migration routing while preserving the M1.8 fresh-install baseline.
 
-M1.8 is not an upgrade, migration, repair, reset, or provisioning system. The target database must be dedicated to copot and empty before installation begins.
+The original M1.8 slice is not an upgrade, migration, repair, reset, or provisioning system. Its fresh-install target database must be dedicated to copot and empty before schema installation begins; WU5 handles explicit existing-installation routing separately and fails closed without positive ownership evidence.
 
 The installer endpoint is `/install`. Supported database baselines are MySQL 8.0 or newer and MariaDB 10.4.32 or newer.
 
@@ -17,7 +17,7 @@ M1.8 includes:
 * Environment and runtime requirement checks.
 * Database credential validation and connection testing.
 * Persistence of database configuration through the root `.env` pattern already consumed by `Env` and `config/database.php`.
-* Installation of the canonical `database/schema.sql` without a table prefix.
+* Installation of the canonical `database/schema.sql` with WU2/WU3 logical-to-physical naming, preserving the empty namespace and supporting a selected non-empty namespace through WU5 routing.
 * Creation of the first active administrator through a dedicated installer workflow service using `PasswordHasher` and the seeded `admin` role.
 * Initial `site.name`, `site.tagline`, `localization.timezone`, and `localization.locale` overrides through `SettingsService`.
 * Registration and activation of the local `default` frontend theme through the Theme System.
@@ -60,7 +60,7 @@ The canonical schema is validated when database installation runs. Default theme
 
 The installer accepts MySQL host, port, database name, username, and password. It builds a test connection in memory using prepared configuration and must not echo credentials or a DSN containing credentials.
 
-The selected database must already exist and must contain no tables or views. M1.8 does not create databases, add table prefixes, reuse an existing schema, or attempt to distinguish compatible tables from unrelated tables.
+The selected database must already exist. The original M1.8 fresh path requires no tables or views; WU5 now distinguishes empty, foreign, COPOT, mixed, multiple, and ambiguous occupancy, analyzes namespace collisions, and never claims foreign or merely table-shaped objects.
 
 After a successful connection and empty-database check, database values are persisted as these existing environment keys:
 
@@ -88,9 +88,9 @@ The implemented capability flow is:
 2. Start an installer session and issue a CSRF token.
 3. Run runtime, extension, session, and writable-location checks.
 4. Collect database credentials and test the target connection.
-5. Verify that the selected database is dedicated and empty.
+5. Classify database occupancy and namespace availability; fresh installation may use an empty database, coexistence requires an available non-empty namespace, and adoption/migration preserves a proven detected namespace.
 6. Persist database environment configuration atomically.
-7. Execute `database/schema.sql` against the verified empty database.
+7. Execute `database/schema.sql` only for an approved fresh/coexistence route; adoption/migration routing does not reinstall the schema.
 8. Collect first-administrator and initial site/localization values.
 9. Validate all administrator and Settings values before their first database write.
 10. Hash the administrator password with `PasswordHasher`, insert one active user, and assign the seeded `admin` role.
@@ -118,9 +118,9 @@ There is no current user-creation repository. M1.8 uses a dedicated installer ad
 
 The Batch 4 workflow first validates every administrator and initial Settings field, then confirms the complete canonical schema is available and acquires the installer mutex. It rejects an existing email and refuses to create another first administrator when any user already exists. User insertion, assignment to the seeded `admin` role, and the four initial Settings overrides run on the same PDO connection and transaction. A database failure rolls back all administrator, role-assignment, and Settings writes.
 
-Installer progress is derived live on every request from the root `.env` database connection, canonical schema presence, and whether any user already exists. It is not stored in the session. When the active database already has a first administrator, the form is replaced by a controlled completed-state message and a `Change Database` link to `/install?step=database`. That query changes presentation only; it does not alter `.env`, delete data, or bypass the normal requirements, connection, version, empty-database, CSRF, and atomic persistence checks.
+Installer progress is derived live on every request from the root `.env` database connection, canonical schema presence, and whether any user already exists. It is not stored in the session. WU5 routing separately classifies occupancy and namespace availability before fresh, coexistence, adoption, or migration/update execution. When the active database already has a first administrator, the form is replaced by a controlled completed-state message and a `Change Database` link to `/install?step=database`. That query changes presentation only; it does not alter `.env`, delete data, or bypass the normal requirements, connection, version, routing, CSRF, and atomic persistence checks.
 
-The database form uses one stable-width action button. A successful asynchronous connection test changes its label from `Test Database` to `Install Database` without rerendering the password field. Editing any database field marks that browser-only test result stale and restores the test action. This state is presentation-only: the install POST repeats all server-side validation, connection/version and empty-database checks, mutex acquisition, atomic environment persistence, and schema execution.
+The database form uses one stable-width action button. A successful asynchronous connection test changes its label from `Test Database` to `Install Database` without rerendering the password field. Editing any database field marks that browser-only test result stale and restores the test action. This state is presentation-only: the install POST repeats all server-side validation, connection/version and WU5 occupancy/namespace routing checks, mutex acquisition, atomic environment persistence, and route-appropriate schema execution.
 
 ## Baseline Finalization
 
@@ -248,6 +248,14 @@ Implemented first-admin creation, admin-role assignment, four initial Settings v
 ### Batch 5 - Baseline Theme, Modules, and Final Lock
 
 Implemented default-theme activation, Content/Taxonomy installation and enablement, final live-state verification, atomic marker creation, and configured admin redirect.
+
+### Multi-Installation WU5 - Installer Routing
+
+Implemented and accepted occupancy/ownership classification, namespace
+availability analysis, explicit fresh/coexistence/adoption/migration intent,
+transient proof assembly from existing installation and Core health evidence,
+and fail-closed routing. Focused and DB-backed WU5 acceptance passed; WU6
+cross-subsystem acceptance remains not started.
 
 ### Batch 6 - Installer UI and End-to-End Flow
 

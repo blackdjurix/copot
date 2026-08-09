@@ -4,7 +4,7 @@
 
 - Multi-Installation Isolation Foundation: **PROMOTED / PREPARATION CONTRACT LOCKED**
 - Preparation: **COMPLETE / CONTRACT LOCKED**
-- Implementation: **IN PROGRESS — WU2–WU5 COMPLETE; WU6 NOT STARTED**
+- Implementation: **WU1–WU5 COMPLETE; WU6 NOT STARTED**
 - WU1 — Installation Identity, Database Namespace, Compatibility & Runtime
   Contract: **COMPLETE AND CLOSED — contract/evidence closure only**
 - WU2 — Core Logical/Physical Table Naming, Schema Generation & Core
@@ -264,8 +264,8 @@ The authoritative contract now explicitly defines every WU1 requirement:
 
 No WU1 runtime implementation is claimed or authorized. WU1 contract/evidence
 closure, WU2 Core implementation, WU3 Module implementation, and WU4 Runtime
-implementation are complete; the next technical target is WU5, whose
-implementation remains NOT STARTED.
+implementation are complete; at that closure checkpoint the next technical
+target was WU5. WU5 is now complete and accepted on the current feature branch.
 
 ### WU2 — Core Logical/Physical Table Naming, Schema Generation & Core Compatibility
 
@@ -306,11 +306,18 @@ of scope; WU6 cross-subsystem acceptance remains NOT STARTED.
 
 ### WU5 — Installer Database Occupancy Classification, Namespace Selection & Existing-Installation Routing
 
+**Objective status: COMPLETE AND ACCEPTED — implementation/evidence scope.**
+
 Implemented occupancy/ownership classification, namespace collision analysis,
 fresh-install routing, coexistence routing, adoption/migration routing,
 namespace selection, warnings, and fail-closed blocking behavior. The prior
 strict empty-database probe remains available for compatibility; WU5 uses
-separate inspection and planning APIs.
+separate inspection and planning APIs. The bounded transient proof assembler
+reuses installation identity, committed lifecycle state, Core schema-generation,
+migration-ledger identity, and schema-health evidence; table shape alone never
+proves COPOT ownership. Focused WU5 validation passed 36 assertions and
+DB-backed acceptance passed 10 assertions, including real adoption and
+migration/update service routing with zero schema reinstall statements.
 
 ### WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance
 
@@ -339,9 +346,10 @@ This preparation does not reopen historical checkpoints or claim installer,
 package, release, or publication completion.
 
 The Multi-Installation Isolation Foundation remains **PROMOTED / PREPARATION
-CONTRACT LOCKED** with implementation **IN PROGRESS**: WU1 contract/evidence
-closure, WU2 Core implementation, WU3 Module implementation, and WU4 Runtime
-implementation are complete; WU5–WU6 remain NOT STARTED.
+CONTRACT LOCKED** with WU5 implementation/evidence **COMPLETE AND ACCEPTED on
+the current feature branch**: WU1 contract/evidence closure, WU2 Core
+implementation, WU3 Module implementation, and WU4 Runtime implementation are
+complete; WU6 remains NOT STARTED.
 Subsequent implementation planning must cite this contract and provide
 evidence for any amendment to its topology, ownership, compatibility, runtime,
 namespace, or deferred boundaries.

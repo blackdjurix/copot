@@ -814,11 +814,13 @@ Foundation is PROMOTED / PREPARATION CONTRACT LOCKED in
 WU1 contract/evidence closure COMPLETE AND CLOSED, WU2 Core
 implementation/evidence COMPLETE AND CLOSED, WU3 Module
 implementation/evidence COMPLETE AND CLOSED, and WU4 Runtime
-implementation/evidence COMPLETE AND CLOSED. Implementation beyond WU4 is NOT
-STARTED. WU5 — Installer Database Occupancy Classification, Namespace Selection
-& Existing-Installation Routing — is the next technical target and its
-implementation is NOT STARTED. Any other candidate work requires separate
-planning and contract authorization. Server-Empty Bootstrap remains DEFERRED /
+implementation/evidence COMPLETE AND CLOSED. WU5 — Installer Database
+Occupancy Classification, Namespace Selection & Existing-Installation Routing
+— implementation/evidence is COMPLETE AND ACCEPTED on the current feature
+branch, including DB-backed proof assembly and adoption/migration routing.
+Implementation beyond WU5 is NOT STARTED; WU6 is the next technical target and
+remains NOT STARTED. Any other candidate work requires separate planning and
+contract authorization. Server-Empty Bootstrap remains DEFERRED /
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
 Backup & Recovery is a separate platform capability with implementation and

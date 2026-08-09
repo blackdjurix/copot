@@ -35,6 +35,9 @@ Multi-Installation WU1 contract/evidence closure: COMPLETE AND CLOSED
 Multi-Installation WU2 Core implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU3 Module implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU4 Runtime implementation/evidence: COMPLETE AND CLOSED
+Multi-Installation WU5 Installer implementation/evidence: COMPLETE AND ACCEPTED
+on the current feature branch; DB-backed proof-assembly and adoption/migration
+routing acceptance passed.
 Multi-Installation implementation beyond WU5: NOT STARTED
 Next technical target: WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance
 Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded
@@ -657,7 +660,7 @@ Commerce remains a separate M5 phase because its transactional and integration r
 * M1.8 provides a web installer for fresh installations on PHP/MySQL shared hosting.
 * The installer URL is `/install`.
 * The minimum supported PHP runtime is PHP 8.2. PHP 8.2 is accepted with an aging warning, PHP 8.3 or newer is recommended, and PHP 8.4 is preferred. Newer compatible PHP releases must not be rejected solely for being newer.
-* Installation requires a dedicated empty database and does not support table prefixes.
+* The original M1.8 fresh path requires a dedicated empty database; WU5 adds explicit namespace routing for coexistence and proven existing-installation adoption/migration, with fail-closed ownership evidence and no foreign-object claiming.
 * Supported database baselines are MySQL 8.0+ and MariaDB 10.4.32+. MariaDB releases before 10.6 are accepted with a legacy/end-of-life warning. Production recommendations are MySQL 8.4 LTS+ or MariaDB 10.11+, with MariaDB 11.4 LTS preferred.
 * The installer must check runtime requirements and writable locations before changing persistent state.
 * Database credentials must be validated with a connection test and persisted through the existing root `.env` pattern.

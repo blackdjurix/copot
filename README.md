@@ -41,8 +41,11 @@ Multi-Installation WU1 contract/evidence closure: COMPLETE AND CLOSED
 Multi-Installation WU2 Core implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU3 Module implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU4 Runtime implementation/evidence: COMPLETE AND CLOSED
-Multi-Installation implementation beyond WU4: NOT STARTED
-Next technical target: WU5 — Installer Database Occupancy Classification, Namespace Selection & Existing-Installation Routing
+Multi-Installation WU5 Installer implementation/evidence: COMPLETE AND ACCEPTED
+on the current feature branch; DB-backed proof-assembly and adoption/migration
+routing acceptance passed.
+Multi-Installation implementation beyond WU5: NOT STARTED
+Next technical target: WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance
 Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (released and published; production reconciliation remains separate)
@@ -931,7 +934,7 @@ M1.8 provides a fresh-install web flow at:
 /install
 ```
 
-When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The installer checks the environment, tests a dedicated empty database, persists the five `DB_*` connection values in the root `.env`, installs the canonical schema, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables Content, Taxonomy, Settings Manager, Module Manager, Navigation, and the Theme Manager compatibility baseline. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
+When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The original fresh-install path tests an empty database by default; WU5 additionally classifies occupancy, selects namespaces, supports explicit coexistence, and routes proven existing installations through adoption or migration/update while failing closed on unproven ownership. The installer persists database configuration, installs the canonical schema for fresh/coexistence routes, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables the baseline modules. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
 
 Requirements:
 
@@ -939,10 +942,10 @@ Requirements:
 - PDO, `pdo_mysql`, Session, JSON, and Filter support.
 - MySQL 8.0+ or MariaDB 10.4.32+.
 - MySQL 8.4 LTS+ or MariaDB 10.11+ recommended for production; MariaDB 11.4 LTS preferred.
-- A pre-created dedicated empty database. Existing tables or views are rejected.
+- A pre-created database whose occupancy and requested namespace pass the WU5 routing policy; fresh installation may use an empty database, while unsafe collisions and unproven existing ownership are rejected.
 - Writable `storage`, writable root `.env` when present, and a writable project root for same-directory atomic replacement.
 
-M1.8 is designed for conventional PHP/MySQL shared hosting where PHP can write and rename files in the project root and `storage`, and where `flock()` is available. Hosts that prohibit those operations are not supported by an FTP/SFTP fallback. The installer does not create databases, use table prefixes, upgrade an installation, repair/reset partial installations, select optional modules/themes, or provide backup/restore.
+M1.8 is designed for conventional PHP/MySQL shared hosting where PHP can write and rename files in the project root and `storage`, and where `flock()` is available. Hosts that prohibit those operations are not supported by an FTP/SFTP fallback. The original M1.8 installer does not create databases, upgrade an installation, repair/reset partial installations, select optional modules/themes, or provide backup/restore. WU5 adds separately bounded namespace selection and proven existing-installation routing without adopting Server-Empty Bootstrap or production reconciliation.
 
 For a fresh manual check:
 
