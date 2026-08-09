@@ -5,23 +5,24 @@
 ```text
 System Health & Status: PROMOTED / PREPARATION
 Contract: LOCKED
-Implementation: WU1–WU5 COMPLETE / WU6 NOT STARTED
-WU1–WU5: IMPLEMENTATION COMPLETE / VALIDATION COMPLETE
+Implementation: WU1–WU6 COMPLETE
+WU1–WU6: IMPLEMENTATION COMPLETE / VALIDATION COMPLETE
 Dependency: INDEPENDENT
 Operational consequence: CONTINUE
 ```
 
 This contract promotes System Health & Status from planning concept into
-authoritative repository preparation. WU1 through WU5 implementation are recorded
-below; the contract authorizes no WU6, schema, Dashboard, Module, permission,
+authoritative repository preparation. WU1 through WU6 implementation are recorded
+below; the contract authorizes no schema, Dashboard, Module, permission,
 production-reconciliation, release, or publication work.
 
-WU1 through WU5 implementation and focused validation are complete. WU2 adapts
+WU1 through WU6 implementation and focused validation are complete. WU2 adapts
 Webcore evidence, WU3 adopts bundled Core Module evidence through one shared
-producer, and WU4 evaluates only deterministic Copot runtime requirements. No
-module-specific reporters or generic host monitoring were added. WU5 validates
-the combined producer/report boundary without requiring production hardening;
-WU6 remains the next separately authorized work unit.
+producer, WU4 evaluates only deterministic Copot runtime requirements, and WU6
+consumes one already-authorized report through the existing Admin Dashboard
+registry. No module-specific reporters or generic host monitoring were added.
+WU5 validates the combined producer/report boundary without requiring production
+hardening.
 
 System Health does not depend on Production Webcore Reconciliation,
 Server-Empty Bootstrap & Package Clean Install, broad MR.x refinement, or
@@ -211,16 +212,16 @@ requirement and separate decision.
 
 ## 13. Dashboard consumer
 
-Dashboard will consume one already-authorized `SystemHealthReport` through
+Dashboard consumes one already-authorized `SystemHealthReport` through
 the existing Core/Admin Dashboard contribution boundary. Dashboard may render
 bounded status, finding summaries, freshness, availability, and approved
 links.
 
 Dashboard must not diagnose subsystems, query private subsystem repositories
 for health, authorize findings itself, perform remediation, or expose raw
-evidence. The current static `Framework Status` surface is presentation
-content and remains so until the Dashboard consumer WU is separately
-implemented; it is not current runtime health.
+evidence. The current static `Framework Status` surface remains presentation
+content and is not runtime health; the System Health widget is the authorized
+health consumer.
 
 ## 14. Multi-Installation isolation
 
@@ -232,17 +233,16 @@ isolation boundaries. This contract does not reopen Multi-Installation.
 
 ## 15. Work units
 
-WU1–WU5 are complete for the reusable foundation. WU6 remains `NOT STARTED`:
+WU1–WU6 are complete for the reusable foundation:
 
 1. **WU1 — System Health Contract & Aggregation Foundation** — **COMPLETE**
 2. **WU2 — Webcore Lifecycle Health Producer** — **COMPLETE**
 3. **WU3 — Bundled Core Module Health Adoption** — **COMPLETE**
 4. **WU4 — Server / Runtime Baseline Producer** — **COMPLETE**
 5. **WU5 — Cross-Producer Acceptance & Report Hardening** — **COMPLETE**
-6. **WU6 — Dashboard System Status Consumer**
+6. **WU6 — Dashboard System Status Consumer** — **COMPLETE**
 
-WU6 is the next technical target only after separate implementation
-authorization. This WU5 delivery does not authorize WU6 implementation.
+The System Health work units are complete for the accepted contract scope.
 
 Focused validation: `tests/system_health_wu1.php` passed 23 assertions under
 the supported XAMPP PHP 8.5 runtime. PHP lint passed for all WU1 source and
@@ -265,6 +265,11 @@ assertions. WU5 required no production aggregation or sanitizer change: the
 existing boundary passed combined healthy, mixed-severity, unavailable,
 failure-isolation, filtering, ordering, serialization, and sanitization
 acceptance scenarios.
+WU6 validation: `tests/system_health_wu6.php` passed 14 assertions. Directly
+impacted Dashboard regressions passed: Admin UI Batch 5 with 32 assertions,
+M3.9 Dashboard presentation with 14 assertions, and Admin UI Batch 3 with 64
+assertions. WU6 adds no diagnosis, aggregation, authorization, MR.x refinement,
+Widget Stage 2, or Widget Stage 3 behavior.
 
 ## 16. Acceptance criteria for later implementation
 

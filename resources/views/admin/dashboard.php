@@ -1,7 +1,12 @@
 <?php
 $coreWidget = null;
+$healthWidget = null;
 $moduleWidgets = [];
 foreach (($widgets ?? []) as $dashboardWidget) {
+    if (($dashboardWidget['id'] ?? null) === 'core.system-health') {
+        $healthWidget = $dashboardWidget;
+        continue;
+    }
     if (($dashboardWidget['id'] ?? null) === 'core.system-overview') {
         $coreWidget = $dashboardWidget;
         continue;
@@ -10,9 +15,38 @@ foreach (($widgets ?? []) as $dashboardWidget) {
     $moduleWidgets[] = $dashboardWidget;
 }
 $coreContent = is_array($coreWidget['content'] ?? null) ? $coreWidget['content'] : [];
+$healthContent = is_array($healthWidget['content'] ?? null) ? $healthWidget['content'] : [];
+$healthStatus = (string) ($healthContent['status'] ?? 'unavailable');
+$healthHeadingId = 'system-health-title';
 ?>
 <div class="admin-dashboard">
     <p class="admin-dashboard__description">Overview of your Copot Admin workspace.</p>
+
+    <section class="admin-panel admin-dashboard-widget admin-dashboard-widget--wide" data-widget-id="core.system-health" data-health-status="<?= htmlspecialchars($healthStatus, ENT_QUOTES, 'UTF-8') ?>" aria-labelledby="<?= $healthHeadingId ?>">
+        <header class="admin-panel__header">
+            <div class="admin-panel__heading">
+                <h2 class="admin-panel__title" id="<?= $healthHeadingId ?>">System Health</h2>
+                <p class="admin-panel__description">Authorized health status for this installation.</p>
+            </div>
+        </header>
+        <div class="admin-panel__body">
+            <p class="admin-dashboard-status"><strong><?= htmlspecialchars((string) ($healthContent['status_label'] ?? 'Health data unavailable'), ENT_QUOTES, 'UTF-8') ?></strong></p>
+            <p><?= htmlspecialchars((string) ($healthContent['message'] ?? 'Health data unavailable.'), ENT_QUOTES, 'UTF-8') ?></p>
+            <?php if (!empty($healthContent['findings']) && is_array($healthContent['findings'])): ?>
+                <ul class="admin-dashboard-health-findings">
+                    <?php foreach ($healthContent['findings'] as $finding): ?>
+                        <li>
+                            <strong><?= htmlspecialchars((string) ($finding['severity'] ?? 'Finding'), ENT_QUOTES, 'UTF-8') ?></strong>
+                            <?= htmlspecialchars((string) ($finding['summary'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
+                            <?php if (!empty($finding['target'])): ?>
+                                <span>(<?= htmlspecialchars((string) $finding['target'], ENT_QUOTES, 'UTF-8') ?>)</span>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
+        </div>
+    </section>
 
     <section class="admin-panel admin-dashboard-widget admin-dashboard-widget--wide" data-widget-id="core.system-overview" data-footprint="wide" aria-labelledby="framework-status-title">
         <header class="admin-panel__header">

@@ -14,6 +14,23 @@ $adminBase = $adminUrl->baseUrl();
 $documentLocale = $app->adminPageRenderer()->documentLocale();
 
 $app->adminDashboard()->add(
+    'core.system-health',
+    'System Health',
+    'Authorized System Health summary for this installation and viewer.',
+    null,
+    'admin.access',
+    90,
+    [
+        'owner' => 'core',
+        'purpose' => 'status',
+        'footprint' => 'wide',
+        'provider' => static function ($user) use ($app): array {
+            return (new \Copot\Core\SystemHealthDashboardConsumer())->content($app->systemHealthReport($user));
+        },
+    ]
+);
+
+$app->adminDashboard()->add(
     'core.system-overview',
     'System overview',
     'Application, Admin path, current user, and safe framework status.',

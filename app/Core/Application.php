@@ -47,8 +47,9 @@ class Application
     private AdminUrl $adminUrl;
     private AdminPageRenderer $adminPageRenderer;
     private AdminErrorRenderer $adminErrors;
+    private SystemHealthReportProvider $systemHealthReports;
 
-    public function __construct(DeploymentContext|string $deployment)
+    public function __construct(DeploymentContext|string $deployment, ?callable $systemHealthReportResolver = null)
     {
         $this->deployment = is_string($deployment)
             ? DeploymentContext::forLegacyApplication($deployment)
@@ -111,6 +112,7 @@ class Application
         $this->adminUrl = new AdminUrl($this->config, $this->deployment);
         $this->adminNavigation = new AdminNavigation();
         $this->adminDashboard = new AdminDashboardRegistry();
+        $this->systemHealthReports = new SystemHealthReportProvider($systemHealthReportResolver);
         $this->adminNavigation->add('Dashboard', $this->adminUrl->baseUrl(), null, 'dashboard', 10);
         $this->adminPageRenderer = new AdminPageRenderer(
             $this->view,
@@ -315,6 +317,11 @@ class Application
     public function adminErrors(): AdminErrorRenderer
     {
         return $this->adminErrors;
+    }
+
+    public function systemHealthReport(User $viewer): ?SystemHealthReport
+    {
+        return $this->systemHealthReports->report(new SystemHealthContext($this->installationIdentity, $viewer));
     }
 
     public function run(Request $request): Response
