@@ -6,10 +6,15 @@ use PDO;
 
 final class CoreMigrationHealthVerifier
 {
+    public function __construct(private ?CoreMigrationLedger $ledger = null)
+    {
+        $this->ledger ??= new CoreMigrationLedger();
+    }
+
     public function verify(PDO $connection, CoreMigrationRegistry $registry, ?string $expectedIdentity = null): HealthGateMatrix
     {
         try {
-            $records = (new CoreMigrationLedger())->records($connection);
+            $records = $this->ledger->records($connection);
             $descriptors = $registry->migrations();
             if (count($records) > count($descriptors)) {
                 return new HealthGateMatrix([HealthGateResult::fail('migration-ledger', 'Applied migration history is longer than the known registry.')]);
@@ -37,6 +42,6 @@ final class CoreMigrationHealthVerifier
 
     public function identity(PDO $connection): string
     {
-        return CoreMigrationStateIdentity::fromRecords((new CoreMigrationLedger())->records($connection));
+        return CoreMigrationStateIdentity::fromRecords($this->ledger->records($connection));
     }
 }

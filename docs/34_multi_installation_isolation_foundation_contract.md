@@ -4,20 +4,21 @@
 
 - Multi-Installation Isolation Foundation: **PROMOTED / PREPARATION CONTRACT LOCKED**
 - Preparation: **COMPLETE / CONTRACT LOCKED**
-- Implementation: **NOT STARTED**
+- Implementation: **IN PROGRESS — WU2 COMPLETE; WU3–WU6 NOT STARTED**
 - WU1 — Installation Identity, Database Namespace, Compatibility & Runtime
   Contract: **COMPLETE AND CLOSED — contract/evidence closure only**
-- Next technical target: **WU2 — Core Logical/Physical Table Naming, Schema
-  Generation & Core Compatibility — implementation NOT STARTED**
-- Scope: architecture, ownership, compatibility, work-unit, and acceptance preparation only
+- WU2 — Core Logical/Physical Table Naming, Schema Generation & Core
+  Compatibility: **COMPLETE AND CLOSED — implementation/evidence scope**
+- Next technical target: **WU3 — Module Persistence, Provisioning, Migration &
+  Lifecycle Namespace Adoption — implementation NOT STARTED**
+- Scope: locked architecture, WU1 contract closure, and WU2 implementation only
 - Production Webcore reconciliation: **NOT STARTED / separately authorized**
 - `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`: **DEFERRED / UNSCHEDULED**
 
 This contract promotes Multi-Installation Isolation Foundation into the
-authoritative Post-M3 work stream. It does not authorize runtime, database,
-schema, migration, installer, session, filesystem, or infrastructure
-implementation. Later implementation authorization must preserve this contract
-or document an evidence-backed amendment.
+authoritative Post-M3 work stream. WU2 implementation is limited to the Core
+boundaries recorded below. Later WU3–WU6 implementation authorization must
+preserve this contract or document an evidence-backed amendment.
 
 ## Relationship to completed foundations
 
@@ -240,15 +241,23 @@ The authoritative contract now explicitly defines every WU1 requirement:
 | Installer intent | Fresh, coexist, adoption, and migration/update remain distinct from evidence |
 | Operational authorization | Explicit lifecycle authorization, existing coordination/exclusion reuse, and bounded runtime metadata responsibility |
 
-No WU1 implementation is claimed or authorized. The next technical target is
-WU2; its implementation remains NOT STARTED.
+No WU1 runtime implementation is claimed or authorized. WU1 contract/evidence
+closure and WU2 Core implementation are complete; the next technical target is
+WU3, whose implementation remains NOT STARTED.
 
 ### WU2 — Core Logical/Physical Table Naming, Schema Generation & Core Compatibility
 
-Prepare centralized database naming, Core namespace adoption,
-schema-generation persistence, Core compatibility state, and preservation of
-constraints, indexes, foreign keys, and empty-namespace backward
-compatibility.
+**Objective status: COMPLETE AND CLOSED — implementation/evidence scope.**
+
+WU2 delivered one validated `DatabaseTableNames` boundary for Core-owned
+objects, empty-namespace preservation, deterministic non-empty namespace
+materialization, namespace-sensitive table/index/constraint/foreign-key
+rewriting, installation/namespace-scoped `core_schema_generation` metadata,
+and Core schema compatibility resolution that remains distinct from the
+existing Core migration ledger. Core repositories, migration access, schema
+health, canonical schema verification, and installer schema materialization
+use the boundary where applicable. Module-owned persistence and migration
+remain outside WU2.
 
 ### WU3 — Module Persistence, Provisioning, Migration & Lifecycle Namespace Adoption
 
@@ -295,7 +304,9 @@ Portability foundations remain complete and closed for their accepted scopes.
 This preparation does not reopen historical checkpoints or claim runtime,
 schema, installer, package, release, or publication completion.
 
-The Multi-Installation Isolation Foundation is **PROMOTED / PREPARATION
-CONTRACT LOCKED** with **IMPLEMENTATION NOT STARTED**. Subsequent implementation
-planning must cite this contract and provide evidence for any amendment to its
-topology, ownership, compatibility, runtime, namespace, or deferred boundaries.
+The Multi-Installation Isolation Foundation remains **PROMOTED / PREPARATION
+CONTRACT LOCKED** with implementation **IN PROGRESS**: WU1 contract/evidence
+closure and WU2 Core implementation are complete; WU3–WU6 remain NOT STARTED.
+Subsequent implementation planning must cite this contract and provide
+evidence for any amendment to its topology, ownership, compatibility, runtime,
+namespace, or deferred boundaries.

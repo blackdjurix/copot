@@ -13,7 +13,7 @@ class ThemeRepository
     public function all(): array
     {
         $statement = $this->database->connection()->query(
-            'SELECT * FROM themes ORDER BY theme_id ASC'
+            'SELECT * FROM ' . $this->database->table('themes') . ' ORDER BY theme_id ASC'
         );
 
         return $statement->fetchAll();
@@ -22,7 +22,7 @@ class ThemeRepository
     public function findByThemeId(string $themeId): ?array
     {
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM themes WHERE theme_id = :theme_id LIMIT 1'
+            'SELECT * FROM ' . $this->database->table('themes') . ' WHERE theme_id = :theme_id LIMIT 1'
         );
 
         $statement->execute(['theme_id' => $themeId]);
@@ -59,7 +59,7 @@ class ThemeRepository
         }
 
         $statement = $this->database->connection()->prepare(
-            'DELETE FROM themes WHERE theme_id = :theme_id'
+            'DELETE FROM ' . $this->database->table('themes') . ' WHERE theme_id = :theme_id'
         );
 
         $statement->execute(['theme_id' => $themeId]);
@@ -68,7 +68,7 @@ class ThemeRepository
     public function activeFrontend(): ?array
     {
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM themes WHERE type = :type AND is_active = 1 ORDER BY id ASC LIMIT 1'
+            'SELECT * FROM ' . $this->database->table('themes') . ' WHERE type = :type AND is_active = 1 ORDER BY id ASC LIMIT 1'
         );
 
         $statement->execute(['type' => 'frontend']);
@@ -80,7 +80,7 @@ class ThemeRepository
     public function activeFrontendRows(): array
     {
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM themes WHERE type = :type AND is_active = 1 ORDER BY id ASC'
+            'SELECT * FROM ' . $this->database->table('themes') . ' WHERE type = :type AND is_active = 1 ORDER BY id ASC'
         );
 
         $statement->execute(['type' => 'frontend']);
@@ -91,7 +91,7 @@ class ThemeRepository
     public function deactivateByType(string $type): void
     {
         $statement = $this->database->connection()->prepare(
-            'UPDATE themes SET is_active = 0, updated_at = NOW() WHERE type = :type'
+            'UPDATE ' . $this->database->table('themes') . ' SET is_active = 0, updated_at = NOW() WHERE type = :type'
         );
 
         $statement->execute(['type' => $type]);
@@ -100,7 +100,7 @@ class ThemeRepository
     public function activate(string $themeId): void
     {
         $statement = $this->database->connection()->prepare(
-            'UPDATE themes SET is_active = 1, updated_at = NOW() WHERE theme_id = :theme_id'
+            'UPDATE ' . $this->database->table('themes') . ' SET is_active = 1, updated_at = NOW() WHERE theme_id = :theme_id'
         );
 
         $statement->execute(['theme_id' => $themeId]);
@@ -109,7 +109,7 @@ class ThemeRepository
     private function create(array $theme): void
     {
         $statement = $this->database->connection()->prepare(
-            'INSERT INTO themes (
+            'INSERT INTO ' . $this->database->table('themes') . ' (
                 theme_id,
                 name,
                 version,
@@ -145,7 +145,7 @@ class ThemeRepository
     private function update(array $theme): void
     {
         $statement = $this->database->connection()->prepare(
-            'UPDATE themes
+            'UPDATE ' . $this->database->table('themes') . '
             SET name = :name,
                 version = :version,
                 type = :type,

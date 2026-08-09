@@ -14,6 +14,7 @@ return [
             'username' => Env::get('DB_USERNAME', 'root'),
             'password' => Env::get('DB_PASSWORD', ''),
             'charset' => 'utf8mb4',
+            'namespace' => Env::get('DB_NAMESPACE', ''),
         ],
     ],
 ];

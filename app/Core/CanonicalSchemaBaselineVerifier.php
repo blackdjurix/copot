@@ -9,6 +9,11 @@ use PDO;
  */
 final class CanonicalSchemaBaselineVerifier
 {
+    public function __construct(private ?DatabaseTableNames $tables = null)
+    {
+        $this->tables ??= new DatabaseTableNames();
+    }
+
     public function verify(PDO $connection, string $schemaPath, bool $requireMigrationLedger = true): HealthGateMatrix
     {
         try {
@@ -18,6 +23,10 @@ final class CanonicalSchemaBaselineVerifier
             }
 
             $actualTables = $this->actualTables($connection);
+            $expected = array_combine(
+                array_map(fn (string $table): string => $this->tables->table($table), array_keys($expected)),
+                array_values($expected)
+            );
             $expectedTables = array_keys($expected);
             sort($expectedTables);
             if ($actualTables !== $expectedTables) {
@@ -121,7 +130,7 @@ final class CanonicalSchemaBaselineVerifier
 
     private function ledgerIsEmpty(PDO $connection): bool
     {
-        $statement = $connection->query('SELECT COUNT(*) FROM ' . CoreMigrationLedger::TABLE);
+        $statement = $connection->query('SELECT COUNT(*) FROM ' . $this->tables->table(CoreMigrationLedger::TABLE));
         return (int) $statement->fetchColumn() === 0;
     }
 

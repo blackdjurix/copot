@@ -14,7 +14,7 @@ class UserProvider
     public function findById(int $id): ?User
     {
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM users WHERE id = :id LIMIT 1'
+            'SELECT * FROM ' . $this->database->table('users') . ' WHERE id = :id LIMIT 1'
         );
 
         $statement->execute(['id' => $id]);
@@ -26,7 +26,7 @@ class UserProvider
     public function findByEmail(string $email): ?User
     {
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM users WHERE email = :email LIMIT 1'
+            'SELECT * FROM ' . $this->database->table('users') . ' WHERE email = :email LIMIT 1'
         );
 
         $statement->execute(['email' => strtolower(trim($email))]);
@@ -38,7 +38,7 @@ class UserProvider
     public function updateLastLogin(int $id): void
     {
         $statement = $this->database->connection()->prepare(
-            'UPDATE users SET last_login_at = NOW(), updated_at = NOW() WHERE id = :id'
+            'UPDATE ' . $this->database->table('users') . ' SET last_login_at = NOW(), updated_at = NOW() WHERE id = :id'
         );
 
         $statement->execute(['id' => $id]);

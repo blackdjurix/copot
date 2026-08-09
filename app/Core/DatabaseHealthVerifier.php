@@ -12,16 +12,22 @@ final class DatabaseHealthVerifier
         'taxonomy_terms', 'taxonomy_assignments', 'core_migration_history',
     ];
 
+    public function __construct(private ?DatabaseTableNames $tables = null)
+    {
+        $this->tables ??= new DatabaseTableNames();
+    }
+
     public function verify(PDO $connection): HealthGateMatrix
     {
         try {
             $connection->query('SELECT 1')->fetchColumn();
             $tables = $this->tables($connection);
-            $missing = array_values(array_diff(self::TABLES, $tables));
+            $expected = array_map(fn (string $table): string => $this->tables->table($table), self::TABLES);
+            $missing = array_values(array_diff($expected, $tables));
             if ($missing !== []) {
                 return new HealthGateMatrix([HealthGateResult::fail('database-schema', 'Required Core tables are missing: ' . implode(', ', $missing))]);
             }
-            $columns = $this->columns($connection, 'core_migration_history');
+            $columns = $this->columns($connection, $this->tables->table('core_migration_history'));
             $required = ['migration_id', 'sequence_number', 'target_webcore_version', 'target_schema_identity', 'migration_checksum', 'applied_at'];
             if (array_diff($required, $columns) !== []) {
                 return new HealthGateMatrix([HealthGateResult::fail('database-schema', 'Core migration ledger columns are incomplete.')]);

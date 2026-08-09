@@ -9,9 +9,19 @@ final class CoreMigrationLedger
 {
     public const TABLE = 'core_migration_history';
 
+    public function __construct(private ?DatabaseTableNames $tables = null)
+    {
+        $this->tables ??= new DatabaseTableNames();
+    }
+
+    public function table(): string
+    {
+        return $this->tables->table(self::TABLE);
+    }
+
     public function records(PDO $connection): array
     {
-        $rows = $connection->query('SELECT migration_id, sequence_number, target_webcore_version, target_schema_identity, migration_checksum, applied_at FROM ' . self::TABLE . ' ORDER BY sequence_number')->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $connection->query('SELECT migration_id, sequence_number, target_webcore_version, target_schema_identity, migration_checksum, applied_at FROM ' . $this->table() . ' ORDER BY sequence_number')->fetchAll(PDO::FETCH_ASSOC);
         $records = [];
         $ids = [];
         $sequences = [];
@@ -40,7 +50,7 @@ final class CoreMigrationLedger
 
     public function record(PDO $connection, CoreMigrationDescriptor $migration, ?DateTimeImmutable $appliedAt = null): void
     {
-        $statement = $connection->prepare('INSERT INTO ' . self::TABLE . ' (migration_id, sequence_number, target_webcore_version, target_schema_identity, migration_checksum, applied_at) VALUES (:migration_id, :sequence_number, :target_webcore_version, :target_schema_identity, :migration_checksum, :applied_at)');
+        $statement = $connection->prepare('INSERT INTO ' . $this->table() . ' (migration_id, sequence_number, target_webcore_version, target_schema_identity, migration_checksum, applied_at) VALUES (:migration_id, :sequence_number, :target_webcore_version, :target_schema_identity, :migration_checksum, :applied_at)');
         $statement->execute([
             'migration_id' => $migration->id(),
             'sequence_number' => $migration->sequence(),

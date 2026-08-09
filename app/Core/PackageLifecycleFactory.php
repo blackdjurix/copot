@@ -26,7 +26,7 @@ final class PackageLifecycleFactory
         $database = new Database(new Config($basePath . DIRECTORY_SEPARATOR . 'config'));
         $baselineCatalog = CanonicalSchemaBaselineCatalog::forProject($basePath);
         $registry = new CoreMigrationRegistry('copot-core-current', []);
-        $ledger = new CoreMigrationLedger();
+        $ledger = new CoreMigrationLedger($database->tables());
         $mutex = new InstallationMutex($storage);
         $operationStore = new LifecycleOperationStore($storage);
         $maintenance = new MaintenanceCoordinator($operationStore);
@@ -46,8 +46,8 @@ final class PackageLifecycleFactory
             $installationState,
             $committedStore,
             new TargetPackageIntegrityVerifier(),
-            new DatabaseHealthVerifier(),
-            new CoreMigrationHealthVerifier(),
+            new DatabaseHealthVerifier($database->tables()),
+            new CoreMigrationHealthVerifier($ledger),
             new RuntimeHealthVerifier(),
             $registry
         );
@@ -124,7 +124,7 @@ final class PackageLifecycleFactory
                     },
                 ];
             },
-            new CanonicalSchemaBaselineVerifier(),
+            new CanonicalSchemaBaselineVerifier($database->tables()),
             $basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql',
             null,
             null,
@@ -232,7 +232,7 @@ final class PackageLifecycleFactory
                 new InstalledStateInspector($committedStore),
                 $installation,
                 static function () use ($database, $basePath): ExistingInstallEvidence { $schema = false; try { $schema = (new InstallerSchemaState($database))->isReady(); } catch (\Throwable) {} return new ExistingInstallEvidence($schema, is_file($basePath . DIRECTORY_SEPARATOR . '.env')); },
-                new LegacyRuntimeClassifier(new CanonicalSchemaBaselineVerifier(), $baselineCatalog),
+                new LegacyRuntimeClassifier(new CanonicalSchemaBaselineVerifier($database->tables()), $baselineCatalog, $ledger),
                 new LegacyReconciliationPlanner(),
                 $registry,
                 $ledger,
@@ -243,11 +243,11 @@ final class PackageLifecycleFactory
                 $runtimeChecks,
                 $databaseName,
                 $schemaPath,
-                new CanonicalSchemaBaselineVerifier(),
+                new CanonicalSchemaBaselineVerifier($database->tables()),
                 $liveGuard,
                 $applier,
-                new LegacyReconciliationDatabaseReconciler($ledger, $migrationRunner, new CanonicalSchemaBaselineVerifier(), new CoreMigrationHealthVerifier(), $baselineCatalog),
-                new LegacyReconciliationFinalizer($recoveryStore, new TargetPackageIntegrityVerifier(), new DatabaseHealthVerifier(), new CoreMigrationHealthVerifier(), new RuntimeHealthVerifier()),
+                new LegacyReconciliationDatabaseReconciler($ledger, $migrationRunner, new CanonicalSchemaBaselineVerifier($database->tables()), new CoreMigrationHealthVerifier($ledger), $baselineCatalog),
+                new LegacyReconciliationFinalizer($recoveryStore, new TargetPackageIntegrityVerifier(), new DatabaseHealthVerifier($database->tables()), new CoreMigrationHealthVerifier($ledger), new RuntimeHealthVerifier()),
                 $recoveryOrchestrator,
                 $integrated,
                 $recoveryCoordinator,

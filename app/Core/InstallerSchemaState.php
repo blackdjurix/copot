@@ -39,6 +39,8 @@ class InstallerSchemaState
             return false;
         }
 
-        return array_diff(self::TABLES, $tables) === [];
+        $expected = array_map(fn (string $table): string => $this->database->table($table), self::TABLES);
+
+        return array_diff($expected, $tables) === [];
     }
 }

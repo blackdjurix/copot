@@ -16,7 +16,7 @@ class SettingsRepository
         $this->validateIdentifiers($namespace, $key);
 
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM settings
+            'SELECT * FROM ' . $this->database->table('settings') . '
             WHERE namespace = :namespace AND setting_key = :setting_key
             LIMIT 1'
         );
@@ -40,7 +40,7 @@ class SettingsRepository
         $this->validateValueType($valueType);
 
         $statement = $this->database->connection()->prepare(
-            'INSERT INTO settings (
+            'INSERT INTO ' . $this->database->table('settings') . ' (
                 namespace,
                 setting_key,
                 setting_value,
@@ -74,7 +74,7 @@ class SettingsRepository
         $this->validateIdentifiers($namespace, $key);
 
         $statement = $this->database->connection()->prepare(
-            'SELECT 1 FROM settings
+            'SELECT 1 FROM ' . $this->database->table('settings') . '
             WHERE namespace = :namespace AND setting_key = :setting_key
             LIMIT 1'
         );
@@ -92,7 +92,7 @@ class SettingsRepository
         $this->validateNamespace($namespace);
 
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM settings
+            'SELECT * FROM ' . $this->database->table('settings') . '
             WHERE namespace = :namespace
             ORDER BY setting_key ASC'
         );
@@ -107,7 +107,7 @@ class SettingsRepository
         $this->validateIdentifiers($namespace, $key);
 
         $statement = $this->database->connection()->prepare(
-            'DELETE FROM settings
+            'DELETE FROM ' . $this->database->table('settings') . '
             WHERE namespace = :namespace AND setting_key = :setting_key'
         );
 
@@ -122,7 +122,7 @@ class SettingsRepository
         $this->validateNamespace($namespace);
 
         $statement = $this->database->connection()->prepare(
-            'DELETE FROM settings WHERE namespace = :namespace'
+            'DELETE FROM ' . $this->database->table('settings') . ' WHERE namespace = :namespace'
         );
         $statement->execute(['namespace' => $namespace]);
     }

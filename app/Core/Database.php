@@ -8,10 +8,14 @@ class Database
 {
     private Config $config;
     private ?PDO $connection = null;
+    private DatabaseTableNames $tables;
 
     public function __construct(Config $config)
     {
         $this->config = $config;
+        $connectionName = $this->config->get('database.default', 'mysql');
+        $connectionKey = "database.connections.{$connectionName}";
+        $this->tables = new DatabaseTableNames((string) $this->config->get("{$connectionKey}.namespace", ''));
     }
 
     public function connection(): PDO
@@ -44,5 +48,15 @@ class Database
         ]);
 
         return $this->connection;
+    }
+
+    public function table(string $logicalName): string
+    {
+        return $this->tables->table($logicalName);
+    }
+
+    public function tables(): DatabaseTableNames
+    {
+        return $this->tables;
     }
 }

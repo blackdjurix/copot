@@ -61,7 +61,7 @@ class InstallerAdministratorSetup
 
             try {
                 $statement = $connection->prepare(
-                    'INSERT INTO users (
+                    'INSERT INTO ' . $this->database->table('users') . ' (
                         name,
                         email,
                         password_hash,
@@ -86,7 +86,7 @@ class InstallerAdministratorSetup
                 $userId = (int) $connection->lastInsertId();
 
                 $statement = $connection->prepare(
-                    'INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)'
+                    'INSERT INTO ' . $this->database->table('user_roles') . ' (user_id, role_id) VALUES (:user_id, :role_id)'
                 );
                 $statement->execute([
                     'user_id' => $userId,
@@ -227,13 +227,13 @@ class InstallerAdministratorSetup
 
     private function userCount(): int
     {
-        return (int) $this->database->connection()->query('SELECT COUNT(*) FROM users')->fetchColumn();
+        return (int) $this->database->connection()->query('SELECT COUNT(*) FROM ' . $this->database->table('users'))->fetchColumn();
     }
 
     private function administratorRoleId(): ?int
     {
         $statement = $this->database->connection()->prepare(
-            'SELECT id FROM roles WHERE slug = :slug LIMIT 1'
+            'SELECT id FROM ' . $this->database->table('roles') . ' WHERE slug = :slug LIMIT 1'
         );
         $statement->execute(['slug' => 'admin']);
         $id = $statement->fetchColumn();

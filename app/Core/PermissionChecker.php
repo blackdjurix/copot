@@ -11,8 +11,8 @@ class PermissionChecker
     public function userHasRole(int $userId, string $role): bool
     {
         $sql = 'SELECT 1
-            FROM user_roles
-            INNER JOIN roles ON roles.id = user_roles.role_id
+            FROM ' . $this->database->table('user_roles') . ' user_roles
+            INNER JOIN ' . $this->database->table('roles') . ' roles ON roles.id = user_roles.role_id
             WHERE user_roles.user_id = :user_id
                 AND roles.slug = :role
             LIMIT 1';
@@ -29,9 +29,9 @@ class PermissionChecker
     public function userCan(int $userId, string $permission): bool
     {
         $sql = 'SELECT 1
-            FROM user_roles
-            INNER JOIN role_permissions ON role_permissions.role_id = user_roles.role_id
-            INNER JOIN permissions ON permissions.id = role_permissions.permission_id
+            FROM ' . $this->database->table('user_roles') . ' user_roles
+            INNER JOIN ' . $this->database->table('role_permissions') . ' role_permissions ON role_permissions.role_id = user_roles.role_id
+            INNER JOIN ' . $this->database->table('permissions') . ' permissions ON permissions.id = role_permissions.permission_id
             WHERE user_roles.user_id = :user_id
                 AND permissions.slug = :permission
             LIMIT 1';

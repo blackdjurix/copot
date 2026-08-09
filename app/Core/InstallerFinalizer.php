@@ -73,7 +73,7 @@ class InstallerFinalizer
     private function validateFirstAdministrator(): void
     {
         $userCount = (int) $this->database->connection()
-            ->query('SELECT COUNT(*) FROM users')
+            ->query('SELECT COUNT(*) FROM ' . $this->database->table('users'))
             ->fetchColumn();
 
         if ($userCount !== 1) {
@@ -82,9 +82,9 @@ class InstallerFinalizer
 
         $statement = $this->database->connection()->prepare(
             'SELECT COUNT(*)
-            FROM users
-            INNER JOIN user_roles ON user_roles.user_id = users.id
-            INNER JOIN roles ON roles.id = user_roles.role_id
+            FROM ' . $this->database->table('users') . ' users
+            INNER JOIN ' . $this->database->table('user_roles') . ' user_roles ON user_roles.user_id = users.id
+            INNER JOIN ' . $this->database->table('roles') . ' roles ON roles.id = user_roles.role_id
             WHERE roles.slug = :role AND users.status = :status'
         );
         $statement->execute([

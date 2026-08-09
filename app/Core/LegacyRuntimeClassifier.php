@@ -8,9 +8,11 @@ final class LegacyRuntimeClassifier
 {
     public function __construct(
         private CanonicalSchemaBaselineVerifier $canonicalSchema,
-        private ?CanonicalSchemaBaselineCatalog $baselineCatalog = null
+        private ?CanonicalSchemaBaselineCatalog $baselineCatalog = null,
+        private ?CoreMigrationLedger $ledger = null
     )
     {
+        $this->ledger ??= new CoreMigrationLedger();
     }
 
     public function classify(
@@ -28,7 +30,7 @@ final class LegacyRuntimeClassifier
         }
 
         try {
-            $records = (new CoreMigrationLedger())->records($connection);
+            $records = $this->ledger->records($connection);
         } catch (\Throwable) {
             $baseline = $this->baselineCatalog?->verify($connection, $this->canonicalSchema);
             if ($baseline instanceof CanonicalSchemaBaselineDescriptor && !$baseline->migrationLedgerPresent()) {

@@ -20,6 +20,10 @@ class InstallerSchemaRunner
     {
         $schema = $this->readSchema();
         $statements = $this->statements($schema);
+        $namespace = new DatabaseTableNames((string) ($configuration['namespace'] ?? ''));
+        if ($namespace->namespace() !== '') {
+            $statements = (new CoreSchemaMaterializer())->namespaceStatements($statements, $namespace);
+        }
 
         if ($statements === []) {
             throw new InstallationException('Database schema is invalid.');
