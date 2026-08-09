@@ -256,9 +256,13 @@
                         <?= htmlspecialchars($databaseResult['vendor'] ?? 'Database', ENT_QUOTES, 'UTF-8') ?>
                         <?= htmlspecialchars($databaseResult['version'] ?? '', ENT_QUOTES, 'UTF-8') ?> verified.
                     </p>
+                    <p>Occupancy: <?= htmlspecialchars($databaseResult['occupancy'] ?? 'unknown', ENT_QUOTES, 'UTF-8') ?>; namespace route: <?= htmlspecialchars($databaseResult['namespace'] ?? '', ENT_QUOTES, 'UTF-8') === '' ? '(empty)' : htmlspecialchars($databaseResult['namespace'], ENT_QUOTES, 'UTF-8') ?>.</p>
                     <?php if (!empty($databaseResult['warning'])): ?>
                         <p class="warning"><?= htmlspecialchars($databaseResult['warning'], ENT_QUOTES, 'UTF-8') ?></p>
                     <?php endif; ?>
+                    <?php foreach (($databaseResult['warnings'] ?? []) as $warning): ?>
+                        <p class="warning"><?= htmlspecialchars((string) $warning, ENT_QUOTES, 'UTF-8') ?></p>
+                    <?php endforeach; ?>
                 <?php endif; ?>
 
                 <p id="database_test_result" class="pass" hidden></p>
@@ -285,6 +289,22 @@
                     <label for="database_password">Password</label>
                     <input id="database_password" name="database_password" type="password" value="">
                     <?php if (!empty($errors['password'])): ?><p class="field-error"><?= htmlspecialchars($errors['password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+
+                    <label for="installer_intent">Installer intent</label>
+                    <select id="installer_intent" name="installer_intent" required>
+                        <?php foreach ([
+                            \Copot\Core\InstallerIntent::FRESH => 'Fresh installation',
+                            \Copot\Core\InstallerIntent::COEXIST => 'New independent installation',
+                            \Copot\Core\InstallerIntent::ADOPT => 'Adopt existing COPOT installation',
+                            \Copot\Core\InstallerIntent::MIGRATE => 'Migrate/update existing COPOT installation',
+                        ] as $intentValue => $intentLabel): ?>
+                            <option value="<?= htmlspecialchars($intentValue, ENT_QUOTES, 'UTF-8') ?>" <?= ($values['intent'] ?? \Copot\Core\InstallerIntent::FRESH) === $intentValue ? 'selected' : '' ?>><?= htmlspecialchars($intentLabel, ENT_QUOTES, 'UTF-8') ?></option>
+                        <?php endforeach; ?>
+                    </select>
+
+                    <label for="database_namespace">Database namespace (blank preserves the empty namespace)</label>
+                    <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <?php if (!empty($errors['namespace'])): ?><p class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
 
                     <div class="actions">
                         <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
@@ -384,6 +404,8 @@
                 'database_name',
                 'database_username',
                 'database_password',
+                'database_namespace',
+                'installer_intent',
             ].map((name) => form.elements.namedItem(name)).filter(Boolean);
             let tested = false;
 

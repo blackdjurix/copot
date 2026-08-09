@@ -12,7 +12,7 @@ class InstallerDatabaseSetup
     ) {
     }
 
-    public function install(array $configuration, bool $requirementsPassed): array
+    public function install(array $configuration, bool $requirementsPassed, string $intent = InstallerIntent::FRESH): array
     {
         if (!$requirementsPassed) {
             throw new InstallationException('Installer requirements are not satisfied.');
@@ -25,13 +25,24 @@ class InstallerDatabaseSetup
         }
 
         try {
-            $server = $this->probe->test($configuration);
+            $inspection = $this->probe->inspect($configuration);
+            $server = $inspection['server'];
+            $requestedNamespace = array_key_exists('namespace', $configuration) ? (string) $configuration['namespace'] : null;
+            $routing = (new InstallerRoutingPlanner())->plan($inspection['occupancy'], $intent, $requestedNamespace);
+            $configuration['namespace'] = $routing->namespace();
             $this->environment->persist($configuration);
-            $statementCount = $this->schema->install($configuration);
+            $statementCount = in_array($routing->route(), [InstallerRoutingPlanner::ADOPT, InstallerRoutingPlanner::MIGRATE], true)
+                ? 0
+                : $this->schema->install($configuration);
 
             return [
                 'server' => $server,
                 'statement_count' => $statementCount,
+                'occupancy' => $inspection['occupancy']->classification(),
+                'route' => $routing->route(),
+                'intent' => $routing->intent(),
+                'namespace' => $routing->namespace(),
+                'warnings' => $routing->warnings(),
             ];
         } finally {
             $lock->release();

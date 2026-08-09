@@ -10,6 +10,7 @@ class InstallerEnvironmentWriter
         'DB_DATABASE' => 'database',
         'DB_USERNAME' => 'username',
         'DB_PASSWORD' => 'password',
+        'DB_NAMESPACE' => 'namespace',
     ];
 
     public function __construct(private string $environmentPath)
@@ -85,6 +86,9 @@ class InstallerEnvironmentWriter
 
         foreach (self::DATABASE_KEYS as $environmentKey => $configurationKey) {
             if (!array_key_exists($configurationKey, $configuration)) {
+                if ($configurationKey === 'namespace') {
+                    continue;
+                }
                 throw new InstallationException('Database configuration is incomplete.');
             }
 
@@ -96,6 +100,10 @@ class InstallerEnvironmentWriter
                 }
 
                 $value = (string) $value;
+            }
+
+            if ($configurationKey === 'namespace' && !is_string($value)) {
+                throw new InstallationException('Database configuration is invalid.');
             }
 
             if (!is_string($value) || preg_match('/[\x00\r\n]/', $value)) {

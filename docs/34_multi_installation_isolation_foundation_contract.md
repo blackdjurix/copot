@@ -4,7 +4,7 @@
 
 - Multi-Installation Isolation Foundation: **PROMOTED / PREPARATION CONTRACT LOCKED**
 - Preparation: **COMPLETE / CONTRACT LOCKED**
-- Implementation: **IN PROGRESS — WU2–WU4 COMPLETE; WU5–WU6 NOT STARTED**
+- Implementation: **IN PROGRESS — WU2–WU5 COMPLETE; WU6 NOT STARTED**
 - WU1 — Installation Identity, Database Namespace, Compatibility & Runtime
   Contract: **COMPLETE AND CLOSED — contract/evidence closure only**
 - WU2 — Core Logical/Physical Table Naming, Schema Generation & Core
@@ -13,16 +13,16 @@
   Adoption: **COMPLETE AND CLOSED — implementation/evidence scope**
 - WU4 — Runtime, Session, Cookie, Filesystem & Coordination Isolation:
   **COMPLETE AND CLOSED — implementation/evidence scope**
-- Next technical target: **WU5 — Installer Database Occupancy Classification,
-  Namespace Selection & Existing-Installation Routing — implementation NOT STARTED**
-- Scope: locked architecture, WU1 contract closure, and WU2–WU4 implementation only
+- Next technical target: **WU6 — Cross-Subsystem Integration &
+  Multi-Installation / Multi-Runtime Acceptance — implementation NOT STARTED**
+- Scope: locked architecture, WU1 contract closure, and WU2–WU5 implementation only
 - Production Webcore reconciliation: **NOT STARTED / separately authorized**
 - `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`: **DEFERRED / UNSCHEDULED**
 
 This contract promotes Multi-Installation Isolation Foundation into the
 authoritative Post-M3 work stream. WU1 contract/evidence closure and WU2–WU4
-implementation are complete for their accepted scopes. WU5 is the next
-technical target and WU5–WU6 implementation remains NOT STARTED; any later
+implementation are complete for their accepted scopes. WU6 is the next
+technical target and WU6 implementation remains NOT STARTED; any later
 implementation authorization must preserve this contract or document an
 evidence-backed amendment.
 
@@ -106,9 +106,11 @@ Table prefix/namespace is an isolation mechanism, not installation identity.
 WU2 and WU3 provide one logical-to-physical database-object naming boundary
 for Core and Module-owned objects, preserve empty-prefix backward
 compatibility, and apply namespace-sensitive naming to constraints, indexes,
-and foreign keys where material. WU5 remains responsible for installer-time
-namespace availability and collision analysis against the complete
-COPOT-owned object set.
+and foreign keys where material. WU5 owns installer-time namespace
+availability, collision analysis against the complete COPOT-owned object set,
+explicit intent routing, and fail-closed adoption/coexistence decisions.
+Foreign objects remain observational evidence and are never claimed by
+routing.
 
 Routing rules:
 
@@ -297,14 +299,15 @@ Registry participants and lifecycle states, compatibility evaluation and
 fail-closed transition coordination through `InstallationMutex`, installation-
 derived session/cookie identity, and isolated runtime cache/temp/lock/staging
 and package-apply temporary paths. Runtime/process orchestration remains out
-of scope; WU5 installer occupancy/routing and WU6 cross-subsystem acceptance
-remain NOT STARTED.
+of scope; WU6 cross-subsystem acceptance remains NOT STARTED.
 
 ### WU5 — Installer Database Occupancy Classification, Namespace Selection & Existing-Installation Routing
 
-Prepare occupancy/ownership classification, namespace collision analysis,
+Implemented occupancy/ownership classification, namespace collision analysis,
 fresh-install routing, coexistence routing, adoption/migration routing,
-namespace selection, warnings, and fail-closed blocking behavior.
+namespace selection, warnings, and fail-closed blocking behavior. The prior
+strict empty-database probe remains available for compatibility; WU5 uses
+separate inspection and planning APIs.
 
 ### WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance
 

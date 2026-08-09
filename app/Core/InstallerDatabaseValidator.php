@@ -6,6 +6,7 @@ class InstallerDatabaseValidator
 {
     private const HOST_PATTERN = '/^[A-Za-z0-9._:-]{1,255}$/';
     private const DATABASE_PATTERN = '/^[A-Za-z0-9_-]{1,64}$/';
+    private const NAMESPACE_PATTERN = '/^[a-z][a-z0-9_]{0,30}$/';
 
     public function validate(array $input): array
     {
@@ -14,6 +15,8 @@ class InstallerDatabaseValidator
         $database = $this->stringValue($input, 'database', true);
         $username = $this->stringValue($input, 'username', true);
         $password = $this->stringValue($input, 'password', false);
+        $hasNamespace = array_key_exists('namespace', $input);
+        $namespace = $this->stringValue($input, 'namespace', true);
         $errors = [];
 
         if ($host === '' || !preg_match(self::HOST_PATTERN, $host)) {
@@ -40,6 +43,10 @@ class InstallerDatabaseValidator
             $errors['password'] = 'The database password contains unsupported control characters.';
         }
 
+        if ($hasNamespace && $namespace !== '' && !preg_match(self::NAMESPACE_PATTERN, $namespace)) {
+            $errors['namespace'] = 'Enter a valid namespace using lowercase letters, numbers, or underscores.';
+        }
+
         $submittedValues = [
             'host' => $this->safeSubmittedValue($host),
             'port' => $this->safeSubmittedValue($portValue),
@@ -51,13 +58,15 @@ class InstallerDatabaseValidator
             throw new InstallerValidationException($errors, $submittedValues);
         }
 
-        return [
+        $configuration = [
             'host' => $host,
             'port' => $port,
             'database' => $database,
             'username' => $username,
             'password' => $password,
         ];
+        if ($hasNamespace) $configuration['namespace'] = $namespace;
+        return $configuration;
     }
 
     private function stringValue(

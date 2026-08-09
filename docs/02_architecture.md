@@ -329,7 +329,7 @@ Normal application bootstrap is allowed only when `storage/installed.lock` exist
 Installer responsibilities are divided across focused Core components:
 
 * `InstallerRequirements` checks the supported PHP/extensions and actual writable filesystem prerequisites.
-* `InstallerDatabaseValidator` and `InstallerDatabaseProbe` validate controlled input, server version, connection, and the dedicated empty database.
+* `InstallerDatabaseValidator` and `InstallerDatabaseProbe` validate controlled input, server version, connection, and database evidence. WU5 adds separate occupancy classification, namespace analysis, and explicit-intent routing while preserving the strict empty-database probe compatibility API.
 * `InstallerEnvironmentWriter` persists only the approved database keys through same-directory atomic replacement.
 * `InstallerSchemaRunner` executes only the controlled statement format in canonical `database/schema.sql`.
 * `InstallerAdministratorSetup` creates the first active administrator, assigns the seeded admin role, and saves initial Settings in one database transaction.

@@ -63,6 +63,8 @@ $values = [
     'port' => '3306',
     'database' => '',
     'username' => '',
+    'namespace' => '',
+    'intent' => \Copot\Core\InstallerIntent::FRESH,
 ];
 $errors = [];
 $databaseResult = null;
@@ -247,6 +249,7 @@ if ($installationStateError) {
                     'database' => $request->post('database_name', ''),
                     'username' => $request->post('database_username', ''),
                     'password' => $request->post('database_password', ''),
+                    'namespace' => $request->post('database_namespace', ''),
                 ];
 
                 try {
@@ -260,7 +263,10 @@ if ($installationStateError) {
                         'port' => (string) $configuration['port'],
                         'database' => $configuration['database'],
                         'username' => $configuration['username'],
+                        'namespace' => $configuration['namespace'] ?? '',
+                        'intent' => $request->post('installer_intent', \Copot\Core\InstallerIntent::FRESH),
                     ];
+                    $intent = $values['intent'];
                     $probe = new InstallerDatabaseProbe();
 
                     if ($action === 'install_database') {
@@ -270,12 +276,23 @@ if ($installationStateError) {
                             new InstallerSchemaRunner($basePath . '/database/schema.sql'),
                             new InstallationMutex($basePath . '/storage')
                         );
-                        $setup->install($configuration, $requirementsPassed);
+                        $setup->install($configuration, $requirementsPassed, $intent);
 
                         return Response::redirect($deploymentContext->url('/install'));
                     } else {
-                        $databaseResult = $probe->test($configuration);
-                        $message = 'Database connection verified. The database is supported and empty.';
+                        $inspection = $probe->inspect($configuration);
+                        $routing = (new \Copot\Core\InstallerRoutingPlanner())->plan(
+                            $inspection['occupancy'],
+                            $intent,
+                            array_key_exists('namespace', $configuration) ? (string) $configuration['namespace'] : null
+                        );
+                        $databaseResult = array_merge($inspection['server'], [
+                            'occupancy' => $inspection['occupancy']->classification(),
+                            'namespace' => $routing->namespace(),
+                            'route' => $routing->route(),
+                            'warnings' => $routing->warnings(),
+                        ]);
+                        $message = 'Database connection and installer routing verified.';
                     }
                 } catch (InstallerValidationException $exception) {
                     $status = 422;

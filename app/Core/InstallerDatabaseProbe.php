@@ -16,6 +16,16 @@ class InstallerDatabaseProbe
 
     public function test(array $configuration): array
     {
+        $result = $this->inspect($configuration);
+        if (!$result['occupancy']->isEmpty()) {
+            throw new InstallationException('Database must be empty before installation.');
+        }
+        return $result['server'];
+    }
+
+    /** @return array{server: array, occupancy: InstallerDatabaseOccupancyResult} */
+    public function inspect(array $configuration): array
+    {
         foreach (['host', 'port', 'database', 'username', 'password'] as $field) {
             if (!array_key_exists($field, $configuration)) {
                 throw new InstallationException('Database configuration is incomplete.');
@@ -48,19 +58,15 @@ class InstallerDatabaseProbe
             ]);
             $server = $this->validateServerVersion((string) $connection->getAttribute(PDO::ATTR_SERVER_VERSION));
             $statement = $connection->prepare(
-                'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = :database'
+                'SELECT table_name FROM information_schema.tables WHERE table_schema = :database'
             );
             $statement->execute(['database' => $configuration['database']]);
-            $objectCount = (int) $statement->fetchColumn();
+            $objects = array_map('strval', $statement->fetchAll(PDO::FETCH_COLUMN));
         } catch (PDOException) {
             throw new InstallationException('Database connection could not be verified.');
         }
 
-        if ($objectCount !== 0) {
-            throw new InstallationException('Database must be empty before installation.');
-        }
-
-        return $server;
+        return ['server' => $server, 'occupancy' => (new InstallerDatabaseOccupancyClassifier())->classify($objects)];
     }
 
     public function validateServerVersion(string $serverVersion): array

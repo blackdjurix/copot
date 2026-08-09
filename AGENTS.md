@@ -35,8 +35,8 @@ Multi-Installation WU1 contract/evidence closure: COMPLETE AND CLOSED
 Multi-Installation WU2 Core implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU3 Module implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU4 Runtime implementation/evidence: COMPLETE AND CLOSED
-Multi-Installation implementation beyond WU4: NOT STARTED
-Next technical target: WU5 — Installer Database Occupancy Classification, Namespace Selection & Existing-Installation Routing
+Multi-Installation implementation beyond WU5: NOT STARTED
+Next technical target: WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance
 Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (released and published; production reconciliation remains separate)
