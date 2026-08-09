@@ -22,7 +22,7 @@ final class DatabaseHealthVerifier
         try {
             $connection->query('SELECT 1')->fetchColumn();
             $tables = $this->tables($connection);
-            $expected = array_map(fn (string $table): string => $this->tables->table($table), self::TABLES);
+            $expected = array_map(fn (string $table): string => $this->physicalTable($table), self::TABLES);
             $missing = array_values(array_diff($expected, $tables));
             if ($missing !== []) {
                 return new HealthGateMatrix([HealthGateResult::fail('database-schema', 'Required Core tables are missing: ' . implode(', ', $missing))]);
@@ -58,5 +58,12 @@ final class DatabaseHealthVerifier
             $statement = $connection->query('PRAGMA table_info(' . $table . ')');
             return array_map('strval', $statement->fetchAll(PDO::FETCH_COLUMN, 1));
         }
+    }
+
+    private function physicalTable(string $logicalName): string
+    {
+        return in_array($logicalName, DatabaseTableNames::moduleTables(), true)
+            ? $this->tables->moduleTable($logicalName)
+            : $this->tables->table($logicalName);
     }
 }
