@@ -634,7 +634,7 @@ published. Deferred integrations remain excluded.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 track: Module Package Lifecycle WU1–WU7
+Latest completed Post-M3 track: Multi-Installation WU1–WU6 implementation and acceptance
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
@@ -806,10 +806,12 @@ milestone number is assigned. The Webcore package lifecycle
 first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all
 possible Webcore installation/distribution capability. The latest completed
-Post-M3 track is Module Package Lifecycle WU1–WU7; v0.13.0 Release Readiness,
+Post-M3 track is Multi-Installation WU1–WU6 implementation and acceptance;
+v0.13.0 Release Readiness,
 tag/publication, and Gate 9 verification are complete. Post-release
 documentation reconciliation is complete; Multi-Installation Isolation
-Foundation is PROMOTED / PREPARATION CONTRACT LOCKED in
+Foundation has WU1–WU6 COMPLETE AND ACCEPTED / INTEGRATED, with foundation
+closure pending a separate closure decision, in
 `docs/34_multi_installation_isolation_foundation_contract.md`, with
 WU1 contract/evidence closure COMPLETE AND CLOSED, WU2 Core
 implementation/evidence COMPLETE AND CLOSED, WU3 Module
@@ -823,8 +825,8 @@ WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime
 Acceptance — is COMPLETE AND ACCEPTED and fast-forward integrated into
 authoritative `main` at `b095d26285f80d5b4caa8d1ac686acc02e17913a`.
 The WU6 feature branch is retained under separate lifecycle authorization.
-Implementation beyond WU6 remains NOT STARTED. Any other candidate work
-requires separate planning and contract authorization. Server-Empty Bootstrap remains DEFERRED /
+No additional Multi-Installation WU is currently defined. Any other candidate
+work requires separate planning and contract authorization. Server-Empty Bootstrap remains DEFERRED /
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
 Backup & Recovery is a separate platform capability with implementation and

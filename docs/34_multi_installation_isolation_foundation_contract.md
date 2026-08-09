@@ -2,7 +2,7 @@
 
 ## Status and authority
 
-- Multi-Installation Isolation Foundation: **PROMOTED / PREPARATION CONTRACT LOCKED**
+- Multi-Installation Isolation Foundation: **WU1–WU6 COMPLETE AND ACCEPTED / INTEGRATED; foundation closure pending separate closure decision**
 - Preparation: **COMPLETE / CONTRACT LOCKED**
 - Implementation: **WU1–WU6 COMPLETE; WU6 acceptance PASS**
 - WU1 — Installation Identity, Database Namespace, Compatibility & Runtime
@@ -13,14 +13,17 @@
   Adoption: **COMPLETE AND CLOSED — implementation/evidence scope**
 - WU4 — Runtime, Session, Cookie, Filesystem & Coordination Isolation:
   **COMPLETE AND CLOSED — implementation/evidence scope**
+- WU5 — Installer Database Occupancy Classification, Namespace Selection &
+  Existing-Installation Routing: **COMPLETE AND ACCEPTED — implementation/evidence scope**
 - WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime
   Acceptance: **COMPLETE AND ACCEPTED — implementation/evidence scope**
 - Scope: locked architecture, WU1 contract closure, WU2–WU5 implementation,
-  and WU6 cross-subsystem acceptance
+  and WU6 cross-subsystem acceptance; foundation closure remains pending a
+  separate closure decision
 - Production Webcore reconciliation: **NOT STARTED / separately authorized**
 - `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`: **DEFERRED / UNSCHEDULED**
 
-This contract promotes Multi-Installation Isolation Foundation into the
+This contract records Multi-Installation Isolation Foundation as an
 authoritative Post-M3 work stream. WU1 contract/evidence closure and WU2–WU5
 implementation/evidence are complete and accepted for their defined scopes;
 WU5 is integrated into authoritative `main`. WU6 is complete and accepted and
@@ -364,15 +367,16 @@ This preparation record does not reopen historical checkpoints. WU5 installer
 implementation/evidence is complete and accepted as recorded above; package,
 release, and publication completion remain outside this foundation.
 
-The Multi-Installation Isolation Foundation remains **PROMOTED / PREPARATION
-CONTRACT LOCKED** with WU5 implementation/evidence **COMPLETE AND ACCEPTED and
-integrated into authoritative `main` at
-`a83c780cf7c5e1ca614ab4dc51a30b44c3aff53c`**: WU1 contract/evidence closure,
+The Multi-Installation Isolation Foundation has **WU1–WU6 COMPLETE AND
+ACCEPTED** and integrated into authoritative `main` at
+`b095d26285f80d5b4caa8d1ac686acc02e17913a`: WU1 contract/evidence closure,
 WU2 Core implementation, WU3 Module implementation, WU4 Runtime
 implementation, and WU5 Installer implementation/evidence are complete and
 accepted; WU6 cross-subsystem acceptance is complete and accepted and
 integrated into authoritative `main` at
 `b095d26285f80d5b4caa8d1ac686acc02e17913a`.
+Foundation closure remains pending a separate closure decision; no additional
+Multi-Installation WU is currently defined.
 Subsequent implementation planning must cite this contract and provide
 evidence for any amendment to its topology, ownership, compatibility, runtime,
 namespace, or deferred boundaries.

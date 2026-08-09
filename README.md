@@ -29,14 +29,15 @@ released, tagged, and published.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 track: Module Package Lifecycle WU1–WU7
+Latest completed Post-M3 track: Multi-Installation WU1–WU6 implementation and acceptance
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
 Webcore Deployment & Portability Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU1–WU7: COMPLETE AND CLOSED; final human/E2E acceptance: PASS
 v0.13.0 Release Readiness: COMPLETE AND CLOSED / RELEASED AND PUBLICLY VERIFIED
-Multi-Installation Isolation Foundation: PROMOTED / PREPARATION CONTRACT LOCKED
+Multi-Installation Isolation Foundation: WU1–WU6 COMPLETE AND ACCEPTED / INTEGRATED; foundation closure pending separate closure decision
+Multi-Installation preparation: COMPLETE / CONTRACT LOCKED
 Multi-Installation WU1 contract/evidence closure: COMPLETE AND CLOSED
 Multi-Installation WU2 Core implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU3 Module implementation/evidence: COMPLETE AND CLOSED
@@ -47,8 +48,9 @@ DB-backed proof-assembly and adoption/migration routing acceptance passed.
 Multi-Installation WU6 Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance: COMPLETE AND ACCEPTED;
 fast-forward integrated into authoritative `main` at
 `b095d26285f80d5b4caa8d1ac686acc02e17913a`; the feature branch is retained
-under separate lifecycle authorization. Implementation beyond WU6 remains
-NOT STARTED.
+under separate lifecycle authorization. No additional Multi-Installation WU is
+currently defined; unrelated candidate work requires separate planning and
+authorization.
 Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (released and published; production reconciliation remains separate)
