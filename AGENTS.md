@@ -31,7 +31,9 @@ Webcore Deployment & Portability Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU1–WU7: COMPLETE AND CLOSED; final human/E2E acceptance: PASS
 v0.13.0 Release Readiness: COMPLETE AND CLOSED / RELEASED AND PUBLICLY VERIFIED
 Multi-Installation Isolation Foundation: PROMOTED / PREPARATION CONTRACT LOCKED
-Multi-Installation implementation: NOT STARTED
+Multi-Installation WU1 contract/evidence closure: COMPLETE AND CLOSED
+Multi-Installation implementation beyond WU1: NOT STARTED
+Next technical target: WU2 — Core Logical/Physical Table Naming, Schema Generation & Core Compatibility
 Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (released and published; production reconciliation remains separate)

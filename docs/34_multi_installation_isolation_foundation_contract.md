@@ -5,6 +5,10 @@
 - Multi-Installation Isolation Foundation: **PROMOTED / PREPARATION CONTRACT LOCKED**
 - Preparation: **COMPLETE / CONTRACT LOCKED**
 - Implementation: **NOT STARTED**
+- WU1 — Installation Identity, Database Namespace, Compatibility & Runtime
+  Contract: **COMPLETE AND CLOSED — contract/evidence closure only**
+- Next technical target: **WU2 — Core Logical/Physical Table Naming, Schema
+  Generation & Core Compatibility — implementation NOT STARTED**
 - Scope: architecture, ownership, compatibility, work-unit, and acceptance preparation only
 - Production Webcore reconciliation: **NOT STARTED / separately authorized**
 - `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`: **DEFERRED / UNSCHEDULED**
@@ -127,6 +131,25 @@ participants, prevent unsafe mutation, coordinate with existing
 lifecycle/migration/exclusion machinery, revalidate immediately before the
 mutation, and update resulting compatibility metadata.
 
+#### Database metadata responsibility
+
+COPOT is responsible for the integrity and authorization semantics of
+installation-scoped metadata: installation identity, namespace ownership,
+schema generation, compatibility envelope, and Runtime Registry state. The
+metadata belongs to the installation it describes and must not be treated as a
+global database-server fact or as a shared authority between independent
+installations. The Migration Ledger remains the exact migration-history
+authority; schema-generation and compatibility metadata describe the permitted
+state around that history.
+
+The database server, database name, foreign objects, and unrelated external
+metadata remain outside COPOT ownership. Installer occupancy evidence may be
+observed and classified, but COPOT must not rewrite or claim foreign objects.
+The physical persistence format and migration of the new metadata are later
+implementation concerns. Any metadata mutation affecting compatibility or
+destructive lifecycle operations requires explicit lifecycle authorization and
+the existing coordination/exclusion boundary.
+
 ### Runtime Registry
 
 Runtime Registry is part of this foundation. Each registered runtime
@@ -200,6 +223,25 @@ invariants, Migration Ledger/Schema Generation/Compatibility Envelope
 semantics, database metadata responsibility, Runtime Registry, lifecycle
 states, occupancy vocabulary, installer intent, and operational authorization
 boundaries.
+
+**Objective status: COMPLETE AND CLOSED — contract/evidence closure only.**
+The authoritative contract now explicitly defines every WU1 requirement:
+
+| WU1 requirement | Contract evidence |
+| --- | --- |
+| Installation identity | Stable `installation_id`, distinct deployment/database/runtime coordinates |
+| Supported topology | Disjoint independent installations and compatibility-gated shared-state runtimes; unsupported partial/ambiguous ownership fails closed |
+| Namespace and ownership invariants | Logical-to-physical naming boundary, namespace routing, complete ownership-set disjointness |
+| Compatibility semantics | Distinct Migration Ledger, Schema Generation, and Compatibility Envelope with transition gates |
+| Database metadata responsibility | Installation-scoped COPOT metadata ownership and explicit non-ownership of foreign/database-server state |
+| Runtime Registry | Stable `runtime_id`, bounded identity/capability/version/last-seen/compatibility/detach semantics |
+| Runtime lifecycle states | `REGISTERED`, `ACTIVE`, `STALE`, `DETACHED`, `INCOMPATIBLE` with stale-state safety rules |
+| Occupancy vocabulary | Separate occupancy/ownership and namespace classifications |
+| Installer intent | Fresh, coexist, adoption, and migration/update remain distinct from evidence |
+| Operational authorization | Explicit lifecycle authorization, existing coordination/exclusion reuse, and bounded runtime metadata responsibility |
+
+No WU1 implementation is claimed or authorized. The next technical target is
+WU2; its implementation remains NOT STARTED.
 
 ### WU2 — Core Logical/Physical Table Naming, Schema Generation & Core Compatibility
 

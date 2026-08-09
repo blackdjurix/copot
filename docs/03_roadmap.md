@@ -811,7 +811,10 @@ tag/publication, and Gate 9 verification are complete. Post-release
 documentation reconciliation is complete; Multi-Installation Isolation
 Foundation is PROMOTED / PREPARATION CONTRACT LOCKED in
 `docs/34_multi_installation_isolation_foundation_contract.md`, with
-implementation NOT STARTED. Any other candidate work requires separate
+WU1 contract/evidence closure COMPLETE AND CLOSED and implementation beyond
+WU1 NOT STARTED. WU2 — Core Logical/Physical Table Naming, Schema Generation &
+Core Compatibility — is the next technical target and its implementation is
+NOT STARTED. Any other candidate work requires separate
 planning and contract authorization. Server-Empty Bootstrap remains DEFERRED /
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
