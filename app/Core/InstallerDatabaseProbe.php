@@ -7,7 +7,7 @@ use PDOException;
 
 class InstallerDatabaseProbe
 {
-    public function __construct(private int $timeoutSeconds = 5)
+    public function __construct(private int $timeoutSeconds = 5, private ?InstallerOwnershipProofAssembler $proofAssembler = null)
     {
         if ($timeoutSeconds < 1 || $timeoutSeconds > 30) {
             throw new InstallationException('Database connection timeout is invalid.');
@@ -67,6 +67,9 @@ class InstallerDatabaseProbe
             throw new InstallationException('Database connection could not be verified.');
         }
 
+        if ($proofs === [] && $this->proofAssembler instanceof InstallerOwnershipProofAssembler) {
+            $proofs = $this->proofAssembler->assemble($connection, $objects);
+        }
         return ['server' => $server, 'occupancy' => (new InstallerDatabaseOccupancyClassifier())->classify($objects, $proofs)];
     }
 

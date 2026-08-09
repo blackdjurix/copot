@@ -12,7 +12,7 @@ final class InstallerDatabaseOccupancyClassifier
         if ($objects === []) return new InstallerDatabaseOccupancyResult(InstallerDatabaseOccupancy::EMPTY, [], []);
 
         $sets = [];
-        foreach ($this->candidateNamespaces($objects) as $namespace) {
+        foreach ($this->candidateNamespacesFromObjects($objects) as $namespace) {
             $names = new DatabaseTableNames($namespace);
             $owned = array_merge(
                 array_map(fn (string $name): string => $names->table($name), DatabaseTableNames::coreTables()),
@@ -79,7 +79,13 @@ final class InstallerDatabaseOccupancyClassifier
         return new InstallerDatabaseOccupancyResult($classification, $objects, [], $warnings);
     }
 
-    private function candidateNamespaces(array $objects): array
+    /** @param list<string> $objects @return list<string> */
+    public function candidateNamespaces(array $objects): array
+    {
+        return $this->candidateNamespacesFromObjects(array_values(array_unique(array_map('strval', $objects))));
+    }
+
+    private function candidateNamespacesFromObjects(array $objects): array
     {
         $candidates = [''];
         foreach ($objects as $object) {

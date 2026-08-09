@@ -11,6 +11,13 @@ use Copot\Core\InstallerNamespaceAnalyzer;
 use Copot\Core\InstallerRoutingPlanner;
 use Copot\Core\InstallationIdentity;
 use Copot\Core\InstallerOwnershipProof;
+use Copot\Core\InstallerOwnershipProofAssembler;
+use Copot\Core\InstallerDatabaseProbe;
+use Copot\Core\InstallerDatabaseSetup;
+use Copot\Core\InstallerEnvironmentWriter;
+use Copot\Core\InstallerSchemaRunner;
+use Copot\Core\InstallationMutex;
+use Copot\Core\CoreMigrationRegistry;
 
 $basePath = dirname(__DIR__);
 chdir($basePath);
@@ -80,6 +87,8 @@ $contradictory = $classifier->classify($objects('alpha'), [$proof('', 'd12345678
 $assert($contradictory->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Contradictory namespace ownership evidence did not fail closed.');
 $duplicateProof = $classifier->classify($objects('alpha'), [$alphaProof, $proof('alpha', 'e123456789abcdef123456789abcdef1')]);
 $assert($duplicateProof->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Conflicting COPOT ownership evidence did not fail closed.');
+$unhealthyProof = new InstallerOwnershipProof(new InstallationIdentity('inst_f123456789abcdef123456789abcdef1'), 'alpha', 'core-schema-generation:test', str_repeat('f', 64), false, true);
+$assert($classifier->classify($objects('alpha'), [$unhealthyProof])->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Unhealthy ownership evidence did not fail closed.');
 $assert($planner->plan($copotEmpty, InstallerIntent::ADOPT)->namespace() === '', 'Adoption did not preserve the legitimate empty namespace.');
 $assert($planner->plan($copotAlpha, InstallerIntent::ADOPT)->namespace() === 'alpha', 'Adoption did not preserve the non-empty namespace.');
 $assert($planner->plan($copotAlpha, InstallerIntent::MIGRATE)->route() === InstallerRoutingPlanner::MIGRATE, 'Migration/update routing failed.');
@@ -90,5 +99,33 @@ $assert((new DatabaseTableNames())->table('users') === 'users', 'WU2 empty Core 
 $assert((new DatabaseTableNames('alpha'))->table('users') === 'alpha_users', 'WU2 namespaced Core naming compatibility changed.');
 $assert((new DatabaseTableNames('alpha'))->moduleTable('content') === 'alpha_content', 'WU3 Module namespace compatibility changed.');
 $assert(in_array('external_orders', $mixed->objects(), true), 'Foreign objects were not retained as unclaimed evidence.');
+
+$proofStorage = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-wu5-proof-' . bin2hex(random_bytes(5));
+mkdir($proofStorage, 0700, true);
+$pdoWithoutDriver = (new ReflectionClass(PDO::class))->newInstanceWithoutConstructor();
+$assembler = new InstallerOwnershipProofAssembler($proofStorage, new CoreMigrationRegistry('copot-core-current', []));
+$assert($assembler->assemble($pdoWithoutDriver, $objects('alpha')) === [], 'Missing authoritative installation evidence did not fail closed.');
+
+$serviceStorage = $proofStorage . DIRECTORY_SEPARATOR . 'service';
+mkdir($serviceStorage, 0700, true);
+$serviceInspection = ['server' => ['vendor' => 'test', 'version' => '1.0.0'], 'occupancy' => $copotAlpha];
+$serviceProbe = new class($serviceInspection) extends InstallerDatabaseProbe {
+    public function __construct(private array $inspection) { parent::__construct(); }
+    public function inspect(array $configuration, array $proofs = []): array { return $this->inspection; }
+};
+$service = new InstallerDatabaseSetup(
+    $serviceProbe,
+    new InstallerEnvironmentWriter($serviceStorage . DIRECTORY_SEPARATOR . '.env'),
+    new InstallerSchemaRunner($serviceStorage . DIRECTORY_SEPARATOR . 'unused-schema.sql'),
+    new InstallationMutex($serviceStorage)
+);
+$serviceConfiguration = ['host' => '127.0.0.1', 'port' => 3306, 'database' => 'existing', 'username' => 'root', 'password' => '', 'namespace' => 'alpha'];
+$adoptionResult = $service->install($serviceConfiguration, true, InstallerIntent::ADOPT, [$alphaProof]);
+$assert($adoptionResult['route'] === InstallerRoutingPlanner::ADOPT && $adoptionResult['namespace'] === 'alpha' && $adoptionResult['statement_count'] === 0, 'Adoption did not succeed through the installer service path.');
+$migrationResult = $service->install($serviceConfiguration, true, InstallerIntent::MIGRATE, [$alphaProof]);
+$assert($migrationResult['route'] === InstallerRoutingPlanner::MIGRATE && $migrationResult['namespace'] === 'alpha' && $migrationResult['statement_count'] === 0, 'Migration/update did not succeed through the installer service path.');
+@unlink($serviceStorage . DIRECTORY_SEPARATOR . '.env');
+@rmdir($serviceStorage);
+@rmdir($proofStorage);
 
 echo "WU5 installer routing focused tests passed ({$assertions} assertions)." . PHP_EOL;

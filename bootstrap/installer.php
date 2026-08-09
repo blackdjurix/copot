@@ -11,6 +11,8 @@ use Copot\Core\InstallationException;
 use Copot\Core\InstallationMutex;
 use Copot\Core\InstallerAdministratorSetup;
 use Copot\Core\InstallerDatabaseProbe;
+use Copot\Core\InstallerOwnershipProofAssembler;
+use Copot\Core\CoreMigrationRegistry;
 use Copot\Core\InstallerDatabaseSetup;
 use Copot\Core\InstallerDatabaseValidator;
 use Copot\Core\InstallerEnvironmentWriter;
@@ -267,7 +269,13 @@ if ($installationStateError) {
                         'intent' => $request->post('installer_intent', \Copot\Core\InstallerIntent::FRESH),
                     ];
                     $intent = $values['intent'];
-                    $probe = new InstallerDatabaseProbe();
+                    $probe = new InstallerDatabaseProbe(
+                        5,
+                        new InstallerOwnershipProofAssembler(
+                            $basePath . '/storage',
+                            new CoreMigrationRegistry('copot-core-current', [])
+                        )
+                    );
 
                     if ($action === 'install_database') {
                         $setup = new InstallerDatabaseSetup(
