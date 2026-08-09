@@ -8,9 +8,9 @@ Release authorization: GRANTED BY USER, subject to the gates in this contract
 
 Release candidate readiness: ESTABLISHED / FROZEN
 
-Git tag `v0.13.0`: NOT YET CREATED
+Git tag `v0.13.0`: CREATED AND REMOTELY VERIFIED
 
-GitHub/public distribution publication: NOT YET PERFORMED
+GitHub/public distribution publication: COMPLETE AND REMOTELY VERIFIED
 
 This contract owns the bounded release-readiness path for the reconciled Webcore source version `0.13.0`. It does not reopen completed Package Lifecycle, Backup & Recovery, Existing-Runtime Webcore Lifecycle Adoption, or Webcore Deployment & Portability work. It does not take ownership of Module Package Lifecycle WU7 final human/E2E acceptance.
 
@@ -240,8 +240,8 @@ Admin dashboard login, public rendering, and the post-finalization `/install`
 404 all passed. The subsequent source change modified only package-owned
 release documentation; runtime/package-producing source was unchanged, so the
 113-assertion clean-install and browser evidence remains applicable. No source
-defect or regression was observed. Tag and publication remain unexecuted and
-separately controlled.
+defect or regression was observed. Tag and publication were completed later
+through Gates 8 and 9 and remain separately controlled for future releases.
 
 The following details are retained as historical evidence for the superseded
 `dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf` artifact. Its package-builder smoke
@@ -502,8 +502,8 @@ sha256:    0ebdd8541ee5f4652f5ec976391394ca38cf413ee2459f5ceff7b821b2e629f8
 inventory: 3e48b4c00e07c1a9c5f572477c69a7e0154ac3547dea7755399691deb6bd8855
 ```
 
-This establishes v0.13.0 release-candidate readiness only. It does not create
-a tag, GitHub Release, or public publication.
+This establishes v0.13.0 release-candidate readiness only; the subsequent Gate
+8 tag/publication and Gate 9 public-release verification are recorded below.
 
 ### Gate 8 — Release execution
 
@@ -526,6 +526,17 @@ A failed gate stops this sequence. Do not publish a different build from the one
 
 PASS when the public release, tag, asset filename, asset digest/identity, target commit, release notes, and downloadable package are independently verified.
 
+#### Gate 9 result
+
+PASS. GitHub Release `v0.13.0` is public and published at
+`https://github.com/blackdjurix/copot/releases/tag/v0.13.0`. The remote tag
+resolves to `dddb87e2afce2224e14c1ec31c39932b39e1b274`; the sole downloadable
+asset is `copot-v0.13.0.zip`, size `2,257,838` bytes, with SHA-256
+`0ebdd8541ee5f4652f5ec976391394ca38cf413ee2459f5ceff7b821b2e629f8` and
+authoritative inventory identity
+`3e48b4c00e07c1a9c5f572477c69a7e0154ac3547dea7755399691deb6bd8855`.
+Release metadata, notes, and the downloaded asset were independently verified.
+
 Only then may v0.13.0 be recorded as released/published in authoritative repository documentation.
 
 ## Release authorization boundary
@@ -539,12 +550,14 @@ If source changes after artifact acceptance, the artifact becomes stale and must
 ## Current next action
 
 After this contract is durably committed and remotely verified, the next
-eligible action is separately controlled release execution after explicit
-authorization:
+eligible action is focused post-release documentation reconciliation. Production
+Webcore reconciliation and Server-Empty Bootstrap remain separately controlled:
 
 ```text
-verify the frozen source-commit/artifact pair, then follow the separately
-controlled tag/publication sequence
+audit current documentation against the published release and accepted
+repository state, without changing implementation or production boundaries
 ```
 
-No release tag or public publication should occur before the acceptance artifact, browser clean-install evidence, documentation reconciliation, and authoritative MPL closure dependency are complete.
+For v0.13.0, the acceptance artifact, browser clean-install evidence,
+documentation reconciliation, and authoritative MPL closure dependency were
+complete before tag/publication. Future releases retain the same gate order.

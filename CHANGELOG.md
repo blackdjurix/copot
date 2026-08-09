@@ -1,17 +1,20 @@
 # Changelog
 
-## v0.13.0 Release Readiness — Candidate Frozen / Not Tagged or Published
+## v0.13.0 — Released
 
-- Release-candidate readiness is COMPLETE AND CLOSED for the validated
+- Release-candidate readiness and Gate 9 public-release verification are
+  COMPLETE AND CLOSED for the validated
   source/artifact pair recorded in
   `docs/33_v0_13_0_release_readiness_contract.md`.
+- Git tag `v0.13.0` and GitHub Release `v0.13.0` are public and verified with
+  the exact accepted `copot-v0.13.0.zip` asset.
 - Module Package Lifecycle WU1–WU7 final human/E2E acceptance is PASS and Full
   Module Package Lifecycle is COMPLETE AND CLOSED.
 - Production Webcore reconciliation remains NOT STARTED; Server-Empty
-  Bootstrap remains DEFERRED / UNSCHEDULED; tag and publication remain
-  separately controlled and unexecuted.
+  Bootstrap remains DEFERRED / UNSCHEDULED; future release actions remain
+  separately controlled.
 
-## Unreleased
+## Historical pre-v0.13.0 reconciliation notes
 
 ### Backup & Recovery Foundation lifecycle closure
 

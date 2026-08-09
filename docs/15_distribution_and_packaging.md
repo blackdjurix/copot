@@ -4,7 +4,10 @@
 
 This document defines the boundary between the copot source repository and an installable release package.
 
-M2 implementation and Post-M2 release preparation are complete. Copot v0.12.0 is the released stable Webcore baseline. Future release work must preserve the deterministic installable-artifact, clean-state verification, and local-state exclusion contracts defined here.
+M2 implementation and Post-M2 release preparation are complete. Copot v0.13.0
+is the current released stable Webcore baseline. Future release work must
+preserve the deterministic installable-artifact, clean-state verification, and
+local-state exclusion contracts defined here.
 
 ## Source Repository vs Release Package
 
@@ -57,10 +60,11 @@ Historical released stable Webcore version:
 0.12.0
 ```
 
-The reconciled source version for the next consolidated Webcore release is
+The reconciled source version for the consolidated Webcore release is
 `0.13.0`. It includes the completed Package Lifecycle & Migration Foundation,
 Module Package Lifecycle Foundation, and Backup & Recovery Foundation. It is
-not tagged, published, or installed by this change. The current release
+tagged and publicly published; publication does not imply installation or
+production reconciliation. The current release
 communication metadata is stored in the package-owned root `release.json`;
 `Version::CURRENT` remains the sole current-version authority.
 
@@ -70,9 +74,9 @@ The current v0.13.0 acceptance/release package output is:
 dist/copot-v0.13.0.zip
 ```
 
-The next package builder output will derive its filename and manifest version
-from `Copot\Core\Version::CURRENT`; no package artifact is published by this
-reconciliation.
+Future package-builder output will derive its filename and manifest version
+from `Copot\Core\Version::CURRENT`; the accepted v0.13.0 artifact is the
+published release asset.
 
 ## Environment Contract
 
@@ -214,6 +218,6 @@ Deployment-environment verification remains separate and pending for real deploy
 
 ## Deferred Distribution Work
 
-The historical v0.12.0 release artifact was published through the completed release workflow. v0.13.0 release-candidate readiness is complete, but v0.13.0 remains untagged and unpublished until separately controlled release execution.
+The historical v0.12.0 release artifact was published through the completed release workflow. v0.13.0 release-candidate readiness, tag creation, publication, and downloadable asset verification are complete. Production deployment reconciliation and deferred distribution capabilities remain separately controlled.
 
 Patch distribution, remote updates, package repositories, signing, delta updates, and multi-version maintenance infrastructure remain deferred beyond the v0.12.0 distribution contract.

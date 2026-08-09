@@ -626,8 +626,8 @@ The approved implementation sequence is:
 M3.11 Form Manager preparation is COMPLETE. WU1–WU4 and full M3.11 are
 COMPLETE and integrated into `main` at
 `0b86eae4c9bb50d7ed8928f4f4b63f8be572a4f9` by fast-forward only, with no merge
-commit. Feature containment is confirmed. Release, tag, and publication remain
-NOT STARTED. Deferred integrations remain excluded.
+commit. Feature containment is confirmed. v0.13.0 is released, tagged, and
+published. Deferred integrations remain excluded.
 
 ### Current authoritative post-M3 state
 
@@ -640,14 +640,14 @@ Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
 Webcore Deployment & Portability Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU1–WU7: COMPLETE AND CLOSED; final human/E2E acceptance: PASS
-v0.13.0 Release Readiness: COMPLETE AND CLOSED / RELEASE CANDIDATE READY
-Frozen release documentation baseline: current branch commit after this reconciliation
+v0.13.0 Release Readiness: COMPLETE AND CLOSED / RELEASED AND PUBLICLY VERIFIED
+Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded
 Version & Release Reconciliation: COMPLETE
-Webcore reconciled source version: 0.13.0 (next consolidated release; not tagged or published)
+Webcore reconciled source version: 0.13.0 (released and published; production reconciliation remains separate)
 Current Core Module versions: 0.1.0 independently owned; modules/example excluded
 Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based; REPAIR is not a release event
-Current boundary: production Webcore reconciliation remains NOT STARTED and separately authorized; Server-empty Bootstrap remains DEFERRED / UNSCHEDULED; tag and publication remain separately controlled and unexecuted.
+Current boundary: production Webcore reconciliation remains NOT STARTED and separately authorized; Server-empty Bootstrap remains DEFERRED / UNSCHEDULED; v0.13.0 tag and publication are complete, while future release actions remain separately controlled.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
 Current active implementation branch: main
@@ -772,7 +772,7 @@ STARTED.
 Backup & Recovery Foundation: COMPLETE AND CLOSED — WU1–WU7 COMPLETE.
 Version & Release Reconciliation closure gate: COMPLETE.
 Module Package Lifecycle preparation: COMPLETE / CONTRACT LOCKED
-Full Module Package Lifecycle: COMPLETE AND CLOSED for the accepted WU1–WU7 scope; production reconciliation remains NOT STARTED; release-candidate readiness is complete; tag and publication remain separate gates
+Full Module Package Lifecycle: COMPLETE AND CLOSED for the accepted WU1–WU7 scope; production reconciliation remains NOT STARTED; v0.13.0 release/tag/publication are complete; future release actions remain separate gates
 Module Package Lifecycle contract: `docs/29_module_package_lifecycle_contract.md`
 Module Package Lifecycle implementation and acceptance: COMPLETE AND CLOSED — WU1–WU7 automated/runtime validation and final human/E2E acceptance PASS
 Module Package Lifecycle WU1: COMPLETE
@@ -783,9 +783,9 @@ Module Package Lifecycle WU5: COMPLETE
 Module Package Lifecycle WU6: COMPLETE
 Module Package Lifecycle WU7: COMPLETE AND CLOSED — implementation, automated validation, and final human/E2E acceptance PASS
 Post-M3 development model: DEPENDENCY-DRIVEN / NON-LINEAR
-Release: NOT STARTED
-Tag: NOT STARTED
-Publication: NOT STARTED
+Release: v0.13.0 PUBLISHED
+Tag: v0.13.0 CREATED AND VERIFIED
+Publication: v0.13.0 PUBLIC / VERIFIED
 
 M4, M5, M6, MR.x, and post-M3 platform foundations are planning domains, not
 an automatically sequential execution order. Future work is selected by actual
@@ -806,8 +806,9 @@ milestone number is assigned. The Webcore package lifecycle
 first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all
 possible Webcore installation/distribution capability. The latest completed
-Post-M3 track is Module Package Lifecycle WU1–WU7, and v0.13.0 Release Readiness
-is the immediate cross-track follow-on.
+Post-M3 track is Module Package Lifecycle WU1–WU7; v0.13.0 Release Readiness,
+tag/publication, and Gate 9 verification are complete. Focused post-release
+documentation reconciliation is the immediate follow-on.
 Backup & Recovery is a separate platform capability with implementation and
 acceptance complete and lifecycle closure recorded in
 `docs/31_backup_recovery_foundation_contract.md`.
