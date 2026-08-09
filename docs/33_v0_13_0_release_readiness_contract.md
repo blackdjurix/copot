@@ -6,7 +6,7 @@ Preparation: COMPLETE / CONTRACT LOCKED
 
 Release authorization: GRANTED BY USER, subject to the gates in this contract
 
-Release candidate readiness: NOT YET ESTABLISHED
+Release candidate readiness: ESTABLISHED / FROZEN
 
 Git tag `v0.13.0`: NOT YET CREATED
 
@@ -207,13 +207,13 @@ revalidated at the later release gate before tag or publication.
 ### Current reconciled candidate artifact
 
 The current release-readiness candidate was rebuilt from exact source commit
-`c27be5d3ac225b3fa6ae26b50d3423b9a38a5d3c` (`docs(release): align readiness
-with current main`) using the official `build/package.php` builder. The output
-is `dist/copot-v0.13.0.zip`, size 2,257,115 bytes, with SHA-256
-`54c569f6c7927e482be63f51e87227cb18812ac816f9127f0465058d34d5c8c5`.
+`dddb87e2afce2224e14c1ec31c39932b39e1b274` (`docs(release): close readiness
+documentation gate`) using the official `build/package.php` builder. The
+output is `dist/copot-v0.13.0.zip`, size 2,257,838 bytes, with SHA-256
+`0ebdd8541ee5f4652f5ec976391394ca38cf413ee2459f5ceff7b821b2e629f8`.
 The ZIP contains 566 entries: 565 package-owned inventory entries plus
 `.copot/package.json`. The inventory identity is
-`ac55a582607844aebc84a9b713ae3cc1b25b3f203e95a9524c9cb409971964c2`.
+`b2d4bcc7192fcaa02e94a6a8faebb8a832484a6454e76f50f8590d7dcdca0c3c`.
 The manifest reports target `0.13.0` and release identity `copot-v0.13.0`.
 
 Required package entries were present and forbidden entries were absent. The
@@ -223,17 +223,21 @@ historical `dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf` source, confirming that
 the rebuilt artifact is bound to the current release-readiness source rather
 than merely retaining the historical artifact bytes.
 
-The package-builder smoke validation passed 1,826 assertions. Package-based
-clean-install verification passed 113 assertions using PHP 8.5.7, including
+The package-builder smoke validation passed 1,826 assertions. The previously
+passed package-based clean-install verification passed 113 assertions using
+PHP 8.5.7, including
 extraction, requirements, canonical schema, committed fresh-install lifecycle
 state, installed marker `0.13.0`, and post-install runtime checks.
 
-Browser acceptance passed the canonical configurable public-root topology from
-the rebuilt artifact with PHP 8.5.7 and MariaDB 10.4.32: requirements and empty
-database verification passed; schema installation, first administrator/site
-settings, finalization, Admin dashboard login, public rendering, and the
-post-finalization `/install` 404 all passed. No source defect or regression was
-observed. Tag and publication gates remain unexecuted.
+Browser acceptance passed the canonical configurable public-root topology with
+PHP 8.5.7 and MariaDB 10.4.32: requirements and empty database verification
+passed; schema installation, first administrator/site settings, finalization,
+Admin dashboard login, public rendering, and the post-finalization `/install`
+404 all passed. The subsequent source change modified only package-owned
+release documentation; runtime/package-producing source was unchanged, so the
+113-assertion clean-install and browser evidence remains applicable. No source
+defect or regression was observed. Tag and publication remain unexecuted and
+separately controlled.
 
 The following details are retained as historical evidence for the superseded
 `dbd9d1f2a37221d12eb7b9be9654a7ad2de01ccf` artifact. Its package-builder smoke
@@ -478,6 +482,25 @@ PASS only when authoritative repository state records final MPL WU7 acceptance a
 
 PASS only when Gates 1-6 pass and the exact final release commit/artifact pair is frozen with no unresolved release-blocking finding.
 
+## Final gate review result
+
+Gates 1–6: PASS. The contract is remotely verifiable; the exact-source
+artifact, package composition, package-builder smoke, clean-install, browser
+acceptance, current documentation reconciliation, and authoritative MPL
+closure evidence are recorded above.
+
+Gate 7: PASS. The exact validated source/artifact pair is frozen:
+
+```text
+source:    dddb87e2afce2224e14c1ec31c39932b39e1b274
+artifact:  dist/copot-v0.13.0.zip
+sha256:    0ebdd8541ee5f4652f5ec976391394ca38cf413ee2459f5ceff7b821b2e629f8
+inventory: b2d4bcc7192fcaa02e94a6a8faebb8a832484a6454e76f50f8590d7dcdca0c3c
+```
+
+This establishes v0.13.0 release-candidate readiness only. It does not create
+a tag, GitHub Release, or public publication.
+
 ### Gate 8 — Release execution
 
 The user has explicitly authorized v0.13.0 release execution. That authorization becomes executable only after Gate 7 passes.
@@ -511,11 +534,13 @@ If source changes after artifact acceptance, the artifact becomes stale and must
 
 ## Current next action
 
-After this contract is durably committed and remotely verified, the next eligible action is:
+After this contract is durably committed and remotely verified, the next
+eligible action is separately controlled release execution after explicit
+authorization:
 
 ```text
-complete the remaining release-readiness gates and freeze the exact validated
-source-commit/artifact pair before any tag or publication action
+verify the frozen source-commit/artifact pair, then follow the separately
+controlled tag/publication sequence
 ```
 
 No release tag or public publication should occur before the acceptance artifact, browser clean-install evidence, documentation reconciliation, and authoritative MPL closure dependency are complete.
