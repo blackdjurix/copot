@@ -23,9 +23,12 @@
 This contract promotes Multi-Installation Isolation Foundation into the
 authoritative Post-M3 work stream. WU1 contract/evidence closure and WU2–WU5
 implementation/evidence are complete and accepted for their defined scopes;
-WU5 is integrated into authoritative `main`. WU6 is complete and accepted on
-the dedicated WU6 feature branch; any later implementation authorization must
-preserve this contract or document an evidence-backed amendment.
+WU5 is integrated into authoritative `main`. WU6 is complete and accepted and
+fast-forward integrated into authoritative `main` at
+`b095d26285f80d5b4caa8d1ac686acc02e17913a`; the dedicated WU6 feature branch
+is retained under separate lifecycle authorization. Any later implementation
+authorization must preserve this contract or document an evidence-backed
+amendment.
 
 ## Relationship to completed foundations
 
@@ -367,8 +370,9 @@ integrated into authoritative `main` at
 `a83c780cf7c5e1ca614ab4dc51a30b44c3aff53c`**: WU1 contract/evidence closure,
 WU2 Core implementation, WU3 Module implementation, WU4 Runtime
 implementation, and WU5 Installer implementation/evidence are complete and
-accepted; WU6 cross-subsystem acceptance is complete and accepted on the
-dedicated feature branch.
+accepted; WU6 cross-subsystem acceptance is complete and accepted and
+integrated into authoritative `main` at
+`b095d26285f80d5b4caa8d1ac686acc02e17913a`.
 Subsequent implementation planning must cite this contract and provide
 evidence for any amendment to its topology, ownership, compatibility, runtime,
 namespace, or deferred boundaries.

@@ -819,9 +819,12 @@ Occupancy Classification, Namespace Selection & Existing-Installation Routing
 — implementation/evidence is COMPLETE AND ACCEPTED and integrated into
 authoritative `main` at `a83c780cf7c5e1ca614ab4dc51a30b44c3aff53c`, including
 DB-backed proof assembly and adoption/migration routing.
-Implementation beyond WU5 is NOT STARTED; WU6 is the next technical target and
-remains NOT STARTED. Any other candidate work requires separate planning and
-contract authorization. Server-Empty Bootstrap remains DEFERRED /
+WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime
+Acceptance — is COMPLETE AND ACCEPTED and fast-forward integrated into
+authoritative `main` at `b095d26285f80d5b4caa8d1ac686acc02e17913a`.
+The WU6 feature branch is retained under separate lifecycle authorization.
+Implementation beyond WU6 remains NOT STARTED. Any other candidate work
+requires separate planning and contract authorization. Server-Empty Bootstrap remains DEFERRED /
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
 Backup & Recovery is a separate platform capability with implementation and

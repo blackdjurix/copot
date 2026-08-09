@@ -39,8 +39,11 @@ Multi-Installation WU5 Installer implementation/evidence: COMPLETE AND ACCEPTED
 and integrated into authoritative main at a83c780cf7c5e1ca614ab4dc51a30b44c3aff53c;
 DB-backed proof-assembly and adoption/migration routing acceptance passed.
 Multi-Installation WU6 Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance: COMPLETE AND ACCEPTED;
-focused cross-subsystem and impacted-predecessor evidence passed on the WU6
-feature branch; implementation beyond WU6 remains NOT STARTED
+focused cross-subsystem and impacted-predecessor evidence passed; WU6 was
+fast-forward integrated into authoritative `main` at
+`b095d26285f80d5b4caa8d1ac686acc02e17913a`; the retained feature branch
+remains available under separate lifecycle authorization; implementation
+beyond WU6 remains NOT STARTED
 Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (released and published; production reconciliation remains separate)
