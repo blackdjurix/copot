@@ -251,7 +251,9 @@ Multi-Installation Isolation Foundation owns cross-install concerns such as:
 
 Multi-Installation must consume the established single-install base-path/root contract rather than implement a second competing portability mechanism.
 
-Independent Multi-Installation preparation/audit may continue, but overlapping base-path implementation should wait for or align with the portability boundary.
+The promoted Multi-Installation preparation contract may proceed, but
+overlapping base-path implementation must wait for or align with the
+portability boundary.
 
 ---
 
