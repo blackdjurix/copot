@@ -20,11 +20,12 @@
 - `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`: **DEFERRED / UNSCHEDULED**
 
 This contract promotes Multi-Installation Isolation Foundation into the
-authoritative Post-M3 work stream. WU1 contract/evidence closure and WU2–WU4
-implementation are complete for their accepted scopes. WU6 is the next
-technical target and WU6 implementation remains NOT STARTED; any later
-implementation authorization must preserve this contract or document an
-evidence-backed amendment.
+authoritative Post-M3 work stream. WU1 contract/evidence closure and WU2–WU5
+implementation/evidence are complete and accepted for their defined scopes;
+WU5 is integrated into authoritative `main`. WU6 is the next technical target
+and WU6 implementation remains NOT STARTED; any later implementation
+authorization must preserve this contract or document an evidence-backed
+amendment.
 
 ## Relationship to completed foundations
 
@@ -41,7 +42,7 @@ separate boundaries.
 
 The focused preparation audit established the following pre-WU2
 implementation baseline. These findings are retained as historical evidence;
-they do not describe the current WU2–WU4 implementation state.
+they do not describe the current WU2–WU5 implementation state.
 
 1. `app/Core/Database.php`, `database/schema.sql`, Core repositories, Module
    repositories, and upgrade SQL used fixed physical table names. No
@@ -73,9 +74,11 @@ they do not describe the current WU2–WU4 implementation state.
    Backup/Recovery code is available for ownership and compatibility evidence,
    but a generic physical table collision is not ownership proof.
 
-WU2–WU4 subsequently superseded the implementation limitations recorded in
-items 1–5 within their accepted scopes. The historical findings did not, and
-do not, authorize WU5 or WU6 implementation.
+WU2–WU5 subsequently superseded the implementation limitations recorded in
+items 1–5 within their accepted scopes, including the preparation-time
+installer limitations in item 2. At the historical preparation checkpoint,
+those findings did not authorize WU5 or WU6 implementation; current WU5
+authorization and acceptance are recorded in the WU5 section below.
 
 ## Locked architecture
 
@@ -343,15 +346,17 @@ authorized. It is not a prerequisite silently absorbed by this foundation.
 The completed Package Lifecycle, Module Package Lifecycle, Existing-Runtime
 Webcore Lifecycle Adoption, Backup & Recovery, and Webcore Deployment &
 Portability foundations remain complete and closed for their accepted scopes.
-This preparation does not reopen historical checkpoints or claim installer,
-package, release, or publication completion.
+This preparation record does not reopen historical checkpoints. WU5 installer
+implementation/evidence is complete and accepted as recorded above; package,
+release, and publication completion remain outside this foundation.
 
 The Multi-Installation Isolation Foundation remains **PROMOTED / PREPARATION
 CONTRACT LOCKED** with WU5 implementation/evidence **COMPLETE AND ACCEPTED and
 integrated into authoritative `main` at
 `a83c780cf7c5e1ca614ab4dc51a30b44c3aff53c`**: WU1 contract/evidence closure,
-WU2 Core implementation, WU3 Module implementation, and WU4 Runtime
-implementation are complete; WU6 remains NOT STARTED.
+WU2 Core implementation, WU3 Module implementation, WU4 Runtime
+implementation, and WU5 Installer implementation/evidence are complete and
+accepted; WU6 remains NOT STARTED.
 Subsequent implementation planning must cite this contract and provide
 evidence for any amendment to its topology, ownership, compatibility, runtime,
 namespace, or deferred boundaries.
