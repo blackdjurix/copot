@@ -22,7 +22,7 @@ class InstallerSchemaRunner
         $statements = $this->statements($schema);
         $namespace = new DatabaseTableNames((string) ($configuration['namespace'] ?? ''));
         if ($namespace->namespace() !== '') {
-            $statements = (new CoreSchemaMaterializer())->namespaceStatements($statements, $namespace);
+            $statements = (new DatabaseSchemaMaterializer())->namespaceStatements($statements, $namespace);
         }
 
         if ($statements === []) {

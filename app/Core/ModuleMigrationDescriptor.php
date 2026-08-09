@@ -94,7 +94,15 @@ final class ModuleMigrationDescriptor
     }
     public function retryable(): bool { return $this->retryable; }
     public function appliesTo(string $packageVersion): bool { return $this->sourceVersionConstraint->supports($packageVersion); }
-    public function execute(\PDO $connection): void { ($this->executor)($connection); }
+    public function execute(\PDO $connection, ?DatabaseTableNames $tables = null): void
+    {
+        if ($tables === null) {
+            ($this->executor)($connection);
+            return;
+        }
+
+        ($this->executor)($connection, new ModuleMigrationContext($connection, $tables));
+    }
     public function checkPrecondition(\PDO $connection): bool { return $this->precondition === null || (bool) ($this->precondition)($connection); }
     public function checkPostcondition(\PDO $connection): bool { return $this->postcondition === null || (bool) ($this->postcondition)($connection); }
 

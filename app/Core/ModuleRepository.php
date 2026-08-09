@@ -13,7 +13,7 @@ class ModuleRepository
     public function all(): array
     {
         $statement = $this->database->connection()->query(
-            'SELECT * FROM modules ORDER BY name ASC'
+            'SELECT * FROM ' . $this->database->tables()->moduleTable('modules') . ' ORDER BY name ASC'
         );
 
         return $statement->fetchAll();
@@ -22,7 +22,7 @@ class ModuleRepository
     public function enabled(): array
     {
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM modules WHERE status = :status ORDER BY name ASC'
+            'SELECT * FROM ' . $this->database->tables()->moduleTable('modules') . ' WHERE status = :status ORDER BY name ASC'
         );
 
         $statement->execute(['status' => 'enabled']);
@@ -33,7 +33,7 @@ class ModuleRepository
     public function findByName(string $name): ?array
     {
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM modules WHERE name = :name LIMIT 1'
+            'SELECT * FROM ' . $this->database->tables()->moduleTable('modules') . ' WHERE name = :name LIMIT 1'
         );
 
         $statement->execute(['name' => $name]);
@@ -45,7 +45,7 @@ class ModuleRepository
     public function create(ModuleDefinition $module, string $status = 'disabled'): void
     {
         $statement = $this->database->connection()->prepare(
-            'INSERT INTO modules (
+            'INSERT INTO ' . $this->database->tables()->moduleTable('modules') . ' (
                 name,
                 title,
                 version,
@@ -81,7 +81,7 @@ class ModuleRepository
         $disabledAt = $status === 'disabled' ? 'NOW()' : 'disabled_at';
 
         $statement = $this->database->connection()->prepare(
-            "UPDATE modules
+            "UPDATE " . $this->database->tables()->moduleTable('modules') . "
             SET status = :status,
                 enabled_at = {$enabledAt},
                 disabled_at = {$disabledAt},
@@ -98,7 +98,7 @@ class ModuleRepository
     public function delete(string $name): void
     {
         $statement = $this->database->connection()->prepare(
-            'DELETE FROM modules WHERE name = :name'
+            'DELETE FROM ' . $this->database->tables()->moduleTable('modules') . ' WHERE name = :name'
         );
 
         $statement->execute(['name' => $name]);
@@ -124,7 +124,7 @@ class ModuleRepository
     public function permissionsFor(string $moduleName): array
     {
         $statement = $this->database->connection()->prepare(
-            'SELECT * FROM module_permissions WHERE module_name = :module_name ORDER BY permission_slug ASC'
+            'SELECT * FROM ' . $this->database->tables()->moduleTable('module_permissions') . ' WHERE module_name = :module_name ORDER BY permission_slug ASC'
         );
 
         $statement->execute(['module_name' => $moduleName]);
@@ -134,10 +134,10 @@ class ModuleRepository
 
     public function upsertPermissionMetadata(string $moduleName, string $slug, string $name): void
     {
-        $check = $this->database->connection()->prepare('SELECT permission_slug FROM module_permissions WHERE module_name = :module_name AND permission_slug = :permission_slug LIMIT 1');
+        $check = $this->database->connection()->prepare('SELECT permission_slug FROM ' . $this->database->tables()->moduleTable('module_permissions') . ' WHERE module_name = :module_name AND permission_slug = :permission_slug LIMIT 1');
         $check->execute(['module_name' => $moduleName, 'permission_slug' => $slug]);
         if ($check->fetch() !== false) {
-            $update = $this->database->connection()->prepare('UPDATE module_permissions SET permission_name = :permission_name WHERE module_name = :module_name AND permission_slug = :permission_slug');
+            $update = $this->database->connection()->prepare('UPDATE ' . $this->database->tables()->moduleTable('module_permissions') . ' SET permission_name = :permission_name WHERE module_name = :module_name AND permission_slug = :permission_slug');
             $update->execute(['module_name' => $moduleName, 'permission_slug' => $slug, 'permission_name' => $name]);
             return;
         }
@@ -147,7 +147,7 @@ class ModuleRepository
     public function deletePermissions(string $moduleName): void
     {
         $statement = $this->database->connection()->prepare(
-            'DELETE FROM module_permissions WHERE module_name = :module_name'
+            'DELETE FROM ' . $this->database->tables()->moduleTable('module_permissions') . ' WHERE module_name = :module_name'
         );
 
         $statement->execute(['module_name' => $moduleName]);
@@ -204,7 +204,7 @@ class ModuleRepository
     private function createPermission(string $moduleName, string $slug, string $name): void
     {
         $statement = $this->database->connection()->prepare(
-            'INSERT INTO module_permissions (
+            'INSERT INTO ' . $this->database->tables()->moduleTable('module_permissions') . ' (
                 module_name,
                 permission_slug,
                 permission_name,

@@ -10,28 +10,28 @@ final class RedirectRepository
 
     public function findById(int $id, bool $forUpdate = false): ?Redirect
     {
-        $sql = 'SELECT * FROM redirects WHERE id = :id LIMIT 1' . ($forUpdate ? ' FOR UPDATE' : '');
+        $sql = 'SELECT * FROM ' . $this->database->tables()->moduleTable('redirects') . ' WHERE id = :id LIMIT 1' . ($forUpdate ? ' FOR UPDATE' : '');
         return $this->hydrate($this->row($sql, ['id' => $id]));
     }
 
     public function findBySource(string $source): ?Redirect
     {
         return $this->hydrate($this->row(
-            'SELECT * FROM redirects WHERE source_path = :source_path LIMIT 1',
+            'SELECT * FROM ' . $this->database->tables()->moduleTable('redirects') . ' WHERE source_path = :source_path LIMIT 1',
             ['source_path' => $source]
         ));
     }
 
     public function all(): array
     {
-        $statement = $this->database->connection()->query('SELECT * FROM redirects ORDER BY source_path ASC, id ASC');
+        $statement = $this->database->queryModule('SELECT * FROM ' . $this->database->tables()->moduleTable('redirects') . ' ORDER BY source_path ASC, id ASC');
 
         return array_map(fn (array $row): Redirect => $this->hydrate($row), $statement->fetchAll());
     }
 
     public function sourceExists(string $source, ?int $ignoreId = null): bool
     {
-        $sql = 'SELECT 1 FROM redirects WHERE source_path = :source_path';
+        $sql = 'SELECT 1 FROM ' . $this->database->tables()->moduleTable('redirects') . ' WHERE source_path = :source_path';
         $parameters = ['source_path' => $source];
 
         if ($ignoreId !== null) {
@@ -44,8 +44,8 @@ final class RedirectRepository
 
     public function create(string $source, string $target, int $status): int
     {
-        $statement = $this->database->connection()->prepare(
-            'INSERT INTO redirects (source_path, target, status_code, created_at, updated_at)
+        $statement = $this->database->prepareModule(
+            'INSERT INTO ' . $this->database->tables()->moduleTable('redirects') . ' (source_path, target, status_code, created_at, updated_at)
              VALUES (:source_path, :target, :status_code, NOW(), NOW())'
         );
         $statement->execute([
@@ -59,8 +59,8 @@ final class RedirectRepository
 
     public function update(int $id, string $source, string $target, int $status, string $expectedUpdatedAt): void
     {
-        $statement = $this->database->connection()->prepare(
-            'UPDATE redirects
+        $statement = $this->database->prepareModule(
+            'UPDATE ' . $this->database->tables()->moduleTable('redirects') . '
              SET source_path = :source_path,
                  target = :target,
                  status_code = :status_code,
@@ -82,8 +82,8 @@ final class RedirectRepository
 
     public function delete(int $id, string $expectedUpdatedAt): void
     {
-        $statement = $this->database->connection()->prepare(
-            'DELETE FROM redirects WHERE id = :id AND updated_at = :expected_updated_at'
+        $statement = $this->database->prepareModule(
+            'DELETE FROM ' . $this->database->tables()->moduleTable('redirects') . ' WHERE id = :id AND updated_at = :expected_updated_at'
         );
         $statement->execute(['id' => $id, 'expected_updated_at' => $expectedUpdatedAt]);
 
@@ -94,7 +94,7 @@ final class RedirectRepository
 
     private function row(string $sql, array $parameters): ?array
     {
-        $statement = $this->database->connection()->prepare($sql);
+        $statement = $this->database->prepareModule($sql);
         $statement->execute($parameters);
         $row = $statement->fetch();
 

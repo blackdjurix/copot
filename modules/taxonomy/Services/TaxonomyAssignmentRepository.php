@@ -15,7 +15,7 @@ class TaxonomyAssignmentRepository
         $this->ensureTermExists($termId);
 
         $this->withinTransaction(function () use ($entityType, $entityId, $termId): void {
-            $statement = $this->database->connection()->prepare(
+            $statement = $this->database->prepareModule(
                 'INSERT IGNORE INTO taxonomy_assignments (
                     taxonomy_term_id,
                     entity_type,
@@ -44,7 +44,7 @@ class TaxonomyAssignmentRepository
         $connection = $this->database->connection();
 
         $this->withinTransaction(function () use ($connection, $entityType, $entityId, $termIds): void {
-            $delete = $connection->prepare(
+            $delete = $this->database->prepareModule(
                 'DELETE FROM taxonomy_assignments
                 WHERE entity_type = :entity_type
                     AND entity_id = :entity_id'
@@ -69,7 +69,7 @@ class TaxonomyAssignmentRepository
         $connection = $this->database->connection();
 
         $this->withinTransaction(function () use ($connection, $entityType, $entityId, $typeSlug, $termIds): void {
-            $delete = $connection->prepare(
+            $delete = $this->database->prepareModule(
                 'DELETE taxonomy_assignments
                 FROM taxonomy_assignments
                 INNER JOIN taxonomy_terms ON taxonomy_terms.id = taxonomy_assignments.taxonomy_term_id
@@ -118,7 +118,7 @@ class TaxonomyAssignmentRepository
     {
         [$entityType, $entityId] = $this->normalizeEntity($entityType, $entityId);
 
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT taxonomy_terms.*
             FROM taxonomy_assignments
             INNER JOIN taxonomy_terms ON taxonomy_terms.id = taxonomy_assignments.taxonomy_term_id
@@ -141,7 +141,7 @@ class TaxonomyAssignmentRepository
         [$entityType, $entityId] = $this->normalizeEntity($entityType, $entityId);
         $typeSlug = $this->normalizeTypeSlug($typeSlug);
 
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT taxonomy_terms.*
             FROM taxonomy_assignments
             INNER JOIN taxonomy_terms ON taxonomy_terms.id = taxonomy_assignments.taxonomy_term_id
@@ -165,7 +165,7 @@ class TaxonomyAssignmentRepository
     {
         $termId = $this->normalizeTermId($termId);
 
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT COUNT(*) FROM taxonomy_assignments WHERE taxonomy_term_id = :taxonomy_term_id'
         );
 
@@ -230,7 +230,7 @@ class TaxonomyAssignmentRepository
 
     private function ensureTermExists(int $termId): void
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT 1 FROM taxonomy_terms WHERE id = :id LIMIT 1'
         );
         $statement->execute(['id' => $termId]);
@@ -255,7 +255,7 @@ class TaxonomyAssignmentRepository
             $parameters[$key] = $termId;
         }
 
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT COUNT(*)
             FROM taxonomy_terms
             INNER JOIN taxonomy_types ON taxonomy_types.id = taxonomy_terms.taxonomy_type_id

@@ -6,7 +6,7 @@ use PDO;
 
 final class ModuleMigrationReconciler
 {
-    public function __construct(private ModuleMigrationLedger $ledger) {}
+    public function __construct(private ModuleMigrationLedger $ledger, private ?DatabaseTableNames $tables = null) {}
 
     public function freshBaseline(ModuleIdentity $module, string $baselineIdentity, callable $establish): ModuleMigrationReconciliationResult
     {
@@ -29,8 +29,8 @@ final class ModuleMigrationReconciler
                 if (isset($byId[$migration->id()])) { $record = $byId[$migration->id()]; if ($record->checksum() !== $migration->checksum() || $record->executableIdentity() !== $migration->executableSource()) throw new \RuntimeException('Applied Module migration was modified.'); continue; }
                 if (!$migration->checkPrecondition($connection)) return new ModuleMigrationReconciliationResult(ModuleMigrationReconciliationResult::FAILED, $applied, 'Module migration precondition failed.');
                 try {
-                    if ($migration->transactionMode() === ModuleMigrationDescriptor::TRANSACTIONAL) { if ($connection->inTransaction()) throw new \RuntimeException('Transactional Module migration cannot join an external transaction.'); $connection->beginTransaction(); try { $migration->execute($connection); if (!$migration->checkPostcondition($connection)) throw new \RuntimeException('Module migration postcondition failed.'); $this->ledger->record($migration, $module); $connection->commit(); } catch (\Throwable $e) { if ($connection->inTransaction()) $connection->rollBack(); throw $e; } }
-                    else { $migration->execute($connection); if (!$migration->checkPostcondition($connection)) throw new \RuntimeException('Module migration postcondition failed.'); try { $this->ledger->record($migration, $module); } catch (\Throwable $e) { return new ModuleMigrationReconciliationResult(ModuleMigrationReconciliationResult::INDETERMINATE, $applied, $e->getMessage()); } }
+                    if ($migration->transactionMode() === ModuleMigrationDescriptor::TRANSACTIONAL) { if ($connection->inTransaction()) throw new \RuntimeException('Transactional Module migration cannot join an external transaction.'); $connection->beginTransaction(); try { $migration->execute($connection, $this->tables); if (!$migration->checkPostcondition($connection)) throw new \RuntimeException('Module migration postcondition failed.'); $this->ledger->record($migration, $module); $connection->commit(); } catch (\Throwable $e) { if ($connection->inTransaction()) $connection->rollBack(); throw $e; } }
+                    else { $migration->execute($connection, $this->tables); if (!$migration->checkPostcondition($connection)) throw new \RuntimeException('Module migration postcondition failed.'); try { $this->ledger->record($migration, $module); } catch (\Throwable $e) { return new ModuleMigrationReconciliationResult(ModuleMigrationReconciliationResult::INDETERMINATE, $applied, $e->getMessage()); } }
                     $applied[] = $migration->id();
                 } catch (\Throwable $e) { return new ModuleMigrationReconciliationResult(ModuleMigrationReconciliationResult::FAILED, $applied, $e->getMessage()); }
             }

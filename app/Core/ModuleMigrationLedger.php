@@ -8,12 +8,15 @@ final class ModuleMigrationLedger
 {
     private string $root;
 
-    public function __construct(string $storagePath)
+    public function __construct(string $storagePath, ?DatabaseTableNames $tables = null)
     {
         if (!is_dir($storagePath) || is_link($storagePath) || !is_writable($storagePath)) throw new \RuntimeException('Module migration storage is unavailable.');
         $base = realpath($storagePath);
         if ($base === false) throw new \RuntimeException('Module migration storage is unavailable.');
         $root = $base . DIRECTORY_SEPARATOR . '.copot-lifecycle' . DIRECTORY_SEPARATOR . 'module-migrations';
+        if ($tables !== null && $tables->namespace() !== '') {
+            $root .= DIRECTORY_SEPARATOR . $tables->namespace();
+        }
         if (!is_dir($root) && !mkdir($root, 0700, true)) throw new \RuntimeException('Module migration storage could not be created.');
         if (is_link($root) || !is_dir($root) || !is_writable($root)) throw new \RuntimeException('Module migration storage is invalid.');
         $this->root = realpath($root) ?: throw new \RuntimeException('Module migration storage is invalid.');

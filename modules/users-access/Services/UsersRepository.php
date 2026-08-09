@@ -14,7 +14,7 @@ class UsersRepository
     {
         $limit = max(1, min($limit, 100));
         $offset = max(0, $offset);
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT ' . self::SAFE_COLUMNS . '
             FROM users
             ORDER BY updated_at DESC, id DESC
@@ -39,7 +39,7 @@ class UsersRepository
 
     public function findByEmail(string $normalizedEmail): ?ManagedUser
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT ' . self::SAFE_COLUMNS . ' FROM users WHERE email = :email LIMIT 1'
         );
         $statement->execute(['email' => $normalizedEmail]);
@@ -58,7 +58,7 @@ class UsersRepository
             $parameters['ignore_id'] = $ignoreId;
         }
 
-        $statement = $this->database->connection()->prepare($sql . ' LIMIT 1');
+        $statement = $this->database->prepareModule($sql . ' LIMIT 1');
         $statement->execute($parameters);
 
         return (bool) $statement->fetchColumn();
@@ -66,7 +66,7 @@ class UsersRepository
 
     public function create(string $name, string $email, string $passwordHash, string $status): int
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'INSERT INTO users (name, email, password_hash, status, created_at, updated_at)
             VALUES (:name, :email, :password_hash, :status, NOW(), NOW())'
         );
@@ -82,7 +82,7 @@ class UsersRepository
 
     public function updateIdentity(int $id, string $name, string $email): void
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'UPDATE users SET name = :name, email = :email, updated_at = NOW() WHERE id = :id'
         );
         $statement->execute(['id' => $id, 'name' => $name, 'email' => $email]);
@@ -90,7 +90,7 @@ class UsersRepository
 
     public function updatePasswordHash(int $id, string $passwordHash): void
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'UPDATE users SET password_hash = :password_hash, updated_at = NOW() WHERE id = :id'
         );
         $statement->execute(['id' => $id, 'password_hash' => $passwordHash]);
@@ -98,7 +98,7 @@ class UsersRepository
 
     public function updateStatus(int $id, string $status): void
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'UPDATE users SET status = :status, updated_at = NOW() WHERE id = :id'
         );
         $statement->execute(['id' => $id, 'status' => $status]);
@@ -112,7 +112,7 @@ class UsersRepository
             $sql .= ' FOR UPDATE';
         }
 
-        $statement = $this->database->connection()->prepare($sql);
+        $statement = $this->database->prepareModule($sql);
         $statement->execute(['id' => $id]);
         $user = $statement->fetch();
 

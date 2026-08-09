@@ -9,7 +9,7 @@ final class MediaVariantRepository
     public function find(MediaId|int $mediaId, string $variantKey): ?MediaVariant
     {
         $mediaId = $mediaId instanceof MediaId ? $mediaId : new MediaId($mediaId);
-        $statement = $this->database->connection()->prepare('SELECT * FROM media_variants WHERE media_id = :media_id AND variant_key = :variant_key LIMIT 1');
+        $statement = $this->database->prepareModule('SELECT * FROM media_variants WHERE media_id = :media_id AND variant_key = :variant_key LIMIT 1');
         $statement->execute(['media_id' => $mediaId->value(), 'variant_key' => trim($variantKey)]);
         $row = $statement->fetch();
         return is_array($row) ? $this->hydrate($row) : null;
@@ -18,14 +18,14 @@ final class MediaVariantRepository
     public function forMedia(MediaId|int $mediaId): array
     {
         $mediaId = $mediaId instanceof MediaId ? $mediaId : new MediaId($mediaId);
-        $statement = $this->database->connection()->prepare('SELECT * FROM media_variants WHERE media_id = :media_id ORDER BY variant_key ASC, id ASC');
+        $statement = $this->database->prepareModule('SELECT * FROM media_variants WHERE media_id = :media_id ORDER BY variant_key ASC, id ASC');
         $statement->execute(['media_id' => $mediaId->value()]);
         return array_map(fn (array $row): MediaVariant => $this->hydrate($row), $statement->fetchAll());
     }
 
     public function expiredPending(string $before): array
     {
-        $statement = $this->database->connection()->prepare("SELECT * FROM media_variants WHERE variant_key LIKE 'pending-%' AND created_at < :before ORDER BY id ASC");
+        $statement = $this->database->prepareModule("SELECT * FROM media_variants WHERE variant_key LIKE 'pending-%' AND created_at < :before ORDER BY id ASC");
         $statement->execute(['before' => $before]);
         return array_map(fn (array $row): MediaVariant => $this->hydrate($row), $statement->fetchAll());
     }
@@ -37,7 +37,7 @@ final class MediaVariantRepository
         $previous = $this->find($mediaId, (string) $data['variant_key']);
         if (!$previous && $this->isTransientKey((string) $data['variant_key']) && count(array_filter($this->forMedia($mediaId), fn (MediaVariant $variant): bool => $this->isTransientKey($variant->variantKey()))) >= 24) throw new MediaProcessingValidationException('Media variant limit reached.');
         if ($previous) {
-            $statement = $this->database->connection()->prepare('UPDATE media_variants SET storage_key = :storage_key, mime_type = :mime_type, extension = :extension, byte_size = :byte_size, width = :width, height = :height, updated_at = NOW() WHERE media_id = :media_id AND variant_key = :variant_key');
+            $statement = $this->database->prepareModule('UPDATE media_variants SET storage_key = :storage_key, mime_type = :mime_type, extension = :extension, byte_size = :byte_size, width = :width, height = :height, updated_at = NOW() WHERE media_id = :media_id AND variant_key = :variant_key');
             $statement->execute(['storage_key'=>$data['storage_key'],'mime_type'=>$data['mime_type'],'extension'=>$data['extension'],'byte_size'=>$data['byte_size'],'width'=>$data['width']??null,'height'=>$data['height']??null,'media_id'=>$mediaId->value(),'variant_key'=>$data['variant_key']]);
             return $previous;
         }
@@ -47,12 +47,12 @@ final class MediaVariantRepository
     public function deleteDescriptor(MediaId|int $mediaId, string $variantKey): ?MediaVariant
     {
         $mediaId = $mediaId instanceof MediaId ? $mediaId : new MediaId($mediaId); $previous = $this->find($mediaId, $variantKey); if (!$previous) return null;
-        $statement = $this->database->connection()->prepare('DELETE FROM media_variants WHERE media_id = :media_id AND variant_key = :variant_key'); $statement->execute(['media_id'=>$mediaId->value(),'variant_key'=>$variantKey]); return $previous;
+        $statement = $this->database->prepareModule('DELETE FROM media_variants WHERE media_id = :media_id AND variant_key = :variant_key'); $statement->execute(['media_id'=>$mediaId->value(),'variant_key'=>$variantKey]); return $previous;
     }
 
     public function saveDescriptor(array $data): int
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'INSERT INTO media_variants (media_id, variant_key, storage_key, mime_type, extension, byte_size, width, height, created_at, updated_at)
              VALUES (:media_id, :variant_key, :storage_key, :mime_type, :extension, :byte_size, :width, :height, NOW(), NOW())'
         );

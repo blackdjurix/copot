@@ -12,7 +12,7 @@ final class MediaRepository
     {
         $id = $this->id($id);
         $sql = 'SELECT * FROM media WHERE id = :id LIMIT 1' . ($forUpdate ? ' FOR UPDATE' : '');
-        $statement = $this->database->connection()->prepare($sql);
+        $statement = $this->database->prepareModule($sql);
         $statement->execute(['id' => $id->value()]);
         $row = $statement->fetch();
         return is_array($row) ? $this->hydrate($row) : null;
@@ -20,7 +20,7 @@ final class MediaRepository
 
     public function findByStorageKey(string $storageKey): ?Media
     {
-        $statement = $this->database->connection()->prepare('SELECT * FROM media WHERE storage_key = :storage_key LIMIT 1');
+        $statement = $this->database->prepareModule('SELECT * FROM media WHERE storage_key = :storage_key LIMIT 1');
         $statement->execute(['storage_key' => $storageKey]);
         $row = $statement->fetch();
         return is_array($row) ? $this->hydrate($row) : null;
@@ -31,7 +31,7 @@ final class MediaRepository
         $limit = max(1, min($limit, 100));
         $offset = max(0, $offset);
         $where = $kind === '' ? '' : ' WHERE kind = :kind';
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT * FROM media' . $where . ' ORDER BY updated_at DESC, id DESC LIMIT :limit OFFSET :offset'
         );
         if ($kind !== '') $statement->bindValue('kind', $kind, PDO::PARAM_STR);
@@ -71,10 +71,10 @@ final class MediaRepository
 
         $whereSql = $where === [] ? '' : 'WHERE ' . implode(' AND ', $where);
         $connection = $this->database->connection();
-        $count = $connection->prepare("SELECT COUNT(*) FROM media {$whereSql}");
+        $count = $this->database->prepareModule("SELECT COUNT(*) FROM media {$whereSql}");
         $count->execute($parameters);
 
-        $statement = $connection->prepare(
+        $statement = $this->database->prepareModule(
             "SELECT * FROM media {$whereSql}
              ORDER BY updated_at DESC, id DESC
              LIMIT :limit OFFSET :offset"
@@ -96,7 +96,7 @@ final class MediaRepository
 
     public function create(array $data): MediaId
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'INSERT INTO media (kind, original_filename, title, storage_key, mime_type, extension, byte_size, width, height, created_at, updated_at)
              VALUES (:kind, :original_filename, :title, :storage_key, :mime_type, :extension, :byte_size, :width, :height, NOW(), NOW())'
         );
@@ -107,7 +107,7 @@ final class MediaRepository
     public function updateTitle(MediaId|int $id, string $title): void
     {
         $id = $this->id($id);
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'UPDATE media SET title = :title, updated_at = GREATEST(NOW(), DATE_ADD(updated_at, INTERVAL 1 SECOND)) WHERE id = :id'
         );
         $statement->execute(['id' => $id->value(), 'title' => $title]);
@@ -117,7 +117,7 @@ final class MediaRepository
     public function delete(MediaId|int $id): void
     {
         $id = $this->id($id);
-        $statement = $this->database->connection()->prepare('DELETE FROM media WHERE id = :id');
+        $statement = $this->database->prepareModule('DELETE FROM media WHERE id = :id');
         $statement->execute(['id' => $id->value()]);
         if ($statement->rowCount() !== 1) throw new MediaNotFoundException('Media could not be deleted.');
     }

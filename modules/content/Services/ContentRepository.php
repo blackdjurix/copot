@@ -40,11 +40,12 @@ class ContentRepository
 
         $whereSql = $where === [] ? '' : 'WHERE ' . implode(' AND ', $where);
         $connection = $this->database->connection();
-        $count = $connection->prepare("SELECT COUNT(*) FROM content {$whereSql}");
+        $table = $this->database->tables()->moduleTable('content');
+        $count = $this->database->prepareModule("SELECT COUNT(*) FROM {$table} {$whereSql}");
         $count->execute($parameters);
 
-        $statement = $connection->prepare(
-            "SELECT * FROM content
+        $statement = $this->database->prepareModule(
+            "SELECT * FROM {$table}
             {$whereSql}
             ORDER BY updated_at DESC, id DESC
             LIMIT :limit OFFSET :offset"
@@ -69,8 +70,8 @@ class ContentRepository
         $limit = max(1, min($limit, 100));
         $offset = max(0, $offset);
 
-        $statement = $this->database->connection()->prepare(
-            'SELECT * FROM content
+        $statement = $this->database->prepareModule(
+            'SELECT * FROM ' . $this->database->tables()->moduleTable('content') . '
             ORDER BY updated_at DESC, id DESC
             LIMIT :limit OFFSET :offset'
         );
@@ -84,8 +85,8 @@ class ContentRepository
 
     public function findById(int $id): ?Content
     {
-        $statement = $this->database->connection()->prepare(
-            'SELECT * FROM content WHERE id = :id LIMIT 1'
+        $statement = $this->database->prepareModule(
+            'SELECT * FROM ' . $this->database->tables()->moduleTable('content') . ' WHERE id = :id LIMIT 1'
         );
 
         $statement->execute(['id' => $id]);
@@ -96,8 +97,8 @@ class ContentRepository
 
     public function findPublishedBySlug(string $slug): ?Content
     {
-        $statement = $this->database->connection()->prepare(
-            'SELECT * FROM content
+        $statement = $this->database->prepareModule(
+            'SELECT * FROM ' . $this->database->tables()->moduleTable('content') . '
             WHERE slug = :slug
                 AND status = :status
             LIMIT 1'
@@ -117,8 +118,8 @@ class ContentRepository
     {
         $data = $this->normalizePayload($data);
 
-        $statement = $this->database->connection()->prepare(
-            'INSERT INTO content (
+        $statement = $this->database->prepareModule(
+            'INSERT INTO ' . $this->database->tables()->moduleTable('content') . ' (
                 type,
                 title,
                 slug,
@@ -166,8 +167,8 @@ class ContentRepository
     {
         $data = $this->normalizePayload($data, false);
 
-        $statement = $this->database->connection()->prepare(
-            'UPDATE content
+        $statement = $this->database->prepareModule(
+            'UPDATE ' . $this->database->tables()->moduleTable('content') . '
             SET type = :type,
                 title = :title,
                 slug = :slug,
@@ -227,8 +228,8 @@ class ContentRepository
 
         $publishedAt = $to === 'published' ? 'NOW()' : 'NULL';
         $archivedAt = $to === 'archived' ? 'NOW()' : 'NULL';
-        $statement = $this->database->connection()->prepare(
-            "UPDATE content
+        $statement = $this->database->prepareModule(
+            "UPDATE " . $this->database->tables()->moduleTable('content') . "
             SET status = :to,
                 published_at = {$publishedAt},
                 archived_at = {$archivedAt},
@@ -249,7 +250,7 @@ class ContentRepository
 
     public function delete(int $id): void
     {
-        $statement = $this->database->connection()->prepare('DELETE FROM content WHERE id = :id');
+        $statement = $this->database->prepareModule('DELETE FROM ' . $this->database->tables()->moduleTable('content') . ' WHERE id = :id');
         $statement->execute(['id' => $id]);
         if ($statement->rowCount() !== 1) {
             throw new InvalidArgumentException('Content entry was not found.');
@@ -258,7 +259,7 @@ class ContentRepository
 
     public function slugExists(string $slug, ?int $ignoreId = null): bool
     {
-        $sql = 'SELECT 1 FROM content WHERE slug = :slug';
+        $sql = 'SELECT 1 FROM ' . $this->database->tables()->moduleTable('content') . ' WHERE slug = :slug';
         $parameters = ['slug' => $slug];
 
         if ($ignoreId !== null) {
@@ -268,7 +269,7 @@ class ContentRepository
 
         $sql .= ' LIMIT 1';
 
-        $statement = $this->database->connection()->prepare($sql);
+        $statement = $this->database->prepareModule($sql);
         $statement->execute($parameters);
 
         return (bool) $statement->fetchColumn();

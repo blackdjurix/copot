@@ -14,7 +14,7 @@ class RolesRepository
     {
         $limit = max(1, min($limit, 100));
         $offset = max(0, $offset);
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT ' . self::SAFE_COLUMNS . '
             FROM roles
             ORDER BY name ASC, id ASC
@@ -29,7 +29,7 @@ class RolesRepository
 
     public function all(): array
     {
-        $statement = $this->database->connection()->query(
+        $statement = $this->database->queryModule(
             'SELECT ' . self::SAFE_COLUMNS . ' FROM roles ORDER BY name ASC, slug ASC, id ASC'
         );
 
@@ -48,7 +48,7 @@ class RolesRepository
 
     public function findBySlug(string $slug): ?ManagedRole
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT ' . self::SAFE_COLUMNS . ' FROM roles WHERE slug = :slug LIMIT 1'
         );
         $statement->execute(['slug' => $slug]);
@@ -67,7 +67,7 @@ class RolesRepository
             $parameters['ignore_id'] = $ignoreId;
         }
 
-        $statement = $this->database->connection()->prepare($sql . ' LIMIT 1');
+        $statement = $this->database->prepareModule($sql . ' LIMIT 1');
         $statement->execute($parameters);
 
         return (bool) $statement->fetchColumn();
@@ -75,7 +75,7 @@ class RolesRepository
 
     public function create(string $name, string $slug): int
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'INSERT INTO roles (name, slug, created_at, updated_at)
             VALUES (:name, :slug, NOW(), NOW())'
         );
@@ -86,7 +86,7 @@ class RolesRepository
 
     public function updateName(int $id, string $name): void
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'UPDATE roles SET name = :name, updated_at = NOW() WHERE id = :id'
         );
         $statement->execute(['id' => $id, 'name' => $name]);
@@ -94,13 +94,13 @@ class RolesRepository
 
     public function delete(int $id): void
     {
-        $statement = $this->database->connection()->prepare('DELETE FROM roles WHERE id = :id');
+        $statement = $this->database->prepareModule('DELETE FROM roles WHERE id = :id');
         $statement->execute(['id' => $id]);
     }
 
     public function assignedUserCount(int $roleId): int
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT COUNT(*) FROM user_roles WHERE role_id = :role_id'
         );
         $statement->execute(['role_id' => $roleId]);
@@ -110,7 +110,7 @@ class RolesRepository
 
     public function permissions(): array
     {
-        return $this->database->connection()->query(
+        return $this->database->queryModule(
             'SELECT id, name, slug FROM permissions ORDER BY name ASC, id ASC'
         )->fetchAll();
     }
@@ -143,7 +143,7 @@ class RolesRepository
 
     public function addUserRoles(int $userId, array $roleIds): void
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'INSERT INTO user_roles (user_id, role_id) VALUES (:user_id, :role_id)'
         );
 
@@ -159,7 +159,7 @@ class RolesRepository
 
     public function addRolePermissions(int $roleId, array $permissionIds): void
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'INSERT INTO role_permissions (role_id, permission_id) VALUES (:role_id, :permission_id)'
         );
 
@@ -177,7 +177,7 @@ class RolesRepository
     {
         $permissionSlugs = $this->normalizePermissionSlugs($permissionSlugs);
         $placeholders = implode(', ', array_fill(0, count($permissionSlugs), '?'));
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             "SELECT COUNT(DISTINCT permissions.slug)
             FROM user_roles
             INNER JOIN role_permissions ON role_permissions.role_id = user_roles.role_id
@@ -195,7 +195,7 @@ class RolesRepository
         $permissionSlugs = $this->normalizePermissionSlugs($permissionSlugs);
         $placeholders = implode(', ', array_fill(0, count($permissionSlugs), '?'));
         $requiredCount = count($permissionSlugs);
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             "SELECT COUNT(*)
             FROM (
                 SELECT users.id
@@ -222,7 +222,7 @@ class RolesRepository
             throw new RuntimeException('Administrator invariant mutex requires an active transaction.');
         }
 
-        $statement = $connection->query("SELECT id FROM roles WHERE slug = 'admin' FOR UPDATE");
+        $statement = $this->database->queryModule("SELECT id FROM roles WHERE slug = 'admin' FOR UPDATE");
         $roleId = $statement->fetchColumn();
 
         if (!is_numeric($roleId)) {
@@ -240,7 +240,7 @@ class RolesRepository
             $sql .= ' FOR UPDATE';
         }
 
-        $statement = $this->database->connection()->prepare($sql);
+        $statement = $this->database->prepareModule($sql);
         $statement->execute(['id' => $id]);
         $role = $statement->fetch();
 
@@ -249,7 +249,7 @@ class RolesRepository
 
     private function integerColumn(string $sql, int $id): array
     {
-        $statement = $this->database->connection()->prepare($sql);
+        $statement = $this->database->prepareModule($sql);
         $statement->execute(['id' => $id]);
 
         return array_map('intval', $statement->fetchAll(PDO::FETCH_COLUMN));
@@ -264,7 +264,7 @@ class RolesRepository
         }
 
         $placeholders = implode(', ', array_fill(0, count($ids), '?'));
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             "SELECT id FROM {$table} WHERE id IN ({$placeholders}) ORDER BY id ASC"
         );
         $statement->execute($ids);
@@ -286,7 +286,7 @@ class RolesRepository
         }
 
         $placeholders = implode(', ', array_fill(0, count($targetIds), '?'));
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             "DELETE FROM {$table}
             WHERE {$ownerColumn} = ? AND {$targetColumn} IN ({$placeholders})"
         );

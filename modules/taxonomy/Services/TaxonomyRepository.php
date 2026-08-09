@@ -12,7 +12,7 @@ class TaxonomyRepository
 
     public function allTypes(): array
     {
-        $statement = $this->database->connection()->query(
+        $statement = $this->database->queryModule(
             'SELECT * FROM taxonomy_types ORDER BY name ASC, id ASC'
         );
 
@@ -21,7 +21,7 @@ class TaxonomyRepository
 
     public function findTypeBySlug(string $slug): ?TaxonomyType
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT * FROM taxonomy_types WHERE slug = :slug LIMIT 1'
         );
 
@@ -33,7 +33,7 @@ class TaxonomyRepository
 
     public function termsByType(string $typeSlug): array
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT taxonomy_terms.*
             FROM taxonomy_terms
             INNER JOIN taxonomy_types ON taxonomy_types.id = taxonomy_terms.taxonomy_type_id
@@ -48,7 +48,7 @@ class TaxonomyRepository
 
     public function findTermById(int $id): ?TaxonomyTerm
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT * FROM taxonomy_terms WHERE id = :id LIMIT 1'
         );
 
@@ -66,7 +66,7 @@ class TaxonomyRepository
             $type = $this->managedType($data['taxonomy_type_id']);
             $this->validateParent($type, $data['parent_id'], null);
 
-            $statement = $this->database->connection()->prepare(
+            $statement = $this->database->prepareModule(
             'INSERT INTO taxonomy_terms (
                 taxonomy_type_id,
                 parent_id,
@@ -114,7 +114,7 @@ class TaxonomyRepository
             $this->validateParent($type, $data['parent_id'], $id);
             $data['id'] = $id;
 
-            $statement = $this->database->connection()->prepare(
+            $statement = $this->database->prepareModule(
             'UPDATE taxonomy_terms
             SET taxonomy_type_id = :taxonomy_type_id,
                 parent_id = :parent_id,
@@ -148,7 +148,7 @@ class TaxonomyRepository
             }
 
             if ($type['slug'] === 'category') {
-                $children = $this->database->connection()->prepare(
+                $children = $this->database->prepareModule(
                     'SELECT id FROM taxonomy_terms WHERE parent_id = :parent_id LIMIT 1 FOR UPDATE'
                 );
                 $children->execute(['parent_id' => $id]);
@@ -158,7 +158,7 @@ class TaxonomyRepository
                 }
             }
 
-            $statement = $this->database->connection()->prepare(
+            $statement = $this->database->prepareModule(
                 'DELETE FROM taxonomy_terms WHERE id = :id'
             );
             $statement->execute(['id' => $id]);
@@ -186,7 +186,7 @@ class TaxonomyRepository
 
         $sql .= ' LIMIT 1';
 
-        $statement = $this->database->connection()->prepare($sql);
+        $statement = $this->database->prepareModule($sql);
         $statement->execute($parameters);
 
         return (bool) $statement->fetchColumn();
@@ -245,7 +245,7 @@ class TaxonomyRepository
 
     private function managedType(int $id): array
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT id, slug, is_hierarchical FROM taxonomy_types WHERE id = :id LIMIT 1 FOR UPDATE'
         );
         $statement->execute(['id' => $id]);
@@ -267,7 +267,7 @@ class TaxonomyRepository
 
     private function lockedTerm(int $id): ?array
     {
-        $statement = $this->database->connection()->prepare(
+        $statement = $this->database->prepareModule(
             'SELECT id, taxonomy_type_id, parent_id FROM taxonomy_terms WHERE id = :id LIMIT 1 FOR UPDATE'
         );
         $statement->execute(['id' => $id]);

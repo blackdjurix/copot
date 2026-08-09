@@ -82,21 +82,6 @@ final class CoreSchemaMaterializer
 
     private function namespaceStatement(string $statement, DatabaseTableNames $tables): string
     {
-        foreach (DatabaseTableNames::coreTables() as $logical) {
-            $physical = $tables->table($logical);
-            $statement = preg_replace(
-                '/(?<![A-Za-z0-9_])' . preg_quote($logical, '/') . '(?![A-Za-z0-9_])/',
-                $physical,
-                $statement
-            ) ?? $statement;
-        }
-
-        $statement = preg_replace_callback(
-            '/\b(CONSTRAINT|UNIQUE\s+KEY|INDEX|KEY)\s+([a-z][a-z0-9_]*)/i',
-            fn (array $match): string => $match[1] . ' ' . $tables->objectIdentifier($match[2]),
-            $statement
-        ) ?? $statement;
-
-        return $statement;
+        return $tables->namespaceStatement($statement);
     }
 }

@@ -59,4 +59,24 @@ class Database
     {
         return $this->tables;
     }
+
+    public function prepareModule(string $sql, array $options = []): \PDOStatement
+    {
+        return $this->connection()->prepare($this->moduleSql($sql), $options);
+    }
+
+    public function queryModule(string $sql): \PDOStatement
+    {
+        return $this->connection()->query($this->moduleSql($sql));
+    }
+
+    public function execModule(string $sql): int|false
+    {
+        return $this->connection()->exec($this->moduleSql($sql));
+    }
+
+    public function moduleSql(string $sql): string
+    {
+        return $this->tables->namespaceStatement($sql);
+    }
 }
