@@ -3,17 +3,17 @@
 ## Status and authority
 
 ```text
-System Health & Status: PROMOTED / PREPARATION
+System Health & Status: PROMOTED / COMPLETE / CLOSED
 Contract: LOCKED
 Implementation: WU1–WU6 COMPLETE
 WU1–WU6: IMPLEMENTATION COMPLETE / VALIDATION COMPLETE
 Dependency: INDEPENDENT
-Operational consequence: CONTINUE
+Operational consequence: NO AUTOMATIC FOLLOW-ON AUTHORIZATION
 ```
 
-This contract promotes System Health & Status from planning concept into
-authoritative repository preparation. WU1 through WU6 implementation are recorded
-below; the contract authorizes no schema, Dashboard, Module, permission,
+This contract records the completed System Health & Status functional scope and
+its authoritative boundaries. WU1 through WU6 implementation are recorded
+below; the contract authorizes no further schema, Dashboard, Module, permission,
 production-reconciliation, release, or publication work.
 
 WU1 through WU6 implementation and focused validation are complete. WU2 adapts
@@ -271,30 +271,21 @@ M3.9 Dashboard presentation with 14 assertions, and Admin UI Batch 3 with 64
 assertions. WU6 adds no diagnosis, aggregation, authorization, MR.x refinement,
 Widget Stage 2, or Widget Stage 3 behavior.
 
-## 16. Acceptance criteria for later implementation
+## 16. Closure and future evolution boundaries
 
-- producer results validate against the locked minimal boundary;
-- missing, not-adopted, unavailable, and failed producers remain distinct;
-- missing evidence never becomes healthy;
-- finding severity remains producer-owned;
-- overall status follows the locked baseline mapping;
-- viewer and unit-owned visibility policies are enforced before reporting;
-- producer failures are isolated and sanitized;
-- expensive checks stay outside normal Dashboard renders;
-- no new health schema is introduced without a separate decision;
-- Webcore, Module, Runtime, Dashboard, and Multi-Installation boundaries are
-  preserved; and
-- focused acceptance proves installation-scoped reports and no raw diagnostic
-  leakage.
+The locked acceptance criteria above were satisfied by WU1–WU6 and their focused
+validation. Any future producer composition, freshness/cache policy, approved
+Dashboard finding-link vocabulary, or health history requirement requires a
+separate decision and authorization. No such future decision is active by this
+closure.
 
-## 17. Open implementation decisions
+## 17. Historical implementation decisions
 
-- Exact producer registration and result enum names.
-- Treatment and display of insufficient required evidence.
-- Freshness bounds and cache invalidation rules.
-- Exact lifecycle-to-severity mapping.
-- Approved Dashboard finding-link vocabulary.
-- Whether any future health history has a durable retention requirement.
+The implementation resolved producer registration through the application report
+provider boundary, preserved distinct availability and overall status values,
+defined bounded insufficient-evidence handling, and mapped lifecycle evidence to
+producer-owned findings. Future freshness/cache, finding-link, and history work
+remain outside the closed WU1–WU6 scope.
 
 These decisions do not weaken the locked ownership, severity, status,
 authorization, cost, security, persistence, or isolation boundaries above.
