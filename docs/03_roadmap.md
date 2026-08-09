@@ -807,8 +807,10 @@ first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all
 possible Webcore installation/distribution capability. The latest completed
 Post-M3 track is Module Package Lifecycle WU1–WU7; v0.13.0 Release Readiness,
-tag/publication, and Gate 9 verification are complete. Focused post-release
-documentation reconciliation is the immediate follow-on.
+tag/publication, and Gate 9 verification are complete. Post-release
+documentation reconciliation is complete; no new Post-M3 implementation target
+is selected by this section, and any candidate work requires separate planning
+and contract authorization.
 Backup & Recovery is a separate platform capability with implementation and
 acceptance complete and lifecycle closure recorded in
 `docs/31_backup_recovery_foundation_contract.md`.
