@@ -5,22 +5,23 @@
 ```text
 System Health & Status: PROMOTED / PREPARATION
 Contract: LOCKED
-Implementation: WU1–WU4 COMPLETE / WU5–WU6 NOT STARTED
-WU1–WU4: IMPLEMENTATION COMPLETE / VALIDATION COMPLETE
+Implementation: WU1–WU5 COMPLETE / WU6 NOT STARTED
+WU1–WU5: IMPLEMENTATION COMPLETE / VALIDATION COMPLETE
 Dependency: INDEPENDENT
 Operational consequence: CONTINUE
 ```
 
 This contract promotes System Health & Status from planning concept into
-authoritative repository preparation. WU1 through WU4 implementation are recorded
-below; the contract authorizes no WU5–WU6, schema, Dashboard, Module, permission,
+authoritative repository preparation. WU1 through WU5 implementation are recorded
+below; the contract authorizes no WU6, schema, Dashboard, Module, permission,
 production-reconciliation, release, or publication work.
 
-WU1 through WU4 implementation and focused validation are complete. WU2 adapts
+WU1 through WU5 implementation and focused validation are complete. WU2 adapts
 Webcore evidence, WU3 adopts bundled Core Module evidence through one shared
 producer, and WU4 evaluates only deterministic Copot runtime requirements. No
-module-specific reporters or generic host monitoring were added. WU5 remains
-the next separately authorized work unit.
+module-specific reporters or generic host monitoring were added. WU5 validates
+the combined producer/report boundary without requiring production hardening;
+WU6 remains the next separately authorized work unit.
 
 System Health does not depend on Production Webcore Reconciliation,
 Server-Empty Bootstrap & Package Clean Install, broad MR.x refinement, or
@@ -231,17 +232,17 @@ isolation boundaries. This contract does not reopen Multi-Installation.
 
 ## 15. Work units
 
-WU1–WU4 are complete for the reusable foundation. WU5–WU6 remain `NOT STARTED`:
+WU1–WU5 are complete for the reusable foundation. WU6 remains `NOT STARTED`:
 
 1. **WU1 — System Health Contract & Aggregation Foundation** — **COMPLETE**
 2. **WU2 — Webcore Lifecycle Health Producer** — **COMPLETE**
 3. **WU3 — Bundled Core Module Health Adoption** — **COMPLETE**
 4. **WU4 — Server / Runtime Baseline Producer** — **COMPLETE**
-5. **WU5 — Cross-Producer Acceptance & Report Hardening**
+5. **WU5 — Cross-Producer Acceptance & Report Hardening** — **COMPLETE**
 6. **WU6 — Dashboard System Status Consumer**
 
-WU5 is the next technical target only after separate implementation
-authorization. This WU4 delivery does not authorize WU5 implementation.
+WU6 is the next technical target only after separate implementation
+authorization. This WU5 delivery does not authorize WU6 implementation.
 
 Focused validation: `tests/system_health_wu1.php` passed 23 assertions under
 the supported XAMPP PHP 8.5 runtime. PHP lint passed for all WU1 source and
@@ -258,6 +259,12 @@ WU2, and WU3 predecessor suites passed again with 23, 14, and 14 assertions.
 PHP lint passed for all WU4 source and test files. WU4 adapts the existing
 deterministic installer requirement vocabulary only; CPU, memory, uptime,
 process, service, network, and other generic host telemetry remain excluded.
+WU5 validation: `tests/system_health_wu5.php` passed 15 assertions; the WU1,
+WU2, WU3, and WU4 predecessor suites passed again with 23, 14, 14, and 12
+assertions. WU5 required no production aggregation or sanitizer change: the
+existing boundary passed combined healthy, mixed-severity, unavailable,
+failure-isolation, filtering, ordering, serialization, and sanitization
+acceptance scenarios.
 
 ## 16. Acceptance criteria for later implementation
 
