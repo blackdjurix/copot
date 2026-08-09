@@ -254,8 +254,9 @@ Multi-Installation must consume the established single-install base-path/root co
 The Multi-Installation foundation has completed and accepted WU1–WU6 and is
 integrated into authoritative `main`. WU1–WU6 consume and align with this
 established portability boundary; no competing base-path implementation was
-introduced. Foundation closure remains pending a separate closure decision,
-and no additional Multi-Installation WU is currently defined.
+introduced. Multi-Installation Isolation Foundation is complete and closed for
+the accepted WU1–WU6 scope; no additional Multi-Installation WU is currently
+defined.
 
 ---
 

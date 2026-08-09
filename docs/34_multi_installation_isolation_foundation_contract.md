@@ -2,7 +2,7 @@
 
 ## Status and authority
 
-- Multi-Installation Isolation Foundation: **WU1–WU6 COMPLETE AND ACCEPTED / INTEGRATED; foundation closure pending separate closure decision**
+- Multi-Installation Isolation Foundation: **COMPLETE AND CLOSED for the accepted WU1–WU6 scope**
 - Preparation: **COMPLETE / CONTRACT LOCKED**
 - Implementation: **WU1–WU6 COMPLETE; WU6 acceptance PASS**
 - WU1 — Installation Identity, Database Namespace, Compatibility & Runtime
@@ -18,8 +18,8 @@
 - WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime
   Acceptance: **COMPLETE AND ACCEPTED — implementation/evidence scope**
 - Scope: locked architecture, WU1 contract closure, WU2–WU5 implementation,
-  and WU6 cross-subsystem acceptance; foundation closure remains pending a
-  separate closure decision
+  and WU6 cross-subsystem acceptance; foundation complete and closed for the
+  accepted scope
 - Production Webcore reconciliation: **NOT STARTED / separately authorized**
 - `DI-PACKAGE-LIFECYCLE-WU7-01 — Server-Empty Bootstrap & Package Clean Install`: **DEFERRED / UNSCHEDULED**
 
@@ -375,8 +375,7 @@ implementation, and WU5 Installer implementation/evidence are complete and
 accepted; WU6 cross-subsystem acceptance is complete and accepted and
 integrated into authoritative `main` at
 `b095d26285f80d5b4caa8d1ac686acc02e17913a`.
-Foundation closure remains pending a separate closure decision; no additional
-Multi-Installation WU is currently defined.
+No additional Multi-Installation WU is currently defined.
 Subsequent implementation planning must cite this contract and provide
 evidence for any amendment to its topology, ownership, compatibility, runtime,
 namespace, or deferred boundaries.

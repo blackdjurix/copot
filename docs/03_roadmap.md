@@ -810,8 +810,7 @@ Post-M3 track is Multi-Installation WU1–WU6 implementation and acceptance;
 v0.13.0 Release Readiness,
 tag/publication, and Gate 9 verification are complete. Post-release
 documentation reconciliation is complete; Multi-Installation Isolation
-Foundation has WU1–WU6 COMPLETE AND ACCEPTED / INTEGRATED, with foundation
-closure pending a separate closure decision, in
+Foundation is COMPLETE AND CLOSED for the accepted WU1–WU6 scope, in
 `docs/34_multi_installation_isolation_foundation_contract.md`, with
 WU1 contract/evidence closure COMPLETE AND CLOSED, WU2 Core
 implementation/evidence COMPLETE AND CLOSED, WU3 Module

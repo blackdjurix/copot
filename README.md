@@ -36,7 +36,7 @@ Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
 Webcore Deployment & Portability Foundation: COMPLETE AND CLOSED
 Module Package Lifecycle WU1–WU7: COMPLETE AND CLOSED; final human/E2E acceptance: PASS
 v0.13.0 Release Readiness: COMPLETE AND CLOSED / RELEASED AND PUBLICLY VERIFIED
-Multi-Installation Isolation Foundation: WU1–WU6 COMPLETE AND ACCEPTED / INTEGRATED; foundation closure pending separate closure decision
+Multi-Installation Isolation Foundation: COMPLETE AND CLOSED for the accepted WU1–WU6 scope
 Multi-Installation preparation: COMPLETE / CONTRACT LOCKED
 Multi-Installation WU1 contract/evidence closure: COMPLETE AND CLOSED
 Multi-Installation WU2 Core implementation/evidence: COMPLETE AND CLOSED
