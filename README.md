@@ -42,8 +42,8 @@ Multi-Installation WU2 Core implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU3 Module implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU4 Runtime implementation/evidence: COMPLETE AND CLOSED
 Multi-Installation WU5 Installer implementation/evidence: COMPLETE AND ACCEPTED
-on the current feature branch; DB-backed proof-assembly and adoption/migration
-routing acceptance passed.
+and integrated into authoritative `main` at `a83c780cf7c5e1ca614ab4dc51a30b44c3aff53c`;
+DB-backed proof-assembly and adoption/migration routing acceptance passed.
 Multi-Installation implementation beyond WU5: NOT STARTED
 Next technical target: WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance
 Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded

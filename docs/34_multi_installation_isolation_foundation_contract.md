@@ -265,7 +265,8 @@ The authoritative contract now explicitly defines every WU1 requirement:
 No WU1 runtime implementation is claimed or authorized. WU1 contract/evidence
 closure, WU2 Core implementation, WU3 Module implementation, and WU4 Runtime
 implementation are complete; at that closure checkpoint the next technical
-target was WU5. WU5 is now complete and accepted on the current feature branch.
+target was WU5. WU5 was subsequently completed, accepted, and integrated into
+authoritative `main`; the current status is recorded below.
 
 ### WU2 — Core Logical/Physical Table Naming, Schema Generation & Core Compatibility
 
@@ -346,10 +347,11 @@ This preparation does not reopen historical checkpoints or claim installer,
 package, release, or publication completion.
 
 The Multi-Installation Isolation Foundation remains **PROMOTED / PREPARATION
-CONTRACT LOCKED** with WU5 implementation/evidence **COMPLETE AND ACCEPTED on
-the current feature branch**: WU1 contract/evidence closure, WU2 Core
-implementation, WU3 Module implementation, and WU4 Runtime implementation are
-complete; WU6 remains NOT STARTED.
+CONTRACT LOCKED** with WU5 implementation/evidence **COMPLETE AND ACCEPTED and
+integrated into authoritative `main` at
+`a83c780cf7c5e1ca614ab4dc51a30b44c3aff53c`**: WU1 contract/evidence closure,
+WU2 Core implementation, WU3 Module implementation, and WU4 Runtime
+implementation are complete; WU6 remains NOT STARTED.
 Subsequent implementation planning must cite this contract and provide
 evidence for any amendment to its topology, ownership, compatibility, runtime,
 namespace, or deferred boundaries.
