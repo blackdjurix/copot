@@ -830,6 +830,12 @@ No additional Multi-Installation WU is currently defined. Any other candidate
 work requires separate planning and contract authorization. Server-Empty Bootstrap remains DEFERRED /
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
+MR.1 Installation Refinement is separately promoted as
+**PROMOTED / IMPLEMENTATION NOT STARTED** in
+`docs/36_mr_1_installation_refinement_contract.md`. Its four-WU topology is
+authoritative there; MR.1 WU1 is **BLOCKED BY PRE-MR.1 CORRECTNESS GATE**.
+This promotion does not reopen the completed Multi-Installation WU1–WU6
+scope.
 Backup & Recovery is a separate platform capability with implementation and
 acceptance complete and lifecycle closure recorded in
 `docs/31_backup_recovery_foundation_contract.md`.
