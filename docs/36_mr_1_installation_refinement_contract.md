@@ -68,9 +68,11 @@ MR.1 WU1 cannot begin until this gate is satisfied.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
 
-Status: **CONFIRMED / UNRESOLVED**. This is a blocking correctness defect
-external to MR.1 and requires a separate bounded correction lifecycle. Do not
-implement or correct it under this contract.
+Status: **RESOLVED / VALIDATED**. The environment merge boundary now treats
+`DB_NAMESPACE` like the other database keys, replacing existing and repeated
+entries without duplication. Focused regression coverage passed. This bounded
+correction is complete; it does not satisfy the overall gate while Blocker B
+remains unresolved.
 
 ### Blocker B — Change Database / Finalize Progression State
 

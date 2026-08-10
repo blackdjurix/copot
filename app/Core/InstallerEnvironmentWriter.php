@@ -130,7 +130,7 @@ class InstallerEnvironmentWriter
         $written = [];
 
         foreach ($lines as $line) {
-            if (preg_match('/^\s*(DB_HOST|DB_PORT|DB_DATABASE|DB_USERNAME|DB_PASSWORD)\s*=/', $line, $matches)) {
+            if (preg_match('/^\s*(DB_HOST|DB_PORT|DB_DATABASE|DB_USERNAME|DB_PASSWORD|DB_NAMESPACE)\s*=/', $line, $matches)) {
                 $key = $matches[1];
 
                 if (!isset($written[$key])) {
