@@ -215,14 +215,21 @@
         main {
             width: min(calc(100% - 32px), 720px);
             margin: 0 auto;
-            padding: 32px 0;
+            padding: 20px 0;
         }
 
         section {
             width: 100%;
+            padding: 18px;
             border-radius: 12px;
             box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
         }
+
+        h1 { margin-bottom: 8px; }
+        h2 { margin: 18px 0 8px; }
+        .status { margin-top: 12px; }
+        .steps { margin: 16px 0; }
+        .requirements-actions { margin-top: 14px; }
 
         .status {
             display: flex;
@@ -246,6 +253,9 @@
             body { align-items: flex-start; }
             main { width: min(calc(100% - 20px), 720px); padding: 20px 0; }
             section { padding: 20px; }
+            .steps { grid-template-columns: 1fr; }
+            .steps .step { display: none; }
+            .steps .step-current { display: block; }
             .requirements-actions { justify-content: stretch; }
             .requirements-actions a, .requirements-actions span { width: 100%; text-align: center; }
         }
@@ -416,7 +426,7 @@
 
                     <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Save Administrator and Settings</button>
                 </form>
-            <?php else: ?>
+            <?php elseif (($currentStep ?? '') === 'finalize'): ?>
                 <h2>Finalize Installation</h2>
                 <p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Change Database</a></p>
 
