@@ -76,14 +76,18 @@ remains unresolved.
 
 ### Blocker B — Change Database / Finalize Progression State
 
-Status: **AUDIT REQUIRED**. Classify the observed progression as accepted
-behavior or incorrect state reuse. This external investigation blocks WU1
-until classified; do not audit or fix it under this contract.
+Status: **CLASSIFIED / NOT A DEFECT**. The current request reloads the
+persisted environment, constructs a namespace-bound `Database`, and derives
+Administrator & Site completion from `InstallerAdministratorSetup::administratorExists()`,
+which counts users in the active namespace only. A newly provisioned independent
+namespace therefore correctly returns to Administrator & Site before Finalize.
+The observed behavior is accepted lifecycle behavior, not state leakage.
 
 ### Gate result
 
 ```text
-MR.1 WU1 = BLOCKED BY PRE-MR.1 CORRECTNESS GATE
+PRE-MR.1 CORRECTNESS GATE = SATISFIED / VALIDATED
+MR.1 WU1 = NOT STARTED / SEPARATE AUTHORIZATION REQUIRED
 ```
 
 ## Separate non-blocking architecture investigation
