@@ -232,7 +232,8 @@
         .requirements-actions { margin-top: 14px; }
 
         .status {
-            display: flex;
+            display: grid;
+            grid-template-columns: 112px minmax(0, 1fr);
             gap: 8px;
             align-items: baseline;
             border-left-width: 5px;
@@ -253,6 +254,7 @@
             body { align-items: flex-start; }
             main { width: min(calc(100% - 20px), 720px); padding: 20px 0; }
             section { padding: 20px; }
+            .status { grid-template-columns: 1fr; align-items: start; }
             .steps { grid-template-columns: 1fr; }
             .steps .step { display: none; }
             .steps .step-current {
