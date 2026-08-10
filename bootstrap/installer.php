@@ -55,6 +55,19 @@ if (extension_loaded('session') && function_exists('session_start') && function_
 $requirementsService = new InstallerRequirements($basePath);
 $requirements = $requirementsService->check($sessionReady);
 $requirementsPassed = $requirementsService->allPassed($requirements);
+$requirementsSessionKey = 'installer_requirements_acknowledged';
+$requirementsHaveWarnings = count(array_filter(
+    $requirements,
+    static fn (array $requirement): bool => is_string($requirement['warning'] ?? null) && $requirement['warning'] !== ''
+)) > 0;
+$requirementsAcknowledged = $sessionReady
+    && $session instanceof Session
+    && $session->get($requirementsSessionKey, false) === true;
+
+if (!$requirementsPassed && $requirementsAcknowledged && $session instanceof Session) {
+    $session->remove($requirementsSessionKey);
+    $requirementsAcknowledged = false;
+}
 $installerReady = !$installationStateError && $storageReady && $requirementsPassed;
 $status = 200;
 $message = $requirementsPassed
@@ -146,6 +159,10 @@ if (!$installationStateError) {
 
 $requestedStep = $request->method() === 'GET' ? $request->input('step') : null;
 $requestedStep = is_string($requestedStep) && $requestedStep === 'database' ? 'database' : null;
+if ($requirementsPassed && $requestedStep === 'database' && $session instanceof Session) {
+    $session->set($requirementsSessionKey, true);
+    $requirementsAcknowledged = true;
+}
 $currentStep = !$schemaReady || $requestedStep === 'database'
     ? 'database'
     : ($administratorExists ? 'finalize' : 'administrator');
@@ -180,6 +197,18 @@ if ($installationStateError) {
             $message = 'Resolve the failed requirements before continuing.';
         } else {
             $action = $request->post('action', 'test_database');
+            if ($action === 'continue_requirements') {
+                if ($session instanceof Session) {
+                    $session->set($requirementsSessionKey, true);
+                }
+
+                return Response::redirect($deploymentContext->url('/install?step=database'));
+            }
+
+            if (!$requirementsAcknowledged) {
+                return Response::redirect($deploymentContext->url('/install'));
+            }
+
             if ($action === 'finalize_installation') {
                 try {
                     if (!$finalizer instanceof InstallerFinalizer) {
@@ -346,22 +375,36 @@ if ($installationStateError) {
     }
 }
 
+if (!$requirementsPassed || !$requirementsAcknowledged) {
+$currentStep = 'requirements';
+}
+
+$statusKind = $status >= 400 || !$requirementsPassed
+    ? 'error'
+    : (is_array($databaseResult) ? 'success' : ($requirementsHaveWarnings ? 'warning' : 'info'));
+
+if ($currentStep === 'requirements' && !$requirementsPassed) {
+    $message = 'Resolve the failed requirements before continuing.';
+} elseif ($currentStep === 'requirements') {
+    $message = 'Review the requirements, then continue to Database.';
+}
+
 $installerReady = $installerReady && $status < 400;
 
 $steps = [
     [
         'label' => 'Requirements',
-        'state' => $requirementsPassed ? 'completed' : 'current',
+        'state' => !$requirementsPassed || !$requirementsAcknowledged ? 'current' : 'completed',
     ],
     [
         'label' => 'Database',
-        'state' => !$requirementsPassed
+        'state' => !$requirementsPassed || !$requirementsAcknowledged
             ? 'blocked'
             : ($currentStep === 'database' ? 'current' : ($schemaReady ? 'completed' : 'pending')),
     ],
     [
         'label' => 'Administrator & Site',
-        'state' => !$requirementsPassed
+        'state' => !$requirementsPassed || !$requirementsAcknowledged || !$schemaReady
             ? 'blocked'
             : ($administratorExists ? 'completed' : ($currentStep === 'administrator' ? 'current' : 'pending')),
     ],
@@ -380,6 +423,7 @@ return Response::html($view->render('installer/index', [
     'installerReady' => $installerReady,
     'requirements' => $requirements,
     'requirementsPassed' => $requirementsPassed,
+    'statusKind' => $statusKind,
     'csrfToken' => $csrf?->token() ?? '',
     'values' => $values,
     'errors' => $errors,

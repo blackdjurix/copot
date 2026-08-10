@@ -831,11 +831,11 @@ work requires separate planning and contract authorization. Server-Empty Bootstr
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
 MR.1 Installation Refinement is separately promoted as
-**PROMOTED / IMPLEMENTATION NOT STARTED** in
+**PROMOTED / IMPLEMENTATION IN PROGRESS** in
 `docs/36_mr_1_installation_refinement_contract.md`. Its four-WU topology is
-authoritative there; MR.1 WU1 is **BLOCKED BY PRE-MR.1 CORRECTNESS GATE**.
+authoritative there; MR.1 WU1 is **IMPLEMENTATION IN PROGRESS / AUTHORIZED**.
 Blocker A is **RESOLVED / VALIDATED** after focused persistence regression coverage.
-Blocker B remains **AUDIT REQUIRED**.
+Blocker B is **CLASSIFIED / NOT A DEFECT**.
 This promotion does not reopen the completed Multi-Installation WU1–WU6
 scope.
 Backup & Recovery is a separate platform capability with implementation and

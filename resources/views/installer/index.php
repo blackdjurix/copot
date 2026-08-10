@@ -206,6 +206,49 @@
                 align-items: flex-start;
             }
         }
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        main {
+            width: min(calc(100% - 32px), 720px);
+            margin: 0 auto;
+            padding: 32px 0;
+        }
+
+        section {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
+        }
+
+        .status {
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+            border-left-width: 5px;
+        }
+
+        .status--success { border-left-color: #15803d; background: #f0fdf4; }
+        .status--info { border-left-color: #2563eb; background: #eff6ff; }
+        .status--warning { border-left-color: #a16207; background: #fefce8; }
+        .status--error { border-left-color: #b91c1c; background: #fef2f2; }
+        .status-label { font-weight: 700; }
+
+        .requirements-intro { margin-top: 0; }
+        .requirements-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
+        .button-secondary { background: #fff; color: #1e293b; border: 1px solid #94a3b8; }
+        .button { display: inline-block; padding: 10px 16px; border-radius: 6px; background: #1d4ed8; color: #fff; font-weight: 700; text-decoration: none; }
+
+        @media (max-width: 560px) {
+            body { align-items: flex-start; }
+            main { width: min(calc(100% - 20px), 720px); padding: 20px 0; }
+            section { padding: 20px; }
+            .requirements-actions { justify-content: stretch; }
+            .requirements-actions a, .requirements-actions span { width: 100%; text-align: center; }
+        }
     </style>
 </head>
 <body>
@@ -213,7 +256,8 @@
         <section>
             <h1>Copot Installer</h1>
             <p>Check the server, test a dedicated empty database, then save its configuration and install the canonical schema.</p>
-            <p id="installer_status" class="status"><?= htmlspecialchars($message ?? 'Installer is unavailable.', ENT_QUOTES, 'UTF-8') ?></p>
+            <?php $statusKind = in_array(($statusKind ?? 'info'), ['success', 'info', 'warning', 'error'], true) ? $statusKind : 'info'; $statusLabel = ['success' => 'Success', 'info' => 'Information', 'warning' => 'Warning', 'error' => 'Blocking error'][$statusKind]; ?>
+            <p id="installer_status" class="status status--<?= htmlspecialchars($statusKind, ENT_QUOTES, 'UTF-8') ?>" role="<?= $statusKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite"><span class="status-label"><?= htmlspecialchars($statusLabel, ENT_QUOTES, 'UTF-8') ?></span><span><?= htmlspecialchars($message ?? 'Installer is unavailable.', ENT_QUOTES, 'UTF-8') ?></span></p>
 
             <nav aria-label="Installation progress">
                 <ol class="steps">
@@ -227,7 +271,7 @@
                 </ol>
             </nav>
 
-            <h2>Requirements</h2>
+            <?php if (($currentStep ?? '') === 'requirements'): ?><h2>Requirements</h2>
             <ul class="requirements">
                 <?php foreach (($requirements ?? []) as $requirement): ?>
                     <li>
@@ -243,6 +287,14 @@
                     </li>
                 <?php endforeach; ?>
             </ul>
+                <div class="requirements-actions">
+                    <?php if (!empty($requirementsPassed)): ?>
+                        <a class="button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Continue to Database</a>
+                    <?php else: ?>
+                        <span class="warning" role="status">Resolve the failed requirements to continue.</span>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
 
             <?php if (($currentStep ?? 'database') === 'database'): ?>
                 <h2>Database</h2>

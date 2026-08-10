@@ -3,16 +3,16 @@
 ## Status and authority
 
 ```text
-MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION NOT STARTED
+MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS
 Contract: LOCKED
-Implementation authorization: NOT GRANTED
-MR.1 WU1: BLOCKED BY PRE-MR.1 CORRECTNESS GATE
+Implementation authorization: GRANTED — WU1 ONLY
+MR.1 WU1: IMPLEMENTATION IN PROGRESS
 ```
 
 This is the authoritative contract for the current Installation Refinement
 workstream. It promotes the accepted MR.1 contract into repository guidance;
-it does not start WU1, authorize implementation, reopen the completed
-Multi-Installation WU1–WU6 baseline, or authorize release work.
+WU1 implementation is authorized within the locked boundary, without reopening
+the completed Multi-Installation WU1–WU6 baseline or authorizing release work.
 
 ## Objective
 
@@ -64,7 +64,8 @@ without positive ownership evidence is not an owned installation.
 
 ## Pre-MR.1 Correctness Gate
 
-MR.1 WU1 cannot begin until this gate is satisfied.
+The gate is satisfied and WU1 implementation is proceeding within the locked
+boundary. WU2–WU4 remain separately bounded and not started.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
 
@@ -87,7 +88,7 @@ The observed behavior is accepted lifecycle behavior, not state leakage.
 
 ```text
 PRE-MR.1 CORRECTNESS GATE = SATISFIED / VALIDATED
-MR.1 WU1 = NOT STARTED / SEPARATE AUTHORIZATION REQUIRED
+MR.1 WU1 = IMPLEMENTATION IN PROGRESS / AUTHORIZED
 ```
 
 ## Separate non-blocking architecture investigation
@@ -104,7 +105,8 @@ MR.1 has exactly four work units; there is no catchall:
 
 1. **WU1 — Installer shell, Requirements, and step progression:** shell,
    Requirements truthfulness, step identity, progression boundaries, and
-   accessible/responsive foundations. Currently blocked by the gate.
+   accessible/responsive foundations. **IMPLEMENTATION IN PROGRESS** within the
+   authorized WU1 boundary.
 2. **WU2 — Database inspection and installation decision UX:** connection,
    occupancy, namespace/Table Prefix, collision, ownership, ambiguity, and
    fail-closed decision presentation.
@@ -121,17 +123,17 @@ Core/Module state, progression/completion locking, split-root portability,
 responsive behavior, accessibility, and human comprehension. Findings are
 classified against the accepted baseline and do not silently expand MR.1.
 
-Implementation requires: Blocker A corrected and verified; Blocker B audited and
-classified; resulting defects corrected and verified; authoritative `main`
-re-verified; no new blocker; and separate explicit WU1 authorization. The
-cross-fileset proof gap is non-blocking by default.
+Implementation requires the locked WU1 boundary to remain intact, the
+authoritative `main` to remain verified, and no new blocker to appear. WU2–WU4
+remain separately bounded and unauthorized. The cross-fileset proof gap is
+non-blocking by default.
 
 ## Documentation and lifecycle boundaries
 
 Only materially relevant current-authority documentation is reconciled. The
 historical Multi-Installation WU1–WU6 contract and evidence remain preserved
 and closed; they are not reopened. This contract makes promotion,
-implementation-not-started status, four-WU topology, the gate, external
-blockers, and the separate ownership-proof investigation visible. It
-authorizes no WU1 implementation, Multi-Installation expansion, release, tag,
-or publication.
+the WU1 implementation-in-progress status, four-WU topology, the gate, external
+blockers, and the separate ownership-proof investigation visible. It authorizes
+no WU2–WU4 implementation, Multi-Installation expansion, release, tag, or
+publication.
