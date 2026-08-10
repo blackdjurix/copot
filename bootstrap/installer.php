@@ -158,14 +158,30 @@ if (!$installationStateError) {
 }
 
 $requestedStep = $request->method() === 'GET' ? $request->input('step') : null;
-$requestedStep = is_string($requestedStep) && $requestedStep === 'database' ? 'database' : null;
+$requestedStep = is_string($requestedStep) && in_array($requestedStep, ['database', 'requirements'], true) ? $requestedStep : null;
+$requirementsReview = false;
 if ($requirementsPassed && $requestedStep === 'database' && $session instanceof Session) {
     $session->set($requirementsSessionKey, true);
     $requirementsAcknowledged = true;
 }
-$currentStep = !$schemaReady || $requestedStep === 'database'
+$forwardStep = !$schemaReady || $requestedStep === 'database'
     ? 'database'
     : ($administratorExists ? 'finalize' : 'administrator');
+$currentStep = $forwardStep;
+
+if ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'requirements') {
+    $requirementsReview = true;
+    $currentStep = 'requirements';
+}
+
+$requirementsForwardUrl = $forwardStep === 'database'
+    ? $deploymentContext->url('/install?step=database')
+    : $deploymentContext->url('/install');
+$requirementsForwardLabel = match ($forwardStep) {
+    'administrator' => 'Administrator & Site',
+    'finalize' => 'Finalize',
+    default => 'Database',
+};
 
 if ($currentStep === 'finalize' && $requirementsPassed) {
     $message = 'The first administrator and initial settings are ready. Finalize the installation.';
@@ -386,7 +402,7 @@ $statusKind = $status >= 400 || !$requirementsPassed
 if ($currentStep === 'requirements' && !$requirementsPassed) {
     $message = 'Resolve the failed requirements before continuing.';
 } elseif ($currentStep === 'requirements') {
-    $message = 'Review the requirements, then continue to Database.';
+    $message = 'Review the completed requirements, then return to the current installer step.';
 }
 
 $installerReady = $installerReady && $status < 400;
@@ -400,19 +416,19 @@ $steps = [
         'label' => 'Database',
         'state' => !$requirementsPassed || !$requirementsAcknowledged
             ? 'blocked'
-            : ($currentStep === 'database' ? 'current' : ($schemaReady ? 'completed' : 'pending')),
+            : ($forwardStep === 'database' ? 'current' : ($schemaReady ? 'completed' : 'pending')),
     ],
     [
         'label' => 'Administrator & Site',
         'state' => !$requirementsPassed || !$requirementsAcknowledged || !$schemaReady
             ? 'blocked'
-            : ($administratorExists ? 'completed' : ($currentStep === 'administrator' ? 'current' : 'pending')),
+            : ($administratorExists ? 'completed' : ($forwardStep === 'administrator' ? 'current' : 'pending')),
     ],
     [
         'label' => 'Finalize',
         'state' => !$requirementsPassed
             ? 'blocked'
-            : ($currentStep === 'finalize' ? 'current' : 'pending'),
+            : ($forwardStep === 'finalize' ? 'current' : 'pending'),
     ],
 ];
 
@@ -431,6 +447,10 @@ return Response::html($view->render('installer/index', [
     'schemaReady' => $schemaReady,
     'administratorExists' => $administratorExists,
     'currentStep' => $currentStep,
+    'forwardStep' => $forwardStep,
+    'requirementsReview' => $requirementsReview,
+    'requirementsForwardUrl' => $requirementsForwardUrl,
+    'requirementsForwardLabel' => $requirementsForwardLabel,
     'setupValues' => $setupValues,
     'setupErrors' => $setupErrors,
     'finalizationError' => $finalizationError,

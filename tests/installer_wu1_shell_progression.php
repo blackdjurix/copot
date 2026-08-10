@@ -21,6 +21,10 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 $assert(str_contains($bootstrap, 'InstallerRequirements($basePath)'), 'Requirements service is not used.');
 $assert(str_contains($bootstrap, '$requirementsService->check($sessionReady)'), 'Mandatory requirements are not rechecked per request.');
 $assert(str_contains($bootstrap, '$requirementsSessionKey = \'installer_requirements_acknowledged\''), 'Requirements acknowledgement is not session-scoped.');
+$assert(str_contains($bootstrap, "['database', 'requirements']"), 'Requirements review re-entry is not an explicit bounded step.');
+$assert(str_contains($bootstrap, '$requirementsReview = true'), 'Completed Requirements review mode is not represented.');
+$assert(str_contains($bootstrap, '$forwardStep ='), 'Forward lifecycle state is not separated from Requirements review mode.');
+$assert(str_contains($bootstrap, '$requirementsForwardUrl ='), 'Requirements review has no return target for the active forward step.');
 $assert(str_contains($bootstrap, '$session->remove($requirementsSessionKey)'), 'A newly failing requirement does not clear acknowledgement.');
 $assert(str_contains($bootstrap, '$currentStep = \'requirements\''), 'A blocking requirement does not return to the Requirements step.');
 $assert(str_contains($bootstrap, 'return Response::redirect($deploymentContext->url(\'/install?step=database\'))'), 'Successful Requirements progression does not target Database.');
@@ -31,6 +35,7 @@ $requirementsGate = strpos($view, 'if (($currentStep ?? \'\') === \'requirements
 $databaseStep = strpos($view, 'if (($currentStep ?? \'database\') === \'database\')');
 $assert(is_int($requirementsGate) && is_int($databaseStep) && $requirementsGate < $databaseStep, 'Requirements is not the first conditional installer step.');
 $assert(str_contains($view, "Continue to Database"), 'Requirements has no visible progression action.');
+$assert(str_contains($view, 'Return to '), 'Completed Requirements review has no forward return action.');
 $assert(str_contains($view, 'elseif (($currentStep ?? \'\') === \'finalize\')'), 'Finalize is not bounded to the Finalize step.');
 $assert(str_contains($view, '.steps .step { display: none; }'), 'Mobile progress does not hide non-current steps.');
 $assert(str_contains($view, '.steps .step-current {'), 'Mobile progress does not preserve the current step.');

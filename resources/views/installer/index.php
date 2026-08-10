@@ -307,7 +307,7 @@
             </ul>
                 <div class="requirements-actions">
                     <?php if (!empty($requirementsPassed)): ?>
-                        <a class="button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Continue to Database</a>
+                        <a class="button" href="<?= htmlspecialchars($requirementsReview ? ($requirementsForwardUrl ?? '/install') : (is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database'), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($requirementsReview ? ('Return to ' . ($requirementsForwardLabel ?? 'current step')) : 'Continue to Database', ENT_QUOTES, 'UTF-8') ?></a>
                     <?php else: ?>
                         <span class="warning" role="status">Resolve the failed requirements to continue.</span>
                     <?php endif; ?>
