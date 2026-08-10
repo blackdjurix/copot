@@ -255,7 +255,13 @@
             section { padding: 20px; }
             .steps { grid-template-columns: 1fr; }
             .steps .step { display: none; }
-            .steps .step-current { display: block; }
+            .steps .step-current {
+                display: grid;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+                gap: 4px;
+            }
+            .steps .step-current span { margin-top: 0; }
             .requirements-actions { justify-content: stretch; }
             .requirements-actions a, .requirements-actions span { width: 100%; text-align: center; }
         }

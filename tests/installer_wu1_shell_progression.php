@@ -33,7 +33,8 @@ $assert(is_int($requirementsGate) && is_int($databaseStep) && $requirementsGate 
 $assert(str_contains($view, "Continue to Database"), 'Requirements has no visible progression action.');
 $assert(str_contains($view, 'elseif (($currentStep ?? \'\') === \'finalize\')'), 'Finalize is not bounded to the Finalize step.');
 $assert(str_contains($view, '.steps .step { display: none; }'), 'Mobile progress does not hide non-current steps.');
-$assert(str_contains($view, '.steps .step-current { display: block; }'), 'Mobile progress does not preserve the current step.');
+$assert(str_contains($view, '.steps .step-current {'), 'Mobile progress does not preserve the current step.');
+$assert(str_contains($view, 'grid-template-rows: auto auto;'), 'Mobile current phase is not presented as two stacked rows.');
 $assert(str_contains($view, 'status--<?= htmlspecialchars($statusKind'), 'Status presentation is not semantic.');
 $assert(str_contains($view, '.status--warning'), 'Warning status styling is missing.');
 $assert(str_contains($view, '.status--error'), 'Blocking error status styling is missing.');
