@@ -4,21 +4,24 @@ namespace Copot\Core;
 
 class InstallerSchemaState
 {
-    private const TABLES = [
+    private const CORE_TABLES = [
         'users',
         'roles',
         'permissions',
         'user_roles',
         'role_permissions',
         'settings',
+        'themes',
+        'core_migration_history',
+    ];
+
+    private const MODULE_TABLES = [
         'modules',
         'module_permissions',
-        'themes',
         'content',
         'taxonomy_types',
         'taxonomy_terms',
         'taxonomy_assignments',
-        'core_migration_history',
     ];
 
     public function __construct(private Database $database)
@@ -39,7 +42,10 @@ class InstallerSchemaState
             return false;
         }
 
-        $expected = array_map(fn (string $table): string => $this->database->table($table), self::TABLES);
+        $expected = array_merge(
+            array_map(fn (string $table): string => $this->database->table($table), self::CORE_TABLES),
+            array_map(fn (string $table): string => $this->database->tables()->moduleTable($table), self::MODULE_TABLES)
+        );
 
         return array_diff($expected, $tables) === [];
     }
