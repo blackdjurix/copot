@@ -215,11 +215,6 @@
             width: 156px;
         }
 
-        .database-navigation > a,
-        .database-navigation > button {
-            flex: 0 0 25%;
-        }
-
         .database-stage-note {
             margin-top: 8px;
             font-size: 14px;
@@ -394,6 +389,8 @@
         .installer-navigation > a,
         .installer-navigation > button { flex: 0 1 48%; text-align: center; }
         .installer-navigation > button { margin-top: 0; }
+        .database-navigation > a,
+        .database-navigation > button { flex: 0 0 25%; }
 
         @media (max-width: 560px) {
             body { align-items: flex-start; }
