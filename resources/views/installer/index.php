@@ -186,6 +186,19 @@
             font-size: 11px;
         }
 
+        .step-state,
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
         .step-completed {
             border-color: #15803d;
             color: #166534;
@@ -194,6 +207,8 @@
         .step-current {
             border-color: #2563eb;
             color: #1d4ed8;
+            border-top-width: 5px;
+            font-weight: 700;
         }
 
         .step-blocked {
@@ -263,7 +278,10 @@
             min-width: 0;
             border-left-width: 5px;
         }
-        .status > span:last-child { min-width: 0; }
+        .status-label { grid-column: 1; }
+        .status-message { grid-column: 2; min-width: 0; }
+        .status--message-only { grid-template-columns: minmax(0, 1fr); }
+        .status--message-only .status-message { grid-column: 1; }
 
         .status--success { border-left-color: #15803d; background: #f0fdf4; }
         .status--info { border-left-color: #2563eb; background: #eff6ff; }
@@ -302,7 +320,7 @@
             <h1>Copot Installer</h1>
             <p>Check the server, test a dedicated empty database, then save its configuration and install the canonical schema.</p>
             <?php $statusKind = in_array(($statusKind ?? 'info'), ['success', 'info', 'warning', 'error'], true) ? $statusKind : 'info'; $statusLabel = ['success' => 'Success', 'info' => 'Information', 'warning' => 'Warning', 'error' => 'Blocking error'][$statusKind]; ?>
-            <p id="installer_status" class="status status--<?= htmlspecialchars($statusKind, ENT_QUOTES, 'UTF-8') ?>" role="<?= $statusKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite"><span class="status-label"><?= htmlspecialchars($statusLabel, ENT_QUOTES, 'UTF-8') ?></span><span><?= htmlspecialchars($message ?? 'Installer is unavailable.', ENT_QUOTES, 'UTF-8') ?></span></p>
+            <p id="installer_status" class="status status--<?= htmlspecialchars($statusKind, ENT_QUOTES, 'UTF-8') ?>" role="<?= $statusKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite"><span class="status-label"><?= htmlspecialchars($statusLabel, ENT_QUOTES, 'UTF-8') ?></span><span class="status-message"><?= htmlspecialchars($message ?? 'Installer is unavailable.', ENT_QUOTES, 'UTF-8') ?></span></p>
 
             <nav aria-label="Installation progress">
                 <ol class="steps">
@@ -313,7 +331,7 @@
                             <?php $stepIsReviewable = $stepState === 'completed' && is_string($step['reviewUrl'] ?? null) && !$stepIsCurrentReview; ?>
                             <?php if ($stepIsReviewable): ?><a class="step-link" href="<?= htmlspecialchars($step['reviewUrl'], ENT_QUOTES, 'UTF-8') ?>" aria-label="Review completed <?= htmlspecialchars($step['label'] ?? 'installer step', ENT_QUOTES, 'UTF-8') ?>">
                             <?php endif; ?><strong><?= htmlspecialchars($step['label'] ?? 'Installer step', ENT_QUOTES, 'UTF-8') ?></strong>
-                            <span><?= htmlspecialchars($stepState, ENT_QUOTES, 'UTF-8') ?></span><?php if ($stepIsReviewable): ?></a><?php endif; ?>
+                            <span class="step-state">State: <?= htmlspecialchars($stepState, ENT_QUOTES, 'UTF-8') ?></span><?php if ($stepIsReviewable): ?></a><?php endif; ?>
                         </li>
                     <?php endforeach; ?>
                 </ol>
@@ -514,6 +532,21 @@
             ].map((name) => form.elements.namedItem(name)).filter(Boolean);
             let tested = false;
 
+            const showMessageOnlyStatus = (message) => {
+                status.classList.add('status--message-only');
+                let messageElement = status.querySelector('.status-message');
+                if (!messageElement) {
+                    messageElement = document.createElement('span');
+                    messageElement.className = 'status-message';
+                    status.replaceChildren(messageElement);
+                }
+                const label = status.querySelector('.status-label');
+                if (label) {
+                    label.remove();
+                }
+                messageElement.textContent = message;
+            };
+
             const resetTest = () => {
                 if (!tested) {
                     return;
@@ -524,7 +557,7 @@
                 button.textContent = 'Test Database';
                 result.hidden = true;
                 result.textContent = '';
-                status.textContent = 'Database fields changed. Test the connection again.';
+                showMessageOnlyStatus('Database fields changed. Test the connection again.');
             };
 
             fields.forEach((field) => field.addEventListener('input', resetTest));
@@ -558,21 +591,21 @@
                         tested = false;
                         button.value = 'test_database';
                         button.textContent = 'Test Database';
-                        status.textContent = payload?.message || 'Database connection could not be verified.';
+                        showMessageOnlyStatus(payload?.message || 'Database connection could not be verified.');
                         return;
                     }
 
                     tested = true;
                     button.value = 'install_database';
                     button.textContent = 'Install Database';
-                    status.textContent = payload.message;
+                    showMessageOnlyStatus(payload.message);
                     result.textContent = `${payload.database.vendor} ${payload.database.version} verified.`;
                     result.hidden = false;
                 } catch (error) {
                     tested = false;
                     button.value = 'test_database';
                     button.textContent = 'Test Database';
-                    status.textContent = 'Database connection could not be verified.';
+                    showMessageOnlyStatus('Database connection could not be verified.');
                 } finally {
                     button.disabled = false;
                 }
