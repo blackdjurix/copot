@@ -747,7 +747,7 @@
                     </div>
 
                     <div class="installer-actions installer-navigation administrator-navigation">
-                        <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a>
+                        <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
                         <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
                     </div>
                 </form>
