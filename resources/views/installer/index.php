@@ -124,12 +124,15 @@
         .database-namespace-row {
             display: grid;
             grid-template-columns: var(--database-label-column) minmax(0, 1fr) auto;
+            grid-template-rows: auto auto;
             align-items: center;
             gap: 12px;
             min-width: 0;
         }
 
         .database-namespace-row > .database-action {
+            grid-column: 3;
+            grid-row: 1;
             align-self: start;
             margin-top: 0;
         }
@@ -139,6 +142,8 @@
         }
 
         .database-help {
+            grid-column: 2;
+            grid-row: 2;
             margin: 0;
             font-size: 13px;
             font-style: italic;
@@ -320,6 +325,16 @@
 
             .database-inline-field {
                 display: grid;
+            }
+
+            .database-help {
+                grid-column: 1;
+                grid-row: auto;
+            }
+
+            .database-namespace-row > .database-action {
+                grid-column: auto;
+                grid-row: auto;
             }
 
             .steps {
@@ -558,8 +573,8 @@
                             <div class="database-control">
                                 <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <?php if (!empty($errors['namespace'])): ?><p class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-                                <p class="database-help">Blank preserves the empty namespace.</p>
                             </div>
+                            <p class="database-help">Blank preserves the empty namespace.</p>
                             <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
                         </div>
                     </div>
