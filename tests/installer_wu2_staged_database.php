@@ -32,7 +32,7 @@ $assert(str_contains($bootstrap, "'decision_evidence'"), 'Inspection evidence is
 $assert(str_contains($bootstrap, "'password' => \$configuration['password']"), 'Latest credentials are not retained server-side for revisit.');
 $assert(str_contains($view, 'class="database-fields"'), 'Database fields do not use a shared Host and Port row.');
 $assert(str_contains($view, 'class="database-row"'), 'Database fields do not use horizontal label/control rows.');
-$assert(str_contains($view, '--database-label-column: 220px;'), 'Database desktop rows do not define a shared fixed label column.');
+$assert(str_contains($view, '--database-label-column: 150px;'), 'Database desktop rows do not define a shared fixed label column.');
 $assert(str_contains($view, 'grid-template-columns: var(--database-label-column) minmax(0, 1fr);'), 'Database desktop rows do not use a consistent label column and flexible control column.');
 $assert(str_contains($view, 'class="database-inline-fields"'), 'Host/Port and Username/Password compact groupings are missing.');
 $assert(str_contains($view, 'grid-template-columns: var(--database-label-column) minmax(0, 1fr) 90px minmax(0, 1fr);'), 'Paired Database rows do not share the fixed label/control grid.');
@@ -40,6 +40,13 @@ $assert(str_contains($view, 'class="database-namespace-row"'), 'DB Namespace doe
 $namespaceRowPosition = strpos($view, 'class="database-namespace-row"');
 $testButtonPosition = strpos($view, 'id="database_action" class="database-action"');
 $assert($namespaceRowPosition !== false && $testButtonPosition !== false && $testButtonPosition > $namespaceRowPosition, 'Test Database is not embedded in the namespace row.');
+$assert(str_contains($view, 'height: 34px;'), 'Database controls do not use the required desktop height.');
+$assert(str_contains($view, 'padding: 8px 12px;'), 'Database controls do not use the required desktop padding.');
+$assert(str_contains($view, '.database-help {') && str_contains($view, 'margin: 0;'), 'Database help text does not use zero margin.');
+$assert(str_contains($view, 'font-size: 13px;') && str_contains($view, 'font-style: italic;'), 'Database help text does not use the required typography.');
+$assert(str_contains($view, 'class="actions installer-actions installer-navigation database-navigation"'), 'Database navigation does not use its dedicated desktop alignment class.');
+$assert(str_contains($view, '.database-navigation > a,') && str_contains($view, 'flex: 0 0 25%;'), 'Database navigation controls are not 25 percent width on desktop.');
+$assert(str_contains($view, '>Previous</a>'), 'Database Previous label is not exactly Previous.');
 $assert(str_contains($view, 'name="action" value="test_database"'), 'Test Database is not a distinct operation.');
 $assert(str_contains($view, 'name="action" value="stage_database"'), 'Database Next does not stage the decision.');
 $assert(str_contains($view, 'Test Database inspects the target only.'), 'Database UI does not explain the non-mutating test boundary.');

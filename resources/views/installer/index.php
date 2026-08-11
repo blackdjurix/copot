@@ -95,7 +95,7 @@
         }
 
         .database-fields {
-            --database-label-column: 220px;
+            --database-label-column: 150px;
             display: grid;
             gap: 10px;
             margin-top: 2px;
@@ -112,6 +112,7 @@
         .database-inline-fields {
             display: grid;
             grid-template-columns: var(--database-label-column) minmax(0, 1fr) 90px minmax(0, 1fr);
+            align-items: center;
             gap: 12px;
             min-width: 0;
         }
@@ -138,7 +139,7 @@
         }
 
         .database-help {
-            margin: -4px 0 0;
+            margin: 0;
             font-size: 13px;
             font-style: italic;
         }
@@ -157,10 +158,11 @@
             font-weight: 700;
         }
 
-        input,
-        select {
+        .database-fields input,
+        .database-fields select {
             width: 100%;
-            padding: 10px 12px;
+            height: 34px;
+            padding: 8px 12px;
             border: 1px solid #9ca3af;
             border-radius: 5px;
             font: inherit;
@@ -211,6 +213,11 @@
 
         .database-action {
             width: 156px;
+        }
+
+        .database-navigation > a,
+        .database-navigation > button {
+            flex: 0 0 25%;
         }
 
         .database-stage-note {
@@ -561,8 +568,8 @@
                     </div>
 
                     <p class="database-stage-note">Test Database inspects the target only. Next stages the latest validated decision; it does not create COPOT schema or tables.</p>
-                    <div class="actions installer-actions installer-navigation">
-                        <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous: Requirements</a><?php else: ?><span></span><?php endif; ?>
+                    <div class="actions installer-actions installer-navigation database-navigation">
+                        <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous</a><?php else: ?><span></span><?php endif; ?>
                         <button type="submit" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
                     </div>
                 </form>
