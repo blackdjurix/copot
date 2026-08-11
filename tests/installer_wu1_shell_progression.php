@@ -36,6 +36,12 @@ $databaseStep = strpos($view, 'if (($currentStep ?? \'database\') === \'database
 $assert(is_int($requirementsGate) && is_int($databaseStep) && $requirementsGate < $databaseStep, 'Requirements is not the first conditional installer step.');
 $assert(str_contains($view, "Continue to Database"), 'Requirements has no visible progression action.');
 $assert(str_contains($view, 'Return to '), 'Completed Requirements review has no forward return action.');
+$assert(str_contains($view, 'stepIsRequirementsReview'), 'Completed Requirements is not explicitly linkable in the progress model.');
+$assert(str_contains($view, 'href="<?= htmlspecialchars($requirementsReviewUrl'), 'Completed Requirements has no review URL.');
+$assert(str_contains($view, 'Review completed Requirements'), 'Mobile Requirements review affordance is missing.');
+$assert(str_contains($view, '.mobile-requirements-review {'), 'Requirements review affordance has no shared style.');
+$assert(str_contains($view, "display: none;\n            margin: -8px 0 12px;"), 'Requirements review affordance is not hidden from desktop duplication.');
+$assert(str_contains($view, '.mobile-requirements-review { display: block; }'), 'Mobile Requirements review affordance is not visible.');
 $assert(str_contains($view, 'elseif (($currentStep ?? \'\') === \'finalize\')'), 'Finalize is not bounded to the Finalize step.');
 $assert(str_contains($view, '.steps .step { display: none; }'), 'Mobile progress does not hide non-current steps.');
 $assert(str_contains($view, '.steps .step-current {'), 'Mobile progress does not preserve the current step.');

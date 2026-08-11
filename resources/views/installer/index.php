@@ -188,6 +188,17 @@
             color: #991b1b;
         }
 
+        .step-link {
+            display: block;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .mobile-requirements-review {
+            display: none;
+            margin: -8px 0 12px;
+        }
+
         @media (max-width: 560px) {
             main {
                 width: min(100% - 20px, 640px);
@@ -264,6 +275,7 @@
                 gap: 4px;
             }
             .steps .step-current span { margin-top: 0; }
+            .mobile-requirements-review { display: block; }
             .requirements-actions { justify-content: stretch; }
             .requirements-actions a, .requirements-actions span { width: 100%; text-align: center; }
         }
@@ -282,12 +294,17 @@
                     <?php foreach (($steps ?? []) as $step): ?>
                         <?php $stepState = in_array(($step['state'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['state'] : 'pending'; ?>
                         <li class="step step-<?= htmlspecialchars($stepState, ENT_QUOTES, 'UTF-8') ?>" <?= $stepState === 'current' ? 'aria-current="step"' : '' ?>>
-                            <strong><?= htmlspecialchars($step['label'] ?? 'Installer step', ENT_QUOTES, 'UTF-8') ?></strong>
-                            <span><?= htmlspecialchars($stepState, ENT_QUOTES, 'UTF-8') ?></span>
+                            <?php $stepIsRequirementsReview = ($step['label'] ?? '') === 'Requirements' && $stepState === 'completed' && !empty($requirementsAcknowledged) && ($currentStep ?? '') !== 'requirements'; ?>
+                            <?php if ($stepIsRequirementsReview): ?><a class="step-link" href="<?= htmlspecialchars($requirementsReviewUrl ?? '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>" aria-label="Review completed Requirements">
+                            <?php endif; ?><strong><?= htmlspecialchars($step['label'] ?? 'Installer step', ENT_QUOTES, 'UTF-8') ?></strong>
+                            <span><?= htmlspecialchars($stepState, ENT_QUOTES, 'UTF-8') ?></span><?php if ($stepIsRequirementsReview): ?></a><?php endif; ?>
                         </li>
                     <?php endforeach; ?>
                 </ol>
             </nav>
+            <?php if (!empty($requirementsPassed) && !empty($requirementsAcknowledged) && ($currentStep ?? '') !== 'requirements'): ?>
+                <p class="mobile-requirements-review"><a class="text-link" href="<?= htmlspecialchars($requirementsReviewUrl ?? '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Review completed Requirements</a></p>
+            <?php endif; ?>
 
             <?php if (($currentStep ?? '') === 'requirements'): ?><h2>Requirements</h2>
             <ul class="requirements">
