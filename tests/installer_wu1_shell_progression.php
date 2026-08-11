@@ -35,6 +35,7 @@ $assert(str_contains($bootstrap, 'return Response::redirect($deploymentContext->
 $assert(str_contains($bootstrap, '\'state\' => !$requirementsPassed || !$requirementsAcknowledged ? \'current\' : \'completed\''), 'Requirements progress state is not gated by acknowledgement.');
 $assert(str_contains($bootstrap, '\'state\' => !$requirementsPassed || !$requirementsAcknowledged || !$schemaReady || !$administratorExists'), 'Finalize is not blocked until Requirements, schema, and administrator state are ready.');
 $assert(str_contains($bootstrap, '\'statusKind\' => $statusKind'), 'Status semantics are not exposed to the view.');
+$assert(str_contains($bootstrap, '$currentStep === \'requirements\' && $requirementsReview'), 'Fresh Requirements and completed Requirements review status are not distinguished.');
 
 $requirementsGate = strpos($view, 'if (($currentStep ?? \'\') === \'requirements\')');
 $databaseStep = strpos($view, 'if (($currentStep ?? \'database\') === \'database\')');

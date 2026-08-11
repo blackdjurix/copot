@@ -407,7 +407,7 @@ $statusKind = $status >= 400 || !$requirementsPassed
 
 if ($currentStep === 'requirements' && !$requirementsPassed) {
     $message = 'Resolve the failed requirements before continuing.';
-} elseif ($currentStep === 'requirements') {
+} elseif ($currentStep === 'requirements' && $requirementsReview) {
     $message = 'Review the completed requirements, then return to the current installer step.';
 }
 
