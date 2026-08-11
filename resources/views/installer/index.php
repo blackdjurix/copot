@@ -94,6 +94,18 @@
             gap: 12px;
         }
 
+        .database-fields {
+            display: grid;
+            grid-template-columns: minmax(0, 2fr) minmax(110px, 1fr);
+            gap: 12px;
+        }
+
+        .database-field {
+            display: grid;
+            gap: 6px;
+            min-width: 0;
+        }
+
         label {
             font-weight: 700;
         }
@@ -152,6 +164,11 @@
 
         .database-action {
             width: 156px;
+        }
+
+        .database-stage-note {
+            margin-top: 8px;
+            font-size: 14px;
         }
 
         .field-error {
@@ -234,6 +251,10 @@
 
             section {
                 padding: 18px;
+            }
+
+            .database-fields {
+                grid-template-columns: 1fr;
             }
 
             .steps {
@@ -406,13 +427,18 @@
                 <form id="database_form" class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
-                    <label for="database_host">Host</label>
-                    <input id="database_host" name="database_host" type="text" maxlength="255" required value="<?= htmlspecialchars($values['host'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                    <?php if (!empty($errors['host'])): ?><p class="field-error"><?= htmlspecialchars($errors['host'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-
-                    <label for="database_port">Port</label>
-                    <input id="database_port" name="database_port" type="number" min="1" max="65535" required value="<?= htmlspecialchars($values['port'] ?? '3306', ENT_QUOTES, 'UTF-8') ?>">
-                    <?php if (!empty($errors['port'])): ?><p class="field-error"><?= htmlspecialchars($errors['port'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                    <div class="database-fields">
+                        <div class="database-field">
+                            <label for="database_host">Host</label>
+                            <input id="database_host" name="database_host" type="text" maxlength="255" required value="<?= htmlspecialchars($values['host'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                            <?php if (!empty($errors['host'])): ?><p class="field-error"><?= htmlspecialchars($errors['host'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                        </div>
+                        <div class="database-field">
+                            <label for="database_port">Port</label>
+                            <input id="database_port" name="database_port" type="number" min="1" max="65535" required value="<?= htmlspecialchars($values['port'] ?? '3306', ENT_QUOTES, 'UTF-8') ?>">
+                            <?php if (!empty($errors['port'])): ?><p class="field-error"><?= htmlspecialchars($errors['port'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                        </div>
+                    </div>
 
                     <label for="database_name">Database Name</label>
                     <input id="database_name" name="database_name" type="text" maxlength="64" required value="<?= htmlspecialchars($values['database'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
@@ -445,9 +471,10 @@
                     <div class="phase-operation-actions">
                         <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
                     </div>
+                    <p class="database-stage-note">Test Database inspects the target only. Next stages the latest validated decision; it does not create COPOT schema or tables.</p>
                     <div class="actions installer-actions installer-navigation">
                         <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous: Requirements</a><?php else: ?><span></span><?php endif; ?>
-                        <button type="button" class="button-secondary" disabled>Next</button>
+                        <button type="submit" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
@@ -591,7 +618,7 @@
             fields.forEach((field) => field.addEventListener('input', resetTest));
 
             form.addEventListener('submit', async (event) => {
-                if (button.value === 'install_database') {
+                if (event.submitter?.value !== 'test_database') {
                     return;
                 }
 
@@ -624,8 +651,6 @@
                     }
 
                     tested = true;
-                    button.value = 'install_database';
-                    button.textContent = 'Install Database';
                     showStatusMessage(payload.message, 'success');
                     result.textContent = `${payload.database.vendor} ${payload.database.version} verified.`;
                     result.hidden = false;

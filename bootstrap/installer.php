@@ -13,12 +13,9 @@ use Copot\Core\InstallerAdministratorSetup;
 use Copot\Core\InstallerDatabaseProbe;
 use Copot\Core\InstallerOwnershipProofAssembler;
 use Copot\Core\CoreMigrationRegistry;
-use Copot\Core\InstallerDatabaseSetup;
 use Copot\Core\InstallerDatabaseValidator;
-use Copot\Core\InstallerEnvironmentWriter;
 use Copot\Core\InstallerFinalizer;
 use Copot\Core\InstallerRequirements;
-use Copot\Core\InstallerSchemaRunner;
 use Copot\Core\InstallerSchemaState;
 use Copot\Core\InstallerValidationException;
 use Copot\Core\PasswordHasher;
@@ -63,6 +60,11 @@ $requirementsHaveWarnings = count(array_filter(
 $requirementsAcknowledged = $sessionReady
     && $session instanceof Session
     && $session->get($requirementsSessionKey, false) === true;
+$databaseSessionKey = 'installer_database_staged';
+$stagedDatabase = $sessionReady && $session instanceof Session
+    ? $session->get($databaseSessionKey, [])
+    : [];
+$stagedDatabase = is_array($stagedDatabase) ? $stagedDatabase : [];
 
 if (!$requirementsPassed && $requirementsAcknowledged && $session instanceof Session) {
     $session->remove($requirementsSessionKey);
@@ -74,15 +76,15 @@ $message = $requirementsPassed
     ? 'Requirements are satisfied. Database configuration can be tested.'
     : 'Resolve the failed requirements before continuing.';
 $values = [
-    'host' => '127.0.0.1',
-    'port' => '3306',
-    'database' => '',
-    'username' => '',
-    'namespace' => '',
-    'intent' => \Copot\Core\InstallerIntent::FRESH,
+    'host' => (string) ($stagedDatabase['host'] ?? '127.0.0.1'),
+    'port' => (string) ($stagedDatabase['port'] ?? '3306'),
+    'database' => (string) ($stagedDatabase['database'] ?? ''),
+    'username' => (string) ($stagedDatabase['username'] ?? ''),
+    'namespace' => (string) ($stagedDatabase['namespace'] ?? ''),
+    'intent' => (string) ($stagedDatabase['intent'] ?? \Copot\Core\InstallerIntent::FRESH),
 ];
 $errors = [];
-$databaseResult = null;
+$databaseResult = is_array($stagedDatabase['inspection'] ?? null) ? $stagedDatabase['inspection'] : null;
 $schemaReady = false;
 $administratorExists = false;
 $administratorSetup = null;
@@ -197,6 +199,10 @@ if ($currentStep === 'finalize' && $requirementsPassed) {
     $message = 'Choose and validate a dedicated empty database.';
 }
 
+if (is_array($databaseResult) && $requirementsPassed && $currentStep === 'database') {
+    $message = 'Database decision is staged and can be revisited before installation.';
+}
+
 if ($installationStateError) {
     $status = 500;
     $message = 'Installation state could not be verified.';
@@ -305,8 +311,26 @@ if ($installationStateError) {
                     'namespace' => $request->post('database_namespace', ''),
                 ];
 
+                if ($input['password'] === '' && is_string($stagedDatabase['password'] ?? null)) {
+                    $input['password'] = $stagedDatabase['password'];
+                }
+
+                $stagedDatabase = array_merge($stagedDatabase, [
+                    'host' => (string) $input['host'],
+                    'port' => (string) $input['port'],
+                    'database' => (string) $input['database'],
+                    'username' => (string) $input['username'],
+                    'password' => (string) $input['password'],
+                    'namespace' => (string) $input['namespace'],
+                    'intent' => (string) $request->post('installer_intent', \Copot\Core\InstallerIntent::FRESH),
+                    'inspection' => null,
+                ]);
+                if ($session instanceof Session) {
+                    $session->set($databaseSessionKey, $stagedDatabase);
+                }
+
                 try {
-                    if (!is_string($action) || !in_array($action, ['test_database', 'install_database'], true)) {
+                    if (!is_string($action) || !in_array($action, ['test_database', 'stage_database'], true)) {
                         throw new InstallationException('Installer action is invalid.');
                     }
 
@@ -328,31 +352,42 @@ if ($installationStateError) {
                         )
                     );
 
-                    if ($action === 'install_database') {
-                        $setup = new InstallerDatabaseSetup(
-                            $probe,
-                            new InstallerEnvironmentWriter($basePath . '/.env'),
-                            new InstallerSchemaRunner($basePath . '/database/schema.sql'),
-                            new InstallationMutex($basePath . '/storage')
-                        );
-                        $setup->install($configuration, $requirementsPassed, $intent);
-
-                        return Response::redirect($deploymentContext->url('/install'));
-                    } else {
-                        $inspection = $probe->inspect($configuration);
-                        $routing = (new \Copot\Core\InstallerRoutingPlanner())->plan(
-                            $inspection['occupancy'],
-                            $intent,
-                            array_key_exists('namespace', $configuration) ? (string) $configuration['namespace'] : null
-                        );
-                        $databaseResult = array_merge($inspection['server'], [
-                            'occupancy' => $inspection['occupancy']->classification(),
-                            'namespace' => $routing->namespace(),
-                            'route' => $routing->route(),
-                            'warnings' => $routing->warnings(),
-                        ]);
-                        $message = 'Database connection and installer routing verified.';
+                    $inspection = $probe->inspect($configuration);
+                    $routing = (new \Copot\Core\InstallerRoutingPlanner())->plan(
+                        $inspection['occupancy'],
+                        $intent,
+                        array_key_exists('namespace', $configuration) ? (string) $configuration['namespace'] : null
+                    );
+                    $databaseResult = array_merge($inspection['server'], [
+                        'occupancy' => $inspection['occupancy']->classification(),
+                        'namespace' => $routing->namespace(),
+                        'route' => $routing->route(),
+                        'warnings' => array_merge($inspection['occupancy']->warnings(), $routing->warnings()),
+                        'objects' => $inspection['occupancy']->objects(),
+                        'copot_namespaces' => $inspection['occupancy']->copotNamespaces(),
+                        'decision_evidence' => [
+                            'classification' => $inspection['occupancy']->classification(),
+                            'objects' => $inspection['occupancy']->objects(),
+                            'copot_namespaces' => $inspection['occupancy']->copotNamespaces(),
+                        ],
+                    ]);
+                    $stagedDatabase = [
+                        'host' => $configuration['host'],
+                        'port' => (string) $configuration['port'],
+                        'database' => $configuration['database'],
+                        'username' => $configuration['username'],
+                        'password' => $configuration['password'],
+                        'namespace' => $routing->namespace(),
+                        'intent' => $intent,
+                        'inspection' => $databaseResult,
+                    ];
+                    if ($session instanceof Session) {
+                        $session->set($databaseSessionKey, $stagedDatabase);
                     }
+                    $values['namespace'] = $routing->namespace();
+                    $message = $action === 'stage_database'
+                        ? 'Database decision staged. No COPOT schema or tables were created.'
+                        : 'Database connection and installer routing verified.';
                 } catch (InstallerValidationException $exception) {
                     $status = 422;
                     $message = 'Correct the database configuration fields.';
