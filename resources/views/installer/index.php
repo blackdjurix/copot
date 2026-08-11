@@ -478,6 +478,14 @@
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
+                <?php if (!empty($databaseStaged) && empty($schemaReady)): ?>
+                <h2>Administrator and Site</h2>
+                <p>The Database decision is staged. Administrator &amp; Site inputs will be available in the next work unit.</p>
+                <div class="installer-actions installer-navigation">
+                    <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a>
+                    <button type="button" disabled>Next</button>
+                </div>
+                <?php else: ?>
                 <h2>Administrator and Site</h2>
                 <?php if (!empty($setupErrors['storage'])): ?>
                     <p class="field-error"><?= htmlspecialchars($setupErrors['storage'], ENT_QUOTES, 'UTF-8') ?></p>
@@ -535,6 +543,7 @@
                         <button type="button" class="button-secondary" disabled>Next</button>
                     </div>
                 </form>
+                <?php endif; ?>
             <?php elseif (($currentStep ?? '') === 'finalize'): ?>
                 <h2>Finalize Installation</h2>
                 <?php if (is_string($finalizationError ?? null) && $finalizationError !== ''): ?>

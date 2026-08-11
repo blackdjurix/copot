@@ -65,6 +65,8 @@ $stagedDatabase = $sessionReady && $session instanceof Session
     ? $session->get($databaseSessionKey, [])
     : [];
 $stagedDatabase = is_array($stagedDatabase) ? $stagedDatabase : [];
+$databaseStaged = ($stagedDatabase['staged'] ?? false) === true
+    && is_array($stagedDatabase['inspection'] ?? null);
 
 if (!$requirementsPassed && $requirementsAcknowledged && $session instanceof Session) {
     $session->remove($requirementsSessionKey);
@@ -166,7 +168,7 @@ if ($requirementsPassed && $requestedStep === 'database' && $session instanceof 
     $session->set($requirementsSessionKey, true);
     $requirementsAcknowledged = true;
 }
-$forwardStep = !$schemaReady || $requestedStep === 'database'
+$forwardStep = ((!$schemaReady && !$databaseStaged) || $requestedStep === 'database')
     ? 'database'
     : ($administratorExists ? 'finalize' : 'administrator');
 $currentStep = $forwardStep;
@@ -177,6 +179,8 @@ if ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'requ
 } elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'database') {
     $currentStep = 'database';
 } elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'administrator' && $schemaReady) {
+    $currentStep = 'administrator';
+} elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'administrator' && !$schemaReady && $databaseStaged) {
     $currentStep = 'administrator';
 } elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'finalize' && $schemaReady && $administratorExists) {
     $currentStep = 'finalize';
@@ -193,8 +197,10 @@ $requirementsForwardLabel = match ($forwardStep) {
 
 if ($currentStep === 'finalize' && $requirementsPassed) {
     $message = 'The first administrator and initial settings are ready. Finalize the installation.';
-} elseif ($currentStep === 'administrator' && $requirementsPassed) {
+} elseif ($currentStep === 'administrator' && $requirementsPassed && $schemaReady) {
     $message = 'Database schema is ready. Create the first administrator and initial site settings.';
+} elseif ($currentStep === 'administrator' && $requirementsPassed && $databaseStaged) {
+    $message = 'Database decision is staged. Administrator & Site staging is the next work unit.';
 } elseif ($requestedStep === 'database' && $requirementsPassed) {
     $message = 'Choose and validate a dedicated empty database.';
 }
@@ -380,6 +386,7 @@ if ($installationStateError) {
                         'namespace' => $routing->namespace(),
                         'intent' => $intent,
                         'inspection' => $databaseResult,
+                        'staged' => $action === 'stage_database',
                     ];
                     if ($session instanceof Session) {
                         $session->set($databaseSessionKey, $stagedDatabase);
@@ -388,6 +395,9 @@ if ($installationStateError) {
                     $message = $action === 'stage_database'
                         ? 'Database decision staged. No COPOT schema or tables were created.'
                         : 'Database connection and installer routing verified.';
+                    if ($action === 'stage_database') {
+                        return Response::redirect($deploymentContext->url('/install?step=administrator'));
+                    }
                 } catch (InstallerValidationException $exception) {
                     $status = 422;
                     $message = 'Correct the database configuration fields.';
@@ -458,11 +468,11 @@ $steps = [
         'label' => 'Database',
         'state' => !$requirementsPassed || !$requirementsAcknowledged
             ? 'blocked'
-            : ($forwardStep === 'database' ? 'current' : ($schemaReady ? 'completed' : 'pending')),
+            : ($databaseStaged || $schemaReady ? 'completed' : 'current'),
     ],
     [
         'label' => 'Administrator & Site',
-        'state' => !$requirementsPassed || !$requirementsAcknowledged || !$schemaReady
+        'state' => !$requirementsPassed || !$requirementsAcknowledged || (!$schemaReady && !$databaseStaged)
             ? 'blocked'
             : ($administratorExists ? 'completed' : ($forwardStep === 'administrator' ? 'current' : 'pending')),
     ],
@@ -505,6 +515,7 @@ $view = new View($basePath . '/resources/views');
 return Response::html($view->render('installer/index', [
     'message' => $message,
     'installerReady' => $installerReady,
+    'databaseStaged' => $databaseStaged,
     'requirements' => $requirements,
     'requirementsPassed' => $requirementsPassed,
     'statusKind' => $statusKind,
