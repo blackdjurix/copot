@@ -232,7 +232,7 @@
 
         .steps {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 8px;
             margin: 24px 0;
         }
@@ -399,6 +399,14 @@
         .button-secondary { background: #fff; color: #1e293b; border: 1px solid #94a3b8; }
         .button { display: inline-block; padding: 10px 16px; border-radius: 6px; background: #1d4ed8; color: #fff; font-weight: 700; text-decoration: none; }
         .phase-form { flex: 1; align-content: start; }
+        .phase-form input,
+        .phase-form select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #9ca3af;
+            border-radius: 5px;
+            font: inherit;
+        }
         .phase-operation-actions { margin-top: auto; }
         .installer-navigation { margin-top: 12px; align-items: stretch; }
         .installer-navigation > a,
@@ -434,7 +442,7 @@
     <main>
         <section>
             <h1>Copot Installer</h1>
-            <?php $phaseDescriptions = ['requirements' => 'Check that this server meets the requirements to run COPOT.', 'database' => 'Choose and validate the database for this installation.', 'administrator' => 'Configure the first administrator and initial site settings.', 'finalize' => 'Review the installation details and finalize COPOT.']; ?>
+            <?php $phaseDescriptions = ['requirements' => 'Check that this server meets the requirements to run COPOT.', 'database' => 'Choose and validate the database for this installation.', 'administrator' => 'Configure the first administrator and initial site settings.', 'modules' => 'Choose optional modules for this installation.', 'finalize' => 'Review the installation details and finalize COPOT.']; ?>
             <p><?= htmlspecialchars($phaseDescriptions[$currentStep ?? 'requirements'] ?? $phaseDescriptions['requirements'], ENT_QUOTES, 'UTF-8') ?></p>
             <?php if (!empty($showStatus)): ?>
                 <?php $statusKind = in_array(($statusKind ?? 'info'), ['success', 'info', 'warning', 'error'], true) ? $statusKind : 'info'; $statusLabel = ['success' => 'Success', 'info' => 'Information', 'warning' => 'Warning', 'error' => 'Error'][$statusKind]; ?>
@@ -446,7 +454,7 @@
                     <?php foreach (($steps ?? []) as $step): ?>
                         <?php $stepState = in_array(($step['state'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['state'] : 'pending'; $stepDisplayState = in_array(($step['displayState'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['displayState'] : $stepState; ?>
                         <li class="step step-<?= htmlspecialchars($stepDisplayState, ENT_QUOTES, 'UTF-8') ?>" <?= $stepDisplayState === 'current' ? 'aria-current="step"' : '' ?>>
-                            <?php $stepIsCurrentReview = (($step['label'] ?? '') === 'Requirements' && ($currentStep ?? '') === 'requirements') || (($step['label'] ?? '') === 'Database' && ($currentStep ?? '') === 'database') || (($step['label'] ?? '') === 'Administrator & Site' && ($currentStep ?? '') === 'administrator'); ?>
+                            <?php $stepIsCurrentReview = (($step['label'] ?? '') === 'Requirements' && ($currentStep ?? '') === 'requirements') || (($step['label'] ?? '') === 'Database' && ($currentStep ?? '') === 'database') || (($step['label'] ?? '') === 'Administrator & Site' && ($currentStep ?? '') === 'administrator') || (($step['label'] ?? '') === 'Modules' && ($currentStep ?? '') === 'modules'); ?>
                             <?php $stepIsReviewable = $stepState === 'completed' && is_string($step['reviewUrl'] ?? null) && !$stepIsCurrentReview; ?>
                             <?php if ($stepIsReviewable): ?><a class="step-link" href="<?= htmlspecialchars($step['reviewUrl'], ENT_QUOTES, 'UTF-8') ?>" aria-label="Review completed <?= htmlspecialchars($step['label'] ?? 'installer step', ENT_QUOTES, 'UTF-8') ?>">
                             <?php endif; ?><strong><?= htmlspecialchars($step['label'] ?? 'Installer step', ENT_QUOTES, 'UTF-8') ?></strong>
@@ -586,9 +594,9 @@
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
-                <?php if (!empty($databaseStaged) && empty($schemaReady)): ?>
+                <?php if (empty($databaseStaged)): ?>
                 <h2>Administrator and Site</h2>
-                <p>The Database decision is staged. Administrator &amp; Site inputs will be available in the next work unit.</p>
+                <p>Stage the Database decision before configuring Administrator &amp; Site.</p>
                 <div class="installer-actions installer-navigation">
                     <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a>
                     <button type="button" disabled>Next</button>
@@ -601,7 +609,7 @@
 
                 <form class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                         <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                        <input type="hidden" name="action" value="create_administrator">
+                        <input type="hidden" name="action" value="stage_administrator">
 
                         <label for="admin_name">Administrator Name</label>
                         <input id="admin_name" name="admin_name" type="text" maxlength="120" required value="<?= htmlspecialchars($setupValues['admin_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
@@ -618,6 +626,7 @@
                         <label for="admin_password_confirmation">Confirm Password</label>
                         <input id="admin_password_confirmation" name="admin_password_confirmation" type="password" minlength="10" required value="">
                         <?php if (!empty($setupErrors['admin_password_confirmation'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_password_confirmation'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                        <p class="field-help">Password is retained securely for the staged installation and is not displayed on revisit.</p>
 
                         <label for="site_name">Site Name</label>
                         <input id="site_name" name="site_name" type="text" maxlength="150" required value="<?= htmlspecialchars($setupValues['site_name'] ?? 'copot', ENT_QUOTES, 'UTF-8') ?>">
@@ -644,14 +653,21 @@
                         <?php if (!empty($setupErrors['locale'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['locale'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
 
                     <div class="phase-operation-actions">
-                        <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Save Administrator and Settings</button>
+                        <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
                     </div>
                     <div class="installer-actions installer-navigation">
                         <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a>
-                        <button type="button" class="button-secondary" disabled>Next</button>
+                        <span></span>
                     </div>
                 </form>
                 <?php endif; ?>
+            <?php elseif (($currentStep ?? '') === 'modules'): ?>
+                <h2>Modules</h2>
+                <p>Administrator &amp; Site is staged. Optional Module selection will be available in the next work unit.</p>
+                <div class="installer-actions installer-navigation">
+                    <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous: Administrator &amp; Site</a>
+                    <button type="button" disabled>Next</button>
+                </div>
             <?php elseif (($currentStep ?? '') === 'finalize'): ?>
                 <h2>Finalize Installation</h2>
                 <?php if (is_string($finalizationError ?? null) && $finalizationError !== ''): ?>

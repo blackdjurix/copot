@@ -21,11 +21,11 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 $assert(str_contains($bootstrap, 'InstallerRequirements($basePath)'), 'Requirements service is not used.');
 $assert(str_contains($bootstrap, '$requirementsService->check($sessionReady)'), 'Mandatory requirements are not rechecked per request.');
 $assert(str_contains($bootstrap, '$requirementsSessionKey = \'installer_requirements_acknowledged\''), 'Requirements acknowledgement is not session-scoped.');
-$assert(str_contains($bootstrap, "['database', 'requirements', 'administrator', 'finalize']"), 'Installer review re-entry steps are not explicitly bounded.');
+$assert(str_contains($bootstrap, "['database', 'requirements', 'administrator', 'modules', 'finalize']"), 'Installer review re-entry steps are not explicitly bounded.');
 $assert(str_contains($bootstrap, '$requirementsReview = true'), 'Completed Requirements review mode is not represented.');
 $assert(str_contains($bootstrap, '$forwardStep ='), 'Forward lifecycle state is not separated from Requirements review mode.');
 $assert(str_contains($bootstrap, '$requirementsForwardUrl ='), 'Requirements review has no return target for the active forward step.');
-$assert(str_contains($bootstrap, "['database', 'requirements', 'administrator', 'finalize']"), 'Completed later installer phases are not bounded review targets.');
+$assert(str_contains($bootstrap, "['database', 'requirements', 'administrator', 'modules', 'finalize']"), 'Completed later installer phases are not bounded review targets.');
 $assert(str_contains($bootstrap, '$requestedStep === \'administrator\' && $schemaReady'), 'Administrator review is not limited to an available completed schema phase.');
 $assert(str_contains($bootstrap, '$requestedStep === \'finalize\' && $schemaReady && $administratorExists'), 'Finalize review is not limited to its legitimate lifecycle context.');
 $assert(str_contains($bootstrap, "['reviewUrl'] ="), 'Completed installer phases do not expose bounded review URLs.');
@@ -47,7 +47,7 @@ $assert(str_contains($view, 'Return to '), 'Completed Requirements review has no
 $assert(str_contains($view, 'stepIsCurrentReview'), 'Current completed-step review is not excluded from self-navigation.');
 $assert(str_contains($view, 'href="<?= htmlspecialchars($requirementsReviewUrl'), 'Completed Requirements has no review URL.');
 $assert(str_contains($view, 'Review completed Requirements'), 'Mobile Requirements review affordance is missing.');
-$assert(str_contains($view, 'Previous: Requirements'), 'Database has no explicit Previous path to Requirements.');
+$assert(str_contains($view, '>Previous</a>'), 'Database has no explicit Previous path to Requirements.');
 $assert(str_contains($view, 'Previous: Database'), 'Administrator and Site has no explicit Previous path to Database.');
 $assert(str_contains($view, 'Previous: Administrator &amp; Site'), 'Finalize has no explicit Previous path to Administrator and Site.');
 $assert(str_contains($view, '$stepIsReviewable'), 'Completed-step navigation is not bounded by completed state and review URL.');

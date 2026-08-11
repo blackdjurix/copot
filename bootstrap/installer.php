@@ -10,6 +10,7 @@ use Copot\Core\CommittedLifecycleStateStore;
 use Copot\Core\InstallationException;
 use Copot\Core\InstallationMutex;
 use Copot\Core\InstallerAdministratorSetup;
+use Copot\Core\InstallerAdministratorValidator;
 use Copot\Core\InstallerDatabaseProbe;
 use Copot\Core\InstallerOwnershipProofAssembler;
 use Copot\Core\CoreMigrationRegistry;
@@ -67,6 +68,12 @@ $stagedDatabase = $sessionReady && $session instanceof Session
 $stagedDatabase = is_array($stagedDatabase) ? $stagedDatabase : [];
 $databaseStaged = ($stagedDatabase['staged'] ?? false) === true
     && is_array($stagedDatabase['inspection'] ?? null);
+$administratorSessionKey = 'installer_administrator_staged';
+$stagedAdministrator = $sessionReady && $session instanceof Session
+    ? $session->get($administratorSessionKey, [])
+    : [];
+$stagedAdministrator = is_array($stagedAdministrator) ? $stagedAdministrator : [];
+$administratorStaged = ($stagedAdministrator['staged'] ?? false) === true;
 
 if (!$requirementsPassed && $requirementsAcknowledged && $session instanceof Session) {
     $session->remove($requirementsSessionKey);
@@ -94,12 +101,12 @@ $finalizer = null;
 $setupErrors = [];
 $finalizationError = null;
 $setupValues = [
-    'admin_name' => '',
-    'admin_email' => '',
-    'site_name' => 'copot',
-    'site_tagline' => '',
-    'timezone' => 'UTC',
-    'locale' => 'en_US',
+    'admin_name' => (string) ($stagedAdministrator['admin_name'] ?? ''),
+    'admin_email' => (string) ($stagedAdministrator['admin_email'] ?? ''),
+    'site_name' => (string) ($stagedAdministrator['site_name'] ?? 'copot'),
+    'site_tagline' => (string) ($stagedAdministrator['site_tagline'] ?? ''),
+    'timezone' => (string) ($stagedAdministrator['timezone'] ?? 'UTC'),
+    'locale' => (string) ($stagedAdministrator['locale'] ?? 'en_US'),
 ];
 
 $loadAdministratorSetup = function () use ($basePath, $installationState): array {
@@ -162,7 +169,7 @@ if (!$installationStateError) {
 }
 
 $requestedStep = $request->method() === 'GET' ? $request->input('step') : null;
-$requestedStep = is_string($requestedStep) && in_array($requestedStep, ['database', 'requirements', 'administrator', 'finalize'], true) ? $requestedStep : null;
+$requestedStep = is_string($requestedStep) && in_array($requestedStep, ['database', 'requirements', 'administrator', 'modules', 'finalize'], true) ? $requestedStep : null;
 $requirementsReview = false;
 if ($requirementsPassed && $requestedStep === 'database' && $session instanceof Session) {
     $session->set($requirementsSessionKey, true);
@@ -170,7 +177,7 @@ if ($requirementsPassed && $requestedStep === 'database' && $session instanceof 
 }
 $forwardStep = ((!$schemaReady && !$databaseStaged) || $requestedStep === 'database')
     ? 'database'
-    : ($administratorExists ? 'finalize' : 'administrator');
+    : ($administratorStaged ? 'modules' : ($administratorExists ? 'finalize' : 'administrator'));
 $currentStep = $forwardStep;
 
 if ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'requirements') {
@@ -182,6 +189,8 @@ if ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'requ
     $currentStep = 'administrator';
 } elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'administrator' && !$schemaReady && $databaseStaged) {
     $currentStep = 'administrator';
+} elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'modules' && $administratorStaged) {
+    $currentStep = 'modules';
 } elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'finalize' && $schemaReady && $administratorExists) {
     $currentStep = 'finalize';
 }
@@ -191,6 +200,7 @@ $requirementsForwardUrl = $forwardStep === 'database'
     : $deploymentContext->url('/install');
 $requirementsForwardLabel = match ($forwardStep) {
     'administrator' => 'Administrator & Site',
+    'modules' => 'Modules',
     'finalize' => 'Finalize',
     default => 'Database',
 };
@@ -200,7 +210,9 @@ if ($currentStep === 'finalize' && $requirementsPassed) {
 } elseif ($currentStep === 'administrator' && $requirementsPassed && $schemaReady) {
     $message = 'Database schema is ready. Create the first administrator and initial site settings.';
 } elseif ($currentStep === 'administrator' && $requirementsPassed && $databaseStaged) {
-    $message = 'Database decision is staged. Administrator & Site staging is the next work unit.';
+    $message = 'Stage the first administrator and initial site settings before installation.';
+} elseif ($currentStep === 'modules' && $requirementsPassed && $administratorStaged) {
+    $message = 'Administrator & Site decision is staged. Optional Module selection is the next work unit.';
 } elseif ($requestedStep === 'database' && $requirementsPassed) {
     $message = 'Choose and validate a dedicated empty database.';
 }
@@ -259,11 +271,7 @@ if ($installationStateError) {
                     $message = 'Installation could not be finalized.';
                     $finalizationError = $currentStep === 'finalize' ? $message : null;
                 }
-            } elseif ($action === 'create_administrator') {
-                if ($administratorExists) {
-                    return Response::redirect($deploymentContext->url('/install'));
-                }
-
+            } elseif (in_array($action, ['stage_administrator', 'create_administrator'], true)) {
                 $input = [
                     'admin_name' => $request->post('admin_name', ''),
                     'admin_email' => $request->post('admin_email', ''),
@@ -274,15 +282,46 @@ if ($installationStateError) {
                     'timezone' => $request->post('timezone', ''),
                     'locale' => $request->post('locale', ''),
                 ];
+                if (
+                    $input['admin_password'] === ''
+                    && $input['admin_password_confirmation'] === ''
+                    && is_string($stagedAdministrator['password'] ?? null)
+                ) {
+                    $input['admin_password'] = $stagedAdministrator['password'];
+                    $input['admin_password_confirmation'] = $stagedAdministrator['password'];
+                }
 
                 try {
-                    if (!$schemaReady || !$administratorSetup instanceof InstallerAdministratorSetup) {
-                        throw new InstallationException('Database schema is not ready.');
+                    if (!$databaseStaged) {
+                        throw new InstallationException('Database decision must be staged before Administrator & Site.');
                     }
 
-                    $administratorSetup->install($input, $requirementsPassed);
+                    $validated = InstallerAdministratorValidator::validate($input);
+                    $stagedAdministrator = [
+                        'admin_name' => $validated['name'],
+                        'admin_email' => $validated['email'],
+                        'password' => $validated['password'],
+                        'site_name' => $validated['site_name'],
+                        'site_tagline' => $validated['site_tagline'],
+                        'timezone' => $validated['timezone'],
+                        'locale' => $validated['locale'],
+                        'staged' => true,
+                    ];
+                    if ($session instanceof Session) {
+                        $session->set($administratorSessionKey, $stagedAdministrator);
+                    }
+                    $administratorStaged = true;
+                    $setupValues = [
+                        'admin_name' => $validated['name'],
+                        'admin_email' => $validated['email'],
+                        'site_name' => $validated['site_name'],
+                        'site_tagline' => $validated['site_tagline'],
+                        'timezone' => $validated['timezone'],
+                        'locale' => $validated['locale'],
+                    ];
+                    $message = 'Administrator & Site decision staged. No installation records were created.';
 
-                    return Response::redirect($deploymentContext->url('/install'));
+                    return Response::redirect($deploymentContext->url('/install?step=modules'));
                 } catch (InstallerValidationException $exception) {
                     $status = 422;
                     $message = 'Correct the administrator and site settings fields.';
@@ -474,7 +513,13 @@ $steps = [
         'label' => 'Administrator & Site',
         'state' => !$requirementsPassed || !$requirementsAcknowledged || (!$schemaReady && !$databaseStaged)
             ? 'blocked'
-            : ($administratorExists ? 'completed' : ($forwardStep === 'administrator' ? 'current' : 'pending')),
+            : ($administratorStaged || $administratorExists ? 'completed' : ($forwardStep === 'administrator' ? 'current' : 'pending')),
+    ],
+    [
+        'label' => 'Modules',
+        'state' => !$requirementsPassed || !$requirementsAcknowledged || !$administratorStaged
+            ? 'blocked'
+            : ($forwardStep === 'modules' ? 'current' : 'pending'),
     ],
     [
         'label' => 'Finalize',
@@ -488,6 +533,7 @@ $displayStep = $currentStep;
 foreach ($steps as &$step) {
     $step['displayState'] = $step['label'] === match ($displayStep) {
         'administrator' => 'Administrator & Site',
+        'modules' => 'Modules',
         'finalize' => 'Finalize',
         'database' => 'Database',
         default => 'Requirements',

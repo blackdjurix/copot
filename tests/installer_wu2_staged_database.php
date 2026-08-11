@@ -50,7 +50,7 @@ $assert(str_contains($view, '>Previous</a>'), 'Database Previous label is not ex
 $assert(str_contains($view, 'name="action" value="test_database"'), 'Test Database is not a distinct operation.');
 $assert(str_contains($view, 'name="action" value="stage_database"'), 'Database Next does not stage the decision.');
 $assert(str_contains($view, 'Test Database inspects the target only.'), 'Database UI does not explain the non-mutating test boundary.');
-$assert(str_contains($view, 'Administrator &amp; Site inputs will be available in the next work unit.'), 'WU2 forward boundary does not keep WU3 form staging out of scope.');
+$assert(str_contains($view, 'name="action" value="stage_administrator"'), 'WU2 forward boundary does not expose the authorized WU3 staging form.');
 $assert(str_contains($view, ".database-inline-field,\n            .database-row,\n            .database-namespace-row {\n                grid-template-columns: 1fr;"), 'Database fields do not collapse safely on mobile.');
 $assert(str_contains($view, 'event.submitter?.value !== \'test_database\''), 'Database Test handler can intercept navigation submission.');
 
