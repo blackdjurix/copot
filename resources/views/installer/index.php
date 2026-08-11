@@ -95,6 +95,7 @@
         }
 
         .database-fields {
+            --database-label-column: 220px;
             display: grid;
             gap: 10px;
             margin-top: 2px;
@@ -102,7 +103,7 @@
 
         .database-row {
             display: grid;
-            grid-template-columns: 220px minmax(0, 1fr);
+            grid-template-columns: var(--database-label-column) minmax(0, 1fr);
             align-items: center;
             gap: 12px;
             min-width: 0;
@@ -110,7 +111,7 @@
 
         .database-inline-fields {
             display: grid;
-            grid-template-columns: 220px minmax(0, 1fr) 90px minmax(0, 1fr);
+            grid-template-columns: var(--database-label-column) minmax(0, 1fr) 90px minmax(0, 1fr);
             gap: 12px;
             min-width: 0;
         }
@@ -121,10 +122,15 @@
 
         .database-namespace-row {
             display: grid;
-            grid-template-columns: 220px minmax(0, 1fr) auto;
+            grid-template-columns: var(--database-label-column) minmax(0, 1fr) auto;
             align-items: center;
             gap: 12px;
             min-width: 0;
+        }
+
+        .database-namespace-row > .database-action {
+            align-self: start;
+            margin-top: 0;
         }
 
         .database-control {

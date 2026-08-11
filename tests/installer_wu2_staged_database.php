@@ -32,9 +32,10 @@ $assert(str_contains($bootstrap, "'decision_evidence'"), 'Inspection evidence is
 $assert(str_contains($bootstrap, "'password' => \$configuration['password']"), 'Latest credentials are not retained server-side for revisit.');
 $assert(str_contains($view, 'class="database-fields"'), 'Database fields do not use a shared Host and Port row.');
 $assert(str_contains($view, 'class="database-row"'), 'Database fields do not use horizontal label/control rows.');
-$assert(str_contains($view, 'grid-template-columns: 220px minmax(0, 1fr);'), 'Database desktop rows do not use a consistent label column and flexible control column.');
+$assert(str_contains($view, '--database-label-column: 220px;'), 'Database desktop rows do not define a shared fixed label column.');
+$assert(str_contains($view, 'grid-template-columns: var(--database-label-column) minmax(0, 1fr);'), 'Database desktop rows do not use a consistent label column and flexible control column.');
 $assert(str_contains($view, 'class="database-inline-fields"'), 'Host/Port and Username/Password compact groupings are missing.');
-$assert(str_contains($view, 'grid-template-columns: 220px minmax(0, 1fr) 90px minmax(0, 1fr);'), 'Paired Database rows do not share the fixed label/control grid.');
+$assert(str_contains($view, 'grid-template-columns: var(--database-label-column) minmax(0, 1fr) 90px minmax(0, 1fr);'), 'Paired Database rows do not share the fixed label/control grid.');
 $assert(str_contains($view, 'class="database-namespace-row"'), 'DB Namespace does not use a dedicated inline action row.');
 $namespaceRowPosition = strpos($view, 'class="database-namespace-row"');
 $testButtonPosition = strpos($view, 'id="database_action" class="database-action"');
