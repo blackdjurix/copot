@@ -4,76 +4,96 @@
 
 ```text
 MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS
-Contract: LOCKED
+Contract: AMENDED / LOCKED
 Implementation authorization: GRANTED — WU1 ONLY
 MR.1 WU1: IMPLEMENTATION IN PROGRESS
+MR.1 WU2–WU6: NOT STARTED / SEPARATE AUTHORIZATION REQUIRED
 ```
 
-This is the authoritative contract for the current Installation Refinement
-workstream. It promotes the accepted MR.1 contract into repository guidance;
-WU1 implementation is authorized within the locked boundary, without reopening
-the completed Multi-Installation WU1–WU6 baseline or authorizing release work.
+This is the authoritative contract for the Installation Refinement workstream.
+It adopts the accepted staged-installation architecture without reopening the
+completed Multi-Installation WU1–WU6 baseline or authorizing release work.
 
-## Objective
+## Objective and installation flow
 
-Complete the accepted installer refinement from Requirements through Finalize
-and the Admin/Site handoff while preserving accepted installation, ownership,
-namespace, lifecycle, and fail-closed semantics.
+MR.1 refines the installer while preserving accepted ownership, namespace,
+lifecycle, and fail-closed semantics. The authoritative flow is:
+
+1. Requirements
+2. Database
+3. Administrator & Site
+4. Modules
+5. Review & Install
+6. Installation Result
+
+Installation Result is an outcome phase, not another configuration-input step.
+
+## Core mutation invariant
+
+Before the user confirms **Install** on Review & Install, COPOT must not create
+installation-owned schema/tables, Administrator/Site records, or optional Module
+installation or activation state. Review & Install is the first COPOT
+installation mutation boundary.
+
+Back navigation changes or reviews staged installer intent only. It neither
+undoes nor mutates installed state. A Database step may create the database
+container only when the user explicitly requests provisioning and the connected
+environment proves sufficient capability and permission. Database-container
+creation is distinct from COPOT schema/tableset creation.
 
 ## Locked scope and exclusions
 
-MR.1 covers Requirements, database UX, installer routes, Table Prefix and
-namespace selection, collision/ownership/ambiguity handling, Administrator &
-Site, Finalize, installer shell, contextual feedback, responsive behavior,
-accessibility, and human UX acceptance.
+MR.1 covers staged Requirements, database decision UX, Administrator/Site
+staging, optional bundled/Core Module selection, final review and installation
+commit, installer routes/shell, contextual feedback, responsive behavior,
+accessibility, and human acceptance.
 
-Out of scope: Admin Shell after completion, Dashboard, Core Module/Admin,
-cross-fileset ownership architecture, migration capability, package lifecycle
-redesign, Server-Empty Bootstrap, production reconciliation, release, tag,
-and publication.
+Out of scope: Dashboard; post-install Admin Shell or Core Module management UI
+refinement; cross-fileset ownership architecture; migration-capability redesign;
+package-lifecycle redesign; Server-Empty Bootstrap; production reconciliation;
+release, tag, and publication. Selecting/installing optional bundled Core
+Modules during installation is in scope; later Core Module Admin UI refinement
+remains separate.
 
-## Locked UX principles
+## Locked UX and safety principles
 
-- **Requirements:** truthful preflight with actionable prerequisites; it does
-  not imply that later steps or installation have started.
-- **Installer Shell:** clear step identity, progress, current-state context,
-  stable navigation, and responsive/accessibility baseline.
-- **Contextual Feedback:** local to the producing decision/operation, explains
-  consequence, preserves safe intent, and fails closed when evidence is incomplete.
-- **Database Decision:** staged connect, inspect occupancy/namespace, select a
-  permitted decision, prove it with available evidence, then proceed. Table-name
+- **Requirements:** truthful preflight with actionable prerequisites. It does
+  not imply that a later step or installation has started.
+- **Staged plan:** input, validation, and permitted inspection are staged until
+  Review & Install; revisiting a step preserves staged input.
+- **Database decision:** connect, inspect occupancy/namespace, select a
+  permitted decision, and prove it with available evidence. Table-name
   similarity is not ownership proof.
-- **Administrator & Site:** explicit, validated, bound to the selected decision,
-  with human-readable confirmation before finalization.
-- **Finalize:** a bounded truthful transition; completion is reported only after
-  accepted identity, schema, lifecycle, and runtime evidence are committed,
-  then the installer locks and hands off to Admin/Site.
+- **Contextual feedback:** local to its producing decision or operation,
+  explains consequence, preserves safe intent, and fails closed on incomplete
+  evidence.
+- **Review & Install:** revalidates the complete staged plan and is the first
+  COPOT mutation boundary.
+- **Result:** reports success or a truthfully classified failure rather than
+  implying that an incomplete mutation left a Fresh environment.
 
 ## Accepted functional baseline
 
 The baseline includes connection testing; occupancy classification; Table
-Prefix/`DB_NAMESPACE` selection and persistence; Fresh, New Independent,
-Adopt, and Migrate decisions only where available proof permits them;
-fail-closed collision, ambiguity, mismatch, and incomplete-evidence handling;
-namespaced Core and Module schema state; empty-namespace handling; installation
-identity; Administrator and Site data; finalization; completion lock; Admin/Site
-handoff; and split-root portability.
+Prefix/`DB_NAMESPACE` selection; Fresh, New Independent, Adopt, and Migrate
+decisions only where available proof permits them; fail-closed collision,
+ambiguity, mismatch, and incomplete-evidence handling; namespaced Core and
+Module schema state; empty-namespace handling; installation identity;
+split-root portability; and accepted lifecycle evidence.
 
 There is no cross-fileset Adopt or Migrate promise. A complete-looking table set
 without positive ownership evidence is not an owned installation.
 
 ## Pre-MR.1 Correctness Gate
 
-The gate is satisfied and WU1 implementation is proceeding within the locked
-boundary. WU2–WU4 remain separately bounded and not started.
+The gate is satisfied. WU1 implementation proceeds within this contract; WU2–WU6
+remain not started and separately authorized.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
 
-Status: **RESOLVED / VALIDATED**. The environment merge boundary now treats
-`DB_NAMESPACE` like the other database keys, replacing existing and repeated
-entries without duplication. Focused regression coverage passed. This bounded
-correction is complete; it does not satisfy the overall gate while Blocker B
-remains unresolved.
+Status: **RESOLVED / VALIDATED**. The environment merge boundary replaces
+existing and repeated `DB_NAMESPACE` entries without duplication. Focused
+regression coverage passed.
 
 ### Blocker B — Change Database / Finalize Progression State
 
@@ -82,7 +102,8 @@ persisted environment, constructs a namespace-bound `Database`, and derives
 Administrator & Site completion from `InstallerAdministratorSetup::administratorExists()`,
 which counts users in the active namespace only. A newly provisioned independent
 namespace therefore correctly returns to Administrator & Site before Finalize.
-The observed behavior is accepted lifecycle behavior, not state leakage.
+The observed behavior is accepted lifecycle behavior, not state leakage. The
+staged-installation amendment supersedes it as the future mutation boundary.
 
 ### Gate result
 
@@ -95,45 +116,101 @@ MR.1 WU1 = IMPLEMENTATION IN PROGRESS / AUTHORIZED
 
 The **Cross-Fileset Upgrade Ownership Proof Gap** is
 **ARCHITECTURE / PRODUCT INVESTIGATION REQUIRED**. It is separate from MR.1,
-not a default WU1 blocker, does not authorize a new capability or ownership
-redesign, and must not become a cross-fileset Adopt or Migrate promise. Only
-routes that backend evidence proves are in scope.
+non-blocking by default, and does not authorize a cross-fileset Adopt or Migrate
+capability promise.
 
 ## Work Unit topology
 
-MR.1 has exactly four work units; there is no catchall:
+MR.1 has exactly six work units:
 
-1. **WU1 — Installer shell, Requirements, and step progression:** shell,
-   Requirements truthfulness, step identity, progression boundaries, and
-   accessible/responsive foundations. **IMPLEMENTATION IN PROGRESS** within the
-   authorized WU1 boundary.
-2. **WU2 — Database inspection and installation decision UX:** connection,
-   occupancy, namespace/Table Prefix, collision, ownership, ambiguity, and
-   fail-closed decision presentation.
-3. **WU3 — Admin/Site and finalization UX:** Administrator & Site, Finalize,
-   completion lock, identity, lifecycle evidence, and Admin/Site handoff.
-4. **WU4 — Responsive, accessibility, and human UX acceptance:** cross-step
-   responsive behavior, keyboard/screen-reader semantics, clarity, feedback,
-   and human acceptance of the locked baseline.
+1. **WU1 — Installer Shell, Requirements & Navigation Framework**
 
-## Validation and implementation entry gate
+   Shared installer shell; Requirements-first progression; step/progress and
+   Back/Previous navigation; completed-step review; non-skippable future/pending
+   steps; staged-input retention on revisit; navigation that does not reset
+   installation state; semantic status presentation; desktop density;
+   responsive/mobile current-phase presentation; and accessibility foundation.
 
-Validation covers the baseline, negative/ambiguous database states, namespaced
-Core/Module state, progression/completion locking, split-root portability,
-responsive behavior, accessibility, and human comprehension. Findings are
-classified against the accepted baseline and do not silently expand MR.1.
+   Status: **IMPLEMENTATION IN PROGRESS**. Existing WU1 evidence remains valid:
+   Requirements-first flow, mandatory revalidation, shell/status semantics,
+   desktop density corrections, mobile current-phase presentation, completed
+   Requirements review, and visible completed-Requirements navigation. The
+   amended generalized Back/staged-navigation behavior is not thereby complete
+   or accepted.
 
-Implementation requires the locked WU1 boundary to remain intact, the
-authoritative `main` to remain verified, and no new blocker to appear. WU2–WU4
-remain separately bounded and unauthorized. The cross-fileset proof gap is
-non-blocking by default.
+2. **WU2 — Staged Installation Plan & Database Decision**
+
+   Establish the authoritative staged plan; database inputs/validation; compact
+   Host + Port shared-row direction; contextual/floating database help;
+   occupancy inspection; Table Prefix/namespace; permitted Fresh/New
+   Independent/Adopt/Migrate presentation; fail-closed ambiguity/collision
+   handling; staged database-input preservation; and database/namespace changes
+   before Install that leave no COPOT tableset behind. Next must not create a
+   COPOT schema/tableset.
+
+   Existing Database is the universal baseline. Optional Create New Database may
+   be offered only when environment and credentials prove sufficient capability;
+   its failure must be actionable. Provider-specific cPanel/Plesk integrations
+   are not a baseline requirement. Ownership proof and `AMBIGUOUS` semantics
+   must not be weakened.
+
+3. **WU3 — Administrator & Site Staging**
+
+   Administrator/Site inputs, validation, staged persistence, and Back/revisit
+   with entered values preserved. Next must not create Administrator/Site rows
+   or otherwise mutate installation state before Review & Install.
+
+4. **WU4 — Optional Core Module Selection**
+
+   Expose optional bundled/Core/first-party Modules for staged installation
+   choice; distinguish mandatory platform Modules from optional Modules; support
+   staged Install and Active selections; require Install for Active; clear Active
+   when Install is unselected; validate dependencies; and permit recommended
+   defaults. Mandatory platform Modules are not user-disableable here.
+
+   Before implementation, inspect repository-native Module lifecycle vocabulary
+   so AVAILABLE/BUNDLED, INSTALLED, and ACTIVE are not conflated and no
+   incompatible persisted lifecycle semantics are invented.
+
+5. **WU5 — Final Review, Installation Commit & Result**
+
+   Final Review presents the complete staged Database, Table Prefix/namespace,
+   installation mode, Administrator, Site, Modules, warnings, and planned
+   actions using clear label/value alignment. Install revalidates requirements,
+   database/namespace/ownership, and the accepted coordination boundary; then
+   creates the COPOT schema/tableset, Administrator/Site state, mandatory and
+   selected optional Modules, selected activations, and required
+   identity/schema/migration/lifecycle/runtime evidence before committing
+   completion.
+
+   Failure handling must account for non-transactional DDL, track objects owned
+   by the operation, never delete pre-existing objects, classify failures, and
+   represent incomplete cleanup as incomplete/recoverable rather than Fresh.
+   Installation Result reports a concise success and Admin/Site handoff, or a
+   human-readable failed stage, cleanup/recovery state, and safe guidance.
+
+6. **WU6 — Cross-Step Responsive, Accessibility & Human Acceptance**
+
+   Validate Steps 1–6 across desktop/mobile, keyboard/focus/screen-reader
+   behavior, Back/forward comprehension, staged-data retention, absence of
+   unintended COPOT mutation before Install, Module-selection usability, final
+   review comprehension, result usability, and final human UX acceptance.
+
+## Validation and implementation boundaries
+
+Validation must cover the staged-plan and mutation invariant in addition to
+negative/ambiguous database states, namespaced Core/Module state, responsive
+behavior, accessibility, and human comprehension. Findings do not silently
+expand MR.1.
+
+WU2–WU6 are **NOT STARTED** and require separate authorization. This amendment
+does not authorize installer/runtime source changes, lifecycle redesign, Module
+implementation, cross-fileset ownership work, release, tag, or publication.
 
 ## Documentation and lifecycle boundaries
 
 Only materially relevant current-authority documentation is reconciled. The
-historical Multi-Installation WU1–WU6 contract and evidence remain preserved
-and closed; they are not reopened. This contract makes promotion,
-the WU1 implementation-in-progress status, four-WU topology, the gate, external
-blockers, and the separate ownership-proof investigation visible. It authorizes
-no WU2–WU4 implementation, Multi-Installation expansion, release, tag, or
-publication.
+historical Multi-Installation WU1–WU6 contract and evidence remain preserved and
+closed. This contract records the six-WU topology, staged-installation invariant,
+satisfied correctness gate, WU1 implementation-in-progress status, and separate
+ownership-proof investigation.

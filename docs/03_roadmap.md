@@ -832,8 +832,14 @@ UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
 MR.1 Installation Refinement is separately promoted as
 **PROMOTED / IMPLEMENTATION IN PROGRESS** in
-`docs/36_mr_1_installation_refinement_contract.md`. Its four-WU topology is
-authoritative there; MR.1 WU1 is **IMPLEMENTATION IN PROGRESS / AUTHORIZED**.
+`docs/36_mr_1_installation_refinement_contract.md`. Its six-WU staged-installation
+topology is authoritative there: WU1 Installer Shell, Requirements & Navigation
+Framework is **IMPLEMENTATION IN PROGRESS / AUTHORIZED**; WU2 Staged Installation
+Plan & Database Decision, WU3 Administrator & Site Staging, WU4 Optional Core
+Module Selection, WU5 Final Review, Installation Commit & Result, and WU6
+Cross-Step Responsive, Accessibility & Human Acceptance are **NOT STARTED**.
+Review & Install is the first COPOT mutation boundary; database-container
+provisioning at Database is the explicit capable-environment exception.
 Blocker A is **RESOLVED / VALIDATED** after focused persistence regression coverage.
 Blocker B is **CLASSIFIED / NOT A DEFECT**.
 This promotion does not reopen the completed Multi-Installation WU1–WU6
