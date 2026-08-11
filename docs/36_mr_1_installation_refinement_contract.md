@@ -127,16 +127,18 @@ MR.1 has exactly six work units:
 
    Shared installer shell; Requirements-first progression; step/progress and
    Back/Previous navigation; completed-step review; non-skippable future/pending
-   steps; staged-input retention on revisit; navigation that does not reset
-   installation state; semantic status presentation; desktop density;
-   responsive/mobile current-phase presentation; and accessibility foundation.
+   steps; navigation that does not itself reset or mutate installation state;
+   rendering values already available from the current runtime/state model;
+   semantic status presentation; desktop density; responsive/mobile
+   current-phase presentation; and accessibility foundation. WU1 does not own
+   authoritative staged-form persistence.
 
    Status: **IMPLEMENTATION IN PROGRESS**. Existing WU1 evidence remains valid:
    Requirements-first flow, mandatory revalidation, shell/status semantics,
    desktop density corrections, mobile current-phase presentation, completed
    Requirements review, and visible completed-Requirements navigation. The
-   amended generalized Back/staged-navigation behavior is not thereby complete
-   or accepted.
+   amended generalized Back/navigation behavior is not thereby complete or
+   accepted.
 
 2. **WU2 — Staged Installation Plan & Database Decision**
 
@@ -144,9 +146,10 @@ MR.1 has exactly six work units:
    Host + Port shared-row direction; contextual/floating database help;
    occupancy inspection; Table Prefix/namespace; permitted Fresh/New
    Independent/Adopt/Migrate presentation; fail-closed ambiguity/collision
-   handling; staged database-input preservation; and database/namespace changes
-   before Install that leave no COPOT tableset behind. Next must not create a
-   COPOT schema/tableset.
+   handling; authoritative persistence of the latest Database inputs and
+   decisions across Back/revisit; and database/namespace intent changes before
+   Install that leave no COPOT tableset behind. WU2 owns the staged Database
+   plan and must ensure Next creates no COPOT schema/tableset.
 
    Existing Database is the universal baseline. Optional Create New Database may
    be offered only when environment and credentials prove sufficient capability;
@@ -156,9 +159,10 @@ MR.1 has exactly six work units:
 
 3. **WU3 — Administrator & Site Staging**
 
-   Administrator/Site inputs, validation, staged persistence, and Back/revisit
-   with entered values preserved. Next must not create Administrator/Site rows
-   or otherwise mutate installation state before Review & Install.
+   Administrator/Site inputs, validation, and authoritative staged persistence;
+   latest Administrator/Site values across Back/revisit; and no
+   Administrator/Site row creation or other installation mutation before
+   Review & Install.
 
 4. **WU4 — Optional Core Module Selection**
 
