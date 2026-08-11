@@ -31,11 +31,14 @@ $assert(!str_contains($bootstrap, "action === 'install_database'"), 'Legacy inst
 $assert(str_contains($bootstrap, "'decision_evidence'"), 'Inspection evidence is not retained with the staged decision.');
 $assert(str_contains($bootstrap, "'password' => \$configuration['password']"), 'Latest credentials are not retained server-side for revisit.');
 $assert(str_contains($view, 'class="database-fields"'), 'Database fields do not use a shared Host and Port row.');
+$assert(str_contains($view, 'class="database-row"'), 'Database fields do not use horizontal label/control rows.');
+$assert(str_contains($view, 'grid-template-columns: 220px minmax(0, 1fr);'), 'Database desktop rows do not use a consistent label column and flexible control column.');
+$assert(str_contains($view, 'class="database-inline-fields"'), 'Host/Port and Username/Password compact groupings are missing.');
 $assert(str_contains($view, 'name="action" value="test_database"'), 'Test Database is not a distinct operation.');
 $assert(str_contains($view, 'name="action" value="stage_database"'), 'Database Next does not stage the decision.');
 $assert(str_contains($view, 'Test Database inspects the target only.'), 'Database UI does not explain the non-mutating test boundary.');
 $assert(str_contains($view, 'Administrator &amp; Site inputs will be available in the next work unit.'), 'WU2 forward boundary does not keep WU3 form staging out of scope.');
-$assert(str_contains($view, ".database-fields {\n                grid-template-columns: 1fr;"), 'Database fields do not collapse safely on mobile.');
+$assert(str_contains($view, ".database-inline-field,\n            .database-row {\n                grid-template-columns: 1fr;"), 'Database fields do not collapse safely on mobile.');
 $assert(str_contains($view, 'event.submitter?.value !== \'test_database\''), 'Database Test handler can intercept navigation submission.');
 
 fwrite(STDOUT, "WU2 staged Database assertions: {$assertions}\n");

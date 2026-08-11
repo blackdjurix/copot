@@ -96,8 +96,46 @@
 
         .database-fields {
             display: grid;
-            grid-template-columns: minmax(0, 2fr) minmax(110px, 1fr);
+            gap: 10px;
+            margin-top: 2px;
+        }
+
+        .database-row {
+            display: grid;
+            grid-template-columns: 220px minmax(0, 1fr);
+            align-items: center;
             gap: 12px;
+            min-width: 0;
+        }
+
+        .database-inline-fields {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 18px;
+            min-width: 0;
+        }
+
+        .database-inline-field {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .database-control {
+            min-width: 0;
+        }
+
+        .database-help {
+            grid-column: 2;
+            margin: -4px 0 0;
+            font-size: 13px;
+            font-style: italic;
+        }
+
+        .database-control .field-error {
+            margin-bottom: 0;
         }
 
         .database-field {
@@ -254,7 +292,22 @@
             }
 
             .database-fields {
+                gap: 12px;
+            }
+
+            .database-inline-fields {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .database-inline-field,
+            .database-row {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+
+            .database-help {
+                grid-column: 1;
             }
 
             .steps {
@@ -428,32 +481,52 @@
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
                     <div class="database-fields">
-                        <div class="database-field">
+                        <div class="database-inline-fields">
+                            <div class="database-inline-field">
                             <label for="database_host">Host</label>
-                            <input id="database_host" name="database_host" type="text" maxlength="255" required value="<?= htmlspecialchars($values['host'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                            <?php if (!empty($errors['host'])): ?><p class="field-error"><?= htmlspecialchars($errors['host'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-                        </div>
-                        <div class="database-field">
+                            <div class="database-control">
+                                <input id="database_host" name="database_host" type="text" maxlength="255" required value="<?= htmlspecialchars($values['host'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                <?php if (!empty($errors['host'])): ?><p class="field-error"><?= htmlspecialchars($errors['host'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                            </div>
+                            </div>
+                            <div class="database-inline-field">
                             <label for="database_port">Port</label>
-                            <input id="database_port" name="database_port" type="number" min="1" max="65535" required value="<?= htmlspecialchars($values['port'] ?? '3306', ENT_QUOTES, 'UTF-8') ?>">
-                            <?php if (!empty($errors['port'])): ?><p class="field-error"><?= htmlspecialchars($errors['port'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                            <div class="database-control">
+                                <input id="database_port" name="database_port" type="number" min="1" max="65535" required value="<?= htmlspecialchars($values['port'] ?? '3306', ENT_QUOTES, 'UTF-8') ?>">
+                                <?php if (!empty($errors['port'])): ?><p class="field-error"><?= htmlspecialchars($errors['port'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                            </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <label for="database_name">Database Name</label>
-                    <input id="database_name" name="database_name" type="text" maxlength="64" required value="<?= htmlspecialchars($values['database'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                    <?php if (!empty($errors['database'])): ?><p class="field-error"><?= htmlspecialchars($errors['database'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                        <div class="database-row">
+                            <label for="database_name">Database name</label>
+                            <div class="database-control">
+                                <input id="database_name" name="database_name" type="text" maxlength="64" required value="<?= htmlspecialchars($values['database'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                <?php if (!empty($errors['database'])): ?><p class="field-error"><?= htmlspecialchars($errors['database'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                            </div>
+                        </div>
 
-                    <label for="database_username">Username</label>
-                    <input id="database_username" name="database_username" type="text" maxlength="128" required value="<?= htmlspecialchars($values['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                    <?php if (!empty($errors['username'])): ?><p class="field-error"><?= htmlspecialchars($errors['username'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                        <div class="database-inline-fields">
+                            <div class="database-inline-field">
+                                <label for="database_username">Username</label>
+                                <div class="database-control">
+                                    <input id="database_username" name="database_username" type="text" maxlength="128" required value="<?= htmlspecialchars($values['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                    <?php if (!empty($errors['username'])): ?><p class="field-error"><?= htmlspecialchars($errors['username'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="database-inline-field">
+                                <label for="database_password">Password</label>
+                                <div class="database-control">
+                                    <input id="database_password" name="database_password" type="password" value="">
+                                    <?php if (!empty($errors['password'])): ?><p class="field-error"><?= htmlspecialchars($errors['password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
 
-                    <label for="database_password">Password</label>
-                    <input id="database_password" name="database_password" type="password" value="">
-                    <?php if (!empty($errors['password'])): ?><p class="field-error"><?= htmlspecialchars($errors['password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-
-                    <label for="installer_intent">Installer intent</label>
-                    <select id="installer_intent" name="installer_intent" required>
+                        <div class="database-row">
+                            <label for="installer_intent">Installer intent</label>
+                            <div class="database-control">
+                                <select id="installer_intent" name="installer_intent" required>
                         <?php foreach ([
                             \Copot\Core\InstallerIntent::FRESH => 'Fresh installation',
                             \Copot\Core\InstallerIntent::COEXIST => 'New independent installation',
@@ -462,11 +535,19 @@
                         ] as $intentValue => $intentLabel): ?>
                             <option value="<?= htmlspecialchars($intentValue, ENT_QUOTES, 'UTF-8') ?>" <?= ($values['intent'] ?? \Copot\Core\InstallerIntent::FRESH) === $intentValue ? 'selected' : '' ?>><?= htmlspecialchars($intentLabel, ENT_QUOTES, 'UTF-8') ?></option>
                         <?php endforeach; ?>
-                    </select>
+                                </select>
+                            </div>
+                        </div>
 
-                    <label for="database_namespace">Database namespace (blank preserves the empty namespace)</label>
-                    <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                    <?php if (!empty($errors['namespace'])): ?><p class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                        <div class="database-row">
+                            <label for="database_namespace">DB Namespace</label>
+                            <div class="database-control">
+                                <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                                <?php if (!empty($errors['namespace'])): ?><p class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                            </div>
+                            <p class="database-help">Blank preserves the empty namespace.</p>
+                        </div>
+                    </div>
 
                     <div class="phase-operation-actions">
                         <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
