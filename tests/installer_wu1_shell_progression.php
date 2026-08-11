@@ -64,6 +64,8 @@ $assert(str_contains($view, 'status--<?= htmlspecialchars($statusKind'), 'Status
 $assert(str_contains($view, '.status--warning'), 'Warning status styling is missing.');
 $assert(str_contains($view, '.status--error'), 'Blocking error status styling is missing.');
 $assert(str_contains($view, 'grid-template-columns: 112px minmax(0, 1fr);'), 'Desktop status layout does not allocate a stable label column.');
+$assert(str_contains($view, 'width: 100%;'), 'Desktop status layout does not use the full installer-card width.');
+$assert(str_contains($view, '.status > span:last-child { min-width: 0; }'), 'Desktop status message cell does not release intrinsic minimum width.');
 $assert(str_contains($view, '.status { grid-template-columns: 1fr; align-items: start; }'), 'Mobile status layout does not preserve readable wrapping.');
 $assert(str_contains($view, 'width: min(calc(100% - 32px), 720px)'), 'Responsive installer-card width foundation is missing.');
 $assert(str_contains($view, 'body { align-items: flex-start; }'), 'Small-screen overflow behavior is not defined.');

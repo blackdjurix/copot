@@ -259,8 +259,11 @@
             grid-template-columns: 112px minmax(0, 1fr);
             gap: 8px;
             align-items: baseline;
+            width: 100%;
+            min-width: 0;
             border-left-width: 5px;
         }
+        .status > span:last-child { min-width: 0; }
 
         .status--success { border-left-color: #15803d; background: #f0fdf4; }
         .status--info { border-left-color: #2563eb; background: #eff6ff; }
