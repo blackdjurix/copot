@@ -33,5 +33,11 @@ $assert(str_contains($view, 'Password is retained securely'), 'Administrator pas
 $assert(str_contains($view, 'Optional Module selection will be available in the next work unit.'), 'WU4 handoff placeholder is missing.');
 $assert(!str_contains($view, 'name="action" value="create_administrator"'), 'Administrator view still exposes the pre-Review mutation action.');
 $assert(str_contains($validator, 'SettingsRegistry::core()'), 'WU3 validation does not use repository-native settings definitions.');
+$assert(str_contains($view, '--administrator-label-column: 150px;'), 'Administrator desktop form does not define a shared label column.');
+$assert(str_contains($view, 'grid-template-columns: var(--administrator-label-column) minmax(0, 1fr) max-content minmax(0, 1fr);'), 'Administrator paired rows do not use the shared desktop grid.');
+$assert(substr_count($view, 'class="administrator-inline-fields"') === 3, 'Administrator paired desktop rows are incomplete.');
+$assert(substr_count($view, 'class="administrator-row"') === 2, 'Administrator single-field rows are incomplete.');
+$assert(str_contains($view, 'administrator-navigation'), 'Administrator navigation container is missing.');
+$assert(str_contains($view, 'class="administrator-help"'), 'Administrator password safety help is not attached to the grid.');
 
 fwrite(STDOUT, "WU3 staged Administrator assertions: {$assertions}\n");
