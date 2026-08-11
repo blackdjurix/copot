@@ -147,7 +147,7 @@
         }
 
         .installer-actions .button-secondary {
-            margin-top: 8px;
+            margin-top: 0;
         }
 
         .database-action {
@@ -254,11 +254,17 @@
             width: min(calc(100% - 32px), 720px);
             margin: 0 auto;
             padding: 20px 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
         }
 
         section {
             width: 100%;
             padding: 18px;
+            min-height: min(760px, calc(100vh - 40px));
+            display: flex;
+            flex-direction: column;
             border-radius: 12px;
             box-shadow: 0 18px 48px rgba(15, 23, 42, 0.10);
         }
@@ -288,13 +294,19 @@
         .status-label { font-weight: 700; }
 
         .requirements-intro { margin-top: 0; }
-        .requirements-actions { margin-top: 20px; }
+        .requirements-actions { margin-top: auto; display: flex; justify-content: flex-end; }
         .button-secondary { background: #fff; color: #1e293b; border: 1px solid #94a3b8; }
         .button { display: inline-block; padding: 10px 16px; border-radius: 6px; background: #1d4ed8; color: #fff; font-weight: 700; text-decoration: none; }
+        .phase-form { flex: 1; align-content: start; }
+        .phase-operation-actions { margin-top: auto; }
+        .installer-navigation { margin-top: 12px; align-items: stretch; }
+        .installer-navigation > a,
+        .installer-navigation > button { flex: 0 1 48%; text-align: center; }
+        .installer-navigation > button { margin-top: 0; }
 
         @media (max-width: 560px) {
             body { align-items: flex-start; }
-            main { width: min(calc(100% - 20px), 720px); padding: 20px 0; }
+            main { width: min(calc(100% - 20px), 720px); min-height: 100vh; padding: 20px 0; align-items: flex-start; }
             section { padding: 20px; }
             .status { grid-template-columns: 1fr; align-items: start; }
             .steps { grid-template-columns: 1fr; }
@@ -307,8 +319,11 @@
             }
             .steps .step-current span { margin-top: 0; }
             .mobile-requirements-review { display: block; }
-            .installer-actions { flex-direction: column; align-items: stretch; }
-            .installer-actions a, .installer-actions button, .requirements-actions span { width: 100%; text-align: center; }
+            section { min-height: 0; }
+            .requirements-actions { margin-top: 20px; justify-content: flex-end; }
+            .installer-navigation { flex-direction: row; align-items: stretch; }
+            .installer-navigation > a, .installer-navigation > button { flex: 1 1 0; width: auto; text-align: center; }
+            .phase-operation-actions > button { width: 100%; }
         }
     </style>
 </head>
@@ -388,7 +403,7 @@
 
                 <p id="database_test_result" class="pass" hidden></p>
 
-                <form id="database_form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
+                <form id="database_form" class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
                     <label for="database_host">Host</label>
@@ -427,9 +442,12 @@
                     <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <?php if (!empty($errors['namespace'])): ?><p class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
 
-                    <div class="actions installer-actions">
-                        <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous: Requirements</a><?php endif; ?>
+                    <div class="phase-operation-actions">
                         <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
+                    </div>
+                    <div class="actions installer-actions installer-navigation">
+                        <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous: Requirements</a><?php else: ?><span></span><?php endif; ?>
+                        <button type="button" class="button-secondary" disabled>Next</button>
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
@@ -438,7 +456,7 @@
                     <p class="field-error"><?= htmlspecialchars($setupErrors['storage'], ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
 
-                <form method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
+                <form class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                         <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="create_administrator">
 
@@ -482,9 +500,12 @@
                         </select>
                         <?php if (!empty($setupErrors['locale'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['locale'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
 
-                    <div class="installer-actions">
-                        <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a>
+                    <div class="phase-operation-actions">
                         <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Save Administrator and Settings</button>
+                    </div>
+                    <div class="installer-actions installer-navigation">
+                        <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a>
+                        <button type="button" class="button-secondary" disabled>Next</button>
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'finalize'): ?>
@@ -500,10 +521,10 @@
                     <li><span>Baseline module</span><strong>Taxonomy</strong></li>
                 </ul>
 
-                <form method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
+                <form class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="action" value="finalize_installation">
-                    <div class="installer-actions">
+                    <div class="installer-actions installer-navigation">
                         <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous: Administrator &amp; Site</a>
                         <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Finalize Installation</button>
                     </div>

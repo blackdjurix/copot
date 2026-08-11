@@ -54,7 +54,12 @@ $assert(str_contains($view, '$stepIsReviewable'), 'Completed-step navigation is 
 $assert(str_contains($view, '.installer-actions {'), 'Shared installer action-row layout is missing.');
 $assert(str_contains($view, 'justify-content: space-between;'), 'Installer action row does not separate secondary and primary actions.');
 $assert(str_contains($view, 'button-secondary'), 'Secondary action styling is missing from the shared action row.');
-$assert(str_contains($view, '.installer-actions { flex-direction: column; align-items: stretch; }'), 'Mobile installer action-row layout is not defined.');
+$assert(str_contains($view, '.installer-navigation { flex-direction: row; align-items: stretch; }'), 'Mobile navigation actions are not kept side-by-side.');
+$assert(str_contains($view, 'phase-operation-actions'), 'Operational actions are not separated from navigation actions.');
+$assert(str_contains($view, 'installer-navigation'), 'Shared navigation row is missing.');
+$assert(str_contains($view, 'min-height: min(760px, calc(100vh - 40px));'), 'Desktop installer shell has no shared viewport-aware footprint.');
+$assert(str_contains($view, 'align-items: center;'), 'Desktop installer shell is not vertically centered.');
+$assert(str_contains($view, 'phase-form'), 'Installer phase forms do not participate in the shared shell geometry.');
 $assert(str_contains($view, '.mobile-requirements-review {'), 'Requirements review affordance has no shared style.');
 $assert(str_contains($view, "display: none;\n            margin: -8px 0 12px;"), 'Requirements review affordance is not hidden from desktop duplication.');
 $assert(str_contains($view, '.mobile-requirements-review { display: block; }'), 'Mobile Requirements review affordance is not visible.');
