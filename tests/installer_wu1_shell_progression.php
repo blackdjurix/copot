@@ -35,6 +35,8 @@ $assert(str_contains($bootstrap, 'return Response::redirect($deploymentContext->
 $assert(str_contains($bootstrap, '\'state\' => !$requirementsPassed || !$requirementsAcknowledged ? \'current\' : \'completed\''), 'Requirements progress state is not gated by acknowledgement.');
 $assert(str_contains($bootstrap, '\'state\' => !$requirementsPassed || !$requirementsAcknowledged || !$schemaReady || !$administratorExists'), 'Finalize is not blocked until Requirements, schema, and administrator state are ready.');
 $assert(str_contains($bootstrap, '\'statusKind\' => $statusKind'), 'Status semantics are not exposed to the view.');
+$assert(str_contains($bootstrap, '$showStatus ='), 'Status visibility is not derived from meaningful contextual conditions.');
+$assert(str_contains($bootstrap, '\'displayStep\' => $displayStep'), 'Displayed installer phase is not separated from forward lifecycle state.');
 $assert(str_contains($bootstrap, '$currentStep === \'requirements\' && $requirementsReview'), 'Fresh Requirements and completed Requirements review status are not distinguished.');
 
 $requirementsGate = strpos($view, 'if (($currentStep ?? \'\') === \'requirements\')');
@@ -65,13 +67,19 @@ $assert(str_contains($view, 'class="step-state"'), 'Installer phase state is not
 $assert(str_contains($view, 'border-top-width: 5px;'), 'Current installer phase lacks a non-color visual cue.');
 $assert(str_contains($view, 'status--<?= htmlspecialchars($statusKind'), 'Status presentation is not semantic.');
 $assert(str_contains($view, 'class="status-message"'), 'Status message does not have an explicit layout target.');
-$assert(str_contains($view, '.status--message-only'), 'Label-less status messages do not have a full-width layout mode.');
-$assert(str_contains($view, 'showMessageOnlyStatus'), 'Dynamic status updates do not preserve message-only layout semantics.');
+$assert(str_contains($view, 'showStatusMessage'), 'Dynamic status updates do not preserve status semantics.');
+$assert(str_contains($view, 'labels = { info: \'Information\', success: \'Success\', warning: \'Warning\', error: \'Error\' }'), 'Dynamic status updates do not use the accepted label vocabulary.');
+$assert(str_contains($view, 'status.replaceChildren()'), 'Dynamic status updates do not preserve the two-line status structure.');
 $assert(str_contains($view, '.status--warning'), 'Warning status styling is missing.');
 $assert(str_contains($view, '.status--error'), 'Blocking error status styling is missing.');
-$assert(str_contains($view, 'grid-template-columns: 112px minmax(0, 1fr);'), 'Desktop status layout does not allocate a stable label column.');
+$assert(str_contains($view, 'grid-template-columns: 1fr;'), 'Status layout does not use the accepted two-line structure.');
+$assert(str_contains($view, 'statusLabel = [\'success\' => \'Success\', \'info\' => \'Information\', \'warning\' => \'Warning\', \'error\' => \'Error\']'), 'Status labels do not use the accepted vocabulary.');
+$assert(!str_contains($view, 'Blocking error'), 'Blocking error remains a visible status label.');
+$assert(str_contains($view, 'phaseDescriptions'), 'Displayed installer phases do not have contextual descriptions.');
+$assert(!str_contains($view, 'Check the server, test a dedicated empty database'), 'Static global installer instruction remains.');
 $assert(str_contains($view, 'width: 100%;'), 'Desktop status layout does not use the full installer-card width.');
-$assert(str_contains($view, '.status-message { grid-column: 2; min-width: 0; }'), 'Desktop status message cell does not release intrinsic minimum width.');
+$assert(str_contains($view, '.status-label,'), 'Status label does not have an explicit status-row placement.');
+$assert(str_contains($view, 'grid-column: 1; min-width: 0;'), 'Status message does not occupy the full status row.');
 $assert(str_contains($view, '.status { grid-template-columns: 1fr; align-items: start; }'), 'Mobile status layout does not preserve readable wrapping.');
 $assert(str_contains($view, 'width: min(calc(100% - 32px), 720px)'), 'Responsive installer-card width foundation is missing.');
 $assert(str_contains($view, 'body { align-items: flex-start; }'), 'Small-screen overflow behavior is not defined.');

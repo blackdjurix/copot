@@ -412,6 +412,7 @@ if ($currentStep === 'requirements' && !$requirementsPassed) {
 }
 
 $installerReady = $installerReady && $status < 400;
+$showStatus = $status >= 400 || !$requirementsPassed || $requirementsHaveWarnings || is_array($databaseResult);
 
 $steps = [
     [
@@ -437,6 +438,19 @@ $steps = [
             : ($forwardStep === 'finalize' ? 'current' : 'pending'),
     ],
 ];
+
+$displayStep = $currentStep;
+foreach ($steps as &$step) {
+    $step['displayState'] = $step['label'] === match ($displayStep) {
+        'administrator' => 'Administrator & Site',
+        'finalize' => 'Finalize',
+        'database' => 'Database',
+        default => 'Requirements',
+    }
+        ? 'current'
+        : (($step['state'] ?? '') === 'current' ? 'pending' : ($step['state'] ?? 'pending'));
+}
+unset($step);
 
 $stepReviewUrls = [
     'Requirements' => $deploymentContext->url('/install?step=requirements'),
@@ -465,8 +479,10 @@ return Response::html($view->render('installer/index', [
     'databaseResult' => $databaseResult,
     'schemaReady' => $schemaReady,
     'administratorExists' => $administratorExists,
-    'currentStep' => $currentStep,
-    'forwardStep' => $forwardStep,
+        'currentStep' => $currentStep,
+        'forwardStep' => $forwardStep,
+        'displayStep' => $displayStep,
+        'showStatus' => $showStatus,
     'requirementsAcknowledged' => $requirementsAcknowledged,
     'requirementsReview' => $requirementsReview,
     'requirementsReviewUrl' => $deploymentContext->url('/install?step=requirements'),

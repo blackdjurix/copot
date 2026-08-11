@@ -271,17 +271,15 @@
 
         .status {
             display: grid;
-            grid-template-columns: 112px minmax(0, 1fr);
-            gap: 8px;
+            grid-template-columns: 1fr;
+            gap: 4px;
             align-items: baseline;
             width: 100%;
             min-width: 0;
             border-left-width: 5px;
         }
-        .status-label { grid-column: 1; }
-        .status-message { grid-column: 2; min-width: 0; }
-        .status--message-only { grid-template-columns: minmax(0, 1fr); }
-        .status--message-only .status-message { grid-column: 1; }
+        .status-label,
+        .status-message { grid-column: 1; min-width: 0; }
 
         .status--success { border-left-color: #15803d; background: #f0fdf4; }
         .status--info { border-left-color: #2563eb; background: #eff6ff; }
@@ -318,15 +316,18 @@
     <main>
         <section>
             <h1>Copot Installer</h1>
-            <p>Check the server, test a dedicated empty database, then save its configuration and install the canonical schema.</p>
-            <?php $statusKind = in_array(($statusKind ?? 'info'), ['success', 'info', 'warning', 'error'], true) ? $statusKind : 'info'; $statusLabel = ['success' => 'Success', 'info' => 'Information', 'warning' => 'Warning', 'error' => 'Blocking error'][$statusKind]; ?>
-            <p id="installer_status" class="status status--<?= htmlspecialchars($statusKind, ENT_QUOTES, 'UTF-8') ?>" role="<?= $statusKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite"><span class="status-label"><?= htmlspecialchars($statusLabel, ENT_QUOTES, 'UTF-8') ?></span><span class="status-message"><?= htmlspecialchars($message ?? 'Installer is unavailable.', ENT_QUOTES, 'UTF-8') ?></span></p>
+            <?php $phaseDescriptions = ['requirements' => 'Check that this server meets the requirements to run COPOT.', 'database' => 'Choose and validate the database for this installation.', 'administrator' => 'Configure the first administrator and initial site settings.', 'finalize' => 'Review the installation details and finalize COPOT.']; ?>
+            <p><?= htmlspecialchars($phaseDescriptions[$currentStep ?? 'requirements'] ?? $phaseDescriptions['requirements'], ENT_QUOTES, 'UTF-8') ?></p>
+            <?php if (!empty($showStatus)): ?>
+                <?php $statusKind = in_array(($statusKind ?? 'info'), ['success', 'info', 'warning', 'error'], true) ? $statusKind : 'info'; $statusLabel = ['success' => 'Success', 'info' => 'Information', 'warning' => 'Warning', 'error' => 'Error'][$statusKind]; ?>
+                <p id="installer_status" class="status status--<?= htmlspecialchars($statusKind, ENT_QUOTES, 'UTF-8') ?>" role="<?= $statusKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite"><span class="status-label"><?= htmlspecialchars($statusLabel, ENT_QUOTES, 'UTF-8') ?></span><span class="status-message"><?= htmlspecialchars($message ?? 'Installer is unavailable.', ENT_QUOTES, 'UTF-8') ?></span></p>
+            <?php endif; ?>
 
             <nav aria-label="Installation progress">
                 <ol class="steps">
                     <?php foreach (($steps ?? []) as $step): ?>
-                        <?php $stepState = in_array(($step['state'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['state'] : 'pending'; ?>
-                        <li class="step step-<?= htmlspecialchars($stepState, ENT_QUOTES, 'UTF-8') ?>" <?= $stepState === 'current' ? 'aria-current="step"' : '' ?>>
+                        <?php $stepState = in_array(($step['state'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['state'] : 'pending'; $stepDisplayState = in_array(($step['displayState'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['displayState'] : $stepState; ?>
+                        <li class="step step-<?= htmlspecialchars($stepDisplayState, ENT_QUOTES, 'UTF-8') ?>" <?= $stepDisplayState === 'current' ? 'aria-current="step"' : '' ?>>
                             <?php $stepIsCurrentReview = (($step['label'] ?? '') === 'Requirements' && ($currentStep ?? '') === 'requirements') || (($step['label'] ?? '') === 'Database' && ($currentStep ?? '') === 'database') || (($step['label'] ?? '') === 'Administrator & Site' && ($currentStep ?? '') === 'administrator'); ?>
                             <?php $stepIsReviewable = $stepState === 'completed' && is_string($step['reviewUrl'] ?? null) && !$stepIsCurrentReview; ?>
                             <?php if ($stepIsReviewable): ?><a class="step-link" href="<?= htmlspecialchars($step['reviewUrl'], ENT_QUOTES, 'UTF-8') ?>" aria-label="Review completed <?= htmlspecialchars($step['label'] ?? 'installer step', ENT_QUOTES, 'UTF-8') ?>">
@@ -519,7 +520,7 @@
                 return;
             }
 
-            const status = document.getElementById('installer_status');
+            let status = document.getElementById('installer_status');
             const result = document.getElementById('database_test_result');
             const fields = [
                 'database_host',
@@ -532,19 +533,25 @@
             ].map((name) => form.elements.namedItem(name)).filter(Boolean);
             let tested = false;
 
-            const showMessageOnlyStatus = (message) => {
-                status.classList.add('status--message-only');
-                let messageElement = status.querySelector('.status-message');
-                if (!messageElement) {
-                    messageElement = document.createElement('span');
-                    messageElement.className = 'status-message';
-                    status.replaceChildren(messageElement);
+            const showStatusMessage = (message, kind = 'info') => {
+                const labels = { info: 'Information', success: 'Success', warning: 'Warning', error: 'Error' };
+                if (!status) {
+                    status = document.createElement('p');
+                    status.id = 'installer_status';
+                    const phaseDescription = document.querySelector('main > section > p');
+                    phaseDescription?.insertAdjacentElement('afterend', status);
                 }
-                const label = status.querySelector('.status-label');
-                if (label) {
-                    label.remove();
-                }
+                status.className = `status status--${kind}`;
+                status.setAttribute('role', kind === 'error' ? 'alert' : 'status');
+                status.setAttribute('aria-live', 'polite');
+                status.replaceChildren();
+                const labelElement = document.createElement('span');
+                labelElement.className = 'status-label';
+                labelElement.textContent = labels[kind] || labels.info;
+                const messageElement = document.createElement('span');
+                messageElement.className = 'status-message';
                 messageElement.textContent = message;
+                status.append(labelElement, messageElement);
             };
 
             const resetTest = () => {
@@ -557,7 +564,7 @@
                 button.textContent = 'Test Database';
                 result.hidden = true;
                 result.textContent = '';
-                showMessageOnlyStatus('Database fields changed. Test the connection again.');
+                showStatusMessage('Database fields changed. Test the connection again.');
             };
 
             fields.forEach((field) => field.addEventListener('input', resetTest));
@@ -591,21 +598,21 @@
                         tested = false;
                         button.value = 'test_database';
                         button.textContent = 'Test Database';
-                        showMessageOnlyStatus(payload?.message || 'Database connection could not be verified.');
+                        showStatusMessage(payload?.message || 'Database connection could not be verified.', 'error');
                         return;
                     }
 
                     tested = true;
                     button.value = 'install_database';
                     button.textContent = 'Install Database';
-                    showMessageOnlyStatus(payload.message);
+                    showStatusMessage(payload.message, 'success');
                     result.textContent = `${payload.database.vendor} ${payload.database.version} verified.`;
                     result.hidden = false;
                 } catch (error) {
                     tested = false;
                     button.value = 'test_database';
                     button.textContent = 'Test Database';
-                    showMessageOnlyStatus('Database connection could not be verified.');
+                    showStatusMessage('Database connection could not be verified.', 'error');
                 } finally {
                     button.disabled = false;
                 }
