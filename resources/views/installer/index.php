@@ -494,6 +494,16 @@
             .installer-navigation { flex-direction: row; align-items: stretch; }
             .installer-navigation > a, .installer-navigation > button { flex: 1 1 0; width: auto; text-align: center; }
             .phase-operation-actions > button { width: 100%; }
+            .administrator-inline-fields,
+            .administrator-row { grid-template-columns: 1fr; gap: 6px; }
+            .administrator-inline-field {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 6px;
+                width: 100%;
+            }
+            .administrator-control,
+            .administrator-help { grid-column: 1; width: 100%; }
         }
     </style>
 </head>
