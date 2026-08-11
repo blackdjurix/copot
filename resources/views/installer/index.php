@@ -110,16 +110,20 @@
 
         .database-inline-fields {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-            gap: 18px;
+            grid-template-columns: 220px minmax(0, 1fr) 90px minmax(0, 1fr);
+            gap: 12px;
             min-width: 0;
         }
 
         .database-inline-field {
+            display: contents;
+        }
+
+        .database-namespace-row {
             display: grid;
-            grid-template-columns: auto minmax(0, 1fr);
+            grid-template-columns: 220px minmax(0, 1fr) auto;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             min-width: 0;
         }
 
@@ -128,7 +132,6 @@
         }
 
         .database-help {
-            grid-column: 2;
             margin: -4px 0 0;
             font-size: 13px;
             font-style: italic;
@@ -301,13 +304,14 @@
             }
 
             .database-inline-field,
-            .database-row {
+            .database-row,
+            .database-namespace-row {
                 grid-template-columns: 1fr;
                 gap: 6px;
             }
 
-            .database-help {
-                grid-column: 1;
+            .database-inline-field {
+                display: grid;
             }
 
             .steps {
@@ -539,19 +543,17 @@
                             </div>
                         </div>
 
-                        <div class="database-row">
+                        <div class="database-namespace-row">
                             <label for="database_namespace">DB Namespace</label>
                             <div class="database-control">
                                 <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <?php if (!empty($errors['namespace'])): ?><p class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                <p class="database-help">Blank preserves the empty namespace.</p>
                             </div>
-                            <p class="database-help">Blank preserves the empty namespace.</p>
+                            <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
                         </div>
                     </div>
 
-                    <div class="phase-operation-actions">
-                        <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
-                    </div>
                     <p class="database-stage-note">Test Database inspects the target only. Next stages the latest validated decision; it does not create COPOT schema or tables.</p>
                     <div class="actions installer-actions installer-navigation">
                         <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous: Requirements</a><?php else: ?><span></span><?php endif; ?>

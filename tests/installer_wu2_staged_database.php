@@ -34,11 +34,16 @@ $assert(str_contains($view, 'class="database-fields"'), 'Database fields do not 
 $assert(str_contains($view, 'class="database-row"'), 'Database fields do not use horizontal label/control rows.');
 $assert(str_contains($view, 'grid-template-columns: 220px minmax(0, 1fr);'), 'Database desktop rows do not use a consistent label column and flexible control column.');
 $assert(str_contains($view, 'class="database-inline-fields"'), 'Host/Port and Username/Password compact groupings are missing.');
+$assert(str_contains($view, 'grid-template-columns: 220px minmax(0, 1fr) 90px minmax(0, 1fr);'), 'Paired Database rows do not share the fixed label/control grid.');
+$assert(str_contains($view, 'class="database-namespace-row"'), 'DB Namespace does not use a dedicated inline action row.');
+$namespaceRowPosition = strpos($view, 'class="database-namespace-row"');
+$testButtonPosition = strpos($view, 'id="database_action" class="database-action"');
+$assert($namespaceRowPosition !== false && $testButtonPosition !== false && $testButtonPosition > $namespaceRowPosition, 'Test Database is not embedded in the namespace row.');
 $assert(str_contains($view, 'name="action" value="test_database"'), 'Test Database is not a distinct operation.');
 $assert(str_contains($view, 'name="action" value="stage_database"'), 'Database Next does not stage the decision.');
 $assert(str_contains($view, 'Test Database inspects the target only.'), 'Database UI does not explain the non-mutating test boundary.');
 $assert(str_contains($view, 'Administrator &amp; Site inputs will be available in the next work unit.'), 'WU2 forward boundary does not keep WU3 form staging out of scope.');
-$assert(str_contains($view, ".database-inline-field,\n            .database-row {\n                grid-template-columns: 1fr;"), 'Database fields do not collapse safely on mobile.');
+$assert(str_contains($view, ".database-inline-field,\n            .database-row,\n            .database-namespace-row {\n                grid-template-columns: 1fr;"), 'Database fields do not collapse safely on mobile.');
 $assert(str_contains($view, 'event.submitter?.value !== \'test_database\''), 'Database Test handler can intercept navigation submission.');
 
 fwrite(STDOUT, "WU2 staged Database assertions: {$assertions}\n");
