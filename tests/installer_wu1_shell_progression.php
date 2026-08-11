@@ -33,6 +33,7 @@ $assert(str_contains($bootstrap, '$session->remove($requirementsSessionKey)'), '
 $assert(str_contains($bootstrap, '$currentStep = \'requirements\''), 'A blocking requirement does not return to the Requirements step.');
 $assert(str_contains($bootstrap, 'return Response::redirect($deploymentContext->url(\'/install?step=database\'))'), 'Successful Requirements progression does not target Database.');
 $assert(str_contains($bootstrap, '\'state\' => !$requirementsPassed || !$requirementsAcknowledged ? \'current\' : \'completed\''), 'Requirements progress state is not gated by acknowledgement.');
+$assert(str_contains($bootstrap, '\'state\' => !$requirementsPassed || !$requirementsAcknowledged || !$schemaReady || !$administratorExists'), 'Finalize is not blocked until Requirements, schema, and administrator state are ready.');
 $assert(str_contains($bootstrap, '\'statusKind\' => $statusKind'), 'Status semantics are not exposed to the view.');
 
 $requirementsGate = strpos($view, 'if (($currentStep ?? \'\') === \'requirements\')');

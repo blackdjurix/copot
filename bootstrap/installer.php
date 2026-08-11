@@ -432,7 +432,7 @@ $steps = [
     ],
     [
         'label' => 'Finalize',
-        'state' => !$requirementsPassed
+        'state' => !$requirementsPassed || !$requirementsAcknowledged || !$schemaReady || !$administratorExists
             ? 'blocked'
             : ($forwardStep === 'finalize' ? 'current' : 'pending'),
     ],
