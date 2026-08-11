@@ -3,14 +3,18 @@
 ## Status and authority
 
 ```text
-MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS
+MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS (WU3 NEXT)
 Contract: AMENDED / LOCKED
 MR.1 implementation: AUTHORIZED WITHIN THE LOCKED SIX-WU CONTRACT
 MR.1 WU1: COMPLETE AND CLOSED
 MR.1 WU1 technical validation: PASS
 MR.1 WU1 human acceptance: PASS
-MR.1 WU2: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
+MR.1 WU2: COMPLETE AND CLOSED
+MR.1 WU2 technical validation: PASS
+MR.1 WU2 human visual acceptance: PASS
+MR.1 WU2 focused validation: 33 assertions PASS; runtime staging and responsive review PASS
 MR.1 WU3–WU6: NOT STARTED
+MR.1 branch lifecycle: main-only / no-op
 ```
 
 This is the authoritative contract for the Installation Refinement workstream.
@@ -90,7 +94,7 @@ without positive ownership evidence is not an owned installation.
 ## Pre-MR.1 Correctness Gate
 
 The gate is satisfied. MR.1 implementation proceeds within this locked contract;
-WU2–WU6 remain not started.
+WU2 is complete and closed; WU3–WU6 remain not started.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
 
@@ -113,7 +117,8 @@ staged-installation amendment supersedes it as the future mutation boundary.
 ```text
 PRE-MR.1 CORRECTNESS GATE = SATISFIED / VALIDATED
 MR.1 WU1 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
-MR.1 WU2 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
+MR.1 WU2 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN VISUAL ACCEPTANCE PASS
+MR.1 WU3 = NEXT ACTIVE IMPLEMENTATION TARGET
 ```
 
 ## Separate non-blocking architecture investigation
@@ -167,6 +172,12 @@ MR.1 has exactly six work units:
    are not a baseline requirement. Ownership proof and `AMBIGUOUS` semantics
    must not be weakened.
 
+   Status: **COMPLETE AND CLOSED**. Technical validation is **PASS**, including
+   33 focused assertions, runtime Database staging, no-schema-on-Next behavior,
+   and PHP/diff checks. Human visual acceptance is **PASS** for the accepted
+   desktop and 390px mobile review. WU2 introduced no change to Database
+   functionality or the Review & Install mutation boundary.
+
 3. **WU3 — Administrator & Site Staging**
 
    Administrator/Site inputs, validation, and authoritative staged persistence;
@@ -217,8 +228,9 @@ negative/ambiguous database states, namespaced Core/Module state, responsive
 behavior, accessibility, and human comprehension. Findings do not silently
 expand MR.1.
 
-WU2 is **NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET**. WU3–WU6 are
-**NOT STARTED**. This amendment does not authorize work outside the
+WU2 is **COMPLETE AND CLOSED** with technical validation **PASS** and human
+visual acceptance **PASS**. WU3 is the **NEXT ACTIVE IMPLEMENTATION TARGET**;
+WU3–WU6 are **NOT STARTED**. This amendment does not authorize work outside the
 MR.1 contract, lifecycle redesign beyond an accepted work-unit boundary, Module
 implementation outside WU4, cross-fileset ownership work, release, tag, or
 publication.
@@ -228,8 +240,11 @@ publication.
 Only materially relevant current-authority documentation is reconciled. The
 historical Multi-Installation WU1–WU6 contract and evidence remain preserved and
 closed. This contract records the six-WU topology, staged-installation invariant,
-satisfied correctness gate, WU1 completion and acceptance status, and separate
+satisfied correctness gate, WU1 and WU2 completion and acceptance status, and separate
 ownership-proof investigation. The accepted `Install UI.png` visual guideline
 continues as the structural reference for later installer refinement; page-specific
 Database, Administrator/Site, and Final Review layout work remains owned by WU2,
 WU3, and WU5 respectively, while the accepted mobile shell remains distinct.
+MR.1 remains main-only / no-op for branch lifecycle. Review & Install remains the
+first COPOT installation mutation boundary; the database-container provisioning
+exception is unchanged. No WU3 implementation has started.
