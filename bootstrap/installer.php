@@ -158,7 +158,7 @@ if (!$installationStateError) {
 }
 
 $requestedStep = $request->method() === 'GET' ? $request->input('step') : null;
-$requestedStep = is_string($requestedStep) && in_array($requestedStep, ['database', 'requirements'], true) ? $requestedStep : null;
+$requestedStep = is_string($requestedStep) && in_array($requestedStep, ['database', 'requirements', 'administrator', 'finalize'], true) ? $requestedStep : null;
 $requirementsReview = false;
 if ($requirementsPassed && $requestedStep === 'database' && $session instanceof Session) {
     $session->set($requirementsSessionKey, true);
@@ -172,6 +172,12 @@ $currentStep = $forwardStep;
 if ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'requirements') {
     $requirementsReview = true;
     $currentStep = 'requirements';
+} elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'database') {
+    $currentStep = 'database';
+} elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'administrator' && $schemaReady) {
+    $currentStep = 'administrator';
+} elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'finalize' && $schemaReady && $administratorExists) {
+    $currentStep = 'finalize';
 }
 
 $requirementsForwardUrl = $forwardStep === 'database'
@@ -431,6 +437,19 @@ $steps = [
             : ($forwardStep === 'finalize' ? 'current' : 'pending'),
     ],
 ];
+
+$stepReviewUrls = [
+    'Requirements' => $deploymentContext->url('/install?step=requirements'),
+    'Database' => $deploymentContext->url('/install?step=database'),
+    'Administrator & Site' => $deploymentContext->url('/install?step=administrator'),
+];
+
+foreach ($steps as &$step) {
+    if (($step['state'] ?? '') === 'completed' && isset($stepReviewUrls[$step['label']])) {
+        $step['reviewUrl'] = $stepReviewUrls[$step['label']];
+    }
+}
+unset($step);
 
 $view = new View($basePath . '/resources/views');
 

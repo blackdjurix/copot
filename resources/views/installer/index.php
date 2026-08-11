@@ -294,10 +294,11 @@
                     <?php foreach (($steps ?? []) as $step): ?>
                         <?php $stepState = in_array(($step['state'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['state'] : 'pending'; ?>
                         <li class="step step-<?= htmlspecialchars($stepState, ENT_QUOTES, 'UTF-8') ?>" <?= $stepState === 'current' ? 'aria-current="step"' : '' ?>>
-                            <?php $stepIsRequirementsReview = ($step['label'] ?? '') === 'Requirements' && $stepState === 'completed' && !empty($requirementsAcknowledged) && ($currentStep ?? '') !== 'requirements'; ?>
-                            <?php if ($stepIsRequirementsReview): ?><a class="step-link" href="<?= htmlspecialchars($requirementsReviewUrl ?? '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>" aria-label="Review completed Requirements">
+                            <?php $stepIsCurrentReview = (($step['label'] ?? '') === 'Requirements' && ($currentStep ?? '') === 'requirements') || (($step['label'] ?? '') === 'Database' && ($currentStep ?? '') === 'database') || (($step['label'] ?? '') === 'Administrator & Site' && ($currentStep ?? '') === 'administrator'); ?>
+                            <?php $stepIsReviewable = $stepState === 'completed' && is_string($step['reviewUrl'] ?? null) && !$stepIsCurrentReview; ?>
+                            <?php if ($stepIsReviewable): ?><a class="step-link" href="<?= htmlspecialchars($step['reviewUrl'], ENT_QUOTES, 'UTF-8') ?>" aria-label="Review completed <?= htmlspecialchars($step['label'] ?? 'installer step', ENT_QUOTES, 'UTF-8') ?>">
                             <?php endif; ?><strong><?= htmlspecialchars($step['label'] ?? 'Installer step', ENT_QUOTES, 'UTF-8') ?></strong>
-                            <span><?= htmlspecialchars($stepState, ENT_QUOTES, 'UTF-8') ?></span><?php if ($stepIsRequirementsReview): ?></a><?php endif; ?>
+                            <span><?= htmlspecialchars($stepState, ENT_QUOTES, 'UTF-8') ?></span><?php if ($stepIsReviewable): ?></a><?php endif; ?>
                         </li>
                     <?php endforeach; ?>
                 </ol>
@@ -333,6 +334,7 @@
 
             <?php if (($currentStep ?? 'database') === 'database'): ?>
                 <h2>Database</h2>
+                <?php if (!empty($requirementsAcknowledged)): ?><p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous: Requirements</a></p><?php endif; ?>
 
                 <?php if (!empty($errors['connection'])): ?>
                     <p class="field-error"><?= htmlspecialchars($errors['connection'], ENT_QUOTES, 'UTF-8') ?></p>
@@ -399,7 +401,7 @@
                 </form>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
                 <h2>Administrator and Site</h2>
-                <p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Change Database</a></p>
+                <p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a></p>
 
                 <?php if (!empty($setupErrors['storage'])): ?>
                     <p class="field-error"><?= htmlspecialchars($setupErrors['storage'], ENT_QUOTES, 'UTF-8') ?></p>
@@ -453,7 +455,7 @@
                 </form>
             <?php elseif (($currentStep ?? '') === 'finalize'): ?>
                 <h2>Finalize Installation</h2>
-                <p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Change Database</a></p>
+                <p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous: Administrator &amp; Site</a></p>
 
                 <?php if (is_string($finalizationError ?? null) && $finalizationError !== ''): ?>
                     <p class="field-error"><?= htmlspecialchars($finalizationError, ENT_QUOTES, 'UTF-8') ?></p>

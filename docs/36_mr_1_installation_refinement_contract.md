@@ -5,9 +5,9 @@
 ```text
 MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS
 Contract: AMENDED / LOCKED
-Implementation authorization: GRANTED — WU1 ONLY
+MR.1 implementation: AUTHORIZED WITHIN THE LOCKED SIX-WU CONTRACT
 MR.1 WU1: IMPLEMENTATION IN PROGRESS
-MR.1 WU2–WU6: NOT STARTED / SEPARATE AUTHORIZATION REQUIRED
+MR.1 WU2–WU6: NOT STARTED
 ```
 
 This is the authoritative contract for the Installation Refinement workstream.
@@ -86,8 +86,8 @@ without positive ownership evidence is not an owned installation.
 
 ## Pre-MR.1 Correctness Gate
 
-The gate is satisfied. WU1 implementation proceeds within this contract; WU2–WU6
-remain not started and separately authorized.
+The gate is satisfied. MR.1 implementation proceeds within this locked contract;
+WU2–WU6 remain not started.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
 
@@ -203,9 +203,10 @@ negative/ambiguous database states, namespaced Core/Module state, responsive
 behavior, accessibility, and human comprehension. Findings do not silently
 expand MR.1.
 
-WU2–WU6 are **NOT STARTED** and require separate authorization. This amendment
-does not authorize installer/runtime source changes, lifecycle redesign, Module
-implementation, cross-fileset ownership work, release, tag, or publication.
+WU2–WU6 are **NOT STARTED**. This amendment does not authorize work outside the
+MR.1 contract, lifecycle redesign beyond an accepted work-unit boundary, Module
+implementation outside WU4, cross-fileset ownership work, release, tag, or
+publication.
 
 ## Documentation and lifecycle boundaries
 
