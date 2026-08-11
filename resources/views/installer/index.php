@@ -347,9 +347,11 @@
                 display: grid;
                 grid-template-columns: 1fr;
                 gap: 6px;
+                width: 100%;
             }
 
-            .administrator-help { grid-column: 1; }
+            .administrator-control,
+            .administrator-help { grid-column: 1; width: 100%; }
 
             .steps {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
