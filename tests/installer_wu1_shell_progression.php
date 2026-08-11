@@ -48,6 +48,10 @@ $assert(str_contains($view, 'Previous: Requirements'), 'Database has no explicit
 $assert(str_contains($view, 'Previous: Database'), 'Administrator and Site has no explicit Previous path to Database.');
 $assert(str_contains($view, 'Previous: Administrator &amp; Site'), 'Finalize has no explicit Previous path to Administrator and Site.');
 $assert(str_contains($view, '$stepIsReviewable'), 'Completed-step navigation is not bounded by completed state and review URL.');
+$assert(str_contains($view, '.installer-actions {'), 'Shared installer action-row layout is missing.');
+$assert(str_contains($view, 'justify-content: space-between;'), 'Installer action row does not separate secondary and primary actions.');
+$assert(str_contains($view, 'button-secondary'), 'Secondary action styling is missing from the shared action row.');
+$assert(str_contains($view, '.installer-actions { flex-direction: column; align-items: stretch; }'), 'Mobile installer action-row layout is not defined.');
 $assert(str_contains($view, '.mobile-requirements-review {'), 'Requirements review affordance has no shared style.');
 $assert(str_contains($view, "display: none;\n            margin: -8px 0 12px;"), 'Requirements review affordance is not hidden from desktop duplication.');
 $assert(str_contains($view, '.mobile-requirements-review { display: block; }'), 'Mobile Requirements review affordance is not visible.');

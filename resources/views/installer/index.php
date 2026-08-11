@@ -138,6 +138,18 @@
             gap: 10px;
         }
 
+        .installer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .installer-actions .button-secondary {
+            margin-top: 8px;
+        }
+
         .database-action {
             width: 156px;
         }
@@ -257,7 +269,7 @@
         .status-label { font-weight: 700; }
 
         .requirements-intro { margin-top: 0; }
-        .requirements-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; }
+        .requirements-actions { margin-top: 20px; }
         .button-secondary { background: #fff; color: #1e293b; border: 1px solid #94a3b8; }
         .button { display: inline-block; padding: 10px 16px; border-radius: 6px; background: #1d4ed8; color: #fff; font-weight: 700; text-decoration: none; }
 
@@ -276,8 +288,8 @@
             }
             .steps .step-current span { margin-top: 0; }
             .mobile-requirements-review { display: block; }
-            .requirements-actions { justify-content: stretch; }
-            .requirements-actions a, .requirements-actions span { width: 100%; text-align: center; }
+            .installer-actions { flex-direction: column; align-items: stretch; }
+            .installer-actions a, .installer-actions button, .requirements-actions span { width: 100%; text-align: center; }
         }
     </style>
 </head>
@@ -334,8 +346,6 @@
 
             <?php if (($currentStep ?? 'database') === 'database'): ?>
                 <h2>Database</h2>
-                <?php if (!empty($requirementsAcknowledged)): ?><p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous: Requirements</a></p><?php endif; ?>
-
                 <?php if (!empty($errors['connection'])): ?>
                     <p class="field-error"><?= htmlspecialchars($errors['connection'], ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
@@ -395,14 +405,13 @@
                     <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <?php if (!empty($errors['namespace'])): ?><p class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
 
-                    <div class="actions">
+                    <div class="actions installer-actions">
+                        <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous: Requirements</a><?php endif; ?>
                         <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
                 <h2>Administrator and Site</h2>
-                <p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a></p>
-
                 <?php if (!empty($setupErrors['storage'])): ?>
                     <p class="field-error"><?= htmlspecialchars($setupErrors['storage'], ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
@@ -451,12 +460,13 @@
                         </select>
                         <?php if (!empty($setupErrors['locale'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['locale'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
 
-                    <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Save Administrator and Settings</button>
+                    <div class="installer-actions">
+                        <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a>
+                        <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Save Administrator and Settings</button>
+                    </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'finalize'): ?>
                 <h2>Finalize Installation</h2>
-                <p><a class="text-link" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous: Administrator &amp; Site</a></p>
-
                 <?php if (is_string($finalizationError ?? null) && $finalizationError !== ''): ?>
                     <p class="field-error"><?= htmlspecialchars($finalizationError, ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
@@ -471,7 +481,10 @@
                 <form method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="action" value="finalize_installation">
-                    <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Finalize Installation</button>
+                    <div class="installer-actions">
+                        <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous: Administrator &amp; Site</a>
+                        <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Finalize Installation</button>
+                    </div>
                 </form>
             <?php endif; ?>
         </section>
