@@ -834,10 +834,12 @@ MR.1 Installation Refinement is separately promoted as
 **PROMOTED / IMPLEMENTATION IN PROGRESS** in
 `docs/36_mr_1_installation_refinement_contract.md`. Its six-WU staged-installation
 topology is authoritative there: WU1 Installer Shell, Requirements & Navigation
-Framework is **IMPLEMENTATION IN PROGRESS / AUTHORIZED**; WU2 Staged Installation
+Framework is **COMPLETE AND CLOSED** with technical validation **PASS** and human
+acceptance **PASS**; WU2 Staged Installation
 Plan & Database Decision, WU3 Administrator & Site Staging, WU4 Optional Core
 Module Selection, WU5 Final Review, Installation Commit & Result, and WU6
-Cross-Step Responsive, Accessibility & Human Acceptance are **NOT STARTED**.
+Cross-Step Responsive, Accessibility & Human Acceptance are **NOT STARTED**, with
+WU2 the **NEXT ACTIVE IMPLEMENTATION TARGET**.
 Review & Install is the first COPOT mutation boundary; database-container
 provisioning at Database is the explicit capable-environment exception.
 Blocker A is **RESOLVED / VALIDATED** after focused persistence regression coverage.

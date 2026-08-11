@@ -6,8 +6,11 @@
 MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS
 Contract: AMENDED / LOCKED
 MR.1 implementation: AUTHORIZED WITHIN THE LOCKED SIX-WU CONTRACT
-MR.1 WU1: IMPLEMENTATION IN PROGRESS
-MR.1 WU2–WU6: NOT STARTED
+MR.1 WU1: COMPLETE AND CLOSED
+MR.1 WU1 technical validation: PASS
+MR.1 WU1 human acceptance: PASS
+MR.1 WU2: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
+MR.1 WU3–WU6: NOT STARTED
 ```
 
 This is the authoritative contract for the Installation Refinement workstream.
@@ -109,7 +112,8 @@ staged-installation amendment supersedes it as the future mutation boundary.
 
 ```text
 PRE-MR.1 CORRECTNESS GATE = SATISFIED / VALIDATED
-MR.1 WU1 = IMPLEMENTATION IN PROGRESS / AUTHORIZED
+MR.1 WU1 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
+MR.1 WU2 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
 ```
 
 ## Separate non-blocking architecture investigation
@@ -133,12 +137,18 @@ MR.1 has exactly six work units:
    current-phase presentation; and accessibility foundation. WU1 does not own
    authoritative staged-form persistence.
 
-   Status: **IMPLEMENTATION IN PROGRESS**. Existing WU1 evidence remains valid:
-   Requirements-first flow, mandatory revalidation, shell/status semantics,
-   desktop density corrections, mobile current-phase presentation, completed
-   Requirements review, and visible completed-Requirements navigation. The
-   amended generalized Back/navigation behavior is not thereby complete or
-   accepted.
+   Status: **COMPLETE AND CLOSED**. Technical validation is **PASS** and human
+   acceptance is **PASS**. Accepted evidence includes Requirements-first flow,
+   mandatory revalidation, contextual descriptions and conditional semantic
+   status, displayed/review-phase synchronization with preserved forward
+   lifecycle state, completed-step review, bounded Previous/navigation behavior,
+   non-skippable pending/future phases, stable desktop shell geometry and
+   centering, viewport-aware footprint and scrolling, bottom-oriented action
+   zones, separated Database operation/navigation, Previous-left/forward-right
+   semantics, mobile current-phase presentation, side-by-side mobile navigation,
+   and accessibility behavior. Focused WU1 validation passed 67 assertions;
+   PHP lint, diff-check, desktop shell/action verification, and 390px mobile
+   verification passed with no horizontal overflow.
 
 2. **WU2 — Staged Installation Plan & Database Decision**
 
@@ -207,7 +217,8 @@ negative/ambiguous database states, namespaced Core/Module state, responsive
 behavior, accessibility, and human comprehension. Findings do not silently
 expand MR.1.
 
-WU2–WU6 are **NOT STARTED**. This amendment does not authorize work outside the
+WU2 is **NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET**. WU3–WU6 are
+**NOT STARTED**. This amendment does not authorize work outside the
 MR.1 contract, lifecycle redesign beyond an accepted work-unit boundary, Module
 implementation outside WU4, cross-fileset ownership work, release, tag, or
 publication.
@@ -217,5 +228,8 @@ publication.
 Only materially relevant current-authority documentation is reconciled. The
 historical Multi-Installation WU1–WU6 contract and evidence remain preserved and
 closed. This contract records the six-WU topology, staged-installation invariant,
-satisfied correctness gate, WU1 implementation-in-progress status, and separate
-ownership-proof investigation.
+satisfied correctness gate, WU1 completion and acceptance status, and separate
+ownership-proof investigation. The accepted `Install UI.png` visual guideline
+continues as the structural reference for later installer refinement; page-specific
+Database, Administrator/Site, and Final Review layout work remains owned by WU2,
+WU3, and WU5 respectively, while the accepted mobile shell remains distinct.
