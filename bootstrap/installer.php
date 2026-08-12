@@ -94,6 +94,7 @@ $values = [
 ];
 $errors = [];
 $databaseResult = is_array($stagedDatabase['inspection'] ?? null) ? $stagedDatabase['inspection'] : null;
+$databaseFeedbackActive = false;
 $schemaReady = false;
 $administratorExists = false;
 $administratorSetup = null;
@@ -397,6 +398,7 @@ if ($installationStateError) {
                         )
                     );
 
+                    $databaseFeedbackActive = true;
                     $inspection = $probe->inspect($configuration);
                     $routing = (new \Copot\Core\InstallerRoutingPlanner())->plan(
                         $inspection['occupancy'],
@@ -497,7 +499,7 @@ if ($currentStep === 'requirements' && !$requirementsPassed) {
 
 $installerReady = $installerReady && $status < 400;
 $databaseContextualState = $currentStep === 'database'
-    && (is_array($databaseResult) || $errors !== []);
+    && ($databaseFeedbackActive || $errors !== []);
 $showStatus = ($status >= 400 || !$requirementsPassed || $requirementsHaveWarnings)
     && !$databaseContextualState;
 

@@ -477,7 +477,7 @@
             </nav>
             <?php if (($currentStep ?? '') === 'database'): ?>
                 <?php $databaseFeedbackKind = !empty($errors['connection']) ? 'error' : 'success'; $databaseFeedbackLabel = $databaseFeedbackKind === 'error' ? 'Error' : 'Success'; ?>
-                <p id="database_feedback" class="status status--<?= $databaseFeedbackKind ?>" role="<?= $databaseFeedbackKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite" <?= empty($errors['connection']) && !is_array($databaseResult ?? null) ? 'hidden' : '' ?>><span class="status-label"><?= $databaseFeedbackLabel ?></span><span class="status-message">
+                <p id="database_feedback" class="status status--<?= $databaseFeedbackKind ?>" role="<?= $databaseFeedbackKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite" <?= empty($databaseFeedbackActive) && empty($errors) ? 'hidden' : '' ?>><span class="status-label"><?= $databaseFeedbackLabel ?></span><span class="status-message">
                     <?php if (!empty($errors['connection'])): ?>
                         <?= htmlspecialchars($errors['connection'], ENT_QUOTES, 'UTF-8') ?>
                     <?php elseif (is_array($databaseResult ?? null)): ?>
