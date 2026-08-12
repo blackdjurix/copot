@@ -570,7 +570,6 @@
                         <div class="form-row">
                             <label for="installer_intent">Installer intent</label>
                             <div class="form-control">
-                                <select id="installer_intent" name="installer_intent" required>
                         <?php
                         $intentLabels = [
                             \Copot\Core\InstallerIntent::FRESH => 'Fresh installation',
@@ -581,6 +580,9 @@
                         $eligibleIntents = is_array($databaseResult ?? null)
                             ? array_values(array_filter($databaseResult['eligible_intents'] ?? [], static fn ($intent): bool => is_string($intent) && array_key_exists($intent, $intentLabels)))
                             : [];
+                        ?>
+                                <select id="installer_intent" name="installer_intent"<?= $eligibleIntents === [] ? '' : ' required' ?>>
+                        <?php
                         if ($eligibleIntents === []): ?>
                             <option value="" selected disabled>Test Database to determine eligible installation paths.</option>
                         <?php else: foreach ($eligibleIntents as $intentValue): $intentLabel = $intentLabels[$intentValue]; ?>
