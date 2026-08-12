@@ -33,6 +33,11 @@ $assert(str_contains($view, '.form-error {') && str_contains($view, 'margin: 0;'
 $assert(str_contains($view, 'class="form-action-row"'), 'Database Namespace action variant is not shared.');
 $assert(str_contains($view, 'class="form-action-row">') || str_contains($view, 'class="form-action-row"'), 'Shared action row is not present.');
 $assert(str_contains($view, '.form-action-row > .database-action'), 'Database Test action is not aligned by the shared action-row variant.');
+$actionRowPosition = strpos($view, '<div class="form-action-row"');
+$actionControlPosition = strpos($view, '<div class="form-control">', $actionRowPosition);
+$actionHelperPosition = strpos($view, '<p class="form-help">Blank preserves the empty namespace.</p>', $actionControlPosition);
+$actionButtonPosition = strpos($view, '<button id="database_action"', $actionRowPosition);
+$assert($actionRowPosition !== false && $actionControlPosition !== false && $actionHelperPosition > $actionControlPosition && $actionButtonPosition > $actionHelperPosition, 'Namespace helper is not inside the shared control slot before the action.');
 $assert(str_contains($view, '.form-inline-field,') && str_contains($view, '.form-action-row') && str_contains($view, 'grid-template-columns: 1fr;'), 'Shared mobile rows do not stack.');
 
 fwrite(STDOUT, "Batch 3 shared form assertions: {$assertions}\n");
