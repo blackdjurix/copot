@@ -75,6 +75,9 @@ $assert(str_contains($view, 'class="status-message"'), 'Status message does not 
 $assert(str_contains($view, 'showStatusMessage'), 'Dynamic status updates do not preserve status semantics.');
 $assert(str_contains($view, 'labels = { info: \'Information\', success: \'Success\', warning: \'Warning\', error: \'Error\' }'), 'Dynamic status updates do not use the accepted label vocabulary.');
 $assert(str_contains($view, 'status.replaceChildren()'), 'Dynamic status updates do not preserve the two-line status structure.');
+$assert(str_contains($view, "button.value = 'test_database';\n                    button.textContent = 'Test Database';\n                    showStatusMessage(payload.message, 'success');"), 'Successful database tests do not restore the normal Test Database action state.');
+$assert(!str_contains($view, 'database_test_result'), 'Database test success still has a duplicate result surface.');
+$assert(!str_contains($view, 'result.textContent'), 'Database test success still appends a duplicate result message.');
 $assert(str_contains($view, '.status--warning'), 'Warning status styling is missing.');
 $assert(str_contains($view, '.status--error'), 'Blocking error status styling is missing.');
 $assert(str_contains($view, 'grid-template-columns: 1fr;'), 'Status layout does not use the accepted two-line structure.');

@@ -581,8 +581,6 @@
                     <?php endforeach; ?>
                 <?php endif; ?>
 
-                <p id="database_test_result" class="pass" hidden></p>
-
                 <form id="database_form" class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
@@ -805,7 +803,6 @@
             }
 
             let status = document.getElementById('installer_status');
-            const result = document.getElementById('database_test_result');
             const fields = [
                 'database_host',
                 'database_port',
@@ -846,8 +843,6 @@
                 tested = false;
                 button.value = 'test_database';
                 button.textContent = 'Test Database';
-                result.hidden = true;
-                result.textContent = '';
                 showStatusMessage('Database fields changed. Test the connection again.');
             };
 
@@ -860,8 +855,8 @@
 
                 event.preventDefault();
                 button.disabled = true;
+                button.value = 'test_database';
                 button.textContent = 'Testing...';
-                result.hidden = true;
 
                 const data = new FormData(form);
                 data.set('action', 'test_database');
@@ -887,9 +882,9 @@
                     }
 
                     tested = true;
+                    button.value = 'test_database';
+                    button.textContent = 'Test Database';
                     showStatusMessage(payload.message, 'success');
-                    result.textContent = `${payload.database.vendor} ${payload.database.version} verified.`;
-                    result.hidden = false;
                 } catch (error) {
                     tested = false;
                     button.value = 'test_database';
