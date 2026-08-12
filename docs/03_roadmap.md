@@ -843,7 +843,10 @@ and human acceptance **PASS**. Reconciliation Batches 1–5 are **COMPLETE**.
 WU3 preserves staged Administrator/Site values across revisit without pre-Install
 mutation and records the accepted Database feedback, shared form/visual,
 inspection-derived intent, namespace-collision, and ownership-proof/
-compatibility outcomes. WU4 Optional Core Module Selection is the **NEXT ACTIVE
+compatibility outcomes. The completed Installer Shared CSS foundation is the
+durable post-WU3 installer UI foundation; WU4 and subsequent installer UI work
+must consume its shared visual primitives, with step-specific styling reserved
+for genuinely unique layout or behavior. WU4 Optional Core Module Selection is the **NEXT ACTIVE
 IMPLEMENTATION TARGET**. WU5 Final Review, Installation Commit & Result and WU6
 Cross-Step Responsive, Accessibility & Human Acceptance are **NOT STARTED**.
 Review & Install is the first COPOT mutation boundary; database-container

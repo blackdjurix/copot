@@ -27,6 +27,13 @@ This is the authoritative contract for the Installation Refinement workstream.
 It adopts the accepted staged-installation architecture without reopening the
 completed Multi-Installation WU1–WU6 baseline or authorizing release work.
 
+The completed Installer Shared CSS foundation is the durable post-WU3 installer
+UI foundation. WU4 and subsequent installer UI work must consume its shared
+shell, progress, status, form, control, feedback, action/navigation, focus,
+spacing, and responsive primitives rather than duplicate generic step-local
+styling. Step-specific styling remains appropriate only for genuinely unique
+layout or behavior.
+
 ## Objective and installation flow
 
 MR.1 refines the installer while preserving accepted ownership, namespace,
@@ -218,6 +225,10 @@ MR.1 has exactly six work units:
    so AVAILABLE/BUNDLED, INSTALLED, and ACTIVE are not conflated and no
    incompatible persisted lifecycle semantics are invented.
 
+   Its installer presentation must consume the completed shared CSS foundation;
+   new step-specific styling is limited to genuinely unique Module-selection
+   layout or behavior.
+
 5. **WU5 — Final Review, Installation Commit & Result**
 
    Final Review presents the complete staged Database, Table Prefix/namespace,
@@ -267,7 +278,10 @@ Reconciliation Batches 1–5, and separate ownership-proof investigation. The
 accepted `Install UI.png` visual guideline
 continues as the structural reference for later installer refinement; page-specific
 Database, Administrator/Site, and Final Review layout work remains owned by WU2,
-WU3, and WU5 respectively, while the accepted mobile shell remains distinct.
+WU3, and WU5 respectively. The completed Installer Shared CSS foundation is the
+durable post-WU3 UI ownership boundary for those surfaces and for WU4; generic
+presentation must be shared there, with step-specific CSS reserved for genuinely
+unique layout or behavior. The accepted mobile shell remains distinct.
 MR.1 remains main-only / no-op for branch lifecycle. Review & Install remains the
 first COPOT installation mutation boundary; the database-container provisioning
 exception is unchanged. WU4 is not started and is the next implementation target.
