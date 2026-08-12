@@ -6,7 +6,7 @@ class InstallerValidationException extends InstallationException
 {
     public function __construct(
         private array $errors,
-        private array $submittedValues
+        private array $submittedValues = []
     ) {
         parent::__construct('Installer input validation failed.');
     }

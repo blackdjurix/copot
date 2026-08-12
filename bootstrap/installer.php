@@ -16,6 +16,7 @@ use Copot\Core\InstallerOwnershipProofAssembler;
 use Copot\Core\CoreMigrationRegistry;
 use Copot\Core\InstallerDatabaseValidator;
 use Copot\Core\InstallerFinalizer;
+use Copot\Core\InstallerModuleSelection;
 use Copot\Core\InstallerRequirements;
 use Copot\Core\InstallerSchemaState;
 use Copot\Core\InstallerValidationException;
@@ -74,6 +75,15 @@ $stagedAdministrator = $sessionReady && $session instanceof Session
     : [];
 $stagedAdministrator = is_array($stagedAdministrator) ? $stagedAdministrator : [];
 $administratorStaged = ($stagedAdministrator['staged'] ?? false) === true;
+$moduleSelectionSessionKey = 'installer_modules_staged';
+$moduleSelectionService = new InstallerModuleSelection(new ModuleDiscovery($basePath . '/modules'));
+$moduleCatalog = $moduleSelectionService->catalog();
+$stagedModules = $sessionReady && $session instanceof Session
+    ? $session->get($moduleSelectionSessionKey, $moduleSelectionService->initialSelection())
+    : $moduleSelectionService->initialSelection();
+$stagedModules = is_array($stagedModules) ? $stagedModules : $moduleSelectionService->initialSelection();
+$moduleErrors = [];
+$moduleFeedback = null;
 
 if (!$requirementsPassed && $requirementsAcknowledged && $session instanceof Session) {
     $session->remove($requirementsSessionKey);
@@ -213,13 +223,17 @@ if ($currentStep === 'finalize' && $requirementsPassed) {
 } elseif ($currentStep === 'administrator' && $requirementsPassed && $databaseStaged) {
     $message = '';
 } elseif ($currentStep === 'modules' && $requirementsPassed && $administratorStaged) {
-    $message = 'Administrator & Site decision is staged. Optional Module selection is the next work unit.';
+    $message = 'Administrator & Site decision is staged. Choose optional Module selections.';
 } elseif ($requestedStep === 'database' && $requirementsPassed) {
     $message = 'Choose and validate a dedicated empty database.';
 }
 
 if (is_array($databaseResult) && $requirementsPassed && $currentStep === 'database') {
     $message = 'Database decision is staged and can be revisited before installation.';
+}
+
+if ($currentStep === 'modules' && is_array($moduleFeedback)) {
+    $message = (string) ($moduleFeedback['message'] ?? $message);
 }
 
 if ($installationStateError) {
@@ -271,6 +285,33 @@ if ($installationStateError) {
                     $status = 503;
                     $message = 'Installation could not be finalized.';
                     $finalizationError = $currentStep === 'finalize' ? $message : null;
+                }
+            } elseif ($action === 'stage_modules') {
+                try {
+                    if (!$administratorStaged) {
+                        throw new InstallationException('Administrator & Site must be staged before selecting Modules.');
+                    }
+
+                    $selection = $moduleSelectionService->validate($moduleSelectionService->normalize([
+                        'install' => $request->post('module_install', []),
+                        'active' => $request->post('module_active', []),
+                    ]));
+                    $stagedModules = $selection;
+                    if ($session instanceof Session) {
+                        $session->set($moduleSelectionSessionKey, $stagedModules);
+                    }
+                    $moduleFeedback = ['kind' => 'success', 'message' => 'Module selections staged. No Modules were installed or activated.'];
+                    $currentStep = 'modules';
+                } catch (InstallerValidationException $exception) {
+                    $status = 422;
+                    $moduleErrors = $exception->errors();
+                    $moduleFeedback = ['kind' => 'error', 'message' => $moduleErrors['modules'] ?? 'Correct the Module selections before continuing.'];
+                    $currentStep = 'modules';
+                } catch (InstallationException $exception) {
+                    $status = 422;
+                    $moduleErrors['modules'] = $exception->getMessage();
+                    $moduleFeedback = ['kind' => 'error', 'message' => $exception->getMessage()];
+                    $currentStep = 'modules';
                 }
             } elseif (in_array($action, ['stage_administrator', 'create_administrator'], true)) {
                 $input = [
@@ -532,6 +573,7 @@ $databaseContextualState = $currentStep === 'database'
     && is_array($databaseFeedback);
 $showStatus = ($status >= 400 || !$requirementsPassed || $requirementsHaveWarnings)
     && !$databaseContextualState;
+$showStatus = $showStatus || ($currentStep === 'modules' && is_array($moduleFeedback));
 
 $steps = [
     [
@@ -623,6 +665,10 @@ return Response::html($view->render('installer/index', [
     'setupValues' => $setupValues,
     'setupErrors' => $setupErrors,
     'finalizationError' => $finalizationError,
+    'moduleCatalog' => $moduleCatalog,
+    'moduleSelection' => $stagedModules,
+    'moduleErrors' => $moduleErrors,
+    'moduleFeedback' => $moduleFeedback,
     'timezones' => array_values(array_unique(array_merge(['UTC'], timezone_identifiers_list()))),
     'locales' => ['en_US', 'id_ID'],
     'steps' => $steps,

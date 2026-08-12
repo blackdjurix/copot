@@ -831,7 +831,7 @@ work requires separate planning and contract authorization. Server-Empty Bootstr
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
 MR.1 Installation Refinement is separately promoted as
-**PROMOTED / IMPLEMENTATION IN PROGRESS (WU4 NEXT)** in
+**PROMOTED / IMPLEMENTATION IN PROGRESS (WU5 NEXT)** in
 `docs/36_mr_1_installation_refinement_contract.md`. Its six-WU staged-installation
 topology is authoritative there: WU1 Installer Shell, Requirements & Navigation
 Framework is **COMPLETE AND CLOSED** with technical validation **PASS** and human
@@ -846,12 +846,13 @@ inspection-derived intent, namespace-collision, and ownership-proof/
 compatibility outcomes. The completed Installer Shared CSS foundation is the
 durable post-WU3 installer UI foundation; WU4 and subsequent installer UI work
 must consume its shared visual primitives, with step-specific styling reserved
-for genuinely unique layout or behavior. WU4 Optional Core Module Selection is the **NEXT ACTIVE
-IMPLEMENTATION TARGET**. WU5 Final Review, Installation Commit & Result and WU6
-Cross-Step Responsive, Accessibility & Human Acceptance are **NOT STARTED**.
+for genuinely unique layout or behavior. WU4 Optional Core Module Selection is
+**COMPLETE AND CLOSED** with technical validation **PASS**. WU5 Final Review,
+Installation Commit & Result is the **NEXT ACTIVE IMPLEMENTATION TARGET**; WU6
+Cross-Step Responsive, Accessibility & Human Acceptance is **NOT STARTED**.
 Review & Install is the first COPOT mutation boundary; database-container
 provisioning at Database is the explicit capable-environment exception.
-MR.1 is main-only / no-op for branch lifecycle. This does not authorize WU4
+MR.1 is main-only / no-op for branch lifecycle. This does not authorize WU5
 implementation automatically.
 Blocker A is **RESOLVED / VALIDATED** after focused persistence regression coverage.
 Blocker B is **CLASSIFIED / NOT A DEFECT**.

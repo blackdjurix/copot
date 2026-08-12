@@ -265,11 +265,52 @@
                 <?php endif; ?>
             <?php elseif (($currentStep ?? '') === 'modules'): ?>
                 <h2>Modules</h2>
-                <p>Administrator &amp; Site is staged. Optional Module selection will be available in the next work unit.</p>
-                <div class="installer-actions installer-navigation">
-                    <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous: Administrator &amp; Site</a>
-                    <button type="button" disabled>Next</button>
-                </div>
+                <p>Administrator &amp; Site is staged. Select optional Modules for the later installation review.</p>
+                <?php $moduleInstall = array_fill_keys(is_array($moduleSelection['install'] ?? null) ? $moduleSelection['install'] : [], true); $moduleActive = array_fill_keys(is_array($moduleSelection['active'] ?? null) ? $moduleSelection['active'] : [], true); ?>
+                <?php if (!empty($moduleErrors['modules'])): ?><p class="field-error" role="alert"><?= htmlspecialchars($moduleErrors['modules'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                <form class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
+                    <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
+                    <input type="hidden" name="action" value="stage_modules">
+
+                    <div class="module-selection">
+                        <div class="module-selection__group">
+                            <h3>Required platform Modules</h3>
+                            <p class="form-help">These Modules are part of the baseline installation and cannot be changed here.</p>
+                            <div class="module-selection__list">
+                                <?php foreach (($moduleCatalog['mandatory'] ?? []) as $module): ?>
+                                    <article class="module-choice module-choice--mandatory">
+                                        <div class="module-choice__copy"><strong><?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?></strong><span><?= htmlspecialchars($module['name'], ENT_QUOTES, 'UTF-8') ?></span></div>
+                                        <div class="module-choice__state">Install and Active required</div>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+
+                        <div class="module-selection__group">
+                            <h3>Optional Modules</h3>
+                            <?php if (($moduleCatalog['optional'] ?? []) === []): ?>
+                                <p class="form-help">No optional bundled or first-party Modules are currently available.</p>
+                            <?php else: ?>
+                                <div class="module-selection__list">
+                                    <?php foreach ($moduleCatalog['optional'] as $module): ?>
+                                        <article class="module-choice">
+                                            <div class="module-choice__copy"><strong><?= htmlspecialchars($module['title'], ENT_QUOTES, 'UTF-8') ?></strong><span><?= htmlspecialchars($module['description'], ENT_QUOTES, 'UTF-8') ?></span><?php if ($module['requires'] !== []): ?><small>Requires: <?= htmlspecialchars(implode(', ', $module['requires']), ENT_QUOTES, 'UTF-8') ?></small><?php endif; ?></div>
+                                            <div class="module-choice__options">
+                                                <label><input type="checkbox" name="module_install[<?= htmlspecialchars($module['name'], ENT_QUOTES, 'UTF-8') ?>]" value="1" data-module-install="<?= htmlspecialchars($module['name'], ENT_QUOTES, 'UTF-8') ?>" <?= isset($moduleInstall[$module['name']]) ? 'checked' : '' ?>> Install</label>
+                                                <label><input type="checkbox" name="module_active[<?= htmlspecialchars($module['name'], ENT_QUOTES, 'UTF-8') ?>]" value="1" data-module-active="<?= htmlspecialchars($module['name'], ENT_QUOTES, 'UTF-8') ?>" <?= isset($moduleActive[$module['name']]) ? 'checked' : '' ?>> Active</label>
+                                            </div>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="installer-actions installer-navigation">
+                        <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous: Administrator &amp; Site</a>
+                        <button type="submit">Save Module selections</button>
+                    </div>
+                </form>
             <?php elseif (($currentStep ?? '') === 'finalize'): ?>
                 <h2>Finalize Installation</h2>
                 <?php if (is_string($finalizationError ?? null) && $finalizationError !== ''): ?>
@@ -313,6 +354,17 @@
 
             const form = document.getElementById('database_form');
             const button = document.getElementById('database_action');
+
+            document.querySelectorAll('[data-module-install]').forEach((installControl) => {
+                installControl.addEventListener('change', () => {
+                    if (!installControl.checked) {
+                        const activeControl = document.querySelector(`[data-module-active="${installControl.dataset.moduleInstall}"]`);
+                        if (activeControl) {
+                            activeControl.checked = false;
+                        }
+                    }
+                });
+            });
 
             if (!form || !button) {
                 return;

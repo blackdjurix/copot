@@ -150,7 +150,7 @@ $assert(($GLOBALS['_SESSION']['installer_administrator_staged']['staged'] ?? fal
 $assert(($GLOBALS['_SESSION']['installer_administrator_staged']['password'] ?? '') === 'SafePassword123!', 'Staged password was not retained server-side.');
 
 $modulesPage = $request('GET', '/install?step=modules');
-$assert(http_response_code() === 200 && str_contains($modulesPage, 'Optional Module selection will be available in the next work unit.'), 'WU3 did not reach the WU4 handoff placeholder.');
+$assert(http_response_code() === 200 && str_contains($modulesPage, 'Select optional Modules for the later installation review.'), 'WU3 did not reach the WU4 Module selection surface.');
 
 $revisited = $request('GET', '/install?step=administrator');
 $assert(http_response_code() === 200 && str_contains($revisited, 'value="WU3 Administrator"'), 'Administrator name did not survive revisit.');

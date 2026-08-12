@@ -3,7 +3,7 @@
 ## Status and authority
 
 ```text
-MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS (WU4 NEXT)
+MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS (WU5 NEXT)
 Contract: AMENDED / LOCKED
 MR.1 implementation: AUTHORIZED WITHIN THE LOCKED SIX-WU CONTRACT
 MR.1 WU1: COMPLETE AND CLOSED
@@ -18,8 +18,10 @@ MR.1 WU3 implementation: COMPLETE
 MR.1 WU3 technical validation: PASS
 MR.1 WU3 human acceptance: PASS
 MR.1 Reconciliation Batches 1–5: COMPLETE
-MR.1 WU4: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
-MR.1 WU5–WU6: NOT STARTED
+MR.1 WU4: COMPLETE AND CLOSED
+MR.1 WU4 technical validation: PASS
+MR.1 WU5: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
+MR.1 WU6: NOT STARTED
 MR.1 branch lifecycle: main-only / no-op
 ```
 
@@ -107,8 +109,8 @@ without positive ownership evidence is not an owned installation.
 ## Pre-MR.1 Correctness Gate
 
 The gate is satisfied. MR.1 implementation proceeds within this locked contract;
-WU2 and WU3 are complete and closed; WU4 is the next active implementation
-target, while WU5–WU6 remain not started.
+WU2, WU3, and WU4 are complete and closed; WU5 is the next active
+implementation target, while WU6 remains not started.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
 
@@ -133,8 +135,9 @@ PRE-MR.1 CORRECTNESS GATE = SATISFIED / VALIDATED
 MR.1 WU1 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
 MR.1 WU2 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN VISUAL ACCEPTANCE PASS
 MR.1 WU3 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
-MR.1 WU4 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
-MR.1 WU5–WU6 = NOT STARTED
+MR.1 WU4 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS
+MR.1 WU5 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
+MR.1 WU6 = NOT STARTED
 ```
 
 ## Separate non-blocking architecture investigation
@@ -227,7 +230,14 @@ MR.1 has exactly six work units:
 
    Its installer presentation must consume the completed shared CSS foundation;
    new step-specific styling is limited to genuinely unique Module-selection
-   layout or behavior.
+   layout or behavior. Status: **COMPLETE AND CLOSED**. WU4 stages optional
+   Install and Active choices in session state only, keeps baseline platform
+   Modules mandatory, enforces Active => Install and deterministic dependency
+   validation, and performs no Module registration or activation. The current
+   repository catalog exposes no optional candidate because `modules/example`
+   is an explicitly excluded sample Module; fixture coverage proves the
+   metadata-driven optional and dependency paths without inventing a new
+   lifecycle classification.
 
 5. **WU5 — Final Review, Installation Commit & Result**
 
@@ -260,9 +270,10 @@ negative/ambiguous database states, namespaced Core/Module state, responsive
 behavior, accessibility, and human comprehension. Findings do not silently
 expand MR.1.
 
-WU2 and WU3 are **COMPLETE AND CLOSED** with technical validation **PASS** and
-human acceptance **PASS**. Reconciliation Batches 1–5 are **COMPLETE**. WU4 is
-the **NEXT ACTIVE IMPLEMENTATION TARGET**; WU5–WU6 are **NOT STARTED**. This
+WU2, WU3, and WU4 are **COMPLETE AND CLOSED** with technical validation
+**PASS**; WU1–WU3 human acceptance remains **PASS**.
+Reconciliation Batches 1–5 are **COMPLETE**. WU5 is the **NEXT ACTIVE
+IMPLEMENTATION TARGET**; WU6 is **NOT STARTED**. This
 amendment does not authorize work outside the
 MR.1 contract, lifecycle redesign beyond an accepted work-unit boundary, Module
 implementation outside WU4, cross-fileset ownership work, release, tag, or
@@ -284,4 +295,5 @@ presentation must be shared there, with step-specific CSS reserved for genuinely
 unique layout or behavior. The accepted mobile shell remains distinct.
 MR.1 remains main-only / no-op for branch lifecycle. Review & Install remains the
 first COPOT installation mutation boundary; the database-container provisioning
-exception is unchanged. WU4 is not started and is the next implementation target.
+exception is unchanged. WU4 is complete and closed; WU5 is the next
+implementation target.

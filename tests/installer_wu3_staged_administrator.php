@@ -31,7 +31,8 @@ $assert(str_contains($bootstrap, "'label' => 'Modules'"), 'WU4 handoff placehold
 $assert(str_contains($view, 'name="action" value="stage_administrator"'), 'Administrator form does not use the staged action.');
 $assert(str_contains($view, 'id="admin_password"'), 'Administrator password field is missing.');
 $assert(str_contains($view, 'Password is kept during this installation.'), 'Administrator password helper copy is missing.');
-$assert(str_contains($view, 'Optional Module selection will be available in the next work unit.'), 'WU4 handoff placeholder is missing.');
+$assert(str_contains($view, 'Select optional Modules for the later installation review.'), 'WU4 staged Module selection surface is missing.');
+$assert(str_contains($view, 'name="action" value="stage_modules"'), 'WU4 staged Module selection action is missing.');
 $assert(!str_contains($view, 'name="action" value="create_administrator"'), 'Administrator view still exposes the pre-Review mutation action.');
 $assert(str_contains($validator, 'SettingsRegistry::core()'), 'WU3 validation does not use repository-native settings definitions.');
 $assert(str_contains($css, '--form-label-column: 150px;'), 'Administrator desktop form does not use the shared label column.');
