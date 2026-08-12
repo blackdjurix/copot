@@ -765,6 +765,13 @@
             }
 
             const status = document.getElementById('database_feedback');
+            const intentSelect = document.getElementById('installer_intent');
+            const intentLabels = {
+                fresh: 'Fresh installation',
+                coexistence: 'New independent installation',
+                adopt: 'Adopt existing COPOT installation',
+                migrate: 'Migrate/update existing COPOT installation',
+            };
             const fields = [
                 'database_host',
                 'database_port',
@@ -775,6 +782,28 @@
                 'installer_intent',
             ].map((name) => form.elements.namedItem(name)).filter(Boolean);
             let tested = <?= !empty($databaseStaged) ? 'true' : 'false' ?>;
+
+            const renderEligibleIntents = (eligibleIntents) => {
+                if (!intentSelect) {
+                    return;
+                }
+
+                const options = Array.isArray(eligibleIntents)
+                    ? eligibleIntents.filter((intent) => typeof intent === 'string' && intentLabels[intent])
+                    : [];
+                intentSelect.replaceChildren();
+                if (options.length === 0) {
+                    const placeholder = new Option('Test Database to determine eligible installation paths.', '', true, true);
+                    placeholder.disabled = true;
+                    intentSelect.append(placeholder);
+                    intentSelect.required = false;
+                    return;
+                }
+
+                options.forEach((intent) => intentSelect.append(new Option(intentLabels[intent], intent)));
+                intentSelect.value = options[0];
+                intentSelect.required = true;
+            };
 
             const showStatusMessage = (message, kind = 'info') => {
                 const labels = { info: 'Information', success: 'Success', warning: 'Warning', error: 'Error' };
@@ -832,6 +861,7 @@
 
                     if (!response.ok || !payload?.ok) {
                         tested = false;
+                        renderEligibleIntents([]);
                         button.value = 'test_database';
                         button.textContent = 'Test Database';
                         const errors = payload?.errors || {};
@@ -840,6 +870,7 @@
                     }
 
                     tested = true;
+                    renderEligibleIntents(payload.database?.eligible_intents || []);
                     button.value = 'test_database';
                     button.textContent = 'Test Database';
                     showStatusMessage(payload.message, 'success');

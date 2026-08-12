@@ -24,6 +24,8 @@ $assert(str_contains($bootstrap, "'eligible_intents' => \$eligibleIntents"), 'In
 $assert(str_contains($bootstrap, "\$values['intent'] = \$eligibleIntents[0] ?? ''"), 'Test Database does not select a valid inspected intent.');
 $assert(str_contains($view, 'Test Database to determine eligible installation paths.'), 'Pre-inspection intent placeholder is missing.');
 $assert(str_contains($view, "array_filter(\$databaseResult['eligible_intents']"), 'Intent options are not filtered by inspected eligibility.');
+$assert(str_contains($view, 'renderEligibleIntents(payload.database?.eligible_intents || [])'), 'Successful inspection does not refresh eligible intent options.');
+$assert(str_contains($view, 'renderEligibleIntents([])'), 'Failed inspection does not clear stale intent options.');
 $assert(!str_contains($view, 'foreach ([\n                            \\Copot\\Core\\InstallerIntent::FRESH'), 'The full unqualified intent list remains visible before inspection.');
 $assert(str_contains($bootstrap, 'No COPOT schema or tables were created.'), 'Pre-Review mutation boundary is not preserved.');
 
