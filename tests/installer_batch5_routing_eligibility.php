@@ -20,6 +20,8 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 
 $assert(str_contains($bootstrap, '$eligibleIntents = $planner->eligibleIntents($inspection[\'occupancy\']);'), 'Database inspection does not derive eligible intents.');
 $assert(str_contains($bootstrap, "if (\$action === 'stage_database')"), 'Selected-route validation is not limited to staging.');
+$assert(str_contains($bootstrap, "The selected Database namespace is already in use."), 'Test Database does not reject current namespace collisions.');
+$assert(str_contains($bootstrap, "&& !\$namespaceResult->usable()"), 'Test Database collision validation is missing its fail-closed branch.');
 $assert(str_contains($bootstrap, "'eligible_intents' => \$eligibleIntents"), 'Inspection result does not preserve eligible intents.');
 $assert(str_contains($bootstrap, "\$values['intent'] = \$eligibleIntents[0] ?? ''"), 'Test Database does not select a valid inspected intent.');
 $assert(str_contains($view, 'Test Database to determine eligible installation paths.'), 'Pre-inspection intent placeholder is missing.');

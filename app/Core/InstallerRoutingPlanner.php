@@ -19,7 +19,11 @@ final class InstallerRoutingPlanner
         }
 
         $eligible = [InstallerIntent::COEXIST];
-        if ($occupancy->classification() === InstallerDatabaseOccupancy::COPOT && count($occupancy->copotNamespaces()) === 1) {
+        if (
+            $occupancy->classification() === InstallerDatabaseOccupancy::COPOT
+            && $occupancy->hasVerifiedOwnershipEvidence()
+            && count($occupancy->copotNamespaces()) === 1
+        ) {
             $eligible[] = InstallerIntent::ADOPT;
             $eligible[] = InstallerIntent::MIGRATE;
         }

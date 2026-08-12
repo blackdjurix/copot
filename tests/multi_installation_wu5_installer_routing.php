@@ -85,6 +85,14 @@ $blocked = static function (callable $operation) use ($assert): void {
 };
 $blocked(fn () => $planner->plan($foreign, InstallerIntent::FRESH));
 $assert($planner->plan($foreign, InstallerIntent::COEXIST, '')->namespace() === '', 'Empty-namespace coexistence was incorrectly blocked.');
+$collision = $classifier->classify(['users']);
+$assert($planner->eligibleIntents($collision) === [InstallerIntent::COEXIST], 'Namespace collision incorrectly removed the eligible coexistence intent.');
+$blocked(fn () => $planner->plan($collision, InstallerIntent::COEXIST, ''));
+$prefixedCollision = $classifier->classify(['cp4_users']);
+$blocked(fn () => $planner->plan($prefixedCollision, InstallerIntent::COEXIST, 'cp4'));
+$assert($planner->plan($prefixedCollision, InstallerIntent::COEXIST, 'cp5')->namespace() === 'cp5', 'Collision-free namespace was rejected after a prefixed foreign table.');
+$externalPrefixed = $classifier->classify(['external_orders']);
+$assert($planner->plan($externalPrefixed, InstallerIntent::COEXIST, 'external')->namespace() === 'external', 'Unrelated foreign prefixed table falsely blocked its namespace.');
 $blocked(fn () => $planner->plan($copotAlpha, InstallerIntent::FRESH, 'beta'));
 $blocked(fn () => $planner->plan($unprovenComplete, InstallerIntent::ADOPT));
 $contradictory = $classifier->classify($objects('alpha'), [$proof('', 'd123456789abcdef123456789abcdef1')]);
@@ -92,7 +100,9 @@ $assert($contradictory->classification() === InstallerDatabaseOccupancy::AMBIGUO
 $duplicateProof = $classifier->classify($objects('alpha'), [$alphaProof, $proof('alpha', 'e123456789abcdef123456789abcdef1')]);
 $assert($duplicateProof->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Conflicting COPOT ownership evidence did not fail closed.');
 $unhealthyProof = new InstallerOwnershipProof(new InstallationIdentity('inst_f123456789abcdef123456789abcdef1'), 'alpha', 'core-schema-generation:test', str_repeat('f', 64), false, true);
-$assert($classifier->classify($objects('alpha'), [$unhealthyProof])->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Unhealthy ownership evidence did not fail closed.');
+$incompatible = $classifier->classify($objects('alpha'), [$unhealthyProof]);
+$assert($incompatible->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Unhealthy ownership evidence did not fail closed.');
+$assert($planner->eligibleIntents($incompatible) === [InstallerIntent::COEXIST], 'Incompatible existing COPOT evidence exposed Adopt/Migrate.');
 $assert($planner->plan($copotEmpty, InstallerIntent::ADOPT)->namespace() === '', 'Adoption did not preserve the legitimate empty namespace.');
 $assert($planner->plan($copotAlpha, InstallerIntent::ADOPT)->namespace() === 'alpha', 'Adoption did not preserve the non-empty namespace.');
 $assert($planner->plan($copotAlpha, InstallerIntent::MIGRATE)->route() === InstallerRoutingPlanner::MIGRATE, 'Migration/update routing failed.');

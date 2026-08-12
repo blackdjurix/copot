@@ -50,7 +50,8 @@ final class InstallerDatabaseOccupancyClassifier
                 $foreign === [] ? InstallerDatabaseOccupancy::MULTIPLE_COPOT : InstallerDatabaseOccupancy::MIXED,
                 $objects,
                 array_keys($sets),
-                ['Multiple complete COPOT ownership sets were detected.']
+                ['Multiple complete COPOT ownership sets were detected.'],
+                true
             );
         }
         if (count($sets) === 1 && count($proofByNamespace) === 1) {
@@ -60,7 +61,8 @@ final class InstallerDatabaseOccupancyClassifier
                 $foreign === [] ? InstallerDatabaseOccupancy::COPOT : InstallerDatabaseOccupancy::MIXED,
                 $objects,
                 [$namespace],
-                $foreign === [] ? [] : ['COPOT-owned and foreign objects coexist; foreign objects are not claimable.']
+                $foreign === [] ? [] : ['COPOT-owned and foreign objects coexist; foreign objects are not claimable.'],
+                true
             );
         }
 

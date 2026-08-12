@@ -407,6 +407,16 @@ if ($installationStateError) {
                         (string) ($configuration['namespace'] ?? ''),
                         $inspection['occupancy']
                     );
+                    $effectiveIntent = in_array($intent, $eligibleIntents, true)
+                        ? $intent
+                        : ($eligibleIntents[0] ?? null);
+                    if (
+                        $action === 'test_database'
+                        && in_array($effectiveIntent, [\Copot\Core\InstallerIntent::FRESH, \Copot\Core\InstallerIntent::COEXIST], true)
+                        && !$namespaceResult->usable()
+                    ) {
+                        throw new InstallationException('The selected Database namespace is already in use. Choose another namespace and test again.');
+                    }
                     if ($action === 'stage_database') {
                         $routing = $planner->plan(
                             $inspection['occupancy'],
