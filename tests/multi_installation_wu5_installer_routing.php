@@ -70,9 +70,13 @@ $full = $analyzer->analyze($objects('alpha'), 'alpha', $foreign);
 $assert($full->availability() === InstallerNamespaceAvailability::FULL_COLLISION, 'Unproven full namespace collision was not classified.');
 $owned = $analyzer->analyze($objects('alpha'), 'alpha', $copotAlpha);
 $assert($owned->availability() === InstallerNamespaceAvailability::OWNED_BY_COPOT, 'COPOT-owned namespace was not classified.');
-$assert($analyzer->analyze(['users', 'roles'], '', $ambiguous)->availability() === InstallerNamespaceAvailability::AMBIGUOUS, 'Ambiguous namespace evidence did not fail closed.');
+$assert($analyzer->analyze(['users', 'roles'], '', $ambiguous)->availability() === InstallerNamespaceAvailability::PARTIAL_COLLISION, 'Actual target collision was not classified.');
 
 $planner = new InstallerRoutingPlanner();
+$assert($planner->eligibleIntents($empty) === [InstallerIntent::FRESH], 'Empty databases did not expose Fresh only.');
+$assert($planner->eligibleIntents($foreign) === [InstallerIntent::COEXIST], 'Foreign databases did not expose coexistence only.');
+$assert($planner->eligibleIntents($copotAlpha) === [InstallerIntent::COEXIST, InstallerIntent::ADOPT, InstallerIntent::MIGRATE], 'Proven COPOT databases did not expose the expected intents.');
+$assert($planner->eligibleIntents($ambiguous) === [InstallerIntent::COEXIST], 'Ambiguous databases did not expose collision-safe coexistence only.');
 $assert($planner->plan($empty, InstallerIntent::FRESH)->route() === InstallerRoutingPlanner::FRESH, 'Fresh empty-database routing failed.');
 $assert($planner->plan($empty, InstallerIntent::FRESH, 'alpha')->namespace() === 'alpha', 'Explicit non-empty fresh namespace was not preserved.');
 $assert($planner->plan($foreign, InstallerIntent::COEXIST, 'alpha')->route() === InstallerRoutingPlanner::COEXIST, 'Available coexistence routing failed.');
@@ -80,7 +84,7 @@ $blocked = static function (callable $operation) use ($assert): void {
     try { $operation(); $assert(false, 'Unsafe routing unexpectedly succeeded.'); } catch (Throwable) { $assert(true, 'Unsafe routing was blocked.'); }
 };
 $blocked(fn () => $planner->plan($foreign, InstallerIntent::FRESH));
-$blocked(fn () => $planner->plan($foreign, InstallerIntent::COEXIST, ''));
+$assert($planner->plan($foreign, InstallerIntent::COEXIST, '')->namespace() === '', 'Empty-namespace coexistence was incorrectly blocked.');
 $blocked(fn () => $planner->plan($copotAlpha, InstallerIntent::FRESH, 'beta'));
 $blocked(fn () => $planner->plan($unprovenComplete, InstallerIntent::ADOPT));
 $contradictory = $classifier->classify($objects('alpha'), [$proof('', 'd123456789abcdef123456789abcdef1')]);
@@ -93,7 +97,8 @@ $assert($planner->plan($copotEmpty, InstallerIntent::ADOPT)->namespace() === '',
 $assert($planner->plan($copotAlpha, InstallerIntent::ADOPT)->namespace() === 'alpha', 'Adoption did not preserve the non-empty namespace.');
 $assert($planner->plan($copotAlpha, InstallerIntent::MIGRATE)->route() === InstallerRoutingPlanner::MIGRATE, 'Migration/update routing failed.');
 $blocked(fn () => $planner->plan($mixed, InstallerIntent::ADOPT));
-$blocked(fn () => $planner->plan($ambiguous, InstallerIntent::COEXIST, 'alpha'));
+$assert($planner->plan($ambiguous, InstallerIntent::COEXIST, 'alpha')->route() === InstallerRoutingPlanner::COEXIST, 'Collision-free coexistence was incorrectly blocked by ambiguous ownership.');
+$blocked(fn () => $planner->plan($ambiguous, InstallerIntent::COEXIST, ''));
 
 $assert((new DatabaseTableNames())->table('users') === 'users', 'WU2 empty Core naming compatibility changed.');
 $assert((new DatabaseTableNames('alpha'))->table('users') === 'alpha_users', 'WU2 namespaced Core naming compatibility changed.');

@@ -399,16 +399,31 @@ if ($installationStateError) {
                     );
 
                     $inspection = $probe->inspect($configuration);
-                    $routing = (new \Copot\Core\InstallerRoutingPlanner())->plan(
-                        $inspection['occupancy'],
-                        $intent,
-                        array_key_exists('namespace', $configuration) ? (string) $configuration['namespace'] : null
+                    $planner = new \Copot\Core\InstallerRoutingPlanner();
+                    $eligibleIntents = $planner->eligibleIntents($inspection['occupancy']);
+                    $routing = null;
+                    $namespaceResult = (new \Copot\Core\InstallerNamespaceAnalyzer())->analyze(
+                        $inspection['occupancy']->objects(),
+                        (string) ($configuration['namespace'] ?? ''),
+                        $inspection['occupancy']
                     );
+                    if ($action === 'stage_database') {
+                        $routing = $planner->plan(
+                            $inspection['occupancy'],
+                            $intent,
+                            array_key_exists('namespace', $configuration) ? (string) $configuration['namespace'] : null
+                        );
+                    } elseif (!in_array($intent, $eligibleIntents, true)) {
+                        $values['intent'] = $eligibleIntents[0] ?? '';
+                    }
+                    $resolvedNamespace = $routing?->namespace() ?? (string) ($configuration['namespace'] ?? '');
                     $databaseResult = array_merge($inspection['server'], [
                         'occupancy' => $inspection['occupancy']->classification(),
-                        'namespace' => $routing->namespace(),
-                        'route' => $routing->route(),
-                        'warnings' => array_merge($inspection['occupancy']->warnings(), $routing->warnings()),
+                        'namespace' => $resolvedNamespace,
+                        'route' => $routing?->route(),
+                        'eligible_intents' => $eligibleIntents,
+                        'namespace_availability' => $namespaceResult->availability(),
+                        'warnings' => array_merge($inspection['occupancy']->warnings(), $routing?->warnings() ?? []),
                         'objects' => $inspection['occupancy']->objects(),
                         'copot_namespaces' => $inspection['occupancy']->copotNamespaces(),
                         'decision_evidence' => [
@@ -423,7 +438,7 @@ if ($installationStateError) {
                         'database' => $configuration['database'],
                         'username' => $configuration['username'],
                         'password' => $configuration['password'],
-                        'namespace' => $routing->namespace(),
+                        'namespace' => $resolvedNamespace,
                         'intent' => $intent,
                         'inspection' => $databaseResult,
                         'staged' => $action === 'stage_database',
@@ -431,7 +446,7 @@ if ($installationStateError) {
                     if ($session instanceof Session) {
                         $session->set($databaseSessionKey, $stagedDatabase);
                     }
-                    $values['namespace'] = $routing->namespace();
+                    $values['namespace'] = $resolvedNamespace;
                     $message = $action === 'stage_database'
                         ? 'Database decision staged. No COPOT schema or tables were created.'
                         : 'Database connection and installer routing verified.';

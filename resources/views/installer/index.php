@@ -571,14 +571,21 @@
                             <label for="installer_intent">Installer intent</label>
                             <div class="form-control">
                                 <select id="installer_intent" name="installer_intent" required>
-                        <?php foreach ([
+                        <?php
+                        $intentLabels = [
                             \Copot\Core\InstallerIntent::FRESH => 'Fresh installation',
                             \Copot\Core\InstallerIntent::COEXIST => 'New independent installation',
                             \Copot\Core\InstallerIntent::ADOPT => 'Adopt existing COPOT installation',
                             \Copot\Core\InstallerIntent::MIGRATE => 'Migrate/update existing COPOT installation',
-                        ] as $intentValue => $intentLabel): ?>
+                        ];
+                        $eligibleIntents = is_array($databaseResult ?? null)
+                            ? array_values(array_filter($databaseResult['eligible_intents'] ?? [], static fn ($intent): bool => is_string($intent) && array_key_exists($intent, $intentLabels)))
+                            : [];
+                        if ($eligibleIntents === []): ?>
+                            <option value="" selected disabled>Test Database to determine eligible installation paths.</option>
+                        <?php else: foreach ($eligibleIntents as $intentValue): $intentLabel = $intentLabels[$intentValue]; ?>
                             <option value="<?= htmlspecialchars($intentValue, ENT_QUOTES, 'UTF-8') ?>" <?= ($values['intent'] ?? \Copot\Core\InstallerIntent::FRESH) === $intentValue ? 'selected' : '' ?>><?= htmlspecialchars($intentLabel, ENT_QUOTES, 'UTF-8') ?></option>
-                        <?php endforeach; ?>
+                        <?php endforeach; endif; ?>
                                 </select>
                             </div>
                         </div>

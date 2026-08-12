@@ -11,13 +11,29 @@ final class InstallerRoutingPlanner
 
     public function __construct(private ?InstallerNamespaceAnalyzer $namespaces = null) { $this->namespaces ??= new InstallerNamespaceAnalyzer(); }
 
+    /** @return list<string> */
+    public function eligibleIntents(InstallerDatabaseOccupancyResult $occupancy): array
+    {
+        if ($occupancy->classification() === InstallerDatabaseOccupancy::EMPTY) {
+            return [InstallerIntent::FRESH];
+        }
+
+        $eligible = [InstallerIntent::COEXIST];
+        if ($occupancy->classification() === InstallerDatabaseOccupancy::COPOT && count($occupancy->copotNamespaces()) === 1) {
+            $eligible[] = InstallerIntent::ADOPT;
+            $eligible[] = InstallerIntent::MIGRATE;
+        }
+
+        return $eligible;
+    }
+
     public function plan(InstallerDatabaseOccupancyResult $occupancy, string $intent, ?string $requestedNamespace = null): InstallerRoutingPlan
     {
         if (!in_array($intent, InstallerIntent::all(), true)) throw new InstallationException('Installer intent is invalid.');
         $namespace = $requestedNamespace ?? ($occupancy->copotNamespaces()[0] ?? '');
         new DatabaseTableNames($namespace);
-        if (in_array($occupancy->classification(), [InstallerDatabaseOccupancy::AMBIGUOUS], true)) {
-            throw new InstallationException('Database ownership evidence is ambiguous; installation is blocked.');
+        if (!in_array($intent, $this->eligibleIntents($occupancy), true)) {
+            throw new InstallationException('Selected installer intent is not eligible for the inspected Database.');
         }
         if (in_array($intent, [InstallerIntent::ADOPT, InstallerIntent::MIGRATE], true)) {
             if ($occupancy->classification() !== InstallerDatabaseOccupancy::COPOT || count($occupancy->copotNamespaces()) !== 1) {
@@ -31,11 +47,9 @@ final class InstallerRoutingPlanner
         if ($occupancy->classification() === InstallerDatabaseOccupancy::EMPTY) {
             $availability = $this->namespaces->analyze($occupancy->objects(), $namespace, $occupancy)->availability();
             if ($availability !== InstallerNamespaceAvailability::AVAILABLE) throw new InstallationException('Selected namespace is not available.');
-            if ($intent === InstallerIntent::COEXIST && $namespace === '') throw new InstallationException('Coexistence requires an explicit non-empty namespace.');
             return new InstallerRoutingPlan($intent, $namespace, self::FRESH);
         }
-        if ($intent !== InstallerIntent::COEXIST) throw new InstallationException('Non-empty database requires explicit coexistence intent.');
-        if ($namespace === '') throw new InstallationException('Unsafe empty-namespace coexistence is blocked.');
+        if ($intent !== InstallerIntent::COEXIST) throw new InstallationException('Non-empty database requires new independent installation intent.');
         $availability = $this->namespaces->analyze($occupancy->objects(), $namespace, $occupancy)->availability();
         if ($availability !== InstallerNamespaceAvailability::AVAILABLE) throw new InstallationException('Selected coexistence namespace is not available.');
         return new InstallerRoutingPlan($intent, $namespace, self::COEXIST);
