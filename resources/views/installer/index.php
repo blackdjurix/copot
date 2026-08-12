@@ -767,10 +767,10 @@
             const status = document.getElementById('database_feedback');
             const intentSelect = document.getElementById('installer_intent');
             const intentLabels = {
-                fresh: 'Fresh installation',
+                fresh_installation: 'Fresh installation',
                 coexistence: 'New independent installation',
-                adopt: 'Adopt existing COPOT installation',
-                migrate: 'Migrate/update existing COPOT installation',
+                adopt_existing_installation: 'Adopt existing COPOT installation',
+                migrate_existing_installation: 'Migrate/update existing COPOT installation',
             };
             const fields = [
                 'database_host',
