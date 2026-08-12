@@ -94,83 +94,87 @@
             gap: 12px;
         }
 
-        .database-fields {
-            --database-label-column: 150px;
+        .form-fields {
+            --form-label-column: 150px;
             display: grid;
             gap: 10px;
             margin-top: 2px;
         }
 
-        .database-row {
+        .form-row {
             display: grid;
-            grid-template-columns: var(--database-label-column) minmax(0, 1fr);
+            grid-template-columns: var(--form-label-column) minmax(0, 1fr);
             align-items: center;
             gap: 12px;
             min-width: 0;
         }
 
-        .database-inline-fields {
+        .form-inline-fields {
             display: grid;
-            grid-template-columns: var(--database-label-column) minmax(0, 1fr) 90px minmax(0, 1fr);
+            grid-template-columns: var(--form-label-column) minmax(0, 1fr) max-content minmax(0, 1fr);
             align-items: center;
             gap: 12px;
             min-width: 0;
         }
 
-        .database-inline-field {
+        .form-inline-field {
             display: contents;
         }
 
-        .database-namespace-row {
+        .form-action-row {
             display: grid;
-            grid-template-columns: var(--database-label-column) minmax(0, 1fr) auto;
-            grid-template-rows: auto auto;
+            grid-template-columns: var(--form-label-column) minmax(0, 1fr) auto;
             align-items: center;
             gap: 12px;
             min-width: 0;
         }
 
-        .database-namespace-row > .database-action {
+        .form-action-row > .database-action {
             grid-column: 3;
-            grid-row: 1;
             align-self: start;
             margin-top: 0;
         }
 
-        .database-control {
+        .form-control {
             min-width: 0;
+            display: grid;
+            gap: 6px;
         }
 
-        .database-help {
-            grid-column: 2;
-            grid-row: 2;
+        .form-help,
+        .form-error {
             margin: 0;
             font-size: 13px;
+        }
+
+        .form-help {
             font-style: italic;
         }
 
-        .database-control .field-error {
+        .form-error {
+            color: #991b1b;
+        }
+
+        .form-control .field-error {
             margin-bottom: 0;
         }
 
-        .database-field {
-            display: grid;
-            gap: 6px;
-            min-width: 0;
-        }
-
-        label {
-            font-weight: 700;
-        }
-
-        .database-fields input,
-        .database-fields select {
+        .form-fields input,
+        .form-fields select {
             width: 100%;
             height: 34px;
             padding: 8px 12px;
             border: 1px solid #9ca3af;
             border-radius: 5px;
             font: inherit;
+        }
+
+        .form-action-row .form-control {
+            min-width: 0;
+        }
+
+        label {
+            font-weight: 700;
         }
 
         input:focus-visible,
@@ -226,7 +230,7 @@
         }
 
         .field-error {
-            margin-top: -8px;
+            margin: 0;
             font-size: 14px;
         }
 
@@ -307,51 +311,32 @@
                 padding: 18px;
             }
 
-            .database-fields {
+            .form-fields {
                 gap: 12px;
             }
 
-            .database-inline-fields {
+            .form-inline-fields {
                 grid-template-columns: 1fr;
                 gap: 12px;
             }
 
-            .database-inline-field,
-            .database-row,
-            .database-namespace-row {
+            .form-inline-field,
+            .form-row,
+            .form-action-row {
                 grid-template-columns: 1fr;
                 gap: 6px;
             }
 
-            .database-inline-field {
+            .form-inline-field {
                 display: grid;
             }
 
-            .database-help {
-                grid-column: 1;
-                grid-row: auto;
-            }
-
-            .database-namespace-row > .database-action {
+            .form-action-row > .database-action {
                 grid-column: auto;
-                grid-row: auto;
             }
 
-            .administrator-inline-fields,
-            .administrator-row {
-                grid-template-columns: 1fr;
-                gap: 6px;
-            }
-
-            .administrator-inline-field {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 6px;
-                width: 100%;
-            }
-
-            .administrator-control,
-            .administrator-help { grid-column: 1; width: 100%; }
+            .form-control,
+            .form-help { grid-column: 1; width: 100%; }
 
             .steps {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -431,49 +416,6 @@
         .database-navigation > a,
         .database-navigation > button { flex: 0 0 25%; }
 
-        .administrator-fields {
-            --administrator-label-column: 150px;
-            display: grid;
-            gap: 10px;
-            margin-top: 2px;
-        }
-
-        .administrator-row {
-            display: grid;
-            grid-template-columns: var(--administrator-label-column) minmax(0, 1fr);
-            align-items: center;
-            gap: 12px;
-            min-width: 0;
-        }
-
-        .administrator-inline-fields {
-            display: grid;
-            grid-template-columns: var(--administrator-label-column) minmax(0, 1fr) max-content minmax(0, 1fr);
-            align-items: center;
-            gap: 12px;
-            min-width: 0;
-        }
-
-        .administrator-inline-field { display: contents; }
-        .administrator-control { min-width: 0; }
-
-        .administrator-fields input,
-        .administrator-fields select {
-            width: 100%;
-            height: 34px;
-            padding: 8px 12px;
-            border: 1px solid #9ca3af;
-            border-radius: 5px;
-            font: inherit;
-        }
-
-        .administrator-help {
-            grid-column: 2 / -1;
-            margin: 0;
-            font-size: 13px;
-            font-style: italic;
-        }
-
         @media (max-width: 560px) {
             body { align-items: flex-start; }
             main { width: min(calc(100% - 20px), 720px); min-height: 100vh; padding: 20px 0; align-items: flex-start; }
@@ -494,16 +436,12 @@
             .installer-navigation { flex-direction: row; align-items: stretch; }
             .installer-navigation > a, .installer-navigation > button { flex: 1 1 0; width: auto; text-align: center; }
             .phase-operation-actions > button { width: 100%; }
-            .administrator-inline-fields,
-            .administrator-row { grid-template-columns: 1fr; gap: 6px; }
-            .administrator-inline-field {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: 6px;
-                width: 100%;
-            }
-            .administrator-control,
-            .administrator-help { grid-column: 1; width: 100%; }
+            .form-inline-fields,
+            .form-row,
+            .form-action-row { grid-template-columns: 1fr; gap: 6px; }
+            .form-inline-field { display: grid; width: 100%; }
+            .form-control,
+            .form-help { grid-column: 1; width: 100%; }
         }
     </style>
 </head>
@@ -584,52 +522,52 @@
                 <form id="database_form" class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
-                    <div class="database-fields">
-                        <div class="database-inline-fields">
-                            <div class="database-inline-field">
+                    <div class="form-fields">
+                        <div class="form-inline-fields">
+                            <div class="form-inline-field">
                             <label for="database_host">Host</label>
-                            <div class="database-control">
+                            <div class="form-control">
                                 <input id="database_host" name="database_host" type="text" maxlength="255" required value="<?= htmlspecialchars($values['host'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <?php if (!empty($errors['host'])): ?><p class="field-error"><?= htmlspecialchars($errors['host'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                             </div>
-                            <div class="database-inline-field">
+                            <div class="form-inline-field">
                             <label for="database_port">Port</label>
-                            <div class="database-control">
+                            <div class="form-control">
                                 <input id="database_port" name="database_port" type="number" min="1" max="65535" required value="<?= htmlspecialchars($values['port'] ?? '3306', ENT_QUOTES, 'UTF-8') ?>">
                                 <?php if (!empty($errors['port'])): ?><p class="field-error"><?= htmlspecialchars($errors['port'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                             </div>
                         </div>
 
-                        <div class="database-row">
+                        <div class="form-row">
                             <label for="database_name">Database name</label>
-                            <div class="database-control">
+                            <div class="form-control">
                                 <input id="database_name" name="database_name" type="text" maxlength="64" required value="<?= htmlspecialchars($values['database'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <?php if (!empty($errors['database'])): ?><p class="field-error"><?= htmlspecialchars($errors['database'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                         </div>
 
-                        <div class="database-inline-fields">
-                            <div class="database-inline-field">
+                        <div class="form-inline-fields">
+                            <div class="form-inline-field">
                                 <label for="database_username">Username</label>
-                                <div class="database-control">
+                                <div class="form-control">
                                     <input id="database_username" name="database_username" type="text" maxlength="128" required value="<?= htmlspecialchars($values['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                     <?php if (!empty($errors['username'])): ?><p class="field-error"><?= htmlspecialchars($errors['username'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
-                            <div class="database-inline-field">
+                            <div class="form-inline-field">
                                 <label for="database_password">Password</label>
-                                <div class="database-control">
+                                <div class="form-control">
                                     <input id="database_password" name="database_password" type="password" value="">
                                     <?php if (!empty($errors['password'])): ?><p class="field-error"><?= htmlspecialchars($errors['password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="database-row">
+                        <div class="form-row">
                             <label for="installer_intent">Installer intent</label>
-                            <div class="database-control">
+                            <div class="form-control">
                                 <select id="installer_intent" name="installer_intent" required>
                         <?php foreach ([
                             \Copot\Core\InstallerIntent::FRESH => 'Fresh installation',
@@ -643,13 +581,13 @@
                             </div>
                         </div>
 
-                        <div class="database-namespace-row">
+                        <div class="form-action-row">
                             <label for="database_namespace">DB Namespace</label>
-                            <div class="database-control">
+                            <div class="form-control">
                                 <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <?php if (!empty($errors['namespace'])): ?><p class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
-                            <p class="database-help">Blank preserves the empty namespace.</p>
+                            <p class="form-help">Blank preserves the empty namespace.</p>
                             <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
                         </div>
                     </div>
@@ -677,62 +615,62 @@
                         <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="stage_administrator">
 
-                    <div class="administrator-fields">
-                        <div class="administrator-inline-fields">
-                            <div class="administrator-inline-field">
+                    <div class="form-fields">
+                        <div class="form-inline-fields">
+                            <div class="form-inline-field">
                                 <label for="admin_name">Username</label>
-                                <div class="administrator-control">
+                                <div class="form-control">
                                     <input id="admin_name" name="admin_name" type="text" maxlength="120" required value="<?= htmlspecialchars($setupValues['admin_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                     <?php if (!empty($setupErrors['admin_name'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_name'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
-                            <div class="administrator-inline-field">
+                            <div class="form-inline-field">
                                 <label for="admin_email">Email</label>
-                                <div class="administrator-control">
+                                <div class="form-control">
                                     <input id="admin_email" name="admin_email" type="email" maxlength="190" required value="<?= htmlspecialchars($setupValues['admin_email'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                     <?php if (!empty($setupErrors['admin_email'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_email'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="administrator-inline-fields">
-                            <div class="administrator-inline-field">
+                        <div class="form-inline-fields">
+                            <div class="form-inline-field">
                                 <label for="admin_password">Password</label>
-                                <div class="administrator-control">
+                                <div class="form-control">
                                     <input id="admin_password" name="admin_password" type="password" minlength="10" required value="">
                                     <?php if (!empty($setupErrors['admin_password'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
-                            <div class="administrator-inline-field">
+                            <div class="form-inline-field">
                                 <label for="admin_password_confirmation">Confirm Password</label>
-                                <div class="administrator-control">
+                                <div class="form-control">
                                     <input id="admin_password_confirmation" name="admin_password_confirmation" type="password" minlength="10" required value="">
                                     <?php if (!empty($setupErrors['admin_password_confirmation'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_password_confirmation'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                        <p class="administrator-help">Password is retained securely for the staged installation and is not displayed on revisit.</p>
+                        <p class="form-help">Password is retained securely for the staged installation and is not displayed on revisit.</p>
 
-                        <div class="administrator-row">
+                        <div class="form-row">
                             <label for="site_name">Site Name</label>
-                            <div class="administrator-control">
+                            <div class="form-control">
                                 <input id="site_name" name="site_name" type="text" maxlength="150" required value="<?= htmlspecialchars($setupValues['site_name'] ?? 'copot', ENT_QUOTES, 'UTF-8') ?>">
                                 <?php if (!empty($setupErrors['site_name'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['site_name'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                         </div>
 
-                        <div class="administrator-row">
+                        <div class="form-row">
                             <label for="site_tagline">Site Tagline</label>
-                            <div class="administrator-control">
+                            <div class="form-control">
                                 <input id="site_tagline" name="site_tagline" type="text" maxlength="255" value="<?= htmlspecialchars($setupValues['site_tagline'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
                                 <?php if (!empty($setupErrors['site_tagline'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['site_tagline'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                         </div>
 
-                        <div class="administrator-inline-fields">
-                            <div class="administrator-inline-field">
+                        <div class="form-inline-fields">
+                            <div class="form-inline-field">
                                 <label for="timezone">Time Zone</label>
-                                <div class="administrator-control">
+                                <div class="form-control">
                                     <select id="timezone" name="timezone" required>
                                         <?php foreach (($timezones ?? ['UTC']) as $timezone): ?>
                                             <option value="<?= htmlspecialchars($timezone, ENT_QUOTES, 'UTF-8') ?>" <?= ($setupValues['timezone'] ?? 'UTC') === $timezone ? 'selected' : '' ?>><?= htmlspecialchars($timezone, ENT_QUOTES, 'UTF-8') ?></option>
@@ -741,9 +679,9 @@
                                     <?php if (!empty($setupErrors['timezone'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['timezone'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
-                            <div class="administrator-inline-field">
+                            <div class="form-inline-field">
                                 <label for="locale">Locale</label>
-                                <div class="administrator-control">
+                                <div class="form-control">
                                     <select id="locale" name="locale" required>
                                         <?php foreach (($locales ?? ['en_US', 'id_ID']) as $locale): ?>
                                             <option value="<?= htmlspecialchars($locale, ENT_QUOTES, 'UTF-8') ?>" <?= ($setupValues['locale'] ?? 'en_US') === $locale ? 'selected' : '' ?>><?= htmlspecialchars($locale, ENT_QUOTES, 'UTF-8') ?></option>
