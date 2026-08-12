@@ -30,7 +30,7 @@ $assert(!str_contains($bootstrap, '$administratorSetup->install($input, $require
 $assert(str_contains($bootstrap, "'label' => 'Modules'"), 'WU4 handoff placeholder is not represented in installer progression.');
 $assert(str_contains($view, 'name="action" value="stage_administrator"'), 'Administrator form does not use the staged action.');
 $assert(str_contains($view, 'id="admin_password"'), 'Administrator password field is missing.');
-$assert(str_contains($view, 'Password is kept during this installation.'), 'Administrator password helper copy is missing.');
+$assert(!str_contains($view, 'Password is kept during this installation.'), 'Administrator password helper copy should be absent.');
 $assert(str_contains($view, 'Select optional Modules for the later installation review.'), 'WU4 staged Module selection surface is missing.');
 $assert(str_contains($view, 'name="action" value="stage_modules"'), 'WU4 staged Module selection action is missing.');
 $assert(!str_contains($view, 'name="action" value="create_administrator"'), 'Administrator view still exposes the pre-Review mutation action.');

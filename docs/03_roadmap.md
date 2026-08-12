@@ -846,8 +846,9 @@ inspection-derived intent, namespace-collision, and ownership-proof/
 compatibility outcomes. The completed Installer Shared CSS foundation is the
 durable post-WU3 installer UI foundation; WU4 and subsequent installer UI work
 must consume its shared visual primitives, with step-specific styling reserved
-for genuinely unique layout or behavior. WU4 Optional Core Module Selection is
-**COMPLETE AND CLOSED** with technical validation **PASS**. WU5 Final Review,
+for genuinely unique layout or behavior. WU4 Optional Core Module Selection
+implementation and technical validation are **COMPLETE / PASS**, while human
+acceptance is **PENDING AFTER RUNTIME SYNC**. WU5 Final Review,
 Installation Commit & Result is the **NEXT ACTIVE IMPLEMENTATION TARGET**; WU6
 Cross-Step Responsive, Accessibility & Human Acceptance is **NOT STARTED**.
 Review & Install is the first COPOT mutation boundary; database-container

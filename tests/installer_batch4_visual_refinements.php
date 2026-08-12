@@ -26,11 +26,11 @@ $assert(!str_contains($css, 'padding: 8px 12px;'), 'Old shared control padding r
 $assert(!str_contains($css, 'padding: 10px 12px;'), 'Old phase form padding remains.');
 $assert(str_contains($css, 'gap: 4px;'), 'Shared helper/error spacing was not tightened.');
 $assert(!str_contains($css, 'margin-top: -8px;'), 'Negative helper/error margin remains.');
-$assert(str_contains($view, 'Password is kept during this installation.'), 'Administrator password helper copy is incorrect.');
+$assert(!str_contains($view, 'Password is kept during this installation.'), 'Administrator password helper copy should be absent.');
 $passwordHelper = strpos($view, 'Password is kept during this installation.');
 $passwordControl = strpos($view, 'id="admin_password"');
 $confirmationControl = strpos($view, 'id="admin_password_confirmation"');
-$assert($passwordHelper !== false && $passwordControl !== false && $confirmationControl !== false && $passwordHelper > $passwordControl && $passwordHelper < $confirmationControl, 'Administrator password helper is not scoped to the Password control.');
+$assert($passwordHelper === false && $passwordControl !== false && $confirmationControl !== false, 'Administrator password fields are missing or still carry the removed helper.');
 $assert(!str_contains($view, 'Password is retained securely'), 'Old Administrator helper copy remains.');
 $nav = strpos($view, '</nav>');
 $feedback = strpos($view, 'id="database_feedback"');

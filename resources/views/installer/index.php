@@ -204,7 +204,6 @@
                                 <div class="form-control">
                                     <input id="admin_password" name="admin_password" type="password" minlength="10" required value="">
                                     <?php if (!empty($setupErrors['admin_password'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-                                    <p class="form-help">Password is kept during this installation.</p>
                                 </div>
                             </div>
                             <div class="form-inline-field">

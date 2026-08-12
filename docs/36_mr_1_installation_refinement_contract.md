@@ -18,7 +18,7 @@ MR.1 WU3 implementation: COMPLETE
 MR.1 WU3 technical validation: PASS
 MR.1 WU3 human acceptance: PASS
 MR.1 Reconciliation Batches 1–5: COMPLETE
-MR.1 WU4: COMPLETE AND CLOSED
+MR.1 WU4: IMPLEMENTATION COMPLETE / HUMAN ACCEPTANCE PENDING AFTER RUNTIME SYNC
 MR.1 WU4 technical validation: PASS
 MR.1 WU5: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
 MR.1 WU6: NOT STARTED
@@ -109,7 +109,8 @@ without positive ownership evidence is not an owned installation.
 ## Pre-MR.1 Correctness Gate
 
 The gate is satisfied. MR.1 implementation proceeds within this locked contract;
-WU2, WU3, and WU4 are complete and closed; WU5 is the next active
+WU2 and WU3 are complete and closed, while WU4 implementation is complete with
+human acceptance pending after runtime synchronization; WU5 is the next active
 implementation target, while WU6 remains not started.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
@@ -135,7 +136,7 @@ PRE-MR.1 CORRECTNESS GATE = SATISFIED / VALIDATED
 MR.1 WU1 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
 MR.1 WU2 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN VISUAL ACCEPTANCE PASS
 MR.1 WU3 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
-MR.1 WU4 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS
+MR.1 WU4 = IMPLEMENTATION COMPLETE / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PENDING AFTER RUNTIME SYNC
 MR.1 WU5 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
 MR.1 WU6 = NOT STARTED
 ```
@@ -270,8 +271,9 @@ negative/ambiguous database states, namespaced Core/Module state, responsive
 behavior, accessibility, and human comprehension. Findings do not silently
 expand MR.1.
 
-WU2, WU3, and WU4 are **COMPLETE AND CLOSED** with technical validation
-**PASS**; WU1–WU3 human acceptance remains **PASS**.
+WU2 and WU3 are **COMPLETE AND CLOSED** with technical validation **PASS** and
+human acceptance **PASS**. WU4 implementation and technical validation are
+**COMPLETE / PASS**, while human acceptance is **PENDING AFTER RUNTIME SYNC**.
 Reconciliation Batches 1–5 are **COMPLETE**. WU5 is the **NEXT ACTIVE
 IMPLEMENTATION TARGET**; WU6 is **NOT STARTED**. This
 amendment does not authorize work outside the
