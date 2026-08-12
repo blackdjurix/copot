@@ -5,9 +5,10 @@ declare(strict_types=1);
 $base = dirname(__DIR__);
 $bootstrap = file_get_contents($base . '/bootstrap/installer.php');
 $view = file_get_contents($base . '/resources/views/installer/index.php');
+$css = file_get_contents($base . '/public/installer-assets/css/installer.css');
 $validator = file_get_contents($base . '/app/Core/InstallerAdministratorValidator.php');
 
-if (!is_string($bootstrap) || !is_string($view) || !is_string($validator)) {
+if (!is_string($bootstrap) || !is_string($view) || !is_string($css) || !is_string($validator)) {
     throw new RuntimeException('WU3 sources could not be read.');
 }
 
@@ -33,8 +34,8 @@ $assert(str_contains($view, 'Password is kept during this installation.'), 'Admi
 $assert(str_contains($view, 'Optional Module selection will be available in the next work unit.'), 'WU4 handoff placeholder is missing.');
 $assert(!str_contains($view, 'name="action" value="create_administrator"'), 'Administrator view still exposes the pre-Review mutation action.');
 $assert(str_contains($validator, 'SettingsRegistry::core()'), 'WU3 validation does not use repository-native settings definitions.');
-$assert(str_contains($view, '--form-label-column: 150px;'), 'Administrator desktop form does not use the shared label column.');
-$assert(str_contains($view, 'grid-template-columns: var(--form-label-column) minmax(0, 1fr) max-content minmax(0, 1fr);'), 'Administrator paired rows do not use the shared desktop grid.');
+$assert(str_contains($css, '--form-label-column: 150px;'), 'Administrator desktop form does not use the shared label column.');
+$assert(str_contains($css, 'grid-template-columns: var(--form-label-column) minmax(0, 1fr) max-content minmax(0, 1fr);'), 'Administrator paired rows do not use the shared desktop grid.');
 $assert(substr_count($view, 'class="form-inline-fields"') >= 3, 'Administrator paired desktop rows are incomplete.');
 $assert(substr_count($view, 'class="form-row"') >= 2, 'Administrator single-field rows are incomplete.');
 $assert(str_contains($view, 'administrator-navigation'), 'Administrator navigation container is missing.');

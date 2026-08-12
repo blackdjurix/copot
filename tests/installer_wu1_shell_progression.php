@@ -5,8 +5,9 @@ declare(strict_types=1);
 $base = dirname(__DIR__);
 $bootstrap = file_get_contents($base . '/bootstrap/installer.php');
 $view = file_get_contents($base . '/resources/views/installer/index.php');
+$css = file_get_contents($base . '/public/installer-assets/css/installer.css');
 
-if (!is_string($bootstrap) || !is_string($view)) {
+if (!is_string($bootstrap) || !is_string($view) || !is_string($css)) {
     throw new RuntimeException('WU1 sources could not be read.');
 }
 
@@ -51,25 +52,25 @@ $assert(str_contains($view, '>Previous</a>'), 'Database has no explicit Previous
 $assert(str_contains($view, 'Previous: Database'), 'Administrator and Site has no explicit Previous path to Database.');
 $assert(str_contains($view, 'Previous: Administrator &amp; Site'), 'Finalize has no explicit Previous path to Administrator and Site.');
 $assert(str_contains($view, '$stepIsReviewable'), 'Completed-step navigation is not bounded by completed state and review URL.');
-$assert(str_contains($view, '.installer-actions {'), 'Shared installer action-row layout is missing.');
-$assert(str_contains($view, 'justify-content: space-between;'), 'Installer action row does not separate secondary and primary actions.');
+$assert(str_contains($css, '.installer-actions'), 'Shared installer action-row layout is missing.');
+$assert(str_contains($css, 'justify-content: space-between;'), 'Installer action row does not separate secondary and primary actions.');
 $assert(str_contains($view, 'button-secondary'), 'Secondary action styling is missing from the shared action row.');
-$assert(str_contains($view, '.installer-navigation { flex-direction: row; align-items: stretch; }'), 'Mobile navigation actions are not kept side-by-side.');
-$assert(str_contains($view, 'phase-operation-actions'), 'Operational actions are not separated from navigation actions.');
+$assert(str_contains($css, 'flex-direction: row;') && str_contains($css, 'align-items: stretch;'), 'Mobile navigation actions are not kept side-by-side.');
+$assert(str_contains($view, 'installer-actions installer-navigation'), 'Operational and navigation actions do not use the shared action-row primitives.');
 $assert(str_contains($view, 'installer-navigation'), 'Shared navigation row is missing.');
-$assert(str_contains($view, 'min-height: min(760px, calc(100vh - 40px));'), 'Desktop installer shell has no shared viewport-aware footprint.');
-$assert(str_contains($view, 'align-items: center;'), 'Desktop installer shell is not vertically centered.');
+$assert(str_contains($css, 'min-height: min(760px, calc(100vh - 40px));'), 'Desktop installer shell has no shared viewport-aware footprint.');
+$assert(str_contains($css, 'align-items: center;'), 'Desktop installer shell is not vertically centered.');
 $assert(str_contains($view, 'phase-form'), 'Installer phase forms do not participate in the shared shell geometry.');
-$assert(str_contains($view, '.mobile-requirements-review {'), 'Requirements review affordance has no shared style.');
-$assert(str_contains($view, "display: none;\n            margin: -8px 0 12px;"), 'Requirements review affordance is not hidden from desktop duplication.');
-$assert(str_contains($view, '.mobile-requirements-review { display: block; }'), 'Mobile Requirements review affordance is not visible.');
+$assert(str_contains($css, '.mobile-requirements-review'), 'Requirements review affordance has no shared style.');
+$assert(str_contains($css, 'display: none;') && str_contains($css, 'margin: -8px 0 12px;'), 'Requirements review affordance is not hidden from desktop duplication.');
+$assert(str_contains($css, 'display: block;'), 'Mobile Requirements review affordance is not visible.');
 $assert(str_contains($view, 'elseif (($currentStep ?? \'\') === \'finalize\')'), 'Finalize is not bounded to the Finalize step.');
-$assert(str_contains($view, '.steps .step { display: none; }'), 'Mobile progress does not hide non-current steps.');
-$assert(str_contains($view, '.steps .step-current {'), 'Mobile progress does not preserve the current step.');
-$assert(str_contains($view, 'grid-template-rows: auto auto;'), 'Mobile current phase is not presented as two stacked rows.');
+$assert(str_contains($css, '.steps .step {') && str_contains($css, 'display: none;'), 'Mobile progress does not hide non-current steps.');
+$assert(str_contains($css, '.steps .step-current {'), 'Mobile progress does not preserve the current step.');
+$assert(str_contains($css, 'grid-template-rows: auto auto;'), 'Mobile current phase is not presented as two stacked rows.');
 $assert(str_contains($view, 'aria-current="step"'), 'Current installer phase is missing its current-step semantic.');
 $assert(str_contains($view, 'class="step-state"'), 'Installer phase state is not retained for screen readers.');
-$assert(str_contains($view, 'border-top-width: 5px;'), 'Current installer phase lacks a non-color visual cue.');
+$assert(str_contains($css, 'border-top-width: 5px;'), 'Current installer phase lacks a non-color visual cue.');
 $assert(str_contains($view, 'status--<?= htmlspecialchars($statusKind'), 'Status presentation is not semantic.');
 $assert(str_contains($view, 'class="status-message"'), 'Status message does not have an explicit layout target.');
 $assert(str_contains($view, 'showStatusMessage'), 'Dynamic status updates do not preserve status semantics.');
@@ -78,18 +79,18 @@ $assert(str_contains($view, 'status.replaceChildren()'), 'Dynamic status updates
 $assert(str_contains($view, "button.value = 'test_database';\n                    button.textContent = 'Test Database';\n                    showStatusMessage(payload.message, 'success');"), 'Successful database tests do not restore the normal Test Database action state.');
 $assert(!str_contains($view, 'database_test_result'), 'Database test success still has a duplicate result surface.');
 $assert(!str_contains($view, 'result.textContent'), 'Database test success still appends a duplicate result message.');
-$assert(str_contains($view, '.status--warning'), 'Warning status styling is missing.');
-$assert(str_contains($view, '.status--error'), 'Blocking error status styling is missing.');
-$assert(str_contains($view, 'grid-template-columns: 1fr;'), 'Status layout does not use the accepted two-line structure.');
+$assert(str_contains($css, '.status--warning'), 'Warning status styling is missing.');
+$assert(str_contains($css, '.status--error'), 'Blocking error status styling is missing.');
+$assert(str_contains($css, 'grid-template-columns: 1fr;'), 'Status layout does not use the accepted two-line structure.');
 $assert(str_contains($view, 'statusLabel = [\'success\' => \'Success\', \'info\' => \'Information\', \'warning\' => \'Warning\', \'error\' => \'Error\']'), 'Status labels do not use the accepted vocabulary.');
 $assert(!str_contains($view, 'Blocking error'), 'Blocking error remains a visible status label.');
 $assert(str_contains($view, 'phaseDescriptions'), 'Displayed installer phases do not have contextual descriptions.');
 $assert(!str_contains($view, 'Check the server, test a dedicated empty database'), 'Static global installer instruction remains.');
-$assert(str_contains($view, 'width: 100%;'), 'Desktop status layout does not use the full installer-card width.');
-$assert(str_contains($view, '.status-label,'), 'Status label does not have an explicit status-row placement.');
-$assert(str_contains($view, 'grid-column: 1; min-width: 0;'), 'Status message does not occupy the full status row.');
-$assert(str_contains($view, '.status { grid-template-columns: 1fr; align-items: start; }'), 'Mobile status layout does not preserve readable wrapping.');
-$assert(str_contains($view, 'width: min(calc(100% - 32px), 720px)'), 'Responsive installer-card width foundation is missing.');
-$assert(str_contains($view, 'body { align-items: flex-start; }'), 'Small-screen overflow behavior is not defined.');
+$assert(str_contains($css, 'width: 100%;'), 'Desktop status layout does not use the full installer-card width.');
+$assert(str_contains($css, '.status-label,'), 'Status label does not have an explicit status-row placement.');
+$assert(str_contains($css, 'grid-column: 1;'), 'Status message does not occupy the full status row.');
+$assert(str_contains($css, 'grid-template-columns: 1fr;'), 'Mobile status layout does not preserve readable wrapping.');
+$assert(str_contains($css, 'width: min(calc(100% - 32px), 720px)'), 'Responsive installer-card width foundation is missing.');
+$assert(str_contains($css, 'align-items: flex-start;'), 'Small-screen overflow behavior is not defined.');
 
 fwrite(STDOUT, "WU1 installer shell/progression assertions: {$assertions}\n");

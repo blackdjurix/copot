@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 $base = dirname(__DIR__);
 $view = file_get_contents($base . '/resources/views/installer/index.php');
+$css = file_get_contents($base . '/public/installer-assets/css/installer.css');
 
-if (!is_string($view)) {
+if (!is_string($view) || !is_string($css)) {
     throw new RuntimeException('Batch 3 installer view could not be read.');
 }
 
@@ -21,23 +22,23 @@ foreach (['database-fields', 'database-row', 'database-inline', 'database-contro
     $assert(!str_contains($view, $obsoleteClass), "Obsolete phase-specific form class remains: {$obsoleteClass}.");
 }
 
-$assert(str_contains($view, '--form-label-column: 150px;'), 'Shared form label column is not fixed at 150px.');
-$assert(str_contains($view, 'grid-template-columns: var(--form-label-column) minmax(0, 1fr);'), 'Shared single-control row is not fluid.');
-$assert(str_contains($view, 'grid-template-columns: var(--form-label-column) minmax(0, 1fr) max-content minmax(0, 1fr);'), 'Shared multi-control row does not reuse the common tracks.');
+$assert(str_contains($css, '--form-label-column: 150px;'), 'Shared form label column is not fixed at 150px.');
+$assert(str_contains($css, 'grid-template-columns: var(--form-label-column) minmax(0, 1fr);'), 'Shared single-control row is not fluid.');
+$assert(str_contains($css, 'grid-template-columns: var(--form-label-column) minmax(0, 1fr) max-content minmax(0, 1fr);'), 'Shared multi-control row does not reuse the common tracks.');
 $assert(str_contains($view, 'class="form-control"'), 'Shared control wrapper is missing.');
 $assert(str_contains($view, 'class="form-help"'), 'Shared helper primitive is missing.');
 $assert(str_contains($view, 'class="field-error"'), 'Shared field-error primitive is missing.');
-$assert(str_contains($view, '.form-help,') && str_contains($view, '.form-error {'), 'Helper and error geometry is not shared.');
-$assert(!str_contains($view, 'margin-top: -8px;'), 'Field errors still use negative-margin compensation.');
-$assert(str_contains($view, '.form-error {') && str_contains($view, 'margin: 0;'), 'Shared feedback placement does not use stable zero-margin geometry.');
+$assert(str_contains($css, '.form-help,') && str_contains($css, '.form-error {'), 'Helper and error geometry is not shared.');
+$assert(!str_contains($css, 'margin-top: -8px;'), 'Field errors still use negative-margin compensation.');
+$assert(str_contains($css, '.form-error {') && str_contains($css, 'margin: 0;'), 'Shared feedback placement does not use stable zero-margin geometry.');
 $assert(str_contains($view, 'class="form-action-row"'), 'Database Namespace action variant is not shared.');
 $assert(str_contains($view, 'class="form-action-row">') || str_contains($view, 'class="form-action-row"'), 'Shared action row is not present.');
-$assert(str_contains($view, '.form-action-row > .database-action'), 'Database Test action is not aligned by the shared action-row variant.');
+$assert(str_contains($css, '.form-action-row > .database-action'), 'Database Test action is not aligned by the shared action-row variant.');
 $actionRowPosition = strpos($view, '<div class="form-action-row"');
 $actionControlPosition = strpos($view, '<div class="form-control">', $actionRowPosition);
 $actionHelperPosition = strpos($view, '<p class="form-help">Blank preserves the empty namespace.</p>', $actionControlPosition);
 $actionButtonPosition = strpos($view, '<button id="database_action"', $actionRowPosition);
 $assert($actionRowPosition !== false && $actionControlPosition !== false && $actionHelperPosition > $actionControlPosition && $actionButtonPosition > $actionHelperPosition, 'Namespace helper is not inside the shared control slot before the action.');
-$assert(str_contains($view, '.form-inline-field,') && str_contains($view, '.form-action-row') && str_contains($view, 'grid-template-columns: 1fr;'), 'Shared mobile rows do not stack.');
+$assert(str_contains($css, '.form-inline-field') && str_contains($css, '.form-action-row') && str_contains($css, 'grid-template-columns: 1fr;'), 'Shared mobile rows do not stack.');
 
 fwrite(STDOUT, "Batch 3 shared form assertions: {$assertions}\n");
