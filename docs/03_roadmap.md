@@ -831,21 +831,25 @@ work requires separate planning and contract authorization. Server-Empty Bootstr
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
 MR.1 Installation Refinement is separately promoted as
-**PROMOTED / IMPLEMENTATION IN PROGRESS (WU3 NEXT)** in
+**PROMOTED / IMPLEMENTATION IN PROGRESS (WU4 NEXT)** in
 `docs/36_mr_1_installation_refinement_contract.md`. Its six-WU staged-installation
 topology is authoritative there: WU1 Installer Shell, Requirements & Navigation
 Framework is **COMPLETE AND CLOSED** with technical validation **PASS** and human
 acceptance **PASS**; WU2 Staged Installation
 Plan & Database Decision is **COMPLETE AND CLOSED** with technical validation
-**PASS** and human visual acceptance **PASS**; its focused validation passed 33
-assertions and its runtime/desktop/mobile evidence passed. WU3 Administrator &
-Site Staging is the **NEXT ACTIVE IMPLEMENTATION TARGET**. WU4 Optional Core
-Module Selection, WU5 Final Review, Installation Commit & Result, and WU6
+**PASS** and human visual acceptance **PASS**; WU3 Administrator & Site
+Staging is **COMPLETE AND CLOSED** with implementation, technical validation,
+and human acceptance **PASS**. Reconciliation Batches 1–5 are **COMPLETE**.
+WU3 preserves staged Administrator/Site values across revisit without pre-Install
+mutation and records the accepted Database feedback, shared form/visual,
+inspection-derived intent, namespace-collision, and ownership-proof/
+compatibility outcomes. WU4 Optional Core Module Selection is the **NEXT ACTIVE
+IMPLEMENTATION TARGET**. WU5 Final Review, Installation Commit & Result and WU6
 Cross-Step Responsive, Accessibility & Human Acceptance are **NOT STARTED**.
 Review & Install is the first COPOT mutation boundary; database-container
 provisioning at Database is the explicit capable-environment exception.
-MR.1 is main-only / no-op for branch lifecycle, and no WU3 implementation has
-started.
+MR.1 is main-only / no-op for branch lifecycle. This does not authorize WU4
+implementation automatically.
 Blocker A is **RESOLVED / VALIDATED** after focused persistence regression coverage.
 Blocker B is **CLASSIFIED / NOT A DEFECT**.
 This promotion does not reopen the completed Multi-Installation WU1–WU6
