@@ -210,7 +210,7 @@ if ($currentStep === 'finalize' && $requirementsPassed) {
 } elseif ($currentStep === 'administrator' && $requirementsPassed && $schemaReady) {
     $message = 'Database schema is ready. Create the first administrator and initial site settings.';
 } elseif ($currentStep === 'administrator' && $requirementsPassed && $databaseStaged) {
-    $message = 'Stage the first administrator and initial site settings before installation.';
+    $message = '';
 } elseif ($currentStep === 'modules' && $requirementsPassed && $administratorStaged) {
     $message = 'Administrator & Site decision is staged. Optional Module selection is the next work unit.';
 } elseif ($requestedStep === 'database' && $requirementsPassed) {
@@ -496,7 +496,10 @@ if ($currentStep === 'requirements' && !$requirementsPassed) {
 }
 
 $installerReady = $installerReady && $status < 400;
-$showStatus = $status >= 400 || !$requirementsPassed || $requirementsHaveWarnings || is_array($databaseResult);
+$databaseContextualState = $currentStep === 'database'
+    && (is_array($databaseResult) || $errors !== []);
+$showStatus = ($status >= 400 || !$requirementsPassed || $requirementsHaveWarnings)
+    && !$databaseContextualState;
 
 $steps = [
     [

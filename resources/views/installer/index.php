@@ -563,16 +563,16 @@
 
             <?php if (($currentStep ?? 'database') === 'database'): ?>
                 <h2>Database</h2>
-                <?php if (!empty($errors['connection'])): ?>
-                    <p class="field-error"><?= htmlspecialchars($errors['connection'], ENT_QUOTES, 'UTF-8') ?></p>
-                <?php endif; ?>
-
-                <?php if (is_array($databaseResult ?? null)): ?>
-                    <p class="pass">
+                <?php $databaseFeedbackKind = !empty($errors['connection']) ? 'error' : 'success'; $databaseFeedbackLabel = $databaseFeedbackKind === 'error' ? 'Error' : 'Success'; ?>
+                <p id="database_feedback" class="status status--<?= $databaseFeedbackKind ?>" role="<?= $databaseFeedbackKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite" <?= empty($errors['connection']) && !is_array($databaseResult ?? null) ? 'hidden' : '' ?>><span class="status-label"><?= $databaseFeedbackLabel ?></span><span class="status-message">
+                    <?php if (!empty($errors['connection'])): ?>
+                        <?= htmlspecialchars($errors['connection'], ENT_QUOTES, 'UTF-8') ?>
+                    <?php elseif (is_array($databaseResult ?? null)): ?>
                         <?= htmlspecialchars($databaseResult['vendor'] ?? 'Database', ENT_QUOTES, 'UTF-8') ?>
                         <?= htmlspecialchars($databaseResult['version'] ?? '', ENT_QUOTES, 'UTF-8') ?> verified.
-                    </p>
-                    <p>Occupancy: <?= htmlspecialchars($databaseResult['occupancy'] ?? 'unknown', ENT_QUOTES, 'UTF-8') ?>; namespace route: <?= htmlspecialchars($databaseResult['namespace'] ?? '', ENT_QUOTES, 'UTF-8') === '' ? '(empty)' : htmlspecialchars($databaseResult['namespace'], ENT_QUOTES, 'UTF-8') ?>.</p>
+                    <?php endif; ?>
+                </span></p>
+                <?php if (is_array($databaseResult ?? null)): ?>
                     <?php if (!empty($databaseResult['warning'])): ?>
                         <p class="warning"><?= htmlspecialchars($databaseResult['warning'], ENT_QUOTES, 'UTF-8') ?></p>
                     <?php endif; ?>
@@ -654,7 +654,6 @@
                         </div>
                     </div>
 
-                    <p class="database-stage-note">Test Database inspects the target only. Next stages the latest validated decision; it does not create COPOT schema or tables.</p>
                     <div class="actions installer-actions installer-navigation database-navigation">
                         <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous</a><?php else: ?><span></span><?php endif; ?>
                         <button type="submit" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
@@ -795,6 +794,21 @@
     </main>
     <script>
         (() => {
+            const adminPassword = document.getElementById('admin_password');
+            const adminPasswordConfirmation = document.getElementById('admin_password_confirmation');
+
+            if (adminPassword && adminPasswordConfirmation) {
+                const updatePasswordConfirmationValidity = () => {
+                    const mismatch = adminPasswordConfirmation.value !== ''
+                        && adminPassword.value !== adminPasswordConfirmation.value;
+                    adminPasswordConfirmation.setCustomValidity(mismatch ? 'Passwords must match.' : '');
+                };
+
+                adminPassword.addEventListener('input', updatePasswordConfirmationValidity);
+                adminPasswordConfirmation.addEventListener('input', updatePasswordConfirmationValidity);
+                updatePasswordConfirmationValidity();
+            }
+
             const form = document.getElementById('database_form');
             const button = document.getElementById('database_action');
 
@@ -802,7 +816,7 @@
                 return;
             }
 
-            let status = document.getElementById('installer_status');
+            const status = document.getElementById('database_feedback');
             const fields = [
                 'database_host',
                 'database_port',
@@ -816,15 +830,10 @@
 
             const showStatusMessage = (message, kind = 'info') => {
                 const labels = { info: 'Information', success: 'Success', warning: 'Warning', error: 'Error' };
-                if (!status) {
-                    status = document.createElement('p');
-                    status.id = 'installer_status';
-                    const phaseDescription = document.querySelector('main > section > p');
-                    phaseDescription?.insertAdjacentElement('afterend', status);
-                }
                 status.className = `status status--${kind}`;
                 status.setAttribute('role', kind === 'error' ? 'alert' : 'status');
                 status.setAttribute('aria-live', 'polite');
+                status.hidden = false;
                 status.replaceChildren();
                 const labelElement = document.createElement('span');
                 labelElement.className = 'status-label';
@@ -877,7 +886,8 @@
                         tested = false;
                         button.value = 'test_database';
                         button.textContent = 'Test Database';
-                        showStatusMessage(payload?.message || 'Database connection could not be verified.', 'error');
+                        const errors = payload?.errors || {};
+                        showStatusMessage(errors.connection || errors.namespace || payload?.message || 'Database connection could not be verified.', 'error');
                         return;
                     }
 
