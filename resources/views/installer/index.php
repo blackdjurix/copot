@@ -394,6 +394,8 @@
         .status-label,
         .status-message { grid-column: 1; min-width: 0; }
 
+        #database_feedback[hidden] { display: none; }
+
         .status--success { border-left-color: #15803d; background: #f0fdf4; }
         .status--info { border-left-color: #2563eb; background: #eff6ff; }
         .status--warning { border-left-color: #a16207; background: #fefce8; }
@@ -476,15 +478,8 @@
                 </ol>
             </nav>
             <?php if (($currentStep ?? '') === 'database'): ?>
-                <?php $databaseFeedbackKind = !empty($errors['connection']) ? 'error' : 'success'; $databaseFeedbackLabel = $databaseFeedbackKind === 'error' ? 'Error' : 'Success'; ?>
-                <p id="database_feedback" class="status status--<?= $databaseFeedbackKind ?>" role="<?= $databaseFeedbackKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite" <?= empty($databaseFeedbackActive) && empty($errors) ? 'hidden' : '' ?>><span class="status-label"><?= $databaseFeedbackLabel ?></span><span class="status-message">
-                    <?php if (!empty($errors['connection'])): ?>
-                        <?= htmlspecialchars($errors['connection'], ENT_QUOTES, 'UTF-8') ?>
-                    <?php elseif (is_array($databaseResult ?? null)): ?>
-                        <?= htmlspecialchars($databaseResult['vendor'] ?? 'Database', ENT_QUOTES, 'UTF-8') ?>
-                        <?= htmlspecialchars($databaseResult['version'] ?? '', ENT_QUOTES, 'UTF-8') ?> verified.
-                    <?php endif; ?>
-                </span></p>
+                <?php $activeDatabaseFeedback = is_array($databaseFeedback ?? null) ? $databaseFeedback : null; $databaseFeedbackKind = in_array(($activeDatabaseFeedback['kind'] ?? ''), ['success', 'info', 'warning', 'error'], true) ? $activeDatabaseFeedback['kind'] : 'info'; $databaseFeedbackLabel = ['success' => 'Success', 'info' => 'Information', 'warning' => 'Warning', 'error' => 'Error'][$databaseFeedbackKind]; ?>
+                <p id="database_feedback" class="status status--<?= $databaseFeedbackKind ?>" role="<?= $databaseFeedbackKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite" <?= $activeDatabaseFeedback === null ? 'hidden' : '' ?>><span class="status-label"><?= $activeDatabaseFeedback === null ? '' : htmlspecialchars($databaseFeedbackLabel, ENT_QUOTES, 'UTF-8') ?></span><span class="status-message"><?= $activeDatabaseFeedback === null ? '' : htmlspecialchars((string) ($activeDatabaseFeedback['message'] ?? ''), ENT_QUOTES, 'UTF-8') ?></span></p>
             <?php endif; ?>
             <?php if (!empty($requirementsPassed) && !empty($requirementsAcknowledged) && ($currentStep ?? '') !== 'requirements'): ?>
                 <p class="mobile-requirements-review"><a class="text-link" href="<?= htmlspecialchars($requirementsReviewUrl ?? '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Review completed Requirements</a></p>
@@ -770,7 +765,7 @@
                 'database_namespace',
                 'installer_intent',
             ].map((name) => form.elements.namedItem(name)).filter(Boolean);
-            let tested = false;
+            let tested = <?= !empty($databaseStaged) ? 'true' : 'false' ?>;
 
             const showStatusMessage = (message, kind = 'info') => {
                 const labels = { info: 'Information', success: 'Success', warning: 'Warning', error: 'Error' };

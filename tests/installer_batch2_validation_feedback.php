@@ -33,9 +33,11 @@ $assert(!str_contains($view, 'database_test_result'), 'A duplicate Database resu
 $assert(!str_contains($view, 'Test Database inspects the target only.'), 'The obsolete technical note remains visible.');
 $assert(!str_contains($bootstrap, "Stage the first administrator and initial site settings before installation."), 'Routine Administrator informational banner remains.');
 $assert(str_contains($bootstrap, '$databaseContextualState = $currentStep === \'database\''), 'Database contextual state is not separated from global status.');
-$assert(str_contains($bootstrap, '$databaseFeedbackActive = false;'), 'Database feedback does not distinguish a fresh operation from staged revisit state.');
-$assert(str_contains($bootstrap, '$databaseFeedbackActive = true;'), 'Database operation feedback is not activated for the current request.');
-$assert(str_contains($view, 'empty($databaseFeedbackActive) && empty($errors) ? \'hidden\''), 'Database feedback target is not hidden on staged revisit.');
+$assert(str_contains($bootstrap, '$databaseFeedback = null;'), 'Database feedback does not begin with an empty request-scoped payload.');
+$assert(str_contains($bootstrap, "['kind' => 'success', 'message' => \$message]"), 'Current Database success does not create an explicit feedback payload.');
+$assert(str_contains($bootstrap, "['kind' => 'error', 'message' => \$message]"), 'Current Database failure does not create an explicit feedback payload.');
+$assert(str_contains($view, '$activeDatabaseFeedback === null ? \'hidden\' : \'\''), 'Database feedback target is not hidden on staged revisit.');
+$assert(str_contains($view, '$activeDatabaseFeedback === null ? \'\' : htmlspecialchars($databaseFeedbackLabel'), 'Hidden Database feedback pre-populates a status label.');
 $assert(str_contains($bootstrap, '&& !$databaseContextualState;'), 'Database contextual feedback still leaks into the global status surface.');
 $assert(str_contains($bootstrap, 'No COPOT schema or tables were created.'), 'Database staging mutation invariant is not preserved.');
 

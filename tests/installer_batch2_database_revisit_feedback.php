@@ -18,12 +18,17 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
     }
 };
 
-$assert(str_contains($bootstrap, '$databaseFeedbackActive = false;'), 'Revisit feedback baseline is not inactive.');
-$assert(str_contains($bootstrap, '$databaseFeedbackActive = true;'), 'Current Database operation does not enable contextual feedback.');
-$assert(str_contains($bootstrap, '$databaseContextualState = $currentStep === \'database\'') && str_contains($bootstrap, '&& ($databaseFeedbackActive || $errors !== []);'), 'Global status suppression is not limited to current-operation feedback or errors.');
-$assert(str_contains($view, 'empty($databaseFeedbackActive) && empty($errors) ? \'hidden\''), 'Rehydrated staged inspection is not hidden from the user.');
+$assert(str_contains($bootstrap, '$databaseFeedback = null;'), 'Revisit feedback baseline is not an empty payload.');
+$assert(str_contains($bootstrap, "['kind' => 'success', 'message' => \$message]"), 'Current Database success does not activate feedback.');
+$assert(str_contains($bootstrap, "['kind' => 'error', 'message' => \$message]"), 'Current Database failure does not activate feedback.');
+$assert(str_contains($bootstrap, '$databaseContextualState = $currentStep === \'database\'') && str_contains($bootstrap, '&& is_array($databaseFeedback);'), 'Global status suppression is not limited to a current Database feedback event.');
+$assert(str_contains($view, '$activeDatabaseFeedback === null ? \'hidden\' : \'\''), 'Rehydrated staged inspection is not hidden from the user.');
+$assert(str_contains($view, '$activeDatabaseFeedback === null ? \'\' : htmlspecialchars($databaseFeedbackLabel'), 'Quiet revisit feedback contains a pre-rendered label.');
+$assert(str_contains($view, '$activeDatabaseFeedback === null ? \'\' : htmlspecialchars((string) ($activeDatabaseFeedback[\'message\'] ?? \'\')'), 'Quiet revisit feedback contains stale result text.');
+$assert(str_contains($view, '#database_feedback[hidden] { display: none; }'), 'Hidden Database feedback still reserves layout height.');
 $assert(str_contains($view, 'is_array($databaseResult ?? null)'), 'Staged Database result remains available for compatibility advisories.');
 $assert(str_contains($view, 'Database fields changed. Test the connection again.'), 'Field-change feedback remains available after revisit.');
+$assert(str_contains($view, "let tested = <?= !empty(\$databaseStaged) ? 'true' : 'false' ?>;"), 'Staged Database revisit does not arm field-change feedback.');
 $assert(str_contains($view, "button.textContent = 'Test Database'"), 'Database Test reset behavior is not preserved.');
 $assert(str_contains($bootstrap, 'No COPOT schema or tables were created.'), 'Pre-install mutation invariant is not preserved.');
 

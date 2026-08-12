@@ -123,7 +123,8 @@ $assert($originalEnvironment === (is_file($base . '/.env') ? hash_file('sha256',
 
 http_response_code(200);
 $revisited = $request('GET', '/install?step=database');
-$assert(http_response_code() === 200 && str_contains($revisited, 'Database decision is staged'), 'Database revisit did not return the staged Database state.');
+$assert(http_response_code() === 200 && !str_contains($revisited, 'Database decision is staged'), 'Database revisit rendered routine staged-success feedback.');
+$assert(preg_match('/id="database_feedback"[^>]*hidden[^>]*><span class="status-label"><\/span><span class="status-message"><\/span>/', $revisited) === 1, 'Database revisit did not render an empty hidden feedback target.');
 $assert(str_contains($revisited, htmlspecialchars($configuration['database'], ENT_QUOTES, 'UTF-8')), 'Database revisit did not retain the database value.');
 $assert($configuration['password'] === '' || !str_contains($revisited, 'value="' . htmlspecialchars($configuration['password'], ENT_QUOTES, 'UTF-8') . '"'), 'Database password was rendered back into the form.');
 

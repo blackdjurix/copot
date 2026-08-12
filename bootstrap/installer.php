@@ -94,7 +94,7 @@ $values = [
 ];
 $errors = [];
 $databaseResult = is_array($stagedDatabase['inspection'] ?? null) ? $stagedDatabase['inspection'] : null;
-$databaseFeedbackActive = false;
+$databaseFeedback = null;
 $schemaReady = false;
 $administratorExists = false;
 $administratorSetup = null;
@@ -398,7 +398,6 @@ if ($installationStateError) {
                         )
                     );
 
-                    $databaseFeedbackActive = true;
                     $inspection = $probe->inspect($configuration);
                     $routing = (new \Copot\Core\InstallerRoutingPlanner())->plan(
                         $inspection['occupancy'],
@@ -436,6 +435,9 @@ if ($installationStateError) {
                     $message = $action === 'stage_database'
                         ? 'Database decision staged. No COPOT schema or tables were created.'
                         : 'Database connection and installer routing verified.';
+                    if ($action === 'test_database') {
+                        $databaseFeedback = ['kind' => 'success', 'message' => $message];
+                    }
                     if ($action === 'stage_database') {
                         return Response::redirect($deploymentContext->url('/install?step=administrator'));
                     }
@@ -444,14 +446,17 @@ if ($installationStateError) {
                     $message = 'Correct the database configuration fields.';
                     $errors = $exception->errors();
                     $values = $exception->submittedValues();
+                    $databaseFeedback = ['kind' => 'error', 'message' => $message];
                 } catch (InstallationException $exception) {
                     $status = 422;
                     $message = $exception->getMessage();
                     $errors['connection'] = $exception->getMessage();
+                    $databaseFeedback = ['kind' => 'error', 'message' => $message];
                 } catch (\Throwable) {
                     $status = 503;
                     $message = 'Database setup could not be completed.';
                     $errors['connection'] = $message;
+                    $databaseFeedback = ['kind' => 'error', 'message' => $message];
                 } finally {
                     if (isset($configuration) && is_array($configuration)) {
                         $configuration['password'] = '';
@@ -499,7 +504,7 @@ if ($currentStep === 'requirements' && !$requirementsPassed) {
 
 $installerReady = $installerReady && $status < 400;
 $databaseContextualState = $currentStep === 'database'
-    && ($databaseFeedbackActive || $errors !== []);
+    && is_array($databaseFeedback);
 $showStatus = ($status >= 400 || !$requirementsPassed || $requirementsHaveWarnings)
     && !$databaseContextualState;
 
@@ -578,6 +583,7 @@ return Response::html($view->render('installer/index', [
     'values' => $values,
     'errors' => $errors,
     'databaseResult' => $databaseResult,
+    'databaseFeedback' => $databaseFeedback,
     'schemaReady' => $schemaReady,
     'administratorExists' => $administratorExists,
         'currentStep' => $currentStep,
