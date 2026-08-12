@@ -542,7 +542,11 @@ foreach ($steps as &$step) {
         default => 'Requirements',
     }
         ? 'current'
-        : (($step['state'] ?? '') === 'current' ? 'pending' : ($step['state'] ?? 'pending'));
+        : (($step['state'] ?? '') === 'completed'
+            ? 'completed'
+            : (($step['state'] ?? '') === 'blocked' && !in_array($step['label'], ['Requirements', 'Database'], true)
+                ? 'pending'
+                : (($step['state'] ?? '') === 'current' ? 'pending' : ($step['state'] ?? 'pending'))));
 }
 unset($step);
 

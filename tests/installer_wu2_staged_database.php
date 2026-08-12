@@ -41,7 +41,7 @@ $namespaceRowPosition = strpos($view, 'class="form-action-row"');
 $testButtonPosition = strpos($view, 'id="database_action" class="database-action"');
 $assert($namespaceRowPosition !== false && $testButtonPosition !== false && $testButtonPosition > $namespaceRowPosition, 'Test Database is not embedded in the namespace row.');
 $assert(str_contains($view, 'height: 34px;'), 'Database controls do not use the required desktop height.');
-$assert(str_contains($view, 'padding: 8px 12px;'), 'Database controls do not use the required desktop padding.');
+$assert(str_contains($view, 'padding: 6px 8px;'), 'Shared form controls do not use the required padding.');
 $assert(str_contains($view, '.form-help,') && str_contains($view, 'margin: 0;'), 'Shared form help does not use zero margin.');
 $assert(str_contains($view, 'font-size: 13px;') && str_contains($view, 'font-style: italic;'), 'Database help text does not use the required typography.');
 $assert(str_contains($view, 'class="actions installer-actions installer-navigation database-navigation"'), 'Database navigation does not use its dedicated desktop alignment class.');

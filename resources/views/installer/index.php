@@ -138,7 +138,7 @@
         .form-control {
             min-width: 0;
             display: grid;
-            gap: 6px;
+            gap: 4px;
         }
 
         .form-help,
@@ -163,7 +163,7 @@
         .form-fields select {
             width: 100%;
             height: 34px;
-            padding: 8px 12px;
+            padding: 6px 8px;
             border: 1px solid #9ca3af;
             border-radius: 5px;
             font: inherit;
@@ -290,6 +290,11 @@
             color: #991b1b;
         }
 
+        .step-pending {
+            border-color: #9ca3af;
+            color: #6b7280;
+        }
+
         .step-link {
             display: block;
             color: inherit;
@@ -403,7 +408,7 @@
         .phase-form input,
         .phase-form select {
             width: 100%;
-            padding: 10px 12px;
+            padding: 6px 8px;
             border: 1px solid #9ca3af;
             border-radius: 5px;
             font: inherit;
@@ -470,6 +475,17 @@
                     <?php endforeach; ?>
                 </ol>
             </nav>
+            <?php if (($currentStep ?? '') === 'database'): ?>
+                <?php $databaseFeedbackKind = !empty($errors['connection']) ? 'error' : 'success'; $databaseFeedbackLabel = $databaseFeedbackKind === 'error' ? 'Error' : 'Success'; ?>
+                <p id="database_feedback" class="status status--<?= $databaseFeedbackKind ?>" role="<?= $databaseFeedbackKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite" <?= empty($errors['connection']) && !is_array($databaseResult ?? null) ? 'hidden' : '' ?>><span class="status-label"><?= $databaseFeedbackLabel ?></span><span class="status-message">
+                    <?php if (!empty($errors['connection'])): ?>
+                        <?= htmlspecialchars($errors['connection'], ENT_QUOTES, 'UTF-8') ?>
+                    <?php elseif (is_array($databaseResult ?? null)): ?>
+                        <?= htmlspecialchars($databaseResult['vendor'] ?? 'Database', ENT_QUOTES, 'UTF-8') ?>
+                        <?= htmlspecialchars($databaseResult['version'] ?? '', ENT_QUOTES, 'UTF-8') ?> verified.
+                    <?php endif; ?>
+                </span></p>
+            <?php endif; ?>
             <?php if (!empty($requirementsPassed) && !empty($requirementsAcknowledged) && ($currentStep ?? '') !== 'requirements'): ?>
                 <p class="mobile-requirements-review"><a class="text-link" href="<?= htmlspecialchars($requirementsReviewUrl ?? '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Review completed Requirements</a></p>
             <?php endif; ?>
@@ -501,15 +517,6 @@
 
             <?php if (($currentStep ?? 'database') === 'database'): ?>
                 <h2>Database</h2>
-                <?php $databaseFeedbackKind = !empty($errors['connection']) ? 'error' : 'success'; $databaseFeedbackLabel = $databaseFeedbackKind === 'error' ? 'Error' : 'Success'; ?>
-                <p id="database_feedback" class="status status--<?= $databaseFeedbackKind ?>" role="<?= $databaseFeedbackKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite" <?= empty($errors['connection']) && !is_array($databaseResult ?? null) ? 'hidden' : '' ?>><span class="status-label"><?= $databaseFeedbackLabel ?></span><span class="status-message">
-                    <?php if (!empty($errors['connection'])): ?>
-                        <?= htmlspecialchars($errors['connection'], ENT_QUOTES, 'UTF-8') ?>
-                    <?php elseif (is_array($databaseResult ?? null)): ?>
-                        <?= htmlspecialchars($databaseResult['vendor'] ?? 'Database', ENT_QUOTES, 'UTF-8') ?>
-                        <?= htmlspecialchars($databaseResult['version'] ?? '', ENT_QUOTES, 'UTF-8') ?> verified.
-                    <?php endif; ?>
-                </span></p>
                 <?php if (is_array($databaseResult ?? null)): ?>
                     <?php if (!empty($databaseResult['warning'])): ?>
                         <p class="warning"><?= htmlspecialchars($databaseResult['warning'], ENT_QUOTES, 'UTF-8') ?></p>
@@ -639,6 +646,7 @@
                                 <div class="form-control">
                                     <input id="admin_password" name="admin_password" type="password" minlength="10" required value="">
                                     <?php if (!empty($setupErrors['admin_password'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                    <p class="form-help">Password is kept during this installation.</p>
                                 </div>
                             </div>
                             <div class="form-inline-field">
@@ -649,8 +657,6 @@
                                 </div>
                             </div>
                         </div>
-                        <p class="form-help">Password is retained securely for the staged installation and is not displayed on revisit.</p>
-
                         <div class="form-row">
                             <label for="site_name">Site Name</label>
                             <div class="form-control">
