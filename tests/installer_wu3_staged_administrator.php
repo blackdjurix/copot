@@ -26,6 +26,7 @@ $assert(str_contains($bootstrap, '$session->set($administratorSessionKey, $stage
 $assert(str_contains($bootstrap, "url('/install?step=finalize')"), 'Successful Administrator staging does not advance to Review & Install.');
 $assert(str_contains($bootstrap, 'InstallerAdministratorValidator::validate($input)'), 'Administrator staging does not reuse the repository-native validation boundary.');
 $assert(str_contains($bootstrap, "'password' => \$validated['password']"), 'Staged Administrator credentials are not retained server-side.');
+$assert(str_contains($bootstrap, "'administratorStaged' => \$administratorStaged"), 'Administrator staged state is not exposed to revisit rendering.');
 $assert(!str_contains($bootstrap, '$administratorSetup->install($input, $requirementsPassed)'), 'Administrator staging still invokes the mutating setup service.');
 $assert(str_contains($bootstrap, "'label' => 'Review & Install'"), 'Review & Install is not represented in installer progression.');
 $assert(str_contains($view, 'name="action" value="stage_administrator"'), 'Administrator form does not use the staged action.');

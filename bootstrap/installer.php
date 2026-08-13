@@ -638,6 +638,7 @@ return Response::html($view->render('installer/index', [
     'databaseFeedback' => $databaseFeedback,
     'schemaReady' => $schemaReady,
     'administratorExists' => $administratorExists,
+    'administratorStaged' => $administratorStaged,
         'currentStep' => $currentStep,
         'forwardStep' => $forwardStep,
         'displayStep' => $displayStep,
