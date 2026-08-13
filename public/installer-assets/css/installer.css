@@ -67,7 +67,8 @@ form {
 
 .phase-form {
     flex: 1;
-    align-content: start;
+    display: flex;
+    flex-direction: column;
 }
 
 .requirements,
@@ -341,24 +342,25 @@ a:focus-visible {
     gap: 10px;
 }
 
-.installer-actions {
+.installer-footer {
+    margin-top: auto;
     justify-content: space-between;
     align-items: center;
     width: 100%;
 }
 
-.installer-navigation {
+.installer-footer {
     align-items: stretch;
-    margin-top: 12px;
+    padding-top: 12px;
 }
 
-.installer-navigation > a,
-.installer-navigation > button {
+.installer-footer > a,
+.installer-footer > button {
     flex: 0 1 48%;
     text-align: center;
 }
 
-.installer-navigation .nav-button {
+.installer-footer .nav-button {
     min-height: 42px;
     padding: 10px 16px;
     color: #1e293b;
@@ -369,20 +371,15 @@ a:focus-visible {
     text-decoration: none;
 }
 
-.installer-navigation .nav-button.install-action {
+.installer-footer .nav-button.install-action {
     color: #fff;
     background: #111827;
     border-color: #111827;
 }
 
-.installer-navigation > button,
+.installer-footer > button,
 .installer-actions .button-secondary {
     margin-top: 0;
-}
-
-.database-navigation > a,
-.database-navigation > button {
-    flex: 0 0 25%;
 }
 
 .database-action {
@@ -407,12 +404,6 @@ a:focus-visible {
 
 .requirements-intro {
     margin-top: 0;
-}
-
-.requirements-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: auto;
 }
 
 @media (max-width: 560px) {
@@ -460,17 +451,13 @@ a:focus-visible {
         align-items: flex-start;
     }
 
-    .requirements-actions {
-        margin-top: 20px;
-    }
-
-    .installer-navigation {
+    .installer-footer {
         flex-direction: row;
         align-items: stretch;
     }
 
-    .installer-navigation > a,
-    .installer-navigation > button {
+    .installer-footer > a,
+    .installer-footer > button {
         flex: 1 1 0;
         width: auto;
     }

@@ -38,7 +38,7 @@ $assert(str_contains($css, '--form-label-column: 150px;'), 'Administrator deskto
 $assert(str_contains($css, 'grid-template-columns: var(--form-label-column) minmax(0, 1fr) max-content minmax(0, 1fr);'), 'Administrator paired rows do not use the shared desktop grid.');
 $assert(substr_count($view, 'class="form-inline-fields"') >= 3, 'Administrator paired desktop rows are incomplete.');
 $assert(substr_count($view, 'class="form-row"') >= 2, 'Administrator single-field rows are incomplete.');
-$assert(str_contains($view, 'administrator-navigation'), 'Administrator navigation container is missing.');
+$assert(str_contains($view, 'installer-footer installer-actions'), 'Administrator navigation does not use the shared installer footer.');
 $assert(str_contains($view, 'class="form-help"'), 'Administrator password safety help is not attached to the shared feedback slot.');
 
 fwrite(STDOUT, "WU3 staged Administrator assertions: {$assertions}\n");

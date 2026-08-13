@@ -47,8 +47,8 @@ $assert(str_contains($css, 'height: 34px;'), 'Database controls do not use the r
 $assert(str_contains($css, 'padding: 6px 8px;'), 'Shared form controls do not use the required padding.');
 $assert(str_contains($css, '.form-help,') && str_contains($css, 'margin: 0;'), 'Shared form help does not use zero margin.');
 $assert(str_contains($css, 'font-size: 13px;') && str_contains($css, 'font-style: italic;'), 'Database help text does not use the required typography.');
-$assert(str_contains($view, 'class="actions installer-actions installer-navigation database-navigation"'), 'Database navigation does not use its dedicated desktop alignment class.');
-$assert(str_contains($css, '.database-navigation > a,') && str_contains($css, 'flex: 0 0 25%;'), 'Database navigation controls are not 25 percent width on desktop.');
+$assert(str_contains($view, 'class="installer-footer installer-actions"'), 'Database navigation does not use the shared installer footer.');
+$assert(str_contains($css, '.installer-footer'), 'Shared installer footer primitive is missing.');
 $assert(str_contains($view, '>Previous</a>'), 'Database Previous label is not exactly Previous.');
 $assert(str_contains($view, 'name="action" value="test_database"'), 'Test Database is not a distinct operation.');
 $assert(str_contains($view, 'name="action" value="stage_database"'), 'Database Next does not stage the decision.');

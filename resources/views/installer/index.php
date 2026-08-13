@@ -51,7 +51,7 @@
                     </li>
                 <?php endforeach; ?>
             </ul>
-                <div class="requirements-actions">
+                <div class="installer-footer installer-actions">
                     <?php if (!empty($requirementsPassed)): ?>
                         <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Next</a>
                     <?php else: ?>
@@ -153,7 +153,7 @@
                         </div>
                     </div>
 
-                    <div class="actions installer-actions installer-navigation database-navigation">
+                    <div class="installer-footer installer-actions">
                         <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous</a><?php else: ?><span></span><?php endif; ?>
                         <button class="nav-button" type="submit" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
                     </div>
@@ -162,7 +162,7 @@
                 <?php if (empty($databaseStaged)): ?>
                 <h2>Administrator and Site</h2>
                 <p>Stage the Database decision before configuring Administrator &amp; Site.</p>
-                <div class="installer-actions installer-navigation">
+                <div class="installer-footer installer-actions">
                     <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
                     <button class="nav-button" type="button" disabled>Next</button>
                 </div>
@@ -252,7 +252,7 @@
                         </div>
                     </div>
 
-                    <div class="installer-actions installer-navigation administrator-navigation">
+                    <div class="installer-footer installer-actions">
                         <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
                         <button class="nav-button" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
                     </div>
@@ -279,7 +279,7 @@
                 <form class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="action" value="finalize_installation">
-                    <div class="installer-actions installer-navigation">
+                    <div class="installer-footer installer-actions">
                         <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
                         <button class="nav-button install-action" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Install</button>
                     </div>

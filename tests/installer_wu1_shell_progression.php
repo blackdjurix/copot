@@ -51,12 +51,12 @@ $assert(str_contains($view, '>Previous</a>'), 'Database has no explicit Previous
 $assert(str_contains($view, '>Previous</a>'), 'Installer phases do not use the standard Previous label.');
 $assert(str_contains($view, '>Next</button>'), 'Installer phases do not use the standard Next label.');
 $assert(str_contains($view, '$stepIsReviewable'), 'Completed-step navigation is not bounded by completed state and review URL.');
-$assert(str_contains($css, '.installer-actions'), 'Shared installer action-row layout is missing.');
+$assert(str_contains($css, '.installer-footer'), 'Shared installer footer layout is missing.');
 $assert(str_contains($css, 'justify-content: space-between;'), 'Installer action row does not separate secondary and primary actions.');
 $assert(str_contains($view, 'button-secondary'), 'Secondary action styling is missing from the shared action row.');
 $assert(str_contains($css, 'flex-direction: row;') && str_contains($css, 'align-items: stretch;'), 'Mobile navigation actions are not kept side-by-side.');
-$assert(str_contains($view, 'installer-actions installer-navigation'), 'Operational and navigation actions do not use the shared action-row primitives.');
-$assert(str_contains($view, 'installer-navigation'), 'Shared navigation row is missing.');
+$assert(substr_count($view, 'installer-footer installer-actions') >= 4, 'All pre-Result phases do not use the shared installer footer.');
+$assert(str_contains($view, 'installer-footer'), 'Shared navigation footer is missing.');
 $assert(str_contains($css, 'min-height: min(760px, calc(100vh - 40px));'), 'Desktop installer shell has no shared viewport-aware footprint.');
 $assert(str_contains($css, 'align-items: center;'), 'Desktop installer shell is not vertically centered.');
 $assert(str_contains($view, 'phase-form'), 'Installer phase forms do not participate in the shared shell geometry.');
