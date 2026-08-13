@@ -37,8 +37,8 @@
             <?php endif; ?>
             <?php if (($currentStep ?? '') === 'requirements'): ?>
             <div class="installer-phase">
+            <div class="installer-phase-header"><h2>Requirements</h2></div>
             <div class="installer-phase-content" tabindex="0">
-            <h2>Requirements</h2>
             <ul class="requirements installer-list">
                 <?php foreach (($requirements ?? []) as $requirement): ?>
                     <li>
@@ -69,17 +69,14 @@
 
             <?php if (($currentStep ?? 'database') === 'database'): ?>
                 <div class="installer-phase">
-                <div class="installer-phase-content" tabindex="0">
+                <div class="installer-phase-header">
                 <h2>Database</h2>
                 <?php if (is_array($databaseResult ?? null)): ?>
-                    <?php if (!empty($databaseResult['warning'])): ?>
-                        <p class="warning"><?= htmlspecialchars($databaseResult['warning'], ENT_QUOTES, 'UTF-8') ?></p>
-                    <?php endif; ?>
-                    <?php foreach (($databaseResult['warnings'] ?? []) as $warning): ?>
-                        <p class="warning"><?= htmlspecialchars((string) $warning, ENT_QUOTES, 'UTF-8') ?></p>
-                    <?php endforeach; ?>
+                    <?php if (!empty($databaseResult['warning'])): ?><p class="warning"><?= htmlspecialchars($databaseResult['warning'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                    <?php foreach (($databaseResult['warnings'] ?? []) as $warning): ?><p class="warning"><?= htmlspecialchars((string) $warning, ENT_QUOTES, 'UTF-8') ?></p><?php endforeach; ?>
                 <?php endif; ?>
-
+                </div>
+                <div class="installer-phase-content" tabindex="0">
                 <form id="database_form" class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
 
@@ -172,8 +169,8 @@
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
                 <?php if (empty($databaseStaged)): ?>
                 <div class="installer-phase">
+                <div class="installer-phase-header"><h2>Administrator and Site</h2></div>
                 <div class="installer-phase-content" tabindex="0">
-                <h2>Administrator and Site</h2>
                 <p>Stage the Database decision before configuring Administrator &amp; Site.</p>
                 </div>
                 <div class="installer-footer installer-actions">
@@ -184,12 +181,11 @@
                 </div>
                 <?php else: ?>
                 <div class="installer-phase">
-                <div class="installer-phase-content" tabindex="0">
+                <div class="installer-phase-header">
                 <h2>Administrator and Site</h2>
-                <?php if (!empty($setupErrors['storage'])): ?>
-                    <p class="field-error"><?= htmlspecialchars($setupErrors['storage'], ENT_QUOTES, 'UTF-8') ?></p>
-                <?php endif; ?>
-
+                <?php if (!empty($setupErrors['storage'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['storage'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                </div>
+                <div class="installer-phase-content" tabindex="0">
                 <form id="administrator_form" class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                         <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="stage_administrator">
@@ -280,8 +276,8 @@
                 <?php endif; ?>
             <?php elseif (($currentStep ?? '') === 'finalize'): ?>
                 <div class="installer-phase">
+                <div class="installer-phase-header"><h2>Review &amp; Install</h2></div>
                 <div class="installer-phase-content" tabindex="0">
-                <h2>Review &amp; Install</h2>
                 <?php if (is_string($finalizationError ?? null) && $finalizationError !== ''): ?>
                     <p class="field-error"><?= htmlspecialchars($finalizationError, ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
@@ -311,8 +307,8 @@
                 </div>
             <?php elseif (($currentStep ?? '') === 'result'): ?>
                 <div class="installer-phase">
+                <div class="installer-phase-header"><h2>Installation Result</h2></div>
                 <div class="installer-phase-content" tabindex="0">
-                <h2>Installation Result</h2>
                 <?php $resultStatus = (($installationResult['status'] ?? '') === 'success') ? 'success' : 'error'; ?>
                 <p class="status status--<?= $resultStatus ?>" role="<?= $resultStatus === 'error' ? 'alert' : 'status' ?>" aria-live="polite"><span class="status-label"><?= $resultStatus === 'success' ? 'Success' : 'Error' ?></span><span class="status-message"><?= htmlspecialchars((string) ($installationResult['message'] ?? 'Installation did not complete.'), ENT_QUOTES, 'UTF-8') ?></span></p>
                 <?php if ($resultStatus === 'success'): ?>
