@@ -444,7 +444,7 @@ if ($installationStateError) {
                         && in_array($effectiveIntent, [\Copot\Core\InstallerIntent::FRESH, \Copot\Core\InstallerIntent::COEXIST], true)
                         && !$namespaceResult->usable()
                     ) {
-                        throw new InstallationException('The selected Database namespace is already in use. Choose another namespace and test again.');
+                        throw new InstallationException('Database namespace is already in use. Change the namespace and test again.');
                     }
                     if ($action === 'stage_database') {
                         $routing = $planner->plan(

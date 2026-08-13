@@ -35,10 +35,6 @@
                 <?php $activeDatabaseFeedback = is_array($databaseFeedback ?? null) ? $databaseFeedback : null; $databaseFeedbackKind = in_array(($activeDatabaseFeedback['kind'] ?? ''), ['success', 'info', 'warning', 'error'], true) ? $activeDatabaseFeedback['kind'] : 'info'; $databaseFeedbackLabel = ['success' => 'Success', 'info' => 'Information', 'warning' => 'Warning', 'error' => 'Error'][$databaseFeedbackKind]; ?>
                 <p id="database_feedback" class="status status--<?= $databaseFeedbackKind ?>" role="<?= $databaseFeedbackKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite" <?= $activeDatabaseFeedback === null ? 'hidden' : '' ?>><span class="status-label"><?= $activeDatabaseFeedback === null ? '' : htmlspecialchars($databaseFeedbackLabel, ENT_QUOTES, 'UTF-8') ?></span><span class="status-message"><?= $activeDatabaseFeedback === null ? '' : htmlspecialchars((string) ($activeDatabaseFeedback['message'] ?? ''), ENT_QUOTES, 'UTF-8') ?></span></p>
             <?php endif; ?>
-            <?php if (!empty($requirementsPassed) && !empty($requirementsAcknowledged) && ($currentStep ?? '') !== 'requirements'): ?>
-                <p class="mobile-requirements-review"><a class="text-link" href="<?= htmlspecialchars($requirementsReviewUrl ?? '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Review completed Requirements</a></p>
-            <?php endif; ?>
-
             <?php if (($currentStep ?? '') === 'requirements'): ?><h2>Requirements</h2>
             <ul class="requirements">
                 <?php foreach (($requirements ?? []) as $requirement): ?>
@@ -57,7 +53,7 @@
             </ul>
                 <div class="requirements-actions">
                     <?php if (!empty($requirementsPassed)): ?>
-                        <a class="button" href="<?= htmlspecialchars($requirementsReview ? ($requirementsForwardUrl ?? '/install') : (is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database'), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($requirementsReview ? ('Return to ' . ($requirementsForwardLabel ?? 'current step')) : 'Continue to Database', ENT_QUOTES, 'UTF-8') ?></a>
+                        <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Next</a>
                     <?php else: ?>
                         <span class="warning" role="status">Resolve the failed requirements to continue.</span>
                     <?php endif; ?>
@@ -158,8 +154,8 @@
                     </div>
 
                     <div class="actions installer-actions installer-navigation database-navigation">
-                        <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous</a><?php else: ?><span></span><?php endif; ?>
-                        <button type="submit" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
+                        <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous</a><?php else: ?><span></span><?php endif; ?>
+                        <button class="nav-button" type="submit" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
@@ -167,8 +163,8 @@
                 <h2>Administrator and Site</h2>
                 <p>Stage the Database decision before configuring Administrator &amp; Site.</p>
                 <div class="installer-actions installer-navigation">
-                    <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous: Database</a>
-                    <button type="button" disabled>Next</button>
+                    <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
+                    <button class="nav-button" type="button" disabled>Next</button>
                 </div>
                 <?php else: ?>
                 <h2>Administrator and Site</h2>
@@ -202,14 +198,14 @@
                             <div class="form-inline-field">
                                 <label for="admin_password">Password</label>
                                 <div class="form-control">
-                                    <input id="admin_password" name="admin_password" type="password" minlength="10" required value="">
+                                    <input id="admin_password" name="admin_password" type="password" minlength="10" <?= empty($administratorStaged) ? 'required' : '' ?> value="">
                                     <?php if (!empty($setupErrors['admin_password'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                             <div class="form-inline-field">
                                 <label for="admin_password_confirmation">Confirm Password</label>
                                 <div class="form-control">
-                                    <input id="admin_password_confirmation" name="admin_password_confirmation" type="password" minlength="10" required value="">
+                                    <input id="admin_password_confirmation" name="admin_password_confirmation" type="password" minlength="10" <?= empty($administratorStaged) ? 'required' : '' ?> value="">
                                     <?php if (!empty($setupErrors['admin_password_confirmation'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_password_confirmation'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
@@ -257,8 +253,8 @@
                     </div>
 
                     <div class="installer-actions installer-navigation administrator-navigation">
-                        <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
-                        <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
+                        <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
+                        <button class="nav-button" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
                     </div>
                 </form>
                 <?php endif; ?>
@@ -284,8 +280,8 @@
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="action" value="finalize_installation">
                     <div class="installer-actions installer-navigation">
-                        <a class="button button-secondary" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous: Administrator &amp; Site</a>
-                        <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Install</button>
+                        <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
+                        <button class="nav-button install-action" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Install</button>
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'result'): ?>

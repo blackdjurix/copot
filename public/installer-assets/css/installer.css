@@ -358,6 +358,23 @@ a:focus-visible {
     text-align: center;
 }
 
+.installer-navigation .nav-button {
+    min-height: 42px;
+    padding: 10px 16px;
+    color: #1e293b;
+    background: #fff;
+    border: 1px solid #94a3b8;
+    border-radius: 6px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.installer-navigation .nav-button.install-action {
+    color: #fff;
+    background: #111827;
+    border-color: #111827;
+}
+
 .installer-navigation > button,
 .installer-actions .button-secondary {
     margin-top: 0;
@@ -396,11 +413,6 @@ a:focus-visible {
     display: flex;
     justify-content: flex-end;
     margin-top: auto;
-}
-
-.mobile-requirements-review {
-    display: none;
-    margin: -8px 0 12px;
 }
 
 @media (max-width: 560px) {

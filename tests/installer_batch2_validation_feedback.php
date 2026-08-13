@@ -22,6 +22,7 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 $assert(str_contains($view, 'required'), 'Native required validation is not present.');
 $assert(str_contains($view, 'type="email"'), 'Native email validation is not present.');
 $assert(str_contains($view, 'minlength="10"'), 'Native password minimum validation is not present.');
+$assert(str_contains($view, "empty(\$administratorStaged) ? 'required' : ''"), 'Administrator revisit password semantics are not reflected in HTML required handling.');
 $assert(str_contains($view, 'pattern="[a-z][a-z0-9_]{0,30}"'), 'Native namespace pattern validation is not present.');
 $assert(str_contains($view, 'setCustomValidity(mismatch ? \'Passwords must match.\' : \'\')'), 'Password confirmation custom validity is not present.');
 $assert(str_contains($view, "adminPassword.addEventListener('input', updatePasswordConfirmationValidity)"), 'Password changes do not refresh confirmation validity.');
@@ -40,5 +41,6 @@ $assert(str_contains($view, '$activeDatabaseFeedback === null ? \'hidden\' : \'\
 $assert(str_contains($view, '$activeDatabaseFeedback === null ? \'\' : htmlspecialchars($databaseFeedbackLabel'), 'Hidden Database feedback pre-populates a status label.');
 $assert(str_contains($bootstrap, '&& !$databaseContextualState;'), 'Database contextual feedback still leaks into the global status surface.');
 $assert(str_contains($bootstrap, 'No COPOT schema or tables were created.'), 'Database staging mutation invariant is not preserved.');
+$assert(str_contains($bootstrap, 'Database namespace is already in use. Change the namespace and test again.'), 'Namespace collision feedback does not use the accepted concise wording.');
 
 fwrite(STDOUT, "Batch 2 validation/feedback assertions: {$assertions}\n");

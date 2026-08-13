@@ -52,6 +52,10 @@ $resultStart = strpos($view, "<?php elseif ((\$currentStep ?? '') === 'result'):
 $reviewMarkup = ($reviewStart !== false && $resultStart !== false) ? substr($view, $reviewStart, $resultStart - $reviewStart) : '';
 $assert($reviewMarkup !== '' && !str_contains($reviewMarkup, 'password'), 'Review markup exposes a staged secret.');
 $assert(str_contains($view, 'Installation Result'), 'The Result view is missing.');
+$assert(substr_count($bootstrap, "'label' => '") >= 5 && !str_contains($bootstrap, "'label' => 'Modules'"), 'Installer progression does not preserve the authoritative five-phase flow.');
+$assert(str_contains($view, 'class="nav-button"'), 'Previous/Next controls do not use the shared navigation primitive.');
+$assert(str_contains($view, 'class="nav-button install-action"'), 'Install is not distinguishable as the final mutation action.');
+$assert(!str_contains($view, 'Return to Review &amp; Install'), 'Obsolete contextual return navigation remains visible.');
 $assert(str_contains($view, 'role="<?= $resultStatus === \'error\' ? \'alert\' : \'status\' ?>"'), 'Result status does not preserve semantic status roles.');
 $assert(str_contains($css, '.installer-summary'), 'WU4 summary does not use a generic shared installer CSS primitive.');
 $assert(!str_contains($view, '<style'), 'WU4 view introduces inline CSS.');

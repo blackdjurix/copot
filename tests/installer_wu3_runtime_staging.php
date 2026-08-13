@@ -155,6 +155,27 @@ $revisited = $request('GET', '/install?step=administrator');
 $assert(http_response_code() === 200 && str_contains($revisited, 'value="WU3 Administrator"'), 'Administrator name did not survive revisit.');
 $assert(str_contains($revisited, 'value="WU3 Site"'), 'Site name did not survive revisit.');
 $assert(!str_contains($revisited, 'value="SafePassword123!"'), 'Staged password was rendered back into the form.');
+$assert(substr_count($revisited, 'id="admin_password"') === 1 && !str_contains($revisited, 'id="admin_password" name="admin_password" type="password" minlength="10" required'), 'Revisited staged password field still requires browser re-entry.');
+$assert(!str_contains($revisited, 'id="admin_password_confirmation" name="admin_password_confirmation" type="password" minlength="10" required'), 'Revisited password confirmation field still requires browser re-entry.');
+$revisitCsrf = $matches[1] ?? $csrf;
+preg_match('/name="_token" value="([^"]+)"/', $revisited, $matches);
+$revisitCsrf = $matches[1] ?? $revisitCsrf;
+$sameStatePost = $administratorPost;
+$sameStatePost['_token'] = $revisitCsrf;
+$sameStatePost['site_tagline'] = 'Changed without password re-entry';
+$sameStatePost['admin_password'] = '';
+$sameStatePost['admin_password_confirmation'] = '';
+http_response_code(200);
+$sameStateResponse = $request('POST', '/install', $sameStatePost);
+$assert(http_response_code() === 302 && ($GLOBALS['_SESSION']['installer_administrator_staged']['password'] ?? '') === 'SafePassword123!', 'Blank password revisit did not preserve the staged password.');
+
+$failedReplacement = $sameStatePost;
+$failedReplacement['_token'] = $revisitCsrf;
+$failedReplacement['admin_password'] = 'replacement-only';
+$failedReplacement['admin_password_confirmation'] = '';
+http_response_code(200);
+$failedReplacementResponse = $request('POST', '/install', $failedReplacement);
+$assert(http_response_code() === 422 && ($GLOBALS['_SESSION']['installer_administrator_staged']['password'] ?? '') === 'SafePassword123!', 'Invalid replacement password mutated the staged Administrator state.');
 $assert($before['occupancy']->objects() === $probe->inspect($configuration)['occupancy']->objects(), 'WU3 staging changed the Database object set.');
 $assert($originalEnvironment === (is_file($base . '/.env') ? hash_file('sha256', $base . '/.env') : false), 'WU3 staging changed the environment file.');
 
