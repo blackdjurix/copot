@@ -44,7 +44,7 @@ $assert(str_contains($committer, 'DROP TABLE'), 'Ownership-aware cleanup does no
 $assert(str_contains($committer, '!$environmentExisted && is_file($environmentPath)'), 'Failure cleanup does not remove a newly created environment file.');
 $assert(str_contains($committer, '$lock = $this->mutex->acquire()'), 'Commit operation does not acquire the installation coordination boundary.');
 $assert(str_contains($committer, 'already been finalized'), 'Repeated installation safety is not guarded.');
-$assert(str_contains($view, 'class="installer-summary"'), 'Review/Result does not use the shared generic summary primitive.');
+$assert(str_contains($view, 'class="installer-summary installer-list"'), 'Review/Result does not use the shared generic summary primitive.');
 $assert(str_contains($view, 'Administrator email'), 'Review does not summarize the staged Administrator/Site plan.');
 $assert(str_contains($view, 'DB Namespace'), 'Review does not summarize the staged namespace.');
 $reviewStart = strpos($view, "<?php elseif ((\$currentStep ?? '') === 'finalize'): ?>");
@@ -57,7 +57,7 @@ $assert(str_contains($view, 'class="nav-button"'), 'Previous/Next controls do no
 $assert(str_contains($view, 'class="nav-button install-action"'), 'Install is not distinguishable as the final mutation action.');
 $assert(!str_contains($view, 'Return to Review &amp; Install'), 'Obsolete contextual return navigation remains visible.');
 $assert(str_contains($view, 'role="<?= $resultStatus === \'error\' ? \'alert\' : \'status\' ?>"'), 'Result status does not preserve semantic status roles.');
-$assert(str_contains($css, '.installer-summary'), 'WU4 summary does not use a generic shared installer CSS primitive.');
+$assert(str_contains($css, '.installer-list'), 'WU4 summary does not use a generic shared installer CSS primitive.');
 $assert(!str_contains($view, '<style'), 'WU4 view introduces inline CSS.');
 $assert(!str_contains($view, 'review.css') && !str_contains($view, 'result.css'), 'WU4 view introduces page-specific stylesheets.');
 

@@ -35,8 +35,11 @@
                 <?php $activeDatabaseFeedback = is_array($databaseFeedback ?? null) ? $databaseFeedback : null; $databaseFeedbackKind = in_array(($activeDatabaseFeedback['kind'] ?? ''), ['success', 'info', 'warning', 'error'], true) ? $activeDatabaseFeedback['kind'] : 'info'; $databaseFeedbackLabel = ['success' => 'Success', 'info' => 'Information', 'warning' => 'Warning', 'error' => 'Error'][$databaseFeedbackKind]; ?>
                 <p id="database_feedback" class="status status--<?= $databaseFeedbackKind ?>" role="<?= $databaseFeedbackKind === 'error' ? 'alert' : 'status' ?>" aria-live="polite" <?= $activeDatabaseFeedback === null ? 'hidden' : '' ?>><span class="status-label"><?= $activeDatabaseFeedback === null ? '' : htmlspecialchars($databaseFeedbackLabel, ENT_QUOTES, 'UTF-8') ?></span><span class="status-message"><?= $activeDatabaseFeedback === null ? '' : htmlspecialchars((string) ($activeDatabaseFeedback['message'] ?? ''), ENT_QUOTES, 'UTF-8') ?></span></p>
             <?php endif; ?>
-            <?php if (($currentStep ?? '') === 'requirements'): ?><h2>Requirements</h2>
-            <ul class="requirements">
+            <?php if (($currentStep ?? '') === 'requirements'): ?>
+            <div class="installer-phase">
+            <div class="installer-phase-content" tabindex="0">
+            <h2>Requirements</h2>
+            <ul class="requirements installer-list">
                 <?php foreach (($requirements ?? []) as $requirement): ?>
                     <li>
                         <span class="requirement-copy">
@@ -50,7 +53,8 @@
                         </strong>
                     </li>
                 <?php endforeach; ?>
-                </ul>
+            </ul>
+            </div>
                 <div class="installer-footer installer-actions">
                     <span class="installer-footer__start" aria-hidden="true"></span>
                     <span class="installer-footer__center" aria-hidden="true"></span>
@@ -60,9 +64,12 @@
                         <span class="installer-footer__end warning" role="status">Resolve the failed requirements to continue.</span>
                     <?php endif; ?>
                 </div>
+            </div>
             <?php endif; ?>
 
             <?php if (($currentStep ?? 'database') === 'database'): ?>
+                <div class="installer-phase">
+                <div class="installer-phase-content" tabindex="0">
                 <h2>Database</h2>
                 <?php if (is_array($databaseResult ?? null)): ?>
                     <?php if (!empty($databaseResult['warning'])): ?>
@@ -154,29 +161,36 @@
                             <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
                         </div>
                     </div>
-
+                </form>
+                </div>
                     <div class="installer-footer installer-actions">
                         <span class="installer-footer__start"><?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous</a><?php endif; ?></span>
                         <span class="installer-footer__center" aria-hidden="true"></span>
-                        <span class="installer-footer__end"><button class="nav-button" type="submit" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button></span>
+                        <span class="installer-footer__end"><button class="nav-button" type="submit" form="database_form" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button></span>
                     </div>
-                </form>
+                </div>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
                 <?php if (empty($databaseStaged)): ?>
+                <div class="installer-phase">
+                <div class="installer-phase-content" tabindex="0">
                 <h2>Administrator and Site</h2>
                 <p>Stage the Database decision before configuring Administrator &amp; Site.</p>
+                </div>
                 <div class="installer-footer installer-actions">
                     <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
                     <span class="installer-footer__center" aria-hidden="true"></span>
                     <span class="installer-footer__end"><button class="nav-button" type="button" disabled>Next</button></span>
                 </div>
+                </div>
                 <?php else: ?>
+                <div class="installer-phase">
+                <div class="installer-phase-content" tabindex="0">
                 <h2>Administrator and Site</h2>
                 <?php if (!empty($setupErrors['storage'])): ?>
                     <p class="field-error"><?= htmlspecialchars($setupErrors['storage'], ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
 
-                <form class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
+                <form id="administrator_form" class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>" autocomplete="off">
                         <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                         <input type="hidden" name="action" value="stage_administrator">
 
@@ -255,22 +269,25 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="installer-footer installer-actions">
-                        <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
-                        <span class="installer-footer__center" aria-hidden="true"></span>
-                        <span class="installer-footer__end"><button class="nav-button" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button></span>
-                    </div>
                 </form>
+                </div>
+                <div class="installer-footer installer-actions">
+                    <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
+                    <span class="installer-footer__center" aria-hidden="true"></span>
+                    <span class="installer-footer__end"><button class="nav-button" type="submit" form="administrator_form" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button></span>
+                </div>
+                </div>
                 <?php endif; ?>
             <?php elseif (($currentStep ?? '') === 'finalize'): ?>
+                <div class="installer-phase">
+                <div class="installer-phase-content" tabindex="0">
                 <h2>Review &amp; Install</h2>
                 <?php if (is_string($finalizationError ?? null) && $finalizationError !== ''): ?>
                     <p class="field-error"><?= htmlspecialchars($finalizationError, ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
 
                 <?php $reviewIntentLabels = ['fresh_installation' => 'Fresh installation', 'coexistence' => 'New independent installation', 'adopt_existing_installation' => 'Adopt existing installation', 'migrate_existing_installation' => 'Migrate existing installation']; ?>
-                <ul class="installer-summary">
+                <ul class="installer-summary installer-list">
                     <li><span>Database</span><strong><?= htmlspecialchars((string) ($values['database'] ?? ''), ENT_QUOTES, 'UTF-8') ?></strong></li>
                     <li><span>DB Namespace</span><strong><?= htmlspecialchars((string) (($values['namespace'] ?? '') !== '' ? $values['namespace'] : 'empty'), ENT_QUOTES, 'UTF-8') ?></strong></li>
                     <li><span>Installation intent</span><strong><?= htmlspecialchars($reviewIntentLabels[$values['intent'] ?? ''] ?? 'Selected database plan', ENT_QUOTES, 'UTF-8') ?></strong></li>
@@ -281,27 +298,33 @@
                     <li><span>Baseline modules</span><strong>Core platform set</strong></li>
                 </ul>
 
-                <form class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
+                <form id="review_install_form" class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="action" value="finalize_installation">
-                    <div class="installer-footer installer-actions">
-                        <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
-                        <span class="installer-footer__center" aria-hidden="true"></span>
-                        <span class="installer-footer__end"><button class="nav-button install-action" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Install</button></span>
-                    </div>
                 </form>
+                </div>
+                <div class="installer-footer installer-actions">
+                    <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
+                    <span class="installer-footer__center" aria-hidden="true"></span>
+                    <span class="installer-footer__end"><button class="nav-button install-action" type="submit" form="review_install_form" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Install</button></span>
+                </div>
+                </div>
             <?php elseif (($currentStep ?? '') === 'result'): ?>
+                <div class="installer-phase">
+                <div class="installer-phase-content" tabindex="0">
                 <h2>Installation Result</h2>
                 <?php $resultStatus = (($installationResult['status'] ?? '') === 'success') ? 'success' : 'error'; ?>
                 <p class="status status--<?= $resultStatus ?>" role="<?= $resultStatus === 'error' ? 'alert' : 'status' ?>" aria-live="polite"><span class="status-label"><?= $resultStatus === 'success' ? 'Success' : 'Error' ?></span><span class="status-message"><?= htmlspecialchars((string) ($installationResult['message'] ?? 'Installation did not complete.'), ENT_QUOTES, 'UTF-8') ?></span></p>
                 <?php if ($resultStatus === 'success'): ?>
-                    <ul class="installer-summary">
+                    <ul class="installer-summary installer-list">
                         <li><span>Installed version</span><strong><?= htmlspecialchars((string) ($installationResult['details']['finalization']['version'] ?? 'current'), ENT_QUOTES, 'UTF-8') ?></strong></li>
                         <li><span>Default theme</span><strong><?= htmlspecialchars((string) ($installationResult['details']['finalization']['theme'] ?? 'default'), ENT_QUOTES, 'UTF-8') ?></strong></li>
                         <li><span>Administrator</span><strong>Created</strong></li>
                     </ul>
                     <p><a class="button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin') : '/admin', ENT_QUOTES, 'UTF-8') ?>">Continue to Admin</a></p>
                 <?php endif; ?>
+                </div>
+                </div>
             <?php endif; ?>
         </section>
     </main>

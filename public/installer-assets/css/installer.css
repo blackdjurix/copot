@@ -69,16 +69,17 @@ form {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-height: 0;
 }
 
-.requirements,
+.installer-list,
 .steps {
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
-.installer-summary {
+.installer-list {
     display: grid;
     gap: 8px;
     margin: 16px 0 0;
@@ -86,7 +87,7 @@ form {
     list-style: none;
 }
 
-.installer-summary li {
+.installer-list li {
     display: flex;
     justify-content: space-between;
     gap: 16px;
@@ -94,16 +95,23 @@ form {
     border-bottom: 1px solid var(--installer-muted-border);
 }
 
-.installer-summary strong {
+.installer-list strong {
     text-align: right;
 }
 
-.requirements li {
+.installer-phase {
+    flex: 1;
     display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--installer-muted-border);
+    flex-direction: column;
+    min-height: 0;
+}
+
+.installer-phase-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 2px;
 }
 
 .requirement-copy {
@@ -360,7 +368,7 @@ a:focus-visible {
 .installer-footer__end { min-width: 0; }
 
 .installer-footer .nav-button {
-    display: block;
+    display: flex;
     width: 100%;
     min-height: 42px;
     padding: 10px 16px;
@@ -370,6 +378,9 @@ a:focus-visible {
     border-radius: 6px;
     font-weight: 700;
     text-decoration: none;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .installer-footer .nav-button.install-action {
@@ -378,8 +389,7 @@ a:focus-visible {
     border-color: #111827;
 }
 
-.installer-footer > button,
-.installer-actions .button-secondary {
+.installer-footer .nav-button {
     margin-top: 0;
 }
 
@@ -443,12 +453,7 @@ a:focus-visible {
         margin-top: 0;
     }
 
-    .mobile-requirements-review {
-        display: block;
-        margin: -8px 0 12px;
-    }
-
-    .requirements li {
+    .installer-list li {
         align-items: flex-start;
     }
 

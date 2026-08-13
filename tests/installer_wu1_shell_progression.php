@@ -63,6 +63,12 @@ $assert(str_contains($view, 'installer-footer'), 'Shared navigation footer is mi
 $assert(str_contains($css, 'min-height: min(760px, calc(100vh - 40px));'), 'Desktop installer shell has no shared viewport-aware footprint.');
 $assert(str_contains($css, 'align-items: center;'), 'Desktop installer shell is not vertically centered.');
 $assert(str_contains($view, 'phase-form'), 'Installer phase forms do not participate in the shared shell geometry.');
+$assert(substr_count($view, 'class="installer-phase"') >= 5, 'All installer phases do not use the shared phase container.');
+$assert(substr_count($view, 'class="installer-phase-content" tabindex="0"') >= 5, 'All installer phases do not expose a keyboard-focusable shared content region.');
+$assert(str_contains($css, '.installer-phase-content') && str_contains($css, 'overflow-y: auto;') && str_contains($css, 'min-height: 0;'), 'Phase content is not flex-safe and internally scrollable.');
+$assert(str_contains($css, 'justify-content: center;') && str_contains($css, 'align-items: center;'), 'Shared footer actions do not center anchor and button content identically.');
+$assert(str_contains($view, 'requirements installer-list') && str_contains($view, 'installer-summary installer-list'), 'Requirements and Review do not share the generic installer list primitive.');
+$assert(str_contains($css, '.installer-list li') && !str_contains($css, '.requirements li') && !str_contains($css, '.installer-summary li'), 'Requirements and Review retain duplicated list row styling.');
 $assert(!str_contains($view, 'mobile-requirements-review'), 'Mobile Requirements review hyperlink remains present.');
 $assert(str_contains($view, 'elseif (($currentStep ?? \'\') === \'finalize\')'), 'Finalize is not bounded to the Finalize step.');
 $assert(str_contains($css, '.steps .step {') && str_contains($css, 'display: none;'), 'Mobile progress does not hide non-current steps.');
