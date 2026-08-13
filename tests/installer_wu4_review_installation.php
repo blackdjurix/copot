@@ -27,10 +27,13 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 $assert(str_contains($bootstrap, "'label' => 'Installation Result'"), 'Installation Result is not an explicit installer phase.');
 $assert(str_contains($bootstrap, "'result' => 'Installation Result'"), 'Result phase is not part of current-step derivation.');
 $assert(str_contains($bootstrap, 'new InstallerInstallationCommitter('), 'Review & Install does not construct the commit coordinator.');
+$assert(str_contains($bootstrap, 'use Copot\\Core\\InstallerSchemaRunner;'), 'Review & Install does not import the schema runner used by the commit coordinator.');
 $assert(str_contains($bootstrap, "if (\$action === 'finalize_installation')"), 'Installation mutation is not bounded to the Review & Install action.');
 $assert(str_contains($bootstrap, '$installationResult = [\'status\' => \'success\''), 'Successful installation does not produce an explicit result state.');
 $assert(str_contains($bootstrap, '$installationResult = [\'status\' => \'failure\''), 'Failed installation does not produce an explicit sanitized result state.');
 $assert(str_contains($bootstrap, 'Installation could not be completed safely.'), 'Failure result does not use sanitized user-visible messaging.');
+$assert(str_contains($bootstrap, "'state' => \$currentStep === 'result'"), 'Review & Install is not completed after entering the Result phase.');
+$assert(str_contains($bootstrap, "'state' => \$currentStep === 'result' ? 'current' : 'pending'"), 'Installation Result is not current after Install executes.');
 $assert(str_contains($committer, 'InstallerDatabaseValidator())->validate'), 'Final commit does not revalidate the staged database input.');
 $assert(str_contains($committer, '$this->probe->inspect($configuration)'), 'Final commit does not re-inspect the target database.');
 $assert(str_contains($committer, 'InstallerRoutingPlanner())->plan'), 'Final commit does not revalidate installation intent eligibility.');

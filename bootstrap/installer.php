@@ -15,9 +15,11 @@ use Copot\Core\InstallerDatabaseProbe;
 use Copot\Core\InstallerOwnershipProofAssembler;
 use Copot\Core\CoreMigrationRegistry;
 use Copot\Core\InstallerDatabaseValidator;
+use Copot\Core\InstallerEnvironmentWriter;
 use Copot\Core\InstallerFinalizer;
 use Copot\Core\InstallerInstallationCommitter;
 use Copot\Core\InstallerRequirements;
+use Copot\Core\InstallerSchemaRunner;
 use Copot\Core\InstallerSchemaState;
 use Copot\Core\InstallerValidationException;
 use Copot\Core\PasswordHasher;
@@ -581,9 +583,11 @@ $steps = [
     ],
     [
         'label' => 'Review & Install',
-        'state' => !$requirementsPassed || !$requirementsAcknowledged || (!$administratorStaged && (!$schemaReady || !$administratorExists))
+        'state' => $currentStep === 'result'
+            ? 'completed'
+            : (!$requirementsPassed || !$requirementsAcknowledged || (!$administratorStaged && (!$schemaReady || !$administratorExists))
             ? 'blocked'
-            : ($forwardStep === 'finalize' ? 'current' : 'pending'),
+            : ($forwardStep === 'finalize' ? 'current' : 'pending')),
     ],
     [
         'label' => 'Installation Result',

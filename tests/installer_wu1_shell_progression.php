@@ -34,7 +34,7 @@ $assert(str_contains($bootstrap, '$session->remove($requirementsSessionKey)'), '
 $assert(str_contains($bootstrap, '$currentStep = \'requirements\''), 'A blocking requirement does not return to the Requirements step.');
 $assert(str_contains($bootstrap, 'return Response::redirect($deploymentContext->url(\'/install?step=database\'))'), 'Successful Requirements progression does not target Database.');
 $assert(str_contains($bootstrap, '\'state\' => !$requirementsPassed || !$requirementsAcknowledged ? \'current\' : \'completed\''), 'Requirements progress state is not gated by acknowledgement.');
-$assert(str_contains($bootstrap, "'state' => !\$requirementsPassed || !\$requirementsAcknowledged || (!\$administratorStaged && (!\$schemaReady || !\$administratorExists))"), 'Review & Install is not gated by staged Administrator state or completed installation state.');
+$assert(str_contains($bootstrap, "!\$requirementsPassed || !\$requirementsAcknowledged || (!\$administratorStaged && (!\$schemaReady || !\$administratorExists))"), 'Review & Install is not gated by staged Administrator state or completed installation state.');
 $assert(str_contains($bootstrap, '\'statusKind\' => $statusKind'), 'Status semantics are not exposed to the view.');
 $assert(str_contains($bootstrap, '$showStatus ='), 'Status visibility is not derived from meaningful contextual conditions.');
 $assert(str_contains($bootstrap, '\'displayStep\' => $displayStep'), 'Displayed installer phase is not separated from forward lifecycle state.');
