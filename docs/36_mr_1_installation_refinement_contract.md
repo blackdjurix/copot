@@ -3,9 +3,9 @@
 ## Status and authority
 
 ```text
-MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS (WU5 NEXT)
+MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS (WU4 NEXT)
 Contract: AMENDED / LOCKED
-MR.1 implementation: AUTHORIZED WITHIN THE LOCKED SIX-WU CONTRACT
+MR.1 implementation: AUTHORIZED WITHIN THE LOCKED FIVE-WU CONTRACT
 MR.1 WU1: COMPLETE AND CLOSED
 MR.1 WU1 technical validation: PASS
 MR.1 WU1 human acceptance: PASS
@@ -18,10 +18,9 @@ MR.1 WU3 implementation: COMPLETE
 MR.1 WU3 technical validation: PASS
 MR.1 WU3 human acceptance: PASS
 MR.1 Reconciliation Batches 1–5: COMPLETE
-MR.1 WU4: IMPLEMENTATION COMPLETE / HUMAN ACCEPTANCE PENDING AFTER RUNTIME SYNC
-MR.1 WU4 technical validation: PASS
-MR.1 WU5: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
-MR.1 WU6: NOT STARTED
+MR.1 former WU4 Module-selection feature: SUPERSEDED / REMOVED FROM MR.1 SCOPE
+MR.1 WU4: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
+MR.1 WU5: NOT STARTED
 MR.1 branch lifecycle: main-only / no-op
 ```
 
@@ -30,11 +29,11 @@ It adopts the accepted staged-installation architecture without reopening the
 completed Multi-Installation WU1–WU6 baseline or authorizing release work.
 
 The completed Installer Shared CSS foundation is the durable post-WU3 installer
-UI foundation. WU4 and subsequent installer UI work must consume its shared
-shell, progress, status, form, control, feedback, action/navigation, focus,
-spacing, and responsive primitives rather than duplicate generic step-local
-styling. Step-specific styling remains appropriate only for genuinely unique
-layout or behavior.
+UI foundation. Subsequent installer UI work must consume its shared shell,
+progress, status, form, control, feedback, action/navigation, focus, spacing,
+and responsive primitives rather than duplicate generic step-local styling.
+Step-specific styling remains appropriate only for genuinely unique layout or
+behavior.
 
 ## Objective and installation flow
 
@@ -44,9 +43,8 @@ lifecycle, and fail-closed semantics. The authoritative flow is:
 1. Requirements
 2. Database
 3. Administrator & Site
-4. Modules
-5. Review & Install
-6. Installation Result
+4. Review & Install
+5. Installation Result
 
 Installation Result is an outcome phase, not another configuration-input step.
 
@@ -66,16 +64,15 @@ creation is distinct from COPOT schema/tableset creation.
 ## Locked scope and exclusions
 
 MR.1 covers staged Requirements, database decision UX, Administrator/Site
-staging, optional bundled/Core Module selection, final review and installation
-commit, installer routes/shell, contextual feedback, responsive behavior,
-accessibility, and human acceptance.
+staging, Review & Install, installation commit, installer routes/shell,
+contextual feedback, responsive behavior, accessibility, and human acceptance.
 
 Out of scope: Dashboard; post-install Admin Shell or Core Module management UI
 refinement; cross-fileset ownership architecture; migration-capability redesign;
 package-lifecycle redesign; Server-Empty Bootstrap; production reconciliation;
-release, tag, and publication. Selecting/installing optional bundled Core
-Modules during installation is in scope; later Core Module Admin UI refinement
-remains separate.
+release, tag, and publication. Module installation/activation selection is not
+part of MR.1 installer UX; later Core Module Admin UI refinement remains
+separate.
 
 ## Locked UX and safety principles
 
@@ -109,9 +106,9 @@ without positive ownership evidence is not an owned installation.
 ## Pre-MR.1 Correctness Gate
 
 The gate is satisfied. MR.1 implementation proceeds within this locked contract;
-WU2 and WU3 are complete and closed, while WU4 implementation is complete with
-human acceptance pending after runtime synchronization; WU5 is the next active
-implementation target, while WU6 remains not started.
+WU1–WU3 are complete and closed; the former WU4 Module-selection feature is
+superseded and removed from active scope. WU4 is the next active implementation
+target and WU5 remains not started.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
 
@@ -136,9 +133,9 @@ PRE-MR.1 CORRECTNESS GATE = SATISFIED / VALIDATED
 MR.1 WU1 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
 MR.1 WU2 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN VISUAL ACCEPTANCE PASS
 MR.1 WU3 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
-MR.1 WU4 = IMPLEMENTATION COMPLETE / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PENDING AFTER RUNTIME SYNC
-MR.1 WU5 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
-MR.1 WU6 = NOT STARTED
+MR.1 former WU4 Module Selection = SUPERSEDED / REMOVED FROM ACTIVE SCOPE
+MR.1 WU4 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
+MR.1 WU5 = NOT STARTED
 ```
 
 ## Separate non-blocking architecture investigation
@@ -150,7 +147,7 @@ capability promise.
 
 ## Work Unit topology
 
-MR.1 has exactly six work units:
+MR.1 has exactly five work units:
 
 1. **WU1 — Installer Shell, Requirements & Navigation Framework**
 
@@ -217,37 +214,14 @@ MR.1 has exactly six work units:
    schema, table, Administrator/Site, or Module mutation occurs before Review &
    Install.
 
-4. **WU4 — Optional Core Module Selection**
+4. **WU4 — Review, Installation Commit & Result**
 
-   Expose optional bundled/Core/first-party Modules for staged installation
-   choice; distinguish mandatory platform Modules from optional Modules; support
-   staged Install and Active selections; require Install for Active; clear Active
-   when Install is unselected; validate dependencies; and permit recommended
-   defaults. Mandatory platform Modules are not user-disableable here.
-
-   Before implementation, inspect repository-native Module lifecycle vocabulary
-   so AVAILABLE/BUNDLED, INSTALLED, and ACTIVE are not conflated and no
-   incompatible persisted lifecycle semantics are invented.
-
-   Its installer presentation must consume the completed shared CSS foundation;
-   new step-specific styling is limited to genuinely unique Module-selection
-   layout or behavior. Status: **COMPLETE AND CLOSED**. WU4 stages optional
-   Install and Active choices in session state only, keeps baseline platform
-   Modules mandatory, enforces Active => Install and deterministic dependency
-   validation, and performs no Module registration or activation. The current
-   repository catalog exposes no optional candidate because `modules/example`
-   is an explicitly excluded sample Module; fixture coverage proves the
-   metadata-driven optional and dependency paths without inventing a new
-   lifecycle classification.
-
-5. **WU5 — Final Review, Installation Commit & Result**
-
-   Final Review presents the complete staged Database, Table Prefix/namespace,
-   installation mode, Administrator, Site, Modules, warnings, and planned
-   actions using clear label/value alignment. Install revalidates requirements,
-   database/namespace/ownership, and the accepted coordination boundary; then
-   creates the COPOT schema/tableset, Administrator/Site state, mandatory and
-   selected optional Modules, selected activations, and required
+   Review & Install presents the complete staged Database, Table
+   Prefix/namespace, installation mode, Administrator, Site, warnings, and
+   planned actions using clear label/value alignment. Install revalidates
+   requirements, database/namespace/ownership, and the accepted coordination
+   boundary; then creates the COPOT schema/tableset, Administrator/Site state,
+   baseline Modules, and required
    identity/schema/migration/lifecycle/runtime evidence before committing
    completion.
 
@@ -257,12 +231,12 @@ MR.1 has exactly six work units:
    Installation Result reports a concise success and Admin/Site handoff, or a
    human-readable failed stage, cleanup/recovery state, and safe guidance.
 
-6. **WU6 — Cross-Step Responsive, Accessibility & Human Acceptance**
+5. **WU5 — Cross-Step Responsive, Accessibility & Human Acceptance**
 
-   Validate Steps 1–6 across desktop/mobile, keyboard/focus/screen-reader
+   Validate Steps 1–5 across desktop/mobile, keyboard/focus/screen-reader
    behavior, Back/forward comprehension, staged-data retention, absence of
-   unintended COPOT mutation before Install, Module-selection usability, final
-   review comprehension, result usability, and final human UX acceptance.
+   unintended COPOT mutation before Install, final review comprehension, result
+   usability, and final human UX acceptance.
 
 ## Validation and implementation boundaries
 
@@ -271,31 +245,31 @@ negative/ambiguous database states, namespaced Core/Module state, responsive
 behavior, accessibility, and human comprehension. Findings do not silently
 expand MR.1.
 
-WU2 and WU3 are **COMPLETE AND CLOSED** with technical validation **PASS** and
-human acceptance **PASS**. WU4 implementation and technical validation are
-**COMPLETE / PASS**, while human acceptance is **PENDING AFTER RUNTIME SYNC**.
-Reconciliation Batches 1–5 are **COMPLETE**. WU5 is the **NEXT ACTIVE
-IMPLEMENTATION TARGET**; WU6 is **NOT STARTED**. This
+WU1–WU3 are **COMPLETE AND CLOSED** with technical validation **PASS** and
+human acceptance **PASS**. Reconciliation Batches 1–5 are **COMPLETE**. The
+former WU4 Module-selection feature is **SUPERSEDED / REMOVED FROM ACTIVE
+SCOPE**. WU4 is the **NEXT ACTIVE IMPLEMENTATION TARGET**; WU5 is **NOT
+STARTED**. This
 amendment does not authorize work outside the
 MR.1 contract, lifecycle redesign beyond an accepted work-unit boundary, Module
-implementation outside WU4, cross-fileset ownership work, release, tag, or
+implementation outside the installer baseline, cross-fileset ownership work, release, tag, or
 publication.
 
 ## Documentation and lifecycle boundaries
 
 Only materially relevant current-authority documentation is reconciled. The
 historical Multi-Installation WU1–WU6 contract and evidence remain preserved and
-closed. This contract records the six-WU topology, staged-installation invariant,
+closed. This contract records the five-WU topology, staged-installation invariant,
 satisfied correctness gate, WU1–WU3 completion and acceptance status, accepted
 Reconciliation Batches 1–5, and separate ownership-proof investigation. The
 accepted `Install UI.png` visual guideline
 continues as the structural reference for later installer refinement; page-specific
-Database, Administrator/Site, and Final Review layout work remains owned by WU2,
-WU3, and WU5 respectively. The completed Installer Shared CSS foundation is the
-durable post-WU3 UI ownership boundary for those surfaces and for WU4; generic
+Database, Administrator/Site, and Review & Install layout work remains owned by
+WU2, WU3, and WU4 respectively. The completed Installer Shared CSS foundation is
+the durable post-WU3 UI ownership boundary for those surfaces; generic
 presentation must be shared there, with step-specific CSS reserved for genuinely
 unique layout or behavior. The accepted mobile shell remains distinct.
 MR.1 remains main-only / no-op for branch lifecycle. Review & Install remains the
 first COPOT installation mutation boundary; the database-container provisioning
-exception is unchanged. WU4 is complete and closed; WU5 is the next
-implementation target.
+exception is unchanged. WU4 is not started and is the next implementation
+target.

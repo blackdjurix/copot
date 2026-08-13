@@ -5,8 +5,9 @@ declare(strict_types=1);
 $base = dirname(__DIR__);
 $bootstrap = file_get_contents($base . '/bootstrap/installer.php');
 $view = file_get_contents($base . '/resources/views/installer/index.php');
+$css = file_get_contents($base . '/public/installer-assets/css/installer.css');
 
-if (!is_string($bootstrap) || !is_string($view)) {
+if (!is_string($bootstrap) || !is_string($view) || !is_string($css)) {
     throw new RuntimeException('Database revisit sources could not be read.');
 }
 
@@ -25,7 +26,7 @@ $assert(str_contains($bootstrap, '$databaseContextualState = $currentStep === \'
 $assert(str_contains($view, '$activeDatabaseFeedback === null ? \'hidden\' : \'\''), 'Rehydrated staged inspection is not hidden from the user.');
 $assert(str_contains($view, '$activeDatabaseFeedback === null ? \'\' : htmlspecialchars($databaseFeedbackLabel'), 'Quiet revisit feedback contains a pre-rendered label.');
 $assert(str_contains($view, '$activeDatabaseFeedback === null ? \'\' : htmlspecialchars((string) ($activeDatabaseFeedback[\'message\'] ?? \'\')'), 'Quiet revisit feedback contains stale result text.');
-$assert(str_contains($view, '#database_feedback[hidden] { display: none; }'), 'Hidden Database feedback still reserves layout height.');
+$assert(str_contains($css, '#database_feedback[hidden]') && str_contains($css, 'display: none;'), 'Hidden Database feedback still reserves layout height.');
 $assert(str_contains($view, 'is_array($databaseResult ?? null)'), 'Staged Database result remains available for compatibility advisories.');
 $assert(str_contains($view, 'Database fields changed. Test the connection again.'), 'Field-change feedback remains available after revisit.');
 $assert(str_contains($view, "let tested = <?= !empty(\$databaseStaged) ? 'true' : 'false' ?>;"), 'Staged Database revisit does not arm field-change feedback.');

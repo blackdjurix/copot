@@ -831,8 +831,8 @@ work requires separate planning and contract authorization. Server-Empty Bootstr
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
 MR.1 Installation Refinement is separately promoted as
-**PROMOTED / IMPLEMENTATION IN PROGRESS (WU5 NEXT)** in
-`docs/36_mr_1_installation_refinement_contract.md`. Its six-WU staged-installation
+**PROMOTED / IMPLEMENTATION IN PROGRESS (WU4 NEXT)** in
+`docs/36_mr_1_installation_refinement_contract.md`. Its five-WU installer
 topology is authoritative there: WU1 Installer Shell, Requirements & Navigation
 Framework is **COMPLETE AND CLOSED** with technical validation **PASS** and human
 acceptance **PASS**; WU2 Staged Installation
@@ -840,20 +840,17 @@ Plan & Database Decision is **COMPLETE AND CLOSED** with technical validation
 **PASS** and human visual acceptance **PASS**; WU3 Administrator & Site
 Staging is **COMPLETE AND CLOSED** with implementation, technical validation,
 and human acceptance **PASS**. Reconciliation Batches 1–5 are **COMPLETE**.
-WU3 preserves staged Administrator/Site values across revisit without pre-Install
-mutation and records the accepted Database feedback, shared form/visual,
-inspection-derived intent, namespace-collision, and ownership-proof/
-compatibility outcomes. The completed Installer Shared CSS foundation is the
-durable post-WU3 installer UI foundation; WU4 and subsequent installer UI work
-must consume its shared visual primitives, with step-specific styling reserved
-for genuinely unique layout or behavior. WU4 Optional Core Module Selection
-implementation and technical validation are **COMPLETE / PASS**, while human
-acceptance is **PENDING AFTER RUNTIME SYNC**. WU5 Final Review,
-Installation Commit & Result is the **NEXT ACTIVE IMPLEMENTATION TARGET**; WU6
+The accepted flow is Requirements → Database → Administrator & Site → Review &
+Install → Installation Result. The former WU4 Module-selection feature is
+superseded and removed from MR.1 installer UX. WU3 preserves staged
+Administrator/Site values across revisit without pre-Install mutation and records
+the accepted Database feedback, shared form/visual, inspection-derived intent,
+namespace-collision, and ownership-proof/compatibility outcomes. WU4 Review,
+Installation Commit & Result is the **NEXT ACTIVE IMPLEMENTATION TARGET**; WU5
 Cross-Step Responsive, Accessibility & Human Acceptance is **NOT STARTED**.
 Review & Install is the first COPOT mutation boundary; database-container
 provisioning at Database is the explicit capable-environment exception.
-MR.1 is main-only / no-op for branch lifecycle. This does not authorize WU5
+MR.1 is main-only / no-op for branch lifecycle. This does not authorize WU4
 implementation automatically.
 Blocker A is **RESOLVED / VALIDATED** after focused persistence regression coverage.
 Blocker B is **CLASSIFIED / NOT A DEFECT**.

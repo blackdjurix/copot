@@ -22,11 +22,11 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 $assert(str_contains($bootstrap, 'InstallerRequirements($basePath)'), 'Requirements service is not used.');
 $assert(str_contains($bootstrap, '$requirementsService->check($sessionReady)'), 'Mandatory requirements are not rechecked per request.');
 $assert(str_contains($bootstrap, '$requirementsSessionKey = \'installer_requirements_acknowledged\''), 'Requirements acknowledgement is not session-scoped.');
-$assert(str_contains($bootstrap, "['database', 'requirements', 'administrator', 'modules', 'finalize']"), 'Installer review re-entry steps are not explicitly bounded.');
+$assert(str_contains($bootstrap, "['database', 'requirements', 'administrator', 'finalize']"), 'Installer review re-entry steps are not explicitly bounded.');
 $assert(str_contains($bootstrap, '$requirementsReview = true'), 'Completed Requirements review mode is not represented.');
 $assert(str_contains($bootstrap, '$forwardStep ='), 'Forward lifecycle state is not separated from Requirements review mode.');
 $assert(str_contains($bootstrap, '$requirementsForwardUrl ='), 'Requirements review has no return target for the active forward step.');
-$assert(str_contains($bootstrap, "['database', 'requirements', 'administrator', 'modules', 'finalize']"), 'Completed later installer phases are not bounded review targets.');
+$assert(str_contains($bootstrap, "['database', 'requirements', 'administrator', 'finalize']"), 'Completed later installer phases are not bounded review targets.');
 $assert(str_contains($bootstrap, '$requestedStep === \'administrator\' && $schemaReady'), 'Administrator review is not limited to an available completed schema phase.');
 $assert(str_contains($bootstrap, '$requestedStep === \'finalize\' && $schemaReady && $administratorExists'), 'Finalize review is not limited to its legitimate lifecycle context.');
 $assert(str_contains($bootstrap, "['reviewUrl'] ="), 'Completed installer phases do not expose bounded review URLs.');
@@ -34,7 +34,7 @@ $assert(str_contains($bootstrap, '$session->remove($requirementsSessionKey)'), '
 $assert(str_contains($bootstrap, '$currentStep = \'requirements\''), 'A blocking requirement does not return to the Requirements step.');
 $assert(str_contains($bootstrap, 'return Response::redirect($deploymentContext->url(\'/install?step=database\'))'), 'Successful Requirements progression does not target Database.');
 $assert(str_contains($bootstrap, '\'state\' => !$requirementsPassed || !$requirementsAcknowledged ? \'current\' : \'completed\''), 'Requirements progress state is not gated by acknowledgement.');
-$assert(str_contains($bootstrap, '\'state\' => !$requirementsPassed || !$requirementsAcknowledged || !$schemaReady || !$administratorExists'), 'Finalize is not blocked until Requirements, schema, and administrator state are ready.');
+$assert(str_contains($bootstrap, "'state' => !\$requirementsPassed || !\$requirementsAcknowledged || (!\$administratorStaged && (!\$schemaReady || !\$administratorExists))"), 'Review & Install is not gated by staged Administrator state or completed installation state.');
 $assert(str_contains($bootstrap, '\'statusKind\' => $statusKind'), 'Status semantics are not exposed to the view.');
 $assert(str_contains($bootstrap, '$showStatus ='), 'Status visibility is not derived from meaningful contextual conditions.');
 $assert(str_contains($bootstrap, '\'displayStep\' => $displayStep'), 'Displayed installer phase is not separated from forward lifecycle state.');

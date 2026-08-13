@@ -23,16 +23,14 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 $assert(str_contains($bootstrap, "installer_administrator_staged"), 'Administrator staging does not have an authoritative session key.');
 $assert(str_contains($bootstrap, "stage_administrator"), 'Administrator staging action is missing.');
 $assert(str_contains($bootstrap, '$session->set($administratorSessionKey, $stagedAdministrator)'), 'Administrator staging is not persisted in the session.');
-$assert(str_contains($bootstrap, "url('/install?step=modules')"), 'Successful Administrator staging does not advance to the WU4 boundary.');
+$assert(str_contains($bootstrap, "url('/install?step=finalize')"), 'Successful Administrator staging does not advance to Review & Install.');
 $assert(str_contains($bootstrap, 'InstallerAdministratorValidator::validate($input)'), 'Administrator staging does not reuse the repository-native validation boundary.');
 $assert(str_contains($bootstrap, "'password' => \$validated['password']"), 'Staged Administrator credentials are not retained server-side.');
 $assert(!str_contains($bootstrap, '$administratorSetup->install($input, $requirementsPassed)'), 'Administrator staging still invokes the mutating setup service.');
-$assert(str_contains($bootstrap, "'label' => 'Modules'"), 'WU4 handoff placeholder is not represented in installer progression.');
+$assert(str_contains($bootstrap, "'label' => 'Review & Install'"), 'Review & Install is not represented in installer progression.');
 $assert(str_contains($view, 'name="action" value="stage_administrator"'), 'Administrator form does not use the staged action.');
 $assert(str_contains($view, 'id="admin_password"'), 'Administrator password field is missing.');
 $assert(!str_contains($view, 'Password is kept during this installation.'), 'Administrator password helper copy should be absent.');
-$assert(str_contains($view, 'Select optional Modules for the later installation review.'), 'WU4 staged Module selection surface is missing.');
-$assert(str_contains($view, 'name="action" value="stage_modules"'), 'WU4 staged Module selection action is missing.');
 $assert(!str_contains($view, 'name="action" value="create_administrator"'), 'Administrator view still exposes the pre-Review mutation action.');
 $assert(str_contains($validator, 'SettingsRegistry::core()'), 'WU3 validation does not use repository-native settings definitions.');
 $assert(str_contains($css, '--form-label-column: 150px;'), 'Administrator desktop form does not use the shared label column.');

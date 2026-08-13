@@ -75,7 +75,6 @@ $request = static function (string $method, string $uri, array $post = []): stri
     $GLOBALS['_GET'] = match (true) {
         str_contains($uri, '?step=database') => ['step' => 'database'],
         str_contains($uri, '?step=administrator') => ['step' => 'administrator'],
-        str_contains($uri, '?step=modules') => ['step' => 'modules'],
         default => [],
     };
     $GLOBALS['_POST'] = $post;
@@ -149,8 +148,8 @@ $assert(http_response_code() === 302 && $stageResponse === '', 'Valid Administra
 $assert(($GLOBALS['_SESSION']['installer_administrator_staged']['staged'] ?? false) === true, 'Administrator/Site staged state was not retained.');
 $assert(($GLOBALS['_SESSION']['installer_administrator_staged']['password'] ?? '') === 'SafePassword123!', 'Staged password was not retained server-side.');
 
-$modulesPage = $request('GET', '/install?step=modules');
-$assert(http_response_code() === 200 && str_contains($modulesPage, 'Select optional Modules for the later installation review.'), 'WU3 did not reach the WU4 Module selection surface.');
+$reviewPage = $request('GET', '/install?step=finalize');
+$assert(http_response_code() === 200 && str_contains($reviewPage, 'Review &amp; Install'), 'WU3 did not reach Review & Install.');
 
 $revisited = $request('GET', '/install?step=administrator');
 $assert(http_response_code() === 200 && str_contains($revisited, 'value="WU3 Administrator"'), 'Administrator name did not survive revisit.');
