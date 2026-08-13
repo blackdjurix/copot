@@ -343,24 +343,25 @@ a:focus-visible {
 }
 
 .installer-footer {
+    display: grid;
+    grid-template-columns: 30% minmax(0, 40%) 30%;
+    gap: 0;
     margin-top: auto;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.installer-footer {
     align-items: stretch;
+    width: 100%;
     padding-top: 12px;
 }
 
-.installer-footer > a,
-.installer-footer > button {
-    flex: 0 1 48%;
-    text-align: center;
-}
+.installer-footer__start { grid-column: 1; }
+.installer-footer__center { grid-column: 2; }
+.installer-footer__end { grid-column: 3; }
+
+.installer-footer__start,
+.installer-footer__end { min-width: 0; }
 
 .installer-footer .nav-button {
+    display: block;
+    width: 100%;
     min-height: 42px;
     padding: 10px 16px;
     color: #1e293b;
@@ -449,17 +450,6 @@ a:focus-visible {
 
     .requirements li {
         align-items: flex-start;
-    }
-
-    .installer-footer {
-        flex-direction: row;
-        align-items: stretch;
-    }
-
-    .installer-footer > a,
-    .installer-footer > button {
-        flex: 1 1 0;
-        width: auto;
     }
 
     .form-fields {

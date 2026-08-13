@@ -50,12 +50,14 @@
                         </strong>
                     </li>
                 <?php endforeach; ?>
-            </ul>
+                </ul>
                 <div class="installer-footer installer-actions">
+                    <span class="installer-footer__start" aria-hidden="true"></span>
+                    <span class="installer-footer__center" aria-hidden="true"></span>
                     <?php if (!empty($requirementsPassed)): ?>
-                        <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Next</a>
+                        <span class="installer-footer__end"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Next</a></span>
                     <?php else: ?>
-                        <span class="warning" role="status">Resolve the failed requirements to continue.</span>
+                        <span class="installer-footer__end warning" role="status">Resolve the failed requirements to continue.</span>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
@@ -154,8 +156,9 @@
                     </div>
 
                     <div class="installer-footer installer-actions">
-                        <?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous</a><?php else: ?><span></span><?php endif; ?>
-                        <button class="nav-button" type="submit" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
+                        <span class="installer-footer__start"><?php if (!empty($requirementsAcknowledged)): ?><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=requirements') : '/install?step=requirements', ENT_QUOTES, 'UTF-8') ?>">Previous</a><?php endif; ?></span>
+                        <span class="installer-footer__center" aria-hidden="true"></span>
+                        <span class="installer-footer__end"><button class="nav-button" type="submit" name="action" value="stage_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button></span>
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'administrator'): ?>
@@ -163,8 +166,9 @@
                 <h2>Administrator and Site</h2>
                 <p>Stage the Database decision before configuring Administrator &amp; Site.</p>
                 <div class="installer-footer installer-actions">
-                    <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
-                    <button class="nav-button" type="button" disabled>Next</button>
+                    <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
+                    <span class="installer-footer__center" aria-hidden="true"></span>
+                    <span class="installer-footer__end"><button class="nav-button" type="button" disabled>Next</button></span>
                 </div>
                 <?php else: ?>
                 <h2>Administrator and Site</h2>
@@ -253,8 +257,9 @@
                     </div>
 
                     <div class="installer-footer installer-actions">
-                        <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
-                        <button class="nav-button" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button>
+                        <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=database') : '/install?step=database', ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
+                        <span class="installer-footer__center" aria-hidden="true"></span>
+                        <span class="installer-footer__end"><button class="nav-button" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Next</button></span>
                     </div>
                 </form>
                 <?php endif; ?>
@@ -280,8 +285,9 @@
                     <input type="hidden" name="_token" value="<?= htmlspecialchars($csrfToken ?? '', ENT_QUOTES, 'UTF-8') ?>">
                     <input type="hidden" name="action" value="finalize_installation">
                     <div class="installer-footer installer-actions">
-                        <a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous</a>
-                        <button class="nav-button install-action" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Install</button>
+                        <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
+                        <span class="installer-footer__center" aria-hidden="true"></span>
+                        <span class="installer-footer__end"><button class="nav-button install-action" type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Install</button></span>
                     </div>
                 </form>
             <?php elseif (($currentStep ?? '') === 'result'): ?>
