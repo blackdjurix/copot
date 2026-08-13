@@ -3,9 +3,9 @@
 ## Status and authority
 
 ```text
-MR.1 Installation Refinement: PROMOTED / IMPLEMENTATION IN PROGRESS (WU4 NEXT)
+MR.1 Installation Refinement: PROMOTED / WU4 COMPLETE AND CLOSED (WU5 NEXT)
 Contract: AMENDED / LOCKED
-MR.1 implementation: AUTHORIZED WITHIN THE LOCKED FIVE-WU CONTRACT
+MR.1 implementation: WU1–WU4 COMPLETE; WU5 NOT STARTED / SEPARATELY AUTHORIZED
 MR.1 WU1: COMPLETE AND CLOSED
 MR.1 WU1 technical validation: PASS
 MR.1 WU1 human acceptance: PASS
@@ -19,8 +19,12 @@ MR.1 WU3 technical validation: PASS
 MR.1 WU3 human acceptance: PASS
 MR.1 Reconciliation Batches 1–5: COMPLETE
 MR.1 former WU4 Module-selection feature: SUPERSEDED / REMOVED FROM MR.1 SCOPE
-MR.1 WU4: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
-MR.1 WU5: NOT STARTED
+MR.1 WU4: COMPLETE AND CLOSED
+MR.1 WU4 implementation: COMPLETE
+MR.1 WU4 technical validation: PASS
+MR.1 WU4 functional installation validation: PASS
+MR.1 WU4 human UI acceptance: PASS
+MR.1 WU5: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
 MR.1 branch lifecycle: main-only / no-op
 ```
 
@@ -105,10 +109,10 @@ without positive ownership evidence is not an owned installation.
 
 ## Pre-MR.1 Correctness Gate
 
-The gate is satisfied. MR.1 implementation proceeds within this locked contract;
-WU1–WU3 are complete and closed; the former WU4 Module-selection feature is
-superseded and removed from active scope. WU4 is the next active implementation
-target and WU5 remains not started.
+The gate is satisfied. MR.1 implementation is complete through WU4 within this
+locked contract; WU1–WU4 are complete and closed. The former WU4
+Module-selection feature is superseded and removed from active scope. WU5 is
+the next active implementation target and remains not started.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
 
@@ -134,8 +138,8 @@ MR.1 WU1 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PA
 MR.1 WU2 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN VISUAL ACCEPTANCE PASS
 MR.1 WU3 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
 MR.1 former WU4 Module Selection = SUPERSEDED / REMOVED FROM ACTIVE SCOPE
-MR.1 WU4 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
-MR.1 WU5 = NOT STARTED
+MR.1 WU4 = COMPLETE AND CLOSED / IMPLEMENTATION COMPLETE / TECHNICAL VALIDATION PASS / FUNCTIONAL INSTALLATION VALIDATION PASS / HUMAN UI ACCEPTANCE PASS
+MR.1 WU5 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
 ```
 
 ## Separate non-blocking architecture investigation
@@ -231,6 +235,12 @@ MR.1 has exactly five work units:
    Installation Result reports a concise success and Admin/Site handoff, or a
    human-readable failed stage, cleanup/recovery state, and safe guidance.
 
+   Status: **COMPLETE AND CLOSED**. Implementation, technical validation,
+   functional installation validation, and human UI acceptance are **PASS**.
+   Review & Install remains the first COPOT installation-owned mutation boundary;
+   Installation Result preserves the successful five-phase completion state and
+   uses the shared installer footer for its Admin handoff.
+
 5. **WU5 — Cross-Step Responsive, Accessibility & Human Acceptance**
 
    Validate Steps 1–5 across desktop/mobile, keyboard/focus/screen-reader
@@ -245,11 +255,11 @@ negative/ambiguous database states, namespaced Core/Module state, responsive
 behavior, accessibility, and human comprehension. Findings do not silently
 expand MR.1.
 
-WU1–WU3 are **COMPLETE AND CLOSED** with technical validation **PASS** and
-human acceptance **PASS**. Reconciliation Batches 1–5 are **COMPLETE**. The
-former WU4 Module-selection feature is **SUPERSEDED / REMOVED FROM ACTIVE
-SCOPE**. WU4 is the **NEXT ACTIVE IMPLEMENTATION TARGET**; WU5 is **NOT
-STARTED**. This
+WU1–WU4 are **COMPLETE AND CLOSED** with accepted technical validation and
+human acceptance **PASS**. WU4 functional installation validation is **PASS**.
+Reconciliation Batches 1–5 are **COMPLETE**. The former WU4 Module-selection
+feature is **SUPERSEDED / REMOVED FROM ACTIVE SCOPE**. WU5 is **NOT STARTED /
+NEXT ACTIVE IMPLEMENTATION TARGET**. This
 amendment does not authorize work outside the
 MR.1 contract, lifecycle redesign beyond an accepted work-unit boundary, Module
 implementation outside the installer baseline, cross-fileset ownership work, release, tag, or
@@ -271,5 +281,5 @@ presentation must be shared there, with step-specific CSS reserved for genuinely
 unique layout or behavior. The accepted mobile shell remains distinct.
 MR.1 remains main-only / no-op for branch lifecycle. Review & Install remains the
 first COPOT installation mutation boundary; the database-container provisioning
-exception is unchanged. WU4 is not started and is the next implementation
-target.
+exception is unchanged. WU4 is complete and closed; WU5 is not started and is
+the next active implementation target.
