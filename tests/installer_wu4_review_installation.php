@@ -53,8 +53,12 @@ $assert(str_contains($view, 'DB Namespace'), 'Review does not summarize the stag
 $reviewStart = strpos($view, "<?php elseif ((\$currentStep ?? '') === 'finalize'): ?>");
 $resultStart = strpos($view, "<?php elseif ((\$currentStep ?? '') === 'result'): ?>");
 $reviewMarkup = ($reviewStart !== false && $resultStart !== false) ? substr($view, $reviewStart, $resultStart - $reviewStart) : '';
+$resultMarkup = $resultStart !== false ? substr($view, $resultStart) : '';
 $assert($reviewMarkup !== '' && !str_contains($reviewMarkup, 'password'), 'Review markup exposes a staged secret.');
 $assert(str_contains($view, 'Installation Result'), 'The Result view is missing.');
+$assert(str_contains($resultMarkup, 'installer-footer installer-actions'), 'Successful Result does not use the shared installer footer.');
+$assert(str_contains($resultMarkup, 'installer-footer__end"><a class="nav-button install-action"'), 'Continue to Admin is not placed in the shared footer end column.');
+$assert(!str_contains($resultMarkup, '<p><a class="button"'), 'Continue to Admin remains in the Result content region.');
 $assert(substr_count($bootstrap, "'label' => '") >= 5 && !str_contains($bootstrap, "'label' => 'Modules'"), 'Installer progression does not preserve the authoritative five-phase flow.');
 $assert(str_contains($view, 'class="nav-button"'), 'Previous/Next controls do not use the shared navigation primitive.');
 $assert(str_contains($view, 'class="nav-button install-action"'), 'Install is not distinguishable as the final mutation action.');

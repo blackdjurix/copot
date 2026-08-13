@@ -317,9 +317,15 @@
                         <li><span>Default theme</span><strong><?= htmlspecialchars((string) ($installationResult['details']['finalization']['theme'] ?? 'default'), ENT_QUOTES, 'UTF-8') ?></strong></li>
                         <li><span>Administrator</span><strong>Created</strong></li>
                     </ul>
-                    <p><a class="button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin') : '/admin', ENT_QUOTES, 'UTF-8') ?>">Continue to Admin</a></p>
                 <?php endif; ?>
                 </div>
+                <?php if ($resultStatus === 'success'): ?>
+                <div class="installer-footer installer-actions">
+                    <span class="installer-footer__start" aria-hidden="true"></span>
+                    <span class="installer-footer__center" aria-hidden="true"></span>
+                    <span class="installer-footer__end"><a class="nav-button install-action" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin') : '/admin', ENT_QUOTES, 'UTF-8') ?>">Continue to Admin</a></span>
+                </div>
+                <?php endif; ?>
                 </div>
             <?php endif; ?>
         </section>

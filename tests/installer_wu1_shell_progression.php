@@ -57,8 +57,8 @@ $assert(str_contains($css, '.installer-footer__start { grid-column: 1; }') && st
 $assert(str_contains($css, 'justify-content: space-between;'), 'Installer action row does not separate secondary and primary actions.');
 $assert(str_contains($view, 'button-secondary'), 'Secondary action styling is missing from the shared action row.');
 $assert(str_contains($css, 'grid-template-columns: 30% minmax(0, 40%) 30%;') && str_contains($css, 'align-items: stretch;'), 'Mobile navigation actions are not kept in the shared three-column footer.');
-$assert(substr_count($view, 'installer-footer installer-actions') >= 4, 'All pre-Result phases do not use the shared installer footer.');
-$assert(substr_count($view, 'installer-footer__center') >= 4, 'All pre-Result footers do not retain the shared center gap.');
+$assert(substr_count($view, 'installer-footer installer-actions') >= 5, 'All installer phases do not use the shared installer footer where actions are available.');
+$assert(substr_count($view, 'installer-footer__center') >= 5, 'All installer footers do not retain the shared center gap.');
 $assert(str_contains($view, 'installer-footer'), 'Shared navigation footer is missing.');
 $assert(str_contains($css, 'min-height: min(760px, calc(100vh - 40px));'), 'Desktop installer shell has no shared viewport-aware footprint.');
 $assert(str_contains($css, 'align-items: center;'), 'Desktop installer shell is not vertically centered.');
