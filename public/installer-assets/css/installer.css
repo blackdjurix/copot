@@ -77,6 +77,26 @@ form {
     list-style: none;
 }
 
+.installer-summary {
+    display: grid;
+    gap: 8px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.installer-summary li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--installer-muted-border);
+}
+
+.installer-summary strong {
+    text-align: right;
+}
+
 .requirements li {
     display: flex;
     justify-content: space-between;

@@ -10,7 +10,7 @@
     <main>
         <section>
             <h1>Copot Installer</h1>
-            <?php $phaseDescriptions = ['requirements' => 'Check that this server meets the requirements to run COPOT.', 'database' => 'Choose and validate the database for this installation.', 'administrator' => 'Configure the first administrator and initial site settings.', 'finalize' => 'Review the staged installation details before installing COPOT.']; ?>
+            <?php $phaseDescriptions = ['requirements' => 'Check that this server meets the requirements to run COPOT.', 'database' => 'Choose and validate the database for this installation.', 'administrator' => 'Configure the first administrator and initial site settings.', 'finalize' => 'Review the staged installation details before installing COPOT.', 'result' => 'Review the result of the COPOT installation operation.']; ?>
             <p><?= htmlspecialchars($phaseDescriptions[$currentStep ?? 'requirements'] ?? $phaseDescriptions['requirements'], ENT_QUOTES, 'UTF-8') ?></p>
             <?php if (!empty($showStatus)): ?>
                 <?php $statusKind = in_array(($statusKind ?? 'info'), ['success', 'info', 'warning', 'error'], true) ? $statusKind : 'info'; $statusLabel = ['success' => 'Success', 'info' => 'Information', 'warning' => 'Warning', 'error' => 'Error'][$statusKind]; ?>
@@ -22,7 +22,7 @@
                     <?php foreach (($steps ?? []) as $step): ?>
                         <?php $stepState = in_array(($step['state'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['state'] : 'pending'; $stepDisplayState = in_array(($step['displayState'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['displayState'] : $stepState; ?>
                         <li class="step step-<?= htmlspecialchars($stepDisplayState, ENT_QUOTES, 'UTF-8') ?>" <?= $stepDisplayState === 'current' ? 'aria-current="step"' : '' ?>>
-                            <?php $stepIsCurrentReview = (($step['label'] ?? '') === 'Requirements' && ($currentStep ?? '') === 'requirements') || (($step['label'] ?? '') === 'Database' && ($currentStep ?? '') === 'database') || (($step['label'] ?? '') === 'Administrator & Site' && ($currentStep ?? '') === 'administrator'); ?>
+                            <?php $stepIsCurrentReview = (($step['label'] ?? '') === 'Requirements' && ($currentStep ?? '') === 'requirements') || (($step['label'] ?? '') === 'Database' && ($currentStep ?? '') === 'database') || (($step['label'] ?? '') === 'Administrator & Site' && ($currentStep ?? '') === 'administrator') || (($step['label'] ?? '') === 'Review & Install' && ($currentStep ?? '') === 'finalize') || (($step['label'] ?? '') === 'Installation Result' && ($currentStep ?? '') === 'result'); ?>
                             <?php $stepIsReviewable = $stepState === 'completed' && is_string($step['reviewUrl'] ?? null) && !$stepIsCurrentReview; ?>
                             <?php if ($stepIsReviewable): ?><a class="step-link" href="<?= htmlspecialchars($step['reviewUrl'], ENT_QUOTES, 'UTF-8') ?>" aria-label="Review completed <?= htmlspecialchars($step['label'] ?? 'installer step', ENT_QUOTES, 'UTF-8') ?>">
                             <?php endif; ?><strong><?= htmlspecialchars($step['label'] ?? 'Installer step', ENT_QUOTES, 'UTF-8') ?></strong>
@@ -268,11 +268,16 @@
                     <p class="field-error"><?= htmlspecialchars($finalizationError, ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
 
-                <ul>
-                    <li><span>First administrator</span><strong class="pass">READY</strong></li>
+                <?php $reviewIntentLabels = ['fresh_installation' => 'Fresh installation', 'coexistence' => 'New independent installation', 'adopt_existing_installation' => 'Adopt existing installation', 'migrate_existing_installation' => 'Migrate existing installation']; ?>
+                <ul class="installer-summary">
+                    <li><span>Database</span><strong><?= htmlspecialchars((string) ($values['database'] ?? ''), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                    <li><span>DB Namespace</span><strong><?= htmlspecialchars((string) (($values['namespace'] ?? '') !== '' ? $values['namespace'] : 'empty'), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                    <li><span>Installation intent</span><strong><?= htmlspecialchars($reviewIntentLabels[$values['intent'] ?? ''] ?? 'Selected database plan', ENT_QUOTES, 'UTF-8') ?></strong></li>
+                    <li><span>First administrator</span><strong><?= htmlspecialchars((string) ($setupValues['admin_name'] ?? 'Ready'), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                    <li><span>Administrator email</span><strong><?= htmlspecialchars((string) ($setupValues['admin_email'] ?? ''), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                    <li><span>Site</span><strong><?= htmlspecialchars((string) ($setupValues['site_name'] ?? 'Ready'), ENT_QUOTES, 'UTF-8') ?></strong></li>
                     <li><span>Default frontend theme</span><strong>default</strong></li>
-                    <li><span>Baseline module</span><strong>Content</strong></li>
-                    <li><span>Baseline module</span><strong>Taxonomy</strong></li>
+                    <li><span>Baseline modules</span><strong>Core platform set</strong></li>
                 </ul>
 
                 <form class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
@@ -283,6 +288,18 @@
                         <button type="submit" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Install</button>
                     </div>
                 </form>
+            <?php elseif (($currentStep ?? '') === 'result'): ?>
+                <h2>Installation Result</h2>
+                <?php $resultStatus = (($installationResult['status'] ?? '') === 'success') ? 'success' : 'error'; ?>
+                <p class="status status--<?= $resultStatus ?>" role="<?= $resultStatus === 'error' ? 'alert' : 'status' ?>" aria-live="polite"><span class="status-label"><?= $resultStatus === 'success' ? 'Success' : 'Error' ?></span><span class="status-message"><?= htmlspecialchars((string) ($installationResult['message'] ?? 'Installation did not complete.'), ENT_QUOTES, 'UTF-8') ?></span></p>
+                <?php if ($resultStatus === 'success'): ?>
+                    <ul class="installer-summary">
+                        <li><span>Installed version</span><strong><?= htmlspecialchars((string) ($installationResult['details']['finalization']['version'] ?? 'current'), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                        <li><span>Default theme</span><strong><?= htmlspecialchars((string) ($installationResult['details']['finalization']['theme'] ?? 'default'), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                        <li><span>Administrator</span><strong>Created</strong></li>
+                    </ul>
+                    <p><a class="button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin') : '/admin', ENT_QUOTES, 'UTF-8') ?>">Continue to Admin</a></p>
+                <?php endif; ?>
             <?php endif; ?>
         </section>
     </main>

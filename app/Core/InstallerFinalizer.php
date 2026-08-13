@@ -35,39 +35,38 @@ class InstallerFinalizer
         }
 
         try {
-            if ($this->installationState->isInstalled()) {
-                throw new InstallationException('Installation has already been finalized.');
-            }
-
-            if (!$this->schema->isReady()) {
-                throw new InstallationException('Database schema is not ready.');
-            }
-
-            $this->validateFirstAdministrator();
-            $this->validateInitialSettings();
-            $this->activateDefaultTheme();
-            $this->enableBaselineModules();
-            $this->committedLifecycleState->commit(
-                $this->installationState,
-                new CommittedLifecycleState(
-                    Version::CURRENT,
-                    'copot-v' . Version::CURRENT,
-                    null,
-                    PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION,
-                    'canonical-current',
-                    CoreMigrationStateIdentity::fromRecords([]),
-                    new \DateTimeImmutable('now')
-                )
-            );
-
-            return [
-                'version' => Version::CURRENT,
-                'theme' => 'default',
-                'modules' => self::BASELINE_MODULES,
-            ];
+            return $this->finalizePrepared();
         } finally {
             $lock->release();
         }
+    }
+
+    /** Execute finalization while the caller owns the installation lock. */
+    public function finalizePrepared(): array
+    {
+        if ($this->installationState->isInstalled()) {
+            throw new InstallationException('Installation has already been finalized.');
+        }
+        if (!$this->schema->isReady()) {
+            throw new InstallationException('Database schema is not ready.');
+        }
+        $this->validateFirstAdministrator();
+        $this->validateInitialSettings();
+        $this->activateDefaultTheme();
+        $this->enableBaselineModules();
+        $this->committedLifecycleState->commit(
+            $this->installationState,
+            new CommittedLifecycleState(
+                Version::CURRENT,
+                'copot-v' . Version::CURRENT,
+                null,
+                PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION,
+                'canonical-current',
+                CoreMigrationStateIdentity::fromRecords([]),
+                new \DateTimeImmutable('now')
+            )
+        );
+        return ['version' => Version::CURRENT, 'theme' => 'default', 'modules' => self::BASELINE_MODULES];
     }
 
     private function validateFirstAdministrator(): void

@@ -16,6 +16,7 @@ use Copot\Core\InstallerOwnershipProofAssembler;
 use Copot\Core\CoreMigrationRegistry;
 use Copot\Core\InstallerDatabaseValidator;
 use Copot\Core\InstallerFinalizer;
+use Copot\Core\InstallerInstallationCommitter;
 use Copot\Core\InstallerRequirements;
 use Copot\Core\InstallerSchemaState;
 use Copot\Core\InstallerValidationException;
@@ -101,6 +102,7 @@ $administratorSetup = null;
 $finalizer = null;
 $setupErrors = [];
 $finalizationError = null;
+$installationResult = null;
 $setupValues = [
     'admin_name' => (string) ($stagedAdministrator['admin_name'] ?? ''),
     'admin_email' => (string) ($stagedAdministrator['admin_email'] ?? ''),
@@ -254,19 +256,50 @@ if ($installationStateError) {
 
             if ($action === 'finalize_installation') {
                 try {
-                    if (!$finalizer instanceof InstallerFinalizer) {
-                        throw new InstallationException('Installation prerequisites are not ready.');
+                    if (!$databaseStaged || !$administratorStaged) {
+                        throw new InstallationException('Database and Administrator & Site decisions must be staged before installation.');
                     }
-
-                    $adminUrl = new AdminUrl(new Config($basePath . '/config'));
-
-                    $finalizer->finalize();
-
-                    return Response::redirect($deploymentContext->url($adminUrl->baseUrl()));
+                    $committer = new InstallerInstallationCommitter(
+                        $basePath,
+                        $installationState,
+                        new InstallerDatabaseProbe(5, new InstallerOwnershipProofAssembler($basePath . '/storage', new CoreMigrationRegistry('copot-core-current', []))),
+                        new InstallerSchemaRunner($basePath . '/database/schema.sql'),
+                        new InstallerEnvironmentWriter($basePath . '/.env'),
+                        new InstallationMutex($basePath . '/storage')
+                    );
+                    $result = $committer->commit([
+                        'host' => (string) ($stagedDatabase['host'] ?? ''),
+                        'port' => (int) ($stagedDatabase['port'] ?? 0),
+                        'database' => (string) ($stagedDatabase['database'] ?? ''),
+                        'username' => (string) ($stagedDatabase['username'] ?? ''),
+                        'password' => (string) ($stagedDatabase['password'] ?? ''),
+                        'namespace' => (string) ($stagedDatabase['namespace'] ?? ''),
+                    ], [
+                        'admin_name' => (string) ($stagedAdministrator['admin_name'] ?? ''),
+                        'admin_email' => (string) ($stagedAdministrator['admin_email'] ?? ''),
+                        'admin_password' => (string) ($stagedAdministrator['password'] ?? ''),
+                        'admin_password_confirmation' => (string) ($stagedAdministrator['password'] ?? ''),
+                        'site_name' => (string) ($stagedAdministrator['site_name'] ?? ''),
+                        'site_tagline' => (string) ($stagedAdministrator['site_tagline'] ?? ''),
+                        'timezone' => (string) ($stagedAdministrator['timezone'] ?? ''),
+                        'locale' => (string) ($stagedAdministrator['locale'] ?? ''),
+                    ], $requirementsPassed, (string) ($stagedDatabase['intent'] ?? \Copot\Core\InstallerIntent::FRESH));
+                    $installationResult = ['status' => 'success', 'message' => 'COPOT installation completed successfully.', 'details' => $result];
+                    $currentStep = 'result';
+                    $message = 'COPOT installation completed successfully.';
+                    $status = 200;
+                } catch (InstallerValidationException|InstallationException) {
+                    $status = 503;
+                    $message = 'Installation could not be completed safely.';
+                    $installationResult = ['status' => 'failure', 'message' => $message];
+                    $currentStep = 'result';
+                    $finalizationError = $message;
                 } catch (\Throwable) {
                     $status = 503;
-                    $message = 'Installation could not be finalized.';
-                    $finalizationError = $currentStep === 'finalize' ? $message : null;
+                    $message = 'Installation could not be completed safely.';
+                    $installationResult = ['status' => 'failure', 'message' => $message];
+                    $currentStep = 'result';
+                    $finalizationError = $message;
                 }
             } elseif (in_array($action, ['stage_administrator', 'create_administrator'], true)) {
                 $input = [
@@ -552,6 +585,10 @@ $steps = [
             ? 'blocked'
             : ($forwardStep === 'finalize' ? 'current' : 'pending'),
     ],
+    [
+        'label' => 'Installation Result',
+        'state' => $currentStep === 'result' ? 'current' : 'pending',
+    ],
 ];
 
 $displayStep = $currentStep;
@@ -559,6 +596,7 @@ foreach ($steps as &$step) {
     $step['displayState'] = $step['label'] === match ($displayStep) {
         'administrator' => 'Administrator & Site',
         'finalize' => 'Review & Install',
+        'result' => 'Installation Result',
         'database' => 'Database',
         default => 'Requirements',
     }
@@ -612,6 +650,7 @@ return Response::html($view->render('installer/index', [
     'setupValues' => $setupValues,
     'setupErrors' => $setupErrors,
     'finalizationError' => $finalizationError,
+    'installationResult' => $installationResult,
     'timezones' => array_values(array_unique(array_merge(['UTC'], timezone_identifiers_list()))),
     'locales' => ['en_US', 'id_ID'],
     'steps' => $steps,

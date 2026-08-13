@@ -26,8 +26,10 @@ $assert(str_contains($bootstrap, "url('/install?step=administrator')"), 'Success
 $assert(str_contains($bootstrap, "!\$schemaReady && \$databaseStaged"), 'Administrator display does not accept the WU2 staged boundary.');
 $assert(str_contains($bootstrap, "['test_database', 'stage_database']"), 'Database progression exposes an unsafe legacy mutation action.');
 $assert(str_contains($bootstrap, 'No COPOT schema or tables were created.'), 'Staged Database feedback does not state the mutation invariant.');
-$assert(!str_contains($bootstrap, 'new InstallerSchemaRunner'), 'Database progression still constructs the COPOT schema runner.');
-$assert(!str_contains($bootstrap, 'new InstallerDatabaseSetup'), 'Database progression still constructs the mutating Database setup service.');
+$databaseActionBoundary = strpos($bootstrap, 'if ($action === \'finalize_installation\')');
+$schemaCommitConstruction = strpos($bootstrap, 'new InstallerSchemaRunner');
+$assert($databaseActionBoundary !== false && $schemaCommitConstruction !== false && $schemaCommitConstruction > $databaseActionBoundary, 'COPOT schema materialization is not confined to the Review & Install commit boundary.');
+$assert(!str_contains(substr($bootstrap, 0, $databaseActionBoundary ?: 0), 'new InstallerDatabaseSetup'), 'Database progression still constructs the mutating Database setup service.');
 $assert(!str_contains($bootstrap, "action === 'install_database'"), 'Legacy install_database progression remains reachable.');
 $assert(str_contains($bootstrap, "'decision_evidence'"), 'Inspection evidence is not retained with the staged decision.');
 $assert(str_contains($bootstrap, "'password' => \$configuration['password']"), 'Latest credentials are not retained server-side for revisit.');
