@@ -1,5 +1,26 @@
 <!doctype html>
 <html lang="en">
+<?php
+$fieldAccessibility = static function (string $fieldId, mixed $error = null, bool $hasHelp = false): string {
+    $describedBy = [];
+    $hasError = is_string($error) && $error !== '';
+
+    if ($hasError) {
+        $describedBy[] = $fieldId . '_error';
+    }
+
+    if ($hasHelp) {
+        $describedBy[] = $fieldId . '_help';
+    }
+
+    $attributes = $hasError ? ['aria-invalid="true"'] : [];
+    if ($describedBy !== []) {
+        $attributes[] = 'aria-describedby="' . implode(' ', $describedBy) . '"';
+    }
+
+    return $attributes === [] ? '' : ' ' . implode(' ', $attributes);
+};
+?>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -85,15 +106,15 @@
                             <div class="form-inline-field">
                             <label for="database_host">Host</label>
                             <div class="form-control">
-                                <input id="database_host" name="database_host" type="text" maxlength="255" required value="<?= htmlspecialchars($values['host'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                                <?php if (!empty($errors['host'])): ?><p class="field-error"><?= htmlspecialchars($errors['host'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                <input id="database_host" name="database_host" type="text" maxlength="255" required value="<?= htmlspecialchars($values['host'] ?? '', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAccessibility('database_host', $errors['host'] ?? null) ?>>
+                                <?php if (!empty($errors['host'])): ?><p id="database_host_error" class="field-error"><?= htmlspecialchars($errors['host'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                             </div>
                             <div class="form-inline-field">
                             <label for="database_port">Port</label>
                             <div class="form-control">
-                                <input id="database_port" name="database_port" type="number" min="1" max="65535" required value="<?= htmlspecialchars($values['port'] ?? '3306', ENT_QUOTES, 'UTF-8') ?>">
-                                <?php if (!empty($errors['port'])): ?><p class="field-error"><?= htmlspecialchars($errors['port'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                <input id="database_port" name="database_port" type="number" min="1" max="65535" required value="<?= htmlspecialchars($values['port'] ?? '3306', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAccessibility('database_port', $errors['port'] ?? null) ?>>
+                                <?php if (!empty($errors['port'])): ?><p id="database_port_error" class="field-error"><?= htmlspecialchars($errors['port'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                             </div>
                         </div>
@@ -101,8 +122,8 @@
                         <div class="form-row">
                             <label for="database_name">Database name</label>
                             <div class="form-control">
-                                <input id="database_name" name="database_name" type="text" maxlength="64" required value="<?= htmlspecialchars($values['database'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                                <?php if (!empty($errors['database'])): ?><p class="field-error"><?= htmlspecialchars($errors['database'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                <input id="database_name" name="database_name" type="text" maxlength="64" required value="<?= htmlspecialchars($values['database'] ?? '', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAccessibility('database_name', $errors['database'] ?? null) ?>>
+                                <?php if (!empty($errors['database'])): ?><p id="database_name_error" class="field-error"><?= htmlspecialchars($errors['database'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                         </div>
 
@@ -110,15 +131,15 @@
                             <div class="form-inline-field">
                                 <label for="database_username">Username</label>
                                 <div class="form-control">
-                                    <input id="database_username" name="database_username" type="text" maxlength="128" required value="<?= htmlspecialchars($values['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                                    <?php if (!empty($errors['username'])): ?><p class="field-error"><?= htmlspecialchars($errors['username'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                    <input id="database_username" name="database_username" type="text" maxlength="128" required value="<?= htmlspecialchars($values['username'] ?? '', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAccessibility('database_username', $errors['username'] ?? null) ?>>
+                                    <?php if (!empty($errors['username'])): ?><p id="database_username_error" class="field-error"><?= htmlspecialchars($errors['username'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                             <div class="form-inline-field">
                                 <label for="database_password">Password</label>
                                 <div class="form-control">
-                                    <input id="database_password" name="database_password" type="password" value="">
-                                    <?php if (!empty($errors['password'])): ?><p class="field-error"><?= htmlspecialchars($errors['password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                    <input id="database_password" name="database_password" type="password" value=""<?= $fieldAccessibility('database_password', $errors['password'] ?? null) ?>>
+                                    <?php if (!empty($errors['password'])): ?><p id="database_password_error" class="field-error"><?= htmlspecialchars($errors['password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -137,7 +158,7 @@
                             ? array_values(array_filter($databaseResult['eligible_intents'] ?? [], static fn ($intent): bool => is_string($intent) && array_key_exists($intent, $intentLabels)))
                             : [];
                         ?>
-                                <select id="installer_intent" name="installer_intent"<?= $eligibleIntents === [] ? '' : ' required' ?>>
+                                <select id="installer_intent" name="installer_intent"<?= $eligibleIntents === [] ? '' : ' required' ?><?= $fieldAccessibility('installer_intent', $errors['intent'] ?? null) ?>>
                         <?php
                         if ($eligibleIntents === []): ?>
                             <option value="" selected disabled>Test Database to determine eligible installation paths.</option>
@@ -151,9 +172,9 @@
                         <div class="form-action-row">
                             <label for="database_namespace">DB Namespace</label>
                             <div class="form-control">
-                                <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                                <?php if (!empty($errors['namespace'])): ?><p class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-                                <p class="form-help">Blank preserves the empty namespace.</p>
+                                <input id="database_namespace" name="database_namespace" type="text" maxlength="31" pattern="[a-z][a-z0-9_]{0,30}" value="<?= htmlspecialchars($values['namespace'] ?? '', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAccessibility('database_namespace', $errors['namespace'] ?? null, true) ?>>
+                                <?php if (!empty($errors['namespace'])): ?><p id="database_namespace_error" class="field-error"><?= htmlspecialchars($errors['namespace'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                <p id="database_namespace_help" class="form-help">Blank preserves the empty namespace.</p>
                             </div>
                             <button id="database_action" class="database-action" type="submit" name="action" value="test_database" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Test Database</button>
                         </div>
@@ -195,15 +216,15 @@
                             <div class="form-inline-field">
                                 <label for="admin_name">Username</label>
                                 <div class="form-control">
-                                    <input id="admin_name" name="admin_name" type="text" maxlength="120" required value="<?= htmlspecialchars($setupValues['admin_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                                    <?php if (!empty($setupErrors['admin_name'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_name'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                    <input id="admin_name" name="admin_name" type="text" maxlength="120" required value="<?= htmlspecialchars($setupValues['admin_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAccessibility('admin_name', $setupErrors['admin_name'] ?? null) ?>>
+                                    <?php if (!empty($setupErrors['admin_name'])): ?><p id="admin_name_error" class="field-error"><?= htmlspecialchars($setupErrors['admin_name'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                             <div class="form-inline-field">
                                 <label for="admin_email">Email</label>
                                 <div class="form-control">
-                                    <input id="admin_email" name="admin_email" type="email" maxlength="190" required value="<?= htmlspecialchars($setupValues['admin_email'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                                    <?php if (!empty($setupErrors['admin_email'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_email'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                    <input id="admin_email" name="admin_email" type="email" maxlength="190" required value="<?= htmlspecialchars($setupValues['admin_email'] ?? '', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAccessibility('admin_email', $setupErrors['admin_email'] ?? null) ?>>
+                                    <?php if (!empty($setupErrors['admin_email'])): ?><p id="admin_email_error" class="field-error"><?= htmlspecialchars($setupErrors['admin_email'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -212,31 +233,31 @@
                             <div class="form-inline-field">
                                 <label for="admin_password">Password</label>
                                 <div class="form-control">
-                                    <input id="admin_password" name="admin_password" type="password" minlength="10" <?= empty($administratorStaged) ? 'required' : '' ?> value="">
-                                    <?php if (!empty($setupErrors['admin_password'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                    <input id="admin_password" name="admin_password" type="password" minlength="10" <?= empty($administratorStaged) ? 'required' : '' ?> value=""<?= $fieldAccessibility('admin_password', $setupErrors['admin_password'] ?? null) ?>>
+                                    <?php if (!empty($setupErrors['admin_password'])): ?><p id="admin_password_error" class="field-error"><?= htmlspecialchars($setupErrors['admin_password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                             <div class="form-inline-field">
                                 <label for="admin_password_confirmation">Confirm Password</label>
                                 <div class="form-control">
-                                    <input id="admin_password_confirmation" name="admin_password_confirmation" type="password" minlength="10" <?= empty($administratorStaged) ? 'required' : '' ?> value="">
-                                    <?php if (!empty($setupErrors['admin_password_confirmation'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['admin_password_confirmation'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                    <input id="admin_password_confirmation" name="admin_password_confirmation" type="password" minlength="10" <?= empty($administratorStaged) ? 'required' : '' ?> value=""<?= $fieldAccessibility('admin_password_confirmation', $setupErrors['admin_password_confirmation'] ?? null) ?>>
+                                    <?php if (!empty($setupErrors['admin_password_confirmation'])): ?><p id="admin_password_confirmation_error" class="field-error"><?= htmlspecialchars($setupErrors['admin_password_confirmation'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                         </div>
                         <div class="form-row">
                             <label for="site_name">Site Name</label>
                             <div class="form-control">
-                                <input id="site_name" name="site_name" type="text" maxlength="150" required value="<?= htmlspecialchars($setupValues['site_name'] ?? 'copot', ENT_QUOTES, 'UTF-8') ?>">
-                                <?php if (!empty($setupErrors['site_name'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['site_name'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                <input id="site_name" name="site_name" type="text" maxlength="150" required value="<?= htmlspecialchars($setupValues['site_name'] ?? 'copot', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAccessibility('site_name', $setupErrors['site_name'] ?? null) ?>>
+                                <?php if (!empty($setupErrors['site_name'])): ?><p id="site_name_error" class="field-error"><?= htmlspecialchars($setupErrors['site_name'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                         </div>
 
                         <div class="form-row">
                             <label for="site_tagline">Site Tagline</label>
                             <div class="form-control">
-                                <input id="site_tagline" name="site_tagline" type="text" maxlength="255" value="<?= htmlspecialchars($setupValues['site_tagline'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
-                                <?php if (!empty($setupErrors['site_tagline'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['site_tagline'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                <input id="site_tagline" name="site_tagline" type="text" maxlength="255" value="<?= htmlspecialchars($setupValues['site_tagline'] ?? '', ENT_QUOTES, 'UTF-8') ?>"<?= $fieldAccessibility('site_tagline', $setupErrors['site_tagline'] ?? null) ?>>
+                                <?php if (!empty($setupErrors['site_tagline'])): ?><p id="site_tagline_error" class="field-error"><?= htmlspecialchars($setupErrors['site_tagline'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                             </div>
                         </div>
 
@@ -244,23 +265,23 @@
                             <div class="form-inline-field">
                                 <label for="timezone">Time Zone</label>
                                 <div class="form-control">
-                                    <select id="timezone" name="timezone" required>
+                                    <select id="timezone" name="timezone" required<?= $fieldAccessibility('timezone', $setupErrors['timezone'] ?? null) ?>>
                                         <?php foreach (($timezones ?? ['UTC']) as $timezone): ?>
                                             <option value="<?= htmlspecialchars($timezone, ENT_QUOTES, 'UTF-8') ?>" <?= ($setupValues['timezone'] ?? 'UTC') === $timezone ? 'selected' : '' ?>><?= htmlspecialchars($timezone, ENT_QUOTES, 'UTF-8') ?></option>
                                         <?php endforeach; ?>
                                     </select>
-                                    <?php if (!empty($setupErrors['timezone'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['timezone'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                    <?php if (!empty($setupErrors['timezone'])): ?><p id="timezone_error" class="field-error"><?= htmlspecialchars($setupErrors['timezone'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                             <div class="form-inline-field">
                                 <label for="locale">Locale</label>
                                 <div class="form-control">
-                                    <select id="locale" name="locale" required>
+                                    <select id="locale" name="locale" required<?= $fieldAccessibility('locale', $setupErrors['locale'] ?? null) ?>>
                                         <?php foreach (($locales ?? ['en_US', 'id_ID']) as $locale): ?>
                                             <option value="<?= htmlspecialchars($locale, ENT_QUOTES, 'UTF-8') ?>" <?= ($setupValues['locale'] ?? 'en_US') === $locale ? 'selected' : '' ?>><?= htmlspecialchars($locale, ENT_QUOTES, 'UTF-8') ?></option>
                                         <?php endforeach; ?>
                                     </select>
-                                    <?php if (!empty($setupErrors['locale'])): ?><p class="field-error"><?= htmlspecialchars($setupErrors['locale'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
+                                    <?php if (!empty($setupErrors['locale'])): ?><p id="locale_error" class="field-error"><?= htmlspecialchars($setupErrors['locale'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                         </div>
