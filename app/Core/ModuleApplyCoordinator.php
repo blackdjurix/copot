@@ -31,7 +31,7 @@ final class ModuleApplyCoordinator
             $applied=$apply->appliedPaths();
             if($apply->status()!==WebcoreApplyResult::COMPLETED){$phase=$applied===[]?ModuleLifecycleOperationRecord::BLOCKED:ModuleLifecycleOperationRecord::BLOCKED;$this->operations->save($record->advance($phase,count($applied),$applied===[]?null:$applied[count($applied)-1],null,$apply->reason()));return new ModuleApplyResult(ModuleApplyResult::BLOCKED,$apply->reason(),$operationId,$applied);}
             $record=$record->advance(ModuleLifecycleOperationRecord::MIGRATING,count($applied),$applied===[]?null:$applied[count($applied)-1]);$this->operations->save($record);
-            $migration=$migrationRunner($connection,$transition,$inspection);
+            $migration=$migrationRunner($connection,$transition,$inspection,$record->operationId());
             if(!$migration instanceof ModuleMigrationReconciliationResult){$this->operations->save($record->advance(ModuleLifecycleOperationRecord::INDETERMINATE,count($applied),null,null,'Module migration outcome is indeterminate.'));return new ModuleApplyResult(ModuleApplyResult::INDETERMINATE,'Module migration outcome is indeterminate.',$operationId,$applied);}
             if($migration->status()===ModuleMigrationReconciliationResult::INDETERMINATE){$this->operations->save($record->advance(ModuleLifecycleOperationRecord::INDETERMINATE,count($applied),null,null,$migration->reason()));return new ModuleApplyResult(ModuleApplyResult::INDETERMINATE,$migration->reason(),$operationId,$applied);}
             if(!in_array($migration->status(),[ModuleMigrationReconciliationResult::COMPLETED,ModuleMigrationReconciliationResult::NOOP],true)) return $this->blocked($record,$migration->reason(),$applied,$operationId);

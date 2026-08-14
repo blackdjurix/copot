@@ -5,9 +5,9 @@
 ```text
 Database Ownership & Lifecycle Management Foundation: PROMOTED / CONTRACT LOCKED
 Preparation audit: COMPLETE
-Implementation: WU1 COMPLETE AND CLOSED; WU2–WU6 NOT STARTED
+Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3–WU6 NOT STARTED
 WU topology: WU1–WU6 LOCKED
-Next active technical target: WU2 — Schema Compatibility & Migration Authority
+Next active technical target: WU3 — System Manager Webcore Lifecycle Capability
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
 Branch lifecycle: NOT YET SELECTED
 ```
@@ -243,13 +243,16 @@ A future release-support policy may define a bounded historical support window,
 but runtime enforcement must not be reduced to arithmetic on one global database
 version.
 
-The following details remain a required WU2 contract/implementation decision and
-must be locked before WU2 mutation behavior is implemented:
+WU2 locks the following compatibility behavior:
 
-- exact supported historical release window;
-- manifest/range syntax;
-- downgrade/unsupported-state policy;
-- operator-facing unsupported-state presentation.
+- supported states are the current lineage and historical baselines already
+  recognized by canonical-baseline, legacy-classification, adoption, or
+  recovery machinery, only where an authorized forward transition exists;
+- compatibility reuses minimum-inclusive/maximum-exclusive
+  `PackageCompatibility` semantics;
+- downgrade and reverse migration are unsupported and fail closed;
+- unsupported state exposes a stable machine-readable status/code and concise
+  sanitized human reason without raw SQL, paths, credentials, or exceptions.
 
 ## Existing migration machinery remains authoritative execution machinery
 
@@ -456,7 +459,18 @@ Objective:
 
 Dependency: **HARD → WU1**.
 
-Status: **NOT STARTED**.
+Status: **COMPLETE AND CLOSED**.
+
+WU2 binds migration execution to installation identity, namespace, lifecycle
+operation, owner identity, migration identity/checksum, source and target
+state, compatibility, declared schema surface, and WU1 extension grants.
+Migration callbacks receive an authorization-aware context with bounded
+mutation primitives; unrestricted PDO is not a migration authority surface.
+Compatibility remains minimum-inclusive/maximum-exclusive, forward-only, and
+fails closed for unsupported or unrecognized historical states. Existing
+canonical-baseline, adoption, and recovery evidence is reused without
+fabricating ledger history. Webcore and Module migration lineages remain
+independent.
 
 ### WU3 — System Manager Webcore Lifecycle Capability
 

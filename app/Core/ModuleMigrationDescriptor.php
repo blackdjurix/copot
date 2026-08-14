@@ -18,7 +18,8 @@ final class ModuleMigrationDescriptor
         private $executor = null,
         private $precondition = null,
         private $postcondition = null,
-        private bool $retryable = false
+        private bool $retryable = false,
+        private ?MigrationSchemaSurface $schemaSurface = null
     ) {
         if (preg_match('/^[a-z0-9][a-z0-9._-]*$/', $id) !== 1 || $sequence < 1) {
             throw new \InvalidArgumentException('Module migration identity is invalid.');
@@ -90,9 +91,11 @@ final class ModuleMigrationDescriptor
             $this->transactionMode,
             $this->retryable ? 'retryable' : 'not-retryable',
             $this->executableSource,
+            json_encode($this->schemaSurface?->tables() ?? ['undeclared_surface'], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR),
         ]));
     }
     public function retryable(): bool { return $this->retryable; }
+    public function schemaSurface(): MigrationSchemaSurface { return $this->schemaSurface ?? new MigrationSchemaSurface(['undeclared_surface']); }
     public function appliesTo(string $packageVersion): bool { return $this->sourceVersionConstraint->supports($packageVersion); }
     public function execute(\PDO $connection, ?DatabaseTableNames $tables = null): void
     {
@@ -101,10 +104,13 @@ final class ModuleMigrationDescriptor
             return;
         }
 
-        ($this->executor)($connection, new ModuleMigrationContext($connection, $tables));
+        ($this->executor)(new ModuleMigrationContext($tables));
     }
+    public function executeAuthorized(AuthorizedMigrationContext $context): void { ($this->executor)($context); }
     public function checkPrecondition(\PDO $connection): bool { return $this->precondition === null || (bool) ($this->precondition)($connection); }
     public function checkPostcondition(\PDO $connection): bool { return $this->postcondition === null || (bool) ($this->postcondition)($connection); }
+    public function checkPreconditionAuthorized(AuthorizedMigrationContext $context): bool { return $this->precondition === null || (bool) ($this->precondition)($context); }
+    public function checkPostconditionAuthorized(AuthorizedMigrationContext $context): bool { return $this->postcondition === null || (bool) ($this->postcondition)($context); }
 
     public function toArray(): array
     {

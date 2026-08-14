@@ -16,6 +16,7 @@ final class CoreMigrationDescriptor
     /** @var callable(PDO):bool|null */
     private $postcondition;
     private string $checksum;
+    private MigrationSchemaSurface $schemaSurface;
 
     public function __construct(
         private string $id,
@@ -29,7 +30,8 @@ final class CoreMigrationDescriptor
         callable $executor,
         ?callable $precondition = null,
         ?callable $postcondition = null,
-        private bool $retryable = false
+        private bool $retryable = false,
+        ?MigrationSchemaSurface $schemaSurface = null
     ) {
         if (!preg_match('/^[a-z0-9][a-z0-9._-]*$/', $id) || trim($id) !== $id || $sequence < 1) {
             throw new \InvalidArgumentException('Core migration identity is invalid.');
@@ -57,6 +59,7 @@ final class CoreMigrationDescriptor
         $this->executor = $executor;
         $this->precondition = $precondition;
         $this->postcondition = $postcondition;
+        $this->schemaSurface = $schemaSurface ?? new MigrationSchemaSurface(['undeclared_surface']);
         $this->checksum = hash('sha256', implode("\n", [
             $id,
             (string) $sequence,
@@ -67,6 +70,7 @@ final class CoreMigrationDescriptor
             $transactionMode,
             $retryable ? 'retryable' : 'not-retryable',
             $executableSource,
+            json_encode($this->schemaSurface->tables(), JSON_THROW_ON_ERROR),
         ]));
     }
 
@@ -77,6 +81,7 @@ final class CoreMigrationDescriptor
     public function transactionMode(): string { return $this->transactionMode; }
     public function checksum(): string { return $this->checksum; }
     public function retryable(): bool { return $this->retryable; }
+    public function schemaSurface(): MigrationSchemaSurface { return $this->schemaSurface; }
 
     public function appliesTo(string $webcoreVersion): bool
     {
@@ -87,6 +92,9 @@ final class CoreMigrationDescriptor
     }
 
     public function execute(PDO $connection): void { ($this->executor)($connection); }
+    public function executeAuthorized(AuthorizedMigrationContext $context): void { ($this->executor)($context); }
     public function checkPrecondition(PDO $connection): bool { return $this->precondition === null || (bool) ($this->precondition)($connection); }
     public function checkPostcondition(PDO $connection): bool { return $this->postcondition === null || (bool) ($this->postcondition)($connection); }
+    public function checkPreconditionAuthorized(AuthorizedMigrationContext $context): bool { return $this->precondition === null || (bool) ($this->precondition)($context); }
+    public function checkPostconditionAuthorized(AuthorizedMigrationContext $context): bool { return $this->postcondition === null || (bool) ($this->postcondition)($context); }
 }

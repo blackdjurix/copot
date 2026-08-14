@@ -10,7 +10,7 @@ final class CoreMigrationRunner
     {
     }
 
-    public function run(PDO $connection, CoreMigrationPlan $plan, ?callable $beforeMigration = null): MigrationRunResult
+    public function run(PDO $connection, CoreMigrationPlan $plan, ?callable $beforeMigration = null, ?callable $authorization = null): MigrationRunResult
     {
         if (!$plan->isAccepted()) {
             return new MigrationRunResult(MigrationRunResult::FAILED, [], $plan->reason());
@@ -28,10 +28,13 @@ final class CoreMigrationRunner
             }
 
             try {
+                if ($authorization === null) return new MigrationRunResult(MigrationRunResult::FAILED, $applied, 'Migration authorization is required.');
+                $authorized = $authorization($migration);
+                if (!$authorized instanceof AuthorizedMigrationContext) return new MigrationRunResult(MigrationRunResult::FAILED, $applied, 'Migration authorization is invalid.');
                 if ($beforeMigration !== null) {
                     $beforeMigration($migration);
                 }
-                if (!$migration->checkPrecondition($connection)) {
+                if (!$migration->checkPreconditionAuthorized($authorized)) {
                     return new MigrationRunResult(MigrationRunResult::FAILED, $applied, 'Migration precondition failed.');
                 }
 
@@ -43,9 +46,9 @@ final class CoreMigrationRunner
                     $connection->beginTransaction();
 
                     try {
-                        $migration->execute($connection);
+                        $migration->executeAuthorized($authorized);
 
-                        if (!$migration->checkPostcondition($connection)) {
+                        if (!$migration->checkPostconditionAuthorized($authorized)) {
                             throw new \RuntimeException('Migration postcondition failed.');
                         }
 
@@ -59,9 +62,9 @@ final class CoreMigrationRunner
                         return new MigrationRunResult(MigrationRunResult::FAILED, $applied, $exception->getMessage());
                     }
                 } else {
-                    $migration->execute($connection);
+                    $migration->executeAuthorized($authorized);
 
-                    if (!$migration->checkPostcondition($connection)) {
+                    if (!$migration->checkPostconditionAuthorized($authorized)) {
                         return new MigrationRunResult(MigrationRunResult::FAILED, $applied, 'Migration postcondition failed.');
                     }
 

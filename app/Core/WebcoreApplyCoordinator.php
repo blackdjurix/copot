@@ -91,7 +91,7 @@ final class WebcoreApplyCoordinator
             $lastPath = $appliedPaths === [] ? null : $appliedPaths[count($appliedPaths) - 1];
             $record = $record->advance(LifecycleOperationRecord::MIGRATING, count($appliedPaths), $lastPath);
             $this->maintenance->update($record);
-            $migration = ($this->migrationRunner)($migrationPlan);
+            $migration = ($this->migrationRunner)($migrationPlan, $record->operationId(), $transition->classification());
 
             if (!$migration instanceof MigrationRunResult || $migration->status() === MigrationRunResult::INDETERMINATE) {
                 $reason = $migration instanceof MigrationRunResult ? $migration->reason() : 'Migration outcome is indeterminate.';

@@ -2,17 +2,10 @@
 
 namespace Copot\Core;
 
-use PDO;
-
 final class ModuleMigrationContext
 {
-    public function __construct(private PDO $connection, private DatabaseTableNames $tables)
+    public function __construct(private DatabaseTableNames $tables)
     {
-    }
-
-    public function connection(): PDO
-    {
-        return $this->connection;
     }
 
     public function table(string $logicalName): string

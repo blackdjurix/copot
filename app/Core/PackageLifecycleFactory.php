@@ -38,8 +38,12 @@ final class PackageLifecycleFactory
         $migrationRunner = new CoreMigrationRunner($ledger);
         $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath, $installationIdentity->value());
         $applier = new PackageOwnedFileApplier($liveGuard, LiveFileActivationCapability::current(), $applyTemporaryRoot);
-        $applyCoordinator = new WebcoreApplyCoordinator($mutex, $maintenance, $applier, static function (CoreMigrationPlan $plan) use ($database, $migrationRunner): MigrationRunResult {
-            return $migrationRunner->run($database->connection(), $plan);
+        $applyCoordinator = new WebcoreApplyCoordinator($mutex, $maintenance, $applier, static function (CoreMigrationPlan $plan, string $operationId, string $classification) use ($database, $migrationRunner, $installationIdentity): MigrationRunResult {
+            $catalog = DatabaseTableOwnershipCatalog::current();
+            return $migrationRunner->run($database->connection(), $plan, null, static function (CoreMigrationDescriptor $migration) use ($database, $catalog, $installationIdentity, $operationId, $classification, $plan): AuthorizedMigrationContext {
+                $authorization = new MigrationAuthorizationContext($installationIdentity, $database->tables(), $operationId, $classification, DatabaseTableOwner::webcore(), $migration->id(), $migration->checksum(), $plan->initialWebcoreVersion(), $plan->virtualFinalWebcoreVersion(), true, $migration->schemaSurface());
+                return new AuthorizedMigrationContext($database->connection(), $authorization, $catalog);
+            });
         }, new RuntimeRegistry($storage, $installationIdentity, $mutex));
         $healthCoordinator = new HealthIntegrityCommitCoordinator(
             $mutex,
