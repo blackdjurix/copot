@@ -101,5 +101,12 @@ $assert(str_contains($css, 'grid-column: 1;'), 'Status message does not occupy t
 $assert(str_contains($css, 'grid-template-columns: 1fr;'), 'Mobile status layout does not preserve readable wrapping.');
 $assert(str_contains($css, 'width: min(calc(100% - 32px), 720px)'), 'Responsive installer-card width foundation is missing.');
 $assert(str_contains($css, 'align-items: flex-start;'), 'Small-screen overflow behavior is not defined.');
+$assert(str_contains($css, 'height: 100dvh;'), 'Mobile shell does not use a dynamic viewport-height fallback.');
+$assert(str_contains($css, "body {\n        height: 100vh;"), 'Mobile page shell does not lock to the viewport height.');
+$assert(str_contains($css, 'overflow: hidden;'), 'Mobile page shell does not prevent outer scrolling.');
+$assert(str_contains($css, "width: 100%;\n        height: 100vh;"), 'Mobile main shell does not fill the viewport width and height.');
+$assert(str_contains($css, "border: 0;\n        border-radius: 0;\n        box-shadow: none;"), 'Mobile installer retains card treatment.');
+$assert(str_contains($css, ".installer-phase {\n        overflow: hidden;"), 'Mobile installer phase does not constrain overflow to its shared content region.');
+$assert(str_contains($css, '.installer-phase-content') && str_contains($css, 'overflow-y: auto;'), 'Shared phase content no longer owns vertical scrolling.');
 
 fwrite(STDOUT, "WU1 installer shell/progression assertions: {$assertions}\n");
