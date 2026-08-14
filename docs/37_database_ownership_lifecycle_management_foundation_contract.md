@@ -432,7 +432,12 @@ Objective:
 
 Dependency: **NONE**.
 
-Status: **NOT STARTED / NEXT ACTIVE TECHNICAL TARGET**.
+Status: **IMPLEMENTED ON FEATURE BRANCH; VALIDATION PASSING**.
+
+The WU1 implementation establishes the locked ownership catalog, historical
+aggregate-installer provenance classification, namespace-aware physical lookup,
+and bounded Module-to-Webcore extension provenance. It does not authorize or
+execute migrations, schema splitting, Installer changes, or later Work Units.
 
 ### WU2 — Schema Compatibility & Migration Authority
 

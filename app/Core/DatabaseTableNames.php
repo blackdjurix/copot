@@ -62,6 +62,19 @@ final class DatabaseTableNames
         return $this->namespace === '' ? $logicalName : $this->namespaced($logicalName);
     }
 
+    /**
+     * Resolve a known logical table through the established Core/Module naming
+     * boundary. Ownership authority is deliberately separate from this
+     * physical naming classification (for example, the Webcore module
+     * registry tables retain the historical Module namespace path).
+     */
+    public function resolve(string $logicalName): string
+    {
+        if (in_array($logicalName, self::CORE_TABLES, true)) return $this->table($logicalName);
+        if (in_array($logicalName, self::MODULE_TABLES, true)) return $this->moduleTable($logicalName);
+        throw new \InvalidArgumentException('Logical database table name is unknown.');
+    }
+
     public function objectIdentifier(string $logicalName): string
     {
         if (preg_match(self::IDENTIFIER_PATTERN, $logicalName) !== 1) {
