@@ -2,8 +2,6 @@
 
 namespace Copot\Core;
 
-use PDO;
-
 final class CoreMigrationDescriptor
 {
     public const TRANSACTIONAL = 'transactional';
@@ -91,10 +89,7 @@ final class CoreMigrationDescriptor
             && ($this->sourceMaximumVersion === null || PackageVersion::compare($webcoreVersion, $this->sourceMaximumVersion) < 0);
     }
 
-    public function execute(PDO $connection): void { ($this->executor)($connection); }
     public function executeAuthorized(AuthorizedMigrationContext $context): void { ($this->executor)($context); }
-    public function checkPrecondition(PDO $connection): bool { return $this->precondition === null || (bool) ($this->precondition)($connection); }
-    public function checkPostcondition(PDO $connection): bool { return $this->postcondition === null || (bool) ($this->postcondition)($connection); }
     public function checkPreconditionAuthorized(AuthorizedMigrationContext $context): bool { return $this->precondition === null || (bool) ($this->precondition)($context); }
     public function checkPostconditionAuthorized(AuthorizedMigrationContext $context): bool { return $this->postcondition === null || (bool) ($this->postcondition)($context); }
 }

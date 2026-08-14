@@ -97,18 +97,7 @@ final class ModuleMigrationDescriptor
     public function retryable(): bool { return $this->retryable; }
     public function schemaSurface(): MigrationSchemaSurface { return $this->schemaSurface ?? new MigrationSchemaSurface(['undeclared_surface']); }
     public function appliesTo(string $packageVersion): bool { return $this->sourceVersionConstraint->supports($packageVersion); }
-    public function execute(\PDO $connection, ?DatabaseTableNames $tables = null): void
-    {
-        if ($tables === null) {
-            ($this->executor)($connection);
-            return;
-        }
-
-        ($this->executor)(new ModuleMigrationContext($tables));
-    }
     public function executeAuthorized(AuthorizedMigrationContext $context): void { ($this->executor)($context); }
-    public function checkPrecondition(\PDO $connection): bool { return $this->precondition === null || (bool) ($this->precondition)($connection); }
-    public function checkPostcondition(\PDO $connection): bool { return $this->postcondition === null || (bool) ($this->postcondition)($connection); }
     public function checkPreconditionAuthorized(AuthorizedMigrationContext $context): bool { return $this->precondition === null || (bool) ($this->precondition)($context); }
     public function checkPostconditionAuthorized(AuthorizedMigrationContext $context): bool { return $this->postcondition === null || (bool) ($this->postcondition)($context); }
 
