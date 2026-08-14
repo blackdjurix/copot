@@ -1,0 +1,601 @@
+# Post-M3 — Database Ownership & Lifecycle Management Foundation Contract
+
+## Status and authority
+
+```text
+Database Ownership & Lifecycle Management Foundation: PROMOTED / CONTRACT LOCKED
+Preparation audit: COMPLETE
+Implementation: NOT STARTED
+WU topology: WU1–WU6 LOCKED
+Next active technical target: WU1 — Table Ownership & Authority
+Implementation authorization: NOT IMPLIED BY THIS CONTRACT
+Branch lifecycle: NOT YET SELECTED
+```
+
+This is the authoritative repository contract for the Post-M3 Database Ownership
+& Lifecycle Management Foundation.
+
+It promotes the accepted planning direction for database table ownership,
+schema compatibility, migration authority, System Manager Webcore lifecycle,
+database lifecycle classification, Installer intent reconciliation, and
+cross-lifecycle acceptance.
+
+Promotion of this contract establishes scope and authority boundaries only. It
+does not authorize source/schema/runtime mutation, WU implementation, production
+reconciliation, Deferred Item adoption, branch creation/deletion, release, tag,
+or publication.
+
+## Core invariant
+
+Every database table has exactly one authoritative owner.
+
+Allowed owners are:
+
+- Webcore; or
+- one specific Module.
+
+Shared usage does not create shared ownership.
+
+COPOT must not introduce jointly owned tables. The owner is authoritative for
+canonical schema, schema/database lineage, compatibility, migration, repair,
+and lifecycle transition behavior for that schema surface.
+
+Ownership is logical. Physical table names remain resolved through the accepted
+installation namespace/table-name boundary.
+
+## Authoritative ownership model
+
+The target architecture requires one authoritative logical ownership
+catalog/registry rather than inferring authority from runtime consumers,
+directory placement, aggregate installer provisioning, or migration location.
+
+The authoritative owner proof must be able to identify at least:
+
+- logical table identity;
+- owner type: Webcore or Module;
+- Module identity when Module-owned;
+- canonical schema source;
+- namespace-aware physical resolution;
+- authorized extension grants where applicable;
+- historical-baseline mapping where applicable.
+
+The ownership catalog is authority metadata. It is not a second migration
+engine.
+
+## Locked current Webcore ownership baseline
+
+The following current schema surfaces are classified as Webcore-owned for this
+workstream:
+
+- `users`;
+- `roles`;
+- `permissions`;
+- `user_roles`;
+- `role_permissions`;
+- `settings`;
+- `themes`;
+- `modules`;
+- `module_permissions`;
+- `core_migration_history`;
+- `core_schema_generation`.
+
+Management Modules or Admin surfaces may consume these tables without owning
+them. In particular, `modules` and `module_permissions` are generic Webcore
+platform registry/lifecycle schema despite their names.
+
+## Locked current Module ownership baseline
+
+The following current bundled capability tables are classified as Module-owned:
+
+### Navigation
+
+- `navigation_menus`;
+- `navigation_items`;
+- `navigation_menu_assignments`.
+
+### Content
+
+- `content`.
+
+### Taxonomy
+
+- `taxonomy_types`;
+- `taxonomy_terms`;
+- `taxonomy_assignments`.
+
+### Media
+
+- `media`;
+- `media_variants`;
+- `media_usages`.
+
+### Redirects
+
+- `redirects`.
+
+### Form Manager
+
+- `forms`;
+- `form_fields`;
+- `form_field_options`;
+- `form_submissions`;
+- `form_submission_values`;
+- `form_submission_attempts`.
+
+A Module-owned table is not a Webcore prerequisite merely because the current
+aggregate installer schema historically provisions it.
+
+## Historical global pre-provisioning
+
+Accepted historical installations provision Module-owned tables through the
+aggregate installer schema.
+
+That provisioning history is valid compatibility evidence, not ownership
+authority.
+
+Locked reconciliation rules:
+
+- historically valid installations remain valid;
+- historical global provisioning does not transfer Module ownership to Webcore;
+- owner-aware future materialization must not invalidate an installation merely
+  because Module tables were historically pre-provisioned;
+- historical state must be mapped to the canonical owner model before later
+  owner-sensitive transitions;
+- ownership metadata modernization alone does not justify rebuilding a valid
+  installation.
+
+The target historical posture is classify-and-map/adopt rather than invalidate
+or rebuild.
+
+## Webcore tables provided for Module use
+
+Webcore may intentionally provide shared platform schema for Module use.
+
+Those tables remain Webcore-owned. Consumption does not transfer or dilute
+ownership.
+
+## Module extension boundary
+
+A Module may extend a Webcore-owned table only through an explicit platform
+contract.
+
+The table remains Webcore-owned.
+
+Default permitted extension surface for this foundation:
+
+- add a Module-specific column;
+- add a bounded Module-specific index associated with an authorized extension.
+
+Not permitted by default:
+
+- dropping or renaming Webcore-owned schema;
+- repurposing Webcore-owned schema;
+- destructive modification of Webcore-owned columns or indexes;
+- arbitrary DDL against Webcore-owned tables;
+- new cross-owner constraints;
+- new cross-owner foreign keys.
+
+Any widening beyond add-column/add-index requires an explicit later contract
+decision.
+
+## Extension provenance
+
+Extension provenance is separate from table ownership.
+
+An authorized extension must identify at least:
+
+- extending Module;
+- affected Webcore-owned table;
+- added schema element(s);
+- migration/declaration identity;
+- lifecycle operation/transition that authorized the extension.
+
+Extension provenance must never be represented as shared table ownership.
+
+## Cross-Module schema boundary
+
+A Module must not write directly to another Module's private schema.
+
+Default policy:
+
+- private cross-Module table references are prohibited;
+- cross-Module foreign keys are prohibited;
+- exceptions require an explicit platform/public contract;
+- normal cross-Module integration should use public service, event, registry,
+  API, or declared dependency boundaries.
+
+## Independent schema/version lineages
+
+Webcore schema/database lineage and each Module schema/database lineage evolve
+independently.
+
+Webcore owns Webcore schema and migrations.
+
+Each Module owns its Module schema and migrations, plus only explicitly
+authorized extensions.
+
+The architecture must not collapse these lineages into one generic global
+`DB_VERSION`.
+
+## Compatibility model
+
+Compatibility is evaluated from declared compatibility plus an available
+authorized transition path.
+
+Material inputs may include:
+
+- current and target Webcore package/version;
+- current and target Webcore schema state;
+- current and target Module package/version;
+- current and target Module schema state;
+- required Webcore capabilities;
+- Module dependencies;
+- available migration path;
+- historical-baseline classification.
+
+Unsupported transitions fail closed.
+
+A future release-support policy may define a bounded historical support window,
+but runtime enforcement must not be reduced to arithmetic on one global database
+version.
+
+The following details remain a required WU2 contract/implementation decision and
+must be locked before WU2 mutation behavior is implemented:
+
+- exact supported historical release window;
+- manifest/range syntax;
+- downgrade/unsupported-state policy;
+- operator-facing unsupported-state presentation.
+
+## Existing migration machinery remains authoritative execution machinery
+
+This workstream does not create a new migration engine.
+
+Existing Package Lifecycle & Migration machinery remains the execution
+machinery.
+
+Locked relationship:
+
+- ownership decides **who may migrate what**;
+- lifecycle machinery decides **how an authorized transition executes**;
+- Webcore migration machinery may mutate only Webcore-owned schema;
+- Module migration machinery may mutate only that Module's schema plus explicit
+  extension grants;
+- attempted migration outside authority fails closed.
+
+## Lifecycle-bounded migration authorization
+
+Database/schema mutation is permitted only inside an authorized lifecycle
+operation.
+
+The authorization context must bind at least:
+
+- installation identity;
+- database namespace;
+- lifecycle operation identity;
+- owner type and owner identity;
+- authorized migration set;
+- allowed logical schema surface;
+- authorized extension grants;
+- source state;
+- target state;
+- compatibility gate;
+- completion/failure state.
+
+Raw PDO/database connection access is not itself migration authority.
+
+The authorization layer belongs at existing planner/coordinator/runner
+boundaries and must not create a parallel migration engine.
+
+## Multi-Installation, namespace, and shared-tableset verdict
+
+The ownership model must preserve installation identity, namespace isolation,
+collision detection, routing, and independent lifecycle boundaries.
+
+Locked verdicts:
+
+### Same database, different namespaces
+
+Supported. Distinct namespaces resolve to distinct physical COPOT object sets.
+
+### Same prefix / namespace
+
+Not valid as two independent installations. The same namespace resolves to the
+same physical tableset.
+
+### Full shared COPOT tableset
+
+Valid only as one legitimate shared installation/state topology recognized by
+the accepted installation/runtime identity model.
+
+It must not be represented as two independent installations both claiming the
+same physical tables.
+
+### Partial COPOT table sharing
+
+Rejected / fail closed.
+
+Partial sharing would create ambiguous ownership, identity, compatibility,
+migration, and recovery authority.
+
+## System Manager relationship
+
+System Manager is the intended operator-facing surface for normal existing
+Webcore lifecycle operations.
+
+Target capability includes:
+
+- intake of a full released Webcore ZIP;
+- Update;
+- Upgrade;
+- Repair / Retry / Reconciliation;
+- compatibility evaluation;
+- authorized Webcore-owned migration execution when required;
+- lifecycle result/status.
+
+System Manager consumes the existing Package Lifecycle & Migration Foundation.
+It is not the migration engine, schema owner, or release-metadata authority.
+
+Normal Webcore update remains a bounded in-place operation against the existing
+installation root while preserving operator/runtime-owned state.
+
+## Database lifecycle classification
+
+### Case A
+
+Webcore package/version changes and database migration is required.
+
+Disposition: **NORMAL WEBcore UPDATE / UPGRADE**.
+
+### Case B
+
+A previously authorized migration failed or is incomplete.
+
+Disposition: **REPAIR / RETRY / RECONCILIATION**.
+
+### Case C
+
+Database requires forward transition while Webcore package/version remains
+unchanged and no failed prior operation exists.
+
+Locked negative rule:
+
+- COPOT must not expose a generic globally available `Update Database` operation
+  or button.
+
+Bounded direction:
+
+- Case C may exist only as an explicitly declared same-version schema-forward
+  maintenance/reconciliation transition;
+- it must be package-defined;
+- it must have a valid authorized migration path;
+- it must use the same ownership and lifecycle authorization boundaries as other
+  transitions.
+
+Before WU4 mutation behavior is implemented, the contract/implementation slice
+must explicitly lock:
+
+- operator-facing name;
+- exact eligibility rules;
+- whether the operation is directly exposed or only lifecycle-derived;
+- release/support policy for same-version schema-forward transitions.
+
+## Installer intent reconciliation
+
+The target Installer intent model is:
+
+- Fresh;
+- Coexist;
+- Adopt / Use Existing Installation.
+
+### Fresh
+
+Create a new COPOT installation.
+
+### Coexist
+
+Create a new independent COPOT installation alongside existing database objects
+or another COPOT installation using a safe distinct namespace.
+
+### Adopt
+
+Use an existing compatible COPOT installation.
+
+Adopt:
+
+- does not silently migrate;
+- does not perform normal Webcore Update / Upgrade / Repair;
+- requires compatibility;
+- fails closed on incompatibility.
+
+Normal existing-install Update / Upgrade / Repair belongs to System Manager /
+Webcore Lifecycle, not Installer.
+
+The accepted Multi-Installation and MR.1 Installer contracts remain authoritative
+until WU5 explicitly reconciles their behavior. Review & Install remains the
+first installation-owned mutation boundary unless later accepted evidence
+explicitly amends that contract.
+
+## Work Unit topology
+
+This workstream has exactly six Work Units.
+
+### WU1 — Table Ownership & Authority
+
+Objective:
+
+- establish the authoritative owner inventory;
+- establish the ownership catalog/proof model;
+- reconcile historical pre-provisioned Module tables;
+- establish extension provenance;
+- establish cross-owner schema boundaries.
+
+Dependency: **NONE**.
+
+Status: **NOT STARTED / NEXT ACTIVE TECHNICAL TARGET**.
+
+### WU2 — Schema Compatibility & Migration Authority
+
+Objective:
+
+- enforce owner-aware migration authority;
+- preserve independent Webcore/Module lineages;
+- establish compatibility relationship/window policy;
+- bind migration authorization to lifecycle operation and namespace;
+- fail closed on unauthorized schema mutation.
+
+Dependency: **HARD → WU1**.
+
+Status: **NOT STARTED**.
+
+### WU3 — System Manager Webcore Lifecycle Capability
+
+Objective:
+
+- expose the accepted Webcore lifecycle capability through System Manager;
+- support released Webcore ZIP intake, Update, Upgrade, Repair/Retry/
+  Reconciliation;
+- evaluate compatibility;
+- invoke only authorized Webcore migrations;
+- report lifecycle result/status.
+
+Execution engine: existing Package Lifecycle & Migration Foundation.
+
+Dependency: **HARD → WU1 + WU2**.
+
+Status: **NOT STARTED**.
+
+### WU4 — Database Lifecycle Classification
+
+Objective:
+
+- formalize Case A/B/C;
+- lock Case C eligibility and operator semantics;
+- prevent generic globally writable database-update behavior.
+
+Dependency: **HARD → WU1 + WU2**.
+
+Additional gate: Case C product/lifecycle semantics must be explicitly locked
+before WU4 mutation behavior is implemented.
+
+Status: **NOT STARTED**.
+
+### WU5 — Installer Intent Reconciliation
+
+Objective:
+
+- reconcile Fresh / Coexist / Adopt with owner-aware provisioning;
+- preserve valid historical installations;
+- keep normal existing-install lifecycle operations outside Installer;
+- preserve namespace and installation-identity safety.
+
+Dependency: **HARD → WU1**.
+
+WU5 consumes accepted WU3/WU4 outcomes where System Manager or database
+lifecycle classification affects Installer routing.
+
+Status: **NOT STARTED**.
+
+### WU6 — Cross-Lifecycle Acceptance
+
+Objective:
+
+Prove coherent boundaries across:
+
+- Installer;
+- installation identity;
+- namespace isolation;
+- System Manager;
+- Webcore lifecycle;
+- Module lifecycle;
+- Webcore-owned migrations;
+- Module-owned migrations;
+- compatibility enforcement;
+- ownership enforcement;
+- repair/recovery boundaries.
+
+Dependency: **HARD → WU1–WU5**.
+
+Status: **NOT STARTED**.
+
+## Acceptance model
+
+### AI / deterministic acceptance
+
+Prefer deterministic evidence for:
+
+- owner-inventory completeness and uniqueness;
+- namespace-aware physical resolution;
+- same-prefix independent-install rejection;
+- partial-sharing fail-closed behavior;
+- owner/extension authorization;
+- lifecycle-plan/operation binding;
+- compatibility classification;
+- historical-baseline mapping;
+- independent Webcore/Module lineages;
+- repair/retry/indeterminate behavior;
+- Installer routing;
+- focused regression integrity.
+
+### Genuine human/product acceptance
+
+Human/product decision is required only when objective repository evidence cannot
+settle the product meaning.
+
+Current reserved human/product decision classes are:
+
+- exact compatibility support-window policy;
+- final Case C operator semantics;
+- any widening of extension types beyond add-column/add-index;
+- any exception to the default cross-Module private-schema prohibition;
+- operator-facing historical-reconciliation posture if exposed to users.
+
+Routine regression testing is not a human acceptance task.
+
+## Interaction with existing authoritative contracts
+
+This contract extends and constrains, but does not silently rewrite, accepted
+boundaries in:
+
+- `docs/28_package_lifecycle_migration_foundation_contract.md`;
+- `docs/29_module_package_lifecycle_contract.md`;
+- `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`;
+- `docs/34_multi_installation_isolation_foundation_contract.md`;
+- `docs/36_mr_1_installation_refinement_contract.md`.
+
+Where later WUs require behavior changes to those accepted surfaces, the
+material contract must be explicitly reconciled in that WU before closure.
+
+## Separate unresolved / non-adopted concerns
+
+The following are not automatically adopted by this contract:
+
+- Cross-Fileset Upgrade Ownership Proof Gap — separate / unresolved /
+  non-blocking by default;
+- Stale Package-Owned File Reconciliation — separate audit candidate;
+- Server-Empty Bootstrap & Package Clean Install — KEEP DEFERRED / UNSCHEDULED;
+- Production Webcore Reconciliation — NOT STARTED / separately authorized;
+- Installation & Runtime Identity Exposure — separate unresolved concern;
+- Admin Shell CSS Single-Source — separate unresolved concern;
+- MR.2 UI refinement;
+- Dashboard refinement;
+- release/tag/publication.
+
+Backup & Recovery remains a separate accepted capability. This contract may
+require it to consume owner-aware facts later, but does not redefine selective
+backup/restore semantics.
+
+## Implementation and mutation boundary
+
+Contract promotion is complete when this document is durable on authoritative
+`main` and independently remotely verified.
+
+After promotion:
+
+- WU1 is the next technical target;
+- WU1 implementation is still **NOT STARTED**;
+- source/schema/runtime mutation requires a separately authorized execution
+  slice;
+- no later WU may skip a HARD dependency;
+- no Deferred Item or production reconciliation is implicitly adopted;
+- no branch, release, tag, or publication action is implied.
