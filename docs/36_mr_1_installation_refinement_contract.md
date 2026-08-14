@@ -3,9 +3,9 @@
 ## Status and authority
 
 ```text
-MR.1 Installation Refinement: PROMOTED / WU4 COMPLETE AND CLOSED (WU5 NEXT)
+MR.1 Installation Refinement: COMPLETE AND CLOSED
 Contract: AMENDED / LOCKED
-MR.1 implementation: WU1–WU4 COMPLETE; WU5 NOT STARTED / SEPARATELY AUTHORIZED
+MR.1 implementation: WU1–WU5 COMPLETE AND CLOSED
 MR.1 WU1: COMPLETE AND CLOSED
 MR.1 WU1 technical validation: PASS
 MR.1 WU1 human acceptance: PASS
@@ -24,7 +24,10 @@ MR.1 WU4 implementation: COMPLETE
 MR.1 WU4 technical validation: PASS
 MR.1 WU4 functional installation validation: PASS
 MR.1 WU4 human UI acceptance: PASS
-MR.1 WU5: NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
+MR.1 WU5: COMPLETE AND CLOSED
+MR.1 WU5 implementation: COMPLETE
+MR.1 WU5 technical/objective validation: PASS
+MR.1 WU5 human acceptance: PASS
 MR.1 branch lifecycle: main-only / no-op
 ```
 
@@ -109,10 +112,9 @@ without positive ownership evidence is not an owned installation.
 
 ## Pre-MR.1 Correctness Gate
 
-The gate is satisfied. MR.1 implementation is complete through WU4 within this
-locked contract; WU1–WU4 are complete and closed. The former WU4
-Module-selection feature is superseded and removed from active scope. WU5 is
-the next active implementation target and remains not started.
+The gate is satisfied. MR.1 implementation is complete and closed through WU5
+within this locked contract. The former WU4 Module-selection feature is
+superseded and removed from active scope.
 
 ### Blocker A — `DB_NAMESPACE` Persistence Merge Defect
 
@@ -139,7 +141,7 @@ MR.1 WU2 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN VISUAL ACCEPT
 MR.1 WU3 = COMPLETE AND CLOSED / TECHNICAL VALIDATION PASS / HUMAN ACCEPTANCE PASS
 MR.1 former WU4 Module Selection = SUPERSEDED / REMOVED FROM ACTIVE SCOPE
 MR.1 WU4 = COMPLETE AND CLOSED / IMPLEMENTATION COMPLETE / TECHNICAL VALIDATION PASS / FUNCTIONAL INSTALLATION VALIDATION PASS / HUMAN UI ACCEPTANCE PASS
-MR.1 WU5 = NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET
+MR.1 WU5 = COMPLETE AND CLOSED / IMPLEMENTATION COMPLETE / TECHNICAL/OBJECTIVE VALIDATION PASS / HUMAN ACCEPTANCE PASS
 ```
 
 ## Separate non-blocking architecture investigation
@@ -248,6 +250,21 @@ MR.1 has exactly five work units:
    unintended COPOT mutation before Install, final review comprehension, result
    usability, and final human UX acceptance.
 
+   Status: **COMPLETE AND CLOSED**. Implementation, technical/objective
+   validation, and human acceptance are **PASS**. Accepted WU5 evidence covers
+   the browser-facing five-phase journey, desktop and 390px mobile rendering,
+   keyboard/error-recovery and available semantic inspection, staged Database
+   and Administrator/Site retention across revisit, and the pre-Install
+   mutation invariant. Shared field presentation now programmatically associates
+   rendered help/error text with its control and exposes invalid state only for
+   invalid controls. Successful installation commit now creates the required
+   installation identity before Installation Result represents completion; the
+   Continue to Admin handoff no longer creates it. At the mobile breakpoint the
+   installer is an accepted full-screen shell without card treatment: header and
+   footer remain outside the phase-content scroll region, which scrolls only
+   when necessary. The accepted five-phase flow and Review & Install first
+   installation-owned mutation boundary are unchanged.
+
 ## Validation and implementation boundaries
 
 Validation must cover the staged-plan and mutation invariant in addition to
@@ -255,12 +272,11 @@ negative/ambiguous database states, namespaced Core/Module state, responsive
 behavior, accessibility, and human comprehension. Findings do not silently
 expand MR.1.
 
-WU1–WU4 are **COMPLETE AND CLOSED** with accepted technical validation and
-human acceptance **PASS**. WU4 functional installation validation is **PASS**.
-Reconciliation Batches 1–5 are **COMPLETE**. The former WU4 Module-selection
-feature is **SUPERSEDED / REMOVED FROM ACTIVE SCOPE**. WU5 is **NOT STARTED /
-NEXT ACTIVE IMPLEMENTATION TARGET**. This
-amendment does not authorize work outside the
+WU1–WU5 are **COMPLETE AND CLOSED** with accepted technical validation and
+human acceptance **PASS**. WU4 functional installation validation is **PASS**;
+WU5 technical/objective validation is **PASS**. Reconciliation Batches 1–5 are
+**COMPLETE**. The former WU4 Module-selection feature is **SUPERSEDED / REMOVED
+FROM ACTIVE SCOPE**. This amendment does not authorize work outside the
 MR.1 contract, lifecycle redesign beyond an accepted work-unit boundary, Module
 implementation outside the installer baseline, cross-fileset ownership work, release, tag, or
 publication.
@@ -270,7 +286,7 @@ publication.
 Only materially relevant current-authority documentation is reconciled. The
 historical Multi-Installation WU1–WU6 contract and evidence remain preserved and
 closed. This contract records the five-WU topology, staged-installation invariant,
-satisfied correctness gate, WU1–WU4 completion and acceptance status, accepted
+satisfied correctness gate, WU1–WU5 completion and acceptance status, accepted
 Reconciliation Batches 1–5, and separate ownership-proof investigation. The
 accepted `Install UI.png` visual guideline
 continues as the structural reference for later installer refinement; page-specific
@@ -281,5 +297,4 @@ presentation must be shared there, with step-specific CSS reserved for genuinely
 unique layout or behavior. The accepted mobile shell remains distinct.
 MR.1 remains main-only / no-op for branch lifecycle. Review & Install remains the
 first COPOT installation mutation boundary; the database-container provisioning
-exception is unchanged. WU4 is complete and closed; WU5 is not started and is
-the next active implementation target.
+exception is unchanged. WU1–WU5 and full MR.1 are complete and closed.

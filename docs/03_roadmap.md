@@ -831,26 +831,29 @@ No additional Multi-Installation WU is currently defined. Any other candidate
 work requires separate planning and contract authorization. Server-Empty Bootstrap remains DEFERRED /
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and
 separately authorized.
-MR.1 Installation Refinement has WU1–WU4 **COMPLETE AND CLOSED** in
-`docs/36_mr_1_installation_refinement_contract.md`. Its five-WU installer
+MR.1 Installation Refinement has WU1–WU5 and full MR.1 **COMPLETE AND CLOSED**
+in `docs/36_mr_1_installation_refinement_contract.md`. Its five-WU installer
 topology is authoritative there: WU1 Installer Shell, Requirements & Navigation
 Framework; WU2 Staged Installation Plan & Database Decision; WU3 Administrator
 & Site Staging; and WU4 Review, Installation Commit & Result are complete and
-closed with accepted validation. WU4 implementation, technical validation,
-functional installation validation, and human UI acceptance are **PASS**.
+closed with accepted validation; WU5 Cross-Step Responsive, Accessibility &
+Human Acceptance is also complete and closed. WU4 implementation, technical
+validation, functional installation validation, and human UI acceptance are
+**PASS**; WU5 implementation, technical/objective validation, and human
+acceptance are **PASS**.
 Reconciliation Batches 1–5 are **COMPLETE**.
 The accepted flow is Requirements → Database → Administrator & Site → Review &
 Install → Installation Result. The former WU4 Module-selection feature is
 superseded and removed from MR.1 installer UX. WU3 preserves staged
 Administrator/Site values across revisit without pre-Install mutation and records
 the accepted Database feedback, shared form/visual, inspection-derived intent,
-namespace-collision, and ownership-proof/compatibility outcomes. WU5
-Cross-Step Responsive, Accessibility & Human Acceptance is **NOT STARTED / NEXT
-ACTIVE IMPLEMENTATION TARGET**.
+namespace-collision, and ownership-proof/compatibility outcomes. WU5 accepted
+the full-screen mobile shell (no card treatment; phase content is the only
+conditional scroll region), shared field error/help association and invalid
+state semantics, and installation-identity creation before Installation Result.
 Review & Install is the first COPOT mutation boundary; database-container
 provisioning at Database is the explicit capable-environment exception.
-MR.1 is main-only / no-op for branch lifecycle. This does not authorize WU5
-implementation automatically.
+MR.1 is main-only / no-op for branch lifecycle.
 Blocker A is **RESOLVED / VALIDATED** after focused persistence regression coverage.
 Blocker B is **CLASSIFIED / NOT A DEFECT**.
 This promotion does not reopen the completed Multi-Installation WU1–WU6
