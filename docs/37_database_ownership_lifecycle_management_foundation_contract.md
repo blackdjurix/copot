@@ -5,9 +5,9 @@
 ```text
 Database Ownership & Lifecycle Management Foundation: PROMOTED / CONTRACT LOCKED
 Preparation audit: COMPLETE
-Implementation: NOT STARTED
+Implementation: WU1 COMPLETE AND CLOSED; WU2–WU6 NOT STARTED
 WU topology: WU1–WU6 LOCKED
-Next active technical target: WU1 — Table Ownership & Authority
+Next active technical target: WU2 — Schema Compatibility & Migration Authority
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
 Branch lifecycle: NOT YET SELECTED
 ```
@@ -436,12 +436,13 @@ Objective:
 
 Dependency: **NONE**.
 
-Status: **IMPLEMENTED ON FEATURE BRANCH; VALIDATION PASSING**.
+Status: **COMPLETE AND CLOSED**.
 
 The WU1 implementation establishes the locked ownership catalog, historical
 aggregate-installer provenance classification, namespace-aware physical lookup,
-and bounded Module-to-Webcore extension provenance. It does not authorize or
-execute migrations, schema splitting, Installer changes, or later Work Units.
+and bounded owner-authorized cross-owner extension provenance. Focused WU1
+validation passes 34 assertions. WU1 does not authorize or execute migrations,
+schema splitting, Installer changes, or later Work Units.
 
 ### WU2 — Schema Compatibility & Migration Authority
 
@@ -602,7 +603,9 @@ Contract promotion is complete when this document is durable on authoritative
 After promotion:
 
 - WU1 is the next technical target;
-- WU1 implementation is still **NOT STARTED**;
+- WU1 implementation is **COMPLETE AND CLOSED**;
+- WU2 remains **NOT STARTED** and is the next technical target under its HARD
+  dependency on WU1;
 - source/schema/runtime mutation requires a separately authorized execution
   slice;
 - no later WU may skip a HARD dependency;
