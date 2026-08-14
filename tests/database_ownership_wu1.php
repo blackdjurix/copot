@@ -36,6 +36,13 @@ foreach (['navigation_menus' => 'navigation', 'content' => 'content', 'taxonomy_
     $assert($catalog->ownership($table)->isHistoricallyPreProvisioned(), $table . ' lost historical pre-provisioning classification.');
 }
 $assert(!$catalog->ownership('users')->isHistoricallyPreProvisioned(), 'Webcore table was incorrectly classified as historically Module-provisioned.');
+$assert(count($catalog->extensions()) === 2, 'Current catalog did not register the evidenced Media-to-Content extensions.');
+$columnGrant = $catalog->extension('media', 'content', DatabaseTableExtensionGrant::ADD_COLUMN, 'featured_media_id');
+$indexGrant = $catalog->extension('media', 'content', DatabaseTableExtensionGrant::ADD_INDEX, 'idx_content_featured_media');
+$assert($catalog->owner('content')->moduleIdentity()?->value() === 'content', 'Content ownership changed during extension registration.');
+$assert($columnGrant->module()->value() === 'media' && $columnGrant->targetOwner()->moduleIdentity()?->value() === 'content', 'Cross-Module extension owner provenance is incomplete.');
+$assert($columnGrant->migrationIdentity() === 'database/upgrades/m3_8_media_library.sql' && $columnGrant->lifecycleOperation() === 'm3.8-wu7-pre-m3.8-upgrade', 'Media-to-Content migration provenance is incorrect.');
+$assert($indexGrant->kind() === DatabaseTableExtensionGrant::ADD_INDEX && $indexGrant->element() === 'idx_content_featured_media', 'Media-to-Content index provenance is incorrect.');
 
 $alpha = new DatabaseTableNames('alpha');
 $empty = new DatabaseTableNames();
@@ -53,15 +60,21 @@ $throws(static fn () => new DatabaseTableOwnershipCatalog([
 ]), 'Shared/duplicate ownership was accepted.');
 $throws(static fn () => new DatabaseTableOwnershipCatalog(
     DatabaseTableOwnershipCatalog::current()->all(),
-    [new DatabaseTableExtensionGrant('media', 'content', DatabaseTableExtensionGrant::ADD_COLUMN, 'media_id', 'media.migration.1', 'op-1')]
+    [new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::webcore(), DatabaseTableExtensionGrant::ADD_COLUMN, 'media_id', 'media.migration.1', 'op-1')]
 ), 'Unauthorized cross-owner extension was accepted.');
-$throws(static fn () => new DatabaseTableExtensionGrant('media', 'content', 'drop_column', 'legacy', 'media.migration.1', 'op-1'), 'Unsupported extension kind was accepted.');
-$throws(static fn () => new DatabaseTableExtensionGrant('media', 'content', DatabaseTableExtensionGrant::ADD_COLUMN, 'media_id', '', 'op-1'), 'Extension without migration provenance was accepted.');
+$throws(static fn () => new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::module('content'), 'drop_column', 'legacy', 'media.migration.1', 'op-1'), 'Unsupported extension kind was accepted.');
+$throws(static fn () => new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::module('content'), DatabaseTableExtensionGrant::ADD_COLUMN, 'media_id', '', 'op-1'), 'Extension without migration provenance was accepted.');
 
-$grant = new DatabaseTableExtensionGrant(new ModuleIdentity('media'), 'users', DatabaseTableExtensionGrant::ADD_INDEX, 'idx_media_user', 'media.migration.2', 'operation-2');
+$grant = new DatabaseTableExtensionGrant(new ModuleIdentity('media'), 'users', DatabaseTableOwner::webcore(), DatabaseTableExtensionGrant::ADD_INDEX, 'idx_media_user', 'media.migration.2', 'operation-2');
 $withGrant = new DatabaseTableOwnershipCatalog(DatabaseTableOwnershipCatalog::current()->all(), [$grant]);
 $assert($withGrant->extension('media', 'users', DatabaseTableExtensionGrant::ADD_INDEX, 'idx_media_user')->lifecycleOperation() === 'operation-2', 'Extension provenance lookup failed.');
 $assert($withGrant->ownership('users')->owner()->isWebcore(), 'Extension provenance changed table ownership.');
 $throws(static fn () => $withGrant->extension('media', 'users', DatabaseTableExtensionGrant::ADD_COLUMN, 'idx_media_user'), 'Unauthorized extension lookup did not fail closed.');
+$throws(static fn () => new DatabaseTableOwnershipCatalog(DatabaseTableOwnershipCatalog::current()->all(), [
+    new DatabaseTableExtensionGrant('media', 'users', DatabaseTableOwner::module('content'), DatabaseTableExtensionGrant::ADD_INDEX, 'idx_wrong_owner', 'media.migration.3', 'operation-3'),
+]), 'Invalid target-owner identity was accepted.');
+$throws(static fn () => new DatabaseTableOwnershipCatalog(DatabaseTableOwnershipCatalog::current()->all(), [
+    new DatabaseTableExtensionGrant('content', 'content', DatabaseTableOwner::module('content'), DatabaseTableExtensionGrant::ADD_COLUMN, 'self_extension', 'content.migration.1', 'operation-4'),
+]), 'Same-owner extension was accepted as cross-owner provenance.');
 
 echo "WU1 database ownership tests passed ({$assertions} assertions)." . PHP_EOL;

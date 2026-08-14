@@ -156,10 +156,11 @@ ownership.
 
 ## Module extension boundary
 
-A Module may extend a Webcore-owned table only through an explicit platform
-contract.
+A Module may extend a Webcore-owned table or another Module-owned table only
+through an explicit owner-authorized platform contract.
 
-The table remains Webcore-owned.
+The target table remains owned by its existing authoritative owner. An
+extension never creates shared ownership or transfers ownership.
 
 Default permitted extension surface for this foundation:
 
@@ -168,10 +169,10 @@ Default permitted extension surface for this foundation:
 
 Not permitted by default:
 
-- dropping or renaming Webcore-owned schema;
-- repurposing Webcore-owned schema;
-- destructive modification of Webcore-owned columns or indexes;
-- arbitrary DDL against Webcore-owned tables;
+- dropping or renaming target-owner schema;
+- repurposing target-owner schema;
+- destructive modification of target-owner columns or indexes;
+- arbitrary DDL against target-owner tables;
 - new cross-owner constraints;
 - new cross-owner foreign keys.
 
@@ -185,7 +186,8 @@ Extension provenance is separate from table ownership.
 An authorized extension must identify at least:
 
 - extending Module;
-- affected Webcore-owned table;
+- authoritative target owner (Webcore or one specific Module);
+- affected table;
 - added schema element(s);
 - migration/declaration identity;
 - lifecycle operation/transition that authorized the extension.
@@ -200,7 +202,9 @@ Default policy:
 
 - private cross-Module table references are prohibited;
 - cross-Module foreign keys are prohibited;
-- exceptions require an explicit platform/public contract;
+- a bounded add-column/add-index extension is permitted only when an explicit
+  owner-authorized extension grant identifies the target Module owner;
+- all other cross-Module schema writes remain prohibited;
 - normal cross-Module integration should use public service, event, registry,
   API, or declared dependency boundaries.
 

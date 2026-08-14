@@ -28,8 +28,11 @@ final class DatabaseTableOwnershipCatalog
         foreach ($extensions as $extension) {
             if (!$extension instanceof DatabaseTableExtensionGrant) throw new \InvalidArgumentException('Invalid table extension grant.');
             $target = $this->byTable[$extension->table()] ?? null;
-            if (!$target instanceof DatabaseTableOwnership || !$target->owner()->isWebcore()) {
-                throw new \InvalidArgumentException('Module extensions may target Webcore-owned tables only.');
+            if (!$target instanceof DatabaseTableOwnership || $target->owner()->key() !== $extension->targetOwner()->key()) {
+                throw new \InvalidArgumentException('Extension target-owner identity does not match authoritative table ownership.');
+            }
+            if ($target->owner()->isModule() && $target->owner()->moduleIdentity()?->value() === $extension->module()->value()) {
+                throw new \InvalidArgumentException('A Module cannot claim its own table as a cross-owner extension.');
             }
             if (isset($this->extensions[$extension->key()])) throw new \InvalidArgumentException('Duplicate table extension grant.');
             $this->extensions[$extension->key()] = $extension;
@@ -50,7 +53,10 @@ final class DatabaseTableOwnershipCatalog
         $entries = [];
         foreach ($webcore as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::webcore(), 'database/schema.sql');
         foreach ($modules as $module => $tables) foreach ($tables as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::module($module), 'database/schema.sql', 'aggregate-installer:database/schema.sql');
-        return new self($entries);
+        return new self($entries, [
+            new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::module('content'), DatabaseTableExtensionGrant::ADD_COLUMN, 'featured_media_id', 'database/upgrades/m3_8_media_library.sql', 'm3.8-wu7-pre-m3.8-upgrade'),
+            new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::module('content'), DatabaseTableExtensionGrant::ADD_INDEX, 'idx_content_featured_media', 'database/upgrades/m3_8_media_library.sql', 'm3.8-wu7-pre-m3.8-upgrade'),
+        ]);
     }
 
     public function ownership(string $logicalName): DatabaseTableOwnership

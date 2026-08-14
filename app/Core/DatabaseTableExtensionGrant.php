@@ -10,6 +10,7 @@ final class DatabaseTableExtensionGrant
     public function __construct(
         private ModuleIdentity|string $module,
         private string $table,
+        private DatabaseTableOwner $targetOwner,
         private string $kind,
         private string $element,
         private string $migrationIdentity,
@@ -28,6 +29,7 @@ final class DatabaseTableExtensionGrant
 
     public function module(): ModuleIdentity { return $this->module; }
     public function table(): string { return $this->table; }
+    public function targetOwner(): DatabaseTableOwner { return $this->targetOwner; }
     public function kind(): string { return $this->kind; }
     public function element(): string { return $this->element; }
     public function migrationIdentity(): string { return $this->migrationIdentity; }
