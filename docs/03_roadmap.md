@@ -634,7 +634,7 @@ published. Deferred integrations remain excluded.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 track: Multi-Installation WU1–WU6 implementation and acceptance
+Latest completed Post-M3 track: System Health & Status WU1–WU6 implementation and validation
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
@@ -808,7 +808,7 @@ milestone number is assigned. The Webcore package lifecycle
 first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all
 possible Webcore installation/distribution capability. The latest completed
-Post-M3 track is Multi-Installation WU1–WU6 implementation and acceptance;
+Post-M3 track is System Health & Status WU1–WU6 implementation and validation;
 v0.13.0 Release Readiness,
 tag/publication, and Gate 9 verification are complete. Post-release
 documentation reconciliation is complete; Multi-Installation Isolation
@@ -825,7 +825,8 @@ DB-backed proof assembly and adoption/migration routing.
 WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime
 Acceptance — is COMPLETE AND ACCEPTED and fast-forward integrated into
 authoritative `main` at `b095d26285f80d5b4caa8d1ac686acc02e17913a`.
-The WU6 feature branch is retained under separate lifecycle authorization.
+The authoritative remote branch lifecycle is closed on `main`, with no active
+Multi-Installation feature branch.
 No additional Multi-Installation WU is currently defined. Any other candidate
 work requires separate planning and contract authorization. Server-Empty Bootstrap remains DEFERRED /
 UNSCHEDULED, and production Webcore reconciliation remains NOT STARTED and

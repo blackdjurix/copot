@@ -28,10 +28,10 @@ authoritative Post-M3 work stream. WU1 contract/evidence closure and WU2–WU5
 implementation/evidence are complete and accepted for their defined scopes;
 WU5 is integrated into authoritative `main`. WU6 is complete and accepted and
 fast-forward integrated into authoritative `main` at
-`b095d26285f80d5b4caa8d1ac686acc02e17913a`; the dedicated WU6 feature branch
-is retained under separate lifecycle authorization. Any later implementation
-authorization must preserve this contract or document an evidence-backed
-amendment.
+`b095d26285f80d5b4caa8d1ac686acc02e17913a`; the authoritative remote branch
+lifecycle is closed on `main`, with no active Multi-Installation feature branch.
+Any later implementation authorization must preserve this contract or document
+an evidence-backed amendment.
 
 ## Relationship to completed foundations
 

@@ -29,7 +29,7 @@ released, tagged, and published.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 track: Multi-Installation WU1–WU6 implementation and acceptance
+Latest completed Post-M3 track: System Health & Status WU1–WU6 implementation and validation
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
@@ -47,10 +47,10 @@ and integrated into authoritative `main` at `a83c780cf7c5e1ca614ab4dc51a30b44c3a
 DB-backed proof-assembly and adoption/migration routing acceptance passed.
 Multi-Installation WU6 Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance: COMPLETE AND ACCEPTED;
 fast-forward integrated into authoritative `main` at
-`b095d26285f80d5b4caa8d1ac686acc02e17913a`; the feature branch is retained
-under separate lifecycle authorization. No additional Multi-Installation WU is
-currently defined; unrelated candidate work requires separate planning and
-authorization.
+`b095d26285f80d5b4caa8d1ac686acc02e17913a`; the authoritative remote branch
+lifecycle is closed on `main`, with no active Multi-Installation feature branch.
+No additional Multi-Installation WU is currently defined; unrelated candidate
+work requires separate planning and authorization.
 Frozen release documentation baseline: current release-readiness contract with Gate 9 verification recorded
 Version & Release Reconciliation: COMPLETE
 Webcore reconciled source version: 0.13.0 (released and published; production reconciliation remains separate)

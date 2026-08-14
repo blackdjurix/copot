@@ -270,7 +270,7 @@ publication.
 Only materially relevant current-authority documentation is reconciled. The
 historical Multi-Installation WU1–WU6 contract and evidence remain preserved and
 closed. This contract records the five-WU topology, staged-installation invariant,
-satisfied correctness gate, WU1–WU3 completion and acceptance status, accepted
+satisfied correctness gate, WU1–WU4 completion and acceptance status, accepted
 Reconciliation Batches 1–5, and separate ownership-proof investigation. The
 accepted `Install UI.png` visual guideline
 continues as the structural reference for later installer refinement; page-specific
