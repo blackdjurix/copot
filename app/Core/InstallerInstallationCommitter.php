@@ -85,6 +85,7 @@ final class InstallerInstallationCommitter
                 new CommittedLifecycleStateStore($this->basePath . '/storage'),
                 $this->mutex
             );
+            (new InstallationIdentityStore($this->basePath . '/storage'))->getOrCreate();
             $finalization = $finalizer->finalizePrepared();
 
             return [

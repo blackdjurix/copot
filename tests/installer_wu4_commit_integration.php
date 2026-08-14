@@ -6,6 +6,7 @@ use Copot\Core\CommittedLifecycleStateStore;
 use Copot\Core\Config;
 use Copot\Core\CoreMigrationRegistry;
 use Copot\Core\InstallationException;
+use Copot\Core\InstallationIdentityStore;
 use Copot\Core\InstallationMutex;
 use Copot\Core\InstallationState;
 use Copot\Core\InstallerDatabaseProbe;
@@ -96,6 +97,9 @@ try {
     if (!$installationState->isInstalled() || !(new CommittedLifecycleStateStore($storage))->read() instanceof Copot\Core\CommittedLifecycleState) {
         throw new RuntimeException('Committed lifecycle/runtime evidence was not written.');
     }
+    if (!(new InstallationIdentityStore($storage))->read() instanceof Copot\Core\InstallationIdentity) {
+        throw new RuntimeException('Review & Install did not create installation identity before successful completion.');
+    }
     $environment = (string) file_get_contents($root . DIRECTORY_SEPARATOR . '.env');
     if (!str_contains($environment, 'DB_NAMESPACE="w4demo"') || str_contains($environment, $administrator['admin_password'])) {
         throw new RuntimeException('Environment persistence or secret handling failed.');
@@ -126,8 +130,12 @@ try {
         $failedCommitter->commit($configuration, ['admin_name' => '', 'admin_email' => 'bad', 'admin_password' => 'x', 'admin_password_confirmation' => 'y', 'site_name' => '', 'site_tagline' => '', 'timezone' => 'UTC', 'locale' => 'en_US'], true, Copot\Core\InstallerIntent::FRESH);
         throw new RuntimeException('Failed revalidation unexpectedly mutated the installation.');
     } catch (InstallerValidationException|InstallationException) {
-        if (is_file($failedRoot . DIRECTORY_SEPARATOR . '.env') || (new InstallationState($failedRoot . DIRECTORY_SEPARATOR . 'storage'))->isInstalled()) {
-            throw new RuntimeException('Failed revalidation left installation-owned state behind.');
+        if (
+            is_file($failedRoot . DIRECTORY_SEPARATOR . '.env')
+            || (new InstallationState($failedRoot . DIRECTORY_SEPARATOR . 'storage'))->isInstalled()
+            || (new InstallationIdentityStore($failedRoot . DIRECTORY_SEPARATOR . 'storage'))->read() instanceof Copot\Core\InstallationIdentity
+        ) {
+            throw new RuntimeException('Failed revalidation left installation-owned identity or state behind.');
         }
     }
 
