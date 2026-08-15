@@ -36,7 +36,10 @@ final class LifecycleOperationRecord
         private ?string $migrationOutcome,
         private string $createdAt,
         private string $updatedAt,
-        private string $reason = ''
+        private string $reason = '',
+        private ?string $recoveryIdentity = null,
+        private ?string $recoveryManifestIdentity = null,
+        private ?string $recoveryState = null
     ) {
         self::assertOpaque($operationId, 'Operation identity');
         self::assertOpaque($classification, 'Classification');
@@ -66,8 +69,10 @@ final class LifecycleOperationRecord
 
     public static function fromArray(array $data): self
     {
-        $required = ['operation_id','classification','target_webcore_version','release_identity','archive_sha256','staging_path','payload_identity','apply_plan_identity','phase','file_cursor','last_verified_path','migration_plan_identity','migration_outcome','created_at','updated_at','reason'];
-        if (array_keys($data) !== $required) { throw new \InvalidArgumentException('Lifecycle operation record format is invalid.'); }
+        $legacy = ['operation_id','classification','target_webcore_version','release_identity','archive_sha256','staging_path','payload_identity','apply_plan_identity','phase','file_cursor','last_verified_path','migration_plan_identity','migration_outcome','created_at','updated_at','reason'];
+        $current = [...$legacy, 'recovery_identity','recovery_manifest_identity','recovery_state'];
+        if (array_keys($data) !== $legacy && array_keys($data) !== $current) { throw new \InvalidArgumentException('Lifecycle operation record format is invalid.'); }
+        if (array_keys($data) === $legacy) { $data['recovery_identity'] = null; $data['recovery_manifest_identity'] = null; $data['recovery_state'] = null; }
         if (!is_int($data['file_cursor'])) { throw new \InvalidArgumentException('Lifecycle operation cursor is invalid.'); }
 
         return new self(...array_values($data));
@@ -92,6 +97,9 @@ final class LifecycleOperationRecord
             'created_at' => $this->createdAt,
             'updated_at' => $this->updatedAt,
             'reason' => $this->reason,
+            'recovery_identity' => $this->recoveryIdentity,
+            'recovery_manifest_identity' => $this->recoveryManifestIdentity,
+            'recovery_state' => $this->recoveryState,
         ];
     }
 
@@ -109,10 +117,15 @@ final class LifecycleOperationRecord
     public function migrationPlanIdentity(): ?string { return $this->migrationPlanIdentity; }
     public function migrationOutcome(): ?string { return $this->migrationOutcome; }
     public function isTerminal(): bool { return $this->phase === self::COMPLETED; }
+    public function recoveryIdentity(): ?string { return $this->recoveryIdentity; }
+    public function recoveryManifestIdentity(): ?string { return $this->recoveryManifestIdentity; }
+    public function recoveryState(): ?string { return $this->recoveryState; }
+    public function bindRecovery(string $identity, string $manifest, string $state): self
+    { return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationPlanIdentity, $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $this->reason, $identity, $manifest, $state); }
 
     public function advance(string $phase, int $cursor, ?string $lastPath = null, ?string $migrationOutcome = null, string $reason = ''): self
     {
-        return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $phase, $cursor, $lastPath ?? $this->lastVerifiedPath, $this->migrationPlanIdentity, $migrationOutcome ?? $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $reason);
+        return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $phase, $cursor, $lastPath ?? $this->lastVerifiedPath, $this->migrationPlanIdentity, $migrationOutcome ?? $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $reason, $this->recoveryIdentity, $this->recoveryManifestIdentity, $this->recoveryState);
     }
 
     private static function assertOpaque(string $value, string $label): void

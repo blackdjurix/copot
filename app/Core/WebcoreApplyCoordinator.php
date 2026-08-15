@@ -12,7 +12,8 @@ final class WebcoreApplyCoordinator
         private MaintenanceCoordinator $maintenance,
         private PackageOwnedFileApplier $applier,
         callable $migrationRunner,
-        private ?RuntimeRegistry $runtimeRegistry = null
+        private ?RuntimeRegistry $runtimeRegistry = null,
+        private ?ProtectedWebcoreMutationBoundary $recoveryBoundary = null
     ) {
         $this->migrationRunner = $migrationRunner;
     }
@@ -28,6 +29,7 @@ final class WebcoreApplyCoordinator
         }
 
         $record = null;
+        $session = null;
 
         try {
             $package = $transition->package();
@@ -66,6 +68,15 @@ final class WebcoreApplyCoordinator
             }
 
             $this->runtimeRegistry?->assertTransitionAllowed();
+
+            if ($this->recoveryBoundary instanceof ProtectedWebcoreMutationBoundary) {
+                $session = $this->recoveryBoundary->enter(new WebcoreMutationContext($record, $applyPlan, $transition, $migrationPlan));
+                $evidence = $session->evidence();
+                if (!isset($evidence['identity'], $evidence['manifest'], $evidence['state'])) throw new \RuntimeException('Recovery evidence is incomplete.');
+                $record = $record->bindRecovery((string) $evidence['identity'], (string) $evidence['manifest'], (string) $evidence['state']);
+                $this->maintenance->update($record);
+                $session->authorize();
+            }
 
             $record = $record->advance(LifecycleOperationRecord::APPLYING, 0);
             $this->maintenance->update($record);
@@ -108,9 +119,11 @@ final class WebcoreApplyCoordinator
 
             $record = $record->advance(LifecycleOperationRecord::AWAITING_WU6, count($appliedPaths), $lastPath, $migration->status());
             $this->maintenance->update($record);
+            $session?->complete();
 
             return new WebcoreApplyResult(WebcoreApplyResult::AWAITING_WU6, $appliedPaths, 'Awaiting WU6 health and installed-state commit.', $record->operationId());
         } catch (\Throwable $exception) {
+            $session?->fail($exception->getMessage());
             if ($record instanceof LifecycleOperationRecord) {
                 try {
                     $this->maintenance->update($record->advance(LifecycleOperationRecord::BLOCKED, $record->fileCursor(), $record->lastVerifiedPath(), null, $exception->getMessage()));
