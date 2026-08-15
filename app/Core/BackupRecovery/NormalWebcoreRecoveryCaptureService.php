@@ -16,7 +16,7 @@ final class NormalWebcoreRecoveryCaptureService
         private $lockConnection
     ) {}
 
-    public function capture(NormalWebcoreRecoveryCaptureRequest $request): NormalWebcoreRecoveryCaptureResult
+    public function capture(NormalWebcoreRecoveryCaptureRequest $request): NormalWebcoreRecoverySession
     {
         $recovery = new RecoveryIdentity('webcore-' . hash('sha256', $request->operationId() . ':' . $request->applyPlan()->identity()));
         $lease = null; $record = null;
@@ -45,15 +45,18 @@ final class NormalWebcoreRecoveryCaptureService
             $this->coordinator->transition($recovery, RecoveryLifecycleState::CAPTURED);
             $this->coordinator->recordCaptureComplete($recovery);
             $this->coordinator->transition($recovery, RecoveryLifecycleState::READY);
+            $this->coordinator->confirm($recovery, $manifest->identity(), $manifest->identity());
             $ready = $this->store->read($recovery);
             if ($ready->state() !== RecoveryLifecycleState::READY || !$ready->captureComplete()) throw new RecoveryLifecycleException('Recovery capture did not reach READY.');
-            return new NormalWebcoreRecoveryCaptureResult($recovery, $manifest->identity(), $ready);
+            return new NormalWebcoreRecoverySession($this->coordinator, $recovery, $manifest->identity(), $ready, $lease);
         } catch (\Throwable $exception) {
             if ($record instanceof RecoveryLifecycleRecord) { try { $this->coordinator->transition($recovery, RecoveryLifecycleState::FAILED_BEFORE_MUTATION, 'Recovery capture failed.'); } catch (\Throwable) {} }
             throw $exception;
         } finally {
-            if ($lease instanceof DatabaseQuiescenceLease && $lease->isActive()) $lease->release();
-            try { $this->coordinator->leaveMaintenance($recovery); } catch (\Throwable) {}
+            if (!isset($ready) || !isset($manifest)) {
+                if ($lease instanceof DatabaseQuiescenceLease && $lease->isActive()) $lease->release();
+                try { $this->coordinator->leaveMaintenance($recovery); } catch (\Throwable) {}
+            }
         }
     }
 }

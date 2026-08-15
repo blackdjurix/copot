@@ -33,12 +33,12 @@ final class RecoveryLifecycleCoordinator
     { $record = $this->store->read($identity); if (!in_array($record->state(), [RecoveryLifecycleState::CAPTURED, RecoveryLifecycleState::READY], true)) throw new RecoveryLifecycleException('Recovery confirmation is not allowed in the current state.'); $next = $record->withConfirmation($identity, $manifestIdentity, $targetIdentity); $this->store->save($next); return $next; }
 
     /** The returned permit must be held for the complete caller-controlled mutation interval. */
-    public function authorizeMutation(RecoveryIdentity $identity, string $manifestIdentity, string $targetIdentity): RecoveryMutationPermit
+    public function authorizeMutation(RecoveryIdentity $identity, string $manifestIdentity, string $targetIdentity, ?DatabaseQuiescenceLease $existingLease = null): RecoveryMutationPermit
     {
         $record = $this->store->read($identity);
         if ($record->state() !== RecoveryLifecycleState::READY || !$record->captureComplete() || !$record->confirmationMatches($identity, $manifestIdentity, $targetIdentity)) throw new RecoveryLifecycleException('Recovery mutation prerequisites are not satisfied.');
         if ($this->maintenance === null || !$this->maintenance->isActive($identity)) throw new RecoveryLifecycleException('Recovery maintenance is unavailable; mutation is blocked.');
-        $lease = $this->quiescence->acquire();
+        $lease = $existingLease ?? $this->quiescence->acquire();
         if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable; mutation is blocked.');
         try { $this->store->markMutationStarting($identity); } catch (\Throwable $e) { $lease->release(); throw $e; }
         return new RecoveryMutationPermit($lease);
