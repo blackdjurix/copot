@@ -19,6 +19,13 @@ use Copot\Core\PackageInventoryEntry;
 use Copot\Core\PackageMigrationDeclaration;
 use Copot\Core\PackageOwnership;
 use Copot\Core\PackageRuntimeCompatibility;
+use Copot\Core\AuthorizedMigrationContext;
+use Copot\Core\DatabaseTableOwnershipCatalog;
+use Copot\Core\DatabaseTableOwner;
+use Copot\Core\DatabaseTableNames;
+use Copot\Core\InstallationIdentity;
+use Copot\Core\MigrationAuthorizationContext;
+use Copot\Core\MigrationSchemaSurface;
 
 $basePath = dirname(__DIR__);
 chdir($basePath);
@@ -44,7 +51,7 @@ $throws = static function (callable $callback, string $message) use (&$assertion
     throw new RuntimeException($message . ' did not throw.');
 };
 
-$descriptor = static function (string $id, int $sequence, string $sourceMin, string $sourceMax, string $target, string $schema, string $mode = CoreMigrationDescriptor::TRANSACTIONAL, ?callable $executor = null, ?callable $postcondition = null): CoreMigrationDescriptor {
+$descriptor = static function (string $id, int $sequence, string $sourceMin, string $sourceMax, string $target, string $schema, string $mode = CoreMigrationDescriptor::TRANSACTIONAL, ?callable $executor = null, ?callable $postcondition = null, ?MigrationSchemaSurface $surface = null): CoreMigrationDescriptor {
     return new CoreMigrationDescriptor(
         $id,
         $sequence,
@@ -54,9 +61,11 @@ $descriptor = static function (string $id, int $sequence, string $sourceMin, str
         $schema,
         $mode,
         'source:' . $id,
-        $executor ?? static function (PDO $connection): void {},
+        $executor ?? static function (AuthorizedMigrationContext $context): void {},
         null,
-        $postcondition
+        $postcondition,
+        false,
+        $surface
     );
 };
 $migrationA = $descriptor(
@@ -161,30 +170,35 @@ $assert(count($gapRegistry->migrations()) === 2, 'Sequence gaps were rejected.')
 
 $runnerConnection = new PDO('sqlite::memory:', options: [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 $runnerConnection->exec('CREATE TABLE core_migration_history (migration_id VARCHAR(191) PRIMARY KEY, sequence_number INTEGER UNIQUE, target_webcore_version VARCHAR(64), target_schema_identity VARCHAR(191), migration_checksum CHAR(64), applied_at DATETIME)');
-$runnerA = $descriptor('core.runner-a', 10, '0.10.0', '0.11.0', '0.11.0', 'schema-11', CoreMigrationDescriptor::TRANSACTIONAL, static function (PDO $connection): void { $connection->exec('CREATE TABLE runner_a (id INTEGER)'); }, static function (PDO $connection): bool { return (bool) $connection->query("SELECT name FROM sqlite_master WHERE type='table' AND name='runner_a'")->fetchColumn(); });
-$runnerB = $descriptor('core.runner-b', 20, '0.11.0', '0.12.0', '0.12.0', 'schema-12', CoreMigrationDescriptor::TRANSACTIONAL, static function (PDO $connection): void { $connection->exec('CREATE TABLE runner_b (id INTEGER)'); });
+$runnerConnection->exec('CREATE TABLE settings (id INTEGER PRIMARY KEY)');
+$surface = new MigrationSchemaSurface(['settings']);
+$runnerA = $descriptor('core.runner-a', 10, '0.10.0', '0.11.0', '0.11.0', 'schema-11', CoreMigrationDescriptor::TRANSACTIONAL, static function (AuthorizedMigrationContext $context): void { $context->addColumn('settings', 'runner_a', 'INTEGER'); }, static function (AuthorizedMigrationContext $context): bool { return $context->columnExists('settings', 'runner_a'); }, $surface);
+$runnerB = $descriptor('core.runner-b', 20, '0.11.0', '0.12.0', '0.12.0', 'schema-12', CoreMigrationDescriptor::TRANSACTIONAL, static function (AuthorizedMigrationContext $context): void { $context->addColumn('settings', 'runner_b', 'INTEGER'); }, null, $surface);
 $runnerPlan = CoreMigrationPlan::allow('0.10.0', '0.12.0', 'schema-10', 'schema-12', [$runnerA, $runnerB]);
-$run = (new CoreMigrationRunner(new CoreMigrationLedger()))->run($runnerConnection, $runnerPlan);
+$authorizeCore = static function (CoreMigrationPlan $plan, PDO $connection): callable { $catalog = DatabaseTableOwnershipCatalog::current(); $identity = InstallationIdentity::generate(); return static function (CoreMigrationDescriptor $migration) use ($plan, $connection, $catalog, $identity): AuthorizedMigrationContext { $authorization = new MigrationAuthorizationContext($identity, new DatabaseTableNames(''), 'wu4-operation', 'upgrade', DatabaseTableOwner::webcore(), $migration->id(), $migration->checksum(), $plan->initialWebcoreVersion(), $plan->virtualFinalWebcoreVersion(), true, $migration->schemaSurface()); return new AuthorizedMigrationContext($connection, $authorization, $catalog); }; };
+$run = (new CoreMigrationRunner(new CoreMigrationLedger()))->run($runnerConnection, $runnerPlan, null, $authorizeCore($runnerPlan, $runnerConnection));
 $assert($run->status() === MigrationRunResult::COMPLETED && $run->appliedMigrationIds() === ['core.runner-a', 'core.runner-b'], 'Transactional migration runner did not complete.');
 $assert(count((new CoreMigrationLedger())->records($runnerConnection)) === 2, 'Applied migration ledger was not recorded transactionally.');
 
 $failureConnection = new PDO('sqlite::memory:', options: [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 $failureConnection->exec('CREATE TABLE core_migration_history (migration_id VARCHAR(191) PRIMARY KEY, sequence_number INTEGER UNIQUE, target_webcore_version VARCHAR(64), target_schema_identity VARCHAR(191), migration_checksum CHAR(64), applied_at DATETIME)');
-$failureMigration = $descriptor('core.failure', 10, '0.10.0', '0.11.0', '0.11.0', 'schema-11', CoreMigrationDescriptor::TRANSACTIONAL, static function (PDO $connection): void { $connection->exec('CREATE TABLE rolled_back (id INTEGER)'); }, static function (PDO $connection): bool { return false; });
+$failureConnection->exec('CREATE TABLE settings (id INTEGER PRIMARY KEY)');
+$failureMigration = $descriptor('core.failure', 10, '0.10.0', '0.11.0', '0.11.0', 'schema-11', CoreMigrationDescriptor::TRANSACTIONAL, static function (AuthorizedMigrationContext $context): void { $context->addColumn('settings', 'rolled_back', 'INTEGER'); }, static function (AuthorizedMigrationContext $context): bool { return false; }, $surface);
 $failurePlan = CoreMigrationPlan::allow('0.10.0', '0.11.0', 'schema-10', 'schema-11', [$failureMigration]);
-$failedRun = (new CoreMigrationRunner(new CoreMigrationLedger()))->run($failureConnection, $failurePlan);
+$failedRun = (new CoreMigrationRunner(new CoreMigrationLedger()))->run($failureConnection, $failurePlan, null, $authorizeCore($failurePlan, $failureConnection));
 $assert($failedRun->status() === MigrationRunResult::FAILED, 'Failed migration did not return FAILED.');
-$assert((int) $failureConnection->query("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='rolled_back'")->fetchColumn() === 0, 'Transactional migration effects were not rolled back.');
+$assert((int) $failureConnection->query("SELECT COUNT(*) FROM pragma_table_info('settings') WHERE name='rolled_back'")->fetchColumn() === 0, 'Transactional migration effects were not rolled back.');
 $assert((new CoreMigrationLedger())->records($failureConnection) === [], 'Failed migration was recorded as applied.');
 
 $nonTransactionalConnection = new PDO('sqlite::memory:', options: [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
 $nonTransactionalConnection->exec('CREATE TABLE core_migration_history (migration_id VARCHAR(191) PRIMARY KEY, sequence_number INTEGER UNIQUE, target_webcore_version VARCHAR(64), target_schema_identity VARCHAR(191), migration_checksum CHAR(64), applied_at DATETIME)');
-$nonTransactional = $descriptor('core.non-transactional', 10, '0.10.0', '0.11.0', '0.11.0', 'schema-11', CoreMigrationDescriptor::NON_TRANSACTIONAL, static function (PDO $connection): void { $connection->exec('CREATE TABLE IF NOT EXISTS non_transactional_effect (id INTEGER)'); });
+$nonTransactionalConnection->exec('CREATE TABLE settings (id INTEGER PRIMARY KEY)');
+$nonTransactional = $descriptor('core.non-transactional', 10, '0.10.0', '0.11.0', '0.11.0', 'schema-11', CoreMigrationDescriptor::NON_TRANSACTIONAL, static function (AuthorizedMigrationContext $context): void { if (!$context->columnExists('settings', 'non_transactional')) $context->addColumn('settings', 'non_transactional', 'INTEGER'); }, null, $surface);
 $nonTransactionalPlan = CoreMigrationPlan::allow('0.10.0', '0.11.0', 'schema-10', 'schema-11', [$nonTransactional]);
-$nonTransactionalRun = (new CoreMigrationRunner(new CoreMigrationLedger()))->run($nonTransactionalConnection, $nonTransactionalPlan);
+$nonTransactionalRun = (new CoreMigrationRunner(new CoreMigrationLedger()))->run($nonTransactionalConnection, $nonTransactionalPlan, null, $authorizeCore($nonTransactionalPlan, $nonTransactionalConnection));
 $assert($nonTransactionalRun->status() === MigrationRunResult::COMPLETED, 'Non-transactional migration did not complete with verified ledger recording.');
 $nonTransactionalConnection->exec('DROP TABLE core_migration_history');
-$indeterminateRun = (new CoreMigrationRunner(new CoreMigrationLedger()))->run($nonTransactionalConnection, $nonTransactionalPlan);
+$indeterminateRun = (new CoreMigrationRunner(new CoreMigrationLedger()))->run($nonTransactionalConnection, $nonTransactionalPlan, null, $authorizeCore($nonTransactionalPlan, $nonTransactionalConnection));
 $assert($indeterminateRun->status() === MigrationRunResult::INDETERMINATE, 'Ledger failure after non-transactional effects was not indeterminate.');
 
 $schema = (string) file_get_contents($basePath . '/database/schema.sql');
