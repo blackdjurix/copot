@@ -616,10 +616,13 @@ Contract promotion is complete when this document is durable on authoritative
 
 After promotion:
 
-- WU1 is the next technical target;
 - WU1 implementation is **COMPLETE AND CLOSED**;
-- WU2 remains **NOT STARTED** and is the next technical target under its HARD
-  dependency on WU1;
+- WU2 implementation is **COMPLETE AND CLOSED**;
+- accepted WU2 validation passed 11 focused authority assertions, 30 Core
+  lifecycle assertions, 15 Module lifecycle/provisioning assertions, and the
+  existing 34 WU1 ownership assertions;
+- WU3 is **NOT STARTED** and is the next technical target under its HARD
+  dependency on WU1 + WU2;
 - source/schema/runtime mutation requires a separately authorized execution
   slice;
 - no later WU may skip a HARD dependency;
