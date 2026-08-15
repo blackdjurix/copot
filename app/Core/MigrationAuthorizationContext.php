@@ -41,7 +41,6 @@ final class MigrationAuthorizationContext
         if (!in_array($logical, $this->surface->tables(), true)) throw new \RuntimeException('Migration table is outside the declared schema surface.');
         $entry = $catalog->ownership($logical);
         if ($entry->owner()->key() === $this->owner->key()) return;
-        foreach ($this->extensions as $grant) if ($grant->module()->value() === $this->owner->moduleIdentity()?->value() && $grant->table() === $logical) return;
         throw new \RuntimeException('Migration table is outside the owner authority.');
     }
     public function authorizeExtension(DatabaseTableOwnershipCatalog $catalog, string $logical, string $kind, string $element): void
