@@ -48,6 +48,7 @@ class Application
     private AdminPageRenderer $adminPageRenderer;
     private AdminErrorRenderer $adminErrors;
     private SystemHealthReportProvider $systemHealthReports;
+    private ?PackageLifecycleService $packageLifecycle = null;
 
     public function __construct(DeploymentContext|string $deployment, ?callable $systemHealthReportResolver = null)
     {
@@ -227,6 +228,11 @@ class Application
     public function installationIdentity(): InstallationIdentity
     {
         return $this->installationIdentity;
+    }
+
+    public function packageLifecycle(): PackageLifecycleService
+    {
+        return $this->packageLifecycle ??= PackageLifecycleFactory::forProject($this->deployment);
     }
 
     public function runtimeRegistry(): RuntimeRegistry

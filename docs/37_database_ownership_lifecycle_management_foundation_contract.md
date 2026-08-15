@@ -5,7 +5,7 @@
 ```text
 Database Ownership & Lifecycle Management Foundation: PROMOTED / CONTRACT LOCKED
 Preparation audit: COMPLETE
-Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3–WU6 NOT STARTED
+Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 IMPLEMENTATION IN PROGRESS; WU4–WU6 NOT STARTED
 WU topology: WU1–WU6 LOCKED
 Next active technical target: WU3 — System Manager Webcore Lifecycle Capability
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
@@ -487,7 +487,9 @@ Execution engine: existing Package Lifecycle & Migration Foundation.
 
 Dependency: **HARD → WU1 + WU2**.
 
-Status: **NOT STARTED**.
+Status: **IMPLEMENTATION IN PROGRESS**.
+
+The bounded operator layer is being delivered over the existing Package Lifecycle engine. It adds the dedicated `system.webcore.manage` Admin boundary, private upload staging, sanitized preflight/result handling, and mandatory fail-closed recovery gating. WU3 does not introduce a migration, package, or recovery engine and does not expose WU4 database-only Case C behavior.
 
 ### WU4 — Database Lifecycle Classification
 

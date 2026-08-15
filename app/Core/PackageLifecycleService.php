@@ -197,6 +197,23 @@ final class PackageLifecycleService
         return $this->reconciliationOperator instanceof LegacyReconciliationOperator;
     }
 
+    public function retryEvidence(string $operationId): bool
+    {
+        $record = $this->maintenance->record();
+        return $record instanceof LifecycleOperationRecord
+            && $record->operationId() === $operationId
+            && in_array($record->phase(), [LifecycleOperationRecord::BLOCKED, LifecycleOperationRecord::INDETERMINATE, LifecycleOperationRecord::APPLYING, LifecycleOperationRecord::MIGRATING], true)
+            && is_dir($record->stagingPath());
+    }
+
+    public function retrySource(string $operationId): ?string
+    {
+        $record = $this->maintenance->record();
+        if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId || !$this->retryEvidence($operationId)) return null;
+        $path = $record->stagingPath() . DIRECTORY_SEPARATOR . 'source.zip';
+        return is_file($path) && is_readable($path) ? $path : null;
+    }
+
     public function status(): array
     {
         try {
