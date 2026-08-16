@@ -1,0 +1,21 @@
+<?php
+declare(strict_types=1);
+$base=dirname(__DIR__);chdir($base);require $base.'/bootstrap/autoload.php';
+use Copot\Core\BackupRecovery\{RecoveryIdentity,RecoveryLifecycleRecord,RecoveryLifecycleState,RecoveryLifecycleStore,RecoveryStorageRoot};
+use Copot\Core\{LifecycleOperationRecord,LifecycleOperationStore,MaintenanceCoordinator,PackageLifecycleService};
+$n=0;$a=static function(bool $v,string $m)use(&$n):void{if(!$v)throw new RuntimeException($m);$n++;};
+$tmp=sys_get_temp_dir().DIRECTORY_SEPARATOR.'copot-c2-'.bin2hex(random_bytes(4));mkdir($tmp,0700,true);mkdir($tmp.'/storage',0700,true);$source=$tmp.'/staging';mkdir($source,0700,true);file_put_contents($source.'/source.zip','retained');
+$operationId='c2-operation';$recovery=new RecoveryIdentity('c2-recovery');$manifest=hash('sha256','c2-manifest');$now=gmdate(DATE_ATOM);
+$op=new LifecycleOperationRecord($operationId,'update','1.2.3', 'release-c2',hash('sha256','archive'),$source,hash('sha256','payload'),hash('sha256','plan'),LifecycleOperationRecord::BLOCKED,0,null,hash('sha256','migration'),null,$now,$now,'interrupted',$recovery->value(),$manifest,RecoveryLifecycleState::READY);
+$ops=new LifecycleOperationStore($tmp.'/storage');$ops->create($op);
+$root=new RecoveryStorageRoot($tmp,$tmp.'/recovery','project-c2');$store=new RecoveryLifecycleStore($root);
+$ready=new RecoveryLifecycleRecord($recovery,$manifest,$operationId,RecoveryLifecycleState::READY,false,true,$recovery->value(),$manifest,$manifest);
+$store->create($ready);
+$service=(new ReflectionClass(PackageLifecycleService::class))->newInstanceWithoutConstructor();$maintenance=new MaintenanceCoordinator($ops);
+$set=static function(string $p,mixed $v)use($service):void{$r=new ReflectionProperty($service,$p);$r->setAccessible(true);$r->setValue($service,$v);};
+$set('maintenance',$maintenance);$set('recoveryEvidenceValidator',static function(LifecycleOperationRecord $record)use($store):bool{$r=$store->read(new RecoveryIdentity((string)$record->recoveryIdentity()));return $r->operationIdentity()===$record->operationId()&&$r->manifestIdentity()===$record->recoveryManifestIdentity()&&$r->state()===RecoveryLifecycleState::READY&&!$r->mutationStarted();});
+$a($service->retryEvidence($operationId),'Eligible persisted Retry evidence was rejected.');$a(is_file((string)$service->retrySource($operationId))&&basename((string)$service->retrySource($operationId))==='source.zip','Retained staged package was not reused.');
+unlink($source.'/source.zip');$a(!$service->retryEvidence($operationId),'Missing retained staging was accepted.');file_put_contents($source.'/source.zip','retained');
+$bad=new LifecycleOperationRecord($operationId,'update','1.2.3','release-c2',hash('sha256','archive'),$source,hash('sha256','payload'),hash('sha256','plan'),LifecycleOperationRecord::BLOCKED,0,null,hash('sha256','migration'),null,$now,$now,'mismatch','wrong-recovery',$manifest,RecoveryLifecycleState::READY);$ops->save($bad);$a(!$service->retryEvidence($operationId),'Mismatched recovery identity was accepted.');
+$post=$bad->bindRecovery($recovery->value(),$manifest,RecoveryLifecycleState::RESTORE_REQUIRED);$ops->save($post);$a(!$service->retryEvidence($operationId),'Post-mutation recovery-required evidence was accepted.');
+echo "package_lifecycle_wu3_recovery_c2_behavioral: {$n} assertions passed\n";
