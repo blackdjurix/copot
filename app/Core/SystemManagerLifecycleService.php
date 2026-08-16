@@ -55,6 +55,7 @@ final class SystemManagerLifecycleService
             TransitionPlan::PATCH, TransitionPlan::UPDATE => 'Update',
             TransitionPlan::UPGRADE => 'Upgrade',
             TransitionPlan::REPAIR => 'Repair',
+            TransitionPlan::DATABASE_UPDATE => 'Database-only Update',
             default => null,
         };
         return $status;
@@ -71,6 +72,7 @@ final class SystemManagerLifecycleService
             TransitionPlan::PATCH, TransitionPlan::UPDATE => 'Update',
             TransitionPlan::UPGRADE => 'Upgrade',
             TransitionPlan::REPAIR => 'Repair',
+            TransitionPlan::DATABASE_UPDATE => 'Database-only Update',
             default => null,
         };
         $zip = $this->lifecycle->retrySource($operationId);
@@ -92,6 +94,7 @@ final class SystemManagerLifecycleService
             TransitionPlan::PATCH, TransitionPlan::UPDATE => 'Update',
             TransitionPlan::UPGRADE => 'Upgrade',
             TransitionPlan::REPAIR => 'Repair',
+            TransitionPlan::DATABASE_UPDATE => 'Database-only Update',
             default => null,
         };
     }

@@ -26,6 +26,10 @@ use Copot\Core\DatabaseTableNames;
 use Copot\Core\InstallationIdentity;
 use Copot\Core\MigrationAuthorizationContext;
 use Copot\Core\MigrationSchemaSurface;
+use Copot\Core\DatabaseLifecycleClassifier;
+use Copot\Core\RuntimeCompatibilityContext;
+use Copot\Core\TransitionPlan;
+use Copot\Core\TransitionPlanner;
 
 $basePath = dirname(__DIR__);
 chdir($basePath);
@@ -115,6 +119,16 @@ $assert(array_map(static fn (CoreMigrationDescriptor $migration): string => $mig
 $assert($plan->virtualFinalWebcoreVersion() === '0.12.0', 'Virtual planning state did not reach the package target.');
 $assert($plan->virtualFinalSchemaIdentity() === 'schema-12', 'Virtual schema state did not advance.');
 $assert($snapshot->webcoreVersion() === '0.10.0', 'Committed installed state was mutated during planning.');
+
+$sameVersionMigration = $descriptor('core.same-version', 10, '0.8.0', '0.11.0', '0.10.0', 'schema-10-forward');
+$sameVersionPackage = $package('0.10.0', new PackageMigrationDeclaration(true, 'same-version-set'));
+$sameVersionTransition = (new TransitionPlanner('0.12.0'))->plan($installed, $sameVersionPackage, new RuntimeCompatibilityContext('8.0', ['sqlite' => '3.0'], ['pdo']));
+$sameVersionPlan = CoreMigrationPlan::allow('0.10.0', '0.10.0', 'schema-10', 'schema-10-forward', [$sameVersionMigration]);
+$classified = (new DatabaseLifecycleClassifier())->classify($sameVersionTransition, $sameVersionPlan);
+$assert($sameVersionTransition->classification() === TransitionPlan::REPAIR, 'Same-version planning did not begin as Repair.');
+$assert($classified->classification() === TransitionPlan::DATABASE_UPDATE, 'Authorized same-version Core migration was not classified as Database-only Update.');
+$noForward = (new DatabaseLifecycleClassifier())->classify($sameVersionTransition, CoreMigrationPlan::allow('0.10.0', '0.10.0', 'schema-10', 'schema-10', []));
+$assert($noForward->classification() === TransitionPlan::REPAIR, 'Same-version planning without a forward migration left Repair.');
 
 $freshPlan = $planner->plan(InstalledStateInspection::fresh(), $package('0.12.0', new PackageMigrationDeclaration(true, 'core-set-1')), $registry, $ledger, $connection);
 $assert($freshPlan->isAccepted() && $freshPlan->isFreshBaseline() && $freshPlan->migrations() === [], 'Fresh canonical planning replayed historical migrations.');

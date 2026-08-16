@@ -13,6 +13,7 @@ $upload = file_get_contents($base . '/app/Core/SystemManagerPackageUpload.php');
 $assert(is_string($service) && str_contains($service, "TransitionPlan::PATCH, TransitionPlan::UPDATE => 'Update'"), 'Patch/update action mapping missing.');
 $assert(str_contains($service, "TransitionPlan::UPGRADE => 'Upgrade'"), 'Upgrade action mapping missing.');
 $assert(str_contains($service, "TransitionPlan::REPAIR => 'Repair'"), 'Repair action mapping missing.');
+$assert(str_contains($service, "TransitionPlan::DATABASE_UPDATE => 'Database-only Update'"), 'Database-only Update action mapping missing.');
 $assert(!str_contains($service, 'recovery->capture'), 'System Manager must not capture recovery directly.');
 $assert(!str_contains($service, 'authorizeMutation'), 'System Manager must not authorize mutation directly.');
 $assert(str_contains($service, 'lifecycle->plan'), 'Preflight does not use PackageLifecycleService::plan.');

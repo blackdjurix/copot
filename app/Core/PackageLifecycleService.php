@@ -49,10 +49,12 @@ final class PackageLifecycleService
         $this->runtimeChecks = $runtimeChecks;
         $this->legacyClassifier = $legacyClassifier ?? new LegacyRuntimeClassifier($canonicalSchema, $baselineCatalog);
         $this->reconciliationPlanner = $reconciliationPlanner ?? new LegacyReconciliationPlanner();
+        $this->databaseLifecycleClassifier = new DatabaseLifecycleClassifier();
     }
 
     private LegacyRuntimeClassifier $legacyClassifier;
     private LegacyReconciliationPlanner $reconciliationPlanner;
+    private DatabaseLifecycleClassifier $databaseLifecycleClassifier;
 
     public function plan(string $zip): PackageLifecycleResult
     {
@@ -284,6 +286,7 @@ final class PackageLifecycleService
             $runtime = ($this->runtime)();
             $transition = $this->transitionPlanner->plan($installed, $manifest->contract(), $runtime);
             $migration = $this->migrationPlanner->plan($installed, $manifest->contract(), $this->migrationRegistry, $this->ledger, ($this->connection)());
+            $transition = $this->databaseLifecycleClassifier->classify($transition, $migration);
             return [$payload, $manifest, $transition, $migration];
         } catch (\Throwable $exception) {
             $payload->cleanup();

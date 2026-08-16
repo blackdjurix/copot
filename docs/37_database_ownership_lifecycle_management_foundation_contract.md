@@ -518,7 +518,17 @@ Dependency: **HARD → WU1 + WU2**.
 Additional gate: Case C product/lifecycle semantics must be explicitly locked
 before WU4 mutation behavior is implemented.
 
-Status: **NOT STARTED**.
+Status: **IMPLEMENTED — CLASSIFICATION/WIRING SLICE**.
+
+Locked Case C semantics for this slice:
+
+- operator-facing action: **Database-only Update**;
+- eligibility is lifecycle-derived only from a trusted same-Webcore-version
+  package with a declared, accepted, non-empty forward Core migration plan;
+- same-version packages without a forward Core migration remain **Repair**;
+- the operation reuses existing ownership, migration authorization, recovery,
+  retry, and reconciliation boundaries; no generic database-update operation is
+  exposed.
 
 ### WU5 — Installer Intent Reconciliation
 
