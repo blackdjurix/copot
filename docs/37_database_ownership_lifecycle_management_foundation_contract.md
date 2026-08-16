@@ -9,7 +9,7 @@ Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE A
 WU topology: WU1–WU6 LOCKED
 Next active implementation target: NONE within this six-WU topology
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
-Branch lifecycle: integrated WU6 state is on `main`; `feature/database-lifecycle-wu6-cross-lifecycle-acceptance` remains present at zero ahead / zero behind pending separately authorized cleanup
+Branch lifecycle: integrated WU6 state is on `main`; `feature/database-lifecycle-wu6-cross-lifecycle-acceptance` remains fully contained in `main` with zero commits ahead, pending separately authorized cleanup
 ```
 
 This is the authoritative repository contract for the Post-M3 Database Ownership
