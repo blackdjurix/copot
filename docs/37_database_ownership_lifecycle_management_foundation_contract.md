@@ -5,11 +5,11 @@
 ```text
 Database Ownership & Lifecycle Management Foundation: PROMOTED / CONTRACT LOCKED
 Preparation audit: COMPLETE
-Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE AND CLOSED; WU4 NOT STARTED / NEXT ACTIVE TECHNICAL TARGET; WU5–WU6 NOT STARTED
+Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE AND CLOSED; WU4 COMPLETE AND CLOSED; WU5–WU6 NOT STARTED
 WU topology: WU1–WU6 LOCKED
-Next active technical target: WU4 Database Lifecycle Classification
+Next active technical target: WU5 Installer Intent Reconciliation
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
-Branch lifecycle: feature/database-system-manager-wu3-lifecycle (active implementation branch)
+Branch lifecycle: main-only; the WU4 feature branch is merged and deleted locally/remotely
 ```
 
 This is the authoritative repository contract for the Post-M3 Database Ownership
@@ -379,8 +379,7 @@ Bounded direction:
 - it must use the same ownership and lifecycle authorization boundaries as other
   transitions.
 
-Before WU4 mutation behavior is implemented, the contract/implementation slice
-must explicitly lock:
+WU4 closure locks:
 
 - operator-facing name;
 - exact eligibility rules;
@@ -515,10 +514,10 @@ Objective:
 
 Dependency: **HARD → WU1 + WU2**.
 
-Additional gate: Case C product/lifecycle semantics must be explicitly locked
-before WU4 mutation behavior is implemented.
+Additional gate satisfied: Case C product/lifecycle semantics were explicitly
+locked before WU4 mutation behavior was implemented.
 
-Status: **IMPLEMENTED — CLASSIFICATION/WIRING SLICE**.
+Status: **COMPLETE AND CLOSED — CLASSIFICATION/WIRING IMPLEMENTATION AND VALIDATION ACCEPTED**.
 
 Locked Case C semantics for this slice:
 
@@ -529,6 +528,13 @@ Locked Case C semantics for this slice:
 - the operation reuses existing ownership, migration authorization, recovery,
   retry, and reconciliation boundaries; no generic database-update operation is
   exposed.
+
+Accepted WU4 evidence is integrated into authoritative `main` at
+`70782fdc9dddeb353cf27cf78f6f20e294e6fa30`. The focused WU4 and WU3/System
+Manager validation, impacted recovery/retry validation, PHP lint, and diff
+checks passed. The Module namespace test failure is a separate pre-existing /
+environmental repository risk: it reproduces on the accepted WU4 base and on
+the final WU4 `main` under the same PHP/MySQL environment.
 
 ### WU5 — Installer Intent Reconciliation
 
@@ -649,8 +655,9 @@ After promotion:
   existing 34 WU1 ownership assertions;
 - WU3 implementation is **COMPLETE AND CLOSED** under its HARD dependency on WU1 + WU2;
 - Recovery Slices B2a–C and focused implementation/validation evidence are accepted;
-- WU4 is **NOT STARTED / NEXT ACTIVE TECHNICAL TARGET**;
-- WU5–WU6 remain **NOT STARTED**;
+- WU4 implementation and accepted validation are **COMPLETE AND CLOSED**;
+- WU5 is **NOT STARTED / NEXT ACTIVE TECHNICAL TARGET**;
+- WU6 remains **NOT STARTED**;
 - WU6 carries the mandatory production-like persisted Retry success-path acceptance
   described above and must not close without it;
 - source/schema/runtime mutation requires a separately authorized execution

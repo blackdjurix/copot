@@ -60,6 +60,10 @@ Module Permission Dependency / Base Access: separate planning concern; not a Sys
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
 Current active implementation branch: main
+Database Ownership & Lifecycle Management Foundation: WU1–WU4 COMPLETE AND CLOSED for the accepted scope
+WU4 Database Lifecycle Classification: COMPLETE AND CLOSED; accepted implementation and focused validation are integrated into `main` at `70782fdc9dddeb353cf27cf78f6f20e294e6fa30`
+WU5 Installer Intent Reconciliation: NEXT ACTIVE TECHNICAL TARGET; NOT STARTED
+Known repository risk: `tests/multi_installation_wu3_module_namespace.php` fails on both the accepted WU4 base and final `main` under the same PHP/MySQL environment; it is pre-existing/environmental and not a WU4 regression.
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
 Completed delivery slice: Webcore first
