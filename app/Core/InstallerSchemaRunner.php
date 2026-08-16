@@ -9,7 +9,7 @@ class InstallerSchemaRunner
 {
     private const MAX_SCHEMA_BYTES = 1048576;
 
-    public function __construct(private string $schemaPath, private int $timeoutSeconds = 5)
+    public function __construct(private string $schemaPath, private int $timeoutSeconds = 5, private ?DatabaseTableOwnershipCatalog $ownershipCatalog = null)
     {
         if ($timeoutSeconds < 1 || $timeoutSeconds > 30) {
             throw new InstallationException('Schema installation configuration is invalid.');
@@ -20,6 +20,7 @@ class InstallerSchemaRunner
     {
         $schema = $this->readSchema();
         $statements = $this->statements($schema);
+        $this->assertAuthoritativeOwnership($statements);
         $namespace = new DatabaseTableNames((string) ($configuration['namespace'] ?? ''));
         if ($namespace->namespace() !== '') {
             $statements = (new DatabaseSchemaMaterializer())->namespaceStatements($statements, $namespace);
@@ -170,6 +171,26 @@ class InstallerSchemaRunner
         }
 
         return $schema;
+    }
+
+    /**
+     * The aggregate schema remains the accepted historical provisioning source.
+     * Validate its logical surfaces against the single WU1 ownership catalog so
+     * provisioning cannot silently create an unowned or jointly-owned table.
+     */
+    private function assertAuthoritativeOwnership(array $statements): void
+    {
+        $catalog = $this->ownershipCatalog ?? DatabaseTableOwnershipCatalog::current();
+        foreach ($statements as $statement) {
+            if (preg_match('/\A(?:CREATE\s+TABLE|INSERT\s+INTO)\s+`?([a-z][a-z0-9_]*)`?/i', $statement, $match) !== 1) {
+                continue;
+            }
+            try {
+                $catalog->ownership(strtolower($match[1]));
+            } catch (\InvalidArgumentException) {
+                throw new InstallationException('Database schema contains a table without authoritative ownership.');
+            }
+        }
     }
 
     private function validateStatement(string $statement): void

@@ -32,7 +32,7 @@ class InstallerDatabaseSetup
             $routing = (new InstallerRoutingPlanner())->plan($inspection['occupancy'], $intent, $requestedNamespace);
             $configuration['namespace'] = $routing->namespace();
             $this->environment->persist($configuration);
-            $statementCount = in_array($routing->route(), [InstallerRoutingPlanner::ADOPT, InstallerRoutingPlanner::MIGRATE], true)
+            $statementCount = $routing->route() === InstallerRoutingPlanner::ADOPT
                 ? 0
                 : $this->schema->install($configuration);
 

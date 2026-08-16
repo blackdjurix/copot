@@ -7,7 +7,6 @@ final class InstallerRoutingPlanner
     public const FRESH = 'fresh';
     public const COEXIST = 'coexist';
     public const ADOPT = 'adopt';
-    public const MIGRATE = 'migrate';
 
     public function __construct(private ?InstallerNamespaceAnalyzer $namespaces = null) { $this->namespaces ??= new InstallerNamespaceAnalyzer(); }
 
@@ -25,7 +24,6 @@ final class InstallerRoutingPlanner
             && count($occupancy->copotNamespaces()) === 1
         ) {
             $eligible[] = InstallerIntent::ADOPT;
-            $eligible[] = InstallerIntent::MIGRATE;
         }
 
         return $eligible;
@@ -39,14 +37,14 @@ final class InstallerRoutingPlanner
         if (!in_array($intent, $this->eligibleIntents($occupancy), true)) {
             throw new InstallationException('Selected installer intent is not eligible for the inspected Database.');
         }
-        if (in_array($intent, [InstallerIntent::ADOPT, InstallerIntent::MIGRATE], true)) {
+        if ($intent === InstallerIntent::ADOPT) {
             if ($occupancy->classification() !== InstallerDatabaseOccupancy::COPOT || count($occupancy->copotNamespaces()) !== 1) {
-                throw new InstallationException('Adoption or migration requires exactly one proven COPOT installation.');
+                throw new InstallationException('Adoption requires exactly one proven COPOT installation.');
             }
             if ($requestedNamespace !== null && $requestedNamespace !== $occupancy->copotNamespaces()[0]) {
                 throw new InstallationException('Existing-installation routing must preserve the detected namespace.');
             }
-            return new InstallerRoutingPlan($intent, $occupancy->copotNamespaces()[0], $intent === InstallerIntent::ADOPT ? self::ADOPT : self::MIGRATE);
+            return new InstallerRoutingPlan($intent, $occupancy->copotNamespaces()[0], self::ADOPT);
         }
         if ($occupancy->classification() === InstallerDatabaseOccupancy::EMPTY) {
             $availability = $this->namespaces->analyze($occupancy->objects(), $namespace, $occupancy)->availability();

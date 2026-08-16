@@ -36,7 +36,10 @@ final class InstallerInstallationCommitter
         $lifecycleFiles = $this->filesUnder($this->basePath . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . '.copot-lifecycle');
 
         try {
-            if ($this->installationState->isInstalled()) {
+            if (!$requirementsPassed) {
+                throw new InstallationException('Installer requirements are not satisfied.');
+            }
+            if ($this->installationState->isInstalled() && $intent !== InstallerIntent::ADOPT) {
                 throw new InstallationException('Installation has already been finalized.');
             }
 
@@ -48,8 +51,20 @@ final class InstallerInstallationCommitter
             $configuration['namespace'] = (string) ($databaseConfiguration['namespace'] ?? '');
             $inspection = $this->probe->inspect($configuration);
             $routing = (new InstallerRoutingPlanner())->plan($inspection['occupancy'], $intent, $configuration['namespace']);
-            if (!in_array($routing->route(), [InstallerRoutingPlanner::FRESH, InstallerRoutingPlanner::COEXIST], true)) {
-                throw new InstallationException('Adopt or migrate requires an existing-installation lifecycle path.');
+            if ($routing->route() === InstallerRoutingPlanner::ADOPT) {
+                if ($administratorInput !== []) {
+                    throw new InstallationException('Adopt does not accept Administrator & Site input.');
+                }
+                $this->environment->persist($configuration);
+
+                return [
+                    'route' => $routing->route(),
+                    'namespace' => $routing->namespace(),
+                    'statement_count' => 0,
+                    'administrator' => null,
+                    'finalization' => null,
+                    'adopted' => true,
+                ];
             }
             // Validate every staged input before the first environment/schema mutation.
             InstallerAdministratorValidator::validate($administratorInput);

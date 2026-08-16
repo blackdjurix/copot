@@ -22,12 +22,20 @@ use Copot\Core\CoreMigrationRegistry;
 $basePath = dirname(__DIR__);
 chdir($basePath);
 require $basePath . '/bootstrap/autoload.php';
+$intentSource = (string) file_get_contents($basePath . '/app/Core/InstallerIntent.php');
+$plannerSource = (string) file_get_contents($basePath . '/app/Core/InstallerRoutingPlanner.php');
+$bootstrapSource = (string) file_get_contents($basePath . '/bootstrap/installer.php');
+$committerSource = (string) file_get_contents($basePath . '/app/Core/InstallerInstallationCommitter.php');
 
 $assertions = 0;
 $assert = static function (bool $condition, string $message) use (&$assertions): void {
     $assertions++;
     if (!$condition) throw new RuntimeException($message);
 };
+$assert(count(InstallerIntent::all()) === 3, 'Installer does not expose exactly three active intents.');
+$assert(!str_contains($intentSource, 'migrate_existing_installation') && !str_contains($plannerSource, 'migrate_existing_installation'), 'Installer migration intent remains in the active source path.');
+$assert(str_contains($bootstrapSource, "['state'] = 'skipped'") && str_contains($bootstrapSource, 'InstallerIntent::ADOPT'), 'Adopt does not represent Administrator & Site as skipped.');
+$assert(str_contains($committerSource, "'adopted' => true") && str_contains($committerSource, 'Administrator & Site input'), 'Adopt commit boundary is not explicit and mutation-free.');
 $objects = static function (string $namespace = ''): array {
     $tables = new DatabaseTableNames($namespace);
     return array_merge(
@@ -75,7 +83,7 @@ $assert($analyzer->analyze(['users', 'roles'], '', $ambiguous)->availability() =
 $planner = new InstallerRoutingPlanner();
 $assert($planner->eligibleIntents($empty) === [InstallerIntent::FRESH], 'Empty databases did not expose Fresh only.');
 $assert($planner->eligibleIntents($foreign) === [InstallerIntent::COEXIST], 'Foreign databases did not expose coexistence only.');
-$assert($planner->eligibleIntents($copotAlpha) === [InstallerIntent::COEXIST, InstallerIntent::ADOPT, InstallerIntent::MIGRATE], 'Proven COPOT databases did not expose the expected intents.');
+$assert($planner->eligibleIntents($copotAlpha) === [InstallerIntent::COEXIST, InstallerIntent::ADOPT], 'Proven COPOT databases did not expose exactly the valid existing-installation intent.');
 $assert($planner->eligibleIntents($ambiguous) === [InstallerIntent::COEXIST], 'Ambiguous databases did not expose collision-safe coexistence only.');
 $assert($planner->plan($empty, InstallerIntent::FRESH)->route() === InstallerRoutingPlanner::FRESH, 'Fresh empty-database routing failed.');
 $assert($planner->plan($empty, InstallerIntent::FRESH, 'alpha')->namespace() === 'alpha', 'Explicit non-empty fresh namespace was not preserved.');
@@ -102,10 +110,10 @@ $assert($duplicateProof->classification() === InstallerDatabaseOccupancy::AMBIGU
 $unhealthyProof = new InstallerOwnershipProof(new InstallationIdentity('inst_f123456789abcdef123456789abcdef1'), 'alpha', 'core-schema-generation:test', str_repeat('f', 64), false, true);
 $incompatible = $classifier->classify($objects('alpha'), [$unhealthyProof]);
 $assert($incompatible->classification() === InstallerDatabaseOccupancy::AMBIGUOUS, 'Unhealthy ownership evidence did not fail closed.');
-$assert($planner->eligibleIntents($incompatible) === [InstallerIntent::COEXIST], 'Incompatible existing COPOT evidence exposed Adopt/Migrate.');
+$assert($planner->eligibleIntents($incompatible) === [InstallerIntent::COEXIST], 'Incompatible existing COPOT evidence exposed Adopt.');
 $assert($planner->plan($copotEmpty, InstallerIntent::ADOPT)->namespace() === '', 'Adoption did not preserve the legitimate empty namespace.');
 $assert($planner->plan($copotAlpha, InstallerIntent::ADOPT)->namespace() === 'alpha', 'Adoption did not preserve the non-empty namespace.');
-$assert($planner->plan($copotAlpha, InstallerIntent::MIGRATE)->route() === InstallerRoutingPlanner::MIGRATE, 'Migration/update routing failed.');
+$blocked(fn () => $planner->plan($copotAlpha, 'legacy_existing_installation'));
 $blocked(fn () => $planner->plan($mixed, InstallerIntent::ADOPT));
 $assert($planner->plan($ambiguous, InstallerIntent::COEXIST, 'alpha')->route() === InstallerRoutingPlanner::COEXIST, 'Collision-free coexistence was incorrectly blocked by ambiguous ownership.');
 $blocked(fn () => $planner->plan($ambiguous, InstallerIntent::COEXIST, ''));
@@ -137,8 +145,6 @@ $service = new InstallerDatabaseSetup(
 $serviceConfiguration = ['host' => '127.0.0.1', 'port' => 3306, 'database' => 'existing', 'username' => 'root', 'password' => '', 'namespace' => 'alpha'];
 $adoptionResult = $service->install($serviceConfiguration, true, InstallerIntent::ADOPT, [$alphaProof]);
 $assert($adoptionResult['route'] === InstallerRoutingPlanner::ADOPT && $adoptionResult['namespace'] === 'alpha' && $adoptionResult['statement_count'] === 0, 'Adoption did not succeed through the installer service path.');
-$migrationResult = $service->install($serviceConfiguration, true, InstallerIntent::MIGRATE, [$alphaProof]);
-$assert($migrationResult['route'] === InstallerRoutingPlanner::MIGRATE && $migrationResult['namespace'] === 'alpha' && $migrationResult['statement_count'] === 0, 'Migration/update did not succeed through the installer service path.');
 @unlink($serviceStorage . DIRECTORY_SEPARATOR . '.env');
 @rmdir($serviceStorage);
 @rmdir($proofStorage);

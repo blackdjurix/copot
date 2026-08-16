@@ -41,7 +41,7 @@ $fieldAccessibility = static function (string $fieldId, mixed $error = null, boo
             <nav aria-label="Installation progress">
                 <ol class="steps">
                     <?php foreach (($steps ?? []) as $step): ?>
-                        <?php $stepState = in_array(($step['state'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['state'] : 'pending'; $stepDisplayState = in_array(($step['displayState'] ?? ''), ['completed', 'current', 'pending', 'blocked'], true) ? $step['displayState'] : $stepState; ?>
+                        <?php $stepState = in_array(($step['state'] ?? ''), ['completed', 'current', 'pending', 'blocked', 'skipped'], true) ? $step['state'] : 'pending'; $stepDisplayState = in_array(($step['displayState'] ?? ''), ['completed', 'current', 'pending', 'blocked', 'skipped'], true) ? $step['displayState'] : $stepState; ?>
                         <li class="step step-<?= htmlspecialchars($stepDisplayState, ENT_QUOTES, 'UTF-8') ?>" <?= $stepDisplayState === 'current' ? 'aria-current="step"' : '' ?>>
                             <?php $stepIsCurrentReview = (($step['label'] ?? '') === 'Requirements' && ($currentStep ?? '') === 'requirements') || (($step['label'] ?? '') === 'Database' && ($currentStep ?? '') === 'database') || (($step['label'] ?? '') === 'Administrator & Site' && ($currentStep ?? '') === 'administrator') || (($step['label'] ?? '') === 'Review & Install' && ($currentStep ?? '') === 'finalize') || (($step['label'] ?? '') === 'Installation Result' && ($currentStep ?? '') === 'result'); ?>
                             <?php $stepIsReviewable = $stepState === 'completed' && is_string($step['reviewUrl'] ?? null) && !$stepIsCurrentReview; ?>
@@ -152,7 +152,6 @@ $fieldAccessibility = static function (string $fieldId, mixed $error = null, boo
                             \Copot\Core\InstallerIntent::FRESH => 'Fresh installation',
                             \Copot\Core\InstallerIntent::COEXIST => 'New independent installation',
                             \Copot\Core\InstallerIntent::ADOPT => 'Adopt existing COPOT installation',
-                            \Copot\Core\InstallerIntent::MIGRATE => 'Migrate/update existing COPOT installation',
                         ];
                         $eligibleIntents = is_array($databaseResult ?? null)
                             ? array_values(array_filter($databaseResult['eligible_intents'] ?? [], static fn ($intent): bool => is_string($intent) && array_key_exists($intent, $intentLabels)))
@@ -303,16 +302,21 @@ $fieldAccessibility = static function (string $fieldId, mixed $error = null, boo
                     <p class="field-error"><?= htmlspecialchars($finalizationError, ENT_QUOTES, 'UTF-8') ?></p>
                 <?php endif; ?>
 
-                <?php $reviewIntentLabels = ['fresh_installation' => 'Fresh installation', 'coexistence' => 'New independent installation', 'adopt_existing_installation' => 'Adopt existing installation', 'migrate_existing_installation' => 'Migrate existing installation']; ?>
+                <?php $reviewIntentLabels = ['fresh_installation' => 'Fresh installation', 'coexistence' => 'New independent installation', 'adopt_existing_installation' => 'Adopt existing installation']; ?>
                 <ul class="installer-summary installer-list">
                     <li><span>Database</span><strong><?= htmlspecialchars((string) ($values['database'] ?? ''), ENT_QUOTES, 'UTF-8') ?></strong></li>
                     <li><span>DB Namespace</span><strong><?= htmlspecialchars((string) (($values['namespace'] ?? '') !== '' ? $values['namespace'] : 'empty'), ENT_QUOTES, 'UTF-8') ?></strong></li>
                     <li><span>Installation intent</span><strong><?= htmlspecialchars($reviewIntentLabels[$values['intent'] ?? ''] ?? 'Selected database plan', ENT_QUOTES, 'UTF-8') ?></strong></li>
-                    <li><span>First administrator</span><strong><?= htmlspecialchars((string) ($setupValues['admin_name'] ?? 'Ready'), ENT_QUOTES, 'UTF-8') ?></strong></li>
-                    <li><span>Administrator email</span><strong><?= htmlspecialchars((string) ($setupValues['admin_email'] ?? ''), ENT_QUOTES, 'UTF-8') ?></strong></li>
-                    <li><span>Site</span><strong><?= htmlspecialchars((string) ($setupValues['site_name'] ?? 'Ready'), ENT_QUOTES, 'UTF-8') ?></strong></li>
-                    <li><span>Default frontend theme</span><strong>default</strong></li>
-                    <li><span>Baseline modules</span><strong>Core platform set</strong></li>
+                    <?php if (!empty($adoptStaged)): ?>
+                        <li><span>Administrator &amp; Site</span><strong>Skipped — existing state preserved</strong></li>
+                        <li><span>Schema and lifecycle</span><strong>Skipped — no migration or repair</strong></li>
+                    <?php else: ?>
+                        <li><span>First administrator</span><strong><?= htmlspecialchars((string) ($setupValues['admin_name'] ?? 'Ready'), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                        <li><span>Administrator email</span><strong><?= htmlspecialchars((string) ($setupValues['admin_email'] ?? ''), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                        <li><span>Site</span><strong><?= htmlspecialchars((string) ($setupValues['site_name'] ?? 'Ready'), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                        <li><span>Default frontend theme</span><strong>default</strong></li>
+                        <li><span>Baseline modules</span><strong>Core platform set</strong></li>
+                    <?php endif; ?>
                 </ul>
 
                 <form id="review_install_form" class="phase-form" method="post" action="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install') : '/install', ENT_QUOTES, 'UTF-8') ?>">
@@ -321,7 +325,7 @@ $fieldAccessibility = static function (string $fieldId, mixed $error = null, boo
                 </form>
                 </div>
                 <div class="installer-footer installer-actions">
-                    <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/install?step=administrator') : '/install?step=administrator', ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
+                    <span class="installer-footer__start"><a class="button button-secondary nav-button" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url(!empty($adoptStaged) ? '/install?step=database' : '/install?step=administrator') : (!empty($adoptStaged) ? '/install?step=database' : '/install?step=administrator'), ENT_QUOTES, 'UTF-8') ?>">Previous</a></span>
                     <span class="installer-footer__center" aria-hidden="true"></span>
                     <span class="installer-footer__end"><button class="nav-button install-action" type="submit" form="review_install_form" <?= empty($requirementsPassed) ? 'disabled' : '' ?>>Install</button></span>
                 </div>
@@ -336,7 +340,7 @@ $fieldAccessibility = static function (string $fieldId, mixed $error = null, boo
                     <ul class="installer-summary installer-list">
                         <li><span>Installed version</span><strong><?= htmlspecialchars((string) ($installationResult['details']['finalization']['version'] ?? 'current'), ENT_QUOTES, 'UTF-8') ?></strong></li>
                         <li><span>Default theme</span><strong><?= htmlspecialchars((string) ($installationResult['details']['finalization']['theme'] ?? 'default'), ENT_QUOTES, 'UTF-8') ?></strong></li>
-                        <li><span>Administrator</span><strong>Created</strong></li>
+                        <li><span>Administrator</span><strong><?= !empty($installationResult['details']['adopted']) ? 'Existing state preserved' : 'Created' ?></strong></li>
                     </ul>
                 <?php endif; ?>
                 </div>
@@ -381,7 +385,6 @@ $fieldAccessibility = static function (string $fieldId, mixed $error = null, boo
                 fresh_installation: 'Fresh installation',
                 coexistence: 'New independent installation',
                 adopt_existing_installation: 'Adopt existing COPOT installation',
-                migrate_existing_installation: 'Migrate/update existing COPOT installation',
             };
             const fields = [
                 'database_host',

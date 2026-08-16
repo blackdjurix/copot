@@ -71,6 +71,8 @@ $stagedDatabase = $sessionReady && $session instanceof Session
 $stagedDatabase = is_array($stagedDatabase) ? $stagedDatabase : [];
 $databaseStaged = ($stagedDatabase['staged'] ?? false) === true
     && is_array($stagedDatabase['inspection'] ?? null);
+$adoptStaged = $databaseStaged
+    && ($stagedDatabase['intent'] ?? null) === \Copot\Core\InstallerIntent::ADOPT;
 $administratorSessionKey = 'installer_administrator_staged';
 $stagedAdministrator = $sessionReady && $session instanceof Session
     ? $session->get($administratorSessionKey, [])
@@ -182,7 +184,7 @@ if ($requirementsPassed && $requestedStep === 'database' && $session instanceof 
 }
 $forwardStep = ((!$schemaReady && !$databaseStaged) || $requestedStep === 'database')
     ? 'database'
-    : ($administratorStaged ? 'finalize' : ($administratorExists ? 'finalize' : 'administrator'));
+    : ($adoptStaged || $administratorStaged ? 'finalize' : ($administratorExists ? 'finalize' : 'administrator'));
 $currentStep = $forwardStep;
 
 if ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'requirements') {
@@ -197,6 +199,9 @@ if ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'requ
 } elseif ($requirementsPassed && $requirementsAcknowledged && $requestedStep === 'finalize' && $schemaReady && $administratorExists) {
     $currentStep = 'finalize';
 }
+if ($adoptStaged && $currentStep === 'administrator') {
+    $currentStep = 'finalize';
+}
 
 $requirementsForwardUrl = $forwardStep === 'database'
     ? $deploymentContext->url('/install?step=database')
@@ -207,7 +212,9 @@ $requirementsForwardLabel = match ($forwardStep) {
     default => 'Database',
 };
 
-if ($currentStep === 'finalize' && $requirementsPassed) {
+if ($currentStep === 'finalize' && $requirementsPassed && $adoptStaged) {
+    $message = 'The existing COPOT installation is ready to adopt. Existing users, settings, schema, and modules will be preserved.';
+} elseif ($currentStep === 'finalize' && $requirementsPassed) {
     $message = 'The first administrator and initial settings are ready. Finalize the installation.';
 } elseif ($currentStep === 'administrator' && $requirementsPassed && $schemaReady) {
     $message = 'Database schema is ready. Create the first administrator and initial site settings.';
@@ -258,7 +265,7 @@ if ($installationStateError) {
 
             if ($action === 'finalize_installation') {
                 try {
-                    if (!$databaseStaged || !$administratorStaged) {
+                    if (!$databaseStaged || (!$adoptStaged && !$administratorStaged)) {
                         throw new InstallationException('Database and Administrator & Site decisions must be staged before installation.');
                     }
                     $committer = new InstallerInstallationCommitter(
@@ -276,7 +283,7 @@ if ($installationStateError) {
                         'username' => (string) ($stagedDatabase['username'] ?? ''),
                         'password' => (string) ($stagedDatabase['password'] ?? ''),
                         'namespace' => (string) ($stagedDatabase['namespace'] ?? ''),
-                    ], [
+                    ], $adoptStaged ? [] : [
                         'admin_name' => (string) ($stagedAdministrator['admin_name'] ?? ''),
                         'admin_email' => (string) ($stagedAdministrator['admin_email'] ?? ''),
                         'admin_password' => (string) ($stagedAdministrator['password'] ?? ''),
@@ -495,7 +502,7 @@ if ($installationStateError) {
                         $databaseFeedback = ['kind' => 'success', 'message' => $message];
                     }
                     if ($action === 'stage_database') {
-                        return Response::redirect($deploymentContext->url('/install?step=administrator'));
+                        return Response::redirect($deploymentContext->url($intent === \Copot\Core\InstallerIntent::ADOPT ? '/install?step=finalize' : '/install?step=administrator'));
                     }
                 } catch (InstallerValidationException $exception) {
                     $status = 422;
@@ -577,9 +584,11 @@ $steps = [
     ],
     [
         'label' => 'Administrator & Site',
-        'state' => !$requirementsPassed || !$requirementsAcknowledged || (!$schemaReady && !$databaseStaged)
+        'state' => $adoptStaged
+            ? 'skipped'
+            : (!$requirementsPassed || !$requirementsAcknowledged || (!$schemaReady && !$databaseStaged)
             ? 'blocked'
-            : ($administratorStaged || $administratorExists ? 'completed' : ($forwardStep === 'administrator' ? 'current' : 'pending')),
+            : ($administratorStaged || $administratorExists ? 'completed' : ($forwardStep === 'administrator' ? 'current' : 'pending'))),
     ],
     [
         'label' => 'Review & Install',
@@ -594,6 +603,10 @@ $steps = [
         'state' => $currentStep === 'result' ? 'current' : 'pending',
     ],
 ];
+if ($adoptStaged) {
+    $steps[2]['state'] = 'skipped';
+    $steps[3]['state'] = 'current';
+}
 
 $displayStep = $currentStep;
 foreach ($steps as &$step) {
@@ -643,6 +656,7 @@ return Response::html($view->render('installer/index', [
     'schemaReady' => $schemaReady,
     'administratorExists' => $administratorExists,
     'administratorStaged' => $administratorStaged,
+    'adoptStaged' => $adoptStaged,
         'currentStep' => $currentStep,
         'forwardStep' => $forwardStep,
         'displayStep' => $displayStep,
