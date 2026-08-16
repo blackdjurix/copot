@@ -5,9 +5,9 @@
 ```text
 Database Ownership & Lifecycle Management Foundation: PROMOTED / CONTRACT LOCKED
 Preparation audit: COMPLETE
-Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE AND CLOSED; WU4 COMPLETE AND CLOSED; WU5 COMPLETE AND CLOSED; WU6 NOT STARTED
+Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE AND CLOSED; WU4 COMPLETE AND CLOSED; WU5 COMPLETE AND CLOSED; WU6 COMPLETE AND CLOSED
 WU topology: WU1–WU6 LOCKED
-Next active implementation target: WU6 Cross-Lifecycle Acceptance
+Next active implementation target: NONE within this six-WU topology
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
 Branch lifecycle: main-only; completed WU4 and WU5 feature branches are merged and deleted locally/remotely
 ```
@@ -579,7 +579,17 @@ Prove coherent boundaries across:
 
 Dependency: **HARD → WU1–WU5**.
 
-Status: **NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET**.
+Status: **COMPLETE AND CLOSED — IMPLEMENTATION AND ACCEPTANCE EVIDENCE INTEGRATED**.
+
+Accepted evidence includes the mandatory production-composed persisted Retry
+success path: 15 assertions passed for persisted evidence acceptance, System
+Manager routing, recovery resume and mutation permit, package-owned file
+mutation, final health/integrity finalization, committed lifecycle state,
+operation-lineage preservation, absence of terminal `awaiting_wu6`, and retained
+staging cleanup. The accepted WU6 implementation is integrated into authoritative
+`main` at `91de0fd829e52d185c4823fe27d7e849bf147622`. The package used an
+accepted/no-op Core migration plan, so no migration execution was required by
+that package. No further implementation WU is defined in this six-WU topology.
 
 ## Acceptance model
 
@@ -664,9 +674,10 @@ After promotion:
 - Recovery Slices B2a–C and focused implementation/validation evidence are accepted;
 - WU4 implementation and accepted validation are **COMPLETE AND CLOSED**;
 - WU5 implementation and accepted integration are **COMPLETE AND CLOSED**;
-- WU6 remains **NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET**;
-- WU6 carries the mandatory production-like persisted Retry success-path acceptance
-  described above and must not close without it;
+- WU6 implementation, mandatory persisted Retry acceptance, and integrated
+  cross-lifecycle evidence are **COMPLETE AND CLOSED**;
+- the full Database Ownership & Lifecycle Management Foundation is **COMPLETE
+  AND CLOSED** for its accepted scope;
 - source/schema/runtime mutation requires a separately authorized execution
   slice;
 - no later WU may skip a HARD dependency;

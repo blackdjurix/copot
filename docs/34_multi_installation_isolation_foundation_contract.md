@@ -134,6 +134,12 @@ Routing rules:
 - adoption or migration of an existing COPOT installation preserves its
   detected namespace, including a legitimately empty namespace.
 
+Current Installer authority was subsequently reconciled by the Database
+Ownership WU5 contract: the active intents are Fresh, Coexist, and Adopt;
+normal existing-install Update / Upgrade / Repair belongs to System Manager /
+Webcore Lifecycle. The migration/update wording above remains historical
+evidence for this predecessor contract.
+
 Independent installations must satisfy:
 
 `OwnershipSet(Installation A) ∩ OwnershipSet(Installation B) = empty`.
@@ -312,7 +318,7 @@ Registry participants and lifecycle states, compatibility evaluation and
 fail-closed transition coordination through `InstallationMutex`, installation-
 derived session/cookie identity, and isolated runtime cache/temp/lock/staging
 and package-apply temporary paths. Runtime/process orchestration remains out
-of scope; WU6 cross-subsystem acceptance remains NOT STARTED.
+of scope; WU6 cross-subsystem acceptance is complete and accepted.
 
 ### WU5 — Installer Database Occupancy Classification, Namespace Selection & Existing-Installation Routing
 
@@ -328,6 +334,11 @@ migration-ledger identity, and schema-health evidence; table shape alone never
 proves COPOT ownership. Focused WU5 validation passed 36 assertions and
 DB-backed acceptance passed 10 assertions, including real adoption and
 migration/update service routing with zero schema reinstall statements.
+
+The migration/update wording above records predecessor evidence. Current WU5
+Installer authority is exactly Fresh, Coexist, and Adopt; normal existing-
+install Update / Upgrade / Repair remains owned by System Manager / Webcore
+Lifecycle.
 
 ### WU6 — Cross-Subsystem Integration & Multi-Installation / Multi-Runtime Acceptance
 

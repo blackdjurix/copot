@@ -110,6 +110,13 @@ split-root portability; and accepted lifecycle evidence.
 There is no cross-fileset Adopt or Migrate promise. A complete-looking table set
 without positive ownership evidence is not an owned installation.
 
+Current Installer authority was subsequently reconciled by Database Ownership
+WU5: the active intents are Fresh, Coexist, and Adopt. The historical New
+Independent and Migrate references in this MR.1 baseline describe the accepted
+refinement evidence and are not current Installer lifecycle ownership. Normal
+existing-install Update / Upgrade / Repair belongs to System Manager / Webcore
+Lifecycle.
+
 ## Pre-MR.1 Correctness Gate
 
 The gate is satisfied. MR.1 implementation is complete and closed through WU5
