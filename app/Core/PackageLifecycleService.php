@@ -204,6 +204,8 @@ final class PackageLifecycleService
         if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId
             || !in_array($record->phase(), [LifecycleOperationRecord::BLOCKED, LifecycleOperationRecord::INDETERMINATE, LifecycleOperationRecord::APPLYING, LifecycleOperationRecord::MIGRATING], true)
             || !is_dir($record->stagingPath())
+            || !is_file($record->stagingPath() . DIRECTORY_SEPARATOR . 'source.zip')
+            || !is_readable($record->stagingPath() . DIRECTORY_SEPARATOR . 'source.zip')
             || $record->recoveryIdentity() === null || $record->recoveryManifestIdentity() === null
             || $record->recoveryState() !== \Copot\Core\BackupRecovery\RecoveryLifecycleState::READY
             || !is_callable($this->recoveryEvidenceValidator)) return false;
