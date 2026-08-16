@@ -157,7 +157,19 @@ final class PackageLifecycleFactory
             null,
             $reconciliationOperator,
             $reconciliationUnavailableReason,
-            $baselineCatalog
+            $baselineCatalog,
+            static function (LifecycleOperationRecord $operation) use ($recoveryComposition): bool {
+                if (!$recoveryComposition instanceof PackageLifecycleRecoveryComposition || $operation->recoveryIdentity() === null || $operation->recoveryManifestIdentity() === null) return false;
+                try {
+                    $record = $recoveryComposition->store->read(new \Copot\Core\BackupRecovery\RecoveryIdentity($operation->recoveryIdentity()));
+                    return $record->operationIdentity() === $operation->operationId()
+                        && $record->manifestIdentity() === $operation->recoveryManifestIdentity()
+                        && $record->state() === \Copot\Core\BackupRecovery\RecoveryLifecycleState::READY
+                        && $record->captureComplete()
+                        && !$record->mutationStarted()
+                        && $record->confirmationMatches($record->recoveryIdentity(), $record->manifestIdentity(), $record->manifestIdentity());
+                } catch (\Throwable) { return false; }
+            }
         );
     }
 

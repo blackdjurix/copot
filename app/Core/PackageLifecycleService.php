@@ -40,7 +40,8 @@ final class PackageLifecycleService
         ?LegacyReconciliationPlanner $reconciliationPlanner = null,
         private ?LegacyReconciliationOperator $reconciliationOperator = null,
         private ?string $reconciliationUnavailableReason = null,
-        ?CanonicalSchemaBaselineCatalog $baselineCatalog = null
+        ?CanonicalSchemaBaselineCatalog $baselineCatalog = null,
+        private $recoveryEvidenceValidator = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -200,10 +201,13 @@ final class PackageLifecycleService
     public function retryEvidence(string $operationId): bool
     {
         $record = $this->maintenance->record();
-        return $record instanceof LifecycleOperationRecord
-            && $record->operationId() === $operationId
-            && in_array($record->phase(), [LifecycleOperationRecord::BLOCKED, LifecycleOperationRecord::INDETERMINATE, LifecycleOperationRecord::APPLYING, LifecycleOperationRecord::MIGRATING], true)
-            && is_dir($record->stagingPath());
+        if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId
+            || !in_array($record->phase(), [LifecycleOperationRecord::BLOCKED, LifecycleOperationRecord::INDETERMINATE, LifecycleOperationRecord::APPLYING, LifecycleOperationRecord::MIGRATING], true)
+            || !is_dir($record->stagingPath())
+            || $record->recoveryIdentity() === null || $record->recoveryManifestIdentity() === null
+            || $record->recoveryState() !== \Copot\Core\BackupRecovery\RecoveryLifecycleState::READY
+            || !is_callable($this->recoveryEvidenceValidator)) return false;
+        try { return (bool) ($this->recoveryEvidenceValidator)($record); } catch (\Throwable) { return false; }
     }
 
     public function retrySource(string $operationId): ?string
@@ -234,6 +238,8 @@ final class PackageLifecycleService
                     'phase' => $record->phase(),
                     'operation_id' => $record->operationId(),
                     'classification' => $record->classification(),
+                    'target_webcore_version' => $record->targetWebcoreVersion(),
+                    'recovery_state' => $record->recoveryState(),
                 ];
             }
 

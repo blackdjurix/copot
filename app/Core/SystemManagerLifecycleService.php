@@ -31,12 +31,10 @@ final class SystemManagerLifecycleService
             return ['accepted' => false, 'status' => 'rejected', 'reason' => 'The requested lifecycle action is not eligible.', 'action' => $action];
         }
         try {
-            $target = (string) ($plan->toArray()['target_webcore_version'] ?? '');
-            $recoveryIdentity = $this->recovery->capture($action, $target);
+            // PackageLifecycleService owns the production recovery boundary. The
+            // System Manager must not capture, quiesce, or authorize directly.
             $result = $this->lifecycle->apply($zip, $action === 'Repair');
             $safe = $this->safeResult($result, $action);
-            $safe['recovery_state'] = $result->accepted() ? 'captured' : 'captured_before_failure';
-            $safe['recovery_identity'] = $result->accepted() ? $recoveryIdentity : null;
             return $safe;
         } catch (\Throwable) {
             return ['accepted' => false, 'status' => 'blocked', 'reason' => 'Recovery capture or lifecycle execution was unavailable.', 'action' => $action, 'recovery_state' => 'unavailable'];
@@ -77,7 +75,9 @@ final class SystemManagerLifecycleService
         };
         $zip = $this->lifecycle->retrySource($operationId);
         if ($action === null || $zip === null) return ['accepted' => false, 'status' => 'rejected', 'reason' => 'Retry evidence is unavailable or stale.', 'action' => 'Retry'];
-        return $this->execute($zip, $action);
+        // The current coordinator has no existing-operation/session entry point;
+        // fail closed rather than recapturing a second recovery set.
+        return ['accepted' => false, 'status' => 'blocked', 'reason' => 'Retry requires the persisted recovery session and is not yet eligible.', 'action' => 'Retry', 'operation_id' => $operationId, 'next_eligible_action' => null];
     }
 
     public function reconcile(string $zip, bool $confirmed): array
@@ -108,8 +108,10 @@ final class SystemManagerLifecycleService
             'classification' => $data['classification'] ?? null,
             'target_webcore_version' => $data['target_webcore_version'] ?? null,
             'operation_id' => $data['operation_id'] ?? null,
+            'phase' => $data['phase'] ?? null,
             'migration_outcome' => $data['migrations'] ?? [],
-            'recovery_state' => 'not_captured',
+            'recovery_state' => $data['recovery_state'] ?? 'not_captured',
+            'next_eligible_action' => $action,
         ];
     }
 }
