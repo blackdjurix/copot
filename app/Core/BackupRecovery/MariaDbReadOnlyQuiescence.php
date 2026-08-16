@@ -26,7 +26,7 @@ final class MariaDbReadOnlyQuiescence implements DatabaseQuiescenceCapability
 
     public function isAvailable(): bool
     {
-        if ($this->held || !$this->deploymentEvidence()) return false;
+        if ($this->held || !($this->deploymentEvidence)()) return false;
         try {
             $version = (string)$this->administrativeConnection->query('SELECT VERSION()')->fetchColumn();
             if (!preg_match('/^10\.4(?:\.|$)/', $version)) return false;

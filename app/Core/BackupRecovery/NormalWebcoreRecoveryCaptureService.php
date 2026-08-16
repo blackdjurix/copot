@@ -28,10 +28,10 @@ final class NormalWebcoreRecoveryCaptureService
             $lifecycle = $this->lifecycle->capture();
             $marker = $this->installedLock->capture();
             $manifest = new RecoveryManifest($recovery, $request->operationId(), $request->targetPackageIdentity(), $request->targetReleaseIdentity(), $request->archiveIdentity(), $request->applyPlan()->identity(), [
-                new RecoveryDomainIdentity('database', 'database.webcore', $request->namespaceIdentity(), $database->record()->artifactIdentity()),
+                new RecoveryDomainIdentity('database.webcore', 'database.webcore', $request->namespaceIdentity(), $database->record()->artifactIdentity()),
                 new RecoveryDomainIdentity('filesystem.package-owned', 'filesystem.package-owned', $request->applyPlan()->identity(), $filesystem->artifact()->artifactIdentity()),
-                new RecoveryDomainIdentity('lifecycle.committed', 'filesystem.lifecycle.committed', $request->deploymentIdentity(), $lifecycle->record()->artifactIdentity()),
-                new RecoveryDomainIdentity('lifecycle.installed-lock', 'filesystem.lifecycle.installed-lock', $request->installationIdentity(), $marker->record()->artifactIdentity()),
+                new RecoveryDomainIdentity('filesystem.lifecycle.committed', 'filesystem.lifecycle.committed', $request->deploymentIdentity(), $lifecycle->record()->artifactIdentity()),
+                new RecoveryDomainIdentity('filesystem.lifecycle.installed-lock', 'filesystem.lifecycle.installed-lock', $request->installationIdentity(), $marker->record()->artifactIdentity()),
             ], $request->preLifecycleIdentity(), $request->migrationLedgerIdentity());
             $record = new RecoveryLifecycleRecord($recovery, $manifest->identity(), $request->operationId(), RecoveryLifecycleState::CREATED);
             $this->coordinator->create($record);

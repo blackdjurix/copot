@@ -111,6 +111,15 @@ final class StagingSession
         self::removeVerifiedTree($this->path, $this->namespacePath);
     }
 
+    public static function cleanupExisting(string $path): void
+    {
+        $path = rtrim(str_replace('/', DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+        if (basename($path) === '' || !str_starts_with(basename($path), 'session-')) {
+            throw new \RuntimeException('Package staging cleanup path is unverified.');
+        }
+        self::removeVerifiedTree($path, dirname($path));
+    }
+
     private static function removeVerifiedTree(string $path, string $namespacePath): void
     {
         if (is_link($path) || is_file($path)) {

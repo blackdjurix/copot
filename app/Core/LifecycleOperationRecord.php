@@ -120,6 +120,8 @@ final class LifecycleOperationRecord
     public function recoveryIdentity(): ?string { return $this->recoveryIdentity; }
     public function recoveryManifestIdentity(): ?string { return $this->recoveryManifestIdentity; }
     public function recoveryState(): ?string { return $this->recoveryState; }
+    public function withStagingPath(string $stagingPath): self
+    { return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationPlanIdentity, $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $this->reason, $this->recoveryIdentity, $this->recoveryManifestIdentity, $this->recoveryState); }
     public function bindRecovery(string $identity, string $manifest, string $state): self
     { return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationPlanIdentity, $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $this->reason, $identity, $manifest, $state); }
 

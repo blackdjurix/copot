@@ -226,6 +226,7 @@ final class PackageLifecycleService
     {
         $record = $this->maintenance->record();
         if (!$record instanceof LifecycleOperationRecord || !$this->retryEvidence($operationId)) return new PackageLifecycleResult(false, 'rejected', 'Retry evidence is unavailable or stale.');
+        $retainedStagingPath = $record->stagingPath();
         $source = $this->retrySource($operationId);
         if ($source === null) return new PackageLifecycleResult(false, 'rejected', 'Retained staged package evidence is unavailable.');
         $payload = null;
@@ -233,10 +234,17 @@ final class PackageLifecycleService
             [$payload, $manifest, $transition, $migration] = $this->prepare($source);
             $applyPlan = WebcoreApplyPlan::fromPayload($manifest->payload());
             if ($applyPlan->identity() !== $record->applyPlanIdentity() || $transition->classification() !== $record->classification() || $manifest->contract()->targetWebcoreVersion() !== $record->targetWebcoreVersion()) throw new \RuntimeException('Retry target evidence does not match the persisted operation.');
+            if ($record->stagingPath() !== $payload->stagingPath()) {
+                $record = $record->withStagingPath($payload->stagingPath());
+                $this->maintenance->update($record);
+            }
             $apply = $this->applyCoordinator->execute($applyPlan, $transition, $migration, $record);
             if ($apply->status() !== WebcoreApplyResult::AWAITING_WU6) return new PackageLifecycleResult(false, strtolower($apply->status()), $apply->reason(), $transition, $migration, $apply->operationId());
             $final = $this->healthCoordinator->finalize($apply->operationId(), $manifest->contract(), $applyPlan, $migration, $this->liveGuard, ($this->connection)(), ($this->runtimeChecks)());
             if ($final->status() === HealthIntegrityCommitResult::COMPLETED) {
+                if ($retainedStagingPath !== $payload->stagingPath()) {
+                    try { StagingSession::cleanupExisting($retainedStagingPath); } catch (\Throwable) {}
+                }
                 return new PackageLifecycleResult(true, 'completed', '', $transition, $migration, $apply->operationId());
             }
             return new PackageLifecycleResult(false, $final->status(), $final->reason(), $transition, $migration, $apply->operationId());

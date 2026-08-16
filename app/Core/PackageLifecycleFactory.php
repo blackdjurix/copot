@@ -303,7 +303,7 @@ final class PackageLifecycleFactory
                     $adminGrants = implode(' ', $admin->query('SHOW GRANTS')->fetchAll(PDO::FETCH_COLUMN));
                     $runtime = $freshConnection();
                     $runtimeGrants = implode(' ', $runtime->query('SHOW GRANTS')->fetchAll(PDO::FETCH_COLUMN));
-                    $adminileged = preg_match('/\\bSUPER\\b|SYSTEM_VARIABLES_ADMIN/i', $adminGrants) === 1;
+                    $adminileged = preg_match('/\\bSUPER\\b|SYSTEM_VARIABLES_ADMIN|ALL PRIVILEGES ON \\*\\.\\*/i', $adminGrants) === 1;
                     $runtimeBypass = preg_match('/\\bSUPER\\b|READ_ONLY ADMIN|SYSTEM_VARIABLES_ADMIN/i', $runtimeGrants) === 1;
                     return $adminileged && !$runtimeBypass && $username !== '' && (int) $admin->query('SELECT @@GLOBAL.read_only')->fetchColumn() === 0;
                 };
