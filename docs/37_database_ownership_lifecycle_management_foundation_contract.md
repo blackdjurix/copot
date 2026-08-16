@@ -5,11 +5,11 @@
 ```text
 Database Ownership & Lifecycle Management Foundation: PROMOTED / CONTRACT LOCKED
 Preparation audit: COMPLETE
-Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE AND CLOSED; WU4 COMPLETE AND CLOSED; WU5–WU6 NOT STARTED
+Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE AND CLOSED; WU4 COMPLETE AND CLOSED; WU5 COMPLETE AND CLOSED; WU6 NOT STARTED
 WU topology: WU1–WU6 LOCKED
-Next active technical target: WU5 Installer Intent Reconciliation
+Next active implementation target: WU6 Cross-Lifecycle Acceptance
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
-Branch lifecycle: main-only; the WU4 feature branch is merged and deleted locally/remotely
+Branch lifecycle: main-only; completed WU4 and WU5 feature branches are merged and deleted locally/remotely
 ```
 
 This is the authoritative repository contract for the Post-M3 Database Ownership
@@ -409,10 +409,13 @@ Use an existing compatible COPOT installation.
 
 Adopt:
 
-- does not silently migrate;
+- uses one positively proven compatible existing COPOT installation;
+- preserves the proven namespace and existing Administrator/User/Site state;
+- does not provision schema or tables, silently migrate, repair, or create an Administrator;
+- skips the Installer Administrator & Site phase and proceeds to Review & Install / Installation Result;
 - does not perform normal Webcore Update / Upgrade / Repair;
 - requires compatibility;
-- fails closed on incompatibility.
+- fails closed on incompatible, ambiguous, contradictory, unhealthy, partial, colliding, or unprovable state.
 
 Normal existing-install Update / Upgrade / Repair belongs to System Manager /
 Webcore Lifecycle, not Installer.
@@ -550,7 +553,11 @@ Dependency: **HARD → WU1**.
 WU5 consumes accepted WU3/WU4 outcomes where System Manager or database
 lifecycle classification affects Installer routing.
 
-Status: **NOT STARTED**.
+Accepted outcome: Installer exposes exactly **Fresh**, **Coexist**, and **Adopt / Use Existing Installation**. Fresh and Coexist retain namespace and installation-identity collision safety and validate provisioning against the authoritative ownership catalog while preserving valid historical aggregate-schema compatibility. Adopt is available only for one positively proven compatible existing installation, preserves its namespace and existing state, performs no schema provisioning, migration, repair, Administrator creation, or Site setup, and fails closed on unsupported or ambiguous state. Normal existing-install Update / Upgrade / Repair remains outside Installer under System Manager / Webcore Lifecycle.
+
+Integration evidence: WU5 was accepted at `eb9367ec4e81b4e6b88c6893a68984a22c74b80a` and fast-forward integrated into `main`; the feature branch was subsequently deleted locally and remotely after containment and zero-ahead verification.
+
+Status: **COMPLETE AND CLOSED**.
 
 ### WU6 — Cross-Lifecycle Acceptance
 
@@ -572,7 +579,7 @@ Prove coherent boundaries across:
 
 Dependency: **HARD → WU1–WU5**.
 
-Status: **NOT STARTED**.
+Status: **NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET**.
 
 ## Acceptance model
 
@@ -656,8 +663,8 @@ After promotion:
 - WU3 implementation is **COMPLETE AND CLOSED** under its HARD dependency on WU1 + WU2;
 - Recovery Slices B2a–C and focused implementation/validation evidence are accepted;
 - WU4 implementation and accepted validation are **COMPLETE AND CLOSED**;
-- WU5 is **NOT STARTED / NEXT ACTIVE TECHNICAL TARGET**;
-- WU6 remains **NOT STARTED**;
+- WU5 implementation and accepted integration are **COMPLETE AND CLOSED**;
+- WU6 remains **NOT STARTED / NEXT ACTIVE IMPLEMENTATION TARGET**;
 - WU6 carries the mandatory production-like persisted Retry success-path acceptance
   described above and must not close without it;
 - source/schema/runtime mutation requires a separately authorized execution
