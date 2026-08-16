@@ -70,7 +70,7 @@ final class WebcoreApplyCoordinator
             $this->runtimeRegistry?->assertTransitionAllowed();
 
             if ($this->recoveryBoundary instanceof ProtectedWebcoreMutationBoundary) {
-                $session = $this->recoveryBoundary->enter(new WebcoreMutationContext($record, $applyPlan, $transition, $migrationPlan));
+                $session = $this->recoveryBoundary->enter(new WebcoreMutationContext($record, $applyPlan, $transition, $migrationPlan, $lock));
                 $evidence = $session->evidence();
                 if (!isset($evidence['identity'], $evidence['manifest'], $evidence['state'])) throw new \RuntimeException('Recovery evidence is incomplete.');
                 $record = $record->bindRecovery((string) $evidence['identity'], (string) $evidence['manifest'], (string) $evidence['state']);
@@ -90,9 +90,11 @@ final class WebcoreApplyCoordinator
                 $lastPath = $appliedPaths === [] ? null : $appliedPaths[count($appliedPaths) - 1];
                 if ($apply->status() === WebcoreApplyResult::FAILED && $appliedPaths === []) {
                     $reason = $apply->reason();
+                    try { $session?->fail($reason); } catch (\Throwable) {}
                     $this->maintenance->clear($record->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, $reason));
                     return new WebcoreApplyResult(WebcoreApplyResult::FAILED, [], $reason, $record->operationId());
                 }
+                try { $session?->fail($apply->reason()); } catch (\Throwable) {}
                 $record = $record->advance(LifecycleOperationRecord::BLOCKED, count($appliedPaths), $lastPath, null, $apply->reason());
                 $this->maintenance->update($record);
                 return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $appliedPaths, $apply->reason(), $record->operationId());
@@ -106,12 +108,14 @@ final class WebcoreApplyCoordinator
 
             if (!$migration instanceof MigrationRunResult || $migration->status() === MigrationRunResult::INDETERMINATE) {
                 $reason = $migration instanceof MigrationRunResult ? $migration->reason() : 'Migration outcome is indeterminate.';
+                try { $session?->fail($reason); } catch (\Throwable) {}
                 $record = $record->advance(LifecycleOperationRecord::INDETERMINATE, count($appliedPaths), $lastPath, MigrationRunResult::INDETERMINATE, $reason);
                 $this->maintenance->update($record);
                 return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $appliedPaths, $reason, $record->operationId());
             }
 
             if ($migration->status() !== MigrationRunResult::COMPLETED && $migration->status() !== MigrationRunResult::NOOP) {
+                try { $session?->fail($migration->reason()); } catch (\Throwable) {}
                 $record = $record->advance(LifecycleOperationRecord::BLOCKED, count($appliedPaths), $lastPath, $migration->status(), $migration->reason());
                 $this->maintenance->update($record);
                 return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $appliedPaths, $migration->reason(), $record->operationId());
@@ -123,7 +127,7 @@ final class WebcoreApplyCoordinator
 
             return new WebcoreApplyResult(WebcoreApplyResult::AWAITING_WU6, $appliedPaths, 'Awaiting WU6 health and installed-state commit.', $record->operationId());
         } catch (\Throwable $exception) {
-            $session?->fail($exception->getMessage());
+            try { $session?->fail($exception->getMessage()); } catch (\Throwable) {}
             if ($record instanceof LifecycleOperationRecord) {
                 try {
                     $this->maintenance->update($record->advance(LifecycleOperationRecord::BLOCKED, $record->fileCursor(), $record->lastVerifiedPath(), null, $exception->getMessage()));

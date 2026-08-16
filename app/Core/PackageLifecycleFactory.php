@@ -52,6 +52,11 @@ final class PackageLifecycleFactory
             $liveGuard
         );
         $normalRecoveryCapture = $recoveryComposition?->normalCaptureService();
+        $normalRecoveryBoundary = $recoveryComposition?->normalProtectedMutationBoundary(
+            $installationIdentity->value(),
+            hash('sha256', 'deployment:' . $deploymentContext->appRoot()),
+            $normalRecoveryCapture
+        );
 
         $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath, $installationIdentity->value());
         $applier = new PackageOwnedFileApplier($liveGuard, LiveFileActivationCapability::current(), $applyTemporaryRoot);
@@ -61,7 +66,7 @@ final class PackageLifecycleFactory
                 $authorization = new MigrationAuthorizationContext($installationIdentity, $database->tables(), $operationId, $classification, DatabaseTableOwner::webcore(), $migration->id(), $migration->checksum(), $plan->initialWebcoreVersion(), $plan->virtualFinalWebcoreVersion(), true, $migration->schemaSurface());
                 return new AuthorizedMigrationContext($database->connection(), $authorization, $catalog);
             });
-        }, new RuntimeRegistry($storage, $installationIdentity, $mutex));
+        }, new RuntimeRegistry($storage, $installationIdentity, $mutex), $normalRecoveryBoundary);
         $healthCoordinator = new HealthIntegrityCommitCoordinator(
             $mutex,
             $maintenance,
@@ -365,6 +370,18 @@ final class PackageLifecycleRecoveryComposition
             $this->quiescence,
             $this->databaseConnection,
             $this->databaseConnection
+        );
+    }
+
+    public function normalProtectedMutationBoundary(string $installationIdentity, string $deploymentIdentity, ?NormalWebcoreRecoveryCaptureService $capture = null): ProtectedWebcoreMutationBoundary
+    {
+        return new NormalWebcoreProtectedMutationBoundary(
+            $capture ?? $this->normalCaptureService(),
+            $this->maintenance,
+            $installationIdentity,
+            $this->databaseIdentity,
+            $deploymentIdentity,
+            $this->databaseIdentity
         );
     }
 }

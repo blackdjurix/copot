@@ -5,11 +5,11 @@
 ```text
 Database Ownership & Lifecycle Management Foundation: PROMOTED / CONTRACT LOCKED
 Preparation audit: COMPLETE
-Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 IMPLEMENTATION IN PROGRESS; WU4–WU6 NOT STARTED
+Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 IMPLEMENTATION IN PROGRESS (Recovery Slices B2a–B2b); WU4–WU6 NOT STARTED
 WU topology: WU1–WU6 LOCKED
-Next active technical target: WU3 — System Manager Webcore Lifecycle Capability
+Next active technical target: WU3 Recovery Slice C — System Manager Webcore Lifecycle Capability
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
-Branch lifecycle: NOT YET SELECTED
+Branch lifecycle: feature/database-system-manager-wu3-lifecycle (active implementation branch)
 ```
 
 This is the authoritative repository contract for the Post-M3 Database Ownership
@@ -487,9 +487,17 @@ Execution engine: existing Package Lifecycle & Migration Foundation.
 
 Dependency: **HARD → WU1 + WU2**.
 
-Status: **IMPLEMENTATION IN PROGRESS**.
+Status: **IMPLEMENTATION IN PROGRESS — RECOVERY SLICES B2a–B2b COMPLETE**.
 
 The bounded operator layer is being delivered over the existing Package Lifecycle engine. It adds the dedicated `system.webcore.manage` Admin boundary, private upload staging, sanitized preflight/result handling, and mandatory fail-closed recovery gating. WU3 does not introduce a migration, package, or recovery engine and does not expose WU4 database-only Case C behavior.
+
+Recovery Slice B2a extracts one factory-owned recovery composition. Recovery Slice
+B2b injects its production `ProtectedWebcoreMutationBoundary` into the existing
+`WebcoreApplyCoordinator`; the coordinator remains the sole lifecycle-mutex
+owner, and package-file plus Core-migration mutation remains inside the live
+recovery permit. Focused B2b evidence passed 33 assertions. Recovery Slice C,
+including the next separately authorized System Manager recovery-gate slice,
+remains outstanding.
 
 ### WU4 — Database Lifecycle Classification
 
@@ -623,8 +631,11 @@ After promotion:
 - accepted WU2 validation passed 11 focused authority assertions, 30 Core
   lifecycle assertions, 15 Module lifecycle/provisioning assertions, and the
   existing 34 WU1 ownership assertions;
-- WU3 is **NOT STARTED** and is the next technical target under its HARD
-  dependency on WU1 + WU2;
+- WU3 implementation is **IN PROGRESS** under its HARD dependency on WU1 + WU2;
+- Recovery Slices B2a–B2b are complete for the accepted protected-mutation
+  boundary and focused evidence;
+- Recovery Slice C and final WU3 closure remain outstanding and separately
+  authorized;
 - source/schema/runtime mutation requires a separately authorized execution
   slice;
 - no later WU may skip a HARD dependency;
