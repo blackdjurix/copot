@@ -14,8 +14,10 @@ use Copot\Core\InstallationRuntimePaths;
 use Copot\Core\InstallerDatabaseOccupancy;
 use Copot\Core\InstallerDatabaseOccupancyClassifier;
 use Copot\Core\InstallerIntent;
+use Copot\Core\InstallerOwnershipProof;
 use Copot\Core\InstallerRoutingPlanner;
 use Copot\Core\InstallerSchemaRunner;
+use Copot\Core\DatabaseTableOwnershipCatalog;
 use Copot\Core\ModuleIdentity;
 use Copot\Core\ModuleMigrationLedger;
 use Copot\Core\PackageApplyTemporaryRoot;
@@ -77,6 +79,15 @@ $ownedB = array_merge(
 $assert(array_intersect($ownedA, $ownedB) === [], 'Independent COPOT ownership sets were not disjoint.');
 $assert((new DatabaseTableNames())->table('users') === 'users', 'Legitimate empty namespace changed.');
 $assert($tablesA->moduleTable('content') === 'wu6a_content', 'Module namespace did not follow the Core namespace boundary.');
+$catalog = DatabaseTableOwnershipCatalog::current();
+$assert(count($catalog->all()) === 28 && $catalog->ownership('content')->isHistoricallyPreProvisioned(), 'Historical aggregate ownership compatibility was not retained.');
+$partial = (new InstallerDatabaseOccupancyClassifier())->classify(['wu6a_users']);
+$blocked(fn () => (new InstallerRoutingPlanner())->plan($partial, InstallerIntent::COEXIST, 'wu6a'));
+$proof = new InstallerOwnershipProof($identityA, 'wu6a', 'core-schema-generation:wu6', str_repeat('a', 64));
+$complete = array_merge($ownedA, []);
+$adoptable = (new InstallerDatabaseOccupancyClassifier())->classify($complete, [$proof]);
+$assert((new InstallerRoutingPlanner())->plan($adoptable, InstallerIntent::ADOPT, 'wu6a')->namespace() === 'wu6a', 'Adopt did not preserve the proven namespace in the combined fixture.');
+$assert(str_contains((string) file_get_contents($basePath . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Core' . DIRECTORY_SEPARATOR . 'SystemManagerLifecycleService.php'), "TransitionPlan::DATABASE_UPDATE => 'Database-only Update'"), 'Lifecycle-derived Database-only Update wiring was not retained.');
 
 $runtimeA = new RuntimeRegistry($storageA, $identityA, new InstallationMutex($storageA));
 $runtimeB = new RuntimeRegistry($storageB, $identityB, new InstallationMutex($storageB));

@@ -235,7 +235,11 @@ final class PackageLifecycleService
             if ($applyPlan->identity() !== $record->applyPlanIdentity() || $transition->classification() !== $record->classification() || $manifest->contract()->targetWebcoreVersion() !== $record->targetWebcoreVersion()) throw new \RuntimeException('Retry target evidence does not match the persisted operation.');
             $apply = $this->applyCoordinator->execute($applyPlan, $transition, $migration, $record);
             if ($apply->status() !== WebcoreApplyResult::AWAITING_WU6) return new PackageLifecycleResult(false, strtolower($apply->status()), $apply->reason(), $transition, $migration, $apply->operationId());
-            return new PackageLifecycleResult(false, 'awaiting_wu6', 'Retry completed mutation; awaiting lifecycle finalization.', $transition, $migration, $apply->operationId());
+            $final = $this->healthCoordinator->finalize($apply->operationId(), $manifest->contract(), $applyPlan, $migration, $this->liveGuard, ($this->connection)(), ($this->runtimeChecks)());
+            if ($final->status() === HealthIntegrityCommitResult::COMPLETED) {
+                return new PackageLifecycleResult(true, 'completed', '', $transition, $migration, $apply->operationId());
+            }
+            return new PackageLifecycleResult(false, $final->status(), $final->reason(), $transition, $migration, $apply->operationId());
         } catch (\Throwable $e) { return new PackageLifecycleResult(false, 'blocked', 'Retry evidence or execution was rejected.', null, null, $record->operationId()); }
         finally { if ($payload instanceof StagedPayload) { try { $payload->cleanup(); } catch (\Throwable) {} } }
     }
