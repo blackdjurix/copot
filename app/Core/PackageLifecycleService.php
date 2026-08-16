@@ -40,7 +40,8 @@ final class PackageLifecycleService
         ?LegacyReconciliationPlanner $reconciliationPlanner = null,
         private ?LegacyReconciliationOperator $reconciliationOperator = null,
         private ?string $reconciliationUnavailableReason = null,
-        ?CanonicalSchemaBaselineCatalog $baselineCatalog = null
+        ?CanonicalSchemaBaselineCatalog $baselineCatalog = null,
+        private $recoveryEvidenceValidator = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -197,6 +198,46 @@ final class PackageLifecycleService
         return $this->reconciliationOperator instanceof LegacyReconciliationOperator;
     }
 
+    public function retryEvidence(string $operationId): bool
+    {
+        $record = $this->maintenance->record();
+        if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId
+            || !in_array($record->phase(), [LifecycleOperationRecord::BLOCKED, LifecycleOperationRecord::INDETERMINATE, LifecycleOperationRecord::APPLYING, LifecycleOperationRecord::MIGRATING], true)
+            || !is_dir($record->stagingPath())
+            || !is_file($record->stagingPath() . DIRECTORY_SEPARATOR . 'source.zip')
+            || !is_readable($record->stagingPath() . DIRECTORY_SEPARATOR . 'source.zip')
+            || $record->recoveryIdentity() === null || $record->recoveryManifestIdentity() === null
+            || $record->recoveryState() !== \Copot\Core\BackupRecovery\RecoveryLifecycleState::READY
+            || !is_callable($this->recoveryEvidenceValidator)) return false;
+        try { return (bool) ($this->recoveryEvidenceValidator)($record); } catch (\Throwable) { return false; }
+    }
+
+    public function retrySource(string $operationId): ?string
+    {
+        $record = $this->maintenance->record();
+        if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId || !$this->retryEvidence($operationId)) return null;
+        $path = $record->stagingPath() . DIRECTORY_SEPARATOR . 'source.zip';
+        return is_file($path) && is_readable($path) ? $path : null;
+    }
+
+    public function retry(string $operationId): PackageLifecycleResult
+    {
+        $record = $this->maintenance->record();
+        if (!$record instanceof LifecycleOperationRecord || !$this->retryEvidence($operationId)) return new PackageLifecycleResult(false, 'rejected', 'Retry evidence is unavailable or stale.');
+        $source = $this->retrySource($operationId);
+        if ($source === null) return new PackageLifecycleResult(false, 'rejected', 'Retained staged package evidence is unavailable.');
+        $payload = null;
+        try {
+            [$payload, $manifest, $transition, $migration] = $this->prepare($source);
+            $applyPlan = WebcoreApplyPlan::fromPayload($manifest->payload());
+            if ($applyPlan->identity() !== $record->applyPlanIdentity() || $transition->classification() !== $record->classification() || $manifest->contract()->targetWebcoreVersion() !== $record->targetWebcoreVersion()) throw new \RuntimeException('Retry target evidence does not match the persisted operation.');
+            $apply = $this->applyCoordinator->execute($applyPlan, $transition, $migration, $record);
+            if ($apply->status() !== WebcoreApplyResult::AWAITING_WU6) return new PackageLifecycleResult(false, strtolower($apply->status()), $apply->reason(), $transition, $migration, $apply->operationId());
+            return new PackageLifecycleResult(false, 'awaiting_wu6', 'Retry completed mutation; awaiting lifecycle finalization.', $transition, $migration, $apply->operationId());
+        } catch (\Throwable $e) { return new PackageLifecycleResult(false, 'blocked', 'Retry evidence or execution was rejected.', null, null, $record->operationId()); }
+        finally { if ($payload instanceof StagedPayload) { try { $payload->cleanup(); } catch (\Throwable) {} } }
+    }
+
     public function status(): array
     {
         try {
@@ -217,6 +258,8 @@ final class PackageLifecycleService
                     'phase' => $record->phase(),
                     'operation_id' => $record->operationId(),
                     'classification' => $record->classification(),
+                    'target_webcore_version' => $record->targetWebcoreVersion(),
+                    'recovery_state' => $record->recoveryState(),
                 ];
             }
 

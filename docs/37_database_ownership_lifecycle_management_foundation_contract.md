@@ -5,11 +5,11 @@
 ```text
 Database Ownership & Lifecycle Management Foundation: PROMOTED / CONTRACT LOCKED
 Preparation audit: COMPLETE
-Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3–WU6 NOT STARTED
+Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE AND CLOSED; WU4 NOT STARTED / NEXT ACTIVE TECHNICAL TARGET; WU5–WU6 NOT STARTED
 WU topology: WU1–WU6 LOCKED
-Next active technical target: WU3 — System Manager Webcore Lifecycle Capability
+Next active technical target: WU4 Database Lifecycle Classification
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
-Branch lifecycle: NOT YET SELECTED
+Branch lifecycle: feature/database-system-manager-wu3-lifecycle (active implementation branch)
 ```
 
 This is the authoritative repository contract for the Post-M3 Database Ownership
@@ -487,7 +487,23 @@ Execution engine: existing Package Lifecycle & Migration Foundation.
 
 Dependency: **HARD → WU1 + WU2**.
 
-Status: **NOT STARTED**.
+Status: **COMPLETE AND CLOSED — FOCUSED IMPLEMENTATION/VALIDATION EVIDENCE ACCEPTED**.
+
+The bounded operator layer is being delivered over the existing Package Lifecycle engine. It adds the dedicated `system.webcore.manage` Admin boundary, private upload staging, sanitized preflight/result handling, and mandatory fail-closed recovery gating. WU3 does not introduce a migration, package, or recovery engine and does not expose WU4 database-only Case C behavior.
+
+Recovery Slice B2a extracts one factory-owned recovery composition. Recovery Slice
+B2b injects its production `ProtectedWebcoreMutationBoundary` into the existing
+`WebcoreApplyCoordinator`; the coordinator remains the sole lifecycle-mutex
+owner, and package-file plus Core-migration mutation remains inside the live
+recovery permit. Focused B2b evidence passed 33 assertions. Recovery Slice C binds
+persisted recovery identity/manifest evidence for Retry and delegates System Manager
+execution through Package Lifecycle with sanitized status fields. Focused Slice C
+evidence covers 23 assertions. The real Retry invocation and eligibility
+evidence are accepted for WU3 closure. Full production-like persisted Retry
+success-path execution is a mandatory WU6 cross-lifecycle acceptance scenario;
+WU6 must not close without exercising it in a representative disposable
+cross-lifecycle environment. This carried requirement is not a WU3 defect or
+Deferred Item.
 
 ### WU4 — Database Lifecycle Classification
 
@@ -621,8 +637,12 @@ After promotion:
 - accepted WU2 validation passed 11 focused authority assertions, 30 Core
   lifecycle assertions, 15 Module lifecycle/provisioning assertions, and the
   existing 34 WU1 ownership assertions;
-- WU3 is **NOT STARTED** and is the next technical target under its HARD
-  dependency on WU1 + WU2;
+- WU3 implementation is **COMPLETE AND CLOSED** under its HARD dependency on WU1 + WU2;
+- Recovery Slices B2a–C and focused implementation/validation evidence are accepted;
+- WU4 is **NOT STARTED / NEXT ACTIVE TECHNICAL TARGET**;
+- WU5–WU6 remain **NOT STARTED**;
+- WU6 carries the mandatory production-like persisted Retry success-path acceptance
+  described above and must not close without it;
 - source/schema/runtime mutation requires a separately authorized execution
   slice;
 - no later WU may skip a HARD dependency;

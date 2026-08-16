@@ -19,6 +19,7 @@ $app->session()->start();
 require $basePath . '/routes/web.php';
 require $basePath . '/routes/auth.php';
 require $basePath . '/routes/admin.php';
+require $basePath . '/routes/system_manager.php';
 
 $app->moduleLoader()->loadListeners($app);
 $app->moduleLoader()->loadResolvers($app);

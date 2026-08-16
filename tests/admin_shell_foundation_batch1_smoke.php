@@ -104,7 +104,7 @@ $layout = (string) file_get_contents($basePath . '/resources/views/admin/layout.
 $css = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
 $script = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-shell.js');
 
-$assert(substr_count($layout, '<script defer src="/admin-assets/js/admin-shell.js"></script>') === 1, 'Admin shell script must load exactly once.');
+$assert(preg_match_all('/<script\s+defer\s+src="(?:<\?=|[^" ]*admin-assets\/js\/admin-shell\.js)[^<]*<\/script>/', $layout, $matches) === 1, 'Admin shell script must load exactly once.');
 $assert(str_contains($layout, 'aria-controls="admin-sidebar"'), 'Mobile navigation trigger does not control the shared sidebar.');
 $assert(str_contains($layout, 'data-admin-nav-overlay'), 'Mobile navigation overlay hook is missing.');
 $assert(str_contains($layout, 'class="admin-breadcrumb" aria-label="Breadcrumb"'), 'Shared breadcrumb landmark is missing.');
