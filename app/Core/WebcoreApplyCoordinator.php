@@ -21,7 +21,8 @@ final class WebcoreApplyCoordinator
     public function execute(
         WebcoreApplyPlan $applyPlan,
         TransitionPlan $transition,
-        CoreMigrationPlan $migrationPlan
+        CoreMigrationPlan $migrationPlan,
+        ?LifecycleOperationRecord $existing = null
     ): WebcoreApplyResult {
         $lock = $this->mutex->acquire();
         if (!$lock instanceof InstallationLock) {
@@ -38,6 +39,9 @@ final class WebcoreApplyCoordinator
                 array_filter($migrationPlan->migrations(), static fn ($migration): bool => $migration instanceof CoreMigrationDescriptor)
             )));
             $now = gmdate(DATE_ATOM);
+            if ($existing instanceof LifecycleOperationRecord) {
+                $record = $existing;
+            } else {
             $record = new LifecycleOperationRecord(
                 bin2hex(random_bytes(16)),
                 $transition->classification(),
@@ -58,7 +62,8 @@ final class WebcoreApplyCoordinator
                 $now,
                 $now
             );
-            $this->maintenance->enter($record);
+            }
+            if ($existing === null) $this->maintenance->enter($record);
 
             if (!$transition->accepted() || !$migrationPlan->isAccepted()) {
                 $reason = $transition->reason() !== '' ? $transition->reason() : $migrationPlan->reason();
@@ -70,7 +75,10 @@ final class WebcoreApplyCoordinator
             $this->runtimeRegistry?->assertTransitionAllowed();
 
             if ($this->recoveryBoundary instanceof ProtectedWebcoreMutationBoundary) {
-                $session = $this->recoveryBoundary->enter(new WebcoreMutationContext($record, $applyPlan, $transition, $migrationPlan, $lock));
+                $context = new WebcoreMutationContext($record, $applyPlan, $transition, $migrationPlan, $lock);
+                $session = $existing !== null && $record->recoveryIdentity() !== null && $record->recoveryManifestIdentity() !== null && $this->recoveryBoundary instanceof NormalWebcoreProtectedMutationBoundary
+                    ? $this->recoveryBoundary->enterExisting($context, $record->recoveryIdentity(), $record->recoveryManifestIdentity())
+                    : $this->recoveryBoundary->enter($context);
                 $evidence = $session->evidence();
                 if (!isset($evidence['identity'], $evidence['manifest'], $evidence['state'])) throw new \RuntimeException('Recovery evidence is incomplete.');
                 $record = $record->bindRecovery((string) $evidence['identity'], (string) $evidence['manifest'], (string) $evidence['state']);

@@ -75,9 +75,8 @@ final class SystemManagerLifecycleService
         };
         $zip = $this->lifecycle->retrySource($operationId);
         if ($action === null || $zip === null) return ['accepted' => false, 'status' => 'rejected', 'reason' => 'Retry evidence is unavailable or stale.', 'action' => 'Retry'];
-        // The current coordinator has no existing-operation/session entry point;
-        // fail closed rather than recapturing a second recovery set.
-        return ['accepted' => false, 'status' => 'blocked', 'reason' => 'Retry requires the persisted recovery session and is not yet eligible.', 'action' => 'Retry', 'operation_id' => $operationId, 'next_eligible_action' => null];
+        $result = $this->lifecycle->retry($operationId);
+        return $this->safeResult($result, 'Retry');
     }
 
     public function reconcile(string $zip, bool $confirmed): array

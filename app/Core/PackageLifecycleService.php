@@ -218,6 +218,24 @@ final class PackageLifecycleService
         return is_file($path) && is_readable($path) ? $path : null;
     }
 
+    public function retry(string $operationId): PackageLifecycleResult
+    {
+        $record = $this->maintenance->record();
+        if (!$record instanceof LifecycleOperationRecord || !$this->retryEvidence($operationId)) return new PackageLifecycleResult(false, 'rejected', 'Retry evidence is unavailable or stale.');
+        $source = $this->retrySource($operationId);
+        if ($source === null) return new PackageLifecycleResult(false, 'rejected', 'Retained staged package evidence is unavailable.');
+        $payload = null;
+        try {
+            [$payload, $manifest, $transition, $migration] = $this->prepare($source);
+            $applyPlan = WebcoreApplyPlan::fromPayload($manifest->payload());
+            if ($applyPlan->identity() !== $record->applyPlanIdentity() || $transition->classification() !== $record->classification() || $manifest->contract()->targetWebcoreVersion() !== $record->targetWebcoreVersion()) throw new \RuntimeException('Retry target evidence does not match the persisted operation.');
+            $apply = $this->applyCoordinator->execute($applyPlan, $transition, $migration, $record);
+            if ($apply->status() !== WebcoreApplyResult::AWAITING_WU6) return new PackageLifecycleResult(false, strtolower($apply->status()), $apply->reason(), $transition, $migration, $apply->operationId());
+            return new PackageLifecycleResult(false, 'awaiting_wu6', 'Retry completed mutation; awaiting lifecycle finalization.', $transition, $migration, $apply->operationId());
+        } catch (\Throwable $e) { return new PackageLifecycleResult(false, 'blocked', 'Retry evidence or execution was rejected.', null, null, $record->operationId()); }
+        finally { if ($payload instanceof StagedPayload) { try { $payload->cleanup(); } catch (\Throwable) {} } }
+    }
+
     public function status(): array
     {
         try {

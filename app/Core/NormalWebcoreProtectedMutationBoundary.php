@@ -48,6 +48,17 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
         return $this->request($context);
     }
 
+    public function enterExisting(WebcoreMutationContext $context, string $identity, string $manifest): ProtectedWebcoreMutationSession
+    {
+        $lock = $context->installationLock();
+        if (!$lock instanceof InstallationLock) throw new \RuntimeException('The lifecycle mutex owner is unavailable to the recovery boundary.');
+        $this->maintenance->adopt($lock);
+        try { $session = $this->capture->resume($this->request($context), new \Copot\Core\BackupRecovery\RecoveryIdentity($identity), $manifest); }
+        catch (\Throwable $e) { $this->maintenance->detach(); throw $e; }
+        if (!$session->ready()) { $session->close(); throw new \RuntimeException('Persisted recovery evidence is not READY.'); }
+        return new NormalWebcoreProtectedMutationSession($session);
+    }
+
     private function request(WebcoreMutationContext $context): NormalWebcoreRecoveryCaptureRequest
     {
         $operation = $context->operation();

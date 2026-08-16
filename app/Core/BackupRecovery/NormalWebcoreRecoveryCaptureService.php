@@ -59,4 +59,16 @@ final class NormalWebcoreRecoveryCaptureService
             }
         }
     }
+
+    public function resume(NormalWebcoreRecoveryCaptureRequest $request, RecoveryIdentity $identity, string $manifest): NormalWebcoreRecoverySession
+    {
+        $lease = $this->quiescence->acquire();
+        try {
+            if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable.');
+            $record = $this->store->read($identity);
+            if ($record->operationIdentity() !== $request->operationId() || $record->manifestIdentity() !== $manifest || $record->state() !== RecoveryLifecycleState::READY || !$record->captureComplete() || $record->mutationStarted()) throw new RecoveryLifecycleException('Persisted recovery evidence is not retry-eligible.');
+            $this->coordinator->enterMaintenance($identity);
+            return new NormalWebcoreRecoverySession($this->coordinator, $identity, $manifest, $record, $lease);
+        } catch (\Throwable $e) { if ($lease instanceof DatabaseQuiescenceLease && $lease->isActive()) $lease->release(); throw $e; }
+    }
 }
