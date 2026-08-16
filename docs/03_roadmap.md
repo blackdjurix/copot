@@ -657,7 +657,7 @@ Database Ownership & Lifecycle Management Foundation: WU1–WU6 COMPLETE AND CLO
 WU4 Database Lifecycle Classification: COMPLETE AND CLOSED; accepted implementation and focused validation are integrated into `main` at `70782fdc9dddeb353cf27cf78f6f20e294e6fa30`
 WU5 Installer Intent Reconciliation: COMPLETE AND CLOSED; Installer intents are Fresh / Coexist / Adopt, with normal existing-install Update / Upgrade / Repair outside Installer under System Manager / Webcore Lifecycle
 WU6 Cross-Lifecycle Acceptance: COMPLETE AND CLOSED; mandatory persisted production-composed Retry success-path acceptance passed and the accepted implementation is integrated into `main` at `91de0fd829e52d185c4823fe27d7e849bf147622`
-Known repository risk: `tests/multi_installation_wu3_module_namespace.php` fails on both the accepted WU4 base and final `main` under the same PHP/MySQL environment; it is pre-existing/environmental and not a WU4 regression.
+Known repository risk: `tests/multi_installation_wu3_module_namespace.php` was reproduced at the accepted WU4 checkpoint under the same PHP/MySQL environment; it remains a pre-existing/environmental WU4-era predecessor fixture risk, is not evidence of a current WU6 regression, and is separate from the accepted WU6 authorization-aware Module namespace evidence.
 Package Lifecycle & Migration Foundation: COMPLETE AND CLOSED — Webcore first delivery slice
 Foundation scope: Webcore + independently distributed Module packages
 Completed delivery slice: Webcore first

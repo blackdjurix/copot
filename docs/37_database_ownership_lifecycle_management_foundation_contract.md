@@ -9,7 +9,7 @@ Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE A
 WU topology: WU1–WU6 LOCKED
 Next active implementation target: NONE within this six-WU topology
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
-Branch lifecycle: main-only; completed WU4 and WU5 feature branches are merged and deleted locally/remotely
+Branch lifecycle: integrated WU6 state is on `main`; `feature/database-lifecycle-wu6-cross-lifecycle-acceptance` remains present at zero ahead / zero behind pending separately authorized cleanup
 ```
 
 This is the authoritative repository contract for the Post-M3 Database Ownership
@@ -420,10 +420,13 @@ Adopt:
 Normal existing-install Update / Upgrade / Repair belongs to System Manager /
 Webcore Lifecycle, not Installer.
 
-The accepted Multi-Installation and MR.1 Installer contracts remain authoritative
-until WU5 explicitly reconciles their behavior. Review & Install remains the
-first installation-owned mutation boundary unless later accepted evidence
-explicitly amends that contract.
+The accepted Multi-Installation and MR.1 Installer contracts remain historical
+and current-authority evidence within their defined boundaries. WU5 subsequently
+reconciled current Installer semantics to Fresh, Coexist, and Adopt; normal
+existing-install Update / Upgrade / Repair remains owned by System Manager /
+Webcore Lifecycle. Review & Install remains the first installation-owned
+mutation boundary unless later accepted evidence explicitly amends that
+contract.
 
 ## Work Unit topology
 
@@ -491,7 +494,7 @@ Dependency: **HARD → WU1 + WU2**.
 
 Status: **COMPLETE AND CLOSED — FOCUSED IMPLEMENTATION/VALIDATION EVIDENCE ACCEPTED**.
 
-The bounded operator layer is being delivered over the existing Package Lifecycle engine. It adds the dedicated `system.webcore.manage` Admin boundary, private upload staging, sanitized preflight/result handling, and mandatory fail-closed recovery gating. WU3 does not introduce a migration, package, or recovery engine and does not expose WU4 database-only Case C behavior.
+WU3 delivered the bounded operator layer over the existing Package Lifecycle engine. It adds the dedicated `system.webcore.manage` Admin boundary, private upload staging, sanitized preflight/result handling, and mandatory fail-closed recovery gating. WU3 does not introduce a migration, package, or recovery engine and does not expose WU4 database-only Case C behavior.
 
 Recovery Slice B2a extracts one factory-owned recovery composition. Recovery Slice
 B2b injects its production `ProtectedWebcoreMutationBoundary` into the existing
@@ -502,10 +505,10 @@ persisted recovery identity/manifest evidence for Retry and delegates System Man
 execution through Package Lifecycle with sanitized status fields. Focused Slice C
 evidence covers 23 assertions. The real Retry invocation and eligibility
 evidence are accepted for WU3 closure. Full production-like persisted Retry
-success-path execution is a mandatory WU6 cross-lifecycle acceptance scenario;
-WU6 must not close without exercising it in a representative disposable
-cross-lifecycle environment. This carried requirement is not a WU3 defect or
-Deferred Item.
+success-path execution was carried forward as a mandatory WU6 cross-lifecycle
+acceptance scenario and was subsequently satisfied by the accepted
+production-composed WU6 persisted Retry E2E acceptance. This carried requirement
+was not a WU3 defect or Deferred Item.
 
 ### WU4 — Database Lifecycle Classification
 
