@@ -85,6 +85,18 @@ $assert(!str_contains($systemPage, 'Package ZIP') && str_contains($systemPage, '
 $assert(str_contains($systemPage, 'accept=".zip"') && !str_contains($systemPage, 'application/zip'), 'Package picker still declares duplicate ZIP filters.');
 $assert(str_contains($systemPage, 'data-system-manager-details'), 'Lifecycle content-fit detail list hook is missing.');
 
+$brandingPage = $render('resources/views/admin/system-manager.php', [
+    'section' => 'branding', 'status' => [], 'branding' => ['palette' => $resolved, 'identity_mode' => 'text', 'identity_color' => 'neutral-light'],
+    'localization' => ['locale' => 'en_US', 'timezone' => 'UTC', 'date_format' => 'Y-m-d', 'time_format' => 'H:i'], 'health' => [], 'modules' => [], 'release' => [],
+    'systemManagerPath' => '/dapur/settings/system-manager', 'preflightPath' => '/dapur/settings/system-manager/preflight', 'applyPath' => '/dapur/settings/system-manager/apply',
+    'retryPath' => '/dapur/settings/system-manager/retry', 'reconcilePath' => '/dapur/settings/system-manager/reconcile', 'brandingPath' => '/dapur/settings/system-manager/branding',
+    'localizationPath' => '/dapur/settings/system-manager/localization', 'moduleActionPath' => '/dapur/settings/system-manager/modules/action', 'csrfToken' => 'token',
+]);
+$assert(str_contains($brandingPage, 'system-manager-detail-form'), 'Branding detail form presentation is missing.');
+$assert(substr_count($brandingPage, 'data-color-control') === 4, 'Branding does not expose four bounded color controls.');
+$assert(substr_count($brandingPage, 'value="hex"') === 4 && substr_count($brandingPage, 'value="rgb"') === 4 && substr_count($brandingPage, 'value="hsl"') === 4, 'HEX/RGB/HSL selectors are incomplete.');
+$assert(substr_count($brandingPage, 'data-color-canonical') === 4, 'Branding colors do not retain one canonical submitted value each.');
+
 $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
 $assert(str_contains($adminCss, 'grid-template-columns: minmax(10rem, 11rem) minmax(0, 1fr)'), 'Lifecycle fixed label column is missing.');
 $assert(str_contains($adminCss, ".system-manager-status-grid {\n    display: grid;\n    grid-template-columns: 1fr;"), 'Lifecycle detail list is not explicitly single-column.');
@@ -99,6 +111,7 @@ $systemJs = (string) file_get_contents($basePath . '/public/admin-assets/js/syst
 $assert(str_contains($systemJs, 'ResizeObserver') && str_contains($systemJs, 'is-stacked'), 'Lifecycle content-fit switching is missing.');
 $assert(str_contains($systemJs, 'MutationObserver'), 'Lifecycle content changes do not trigger re-evaluation.');
 $assert(str_contains($systemJs, 'payload.guidance'), 'Module completion guidance is not rendered by package feedback.');
+$assert(str_contains($systemJs, 'hexToHsl') && str_contains($systemJs, 'hslToHex') && str_contains($systemJs, 'parseColor'), 'Bounded color representation conversion is missing.');
 
 $route = (string) file_get_contents($basePath . '/routes/system_manager.php');
 $modulePackageFallback = (string) file_get_contents($basePath . '/app/Core/SystemManagerModulePackageFallback.php');

@@ -1,6 +1,62 @@
 (function () {
     'use strict';
 
+    const colorControls = document.querySelectorAll('[data-color-control]');
+    const clamp = (value, minimum, maximum) => Math.min(maximum, Math.max(minimum, value));
+    const hexToRgb = (hex) => {
+        const value = /^#[0-9a-f]{6}$/i.test(hex) ? hex.slice(1) : null;
+        return value ? [parseInt(value.slice(0, 2), 16), parseInt(value.slice(2, 4), 16), parseInt(value.slice(4, 6), 16)] : null;
+    };
+    const rgbToHex = (rgb) => '#' + rgb.map((channel) => Math.round(clamp(channel, 0, 255)).toString(16).padStart(2, '0')).join('');
+    const hexToHsl = (hex) => {
+        const rgb = hexToRgb(hex).map((channel) => channel / 255);
+        const maximum = Math.max(...rgb); const minimum = Math.min(...rgb); const delta = maximum - minimum;
+        let hue = 0;
+        const lightness = (maximum + minimum) / 2;
+        const saturation = delta === 0 ? 0 : delta / (1 - Math.abs((2 * lightness) - 1));
+        if (delta !== 0) {
+            hue = maximum === rgb[0] ? ((rgb[1] - rgb[2]) / delta) % 6 : maximum === rgb[1] ? ((rgb[2] - rgb[0]) / delta) + 2 : ((rgb[0] - rgb[1]) / delta) + 4;
+            hue = Math.round(hue * 60); if (hue < 0) hue += 360;
+        }
+        return [hue, Math.round(saturation * 100), Math.round(lightness * 100)];
+    };
+    const hslToHex = (hsl) => {
+        const [hue, saturation, lightness] = [hsl[0] / 360, hsl[1] / 100, hsl[2] / 100];
+        const chroma = (1 - Math.abs((2 * lightness) - 1)) * saturation;
+        const part = chroma * (1 - Math.abs(((hue * 6) % 2) - 1));
+        const match = hue < 1 / 6 ? [chroma, part, 0] : hue < 2 / 6 ? [part, chroma, 0] : hue < 3 / 6 ? [0, chroma, part] : hue < 4 / 6 ? [0, part, chroma] : hue < 5 / 6 ? [part, 0, chroma] : [chroma, 0, part];
+        const adjustment = lightness - (chroma / 2);
+        return rgbToHex(match.map((channel) => (channel + adjustment) * 255));
+    };
+    const parseColor = (format, value) => {
+        const text = value.trim();
+        if (format === 'hex') return /^#[0-9a-f]{6}$/i.test(text) ? text.toLowerCase() : null;
+        const numbers = text.replace(/^(rgb|hsl)\(|\)$/gi, '').split(/[,\s]+/).filter(Boolean);
+        if (numbers.length !== 3 || numbers.some((number) => !/^-?\d+(?:\.\d+)?%?$/.test(number))) return null;
+        if (format === 'rgb') {
+            const rgb = numbers.map((number) => Number(number.replace('%', '')) * (number.endsWith('%') ? 2.55 : 1));
+            return rgb.every((channel) => channel >= 0 && channel <= 255) ? rgbToHex(rgb) : null;
+        }
+        const hsl = [Number(numbers[0]), Number(numbers[1].replace('%', '')), Number(numbers[2].replace('%', ''))];
+        return hsl[0] >= 0 && hsl[0] <= 360 && hsl[1] >= 0 && hsl[1] <= 100 && hsl[2] >= 0 && hsl[2] <= 100 ? hslToHex(hsl) : null;
+    };
+    const displayColor = (format, hex) => {
+        if (format === 'hex') return hex;
+        if (format === 'rgb') return 'rgb(' + hexToRgb(hex).join(', ') + ')';
+        const hsl = hexToHsl(hex); return 'hsl(' + hsl[0] + ', ' + hsl[1] + '%, ' + hsl[2] + '%)';
+    };
+    colorControls.forEach((control) => {
+        const native = control.querySelector('[data-color-native]');
+        const format = control.querySelector('[data-color-format]');
+        const input = control.querySelector('[data-color-input]');
+        const canonical = control.querySelector('[data-color-canonical]');
+        const syncDisplay = () => { input.value = displayColor(format.value, canonical.value); input.removeAttribute('aria-invalid'); native.value = canonical.value; };
+        format.addEventListener('change', syncDisplay);
+        native.addEventListener('input', () => { canonical.value = native.value.toLowerCase(); syncDisplay(); });
+        input.addEventListener('input', () => { const parsed = parseColor(format.value, input.value); if (parsed === null) { input.setAttribute('aria-invalid', 'true'); return; } canonical.value = parsed; native.value = parsed; input.removeAttribute('aria-invalid'); });
+        syncDisplay();
+    });
+
     const detailList = document.querySelector('[data-system-manager-details]');
     if (detailList) {
         const rows = () => Array.from(detailList.querySelectorAll(':scope > div'));
