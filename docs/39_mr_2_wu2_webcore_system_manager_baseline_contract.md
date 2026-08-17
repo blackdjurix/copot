@@ -8,7 +8,7 @@ WU1: COMPLETE AND CLOSED at docs/38_mr_2_wu1_webcore_admin_view_foundation_contr
 WU2 scope: Webcore System Manager Baseline
 WU2 contract: PROMOTED / CONTRACT LOCKED
 WU2 runtime implementation: TECHNICALLY IMPLEMENTED
-WU2 focused validation: PASSED (environment-limited regression checks noted below)
+WU2 focused validation: PASSED (one unrelated pre-existing Admin UI smoke assertion remains)
 Human UI acceptance: REQUIRED / PENDING
 ```
 
