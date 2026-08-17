@@ -68,13 +68,32 @@ $assert(str_contains($page, 'System Health'), 'System Health area did not render
 $assert(str_contains($page, 'Operational'), 'Authorized health status did not render.');
 $assert(!str_contains($page, 'SystemHealthAggregator'), 'Health presentation contains engine internals.');
 
+$systemPage = $render('resources/views/admin/system-manager.php', [
+    'section' => 'system', 'status' => ['installed_state' => 'committed', 'installed_version' => '0.13.0', 'schema_state_identity' => 'schema-1', 'migration_state_identity' => 'migration-1', 'maintenance' => 'not_required', 'next_action' => 'Update'],
+    'branding' => ['palette' => $resolved], 'localization' => [], 'health' => [], 'modules' => [], 'release' => ['whats_new' => ['Release note']],
+    'systemManagerPath' => '/dapur/settings/system-manager', 'preflightPath' => '/dapur/settings/system-manager/preflight', 'applyPath' => '/dapur/settings/system-manager/apply',
+    'retryPath' => '/dapur/settings/system-manager/retry', 'reconcilePath' => '/dapur/settings/system-manager/reconcile', 'brandingPath' => '/dapur/settings/system-manager/branding',
+    'localizationPath' => '/dapur/settings/system-manager/localization', 'moduleActionPath' => '/dapur/settings/system-manager/modules/action', 'csrfToken' => 'token',
+]);
+$assert(strpos($systemPage, 'system-manager-release-title') < strpos($systemPage, 'system-manager-status-title'), 'System desktop overview order is not What’s New before lifecycle.');
+$assert(strpos($systemPage, 'system-manager-status-title') < strpos($systemPage, 'system-manager-package-title'), 'System Update area is not after the overview.');
+$assert(str_contains($systemPage, 'system-manager-system-overview'), 'System overview composition wrapper is missing.');
+
+$adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
+$assert(str_contains($adminCss, 'grid-template-columns: minmax(10rem, 11rem) minmax(0, 1fr)'), 'Lifecycle fixed label column is missing.');
+$assert(str_contains($adminCss, ".system-manager-status-grid > div {\n        grid-template-columns: 1fr;"), 'Lifecycle mobile stacked treatment is missing.');
+
 $route = (string) file_get_contents($basePath . '/routes/system_manager.php');
+$modulePackageFallback = (string) file_get_contents($basePath . '/app/Core/SystemManagerModulePackageFallback.php');
 $schema = (string) file_get_contents($basePath . '/database/schema.sql');
 $assert(str_contains($route, "add('System Manager'"), 'System Manager navigation registration was removed.');
 $assert(str_contains($schema, "'system.webcore.manage'"), 'Fresh-install schema does not seed the System Manager permission.');
 $assert(str_contains($route, 'SystemManagerBrandingService'), 'Branding authority is not wired to System Manager.');
 $assert(str_contains($route, "SystemManagerRecoveryGate.php"), 'System Manager recovery gate authority is not loadable from the route.');
 $assert(str_contains($route, 'SystemManagerModuleFallback'), 'Conditional Modules fallback is not wired.');
+$assert(str_contains($route, 'SystemManagerModulePackageFallback'), 'System Manager Module package fallback is not wired.');
+$assert(str_contains($modulePackageFallback, 'Module packages must be handled through Module Manager.'), 'Module Manager routing guidance is missing.');
+$assert(!str_contains($route, 'Plugin'), 'Plugin package handling was introduced unexpectedly.');
 $assert(str_contains($route, 'systemHealthReport'), 'System Health report authority is not consumed.');
 $assert(str_contains($route, 'preflightUpload') && str_contains($route, 'executeUpload'), 'Lifecycle intake and execution endpoints are not preserved.');
 $assert(!str_contains($route, 'modules/module-manager'), 'System Manager reaches into Module Manager private files.');

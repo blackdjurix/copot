@@ -7,6 +7,7 @@ use Copot\Core\SystemHealthDashboardConsumer;
 use Copot\Core\SystemManagerBrandingService;
 use Copot\Core\SystemManagerLifecycleService;
 use Copot\Core\SystemManagerModuleFallback;
+use Copot\Core\SystemManagerModulePackageFallback;
 use Copot\Core\SystemManagerPackageUpload;
 use Copot\Core\SystemManagerSettingsService;
 use Copot\Core\UnavailableSystemManagerRecoveryGate;
@@ -31,6 +32,9 @@ $branding = static fn (): SystemManagerBrandingService => new SystemManagerBrand
 $settings = static fn (): SystemManagerSettingsService => new SystemManagerSettingsService($app->settings(), $app->database());
 $moduleFallback = static fn (): SystemManagerModuleFallback => new SystemManagerModuleFallback(
     new ModuleDiscovery($app->path('modules')), new ModuleRepository($app->database())
+);
+$modulePackageFallback = static fn (): SystemManagerModulePackageFallback => new SystemManagerModulePackageFallback(
+    $app, new SystemManagerPackageUpload($app->path('storage/.system-manager-packages'))
 );
 $app->adminNavigation()->add('System Manager', $path, $permission, 'settings', 75);
 
@@ -150,16 +154,26 @@ $app->router()->post($moduleActionPath, function ($request) use ($app, $requireU
     }
 });
 
-$app->router()->post($preflightPath, function ($request) use ($app, $requireUser, $manager) {
+$app->router()->post($preflightPath, function ($request) use ($app, $requireUser, $manager, $moduleFallback, $modulePackageFallback) {
     $user = $requireUser($request); if ($user instanceof Response) return $user;
     if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
-    try { return Response::content(json_encode($manager()->preflightUpload($request->file('package')), JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']); }
+    try {
+        $upload = $request->file('package');
+        $moduleResult = $modulePackageFallback()->preflight($upload, $moduleFallback()->operational());
+        if (is_array($moduleResult)) return Response::content(json_encode($moduleResult, JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']);
+        return Response::content(json_encode($manager()->preflightUpload($upload), JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']);
+    }
     catch (Throwable) { return Response::content(json_encode(['accepted' => false, 'status' => 'invalid_package', 'reason' => 'Package intake failed.']), 422, ['Content-Type' => 'application/json']); }
 });
-$app->router()->post($applyPath, function ($request) use ($app, $requireUser, $manager) {
+$app->router()->post($applyPath, function ($request) use ($app, $requireUser, $manager, $moduleFallback, $modulePackageFallback) {
     $user = $requireUser($request); if ($user instanceof Response) return $user;
     if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
-    try { return Response::content(json_encode($manager()->executeUpload($request->file('package'), (string) $request->post('action', '')), JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']); }
+    try {
+        $upload = $request->file('package');
+        $moduleResult = $modulePackageFallback()->execute($upload, $moduleFallback()->operational(), (string) $request->post('action', ''));
+        if (is_array($moduleResult)) return Response::content(json_encode($moduleResult, JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']);
+        return Response::content(json_encode($manager()->executeUpload($upload, (string) $request->post('action', '')), JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']);
+    }
     catch (Throwable) { return Response::content(json_encode(['accepted' => false, 'status' => 'invalid_package', 'reason' => 'Package intake failed.']), 422, ['Content-Type' => 'application/json']); }
 });
 $app->router()->post($retryPath, function ($request) use ($app, $requireUser, $manager) {

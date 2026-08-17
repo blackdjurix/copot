@@ -107,6 +107,7 @@ final class SystemManagerLifecycleService
             'status' => $result->status(),
             'reason' => $result->accepted() ? '' : 'The package lifecycle request was rejected or is unavailable.',
             'action' => $action,
+            'package_type' => 'copot-webcore',
             'classification' => $data['classification'] ?? null,
             'target_webcore_version' => $data['target_webcore_version'] ?? null,
             'operation_id' => $data['operation_id'] ?? null,

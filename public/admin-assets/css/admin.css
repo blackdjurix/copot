@@ -851,10 +851,15 @@ dd {
     min-width: 0;
 }
 
+.system-manager-system-overview {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--admin-space-6);
+}
+
 .system-manager-status-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--admin-space-4);
+    gap: 0;
     margin: 0;
 }
 
@@ -868,6 +873,17 @@ dd {
     border: 1px solid var(--admin-color-border);
     border-radius: var(--admin-radius-sm);
     background: var(--admin-color-bg);
+}
+
+.system-manager-status-grid > div {
+    grid-template-columns: minmax(10rem, 11rem) minmax(0, 1fr);
+    align-items: baseline;
+    border-width: 0 0 1px;
+    border-radius: 0;
+}
+
+.system-manager-status-grid > div:last-child {
+    border-bottom: 0;
 }
 
 .system-manager-status-grid dt {
@@ -973,10 +989,15 @@ dd {
         flex-direction: column;
     }
 
-    .system-manager-status-grid,
+    .system-manager-system-overview,
     .system-manager-form,
     .system-manager-module-list .admin-status-card {
         grid-template-columns: 1fr;
+    }
+
+    .system-manager-status-grid > div {
+        grid-template-columns: 1fr;
+        gap: var(--admin-space-1);
     }
 
     .system-manager-inline-form {

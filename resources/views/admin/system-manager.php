@@ -23,6 +23,12 @@ $query = static fn (string $name): string => $basePath . '?section=' . rawurlenc
     <?php if ($error !== null): ?><div class="admin-alert admin-alert--error" role="alert"><?= $escape($error) ?></div><?php endif; ?>
 
     <?php if ($activeSection === 'system'): ?>
+        <div class="system-manager-system-overview">
+        <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-release-title">
+            <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-release-title">What’s New</h2><p class="admin-panel__description">Authoritative release metadata included with the Webcore package.</p></div></header>
+            <div class="admin-panel__body"><ul class="system-manager-release-list"><?php foreach ((is_array($release['whats_new'] ?? null) ? $release['whats_new'] : []) as $item): ?><li><?= $escape($item) ?></li><?php endforeach; ?><?php if (empty($release['whats_new'])): ?><li>No release notes were supplied.</li><?php endif; ?></ul></div>
+        </section>
+
         <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-status-title">
             <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-status-title">Webcore lifecycle</h2><p class="admin-panel__description">Review authoritative state and apply a released Webcore package only when the lifecycle engine marks an action eligible.</p></div></header>
             <div class="admin-panel__body">
@@ -39,6 +45,7 @@ $query = static fn (string $name): string => $basePath . '?section=' . rawurlenc
                 <?php endif; ?>
             </div>
         </section>
+        </div>
 
         <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-package-title">
             <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-package-title">Update Webcore</h2><p class="admin-panel__description">Choose a released Webcore ZIP. Preflight derives the eligible lifecycle action before any mutation.</p></div></header>
@@ -54,10 +61,6 @@ $query = static fn (string $name): string => $basePath . '?section=' . rawurlenc
             </div>
         </section>
 
-        <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-release-title">
-            <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-release-title">What’s New</h2><p class="admin-panel__description">Authoritative release metadata included with the Webcore package.</p></div></header>
-            <div class="admin-panel__body"><ul class="system-manager-release-list"><?php foreach ((is_array($release['whats_new'] ?? null) ? $release['whats_new'] : []) as $item): ?><li><?= $escape($item) ?></li><?php endforeach; ?><?php if (empty($release['whats_new'])): ?><li>No release notes were supplied.</li><?php endif; ?></ul></div>
-        </section>
     <?php elseif ($activeSection === 'branding'): ?>
         <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-localization-title">
             <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-localization-title">Localization</h2><p class="admin-panel__description">These values remain registered Core settings. Language is not implemented in WU2.</p></div></header>
