@@ -10,7 +10,10 @@ MR.2 WU1 — Webcore Admin View Foundation is COMPLETE on the integrated
 `main` baseline. The reusable Admin Page Frame remains inside `admin-main`,
 supports only `panel|transparent` surface and `default|none` spacing intent,
 preserves consumer-owned content, and is proven by the Users list consumer and
-focused controlled fixture. WU2 and later MR.2 work remain outside this scope.
+focused controlled fixture. MR.2 WU2 — Webcore System Manager Baseline is now
+promoted as a documentation-only, contract-locked next work unit at
+`docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`; runtime
+implementation has not started.
 
 The older milestone narrative below is retained as historical checkpoint
 context; it does not override the current post-M3 state recorded below.

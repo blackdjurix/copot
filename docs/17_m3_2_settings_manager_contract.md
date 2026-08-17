@@ -35,6 +35,13 @@ Current gaps:
 
 Editable application settings are registered, non-secret values with explicit definitions, defaults, types, validation, and ownership. Initial examples are the existing site identity text and localization values. Logo/Favicon descriptors remain controlled by Site Asset workflows rather than generic JSON fields.
 
+MR.2 WU2 establishes the Webcore System Manager as the always-available
+baseline delivery and authority for Webcore Basic Branding, Localization, and
+system-management fallback. Settings Manager may later provide richer delivery
+for overlapping values, but must not duplicate or take over that Webcore
+authority. WU2's bounded contract is recorded in
+`docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`.
+
 The following are never editable through Settings Manager:
 
 * database host, name, username, or password;

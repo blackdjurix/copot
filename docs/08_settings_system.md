@@ -1,5 +1,13 @@
 # Settings System
 
+The historical M1.7/M3.2 settings boundary remains authoritative for
+registered definitions, typed persistence, validation, and specialized
+Logo/Favicon workflows. MR.2 WU2 now separately authorizes the Webcore-owned
+System Manager baseline to deliver controlled Localization and Basic Branding
+fields, including the Core palette. This does not authorize an arbitrary
+settings editor or allow Settings Manager to take over Webcore baseline
+authority; see `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`.
+
 ## Purpose
 
 M1.7 Settings Foundation provides global settings for one copot installation. Settings is a Core/platform service, not an optional module.
@@ -259,7 +267,8 @@ M1.7 does not include:
 * Cache or server configuration
 * Environment variable editor
 * Logo or favicon upload
-* Core brand palette editing before Branding Foundation and Settings Manager
+* Core brand palette editing outside the approved Webcore System Manager
+  baseline contract
 * Semantic color-mapping editor
 * Theme-specific advanced color settings
 * Custom CSS

@@ -1278,8 +1278,10 @@ integrated `main` baseline. Its authoritative contract is
 `docs/38_mr_2_wu1_webcore_admin_view_foundation_contract.md`. WU1 provides only
 the reusable Webcore-owned Admin Page Frame inside the existing `admin-main`
 boundary, with bounded semantic `surface` and `spacing` intent and preserved
-consumer-owned Content. WU2 and later MR.2 work are separately gated and are
-not implied by WU1 completion.
+consumer-owned Content. MR.2 WU2 — Webcore System Manager Baseline is promoted
+and contract-locked at
+`docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`; runtime
+implementation has not started and remains separately authorized.
 
 ---
 

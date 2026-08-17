@@ -2,9 +2,12 @@
 
 ## Purpose
 
-Branding Foundation defines the future Core color contract shared by Webcore consumers without turning Site Settings into a visual-theme editor.
+Branding Foundation defines the Core color contract shared by Webcore consumers without turning Site Settings into a visual-theme editor. MR.2 WU2 promotes the Webcore Basic Branding baseline and its bounded palette validation/resolution into the Webcore System Manager contract at `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`.
 
-This is a future M2 Platform Capability. It is not implemented by M2.1 Admin UI Foundation, and this document does not approve database schema or runtime-setting changes.
+The original M2 foundation text below remains the historical foundation
+boundary. MR.2 WU2 is the separately approved delivery contract for the
+Webcore Basic Branding baseline; it does not authorize a universal Theme
+engine, generic color system, or unbounded runtime-setting change.
 
 ---
 
@@ -16,8 +19,11 @@ Branding responsibilities are split deliberately:
 Core Branding Foundation
 -> stable palette and default semantic contract
 
+Webcore System Manager
+-> edits the Webcore Basic Branding baseline values
+
 Settings Manager
--> edits Core palette values
+-> may later provide richer delivery without taking over Webcore authority
 
 Theme + Theme Manager
 -> active-theme-scoped overrides and advanced presentation controls
@@ -92,7 +98,10 @@ M2.1 Admin UI Foundation uses internal Admin UI color tokens only.
 
 Admin UI does not currently read Site Branding, the Core palette, or frontend Theme settings. The dark-navigation and light-content baseline remains an Admin-owned, contrast-safe operational design.
 
-Future Admin UI integration with brand color is deferred. If approved later, it must be limited, explicit, contrast-safe, and must not make Admin UI dependent on the active frontend Theme.
+MR.2 WU2 may add only the explicit, contrast-safe Admin identity baseline
+(Logo/Text and a selection from the four Core palette values). Admin UI remains
+independent from the active frontend Theme and retains its own internal tokens;
+advanced Admin branding integration remains deferred.
 
 ---
 
@@ -104,19 +113,24 @@ Future Admin UI integration with brand color is deferred. If approved later, it 
 * Batch 1 Admin URL and Page Rendering is complete.
 * Batch 2 Shared Assets and Shell Baseline is complete.
 * Batch 3 Core Admin Patterns is the current focus.
-* No Site Branding integration.
+* Historical M2.1 boundary; WU2 separately defines the bounded System Manager
+  Basic Branding and Admin identity integration.
 
-### Future M2 Branding Foundation
+### MR.2 WU2 Webcore System Manager Baseline
 
 * Core four-color palette contract.
 * Locked default semantic mapping.
 * Palette validation.
 * Safe fallback behavior.
+* Contrast-aware Neutral Dark / Neutral Light resolution for required foreground
+  relationships.
+* Basic Branding Site Name, Tagline, Logo, Favicon, and Admin identity baseline.
 * Consumer contract.
 
 ### M3 Settings Manager
 
-* UI for editing the four Core palette values.
+* A richer settings/branding delivery may be added only while preserving the
+  Webcore System Manager authority and fallback.
 * No Site Settings editor for the locked semantic mapping.
 
 ### M3 Theme Manager
@@ -151,7 +165,7 @@ The base Branding Foundation does not include:
 * advanced theme color settings;
 * Custom CSS;
 * Admin UI theme coupling;
-* logo, favicon, social-image, email, document, or white-label management;
+* social-image, email, document, or white-label management;
 * multi-brand or per-tenant branding;
 * a database schema decision before the milestone is approved.
 
