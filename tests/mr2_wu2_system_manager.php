@@ -95,6 +95,7 @@ $assert(isset($detailRule[1]) && !str_contains($detailRule[1], 'border'), 'Lifec
 $systemJs = (string) file_get_contents($basePath . '/public/admin-assets/js/system-manager.js');
 $assert(str_contains($systemJs, 'ResizeObserver') && str_contains($systemJs, 'is-stacked'), 'Lifecycle content-fit switching is missing.');
 $assert(str_contains($systemJs, 'MutationObserver'), 'Lifecycle content changes do not trigger re-evaluation.');
+$assert(str_contains($systemJs, 'payload.guidance'), 'Module completion guidance is not rendered by package feedback.');
 
 $route = (string) file_get_contents($basePath . '/routes/system_manager.php');
 $modulePackageFallback = (string) file_get_contents($basePath . '/app/Core/SystemManagerModulePackageFallback.php');
@@ -102,10 +103,13 @@ $schema = (string) file_get_contents($basePath . '/database/schema.sql');
 $assert(str_contains($route, "add('System Manager'"), 'System Manager navigation registration was removed.');
 $assert(str_contains($schema, "'system.webcore.manage'"), 'Fresh-install schema does not seed the System Manager permission.');
 $assert(str_contains($route, 'SystemManagerBrandingService'), 'Branding authority is not wired to System Manager.');
+$assert(str_contains($route, 'admin-settings-tabs-wrap') && str_contains($route, 'admin-settings-tab'), 'System Manager navigation does not reuse the Settings tab pattern.');
+$assert(!str_contains($route, 'class="admin-tabs"'), 'System Manager still uses the button-style tab pattern.');
 $assert(str_contains($route, "SystemManagerRecoveryGate.php"), 'System Manager recovery gate authority is not loadable from the route.');
 $assert(str_contains($route, 'SystemManagerModuleFallback'), 'Conditional Modules fallback is not wired.');
 $assert(str_contains($route, 'SystemManagerModulePackageFallback'), 'System Manager Module package fallback is not wired.');
 $assert(str_contains($modulePackageFallback, 'Module packages must be handled through Module Manager.'), 'Module Manager routing guidance is missing.');
+$assert(str_contains($modulePackageFallback, 'Fresh Module install completed') && str_contains($modulePackageFallback, 'ModuleTransitionPlan::INSTALL'), 'Fresh Module install guidance is missing or not classification-gated.');
 $assert(!str_contains($route, 'Plugin'), 'Plugin package handling was introduced unexpectedly.');
 $assert(str_contains($route, 'systemHealthReport'), 'System Health report authority is not consumed.');
 $assert(str_contains($route, 'preflightUpload') && str_contains($route, 'executeUpload'), 'Lifecycle intake and execution endpoints are not preserved.');

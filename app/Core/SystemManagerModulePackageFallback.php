@@ -24,7 +24,7 @@ final class SystemManagerModulePackageFallback
             return $this->rejected($contract->moduleIdentity()->value());
         }
 
-        return [
+        $result = [
             'accepted' => true,
             'status' => 'ready',
             'reason' => '',
@@ -33,6 +33,10 @@ final class SystemManagerModulePackageFallback
             'module' => $contract->moduleIdentity()->value(),
             'title' => $contract->title(),
         ];
+        if ($classification === ModuleTransitionPlan::INSTALL) {
+            $result['guidance'] = 'Fresh Module install completed. Open the Modules tab to review the installed Module and available actions.';
+        }
+        return $result;
     }
 
     public function execute(?array $upload, bool $moduleManagerOperational, string $requestedAction): ?array

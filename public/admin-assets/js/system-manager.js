@@ -52,6 +52,11 @@
         const detail = document.createElement('p');
         detail.textContent = [payload.status, payload.action, payload.reason].filter(Boolean).join(' · ');
         result.append(heading, detail);
+        if (payload.guidance) {
+            const guidance = document.createElement('p');
+            guidance.textContent = payload.guidance;
+            result.appendChild(guidance);
+        }
     };
 
     form.addEventListener('submit', async (event) => {
