@@ -79,6 +79,54 @@ class SettingsRegistry
                 )
             ),
             new SettingDefinition(
+                'branding',
+                'main',
+                'string',
+                WebcoreBranding::defaults()['main'],
+                static fn (string $value): bool => WebcoreBranding::isHexColor($value),
+                metadata: ['max_length' => 7, 'internal' => true]
+            ),
+            new SettingDefinition(
+                'branding',
+                'accent',
+                'string',
+                WebcoreBranding::defaults()['accent'],
+                static fn (string $value): bool => WebcoreBranding::isHexColor($value),
+                metadata: ['max_length' => 7, 'internal' => true]
+            ),
+            new SettingDefinition(
+                'branding',
+                'neutral-dark',
+                'string',
+                WebcoreBranding::defaults()['neutral-dark'],
+                static fn (string $value): bool => WebcoreBranding::isHexColor($value),
+                metadata: ['max_length' => 7, 'internal' => true]
+            ),
+            new SettingDefinition(
+                'branding',
+                'neutral-light',
+                'string',
+                WebcoreBranding::defaults()['neutral-light'],
+                static fn (string $value): bool => WebcoreBranding::isHexColor($value),
+                metadata: ['max_length' => 7, 'internal' => true]
+            ),
+            new SettingDefinition(
+                'admin',
+                'identity_mode',
+                'string',
+                'text',
+                allowedValues: WebcoreBranding::IDENTITY_MODES,
+                metadata: ['internal' => true]
+            ),
+            new SettingDefinition(
+                'admin',
+                'identity_color',
+                'string',
+                'neutral-light',
+                allowedValues: WebcoreBranding::IDENTITY_COLORS,
+                metadata: ['internal' => true]
+            ),
+            new SettingDefinition(
                 'localization',
                 'timezone',
                 'string',

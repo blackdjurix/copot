@@ -3,6 +3,7 @@
 namespace Copot\Core\Admin;
 
 use Copot\Core\AdminNavigation;
+use Copot\Core\SiteBranding;
 use Copot\Core\User;
 use Copot\Core\View;
 
@@ -17,7 +18,8 @@ class AdminPageRenderer
         private string $appName,
         private string $siteName,
         private string $documentLocale = 'en',
-        ?AdminIcon $icons = null
+        ?AdminIcon $icons = null,
+        private ?SiteBranding $branding = null
     ) {
         $this->icons = $icons ?? new AdminIcon();
     }
@@ -43,6 +45,7 @@ class AdminPageRenderer
             'title' => $title,
             'appName' => $this->appName,
             'siteName' => $this->siteName,
+            'adminBranding' => $this->branding,
             'documentLocale' => $this->documentLocale(),
             'adminBaseUrl' => $this->adminUrl->baseUrl(),
             'adminLogoutUrl' => $this->adminUrl->childUrl('logout'),

@@ -22,6 +22,13 @@ $normalizePath = static function (mixed $path): string {
 $normalizedCurrentPath = $normalizePath($currentPath ?? '');
 $normalizedAdminBase = $normalizePath($adminBaseUrl ?? '');
 $isAdminRoot = $normalizedCurrentPath !== '' && $normalizedCurrentPath === $normalizedAdminBase;
+$adminBranding = $adminBranding ?? null;
+$adminBrandingMode = $adminBranding?->identityMode() ?? 'text';
+$adminBrandingLogo = $adminBrandingMode === 'logo' ? $adminBranding?->logoUrl() : null;
+$adminBrandingTextColor = $adminBranding?->identityColorValue();
+$adminBrandingStyle = is_string($adminBrandingTextColor) && preg_match('/^#[0-9a-fA-F]{6}$/D', $adminBrandingTextColor) === 1
+    ? '--admin-brand-identity-color:' . strtolower($adminBrandingTextColor)
+    : '';
 ?>
 <!doctype html>
 <html lang="<?= htmlspecialchars($documentLocale ?? 'en', ENT_QUOTES, 'UTF-8') ?>">
@@ -53,11 +60,19 @@ $isAdminRoot = $normalizedCurrentPath !== '' && $normalizedCurrentPath === $norm
 
             <div class="admin-brand">
                 <a class="admin-brand-link" href="<?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?>">
-                    <span class="admin-brand-icon" aria-hidden="true">
-                        <?= $icon('modules', 'admin-brand-icon__svg') ?>
-                    </span>
+                    <?php if ($adminBrandingLogo !== null): ?>
+                        <img class="admin-brand-logo" src="<?= htmlspecialchars($adminBrandingLogo, ENT_QUOTES, 'UTF-8') ?>" alt="">
+                    <?php else: ?>
+                        <span class="admin-brand-icon" aria-hidden="true">
+                            <?= $icon('modules', 'admin-brand-icon__svg') ?>
+                        </span>
+                    <?php endif; ?>
                     <span class="admin-brand-copy">
-                        <span class="admin-brand-title"><?= htmlspecialchars($appName ?? 'Copot', ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php if ($adminBrandingLogo === null || $adminBrandingMode === 'text'): ?>
+                            <span class="admin-brand-title"<?= $adminBrandingStyle !== '' ? ' style="' . htmlspecialchars($adminBrandingStyle, ENT_QUOTES, 'UTF-8') . '"' : '' ?>><?= htmlspecialchars($adminBranding?->name() ?? $siteName ?? 'copot', ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php else: ?>
+                            <span class="admin-brand-title admin-brand-title--visually-hidden"><?= htmlspecialchars($adminBranding?->name() ?? $siteName ?? 'copot', ENT_QUOTES, 'UTF-8') ?></span>
+                        <?php endif; ?>
                         <span class="admin-brand-meta"><?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?></span>
                     </span>
                 </a>

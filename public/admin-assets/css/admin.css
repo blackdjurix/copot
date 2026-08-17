@@ -309,6 +309,30 @@ dd {
     font-weight: 800;
 }
 
+.admin-brand-title[style] {
+    color: var(--admin-brand-identity-color);
+}
+
+.admin-brand-title--visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.admin-brand-logo {
+    display: block;
+    width: auto;
+    max-width: 132px;
+    height: 36px;
+    object-fit: contain;
+}
+
 .admin-brand-meta {
     margin: var(--admin-space-1) 0 0;
     color: var(--admin-color-navigation-muted);
@@ -818,10 +842,145 @@ dd {
     border-top: 1px solid var(--admin-color-border);
 }
 
+.system-manager-workspace {
+    display: grid;
+    gap: var(--admin-space-6);
+}
+
+.system-manager-panel {
+    min-width: 0;
+}
+
+.system-manager-status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--admin-space-4);
+    margin: 0;
+}
+
+.system-manager-status-grid > div,
+.admin-status-card,
+.system-health-overview {
+    display: grid;
+    gap: var(--admin-space-1);
+    min-width: 0;
+    padding: var(--admin-space-4);
+    border: 1px solid var(--admin-color-border);
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-color-bg);
+}
+
+.system-manager-status-grid dt {
+    color: var(--admin-color-muted);
+    font-size: 13px;
+}
+
+.system-manager-status-grid dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-weight: 700;
+}
+
+.system-manager-form,
+.system-manager-upload,
+.system-manager-inline-form {
+    display: grid;
+    gap: var(--admin-space-4);
+}
+
+.system-manager-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.system-manager-form > button,
+.system-manager-form > .admin-field__help,
+.system-manager-upload > button {
+    grid-column: 1 / -1;
+    justify-self: start;
+}
+
+.system-manager-inline-form {
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin-top: var(--admin-space-5);
+}
+
+.system-manager-result {
+    display: grid;
+    gap: var(--admin-space-2);
+    margin-top: var(--admin-space-5);
+    padding: var(--admin-space-4);
+    border: 1px solid var(--admin-color-info-border);
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-color-info-soft);
+}
+
+.system-manager-release-list,
+.system-manager-findings,
+.system-manager-producers {
+    display: grid;
+    gap: var(--admin-space-3);
+    margin: 0;
+    padding-left: 20px;
+}
+
+.system-manager-module-list {
+    display: grid;
+    gap: var(--admin-space-4);
+}
+
+.system-manager-module-list .admin-status-card {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+}
+
+.system-manager-module-list h3,
+.system-health-overview strong {
+    margin: 0;
+}
+
+.system-manager-module-list p {
+    margin: 0;
+    color: var(--admin-color-muted);
+}
+
+.admin-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--admin-space-2);
+}
+
+.admin-tab {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--admin-control-height);
+    padding: 0 var(--admin-space-4);
+    border: 1px solid var(--admin-color-border);
+    border-radius: var(--admin-radius-sm);
+    color: var(--admin-color-text);
+    background: var(--admin-color-surface);
+    text-decoration: none;
+}
+
+.admin-tab.is-active {
+    border-color: var(--admin-color-primary);
+    color: var(--admin-color-primary-contrast);
+    background: var(--admin-color-primary);
+}
+
 @media (max-width: 560px) {
     .admin-page-frame--spacing-default .admin-page-frame__header,
     .admin-page-frame--spacing-none .admin-page-frame__header {
         flex-direction: column;
+    }
+
+    .system-manager-status-grid,
+    .system-manager-form,
+    .system-manager-module-list .admin-status-card {
+        grid-template-columns: 1fr;
+    }
+
+    .system-manager-inline-form {
+        grid-template-columns: 1fr;
     }
 }
 

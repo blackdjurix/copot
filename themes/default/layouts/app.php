@@ -11,7 +11,7 @@
         <link rel="stylesheet" href="<?= htmlspecialchars($themeAsset('css/app.css'), ENT_QUOTES, 'UTF-8') ?>">
     <?php endif; ?>
 </head>
-<body>
+<body<?= ($branding?->cssVariables() ?? '') !== '' ? ' style="' . htmlspecialchars($branding->cssVariables(), ENT_QUOTES, 'UTF-8') . '"' : '' ?>>
     <header class="site-header">
         <div class="site-header__inner">
             <?php if ($branding?->logoUrl() !== null): ?>

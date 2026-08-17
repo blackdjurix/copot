@@ -122,7 +122,8 @@ class Application
             (string) $this->config->get('app.name', 'Copot'),
             $this->siteName,
             $this->locale,
-            new AdminIcon($this->deployment->publicPath('admin-assets/icons'))
+            new AdminIcon($this->deployment->publicPath('admin-assets/icons')),
+            $this->branding
         );
         $adminPermission = $this->config->get('admin.permission', 'admin.access');
 
@@ -419,7 +420,10 @@ class Application
             $this->siteName,
             $siteTagline,
             $this->siteAssets->url('logo'),
-            $this->siteAssets->url('favicon')
+            $this->siteAssets->url('favicon'),
+            (new SystemManagerBrandingService($this->settings, $this->database))->effective()['palette'],
+            (string) $this->settings->get('admin', 'identity_mode', 'text'),
+            (string) $this->settings->get('admin', 'identity_color', 'neutral-light')
         );
     }
 

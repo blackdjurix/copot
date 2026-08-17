@@ -89,6 +89,11 @@ class SettingsService
             ))
             : $this->registry->all($namespace);
 
+        $definitions = array_values(array_filter(
+            $definitions,
+            static fn (SettingDefinition $definition): bool => !$definition->isInternal()
+        ));
+
         usort(
             $definitions,
             static fn (SettingDefinition $left, SettingDefinition $right): int =>

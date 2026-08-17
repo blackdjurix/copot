@@ -10,6 +10,10 @@ final class PackageLifecycleStatus
             'accepted' => true,
             'installed_state' => $inspection->status(),
             'reason' => $inspection->reason(),
+            'installed_version' => $inspection->snapshot()?->webcoreVersion(),
+            'installed_at' => $inspection->snapshot()?->installedAt()->format(DATE_ATOM),
+            'schema_state_identity' => $inspection->snapshot()?->schemaStateIdentity(),
+            'migration_state_identity' => $inspection->snapshot()?->migrationStateIdentity(),
             'maintenance' => $record instanceof LifecycleOperationRecord && !$record->isTerminal() ? 'active' : 'inactive',
             'operation' => $record instanceof LifecycleOperationRecord ? [
                 'state' => $operationState,

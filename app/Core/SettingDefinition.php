@@ -73,6 +73,11 @@ class SettingDefinition
         return $this->metadata;
     }
 
+    public function isInternal(): bool
+    {
+        return ($this->metadata['internal'] ?? false) === true;
+    }
+
     public function validate(mixed $value): void
     {
         if ($this->allowedValues !== [] && !in_array($value, $this->allowedValues, true)) {
