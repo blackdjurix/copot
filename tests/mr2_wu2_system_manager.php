@@ -69,7 +69,9 @@ $assert(str_contains($page, 'Operational'), 'Authorized health status did not re
 $assert(!str_contains($page, 'SystemHealthAggregator'), 'Health presentation contains engine internals.');
 
 $route = (string) file_get_contents($basePath . '/routes/system_manager.php');
+$schema = (string) file_get_contents($basePath . '/database/schema.sql');
 $assert(str_contains($route, "add('System Manager'"), 'System Manager navigation registration was removed.');
+$assert(str_contains($schema, "'system.webcore.manage'"), 'Fresh-install schema does not seed the System Manager permission.');
 $assert(str_contains($route, 'SystemManagerBrandingService'), 'Branding authority is not wired to System Manager.');
 $assert(str_contains($route, 'SystemManagerModuleFallback'), 'Conditional Modules fallback is not wired.');
 $assert(str_contains($route, 'systemHealthReport'), 'System Health report authority is not consumed.');
