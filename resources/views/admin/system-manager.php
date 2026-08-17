@@ -32,17 +32,17 @@ $query = static fn (string $name): string => $basePath . '?section=' . rawurlenc
         <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-status-title">
             <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-status-title">Webcore lifecycle</h2><p class="admin-panel__description">Review authoritative state and apply a released Webcore package only when the lifecycle engine marks an action eligible.</p></div></header>
             <div class="admin-panel__body">
-                <dl class="system-manager-status-grid">
+                <dl class="system-manager-status-grid system-manager-status-grid--inline">
                     <div><dt>Installed state</dt><dd><?= $escape($status['installed_state'] ?? 'Unavailable') ?></dd></div>
                     <div><dt>Webcore version</dt><dd><?= $escape($status['installed_version'] ?? 'Not available') ?></dd></div>
                     <div><dt>Schema state</dt><dd><?= $escape($status['schema_state_identity'] ?? 'Not available') ?></dd></div>
                     <div><dt>Migration state</dt><dd><?= $escape($status['migration_state_identity'] ?? 'Not available') ?></dd></div>
                     <div><dt>Maintenance</dt><dd><?= $escape($status['maintenance'] ?? 'Unavailable') ?></dd></div>
                     <div><dt>Next valid action</dt><dd><?= $escape($status['next_action'] ?? 'None reported') ?></dd></div>
+                    <?php if (is_array($status['operation'] ?? null)): ?>
+                        <div><dt>Current operation</dt><dd><span class="admin-badge admin-badge--info" data-status="<?= $escape($status['operation']['state'] ?? 'unknown') ?>"><?= $escape($status['operation']['classification'] ?? 'Unknown') ?> · <?= $escape($status['operation']['phase'] ?? 'Unknown phase') ?></span></dd></div>
+                    <?php endif; ?>
                 </dl>
-                <?php if (is_array($status['operation'] ?? null)): ?>
-                    <div class="admin-status-card" data-status="<?= $escape($status['operation']['state'] ?? 'unknown') ?>"><strong>Current operation</strong><span><?= $escape($status['operation']['classification'] ?? 'Unknown') ?> · <?= $escape($status['operation']['phase'] ?? 'Unknown phase') ?></span></div>
-                <?php endif; ?>
             </div>
         </section>
         </div>

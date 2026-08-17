@@ -81,7 +81,9 @@ $assert(str_contains($systemPage, 'system-manager-system-overview'), 'System ove
 
 $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
 $assert(str_contains($adminCss, 'grid-template-columns: minmax(10rem, 11rem) minmax(0, 1fr)'), 'Lifecycle fixed label column is missing.');
-$assert(str_contains($adminCss, ".system-manager-status-grid > div {\n        grid-template-columns: 1fr;"), 'Lifecycle mobile stacked treatment is missing.');
+$assert(str_contains($adminCss, '.system-manager-status-grid > div {') && str_contains($adminCss, 'grid-template-columns: 1fr;'), 'Lifecycle mobile stacked treatment is missing.');
+$assert(!str_contains($adminCss, ".system-manager-status-grid > div,\n.admin-status-card"), 'Lifecycle detail rows must not share card styling.');
+$assert(str_contains($systemPage, 'system-manager-status-grid--inline'), 'Lifecycle detail-list layout marker is missing.');
 
 $route = (string) file_get_contents($basePath . '/routes/system_manager.php');
 $modulePackageFallback = (string) file_get_contents($basePath . '/app/Core/SystemManagerModulePackageFallback.php');
