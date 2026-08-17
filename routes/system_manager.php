@@ -11,6 +11,8 @@ use Copot\Core\SystemManagerPackageUpload;
 use Copot\Core\SystemManagerSettingsService;
 use Copot\Core\UnavailableSystemManagerRecoveryGate;
 
+require_once $app->path('app/Core/SystemManagerRecoveryGate.php');
+
 $adminUrl = $app->adminUrl();
 $path = $adminUrl->childUrl('settings/system-manager');
 $preflightPath = $path . '/preflight';

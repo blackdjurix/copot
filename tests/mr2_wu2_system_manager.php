@@ -73,6 +73,7 @@ $schema = (string) file_get_contents($basePath . '/database/schema.sql');
 $assert(str_contains($route, "add('System Manager'"), 'System Manager navigation registration was removed.');
 $assert(str_contains($schema, "'system.webcore.manage'"), 'Fresh-install schema does not seed the System Manager permission.');
 $assert(str_contains($route, 'SystemManagerBrandingService'), 'Branding authority is not wired to System Manager.');
+$assert(str_contains($route, "SystemManagerRecoveryGate.php"), 'System Manager recovery gate authority is not loadable from the route.');
 $assert(str_contains($route, 'SystemManagerModuleFallback'), 'Conditional Modules fallback is not wired.');
 $assert(str_contains($route, 'systemHealthReport'), 'System Health report authority is not consumed.');
 $assert(str_contains($route, 'preflightUpload') && str_contains($route, 'executeUpload'), 'Lifecycle intake and execution endpoints are not preserved.');
