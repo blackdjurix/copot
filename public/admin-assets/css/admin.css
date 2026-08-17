@@ -851,6 +851,12 @@ dd {
     min-width: 0;
 }
 
+.system-manager-update-bar {
+    border: 1px solid var(--admin-color-border);
+    background: transparent;
+    box-shadow: none;
+}
+
 .system-manager-system-overview {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -880,15 +886,15 @@ dd {
     align-items: baseline;
     gap: var(--admin-space-4);
     padding: var(--admin-space-2) 0;
-    border-bottom: 1px solid var(--admin-color-border);
 }
 
 .system-manager-status-grid > div:first-child {
     padding-top: 0;
 }
 
-.system-manager-status-grid > div:last-child {
-    border-bottom: 0;
+.system-manager-status-grid.is-stacked > div {
+    grid-template-columns: 1fr;
+    gap: var(--admin-space-1);
 }
 
 .system-manager-status-grid dt {
@@ -998,11 +1004,6 @@ dd {
     .system-manager-form,
     .system-manager-module-list .admin-status-card {
         grid-template-columns: 1fr;
-    }
-
-    .system-manager-status-grid > div {
-        grid-template-columns: 1fr;
-        gap: var(--admin-space-1);
     }
 
     .system-manager-inline-form {

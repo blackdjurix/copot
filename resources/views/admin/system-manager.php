@@ -23,6 +23,20 @@ $query = static fn (string $name): string => $basePath . '?section=' . rawurlenc
     <?php if ($error !== null): ?><div class="admin-alert admin-alert--error" role="alert"><?= $escape($error) ?></div><?php endif; ?>
 
     <?php if ($activeSection === 'system'): ?>
+        <section class="admin-panel system-manager-panel system-manager-update-bar" aria-labelledby="system-manager-package-title">
+            <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-package-title">Update Webcore</h2><p class="admin-panel__description">Choose a released ZIP. Preflight derives the eligible lifecycle action before any mutation.</p></div></header>
+            <div class="admin-panel__body">
+                <form class="system-manager-upload" method="post" enctype="multipart/form-data" action="<?= $escape($preflightPath ?? '') ?>" data-apply-action="<?= $escape($applyPath ?? '') ?>" data-system-manager-upload>
+                    <input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>">
+                    <label class="admin-field"><span class="admin-field__label">Released Webcore or Module ZIP</span><input type="file" name="package" accept="application/zip,.zip" required data-system-manager-package><span class="admin-field__help">Online discovery and download are not part of this baseline.</span></label>
+                    <button class="admin-button admin-button--primary" type="submit">Preflight package</button>
+                </form>
+                <div class="system-manager-result" data-system-manager-result hidden aria-live="polite"></div>
+                <?php if (($status['reconciliation_available'] ?? false) === true): ?><form method="post" action="<?= $escape($reconcilePath ?? '') ?>" class="system-manager-inline-form"><input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>"><input type="hidden" name="confirmed" value="1"><input name="package_path" type="text" placeholder="Approved package path" required><button class="admin-button admin-button--secondary" type="submit">Reconcile</button></form><?php endif; ?>
+                <?php if (is_array($status['operation'] ?? null) && !empty($status['operation']['operation_id'])): ?><form method="post" action="<?= $escape($retryPath ?? '') ?>" class="system-manager-inline-form"><input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>"><input type="hidden" name="operation_id" value="<?= $escape($status['operation']['operation_id']) ?>"><button class="admin-button admin-button--secondary" type="submit">Retry eligible operation</button></form><?php endif; ?>
+            </div>
+        </section>
+
         <div class="system-manager-system-overview">
         <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-release-title">
             <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-release-title">What’s New</h2><p class="admin-panel__description">Authoritative release metadata included with the Webcore package.</p></div></header>
@@ -32,7 +46,7 @@ $query = static fn (string $name): string => $basePath . '?section=' . rawurlenc
         <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-status-title">
             <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-status-title">Webcore lifecycle</h2><p class="admin-panel__description">Review authoritative state and apply a released Webcore package only when the lifecycle engine marks an action eligible.</p></div></header>
             <div class="admin-panel__body">
-                <dl class="system-manager-status-grid system-manager-status-grid--inline">
+                <dl class="system-manager-status-grid system-manager-status-grid--inline" data-system-manager-details>
                     <div><dt>Installed state</dt><dd><?= $escape($status['installed_state'] ?? 'Unavailable') ?></dd></div>
                     <div><dt>Webcore version</dt><dd><?= $escape($status['installed_version'] ?? 'Not available') ?></dd></div>
                     <div><dt>Schema state</dt><dd><?= $escape($status['schema_state_identity'] ?? 'Not available') ?></dd></div>
@@ -46,20 +60,6 @@ $query = static fn (string $name): string => $basePath . '?section=' . rawurlenc
             </div>
         </section>
         </div>
-
-        <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-package-title">
-            <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="system-manager-package-title">Update Webcore</h2><p class="admin-panel__description">Choose a released Webcore ZIP. Preflight derives the eligible lifecycle action before any mutation.</p></div></header>
-            <div class="admin-panel__body">
-                <form class="system-manager-upload" method="post" enctype="multipart/form-data" action="<?= $escape($preflightPath ?? '') ?>" data-apply-action="<?= $escape($applyPath ?? '') ?>" data-system-manager-upload>
-                    <input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>">
-                    <label class="admin-field"><span class="admin-field__label">Released Webcore ZIP</span><input type="file" name="package" accept="application/zip,.zip" required data-system-manager-package><span class="admin-field__help">Online discovery and download are not part of this baseline.</span></label>
-                    <button class="admin-button admin-button--primary" type="submit">Preflight package</button>
-                </form>
-                <div class="system-manager-result" data-system-manager-result hidden aria-live="polite"></div>
-                <?php if (($status['reconciliation_available'] ?? false) === true): ?><form method="post" action="<?= $escape($reconcilePath ?? '') ?>" class="system-manager-inline-form"><input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>"><input type="hidden" name="confirmed" value="1"><input name="package_path" type="text" placeholder="Approved package path" required><button class="admin-button admin-button--secondary" type="submit">Reconcile</button></form><?php endif; ?>
-                <?php if (is_array($status['operation'] ?? null) && !empty($status['operation']['operation_id'])): ?><form method="post" action="<?= $escape($retryPath ?? '') ?>" class="system-manager-inline-form"><input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>"><input type="hidden" name="operation_id" value="<?= $escape($status['operation']['operation_id']) ?>"><button class="admin-button admin-button--secondary" type="submit">Retry eligible operation</button></form><?php endif; ?>
-            </div>
-        </section>
 
     <?php elseif ($activeSection === 'branding'): ?>
         <section class="admin-panel system-manager-panel" aria-labelledby="system-manager-localization-title">

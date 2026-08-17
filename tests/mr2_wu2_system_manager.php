@@ -75,15 +75,22 @@ $systemPage = $render('resources/views/admin/system-manager.php', [
     'retryPath' => '/dapur/settings/system-manager/retry', 'reconcilePath' => '/dapur/settings/system-manager/reconcile', 'brandingPath' => '/dapur/settings/system-manager/branding',
     'localizationPath' => '/dapur/settings/system-manager/localization', 'moduleActionPath' => '/dapur/settings/system-manager/modules/action', 'csrfToken' => 'token',
 ]);
+$assert(strpos($systemPage, 'system-manager-package-title') < strpos($systemPage, 'system-manager-release-title'), 'System Update bar is not before the information cards.');
 $assert(strpos($systemPage, 'system-manager-release-title') < strpos($systemPage, 'system-manager-status-title'), 'System desktop overview order is not What’s New before lifecycle.');
-$assert(strpos($systemPage, 'system-manager-status-title') < strpos($systemPage, 'system-manager-package-title'), 'System Update area is not after the overview.');
 $assert(str_contains($systemPage, 'system-manager-system-overview'), 'System overview composition wrapper is missing.');
+$assert(str_contains($systemPage, 'data-system-manager-details'), 'Lifecycle content-fit detail list hook is missing.');
 
 $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
 $assert(str_contains($adminCss, 'grid-template-columns: minmax(10rem, 11rem) minmax(0, 1fr)'), 'Lifecycle fixed label column is missing.');
 $assert(str_contains($adminCss, '.system-manager-status-grid > div {') && str_contains($adminCss, 'grid-template-columns: 1fr;'), 'Lifecycle mobile stacked treatment is missing.');
 $assert(!str_contains($adminCss, ".system-manager-status-grid > div,\n.admin-status-card"), 'Lifecycle detail rows must not share card styling.');
 $assert(str_contains($systemPage, 'system-manager-status-grid--inline'), 'Lifecycle detail-list layout marker is missing.');
+$detailRule = [];
+preg_match('/\\.system-manager-status-grid > div \\{(.*?)\\}/s', $adminCss, $detailRule);
+$assert(isset($detailRule[1]) && !str_contains($detailRule[1], 'border'), 'Lifecycle rows must not have per-row borders.');
+$systemJs = (string) file_get_contents($basePath . '/public/admin-assets/js/system-manager.js');
+$assert(str_contains($systemJs, 'ResizeObserver') && str_contains($systemJs, 'is-stacked'), 'Lifecycle content-fit switching is missing.');
+$assert(str_contains($systemJs, 'MutationObserver'), 'Lifecycle content changes do not trigger re-evaluation.');
 
 $route = (string) file_get_contents($basePath . '/routes/system_manager.php');
 $modulePackageFallback = (string) file_get_contents($basePath . '/app/Core/SystemManagerModulePackageFallback.php');
