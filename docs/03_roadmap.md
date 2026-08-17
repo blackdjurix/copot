@@ -1271,6 +1271,16 @@ The reusable requirements are defined in `docs/19_m3_admin_shell_design_adjustme
 
 These checkpoints are horizontal design-governance work units and are not included in the 59 domain implementation batches unless a future approved planning decision explicitly changes the accounting model.
 
+## MR.2 Webcore Admin Refinement
+
+MR.2 WU1 — Webcore Admin View Foundation is COMPLETE AND CLOSED on the
+integrated `main` baseline. Its authoritative contract is
+`docs/38_mr_2_wu1_webcore_admin_view_foundation_contract.md`. WU1 provides only
+the reusable Webcore-owned Admin Page Frame inside the existing `admin-main`
+boundary, with bounded semantic `surface` and `spacing` intent and preserved
+consumer-owned Content. WU2 and later MR.2 work are separately gated and are
+not implied by WU1 completion.
+
 ---
 
 ## Historical M3 Core Modules Context

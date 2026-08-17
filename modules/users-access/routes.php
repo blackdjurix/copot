@@ -89,14 +89,16 @@ $usersRenderAdmin = static function (
     string $content,
     $user,
     string $currentPath,
-    int $status = 200
+    int $status = 200,
+    ?array $pageFrame = null
 ) use ($app): Response {
     return Response::html($app->adminPageRenderer()->render(
         $title,
         $content,
         $user,
         $app->session()->csrfToken(),
-        $currentPath
+        $currentPath,
+        $pageFrame
     ), $status);
 };
 
@@ -210,7 +212,8 @@ $app->router()->get($usersAdminUrl('users'), function ($request) use (
     $usersRepository,
     $usersRequireAdmin,
     $usersRenderAdmin,
-    $usersRenderView
+    $usersRenderView,
+    $usersAdminUrl
 ): Response {
     $user = $usersRequireAdmin($request, ['users.read']);
 
@@ -229,7 +232,15 @@ $app->router()->get($usersAdminUrl('users'), function ($request) use (
         'canCreate' => $user->can('users.create'),
     ]);
 
-    return $usersRenderAdmin('Users', $content, $user, $request->path());
+    return $usersRenderAdmin('Users', $content, $user, $request->path(), 200, [
+        'title' => 'User accounts',
+        'description' => 'Review and manage user identity and account status.',
+        'bar' => $user->can('users.create')
+            ? '<a class="admin-button admin-button--primary" href="' . htmlspecialchars($usersAdminUrl('users/create'), ENT_QUOTES, 'UTF-8') . '">Create user</a>'
+            : null,
+        'surface' => 'panel',
+        'spacing' => 'default',
+    ]);
 });
 
 $app->router()->get($usersAdminUrl('users/create'), function ($request) use (

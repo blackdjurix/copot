@@ -27,9 +27,17 @@ class AdminPageRenderer
         string $content,
         User $user,
         string $csrfToken,
-        ?string $currentPath = null
+        ?string $currentPath = null,
+        ?array $pageFrame = null
     ): string {
         $navigation = $this->resolveNavigation($this->navigation->itemsFor($user), $currentPath);
+
+        if ($pageFrame !== null) {
+            $content = $this->renderPageFrame($pageFrame + [
+                'title' => $title,
+                'content' => $content,
+            ]);
+        }
 
         return $this->view->render('admin/layout', [
             'title' => $title,
@@ -46,6 +54,59 @@ class AdminPageRenderer
             'navigation' => $navigation,
             'renderAdminIcon' => fn (?string $key, string $class = 'admin-icon'): string => $this->icons->render($key, $class),
             'content' => $content,
+        ]);
+    }
+
+    /**
+     * Render the bounded Webcore-owned frame inside the existing admin-main.
+     * Consumer content is intentionally rendered as opaque HTML.
+     */
+    public function renderPageFrame(array $frame): string
+    {
+        $title = $frame['title'] ?? null;
+        $content = $frame['content'] ?? null;
+
+        if (!is_string($title) || trim($title) === '') {
+            throw new \InvalidArgumentException('Admin Page Frame title is required.');
+        }
+
+        if (!is_string($content)) {
+            throw new \InvalidArgumentException('Admin Page Frame content must be a string.');
+        }
+
+        $surface = $frame['surface'] ?? 'panel';
+        $spacing = $frame['spacing'] ?? 'default';
+
+        if (!in_array($surface, ['panel', 'transparent'], true)) {
+            throw new \InvalidArgumentException('Admin Page Frame surface is invalid.');
+        }
+
+        if (!in_array($spacing, ['default', 'none'], true)) {
+            throw new \InvalidArgumentException('Admin Page Frame spacing is invalid.');
+        }
+
+        $optional = [];
+        foreach (['description', 'bar', 'footer'] as $region) {
+            $value = $frame[$region] ?? null;
+
+            if ($value !== null && !is_string($value)) {
+                throw new \InvalidArgumentException("Admin Page Frame {$region} must be a string or null.");
+            }
+
+            $optional[$region] = $value !== null && $value !== '' ? $value : null;
+        }
+
+        $titleId = 'admin-page-frame-title-' . substr(hash('sha256', trim($title)), 0, 12);
+
+        return $this->view->render('admin/page-frame', [
+            'title' => trim($title),
+            'titleId' => $titleId,
+            'description' => $optional['description'],
+            'bar' => $optional['bar'],
+            'content' => $content,
+            'footer' => $optional['footer'],
+            'surface' => $surface,
+            'spacing' => $spacing,
         ]);
     }
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Added the MR.2 WU1 Webcore-owned Admin Page Frame inside the existing Admin
+  Shell boundary, with bounded surface/spacing intent, optional regions,
+  consumer-owned content preservation, Users adoption, and focused validation.
+
 ## v0.13.0 — Released
 
 - Release-candidate readiness and Gate 9 public-release verification are

@@ -1,18 +1,4 @@
-<section class="admin-panel" aria-labelledby="users-list-title">
-    <header class="admin-panel__header">
-        <div class="admin-panel__heading">
-            <h2 class="admin-panel__title" id="users-list-title">User accounts</h2>
-            <p class="admin-panel__description">Review and manage user identity and account status.</p>
-        </div>
-
-        <?php if (!empty($canCreate)): ?>
-            <div class="admin-actions">
-                <a class="admin-button admin-button--primary" href="<?= htmlspecialchars($adminUrl('users/create'), ENT_QUOTES, 'UTF-8') ?>">Create user</a>
-            </div>
-        <?php endif; ?>
-    </header>
-
-    <div class="admin-panel__body">
+<div class="admin-page-frame-content">
         <?php if (empty($users)): ?>
             <div class="admin-empty-state">
                 <h3 class="admin-empty-state__title">No users found</h3>
@@ -63,5 +49,4 @@
                 </table>
             </div>
         <?php endif; ?>
-    </div>
-</section>
+</div>

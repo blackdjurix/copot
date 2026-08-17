@@ -18,6 +18,14 @@ COMPLETE and integrated into `main` at
 commit. Feature containment is confirmed; v0.13.0 is released, tagged, and
 published. Deferred integrations remain excluded.
 
+MR.2 WU1 — Webcore Admin View Foundation is COMPLETE AND CLOSED. The approved
+contract is `docs/38_mr_2_wu1_webcore_admin_view_foundation_contract.md`. The
+shared Admin Page Frame is implemented inside the existing `admin-main`
+boundary with bounded `panel|transparent` and `default|none` semantic intent,
+consumer-owned Content preservation, Users adoption, focused fixture coverage,
+and no Admin Shell, Dashboard, Module, package, ownership, or System Health
+architecture expansion. WU2 and later MR.2 work remain separately gated.
+
 ### Current authoritative post-M3 state
 
 M3 Core Modules: COMPLETE AND CLOSED

@@ -6,6 +6,12 @@ COMPLETE and integrated into `main` at
 commit. Feature containment is confirmed. v0.13.0 is released, tagged, and
 published. Deferred integrations remain excluded.
 
+MR.2 WU1 — Webcore Admin View Foundation is COMPLETE on the integrated
+`main` baseline. The reusable Admin Page Frame remains inside `admin-main`,
+supports only `panel|transparent` surface and `default|none` spacing intent,
+preserves consumer-owned content, and is proven by the Users list consumer and
+focused controlled fixture. WU2 and later MR.2 work remain outside this scope.
+
 The older milestone narrative below is retained as historical checkpoint
 context; it does not override the current post-M3 state recorded below.
 
