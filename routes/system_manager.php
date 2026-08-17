@@ -78,7 +78,8 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
     foreach ($labels as $key => $label) {
         $tabs[] = '<a class="admin-settings-tab' . ($section === $key ? ' is-active' : '') . '" href="' . htmlspecialchars($path . '?section=' . $key, ENT_QUOTES, 'UTF-8') . '"' . ($section === $key ? ' aria-current="page"' : '') . '>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</a>';
     }
-    $content = $app->view()->render('admin/system-manager', [
+    $tabsMarkup = '<nav class="admin-settings-tabs-wrap system-manager-tabs-wrap" aria-label="System Manager areas"><div class="admin-settings-tabs">' . implode('', $tabs) . '</div></nav>';
+    $content = $tabsMarkup . $app->view()->render('admin/system-manager', [
         'section' => $section, 'status' => $lifecycleStatus, 'branding' => $brandingState,
         'localization' => $localization, 'health' => $health, 'modules' => $modules,
         'release' => $releaseMetadata(), 'message' => $message, 'error' => $error,
@@ -92,7 +93,7 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
         'System Manager', $content, $user, $app->csrf()->token(), $request->path(), [
             'title' => 'System Manager',
             'description' => 'Webcore-owned system administration and recovery baseline.',
-            'bar' => '<nav class="admin-settings-tabs-wrap" aria-label="System Manager areas"><div class="admin-settings-tabs">' . implode('', $tabs) . '</div></nav>',
+            'bar' => null,
             'surface' => 'transparent', 'spacing' => 'default',
         ]
     ), $statusCode);

@@ -874,6 +874,14 @@ dd {
     font-size: 13px;
 }
 
+.system-manager-tabs-wrap {
+    margin-bottom: var(--admin-space-6);
+}
+
+.system-manager-tabs-wrap .admin-settings-tabs {
+    padding-inline: 0;
+}
+
 .system-manager-update-bar .system-manager-upload {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
@@ -981,6 +989,10 @@ dd {
     border: 1px solid var(--admin-color-info-border);
     border-radius: var(--admin-radius-sm);
     background: var(--admin-color-info-soft);
+}
+
+.system-manager-result[hidden] {
+    display: none;
 }
 
 .system-manager-release-list,

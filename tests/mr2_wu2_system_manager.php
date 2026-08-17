@@ -81,6 +81,8 @@ $assert(str_contains($systemPage, 'system-manager-system-overview'), 'System ove
 $assert(str_contains($systemPage, 'system-manager-update-bar'), 'Compact Update operation bar is missing.');
 $assert(!str_contains($systemPage, 'system-manager-update-bar"><header'), 'Update bar retained the large panel header hierarchy.');
 $assert(!str_contains($systemPage, 'system-manager-update-bar admin-panel'), 'Update bar is still structurally presented as an Admin panel.');
+$assert(!str_contains($systemPage, 'Package ZIP') && str_contains($systemPage, 'Webcore or Module'), 'Update copy retains redundant ZIP terminology.');
+$assert(str_contains($systemPage, 'accept=".zip"') && !str_contains($systemPage, 'application/zip'), 'Package picker still declares duplicate ZIP filters.');
 $assert(str_contains($systemPage, 'data-system-manager-details'), 'Lifecycle content-fit detail list hook is missing.');
 
 $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
@@ -92,6 +94,7 @@ $assert(str_contains($systemPage, 'system-manager-status-grid--inline'), 'Lifecy
 $detailRule = [];
 preg_match('/\\.system-manager-status-grid > div \\{(.*?)\\}/s', $adminCss, $detailRule);
 $assert(isset($detailRule[1]) && !str_contains($detailRule[1], 'border'), 'Lifecycle rows must not have per-row borders.');
+$assert(str_contains($adminCss, '.system-manager-result[hidden]') && str_contains($adminCss, 'display: none;'), 'Idle Update result region is not hidden.');
 $systemJs = (string) file_get_contents($basePath . '/public/admin-assets/js/system-manager.js');
 $assert(str_contains($systemJs, 'ResizeObserver') && str_contains($systemJs, 'is-stacked'), 'Lifecycle content-fit switching is missing.');
 $assert(str_contains($systemJs, 'MutationObserver'), 'Lifecycle content changes do not trigger re-evaluation.');
@@ -104,6 +107,7 @@ $assert(str_contains($route, "add('System Manager'"), 'System Manager navigation
 $assert(str_contains($schema, "'system.webcore.manage'"), 'Fresh-install schema does not seed the System Manager permission.');
 $assert(str_contains($route, 'SystemManagerBrandingService'), 'Branding authority is not wired to System Manager.');
 $assert(str_contains($route, 'admin-settings-tabs-wrap') && str_contains($route, 'admin-settings-tab'), 'System Manager navigation does not reuse the Settings tab pattern.');
+$assert(str_contains($route, 'system-manager-tabs-wrap') && str_contains($route, '$content = $tabsMarkup'), 'System Manager tabs are not placed in the content area.');
 $assert(!str_contains($route, 'class="admin-tabs"'), 'System Manager still uses the button-style tab pattern.');
 $assert(str_contains($route, "SystemManagerRecoveryGate.php"), 'System Manager recovery gate authority is not loadable from the route.');
 $assert(str_contains($route, 'SystemManagerModuleFallback'), 'Conditional Modules fallback is not wired.');

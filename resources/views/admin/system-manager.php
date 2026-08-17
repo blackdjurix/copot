@@ -24,10 +24,10 @@ $query = static fn (string $name): string => $basePath . '?section=' . rawurlenc
 
     <?php if ($activeSection === 'system'): ?>
         <div class="system-manager-update-bar" role="region" aria-labelledby="system-manager-package-title">
-            <div class="system-manager-update-bar__context"><strong id="system-manager-package-title">Update</strong><span>Webcore or Module ZIP</span></div>
+            <div class="system-manager-update-bar__context"><strong id="system-manager-package-title">Update</strong><span>Webcore or Module</span></div>
             <form class="system-manager-upload" method="post" enctype="multipart/form-data" action="<?= $escape($preflightPath ?? '') ?>" data-apply-action="<?= $escape($applyPath ?? '') ?>" data-system-manager-upload>
                 <input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>">
-                <label class="admin-field"><span class="admin-field__label">Package ZIP</span><input type="file" name="package" accept="application/zip,.zip" required data-system-manager-package></label>
+                <label class="admin-field"><span class="admin-visually-hidden">Select package</span><input type="file" name="package" accept=".zip" required data-system-manager-package></label>
                 <button class="admin-button admin-button--primary" type="submit">Preflight</button>
             </form>
             <div class="system-manager-result" data-system-manager-result hidden aria-live="polite"></div>
