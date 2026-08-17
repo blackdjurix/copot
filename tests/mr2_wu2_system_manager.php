@@ -78,10 +78,14 @@ $systemPage = $render('resources/views/admin/system-manager.php', [
 $assert(strpos($systemPage, 'system-manager-package-title') < strpos($systemPage, 'system-manager-release-title'), 'System Update bar is not before the information cards.');
 $assert(strpos($systemPage, 'system-manager-release-title') < strpos($systemPage, 'system-manager-status-title'), 'System desktop overview order is not What’s New before lifecycle.');
 $assert(str_contains($systemPage, 'system-manager-system-overview'), 'System overview composition wrapper is missing.');
+$assert(str_contains($systemPage, 'system-manager-update-bar'), 'Compact Update operation bar is missing.');
+$assert(!str_contains($systemPage, 'system-manager-update-bar"><header'), 'Update bar retained the large panel header hierarchy.');
+$assert(!str_contains($systemPage, 'system-manager-update-bar admin-panel'), 'Update bar is still structurally presented as an Admin panel.');
 $assert(str_contains($systemPage, 'data-system-manager-details'), 'Lifecycle content-fit detail list hook is missing.');
 
 $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
 $assert(str_contains($adminCss, 'grid-template-columns: minmax(10rem, 11rem) minmax(0, 1fr)'), 'Lifecycle fixed label column is missing.');
+$assert(str_contains($adminCss, ".system-manager-status-grid {\n    display: grid;\n    grid-template-columns: 1fr;"), 'Lifecycle detail list is not explicitly single-column.');
 $assert(str_contains($adminCss, '.system-manager-status-grid > div {') && str_contains($adminCss, 'grid-template-columns: 1fr;'), 'Lifecycle mobile stacked treatment is missing.');
 $assert(!str_contains($adminCss, ".system-manager-status-grid > div,\n.admin-status-card"), 'Lifecycle detail rows must not share card styling.');
 $assert(str_contains($systemPage, 'system-manager-status-grid--inline'), 'Lifecycle detail-list layout marker is missing.');

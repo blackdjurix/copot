@@ -852,9 +852,50 @@ dd {
 }
 
 .system-manager-update-bar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--admin-space-4) var(--admin-space-5);
+    padding: var(--admin-space-4) var(--admin-space-5);
     border: 1px solid var(--admin-color-border);
+    border-radius: var(--admin-radius-md);
     background: transparent;
     box-shadow: none;
+}
+
+.system-manager-update-bar__context {
+    display: grid;
+    gap: var(--admin-space-1);
+    min-width: 0;
+}
+
+.system-manager-update-bar__context span {
+    color: var(--admin-color-muted);
+    font-size: 13px;
+}
+
+.system-manager-update-bar .system-manager-upload {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: var(--admin-space-3);
+}
+
+.system-manager-update-bar .system-manager-upload > button {
+    grid-column: auto;
+    justify-self: stretch;
+}
+
+.system-manager-update-bar .system-manager-result,
+.system-manager-update-bar .system-manager-inline-form {
+    grid-column: 1 / -1;
+}
+
+.system-manager-update-bar .system-manager-result {
+    margin-top: 0;
+}
+
+.system-manager-update-bar .system-manager-inline-form {
+    margin-top: 0;
 }
 
 .system-manager-system-overview {
@@ -865,6 +906,7 @@ dd {
 
 .system-manager-status-grid {
     display: grid;
+    grid-template-columns: 1fr;
     gap: 0;
     margin: 0;
 }
@@ -1004,6 +1046,18 @@ dd {
     .system-manager-form,
     .system-manager-module-list .admin-status-card {
         grid-template-columns: 1fr;
+    }
+
+    .system-manager-update-bar {
+        grid-template-columns: 1fr;
+    }
+
+    .system-manager-update-bar .system-manager-upload {
+        grid-template-columns: 1fr;
+    }
+
+    .system-manager-update-bar .system-manager-upload > button {
+        justify-self: start;
     }
 
     .system-manager-inline-form {
