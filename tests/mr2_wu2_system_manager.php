@@ -122,6 +122,8 @@ $assert(str_contains($capabilityJs, 'ResizeObserver') && str_contains($capabilit
 $assert(str_contains($capabilityJs, 'sessionStorage') && str_contains($capabilityJs, 'beforeunload'), 'Capability-local draft guard is missing.');
 $assert(str_contains($capabilityJs, 'data-admin-workspace-save-button') && str_contains($capabilityJs, 'payload.capabilities'), 'Scoped workspace Save coordination is missing.');
 $assert(str_contains($capabilityJs, 'dirtyKeys().size === 0'), 'Scoped workspace Save is not inactive when no capability is dirty.');
+$assert(str_contains($capabilityJs, 'internalWorkspaceNavigation') && str_contains($capabilityJs, 'destination.origin === window.location.origin'), 'Sibling System Manager navigation is not exempted from the leave guard.');
+$assert(str_contains($capabilityJs, "section === 'system' && dirty.has('localization')"), 'System tab does not reflect Localization dirty state.');
 
 $route = (string) file_get_contents($basePath . '/routes/system_manager.php');
 $modulePackageFallback = (string) file_get_contents($basePath . '/app/Core/SystemManagerModulePackageFallback.php');
@@ -131,6 +133,7 @@ $assert(str_contains($schema, "'system.webcore.manage'"), 'Fresh-install schema 
 $assert(str_contains($route, 'SystemManagerBrandingService'), 'Branding authority is not wired to System Manager.');
 $assert(str_contains($route, 'admin-settings-tabs-wrap') && str_contains($route, 'admin-settings-tab'), 'System Manager navigation does not reuse the Settings tab pattern.');
 $assert(str_contains($route, 'admin-form-capabilities.js') && str_contains($route, 'data-admin-workspace-save-button') && str_contains($route, '$workspaceSavePath'), 'Scoped workspace Save is not wired.');
+$assert(strpos($route, '$tabsMarkup . $view . $saveMarkup') !== false, 'Workspace Save is not placed after the active tab content.');
 $assert(str_contains($route, 'validateLocalization') && str_contains($route, '->validate($brandingValues)'), 'Workspace Save does not validate all dirty capabilities before persistence.');
 $assert(str_contains($route, 'system-manager-tabs-wrap') && str_contains($route, '$content = \'<div class="system-manager-workspace-shell"'), 'System Manager tabs are not placed in the content area.');
 $assert(!str_contains($route, 'class="admin-tabs"'), 'System Manager still uses the button-style tab pattern.');

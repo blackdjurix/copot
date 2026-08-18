@@ -38,7 +38,7 @@
         const dirty = dirtyKeys();
         document.querySelectorAll('[data-admin-capability-tab]').forEach((tab) => {
             const section = tab.dataset.adminCapabilityTab;
-            const hasDirty = dirty.has(section);
+            const hasDirty = dirty.has(section) || (section === 'system' && dirty.has('localization'));
             const indicator = tab.querySelector('.admin-capability-tab__dirty');
             if (indicator) indicator.hidden = !hasDirty;
             tab.classList.toggle('is-dirty', hasDirty);
@@ -74,17 +74,22 @@
     });
 
     const systemPath = window.location.pathname.replace(/\/$/, '');
+    let internalWorkspaceNavigation = false;
     const hasDirty = () => dirtyKeys().size > 0;
     document.addEventListener('click', (event) => {
         const link = event.target.closest ? event.target.closest('a[href]') : null;
         if (!link || !hasDirty()) return;
         let destination;
         try { destination = new URL(link.href, window.location.href); } catch (error) { return; }
-        if (destination.pathname.replace(/\/$/, '') === systemPath) return;
+        if (destination.origin === window.location.origin && destination.pathname.replace(/\/$/, '') === systemPath) {
+            internalWorkspaceNavigation = true;
+            return;
+        }
         if (!window.confirm('You have unsaved System Manager changes. Leave without saving?')) { event.preventDefault(); return; }
         clearAll();
     }, true);
     window.addEventListener('beforeunload', (event) => {
+        if (internalWorkspaceNavigation) return;
         if (!hasDirty()) return;
         event.preventDefault();
         event.returnValue = '';
