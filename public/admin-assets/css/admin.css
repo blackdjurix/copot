@@ -974,6 +974,34 @@ dd {
     gap: var(--admin-space-3);
 }
 
+.admin-fit-form-group {
+    display: grid;
+    gap: var(--admin-space-4);
+}
+
+.admin-fit-form-group.is-level-1 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-fit-form-group.is-level-2,
+.admin-fit-form-group.is-level-3 {
+    grid-template-columns: 1fr;
+}
+
+.admin-fit-field {
+    display: grid;
+    grid-template-columns: minmax(10rem, 11rem) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--admin-space-4);
+    min-width: 0;
+}
+
+.admin-fit-form-group.is-level-3 .admin-fit-field {
+    grid-template-columns: 1fr;
+    align-items: start;
+    gap: var(--admin-space-1);
+}
+
 .system-manager-detail-row {
     display: grid;
     grid-template-columns: minmax(10rem, 11rem) minmax(0, 1fr);
@@ -1005,6 +1033,21 @@ dd {
 .system-manager-detail-form > .admin-field__help {
     grid-column: 1 / -1;
     justify-self: start;
+}
+
+.admin-capability-save {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--admin-space-2);
+}
+
+.admin-capability-tab__dirty {
+    margin-left: .35rem;
+    color: var(--admin-color-warning);
+}
+
+.admin-settings-tab.is-dirty .admin-capability-tab__dirty {
+    display: inline;
 }
 
 .system-manager-form > button,
@@ -1102,6 +1145,14 @@ dd {
         grid-template-columns: 1fr;
         align-items: start;
         gap: var(--admin-space-1);
+    }
+
+    .admin-capability-save {
+        justify-content: stretch;
+    }
+
+    .admin-capability-save .admin-button {
+        width: 100%;
     }
 
     .system-manager-color-control {

@@ -76,7 +76,7 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
     if (!$operational) $labels['modules'] = 'Modules';
     $tabs = [];
     foreach ($labels as $key => $label) {
-        $tabs[] = '<a class="admin-settings-tab' . ($section === $key ? ' is-active' : '') . '" href="' . htmlspecialchars($path . '?section=' . $key, ENT_QUOTES, 'UTF-8') . '"' . ($section === $key ? ' aria-current="page"' : '') . '>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '</a>';
+        $tabs[] = '<a class="admin-settings-tab' . ($section === $key ? ' is-active' : '') . '" data-admin-capability-tab="' . htmlspecialchars($key, ENT_QUOTES, 'UTF-8') . '" href="' . htmlspecialchars($path . '?section=' . $key, ENT_QUOTES, 'UTF-8') . '"' . ($section === $key ? ' aria-current="page"' : '') . '>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '<span class="admin-capability-tab__dirty" aria-hidden="true" hidden>•</span></a>';
     }
     $tabsMarkup = '<nav class="admin-settings-tabs-wrap system-manager-tabs-wrap" aria-label="System Manager areas"><div class="admin-settings-tabs">' . implode('', $tabs) . '</div></nav>';
     $content = $tabsMarkup . $app->view()->render('admin/system-manager', [
@@ -87,7 +87,13 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
         'retryPath' => $retryPath, 'reconcilePath' => $reconcilePath, 'brandingPath' => $brandingPath,
         'localizationPath' => $localizationPath, 'moduleActionPath' => $moduleActionPath,
         'csrfToken' => $app->csrf()->token(),
+        'clearCapability' => match ($request->input('notice')) {
+            'localization_saved' => 'localization',
+            'branding_saved' => 'branding',
+            default => '',
+        },
     ]);
+    $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/admin-form-capabilities.js'), ENT_QUOTES, 'UTF-8') . '"></script>';
     $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/system-manager.js'), ENT_QUOTES, 'UTF-8') . '"></script>';
     return Response::html($app->adminPageRenderer()->render(
         'System Manager', $content, $user, $app->csrf()->token(), $request->path(), [
@@ -133,9 +139,9 @@ $app->router()->post($localizationPath, function ($request) use ($app, $requireU
             'locale' => $request->post('locale'), 'timezone' => $request->post('timezone'),
             'date_format' => $request->post('date_format'), 'time_format' => $request->post('time_format'),
         ]);
-        return Response::redirect($app->adminUrl()->childUrl('settings/system-manager') . '?section=branding&notice=localization_saved');
+        return Response::redirect($app->adminUrl()->childUrl('settings/system-manager') . '?section=system&notice=localization_saved');
     } catch (Throwable) {
-        return $render($request, $user, null, 'Localization could not be saved. Review the submitted values.', 422, 'branding');
+        return $render($request, $user, null, 'Localization could not be saved. Review the submitted values.', 422, 'system');
     }
 });
 
