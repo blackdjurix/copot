@@ -1035,10 +1035,16 @@ dd {
     justify-self: start;
 }
 
-.admin-capability-save {
+.admin-workspace-save {
     display: flex;
+    align-items: center;
     justify-content: flex-end;
-    margin-top: var(--admin-space-2);
+    gap: var(--admin-space-3);
+    margin: var(--admin-space-4) 0;
+}
+
+.admin-workspace-save__status {
+    color: var(--admin-color-muted);
 }
 
 .admin-capability-tab__dirty {
@@ -1147,11 +1153,12 @@ dd {
         gap: var(--admin-space-1);
     }
 
-    .admin-capability-save {
-        justify-content: stretch;
+    .admin-workspace-save {
+        align-items: stretch;
+        flex-direction: column;
     }
 
-    .admin-capability-save .admin-button {
+    .admin-workspace-save .admin-button {
         width: 100%;
     }
 

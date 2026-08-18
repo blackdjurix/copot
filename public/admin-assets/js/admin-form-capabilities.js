@@ -11,6 +11,7 @@
     let drafts = readDrafts();
     const writeDrafts = () => { try { window.sessionStorage.setItem(draftKey, JSON.stringify(drafts)); } catch (error) {} };
     const forms = Array.from(scope.querySelectorAll('[data-admin-capability-form]'));
+    const capabilityKeys = (scope.dataset.adminWorkspaceCapabilities || '').split(',').map((key) => key.trim()).filter(Boolean);
     const valuesFor = (form) => {
         const values = {};
         new FormData(form).forEach((value, key) => { if (key !== '_token' && typeof value === 'string') values[key] = value; });
@@ -32,29 +33,45 @@
             native.value = canonical.value;
         });
     };
-    const dirtyKeys = () => new Set(forms.map((form) => form.dataset.adminCapability).filter((key) => drafts[key]));
+    const dirtyKeys = () => new Set(capabilityKeys.filter((key) => drafts[key]));
     const updateTabs = () => {
         const dirty = dirtyKeys();
         document.querySelectorAll('[data-admin-capability-tab]').forEach((tab) => {
             const section = tab.dataset.adminCapabilityTab;
-            const hasDirty = forms.some((form) => form.dataset.adminCapabilitySection === section && dirty.has(form.dataset.adminCapability));
+            const hasDirty = dirty.has(section);
             const indicator = tab.querySelector('.admin-capability-tab__dirty');
             if (indicator) indicator.hidden = !hasDirty;
             tab.classList.toggle('is-dirty', hasDirty);
         });
     };
     const clearAll = () => { drafts = {}; try { window.sessionStorage.removeItem(draftKey); } catch (error) {} updateTabs(); };
+    if (scope.dataset.adminClearWorkspace === '1') clearAll();
     const clearCapability = scope.dataset.adminClearCapability;
     if (clearCapability) { delete drafts[clearCapability]; writeDrafts(); }
 
     forms.forEach((form) => {
         const key = form.dataset.adminCapability;
         if (drafts[key]) applyValues(form, drafts[key]);
-        const markDirty = () => { drafts[key] = valuesFor(form); writeDrafts(); updateTabs(); };
+        const markDirty = () => { drafts[key] = valuesFor(form); writeDrafts(); updateTabs(); refreshSaveButton(); };
         form.addEventListener('input', markDirty);
         form.addEventListener('change', markDirty);
     });
     updateTabs();
+
+    const saveButton = scope.querySelector('[data-admin-workspace-save-button]');
+    const savePayload = scope.querySelector('[data-admin-workspace-payload]');
+    const saveStatus = scope.querySelector('[data-admin-workspace-save-status]');
+    const refreshSaveButton = () => { if (saveButton) saveButton.disabled = dirtyKeys().size === 0; };
+    refreshSaveButton();
+    if (saveButton) saveButton.addEventListener('click', async () => {
+        const dirty = dirtyKeys();
+        if (dirty.size === 0) return;
+        saveButton.dataset.saving = '1';
+        if (saveStatus) saveStatus.textContent = 'Validating changes…';
+        const payload = { capabilities: {} };
+        dirty.forEach((key) => { payload.capabilities[key] = drafts[key]; });
+        if (savePayload) savePayload.value = JSON.stringify(payload);
+    });
 
     const systemPath = window.location.pathname.replace(/\/$/, '');
     const hasDirty = () => dirtyKeys().size > 0;

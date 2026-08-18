@@ -28,14 +28,12 @@ final class SystemManagerSettingsService
 
     public function saveLocalization(array $values): void
     {
+        $this->validateLocalization($values);
+
         $normalized = [];
         foreach (self::LOCALIZATION as $key) {
             $value = $values[$key] ?? null;
-            if (!is_string($value)) {
-                throw new SettingsException('All Localization values are required.');
-            }
             $normalized[$key] = $value;
-            $this->settings->validate('localization', $key, $value, 'string');
         }
 
         $connection = $this->database->connection();
@@ -50,6 +48,17 @@ final class SystemManagerSettingsService
                 $connection->rollBack();
             }
             throw $failure;
+        }
+    }
+
+    public function validateLocalization(array $values): void
+    {
+        foreach (self::LOCALIZATION as $key) {
+            $value = $values[$key] ?? null;
+            if (!is_string($value)) {
+                throw new SettingsException('All Localization values are required.');
+            }
+            $this->settings->validate('localization', $key, $value, 'string');
         }
     }
 }

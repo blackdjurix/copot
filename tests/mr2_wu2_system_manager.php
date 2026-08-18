@@ -96,8 +96,9 @@ $assert(str_contains($brandingPage, 'system-manager-detail-form'), 'Branding det
 $assert(substr_count($brandingPage, 'data-color-control') === 4, 'Branding does not expose four bounded color controls.');
 $assert(!str_contains($brandingPage, 'data-color-format') && !str_contains($brandingPage, 'value="rgb"') && !str_contains($brandingPage, 'value="hsl"'), 'External color representation selectors remain in the normal Branding form.');
 $assert(substr_count($brandingPage, 'data-color-canonical') === 4, 'Branding colors do not retain one canonical submitted value each.');
-$assert(str_contains($systemPage, 'Save Localization') && str_contains($systemPage, 'data-admin-capability="localization"'), 'Localization was not moved into the System capability surface.');
+$assert(!str_contains($systemPage, 'Save Localization') && str_contains($systemPage, 'data-admin-capability="localization"'), 'Localization still exposes a capability-level Save action.');
 $assert(!str_contains($brandingPage, 'Localization'), 'Localization remains presented in Branding.');
+$assert(!str_contains($brandingPage, 'Save Branding'), 'Branding still exposes a capability-level Save action.');
 $assert(substr_count($systemPage, 'data-admin-fit-group') === 2 && substr_count($brandingPage, 'data-admin-fit-group') === 2, 'Localization and Branding do not use two-field-set fit groups.');
 
 $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
@@ -119,6 +120,8 @@ $capabilityJs = (string) file_get_contents($basePath . '/public/admin-assets/js/
 $assert(str_contains($capabilityJs, 'is-level-1') && str_contains($capabilityJs, 'is-level-2') && str_contains($capabilityJs, 'is-level-3'), 'Three-level fit layout capability is incomplete.');
 $assert(str_contains($capabilityJs, 'ResizeObserver') && str_contains($capabilityJs, 'MutationObserver'), 'Fit layout capability does not re-evaluate content/container changes.');
 $assert(str_contains($capabilityJs, 'sessionStorage') && str_contains($capabilityJs, 'beforeunload'), 'Capability-local draft guard is missing.');
+$assert(str_contains($capabilityJs, 'data-admin-workspace-save-button') && str_contains($capabilityJs, 'payload.capabilities'), 'Scoped workspace Save coordination is missing.');
+$assert(str_contains($capabilityJs, 'dirtyKeys().size === 0'), 'Scoped workspace Save is not inactive when no capability is dirty.');
 
 $route = (string) file_get_contents($basePath . '/routes/system_manager.php');
 $modulePackageFallback = (string) file_get_contents($basePath . '/app/Core/SystemManagerModulePackageFallback.php');
@@ -127,8 +130,9 @@ $assert(str_contains($route, "add('System Manager'"), 'System Manager navigation
 $assert(str_contains($schema, "'system.webcore.manage'"), 'Fresh-install schema does not seed the System Manager permission.');
 $assert(str_contains($route, 'SystemManagerBrandingService'), 'Branding authority is not wired to System Manager.');
 $assert(str_contains($route, 'admin-settings-tabs-wrap') && str_contains($route, 'admin-settings-tab'), 'System Manager navigation does not reuse the Settings tab pattern.');
-$assert(str_contains($route, 'admin-form-capabilities.js') && str_contains($route, 'clearCapability'), 'Shared capability presentation/dirty-state asset is not wired.');
-$assert(str_contains($route, 'system-manager-tabs-wrap') && str_contains($route, '$content = $tabsMarkup'), 'System Manager tabs are not placed in the content area.');
+$assert(str_contains($route, 'admin-form-capabilities.js') && str_contains($route, 'data-admin-workspace-save-button') && str_contains($route, '$workspaceSavePath'), 'Scoped workspace Save is not wired.');
+$assert(str_contains($route, 'validateLocalization') && str_contains($route, '->validate($brandingValues)'), 'Workspace Save does not validate all dirty capabilities before persistence.');
+$assert(str_contains($route, 'system-manager-tabs-wrap') && str_contains($route, '$content = \'<div class="system-manager-workspace-shell"'), 'System Manager tabs are not placed in the content area.');
 $assert(!str_contains($route, 'class="admin-tabs"'), 'System Manager still uses the button-style tab pattern.');
 $assert(str_contains($route, "SystemManagerRecoveryGate.php"), 'System Manager recovery gate authority is not loadable from the route.');
 $assert(str_contains($route, 'SystemManagerModuleFallback'), 'Conditional Modules fallback is not wired.');

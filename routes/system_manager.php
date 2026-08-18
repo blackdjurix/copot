@@ -22,6 +22,7 @@ $retryPath = $path . '/retry';
 $reconcilePath = $path . '/reconcile';
 $brandingPath = $path . '/branding';
 $localizationPath = $path . '/localization';
+$workspaceSavePath = $path . '/save';
 $moduleActionPath = $path . '/modules/action';
 $permission = 'system.webcore.manage';
 $manager = static fn (): SystemManagerLifecycleService => new SystemManagerLifecycleService(
@@ -55,7 +56,7 @@ $releaseMetadata = static function () use ($app): array {
 };
 
 $render = static function ($request, $user, ?string $message = null, ?string $error = null, int $statusCode = 200, ?string $sectionOverride = null) use (
-    $app, $path, $preflightPath, $applyPath, $retryPath, $reconcilePath, $brandingPath,
+    $app, $path, $preflightPath, $applyPath, $retryPath, $reconcilePath, $brandingPath, $workspaceSavePath,
     $localizationPath, $moduleActionPath, $manager, $branding, $settings, $moduleFallback,
     $releaseMetadata
 ): Response {
@@ -79,7 +80,7 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
         $tabs[] = '<a class="admin-settings-tab' . ($section === $key ? ' is-active' : '') . '" data-admin-capability-tab="' . htmlspecialchars($key, ENT_QUOTES, 'UTF-8') . '" href="' . htmlspecialchars($path . '?section=' . $key, ENT_QUOTES, 'UTF-8') . '"' . ($section === $key ? ' aria-current="page"' : '') . '>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '<span class="admin-capability-tab__dirty" aria-hidden="true" hidden>•</span></a>';
     }
     $tabsMarkup = '<nav class="admin-settings-tabs-wrap system-manager-tabs-wrap" aria-label="System Manager areas"><div class="admin-settings-tabs">' . implode('', $tabs) . '</div></nav>';
-    $content = $tabsMarkup . $app->view()->render('admin/system-manager', [
+    $view = $app->view()->render('admin/system-manager', [
         'section' => $section, 'status' => $lifecycleStatus, 'branding' => $brandingState,
         'localization' => $localization, 'health' => $health, 'modules' => $modules,
         'release' => $releaseMetadata(), 'message' => $message, 'error' => $error,
@@ -93,7 +94,9 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
             default => '',
         },
     ]);
-    $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/admin-form-capabilities.js'), ENT_QUOTES, 'UTF-8') . '"></script>';
+    $saveMarkup = '<form class="admin-workspace-save" method="post" action="' . htmlspecialchars($workspaceSavePath, ENT_QUOTES, 'UTF-8') . '" data-admin-workspace-save><input type="hidden" name="_token" value="' . htmlspecialchars($app->csrf()->token(), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="section" value="' . htmlspecialchars($section, ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="payload" value="" data-admin-workspace-payload><button class="admin-button admin-button--primary" type="submit" data-admin-workspace-save-button disabled>Save Changes</button><span class="admin-workspace-save__status" data-admin-workspace-save-status role="status" aria-live="polite"></span></form>';
+    $content = '<div class="system-manager-workspace-shell" data-admin-draft-scope data-admin-clear-workspace="' . ($request->input('notice') === 'workspace_saved' ? '1' : '0') . '" data-admin-workspace-capabilities="localization,branding">' . $tabsMarkup . $saveMarkup . $view . '</div>';
+    $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/admin-form-capabilities.js?v=wu2-workspace-save'), ENT_QUOTES, 'UTF-8') . '"></script>';
     $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/system-manager.js'), ENT_QUOTES, 'UTF-8') . '"></script>';
     return Response::html($app->adminPageRenderer()->render(
         'System Manager', $content, $user, $app->csrf()->token(), $request->path(), [
@@ -110,10 +113,32 @@ $app->router()->get($path, function ($request) use ($requireUser, $render) {
     $notice = match ($request->input('notice')) {
         'branding_saved' => 'Branding saved successfully.',
         'localization_saved' => 'Localization saved successfully.',
+        'workspace_saved' => 'System Manager changes saved successfully.',
         'module_action' => 'Module lifecycle action completed.',
         default => null,
     };
     return $render($request, $user, $notice);
+});
+
+$app->router()->post($workspaceSavePath, function ($request) use ($app, $requireUser, $render, $path) {
+    $user = $requireUser($request); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    $payload = json_decode((string) $request->post('payload', ''), true);
+    $capabilities = is_array($payload['capabilities'] ?? null) ? $payload['capabilities'] : [];
+    $brandingValues = is_array($capabilities['branding'] ?? null) ? $capabilities['branding'] : null;
+    $localizationValues = is_array($capabilities['localization'] ?? null) ? $capabilities['localization'] : null;
+    $section = in_array((string) $request->post('section', 'system'), ['system', 'branding', 'modules', 'health'], true) ? (string) $request->post('section', 'system') : 'system';
+    try {
+        $brandingService = new SystemManagerBrandingService($app->settings(), $app->database());
+        $settingsService = new SystemManagerSettingsService($app->settings(), $app->database());
+        if ($localizationValues !== null) $settingsService->validateLocalization($localizationValues);
+        if ($brandingValues !== null) $brandingService->validate($brandingValues);
+        if ($localizationValues !== null) $settingsService->saveLocalization($localizationValues);
+        if ($brandingValues !== null) $brandingService->save($brandingValues);
+        return Response::redirect($path . '?section=' . rawurlencode($section) . '&notice=workspace_saved');
+    } catch (Throwable $failure) {
+        return $render($request, $user, null, $failure->getMessage() !== '' ? $failure->getMessage() : 'System Manager changes could not be saved.', 422, $section);
+    }
 });
 
 $app->router()->post($brandingPath, function ($request) use ($app, $requireUser, $render) {

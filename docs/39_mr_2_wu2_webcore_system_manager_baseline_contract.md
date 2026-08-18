@@ -332,6 +332,9 @@ Acceptance must cover:
 - lifecycle comprehension, action eligibility, blocked/recovery/result states,
   and What's New presentation;
 - Localization controls and validation;
+- one opt-in System Manager workspace `Save Changes` action that validates and
+  persists dirty Localization and Branding capabilities through their existing
+  authorities, while preserving capability-local drafts across sibling tabs;
 - Branding controls, specialized Logo/Favicon flows, palette validation, and
   contrast-aware behavior;
 - Logo/Text Admin identity behavior;
