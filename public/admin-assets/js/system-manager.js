@@ -14,29 +14,45 @@
 
     const detailList = document.querySelector('[data-system-manager-details]');
     if (detailList) {
-        const rows = () => Array.from(detailList.querySelectorAll(':scope > div'));
+        const fitTolerance = 2;
         let frame = 0;
         const evaluateDetailFit = () => {
             frame = 0;
             if (detailList.clientWidth < 1) return;
-            detailList.classList.remove('is-stacked');
             const available = detailList.clientWidth;
-            const stacked = rows().some((row) => {
+            const currentStacked = detailList.classList.contains('is-stacked');
+            const measurement = detailList.cloneNode(true);
+            measurement.removeAttribute('data-system-manager-details');
+            measurement.classList.remove('is-stacked');
+            measurement.setAttribute('aria-hidden', 'true');
+            measurement.style.position = 'absolute';
+            measurement.style.visibility = 'hidden';
+            measurement.style.pointerEvents = 'none';
+            measurement.style.width = available + 'px';
+            measurement.style.maxWidth = available + 'px';
+            detailList.parentElement.appendChild(measurement);
+            const inlineFits = Array.from(measurement.querySelectorAll(':scope > div')).every((row) => {
                 const label = row.querySelector('dt');
                 const value = row.querySelector('dd');
-                if (!label || !value) return false;
-                const originalStyle = value.getAttribute('style');
+                if (!label || !value) return true;
+                row.style.gridTemplateColumns = 'max-content max-content';
                 value.style.whiteSpace = 'nowrap';
                 value.style.width = 'max-content';
                 value.style.maxWidth = 'none';
                 value.style.overflow = 'visible';
                 const gap = parseFloat(window.getComputedStyle(row).columnGap) || 0;
-                const required = label.getBoundingClientRect().width + gap + value.getBoundingClientRect().width;
-                if (originalStyle === null) value.removeAttribute('style');
-                else value.setAttribute('style', originalStyle);
-                return required > available + 1;
+                return label.getBoundingClientRect().width + gap + value.getBoundingClientRect().width <= available + fitTolerance;
             });
-            detailList.classList.toggle('is-stacked', stacked);
+            const inlineSafe = Array.from(measurement.querySelectorAll(':scope > div')).every((row) => {
+                const label = row.querySelector('dt');
+                const value = row.querySelector('dd');
+                if (!label || !value) return true;
+                const gap = parseFloat(window.getComputedStyle(row).columnGap) || 0;
+                return label.getBoundingClientRect().width + gap + value.getBoundingClientRect().width <= available - fitTolerance;
+            });
+            measurement.remove();
+            const stacked = currentStacked ? !inlineSafe : !inlineFits;
+            if (stacked !== currentStacked) detailList.classList.toggle('is-stacked', stacked);
         };
         const schedule = () => {
             if (frame) return;

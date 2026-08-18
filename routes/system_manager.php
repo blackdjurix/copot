@@ -96,8 +96,8 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
     ]);
     $saveMarkup = '<form class="admin-workspace-save" method="post" action="' . htmlspecialchars($workspaceSavePath, ENT_QUOTES, 'UTF-8') . '" data-admin-workspace-save><input type="hidden" name="_token" value="' . htmlspecialchars($app->csrf()->token(), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="section" value="' . htmlspecialchars($section, ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="payload" value="" data-admin-workspace-payload><button class="admin-button admin-button--primary" type="submit" data-admin-workspace-save-button disabled>Save Changes</button><span class="admin-workspace-save__status" data-admin-workspace-save-status role="status" aria-live="polite"></span></form>';
     $content = '<div class="system-manager-workspace-shell" data-admin-draft-scope data-admin-clear-workspace="' . ($request->input('notice') === 'workspace_saved' ? '1' : '0') . '" data-admin-workspace-capabilities="localization,branding">' . $tabsMarkup . $view . $saveMarkup . '</div>';
-    $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/admin-form-capabilities.js?v=wu2-workspace-save-2'), ENT_QUOTES, 'UTF-8') . '"></script>';
-    $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/system-manager.js'), ENT_QUOTES, 'UTF-8') . '"></script>';
+    $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/admin-form-capabilities.js?v=wu2-workspace-save-3'), ENT_QUOTES, 'UTF-8') . '"></script>';
+    $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/system-manager.js?v=wu2-lifecycle-stable'), ENT_QUOTES, 'UTF-8') . '"></script>';
     return Response::html($app->adminPageRenderer()->render(
         'System Manager', $content, $user, $app->csrf()->token(), $request->path(), [
             'title' => 'System Manager',

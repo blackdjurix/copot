@@ -114,6 +114,8 @@ $assert(str_contains($adminCss, '.system-manager-result[hidden]') && str_contain
 $systemJs = (string) file_get_contents($basePath . '/public/admin-assets/js/system-manager.js');
 $assert(str_contains($systemJs, 'ResizeObserver') && str_contains($systemJs, 'is-stacked'), 'Lifecycle content-fit switching is missing.');
 $assert(str_contains($systemJs, 'MutationObserver'), 'Lifecycle content changes do not trigger re-evaluation.');
+$assert(str_contains($systemJs, 'cloneNode(true)') && str_contains($systemJs, 'fitTolerance'), 'Lifecycle fit evaluation lacks stable canonical measurement and tolerance.');
+$assert(!str_contains($systemJs, 'detailList.classList.remove(\'is-stacked\')'), 'Lifecycle evaluator still measures by mutating the live layout state.');
 $assert(str_contains($systemJs, 'payload.guidance'), 'Module completion guidance is not rendered by package feedback.');
 $assert(str_contains($systemJs, 'validHex') && str_contains($systemJs, 'data-color-native') && !str_contains($systemJs, 'data-color-format'), 'Canonical native color control synchronization is missing.');
 $capabilityJs = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-form-capabilities.js');
