@@ -5,9 +5,10 @@
 - Added the MR.2 WU1 Webcore-owned Admin Page Frame inside the existing Admin
   Shell boundary, with bounded surface/spacing intent, optional regions,
   consumer-owned content preservation, Users adoption, and focused validation.
-- Promoted the documentation-only MR.2 WU2 Webcore System Manager Baseline
-  contract, preserving existing lifecycle, Settings, Site Asset, Module, and
-  System Health authority while defining the Webcore-only fallback surface.
+- Completed and human-accepted MR.2 WU2 Webcore System Manager Baseline on its
+  feature branch, preserving existing lifecycle, Settings, Site Asset, Module,
+  and System Health authority while delivering the Webcore-only fallback
+  surface.
 
 ## v0.13.0 — Released
 

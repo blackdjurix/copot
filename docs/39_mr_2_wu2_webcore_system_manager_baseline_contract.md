@@ -7,15 +7,17 @@ MR.2 preparation: APPROVED
 WU1: COMPLETE AND CLOSED at docs/38_mr_2_wu1_webcore_admin_view_foundation_contract.md
 WU2 scope: Webcore System Manager Baseline
 WU2 contract: PROMOTED / CONTRACT LOCKED
-WU2 runtime implementation: TECHNICALLY IMPLEMENTED
-WU2 focused validation: PASSED (one unrelated pre-existing Admin UI smoke assertion remains)
-Human UI acceptance: REQUIRED / PENDING
+WU2 runtime implementation: COMPLETE
+WU2 focused validation: PASSED
+Human UI acceptance: PASS / APPROVED
+WU2 closure: COMPLETE AND CLOSED on the accepted feature branch
 ```
 
-This is the authoritative preparation contract for MR.2 WU2. It promotes the
-accepted WU2 proposal into a bounded implementation and acceptance scope. The
-implementation is present on the dedicated WU2 feature branch for technical
-validation and human acceptance. It does not authorize Settings Manager refinement,
+This is the authoritative contract and closure record for MR.2 WU2. It promotes
+the accepted WU2 proposal into a bounded implementation and acceptance scope.
+The implementation, focused validation, and human UI acceptance are complete on
+the dedicated WU2 feature branch. Integration into `main` remains a separate
+merge gate. This contract does not authorize Settings Manager refinement,
 Module Manager refinement, production reconciliation, release work, or later
 MR.2 work.
 
@@ -26,9 +28,9 @@ a Webcore-only COPOT installation operational without requiring Core Modules.
 System Manager is the minimum system-administration fallback; it is
 not a replacement for the richer Core Module operators that may be present.
 
-The current feature-branch implementation is limited to the bounded runtime
-capabilities classified below. Human UI acceptance remains a required gate; this
-status does not represent WU2 closure or integration.
+The accepted feature-branch implementation is limited to the bounded runtime
+capabilities classified below. Human UI acceptance passed; integration into
+`main` remains a separate merge gate.
 
 The System Manager areas are:
 
@@ -317,15 +319,15 @@ These do not authorize a new lifecycle engine, schema/migration engine,
 generic provider framework, generic settings editor, generic color engine,
 health engine, Installer change, or Module Manager mutation.
 
-## Human acceptance contract
+## Human acceptance record
 
-Human UI acceptance is required for WU2. The primary acceptance environment is
+Human UI acceptance passed for WU2. The primary acceptance environment was
 a disposable Webcore-only runtime derived from accepted WU2 source. Settings
 Manager and Module Manager must be absent or inactive, and ideally no Core
 Module is installed/enabled. The normal `main` runtime must not be mutated for
 this acceptance.
 
-Acceptance must cover:
+Acceptance covered:
 
 - Webcore-only System Manager navigation and the System / Branding / Modules /
   System Health information architecture;
@@ -344,7 +346,7 @@ Acceptance must cover:
   refinement;
 - Modules fallback inventory and lifecycle availability.
 
-Where technically feasible without expanding WU2, acceptance should also prove:
+Where technically feasible without expanding WU2, acceptance also proved:
 
 1. Webcore-only state exposes the Modules fallback;
 2. the fallback installs or restores Module Manager through the existing Module
@@ -373,8 +375,9 @@ WU2 is accepted only when:
   Installer change, or Module Manager refinement is introduced;
 - PHP lint, focused tests, directly impacted regressions, documentation/link
   checks, disposable-runtime acceptance, and final diff review pass; and
-- implementation and human acceptance are tracked after this contract
-  promotion; this document remains the authoritative WU2 boundary.
+- implementation and human acceptance are complete on the accepted feature
+  branch; this document remains the authoritative WU2 boundary and closure
+  record.
 
 ## Explicit exclusions
 

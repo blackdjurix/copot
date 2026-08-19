@@ -216,6 +216,54 @@ The page renderer must not inject unrestricted application services into templat
 
 Views should receive only the data needed for presentation.
 
+## Proven MR.2 shared presentation capabilities
+
+The closed WU1 Admin Page Frame establishes the reusable page hierarchy:
+
+```text
+Header
+|-- optional Operation Bar
+|-- Content
+Footer
+```
+
+The Operation Bar is contextual and optional. It may contain package or file
+intake, filtering, or other relevant operational controls; it is not required
+on every Admin page.
+
+MR.2 has also proven two optional Admin presentation/interaction patterns:
+
+### Content-fit field layout
+
+Editable form groups use content-fit decisions rather than device-name
+breakpoints. One group uses one level consistently:
+
+1. Level 1: up to two field-sets in one row, each with inline label/value;
+2. Level 2: one field-set per row, with inline label/value;
+3. Level 3: one field-set per row, with stacked label/value.
+
+The current shared contract is limited to a maximum of two field-sets per row.
+Behavior for more than two field-sets per row is not part of the contract.
+Read-only/detail consumers such as Lifecycle use the same group-wide
+inline/stacked content-fit semantics with a stable decision at the transition
+boundary.
+
+### Scoped workspace Save
+
+An editable multi-section workspace may opt into one user-facing Save action
+for all currently dirty editable capabilities in that workspace. Capability
+dirty state, validation, and persistence authority remain independent; all
+dirty capabilities validate before mutation to avoid an intentional partial
+save. Switching sibling sections retains drafts and dirty state without saving
+or warning. Leaving the workspace with dirty state invokes the unsaved-change
+guard, and confirmed discard clears workspace drafts without database mutation.
+
+This pattern is not universal. It must not be applied automatically to
+modal/floating workflows, action-only surfaces, or independent entity editors
+and sub-pages. The current System Manager consumer places Save Changes after
+active content, right-aligned on desktop and full-width or near-full-width on
+narrow screens. Sticky Save behavior is not part of the shared contract.
+
 ---
 
 ## View and Partial Strategy
