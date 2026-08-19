@@ -25,10 +25,9 @@ boundary with bounded `panel|transparent` and `default|none` semantic intent,
 consumer-owned Content preservation, Users adoption, focused fixture coverage,
 and no Admin Shell, Dashboard, Module, package, ownership, or System Health
 architecture expansion. MR.2 WU2 — Webcore System Manager Baseline is COMPLETE
-AND CLOSED on the accepted feature branch. Its authoritative contract and
+AND CLOSED on the integrated `main` baseline. Its authoritative contract and
 closure record is `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`;
-technical validation and human UI acceptance are PASS / APPROVED. Integration
-into `main` remains a separate merge gate.
+technical validation and human UI acceptance are PASS / APPROVED.
 
 ### Current authoritative post-M3 state
 

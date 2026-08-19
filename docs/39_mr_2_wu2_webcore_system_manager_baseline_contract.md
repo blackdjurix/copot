@@ -10,14 +10,14 @@ WU2 contract: PROMOTED / CONTRACT LOCKED
 WU2 runtime implementation: COMPLETE
 WU2 focused validation: PASSED
 Human UI acceptance: PASS / APPROVED
-WU2 closure: COMPLETE AND CLOSED on the accepted feature branch
+WU2 closure: COMPLETE AND CLOSED on the integrated `main` baseline
 ```
 
 This is the authoritative contract and closure record for MR.2 WU2. It promotes
 the accepted WU2 proposal into a bounded implementation and acceptance scope.
-The implementation, focused validation, and human UI acceptance are complete on
-the dedicated WU2 feature branch. Integration into `main` remains a separate
-merge gate. This contract does not authorize Settings Manager refinement,
+The implementation, focused validation, and human UI acceptance are complete in
+the accepted committed `main` state. This contract does not authorize Settings
+Manager refinement,
 Module Manager refinement, production reconciliation, release work, or later
 MR.2 work.
 
@@ -28,9 +28,8 @@ a Webcore-only COPOT installation operational without requiring Core Modules.
 System Manager is the minimum system-administration fallback; it is
 not a replacement for the richer Core Module operators that may be present.
 
-The accepted feature-branch implementation is limited to the bounded runtime
-capabilities classified below. Human UI acceptance passed; integration into
-`main` remains a separate merge gate.
+The accepted implementation in `main` is limited to the bounded runtime
+capabilities classified below. Human UI acceptance passed.
 
 The System Manager areas are:
 
@@ -375,9 +374,9 @@ WU2 is accepted only when:
   Installer change, or Module Manager refinement is introduced;
 - PHP lint, focused tests, directly impacted regressions, documentation/link
   checks, disposable-runtime acceptance, and final diff review pass; and
-- implementation and human acceptance are complete on the accepted feature
-  branch; this document remains the authoritative WU2 boundary and closure
-  record.
+- implementation and human acceptance are complete in the accepted committed
+  `main` state; this document remains the authoritative WU2 boundary and
+  closure record.
 
 ## Explicit exclusions
 

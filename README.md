@@ -11,10 +11,10 @@ MR.2 WU1 — Webcore Admin View Foundation is COMPLETE on the integrated
 supports only `panel|transparent` surface and `default|none` spacing intent,
 preserves consumer-owned content, and is proven by the Users list consumer and
 focused controlled fixture. MR.2 WU2 — Webcore System Manager Baseline is
-COMPLETE AND CLOSED on the accepted feature branch. Its authoritative contract
-and closure record is `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`;
-technical validation and human UI acceptance are PASS / APPROVED. Integration
-into `main` remains a separate merge gate.
+COMPLETE AND CLOSED on the integrated `main` baseline. Its authoritative
+contract and closure record is
+`docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`; technical
+validation and human UI acceptance are PASS / APPROVED.
 
 The older milestone narrative below is retained as historical checkpoint
 context; it does not override the current post-M3 state recorded below.
