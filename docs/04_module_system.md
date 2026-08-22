@@ -11,6 +11,16 @@ Modules may be classified as:
 
 M1.3 focuses on a local module-manager foundation. It does not introduce a marketplace, remote package downloads, a module UI, a Composer package system, a migration runner, or theme integration.
 
+### Current Post-M3 reconciliation direction
+
+The promoted target in
+`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`
+defines a Module as an executable capability extension and a Bundled Module as
+optional distribution, not mandatory installation or enablement. Module
+lifecycle remains a Webcore/System Manager responsibility. The M1.3 lifecycle
+record below is historical where it conflicts with this target; reconciliation
+implementation has not started.
+
 ---
 
 ## M1.3 Scope

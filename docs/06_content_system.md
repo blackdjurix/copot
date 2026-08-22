@@ -8,6 +8,17 @@ Content is the primary domain concept. Article, Page, News, Video, Gallery, Docu
 
 M1.5 introduces a local Content Module. It includes basic content creation, editing, publishing lifecycle, and frontend rendering. It does not include advanced editorial, media, SEO, analytics, translation, or workflow features.
 
+### Current Post-M3 reconciliation direction
+
+Webcore owns the baseline Content capability and state, including Page/Article,
+persistence, slug/public identity, lifecycle, basic authorship and Admin
+operations, basic Media references, public delivery, and normalized render data.
+Content Manager remains a Bundled Module that **EXTENDS** Webcore Content.
+Rich-text/editor implementation is outside this promotion and WU3 extraction.
+The M1.5 local-module ownership record below is historical where it conflicts
+with this promoted target. See
+`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`.
+
 ---
 
 ## M1.5 Scope

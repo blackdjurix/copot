@@ -36,6 +36,16 @@ Module ownership remains local wherever applicable: routes, permissions, service
 
 Cross-module integration must use explicit boundaries such as public service contracts, registry contributions, event/listener integration, documented module APIs, or declared dependencies. Modules must not reach into another module's private files, depend on another module's filesystem layout, or write directly into schema owned by another module without an approved shared contract.
 
+### Current Post-M3 reconciliation direction
+
+The current target architecture is authoritative in
+`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`.
+Webcore owns complete minimum viability, including baseline Content, Media,
+Navigation, Redirects, and the always-available Built-in Public View. Optional
+Modules and Themes must not be required for a usable installation. The earlier
+M1/M3 ownership descriptions below remain milestone history where they differ
+from this promoted target; implementation has not started.
+
 ---
 
 ## Core Layer

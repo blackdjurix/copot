@@ -6,6 +6,15 @@ The taxonomy system provides reusable classification for Copot.
 
 Taxonomy is the primary domain concept. Category and tag are taxonomy types, not separate primary architecture models.
 
+### Current Post-M3 reconciliation direction
+
+Webcore has no default taxonomy system. Taxonomy semantics and state are
+Module-owned by default; shared taxonomy identity is exceptional and requires a
+concrete cross-domain semantic need. Taxonomy Manager is a high-confidence
+retirement candidate. The M1.6 taxonomy foundation and M3.5 Manager records
+below remain historical where they conflict with this promoted target. See
+`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`.
+
 ---
 
 ## M1.6 Scope

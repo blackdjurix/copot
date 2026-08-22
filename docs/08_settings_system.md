@@ -8,6 +8,12 @@ fields, including the Core palette. This does not authorize an arbitrary
 settings editor or allow Settings Manager to take over Webcore baseline
 authority; see `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`.
 
+The current Post-M3 reconciliation additionally plans to retire Settings
+Manager as a product-facing ownership boundary while retaining Settings
+Platform as reusable internal machinery. This is a documentation target only;
+implementation has not started. The authoritative disposition is in
+`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`.
+
 ## Purpose
 
 M1.7 Settings Foundation provides global settings for one copot installation. Settings is a Core/platform service, not an optional module.

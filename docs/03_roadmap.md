@@ -1283,6 +1283,18 @@ AND CLOSED on the integrated `main` baseline. Its authoritative contract and
 closure record is `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`;
 technical validation and human UI acceptance are PASS / APPROVED.
 
+### Post-M3 Webcore & Extension Architecture Reconciliation
+
+The authoritative contract is
+`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`.
+The workstream is PROMOTED / CONTRACT LOCKED and implementation has NOT
+STARTED. Its topology is WU1 Architecture Contract & Ownership Reconciliation,
+WU2 Built-in Public View & Theme Decoupling, WU3 Webcore Content Extraction,
+WU4 Webcore Media Extraction, WU5 Webcore Navigation & Redirects Extraction,
+WU6 Bundled Module & Installer Reconciliation, and WU7 Cross-Lifecycle
+Acceptance & Architecture Closure. MR.2 WU1 and WU2 are complete; MR.2 WU3
+onward remains ON HOLD until this workstream closes.
+
 ---
 
 ## Historical M3 Core Modules Context

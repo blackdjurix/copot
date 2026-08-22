@@ -8,6 +8,17 @@ The original M1.8 slice is not an upgrade, migration, repair, reset, or provisio
 
 The installer endpoint is `/install`. Supported database baselines are MySQL 8.0 or newer and MariaDB 10.4.32 or newer.
 
+### Current Post-M3 reconciliation direction
+
+The promoted target requires fresh installation to remain valid with zero
+mandatory optional Modules and zero mandatory Themes. Built-in Public View
+removes any Theme requirement. A later implementation may allow a Bundled
+Module to be not installed, installed but disabled, or installed and enabled;
+this promotion does not change the installer. The M1.8 finalization record
+below remains historical where it describes mandatory baseline Module or Theme
+activation. See
+`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`.
+
 ## Locked Scope
 
 M1.8 includes:

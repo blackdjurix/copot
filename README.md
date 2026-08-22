@@ -16,6 +16,12 @@ contract and closure record is
 `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`; technical
 validation and human UI acceptance are PASS / APPROVED.
 
+Post-M3 Webcore & Extension Architecture Reconciliation is PROMOTED / CONTRACT
+LOCKED at
+`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`;
+implementation has NOT STARTED. Its seven-WU topology is authoritative. MR.2
+WU3 onward remains ON HOLD until this workstream closes.
+
 The older milestone narrative below is retained as historical checkpoint
 context; it does not override the current post-M3 state recorded below.
 

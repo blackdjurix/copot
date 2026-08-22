@@ -10,6 +10,15 @@ M1.4 introduces the first local frontend theme foundation. It is intentionally s
 
 M1.4.1 introduces a separate core Admin Shell. The Admin Shell does not use frontend themes, active theme layouts, `ViewRenderer`, or frontend theme overrides.
 
+### Current Post-M3 reconciliation direction
+
+Webcore owns the always-available Built-in Public View and does not own a
+Theme. No active Theme resolves to Built-in Public View; a compatible active
+Theme may provide presentation. Theme remains optional, and no Theme is
+required for a valid public site. The M1.4 Theme System record below remains
+historical where it assumes a mandatory active default Theme. See
+`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`.
+
 ---
 
 ## Future Branding and Theme Settings Boundary
