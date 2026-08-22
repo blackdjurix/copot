@@ -12,18 +12,23 @@ class ViewRenderer
         private SiteBranding $branding,
         private ?FrontendThemeContextRegistry $frontendThemeContext = null,
         private ?ThemeSettingsResolver $themeSettingsResolver = null,
-        private ?DeploymentContext $deployment = null
+        private ?DeploymentContext $deployment = null,
+        private ?string $builtInLayoutPath = null
     )
     {
     }
 
     public function renderFile(string $contentPath, array $context = [], ?string $layout = null, ?string $title = null): string
     {
-        $theme = $this->themes->activeTheme();
-        if ($this->frontendThemeContext !== null) {
+        try {
+            $theme = $this->themes->activeThemeOrNull();
+        } catch (ThemeException) {
+            $theme = null;
+        }
+        if ($theme !== null && $this->frontendThemeContext !== null) {
             $context = array_replace($context, $this->frontendThemeContext->compose($theme));
         }
-        $themeAsset = fn (string $path): string => $this->themeAssets->url($path);
+        $themeAsset = $theme === null ? null : fn (string $path): string => $this->themeAssets->url($path);
         $title = $title ?? $this->branding->name();
         $contentPath = $this->resolveContentPath($contentPath);
         $variables = [
@@ -37,7 +42,14 @@ class ViewRenderer
         ];
         $content = $this->renderPhpFile($contentPath, $variables);
 
-        return $this->renderPhpFile($this->themes->layoutPath($layout), $variables + [
+        $layoutPath = $theme === null
+            ? $this->builtInLayoutPath
+            : $this->themes->layoutPath($layout);
+        if ($layoutPath === null || !is_file($layoutPath)) {
+            throw new ThemeException('Built-in Public View layout is unavailable.');
+        }
+
+        return $this->renderPhpFile($layoutPath, $variables + [
             'content' => $content,
         ]);
     }

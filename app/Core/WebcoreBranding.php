@@ -19,6 +19,21 @@ final class WebcoreBranding
         return self::DEFAULT_PALETTE;
     }
 
+    public static function builtInAccentPalette(mixed $accent): array
+    {
+        $accent = self::isHexColor($accent) ? strtolower($accent) : self::DEFAULT_PALETTE['accent'];
+        $foreground = self::contrastRatio($accent, '#ffffff') >= self::contrastRatio($accent, '#17202a')
+            ? '#ffffff'
+            : '#17202a';
+
+        return [
+            'accent' => $accent,
+            'accent-soft' => self::blend($accent, '#ffffff', 0.88),
+            'accent-strong' => self::blend($accent, '#000000', 0.18),
+            'accent-foreground' => $foreground,
+        ];
+    }
+
     public static function resolvePalette(array $palette): array
     {
         $resolved = [];
@@ -90,5 +105,17 @@ final class WebcoreBranding
         }
 
         return (0.2126 * $rgb[0]) + (0.7152 * $rgb[1]) + (0.0722 * $rgb[2]);
+    }
+
+    private static function blend(string $color, string $target, float $amount): string
+    {
+        $channels = [];
+        for ($offset = 1; $offset <= 5; $offset += 2) {
+            $source = hexdec(substr($color, $offset, 2));
+            $destination = hexdec(substr($target, $offset, 2));
+            $channels[] = (int) round($source + (($destination - $source) * $amount));
+        }
+
+        return sprintf('#%02x%02x%02x', ...$channels);
     }
 }

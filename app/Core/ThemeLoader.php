@@ -21,6 +21,19 @@ class ThemeLoader
             throw new ThemeException('No active frontend theme is registered.');
         }
 
+        return $this->loadTheme($theme);
+    }
+
+    public function activeThemeOrNull(): ?array
+    {
+        $theme = $this->themes->activeFrontend();
+
+        return $theme === null ? null : $this->loadTheme($theme);
+    }
+
+    private function loadTheme(array $theme): array
+    {
+
         $themePath = $this->resolveThemePath($theme);
         $metadata = $this->decodeMetadata($theme);
         $this->defaultLayout($metadata);

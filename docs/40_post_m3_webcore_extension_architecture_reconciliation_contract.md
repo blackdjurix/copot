@@ -7,7 +7,8 @@ Post-M3 track: Webcore & Extension Architecture Reconciliation
 Contract status: PROMOTED / CONTRACT LOCKED
 WU1 implementation: COMPLETE AND CLOSED
 WU1 focused validation: PASS
-WU2-WU7 implementation: NOT STARTED
+WU2 implementation: TECHNICALLY COMPLETE / HUMAN ACCEPTANCE PENDING
+WU3-WU7 implementation: NOT STARTED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
 MR.2 WU3 onward: ON HOLD until this workstream closes
@@ -92,6 +93,32 @@ Site Identity includes Logo and Favicon. Baseline appearance may include Color
 Scheme and Font. These are bounded Webcore baseline values; a Theme may consume
 them through an explicit presentation contract without taking ownership of
 Webcore identity state.
+
+### WU2 implementation result
+
+WU2 establishes the Webcore-owned Built-in Public View as the runtime fallback
+for public rendering. The resolver now treats an absent or invalid active Theme
+as an optional-extension condition rather than a public-rendering prerequisite:
+
+```text
+no active or compatible Theme -> Webcore Built-in Public View
+compatible active Theme       -> Theme presentation
+Theme deactivated or removed  -> Webcore Built-in Public View
+```
+
+The Built-in Public View is a Webcore layout and is not a packaged or
+implicitly active Theme. It provides a neutral responsive shell, optional Site
+Identity Logo/Favicon, Site Name fallback, bounded accent-color variants,
+existing safe navigation context when available, plain-text content rendering,
+and a runtime-derived `© {current_year} {site_name}` footer. It does not imply
+rich-text, Markdown, block composition, or Theme ownership.
+
+WU2 consumes the currently available transitional Content and navigation view
+contracts without moving their ownership or implementing WU3-WU5 extraction.
+Theme Manager and Theme packages remain optional extension machinery. Installer
+reconciliation remains WU6 scope. Technical validation is complete; human
+visual/product acceptance remains pending on the local review surface supplied
+with the implementation handoff.
 
 ## Webcore Content
 

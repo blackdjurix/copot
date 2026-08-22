@@ -104,7 +104,7 @@ class Application
         $this->themeAssets = new ThemeAssets($this->themeLoader, $this->deployment);
         $this->themeSettingsResolver = new ThemeSettingsResolver($themeRepository, new ThemeSettingsService(new SettingsRepository($this->database), $this->database));
         $this->frontendThemeContext = new FrontendThemeContextRegistry($this->diagnostics);
-        $this->viewRenderer = new ViewRenderer($this->themeLoader, $this->themeAssets, $this->branding, $this->frontendThemeContext, $this->themeSettingsResolver, $this->deployment);
+        $this->viewRenderer = new ViewRenderer($this->themeLoader, $this->themeAssets, $this->branding, $this->frontendThemeContext, $this->themeSettingsResolver, $this->deployment, $this->path('resources/views/layout.php'));
         $this->viewResolver = new ViewResolver(
             $this->themeLoader,
             $this->path('resources/views'),

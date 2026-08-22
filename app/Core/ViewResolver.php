@@ -79,12 +79,13 @@ class ViewResolver
 
     private function resolveCoreView(string $viewPath, string $viewName): string
     {
-        $themeViews = $this->themes->themePath() . DIRECTORY_SEPARATOR . 'views';
+        $themeViews = $this->activeThemeViews();
+        $candidates = [[$this->coreViewsPath, $viewPath]];
+        if ($themeViews !== null) {
+            array_unshift($candidates, [$themeViews, $viewPath]);
+        }
 
-        return $this->firstExisting([
-            [$themeViews, $viewPath],
-            [$this->coreViewsPath, $viewPath],
-        ], "Core view [{$viewName}] was not found.");
+        return $this->firstExisting($candidates, "Core view [{$viewName}] was not found.");
     }
 
     private function resolveThemeView(string $viewPath, string $viewName): string
@@ -102,18 +103,30 @@ class ViewResolver
             throw new ViewException("View namespace [{$module}] is reserved.");
         }
 
-        $themeModuleViews = $this->themes->themePath()
-            . DIRECTORY_SEPARATOR . 'views'
-            . DIRECTORY_SEPARATOR . 'modules'
-            . DIRECTORY_SEPARATOR . $module;
         $moduleViews = $this->modulesPath
             . DIRECTORY_SEPARATOR . $module
             . DIRECTORY_SEPARATOR . 'views';
+        $candidates = [[$moduleViews, $viewPath]];
+        $themeViews = $this->activeThemeViews();
+        if ($themeViews !== null) {
+            array_unshift($candidates, [
+                $themeViews . DIRECTORY_SEPARATOR . 'modules' . DIRECTORY_SEPARATOR . $module,
+                $viewPath,
+            ]);
+        }
 
-        return $this->firstExisting([
-            [$themeModuleViews, $viewPath],
-            [$moduleViews, $viewPath],
-        ], "Module view [{$viewName}] was not found.");
+        return $this->firstExisting($candidates, "Module view [{$viewName}] was not found.");
+    }
+
+    private function activeThemeViews(): ?string
+    {
+        try {
+            $theme = $this->themes->activeThemeOrNull();
+        } catch (ThemeException) {
+            return null;
+        }
+
+        return $theme === null ? null : $theme['theme_path'] . DIRECTORY_SEPARATOR . 'views';
     }
 
     private function firstExisting(array $candidates, string $errorMessage): string
