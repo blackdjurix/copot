@@ -7,8 +7,11 @@ Post-M3 track: Webcore & Extension Architecture Reconciliation
 Contract status: PROMOTED / CONTRACT LOCKED
 WU1 implementation: COMPLETE AND CLOSED
 WU1 focused validation: PASS
-WU2 implementation: TECHNICALLY COMPLETE / HUMAN ACCEPTANCE PENDING
-WU3-WU7 implementation: NOT STARTED
+WU2 technical validation: PASS
+WU2 human visual/product acceptance: PASS
+WU2 implementation: COMPLETE AND CLOSED
+WU3: NEXT / NOT STARTED
+WU4-WU7: NOT STARTED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
 MR.2 WU3 onward: ON HOLD until this workstream closes
@@ -116,9 +119,10 @@ rich-text, Markdown, block composition, or Theme ownership.
 WU2 consumes the currently available transitional Content and navigation view
 contracts without moving their ownership or implementing WU3-WU5 extraction.
 Theme Manager and Theme packages remain optional extension machinery. Installer
-reconciliation remains WU6 scope. Technical validation is complete; human
-visual/product acceptance remains pending on the local review surface supplied
-with the implementation handoff.
+reconciliation remains WU6 scope. Technical validation and human
+visual/product acceptance are PASS. WU2 is COMPLETE AND CLOSED. The normal
+application entrypoint's pre-existing masked HTTP 500 was reproduced at the
+WU2 parent and is not a WU2 regression or a reason to reopen this closure.
 
 ## Webcore Content
 
@@ -248,6 +252,13 @@ The workstream is locked to this seven-WU topology:
 5. **WU5 — Webcore Navigation & Redirects Extraction**
 6. **WU6 — Bundled Module & Installer Reconciliation**
 7. **WU7 — Cross-Lifecycle Acceptance & Architecture Closure**
+
+Current workstream execution state:
+
+- WU1 — COMPLETE AND CLOSED.
+- WU2 — COMPLETE AND CLOSED.
+- WU3 — NEXT / NOT STARTED.
+- WU4-WU7 — NOT STARTED.
 
 MR.2 WU1 and WU2 are already complete and closed. MR.2 WU3 onward remains on
 hold until this workstream closes. This workstream does not reopen MR.2 and
