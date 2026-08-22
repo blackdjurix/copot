@@ -84,7 +84,8 @@ class ModuleDiscovery
             frontendContext: isset($metadata['frontend_context']) ? (string) $metadata['frontend_context'] : null,
             resolver: isset($metadata['resolver']) ? (string) $metadata['resolver'] : null,
             requires: isset($metadata['requires']) && is_array($metadata['requires']) ? $metadata['requires'] : [],
-            permissions: isset($metadata['permissions']) && is_array($metadata['permissions']) ? $metadata['permissions'] : []
+            permissions: isset($metadata['permissions']) && is_array($metadata['permissions']) ? $metadata['permissions'] : [],
+            schema: isset($metadata['schema']) ? (string) $metadata['schema'] : null
         );
     }
 
@@ -128,6 +129,11 @@ class ModuleDiscovery
         if (array_key_exists('resolver', $metadata)
             && (!is_string($metadata['resolver']) || !$this->isSafeListenerPath($metadata['resolver']))) {
             return 'Module resolver path must be a safe relative path inside the module folder.';
+        }
+
+        if (array_key_exists('schema', $metadata)
+            && (!is_string($metadata['schema']) || !$this->isSafeRelativePath($metadata['schema']))) {
+            return 'Module schema path must be a safe relative path inside the module folder.';
         }
 
         if (array_key_exists('requires', $metadata)) {

@@ -6,6 +6,7 @@
   "author": "Copot",
   "routes": "routes.php",
   "frontend_context": "frontend-context.php",
+  "schema": "schema.sql",
   "requires": {
     "modules": []
   },

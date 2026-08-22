@@ -195,7 +195,7 @@ class InstallerSchemaRunner
 
     private function validateStatement(string $statement): void
     {
-        if (!preg_match('/\A(?:CREATE\s+TABLE|INSERT\s+INTO)\b/i', $statement)) {
+        if (!preg_match('/\A(?:CREATE\s+TABLE|INSERT(?:\s+IGNORE)?\s+INTO)\b/i', $statement)) {
             throw new InstallationException('Database schema contains an unsupported statement.');
         }
     }

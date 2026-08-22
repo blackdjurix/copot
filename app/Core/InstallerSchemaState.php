@@ -24,11 +24,6 @@ class InstallerSchemaState
     private const MODULE_TABLES = [
         'modules',
         'module_permissions',
-        'taxonomy_types',
-        'taxonomy_terms',
-        'taxonomy_assignments',
-        'navigation_menu_assignments',
-        'media_variants',
     ];
 
     public function __construct(private Database $database)

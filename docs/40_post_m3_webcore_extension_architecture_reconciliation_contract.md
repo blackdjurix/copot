@@ -309,21 +309,24 @@ available.
 ### WU6 implementation result
 
 WU6 reconciles fresh installation with the Webcore minimum-viability boundary.
-The installer materializes the accepted aggregate schema, including Webcore
-Content, baseline Media, primary Navigation, and Redirects, without requiring
-any optional Module or Theme to be installed or enabled. Finalization commits
-the installation lifecycle after the first Administrator and required Site
-settings are valid; it does not activate a default Theme or provision a
-baseline Module set.
+The installer materializes only the Webcore-owned baseline and shared
+foundation schema, including Webcore Content, baseline Media, primary
+Navigation, Redirects, users, Settings, Themes, and the Webcore Module
+registry. It does so without requiring any optional Module or Theme to be
+installed or enabled. Finalization commits the installation lifecycle after
+the first Administrator and required Site settings are valid; it does not
+activate a default Theme or provision a baseline Module set.
 
 Bundled Modules remain discoverable and are governed by the existing singular
-Module Manager lifecycle. Explicit lifecycle operations continue to represent
-not installed, installed-but-disabled, and installed-and-enabled states where
-the existing package supports them. Retained Content, Media, Navigation, Form,
-Taxonomy, and Theme packages remain optional extensions; `media_variants`,
-`navigation_menu_assignments`, taxonomy state, and Form Manager state remain
-Module-owned. No package was deleted, no second lifecycle engine was added, and
-no destructive schema or data cleanup was performed.
+Module Manager lifecycle. Local/Bundled Module manifests may declare an
+owner-scoped schema source. Installation invokes the existing
+`ModuleProvisioningReconciler` through Module Manager, applies namespace-aware
+table resolution, and rejects schema statements whose table owner does not
+match the installing Module. Explicit lifecycle operations continue to
+represent not installed, installed-but-disabled, and installed-and-enabled
+states where the existing package supports them. No package was deleted, no
+second lifecycle engine was added, and no destructive schema or data cleanup
+was performed.
 
 Built-in Public View remains valid when no Theme is registered or active, and
 omitting or disabling retained Bundled Modules does not invalidate Webcore
@@ -331,6 +334,27 @@ minimum viability. WU6 does not alter the accepted WU3-WU5 ownership matrix.
 
 WU6 technical validation is PASS and WU6 is COMPLETE AND CLOSED. WU7 remains
 the next work unit and is NOT STARTED.
+
+### WU6 table materialization categories
+
+The authoritative materialization model has three categories:
+
+1. **Webcore capability/state tables** — Webcore owns capability/state,
+   schema contract, migration authority, lifecycle, and baseline materialization.
+   These tables exist in every valid Webcore installation.
+2. **Webcore shared/extensible foundation tables** — Webcore owns the table,
+   baseline schema contract, migration authority, compatibility boundary, and
+   baseline materialization. Modules may consume or extend them only through a
+   bounded explicit contract; Bundled status never creates co-ownership.
+3. **Module-owned extension/domain tables** — the owning Module controls schema,
+   migrations, domain semantics, and lifecycle. These tables are materialized
+   by that Module lifecycle, not by Webcore baseline installation.
+
+The current Webcore baseline includes `content`, `media`, `media_usages`,
+`navigation_menus`, `navigation_items`, and `redirects`. Module-owned state
+includes `media_variants`, `navigation_menu_assignments`, taxonomy tables, and
+Form Manager tables. One Module may own multiple tables; no table has shared
+ownership.
 
 ## Development migration boundary
 

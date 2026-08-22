@@ -20,7 +20,7 @@ final class ModuleManifestValidator
             return "Module folder [{$folderName}] must match module name [{$name}].";
         }
 
-        foreach (['routes' => false, 'listeners' => true, 'frontend_context' => true, 'resolver' => true] as $field => $listenerPath) {
+        foreach (['routes' => false, 'listeners' => true, 'frontend_context' => true, 'resolver' => true, 'schema' => false] as $field => $listenerPath) {
             if (array_key_exists($field, $metadata)
                 && (!is_string($metadata[$field]) || !self::isSafePath($metadata[$field], $listenerPath))) {
                 return "Module {$field} path must be a safe relative path inside the module folder.";

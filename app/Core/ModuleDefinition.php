@@ -16,7 +16,8 @@ class ModuleDefinition
         private array $requires = [],
         private array $permissions = [],
         private ?string $frontendContext = null,
-        private ?string $resolver = null
+        private ?string $resolver = null,
+        private ?string $schema = null
     ) {
     }
 
@@ -70,6 +71,11 @@ class ModuleDefinition
         return $this->resolver;
     }
 
+    public function schema(): ?string
+    {
+        return $this->schema;
+    }
+
     public function requires(): array
     {
         return $this->requires;
@@ -93,6 +99,7 @@ class ModuleDefinition
             'listeners' => $this->listeners,
             'frontend_context' => $this->frontendContext,
             'resolver' => $this->resolver,
+            'schema' => $this->schema,
             'requires' => $this->requires,
             'permissions' => $this->permissions,
         ];

@@ -248,23 +248,6 @@ CREATE TABLE navigation_items (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE navigation_menu_assignments (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    theme_id VARCHAR(100) NOT NULL,
-    location_key VARCHAR(100) NOT NULL,
-    menu_id BIGINT UNSIGNED NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    UNIQUE KEY uq_navigation_assignment_theme_location (theme_id, location_key),
-    INDEX idx_navigation_assignment_menu (menu_id),
-    CONSTRAINT fk_navigation_assignment_theme
-        FOREIGN KEY (theme_id) REFERENCES themes(theme_id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_navigation_assignment_menu
-        FOREIGN KEY (menu_id) REFERENCES navigation_menus(id)
-        ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE content (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     type VARCHAR(50) NOT NULL,
@@ -288,52 +271,6 @@ CREATE TABLE content (
         ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-CREATE TABLE taxonomy_types (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    slug VARCHAR(100) NOT NULL UNIQUE,
-    name VARCHAR(150) NOT NULL,
-    description TEXT NULL,
-    is_hierarchical TINYINT(1) NOT NULL DEFAULT 0,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO taxonomy_types (slug, name, description, is_hierarchical, created_at, updated_at) VALUES
-    ('category', 'Category', 'Default hierarchical content classification type.', 1, NOW(), NOW()),
-    ('tag', 'Tag', 'Default flat content classification type.', 0, NOW(), NOW());
-
-CREATE TABLE taxonomy_terms (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    taxonomy_type_id BIGINT UNSIGNED NOT NULL,
-    parent_id BIGINT UNSIGNED NULL,
-    name VARCHAR(150) NOT NULL,
-    slug VARCHAR(150) NOT NULL,
-    description TEXT NULL,
-    sort_order INT NOT NULL DEFAULT 0,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    UNIQUE KEY uq_taxonomy_terms_type_slug (taxonomy_type_id, slug),
-    INDEX idx_taxonomy_terms_type_parent (taxonomy_type_id, parent_id),
-    CONSTRAINT fk_taxonomy_terms_type
-        FOREIGN KEY (taxonomy_type_id) REFERENCES taxonomy_types(id)
-        ON DELETE CASCADE,
-    CONSTRAINT fk_taxonomy_terms_parent
-        FOREIGN KEY (parent_id) REFERENCES taxonomy_terms(id)
-        ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE taxonomy_assignments (
-    taxonomy_term_id BIGINT UNSIGNED NOT NULL,
-    entity_type VARCHAR(100) NOT NULL,
-    entity_id BIGINT UNSIGNED NOT NULL,
-    created_at DATETIME NOT NULL,
-    PRIMARY KEY (taxonomy_term_id, entity_type, entity_id),
-    INDEX idx_taxonomy_assignments_entity (entity_type, entity_id),
-    CONSTRAINT fk_taxonomy_assignments_term
-        FOREIGN KEY (taxonomy_term_id) REFERENCES taxonomy_terms(id)
-        ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 CREATE TABLE media (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     kind VARCHAR(30) NOT NULL,
@@ -348,25 +285,6 @@ CREATE TABLE media (
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL,
     INDEX idx_media_kind_updated (kind, updated_at, id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE media_variants (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    media_id BIGINT UNSIGNED NOT NULL,
-    variant_key VARCHAR(100) NOT NULL,
-    storage_key VARCHAR(255) NOT NULL UNIQUE,
-    mime_type VARCHAR(190) NOT NULL,
-    extension VARCHAR(20) NOT NULL,
-    byte_size BIGINT UNSIGNED NOT NULL,
-    width INT UNSIGNED NULL,
-    height INT UNSIGNED NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    UNIQUE KEY uq_media_variants_media_key (media_id, variant_key),
-    INDEX idx_media_variants_media_updated (media_id, updated_at, id),
-    CONSTRAINT fk_media_variants_media
-        FOREIGN KEY (media_id) REFERENCES media(id)
-        ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE media_usages (
@@ -420,82 +338,7 @@ INNER JOIN permissions ON permissions.slug IN ('media.view', 'media.upload', 'me
 LEFT JOIN role_permissions ON role_permissions.role_id = roles.id AND role_permissions.permission_id = permissions.id
 WHERE roles.slug = 'admin' AND role_permissions.permission_id IS NULL;
 
-CREATE TABLE forms (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(150) NOT NULL,
-    status VARCHAR(30) NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    INDEX idx_forms_status_updated (status, updated_at, id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE form_fields (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    form_id BIGINT UNSIGNED NOT NULL,
-    field_key VARCHAR(100) NOT NULL,
-    label VARCHAR(150) NOT NULL,
-    field_type VARCHAR(30) NOT NULL,
-    sort_order INT UNSIGNED NOT NULL,
-    is_required TINYINT(1) NOT NULL DEFAULT 0,
-    min_length INT UNSIGNED NULL,
-    max_length INT UNSIGNED NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    UNIQUE KEY uq_form_fields_form_key (form_id, field_key),
-    UNIQUE KEY uq_form_fields_form_order (form_id, sort_order),
-    INDEX idx_form_fields_form_order (form_id, sort_order, id),
-    CONSTRAINT fk_form_fields_form FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE form_field_options (
-    form_field_id BIGINT UNSIGNED NOT NULL,
-    option_value VARCHAR(100) NOT NULL,
-    option_label VARCHAR(150) NOT NULL,
-    sort_order INT UNSIGNED NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    PRIMARY KEY (form_field_id, option_value),
-    UNIQUE KEY uq_form_field_options_order (form_field_id, sort_order),
-    INDEX idx_form_field_options_order (form_field_id, sort_order, option_value),
-    CONSTRAINT fk_form_field_options_field FOREIGN KEY (form_field_id) REFERENCES form_fields(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE form_submissions (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    form_id BIGINT UNSIGNED NOT NULL,
-    status VARCHAR(30) NOT NULL,
-    created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL,
-    INDEX idx_form_submissions_form_status_updated (form_id, status, updated_at, id),
-    CONSTRAINT fk_form_submissions_form FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE form_submission_values (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    submission_id BIGINT UNSIGNED NOT NULL,
-    form_field_id BIGINT UNSIGNED NULL,
-    field_key VARCHAR(100) NOT NULL,
-    field_label VARCHAR(150) NOT NULL,
-    field_type VARCHAR(30) NOT NULL,
-    value_text TEXT NOT NULL,
-    value_label VARCHAR(150) NULL,
-    created_at DATETIME NOT NULL,
-    UNIQUE KEY uq_form_submission_values_submission_key (submission_id, field_key),
-    INDEX idx_form_submission_values_submission (submission_id, id),
-    INDEX idx_form_submission_values_field (form_field_id),
-    CONSTRAINT fk_form_submission_values_submission FOREIGN KEY (submission_id) REFERENCES form_submissions(id) ON DELETE CASCADE,
-    CONSTRAINT fk_form_submission_values_field FOREIGN KEY (form_field_id) REFERENCES form_fields(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE form_submission_attempts (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    form_id BIGINT UNSIGNED NOT NULL,
-    client_address VARBINARY(16) NOT NULL,
-    attempted_at DATETIME NOT NULL,
-    INDEX idx_form_submission_attempts_form_client_time (form_id, client_address, attempted_at, id),
-    INDEX idx_form_submission_attempts_cleanup (attempted_at, id),
-    CONSTRAINT fk_form_submission_attempts_form FOREIGN KEY (form_id) REFERENCES forms(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Form Manager tables are materialized by the owning Module lifecycle.
 
 INSERT INTO permissions (name, slug, created_at, updated_at)
 SELECT desired.name, desired.slug, NOW(), NOW()

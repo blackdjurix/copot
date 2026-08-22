@@ -50,6 +50,10 @@ class ModuleManager
                 throw new \RuntimeException("Module [{$name}] was not found during discovery.");
             }
 
+            if ($module->schema() !== null) {
+                $this->provisionSchema($module);
+            }
+
             $this->repository->atomic(function () use ($module): void {
                 $this->repository->create($module, 'disabled');
                 $this->repository->replacePermissions($module);
@@ -58,6 +62,27 @@ class ModuleManager
             throw $failure;
         } catch (\Throwable $failure) {
             throw new ModuleLifecycleException('Module installation failed.', 0, $failure);
+        }
+    }
+
+    private function provisionSchema(ModuleDefinition $module): void
+    {
+        $provisioner = new ModuleSchemaProvisioner($this->repository->database());
+        $result = (new ModuleProvisioningReconciler(
+            function (ModuleIdentity $owner, ModuleProvisioningDeclaration $declaration, bool $baseline, ?ModuleProvisioningContext $context) use ($module, $provisioner): void {
+                if (!$baseline || !$context || $owner->value() !== $module->name()) {
+                    throw new ModuleLifecycleException('Module baseline provisioning context is invalid.');
+                }
+                $provisioner->provision($module, $context);
+            },
+            null,
+            $this->repository->database()->tables()
+        ))->establishBaseline(
+            new ModuleIdentity($module->name()),
+            new ModuleProvisioningDeclaration('local-' . $module->name() . '-' . $module->version())
+        );
+        if ($result->status() !== ModuleProvisioningReconciliationResult::COMPLETED) {
+            throw new ModuleLifecycleException($result->reason() ?: 'Module schema provisioning failed.');
         }
     }
 

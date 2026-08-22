@@ -10,6 +10,11 @@ class ModuleRepository
     {
     }
 
+    public function database(): Database
+    {
+        return $this->database;
+    }
+
     public function all(): array
     {
         $statement = $this->database->connection()->query(

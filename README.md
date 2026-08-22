@@ -489,8 +489,8 @@ Included so far:
 - Atomic root `.env` database configuration persistence
 - Canonical `database/schema.sql` installation
 - First administrator and initial site/localization setup
-- Automatic default-theme activation
-- Automatic Content, Taxonomy, Settings Manager, Module Manager, Navigation, and Theme Manager compatibility-baseline module enablement
+- Built-in Public View with no required active Theme
+- Webcore baseline/foundation schema materialization with optional Module-owned schema provisioned through Module Manager
 - Atomic final installation marker at `storage/installed.lock`
 - Installer denial after successful installation
 

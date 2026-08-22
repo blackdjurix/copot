@@ -51,7 +51,7 @@ final class DatabaseTableOwnershipCatalog
         ];
         $entries = [];
         foreach ($webcore as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::webcore(), 'database/schema.sql', null, self::targetOwnerFor($table), self::transitionWorkUnitFor($table));
-        foreach ($modules as $module => $tables) foreach ($tables as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::module($module), 'database/schema.sql', 'aggregate-installer:database/schema.sql', self::targetOwnerFor($table), self::transitionWorkUnitFor($table));
+        foreach ($modules as $module => $tables) foreach ($tables as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::module($module), 'modules/' . $module . '/schema.sql', 'aggregate-installer:database/schema.sql', self::targetOwnerFor($table), self::transitionWorkUnitFor($table));
         return new self($entries, [
             new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::webcore(), DatabaseTableExtensionGrant::ADD_COLUMN, 'featured_media_id', 'database/upgrades/m3_8_media_library.sql', 'm3.8-wu7-pre-m3.8-upgrade'),
             new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::webcore(), DatabaseTableExtensionGrant::ADD_INDEX, 'idx_content_featured_media', 'database/upgrades/m3_8_media_library.sql', 'm3.8-wu7-pre-m3.8-upgrade'),

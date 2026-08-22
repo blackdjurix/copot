@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "author": "Copot",
   "routes": "routes.php",
+  "schema": "schema.sql",
   "requires": { "modules": [] },
   "permissions": [
     { "slug": "forms.view", "name": "View forms" },

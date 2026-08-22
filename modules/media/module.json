@@ -8,6 +8,7 @@
     "modules": []
   },
   "routes": "routes.php",
+  "schema": "schema.sql",
   "permissions": [
     { "slug": "media.view", "name": "View media" },
     { "slug": "media.upload", "name": "Upload media" },

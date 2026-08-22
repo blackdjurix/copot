@@ -30,7 +30,7 @@ M1.8 includes:
 * Installation of the canonical `database/schema.sql` with WU2/WU3 logical-to-physical naming, preserving the empty namespace and supporting a selected non-empty namespace through WU5 routing.
 * Creation of the first active administrator through a dedicated installer workflow service using `PasswordHasher` and the seeded `admin` role.
 * Initial `site.name`, `site.tagline`, `localization.timezone`, and `localization.locale` overrides through `SettingsService`.
-* Webcore baseline schema materialization without requiring optional Module or Theme activation.
+* Webcore baseline and shared-foundation schema materialization without requiring optional Module or Theme activation; Module-owned schema is deferred to the owning Module lifecycle.
 * Optional registration, installation, enablement, and deactivation through the existing Theme and Module lifecycle services when explicitly requested.
 * A final installation lock written only after all required setup succeeds.
 * Installer denial after successful installation.
@@ -64,7 +64,7 @@ Checks must complete before persistent installation work:
 
 Checks should report capability names and remediation guidance, not absolute filesystem paths or server internals.
 
-The canonical schema is validated when database installation runs. Optional Theme and Module metadata is validated only when an operator explicitly uses the corresponding lifecycle service.
+The canonical schema is validated when database installation runs. Optional Theme and Module metadata is validated only when an operator explicitly uses the corresponding lifecycle service. Module schema declarations are owner-checked before their statements execute and are resolved through the selected namespace.
 
 ## Database Contract
 
@@ -134,7 +134,7 @@ The database form uses one stable-width action button. A successful asynchronous
 
 After the first administrator and initial Settings exist, the installer presents one explicit finalization action. A dedicated finalizer acquires the installer mutex and rechecks the canonical schema, exactly one active administrator assigned to the built-in `admin` role, and valid persisted overrides for Site Name, Site Tagline, Timezone, and Locale.
 
-WU6 finalization commits the installation after the administrator, required Settings, and Webcore baseline schema are valid. It does not register or activate a Theme and does not install or enable a baseline Module set. Optional Theme and Module operations remain available through their existing lifecycle services and are not duplicated by the installer.
+WU6 finalization commits the installation after the administrator, required Settings, and Webcore baseline/foundation schema are valid. It does not register or activate a Theme, install or enable a baseline Module set, or require Module-owned extension tables. Optional Module installation uses the existing Module Manager provisioning lifecycle and materializes only the owning Module's declared schema.
 
 `storage/installed.lock` is created atomically as the final operation only. Its version comes from the framework release source of truth, `Copot\Core\Version::CURRENT`. Once present and valid, `/install` is blocked by the pre-bootstrap gate and normal application requests proceed. Successful finalization redirects to the configured admin path rather than a hardcoded `/admin` URL.
 
