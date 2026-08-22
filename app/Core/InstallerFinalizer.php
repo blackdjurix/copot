@@ -10,7 +10,6 @@ class InstallerFinalizer
         ['localization', 'timezone'],
         ['localization', 'locale'],
     ];
-    private const BASELINE_MODULES = ['content', 'settings-manager', 'taxonomy', 'module-manager', 'navigation', 'theme-manager', 'media', 'redirects', 'form-manager'];
 
     public function __construct(
         private Database $database,
@@ -52,8 +51,6 @@ class InstallerFinalizer
         }
         $this->validateFirstAdministrator();
         $this->validateInitialSettings();
-        $this->activateDefaultTheme();
-        $this->enableBaselineModules();
         $this->committedLifecycleState->commit(
             $this->installationState,
             new CommittedLifecycleState(
@@ -66,7 +63,7 @@ class InstallerFinalizer
                 new \DateTimeImmutable('now')
             )
         );
-        return ['version' => Version::CURRENT, 'theme' => 'default', 'modules' => self::BASELINE_MODULES];
+        return ['version' => Version::CURRENT, 'theme' => null, 'modules' => []];
     }
 
     private function validateFirstAdministrator(): void
@@ -118,44 +115,4 @@ class InstallerFinalizer
         }
     }
 
-    private function activateDefaultTheme(): void
-    {
-        $defaultTheme = null;
-
-        foreach ($this->themeDiscovery->discoverCatalog()['themes'] as $theme) {
-            if ($theme->id() === 'default') {
-                $defaultTheme = $theme;
-                break;
-            }
-        }
-
-        if (!$defaultTheme instanceof ThemeDefinition) {
-            throw new InstallationException('Default theme is unavailable.');
-        }
-
-        $this->themes->register($defaultTheme);
-        $this->themes->activate('default');
-    }
-
-    private function enableBaselineModules(): void
-    {
-        $installed = [];
-
-        foreach ($this->modules->installed() as $module) {
-            if (isset($module['name']) && is_string($module['name'])) {
-                $installed[$module['name']] = $module;
-            }
-        }
-
-        foreach (self::BASELINE_MODULES as $moduleName) {
-            if (!isset($installed[$moduleName])) {
-                $this->modules->install($moduleName);
-                $installed[$moduleName] = ['status' => 'disabled'];
-            }
-
-            if (($installed[$moduleName]['status'] ?? null) !== 'enabled') {
-                $this->modules->enable($moduleName);
-            }
-        }
-    }
 }

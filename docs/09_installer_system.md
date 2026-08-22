@@ -4,7 +4,7 @@
 
 M1.8 Installer Foundation provides the original web-based fresh installation flow for copot on PHP/MySQL shared hosting. It prepares one new installation from the canonical project files and existing Core services. The later Multi-Installation WU5 extension adds occupancy classification, namespace selection, explicit coexistence, and proven existing-installation adoption/migration routing while preserving the M1.8 fresh-install baseline.
 
-The original M1.8 slice is not an upgrade, migration, repair, reset, or provisioning system. Its fresh-install target database must be dedicated to copot and empty before schema installation begins; WU5 handles explicit existing-installation routing separately and fails closed without positive ownership evidence.
+The original M1.8 slice is not an upgrade, migration, repair, reset, or provisioning system. Its fresh-install target database must be dedicated to copot and empty before schema installation begins; WU5 handles explicit existing-installation routing separately and fails closed without positive ownership evidence. The accepted WU6 reconciliation makes optional Modules and Themes unnecessary for fresh-install validity.
 
 The installer endpoint is `/install`. Supported database baselines are MySQL 8.0 or newer and MariaDB 10.4.32 or newer.
 
@@ -12,11 +12,10 @@ The installer endpoint is `/install`. Supported database baselines are MySQL 8.0
 
 The promoted target requires fresh installation to remain valid with zero
 mandatory optional Modules and zero mandatory Themes. Built-in Public View
-removes any Theme requirement. A later implementation may allow a Bundled
-Module to be not installed, installed but disabled, or installed and enabled;
-this promotion does not change the installer. The M1.8 finalization record
-below remains historical where it describes mandatory baseline Module or Theme
-activation. See
+removes any Theme requirement. WU6 implements this policy while preserving the
+existing explicit Module lifecycle for optional Bundled Modules. The M1.8
+milestone record below remains historical where it describes mandatory
+baseline Module or Theme activation. See
 `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`.
 
 ## Locked Scope
@@ -31,8 +30,8 @@ M1.8 includes:
 * Installation of the canonical `database/schema.sql` with WU2/WU3 logical-to-physical naming, preserving the empty namespace and supporting a selected non-empty namespace through WU5 routing.
 * Creation of the first active administrator through a dedicated installer workflow service using `PasswordHasher` and the seeded `admin` role.
 * Initial `site.name`, `site.tagline`, `localization.timezone`, and `localization.locale` overrides through `SettingsService`.
-* Registration and activation of the local `default` frontend theme through the Theme System.
-* Installation and enablement of the local `content` and `taxonomy` modules through the Module Manager.
+* Webcore baseline schema materialization without requiring optional Module or Theme activation.
+* Optional registration, installation, enablement, and deactivation through the existing Theme and Module lifecycle services when explicitly requested.
 * A final installation lock written only after all required setup succeeds.
 * Installer denial after successful installation.
 
@@ -65,7 +64,7 @@ Checks must complete before persistent installation work:
 
 Checks should report capability names and remediation guidance, not absolute filesystem paths or server internals.
 
-The canonical schema is validated when database installation runs. Default theme and baseline module metadata are validated during finalization through their existing discovery and lifecycle services.
+The canonical schema is validated when database installation runs. Optional Theme and Module metadata is validated only when an operator explicitly uses the corresponding lifecycle service.
 
 ## Database Contract
 
@@ -106,11 +105,9 @@ The implemented capability flow is:
 9. Validate all administrator and Settings values before their first database write.
 10. Hash the administrator password with `PasswordHasher`, insert one active user, and assign the seeded `admin` role.
 11. Save Site Name, Site Tagline, Timezone, and Locale through `SettingsService` in the same transaction.
-12. Discover, register, and activate the local `default` frontend theme through existing Theme services.
-13. Discover, install, and enable the local `content` and `taxonomy` modules through `ModuleManager`.
-14. Recheck all required resulting state.
-15. Create the final installation lock atomically.
-16. Redirect to the configured admin path for login.
+12. Recheck all required resulting state without requiring an active Theme or optional Module.
+13. Create the final installation lock atomically.
+14. Redirect to the configured admin path for login.
 
 No optional module/theme choices, sample content, mail setup, infrastructure setup, or M2 capability is included.
 
@@ -137,7 +134,7 @@ The database form uses one stable-width action button. A successful asynchronous
 
 After the first administrator and initial Settings exist, the installer presents one explicit finalization action. A dedicated finalizer acquires the installer mutex and rechecks the canonical schema, exactly one active administrator assigned to the built-in `admin` role, and valid persisted overrides for Site Name, Site Tagline, Timezone, and Locale.
 
-Finalization registers and activates the discovered `default` frontend theme through `ThemeManager`, then installs and enables Content, Settings Manager, and Taxonomy through `ModuleManager`. Existing registry rows and already-enabled modules are reused so a retry after a partial failure does not create duplicate registry rows. Theme and module operations are not claimed to be fully transactional; a failure leaves no installation marker and a later retry resumes through the same idempotent lifecycle checks.
+WU6 finalization commits the installation after the administrator, required Settings, and Webcore baseline schema are valid. It does not register or activate a Theme and does not install or enable a baseline Module set. Optional Theme and Module operations remain available through their existing lifecycle services and are not duplicated by the installer.
 
 `storage/installed.lock` is created atomically as the final operation only. Its version comes from the framework release source of truth, `Copot\Core\Version::CURRENT`. Once present and valid, `/install` is blocked by the pre-bootstrap gate and normal application requests proceed. Successful finalization redirects to the configured admin path rather than a hardcoded `/admin` URL.
 
@@ -155,7 +152,7 @@ The requirements check reflects the actual atomic-write prerequisites: an existi
 
 Both `.env` and `installed.lock` are written completely to temporary files in their destination directories, flushed, optionally synchronized when `fsync()` is available, and then renamed. Temporary and backup files are removed on handled failures. A malformed existing marker is never overwritten; it puts the gate into a controlled fail-safe state. Missing or unavailable `flock()` support is rejected with a controlled concurrency error rather than treated as an unlocked installation.
 
-Connection, schema, administrator transaction, theme/module lifecycle, marker, and unexpected runtime failures are contained at the public installer boundary. Responses remain generic and do not include credentials, DSNs, SQL, absolute filesystem paths, environment contents, or stack traces. A valid final marker is still created only after theme and module activation succeeds.
+Connection, schema, administrator transaction, marker, and unexpected runtime failures are contained at the public installer boundary. Responses remain generic and do not include credentials, DSNs, SQL, absolute filesystem paths, environment contents, or stack traces. A valid final marker is created after required baseline setup succeeds; optional Theme and Module lifecycle failures occur only in their explicit operations.
 
 Schema DDL is not assumed to be transactionally reversible. If schema execution fails after creating database objects, the database is partial and non-empty; a retry is rejected by the empty-database probe and the operator must select a clean empty database. No repair, reset, table deletion, or destructive cleanup flow is provided. Theme/module activation can likewise leave partial registry state, but subsequent requests reuse existing rows and retry through the idempotent lifecycle checks before any marker is created.
 
@@ -176,11 +173,7 @@ The installer collects Site Name, optional Site Tagline, Timezone, and Locale on
 
 ## Theme and Module Initialization
 
-The default theme is local trusted project code. Installation must use `ThemeDiscovery`, `ThemeManager::register()`, and `ThemeManager::activate('default')` so registry metadata, relative path storage, layout validation, and single-active-theme rules remain centralized.
-
-Content, Settings Manager, Taxonomy, Module Manager, and the Theme Manager compatibility baseline are local baseline modules. Installation must use `ModuleManager::install()` followed by `enable()` for each module. M1.8 does not enable the Example module and does not add module selection UI.
-
-The finalizer verifies `default` through the tolerant Theme catalog and enables the approved baseline modules through existing discovery services before it creates the final marker. Missing or invalid default-theme metadata stops finalization without claiming installation success; unrelated malformed themes remain bounded catalog evidence.
+Themes and Bundled Modules are optional local packages. Explicit lifecycle operations must use the existing `ThemeManager` and `ModuleManager` services so registry metadata, validation, permissions, dependencies, and single-active-theme rules remain centralized. A fresh install does not require a discovered Theme or an installed/enabled Module; Built-in Public View supplies the no-Theme presentation.
 
 ## Installation State and Lock
 
@@ -203,7 +196,7 @@ It is outside `public` and contains exactly this JSON contract:
 
 Presence of a successfully validated marker means normal bootstrap is allowed and the installer is unavailable.
 
-The completed-installation marker must be created with an atomic/exclusive filesystem operation only after schema installation, administrator assignment, Settings writes, theme activation, module enablement, and final verification all succeed. A writable-location probe must run before database changes, but the marker itself must not be created early.
+The completed-installation marker must be created with an atomic/exclusive filesystem operation only after schema installation, administrator assignment, Settings writes, and final verification succeed. A writable-location probe must run before database changes, but the marker itself must not be created early.
 
 Concurrent installation submissions must be serialized with an exclusive non-blocking `flock`. The temporary lock file may remain on disk, but its presence is never installation state; only a successfully validated `storage/installed.lock` marks completion.
 

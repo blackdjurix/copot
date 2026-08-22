@@ -314,8 +314,8 @@ $fieldAccessibility = static function (string $fieldId, mixed $error = null, boo
                         <li><span>First administrator</span><strong><?= htmlspecialchars((string) ($setupValues['admin_name'] ?? 'Ready'), ENT_QUOTES, 'UTF-8') ?></strong></li>
                         <li><span>Administrator email</span><strong><?= htmlspecialchars((string) ($setupValues['admin_email'] ?? ''), ENT_QUOTES, 'UTF-8') ?></strong></li>
                         <li><span>Site</span><strong><?= htmlspecialchars((string) ($setupValues['site_name'] ?? 'Ready'), ENT_QUOTES, 'UTF-8') ?></strong></li>
-                        <li><span>Default frontend theme</span><strong>default</strong></li>
-                        <li><span>Baseline modules</span><strong>Core platform set</strong></li>
+                        <li><span>Public presentation</span><strong>Built-in Public View</strong></li>
+                        <li><span>Optional Modules and Themes</span><strong>None required</strong></li>
                     <?php endif; ?>
                 </ul>
 
@@ -339,7 +339,7 @@ $fieldAccessibility = static function (string $fieldId, mixed $error = null, boo
                 <?php if ($resultStatus === 'success'): ?>
                     <ul class="installer-summary installer-list">
                         <li><span>Installed version</span><strong><?= htmlspecialchars((string) ($installationResult['details']['finalization']['version'] ?? 'current'), ENT_QUOTES, 'UTF-8') ?></strong></li>
-                        <li><span>Default theme</span><strong><?= htmlspecialchars((string) ($installationResult['details']['finalization']['theme'] ?? 'default'), ENT_QUOTES, 'UTF-8') ?></strong></li>
+                        <li><span>Public presentation</span><strong><?= htmlspecialchars((string) (($installationResult['details']['finalization']['theme'] ?? null) ?: 'Built-in Public View'), ENT_QUOTES, 'UTF-8') ?></strong></li>
                         <li><span>Administrator</span><strong><?= !empty($installationResult['details']['adopted']) ? 'Existing state preserved' : 'Created' ?></strong></li>
                     </ul>
                 <?php endif; ?>

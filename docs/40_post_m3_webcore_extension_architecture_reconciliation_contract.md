@@ -16,26 +16,30 @@ WU4 technical validation: PASS
 WU4 implementation: COMPLETE AND CLOSED
 WU5 technical validation: PASS
 WU5 implementation: COMPLETE AND CLOSED
-WU6-WU7: NOT STARTED
+WU6 technical validation: PASS
+WU6 implementation: COMPLETE AND CLOSED
+WU7: NOT STARTED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
 MR.2 WU3 onward: ON HOLD until this workstream closes
 ```
 
 This contract promotes the Post-M3 Webcore and Extension Architecture
-Reconciliation into the authoritative repository documentation baseline. It is
-a documentation and architecture-ownership contract only. It does not start
-WU1, authorize source/schema/runtime mutation, authorize package deletion, or
-adopt any Deferred Item.
+Reconciliation into the authoritative repository baseline. The original
+promotion was documentation-only; the separately authorized WU1-WU6 slices
+and their objective implementation states are recorded below. This contract
+does not authorize package deletion, destructive cleanup, or adoption of any
+Deferred Item.
 
 Where an earlier milestone document records the architecture that was
 implemented at that milestone, that record remains historical. This contract
 controls the current target architecture and supersedes conflicting
 forward-looking assumptions in those records.
 
-WU1 establishes the minimum explicit target-ownership metadata needed by later
-extraction WUs. It does not change the currently enforced owner, physical table
-resolution, migration authority, installer materialization, or package layout.
+WU1 established the minimum explicit target-ownership metadata needed by later
+extraction WUs. WU3-WU5 subsequently completed the accepted baseline ownership
+transitions, and WU6 reconciled installer optionality without changing the
+physical package layout or introducing a second lifecycle authority.
 
 ## Baseline architecture
 
@@ -302,8 +306,31 @@ Theme selection or installation may also be offered when available. No Theme
 may be required for a valid public site because Built-in Public View is always
 available.
 
-This policy is a later reconciliation target. It does not authorize installer
-implementation in this promotion.
+### WU6 implementation result
+
+WU6 reconciles fresh installation with the Webcore minimum-viability boundary.
+The installer materializes the accepted aggregate schema, including Webcore
+Content, baseline Media, primary Navigation, and Redirects, without requiring
+any optional Module or Theme to be installed or enabled. Finalization commits
+the installation lifecycle after the first Administrator and required Site
+settings are valid; it does not activate a default Theme or provision a
+baseline Module set.
+
+Bundled Modules remain discoverable and are governed by the existing singular
+Module Manager lifecycle. Explicit lifecycle operations continue to represent
+not installed, installed-but-disabled, and installed-and-enabled states where
+the existing package supports them. Retained Content, Media, Navigation, Form,
+Taxonomy, and Theme packages remain optional extensions; `media_variants`,
+`navigation_menu_assignments`, taxonomy state, and Form Manager state remain
+Module-owned. No package was deleted, no second lifecycle engine was added, and
+no destructive schema or data cleanup was performed.
+
+Built-in Public View remains valid when no Theme is registered or active, and
+omitting or disabling retained Bundled Modules does not invalidate Webcore
+minimum viability. WU6 does not alter the accepted WU3-WU5 ownership matrix.
+
+WU6 technical validation is PASS and WU6 is COMPLETE AND CLOSED. WU7 remains
+the next work unit and is NOT STARTED.
 
 ## Development migration boundary
 
@@ -335,10 +362,11 @@ Current workstream execution state:
 - WU3 — COMPLETE AND CLOSED.
 - WU4 — COMPLETE AND CLOSED.
 - WU5 — COMPLETE AND CLOSED.
-- WU6-WU7 — NOT STARTED.
+- WU6 — COMPLETE AND CLOSED.
+- WU7 — NOT STARTED.
 
-WU5 is complete. WU6 — Bundled Module & Installer Reconciliation is the next
-work unit and has not started.
+WU6 is complete. WU7 — Cross-Lifecycle Acceptance & Architecture Closure is
+the next work unit and has not started.
 
 MR.2 WU1 and WU2 are already complete and closed. MR.2 WU3 onward remains on
 hold until this workstream closes. This workstream does not reopen MR.2 and
@@ -349,8 +377,9 @@ execution slice.
 
 The current ownership catalog remains the enforcement authority for the
 delivered runtime. WU1 established the target ownership and transition-work-
-unit metadata; WU3, WU4, and WU5 have now completed the Content, baseline Media,
-and baseline Navigation/Redirect transitions. WU6 and WU7 remain future work.
+unit metadata; WU3, WU4, and WU5 completed the Content, baseline Media, and
+baseline Navigation/Redirect transitions. WU6 reconciled installer optionality
+without changing the ownership matrix. WU7 remains future work.
 
 | Table family | Current enforced owner | Target owner | Transition |
 |---|---|---|---|

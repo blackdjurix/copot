@@ -343,7 +343,7 @@ Installer responsibilities are divided across focused Core components:
 * `InstallerEnvironmentWriter` persists only the approved database keys through same-directory atomic replacement.
 * `InstallerSchemaRunner` executes only the controlled statement format in canonical `database/schema.sql`.
 * `InstallerAdministratorSetup` creates the first active administrator, assigns the seeded admin role, and saves initial Settings in one database transaction.
-* `InstallerFinalizer` rechecks live state, activates the default theme, enables Content, Settings Manager, and Taxonomy, and creates the final marker last.
+* `InstallerFinalizer` rechecks live state and creates the final marker last; optional Theme and Module lifecycle remains explicit and is not required for Webcore minimum viability.
 * `InstallationMutex` serializes state-changing workflows with exclusive non-blocking `flock()`.
 
 The installer bootstrap reuses Request, Response, Session/CSRF, Database, Settings, Theme, and Module primitives without constructing the complete normal `Application` prematurely. It provides no upgrade, migration, repair, reset, table-prefix, or destructive cleanup path.

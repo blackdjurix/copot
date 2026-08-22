@@ -846,7 +846,7 @@ M1.5 adds a basic local Content Module at:
 modules/content
 ```
 
-For an existing or manually prepared installation, install and enable the Content Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, Settings Manager, Module Manager, Navigation, and the Theme Manager compatibility baseline automatically as baseline modules.
+For an existing or manually prepared installation, install and enable the Content Module through the Module Manager when its optional extension capability is needed. A fresh installation completed through `/install` provides Webcore baseline Content without requiring Content Manager or another optional Module.
 
 Install and enable the Content Module:
 
@@ -893,7 +893,7 @@ M1.6 adds a reusable local Taxonomy Foundation module at:
 modules/taxonomy
 ```
 
-For an existing or manually prepared installation, install and enable the Taxonomy Module through the Module Manager. A fresh installation completed through `/install` installs and enables Content, Taxonomy, Settings Manager, Module Manager, Navigation, and the Theme Manager compatibility baseline automatically as baseline modules.
+For an existing or manually prepared installation, install and enable the Taxonomy Module through the Module Manager when taxonomy capability is needed. A fresh installation completed through `/install` does not require the optional Taxonomy Module; taxonomy state remains Module-owned.
 
 Install and enable the Taxonomy Module:
 
@@ -963,7 +963,7 @@ M1.8 provides a fresh-install web flow at:
 /install
 ```
 
-When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The original fresh-install path tests an empty database by default; WU5 additionally classifies occupancy, selects namespaces, supports explicit coexistence, and routes proven existing installations through adoption or migration/update while failing closed on unproven ownership. The installer persists database configuration, installs the canonical schema for fresh/coexistence routes, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, activates the local `default` theme, and installs/enables the baseline modules. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
+When `storage/installed.lock` is absent, normal application requests redirect to the installer before `Application` or database-dependent routes are bootstrapped. The original fresh-install path tests an empty database by default; WU5 additionally classifies occupancy, selects namespaces, supports explicit coexistence, and routes proven existing installations through adoption or migration/update while failing closed on unproven ownership. The installer persists database configuration, installs the canonical schema for fresh/coexistence routes, creates the first administrator, saves Site Name, Site Tagline, Timezone, and Locale, and commits installation without requiring an active Theme or optional Module. Built-in Public View supplies the no-Theme baseline. The final marker is created only after all required setup succeeds. A valid marker makes `/install` return `404` and allows normal application bootstrap.
 
 Requirements:
 
@@ -981,7 +981,7 @@ For a fresh manual check:
 1. Ensure `storage/installed.lock` is absent and select an empty disposable database.
 2. Open `/install` and complete Requirements, Database, Administrator & Site, and Finalize.
 3. Confirm the final redirect uses the configured admin path.
-4. Confirm `/install` returns `404`, the default theme is active, and Content, Taxonomy, Settings Manager, Module Manager, Navigation, and Theme Manager are enabled.
+4. Confirm `/install` returns `404`, Built-in Public View is available with no active Theme, and Webcore baseline capabilities are usable without optional Modules.
 5. If schema execution fails partially, use a new clean database; M1.8 has no destructive repair/reset flow.
 
 ## Manual Settings Test Checklist
