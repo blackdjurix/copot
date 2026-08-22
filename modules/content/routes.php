@@ -561,29 +561,6 @@ $app->router()->get($app->adminUrl()->childUrl('content'), function ($request) u
     return $contentRenderAdmin('Content', $content, $user, $request->path());
 });
 
-$app->router()->get('/content/{slug}', function ($request, array $params) use ($app, $contentRepository, $contentMediaReferences): Response {
-    $slug = trim((string) ($params['slug'] ?? ''));
-
-    if ($slug === '') {
-        return $app->adminErrors()->response($request, 404);
-    }
-
-    $entry = $contentRepository->findPublishedBySlug($slug);
-
-    if (!$entry) {
-        return $app->adminErrors()->response($request, 404);
-    }
-
-    $featuredMedia = null;
-    try { $featuredMedia = $contentMediaReferences?->descriptor($entry->featuredMediaId(), $entry->id()); } catch (Throwable) { $featuredMedia = null; }
-    return Response::html($app->viewRenderer()->renderFile(
-        $app->viewResolver()->resolve('content::show'),
-        ['content' => $entry, 'featuredMedia' => $featuredMedia],
-        null,
-        $entry->title()
-    ));
-});
-
 $app->router()->get($app->adminUrl()->childUrl('content/create'), function ($request) use (
     $app,
     $contentRequireAdmin,

@@ -12,13 +12,13 @@ class InstallerSchemaState
         'role_permissions',
         'settings',
         'themes',
+        'content',
         'core_migration_history',
     ];
 
     private const MODULE_TABLES = [
         'modules',
         'module_permissions',
-        'content',
         'taxonomy_types',
         'taxonomy_terms',
         'taxonomy_assignments',

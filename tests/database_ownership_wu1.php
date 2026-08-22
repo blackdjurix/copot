@@ -35,7 +35,7 @@ $assert(count($catalog->all()) === 28, 'Locked ownership catalog does not contai
 $assert(count(array_unique(array_map(static fn (DatabaseTableOwnership $entry): string => $entry->logicalName(), $catalog->all()))) === 28, 'Ownership catalog contains duplicate logical identities.');
 
 $targetOwners = [
-    'content' => ['webcore', 'WU3'],
+    'content' => ['webcore', null],
     'media' => ['webcore', 'WU4'],
     'media_usages' => ['webcore', 'WU4'],
     'media_variants' => ['module:media', null],
@@ -52,9 +52,9 @@ foreach ($targetOwners as $table => [$owner, $workUnit]) {
     $assert($catalog->targetOwner($table)->key() === $owner, $table . ' has the wrong target owner.');
     $assert($catalog->targetTransitionWorkUnit($table) === $workUnit, $table . ' has the wrong target transition WU.');
 }
-$assert($catalog->owner('content')->key() === 'module:content', 'Content current owner was prematurely reclassified.');
-$assert($catalog->owner('content')->key() !== $catalog->targetOwner('content')->key(), 'Content target transition is not explicit.');
-$assert($catalog->ownership('content')->isTargetTransitionPending(), 'Content target transition is not pending.');
+$assert($catalog->owner('content')->key() === 'webcore', 'WU3 did not close Content ownership at Webcore.');
+$assert($catalog->owner('content')->key() === $catalog->targetOwner('content')->key(), 'Content ownership transition remained open after WU3.');
+$assert(!$catalog->ownership('content')->isTargetTransitionPending(), 'Content target transition remained pending after WU3.');
 $assert($catalog->owner('media_variants')->key() === $catalog->targetOwner('media_variants')->key(), 'Media variant advanced state changed owner during WU1.');
 
 $moduleAuthorization = new MigrationAuthorizationContext(
@@ -70,7 +70,7 @@ $moduleAuthorization = new MigrationAuthorizationContext(
     true,
     new MigrationSchemaSurface(['content'])
 );
-$moduleAuthorization->authorizeTable($catalog, 'content');
+$throwsRuntime(static fn () => $moduleAuthorization->authorizeTable($catalog, 'content'), 'Content Manager retained baseline table mutation authority after WU3.');
 $webcoreAuthorization = new MigrationAuthorizationContext(
     InstallationIdentity::generate(),
     new DatabaseTableNames(''),
@@ -84,12 +84,12 @@ $webcoreAuthorization = new MigrationAuthorizationContext(
     true,
     new MigrationSchemaSurface(['content'])
 );
-$throwsRuntime(static fn () => $webcoreAuthorization->authorizeTable($catalog, 'content'), 'Target ownership metadata implicitly authorized premature Webcore mutation.');
+$webcoreAuthorization->authorizeTable($catalog, 'content');
 
 foreach (['users', 'roles', 'settings', 'themes', 'modules', 'module_permissions', 'core_migration_history', 'core_schema_generation'] as $table) {
     $assert($catalog->owner($table)->isWebcore(), $table . ' is not Webcore-owned.');
 }
-foreach (['navigation_menus' => 'navigation', 'content' => 'content', 'taxonomy_terms' => 'taxonomy', 'media' => 'media', 'redirects' => 'redirects', 'forms' => 'form-manager'] as $table => $module) {
+foreach (['navigation_menus' => 'navigation', 'taxonomy_terms' => 'taxonomy', 'media' => 'media', 'redirects' => 'redirects', 'forms' => 'form-manager'] as $table => $module) {
     $owner = $catalog->owner($table);
     $assert($owner->isModule() && $owner->moduleIdentity()?->value() === $module, $table . ' has the wrong Module owner.');
     $assert($catalog->ownership($table)->isHistoricallyPreProvisioned(), $table . ' lost historical pre-provisioning classification.');
@@ -98,8 +98,8 @@ $assert(!$catalog->ownership('users')->isHistoricallyPreProvisioned(), 'Webcore 
 $assert(count($catalog->extensions()) === 2, 'Current catalog did not register the evidenced Media-to-Content extensions.');
 $columnGrant = $catalog->extension('media', 'content', DatabaseTableExtensionGrant::ADD_COLUMN, 'featured_media_id');
 $indexGrant = $catalog->extension('media', 'content', DatabaseTableExtensionGrant::ADD_INDEX, 'idx_content_featured_media');
-$assert($catalog->owner('content')->moduleIdentity()?->value() === 'content', 'Content ownership changed during extension registration.');
-$assert($columnGrant->module()->value() === 'media' && $columnGrant->targetOwner()->moduleIdentity()?->value() === 'content', 'Cross-Module extension owner provenance is incomplete.');
+$assert($catalog->owner('content')->isWebcore(), 'Content ownership changed during extension registration.');
+$assert($columnGrant->module()->value() === 'media' && $columnGrant->targetOwner()->isWebcore(), 'Media extension owner provenance is incomplete.');
 $assert($columnGrant->migrationIdentity() === 'database/upgrades/m3_8_media_library.sql' && $columnGrant->lifecycleOperation() === 'm3.8-wu7-pre-m3.8-upgrade', 'Media-to-Content migration provenance is incorrect.');
 $assert($indexGrant->kind() === DatabaseTableExtensionGrant::ADD_INDEX && $indexGrant->element() === 'idx_content_featured_media', 'Media-to-Content index provenance is incorrect.');
 
@@ -120,7 +120,7 @@ $throws(static fn () => new DatabaseTableOwnershipCatalog([
 ]), 'Shared/duplicate ownership was accepted.');
 $throws(static fn () => new DatabaseTableOwnershipCatalog(
     DatabaseTableOwnershipCatalog::current()->all(),
-    [new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::webcore(), DatabaseTableExtensionGrant::ADD_COLUMN, 'media_id', 'media.migration.1', 'op-1')]
+    [new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::module('content'), DatabaseTableExtensionGrant::ADD_COLUMN, 'media_id', 'media.migration.1', 'op-1')]
 ), 'Unauthorized cross-owner extension was accepted.');
 $throws(static fn () => new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::module('content'), 'drop_column', 'legacy', 'media.migration.1', 'op-1'), 'Unsupported extension kind was accepted.');
 $throws(static fn () => new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::module('content'), DatabaseTableExtensionGrant::ADD_COLUMN, 'media_id', '', 'op-1'), 'Extension without migration provenance was accepted.');

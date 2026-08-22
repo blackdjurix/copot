@@ -11,6 +11,12 @@ require_once $basePath . '/bootstrap/autoload.php';
 $deploymentContext ??= DeploymentContext::forApplicationRoot($basePath);
 $basePath = $deploymentContext->appRoot();
 
+require_once $basePath . '/app/Core/Content.php';
+require_once $basePath . '/app/Core/ContentRepository.php';
+require_once $basePath . '/app/Core/ContentDeliveryService.php';
+require_once $basePath . '/app/Core/ContentService.php';
+require_once $basePath . '/app/Core/Slugger.php';
+
 Env::load($basePath . '/.env');
 
 $app = new Application($deploymentContext);

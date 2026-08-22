@@ -45,10 +45,9 @@ installation namespace/table-name boundary.
 
 The catalog in this contract records and enforces the delivered current
 ownership baseline. WU1 of the Post-M3 Webcore & Extension Architecture
-Reconciliation adds explicit target-owner and transition-work-unit metadata
-without changing current runtime authorization. A target transition is not a
-runtime reclassification: the current owner continues to authorize schema and
-data mutation until its later extraction WU closes.
+Reconciliation added explicit target-owner and transition-work-unit metadata.
+The later WU3 Content transition is now closed and Content is Webcore-owned;
+the remaining target transitions are still future work.
 
 ## Authoritative ownership model
 
@@ -83,6 +82,7 @@ workstream:
 - `themes`;
 - `modules`;
 - `module_permissions`;
+- `content`;
 - `core_migration_history`;
 - `core_schema_generation`.
 
@@ -99,10 +99,6 @@ The following current bundled capability tables are classified as Module-owned:
 - `navigation_menus`;
 - `navigation_items`;
 - `navigation_menu_assignments`.
-
-### Content
-
-- `content`.
 
 ### Taxonomy
 
@@ -210,7 +206,7 @@ Default policy:
 - private cross-Module table references are prohibited;
 - cross-Module foreign keys are prohibited;
 - a bounded add-column/add-index extension is permitted only when an explicit
-  owner-authorized extension grant identifies the target Module owner;
+  owner-authorized extension grant identifies the authoritative target owner;
 - all other cross-Module schema writes remain prohibited;
 - normal cross-Module integration should use public service, event, registry,
   API, or declared dependency boundaries.

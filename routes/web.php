@@ -1,6 +1,10 @@
 <?php
 
 use Copot\Core\Response;
+use Copot\Core\ContentDeliveryService;
+use Copot\Core\ContentRepository;
+
+$contentDelivery = new ContentDeliveryService(new ContentRepository($app->database()));
 
 $app->router()->get('/', function () use ($app): Response {
     return Response::html($app->viewRenderer()->renderFile(
@@ -8,6 +12,22 @@ $app->router()->get('/', function () use ($app): Response {
         [],
         null,
         $app->branding()->name()
+    ));
+});
+
+$app->router()->get('/content/{slug}', function ($request, array $params) use ($app, $contentDelivery): Response {
+    $slug = trim((string) ($params['slug'] ?? ''));
+    $renderData = $slug === '' ? null : $contentDelivery->findPublishedBySlug($slug);
+
+    if ($renderData === null) {
+        return $app->adminErrors()->response($request, 404);
+    }
+
+    return Response::html($app->viewRenderer()->renderFile(
+        $app->viewResolver()->resolve('content::show'),
+        ['content' => $renderData],
+        null,
+        (string) ($renderData['title'] ?? $app->branding()->name())
     ));
 });
 

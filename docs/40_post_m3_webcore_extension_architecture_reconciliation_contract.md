@@ -10,7 +10,8 @@ WU1 focused validation: PASS
 WU2 technical validation: PASS
 WU2 human visual/product acceptance: PASS
 WU2 implementation: COMPLETE AND CLOSED
-WU3: NEXT / NOT STARTED
+WU3 technical validation: PASS
+WU3 implementation: COMPLETE AND CLOSED
 WU4-WU7: NOT STARTED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
@@ -123,6 +124,35 @@ reconciliation remains WU6 scope. Technical validation and human
 visual/product acceptance are PASS. WU2 is COMPLETE AND CLOSED. The normal
 application entrypoint's pre-existing masked HTTP 500 was reproduced at the
 WU2 parent and is not a WU2 regression or a reason to reopen this closure.
+
+### WU3 implementation result
+
+WU3 moves the baseline Content authority and persistence boundary into
+Webcore. Webcore now owns the Page and Article model, repository, lifecycle
+service, slug/public identity boundary, public delivery service, and
+normalized render data. The baseline supports draft, published, and archived
+state, basic authorship, and the existing basic Media reference without taking
+ownership of Media.
+
+Content Manager remains a Bundled Module that **EXTENDS** Webcore Content. Its
+Admin list, create, edit, publish, archive, restore, taxonomy integration, and
+Media-reference integration remain extension routes and capabilities; they no
+longer own baseline Content persistence or public delivery. The public route is
+Webcore-owned and passes normalized render data to the presentation resolver:
+
+```text
+Request
+-> Webcore Content delivery
+-> normalized render data
+-> presentation resolver
+-> Built-in Public View or Theme
+```
+
+The `content` table is now Webcore-owned in the active ownership catalog and
+uses the Webcore table boundary while preserving the established physical
+namespace identity. Content Manager cannot authorize baseline table mutation.
+Taxonomy remains Module-owned, Media remains outside the WU3 ownership
+transition, and no rich-text/editor capability was introduced.
 
 ## Webcore Content
 
@@ -257,8 +287,11 @@ Current workstream execution state:
 
 - WU1 — COMPLETE AND CLOSED.
 - WU2 — COMPLETE AND CLOSED.
-- WU3 — NEXT / NOT STARTED.
+- WU3 — COMPLETE AND CLOSED.
 - WU4-WU7 — NOT STARTED.
+
+WU3 is complete. WU4 — Webcore Media Extraction is the next work unit and has
+not started.
 
 MR.2 WU1 and WU2 are already complete and closed. MR.2 WU3 onward remains on
 hold until this workstream closes. This workstream does not reopen MR.2 and
@@ -268,12 +301,13 @@ execution slice.
 ## WU1 ownership result
 
 The current ownership catalog remains the enforcement authority for the
-delivered runtime. WU1 adds target ownership and transition-work-unit metadata;
-it does not pretend that WU3, WU4, or WU5 extraction has already occurred.
+delivered runtime. WU1 established the target ownership and transition-work-
+unit metadata; WU3 has now completed the Content transition. WU4 and WU5
+extractions remain future work.
 
 | Table family | Current enforced owner | Target owner | Transition |
 |---|---|---|---|
-| `content` | Content Module | Webcore | WU3 |
+| `content` | Webcore | Webcore | WU3 complete |
 | `media` | Media Module | Webcore | WU4 |
 | `media_usages` | Media Module | Webcore | WU4 |
 | `media_variants` | Media Module | Media Manager / Media Module | No ownership move; advanced state remains Module-owned |
@@ -298,7 +332,7 @@ Promotion is complete when this contract and the materially affected current
 documentation are durable on authoritative `main`, the final diff is
 documentation-only, and the remote commit is independently verified.
 
-Before any implementation WU begins, its execution slice must reconcile the
+Before each future implementation WU begins, its execution slice must reconcile the
 affected source, schema, runtime, package, installer, and accepted lifecycle
 contracts. No implementation, destructive cleanup, package deletion, release,
 tag, or publication is part of this promotion.

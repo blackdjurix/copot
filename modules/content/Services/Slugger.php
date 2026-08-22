@@ -1,26 +1,5 @@
 <?php
 
-class Slugger
-{
-    public function unique(string $title, ContentRepository $contents, ?int $ignoreId = null): string
-    {
-        return $this->generate($title);
-    }
+require_once dirname(__DIR__, 3) . '/app/Core/Slugger.php';
 
-    public function generate(string $value): string
-    {
-        $slug = strtolower(trim($value));
-        $slug = preg_replace('/[^a-z0-9]+/', '-', $slug) ?? '';
-        $slug = trim($slug, '-');
-
-        if ($slug === '') {
-            throw new InvalidArgumentException('Content slug cannot be empty.');
-        }
-
-        if (strlen($slug) > 190) {
-            throw new InvalidArgumentException('Content slug cannot exceed 190 characters.');
-        }
-
-        return $slug;
-    }
-}
+if (!class_exists('Slugger', false)) class_alias(\Copot\Core\Slugger::class, 'Slugger');

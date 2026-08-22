@@ -101,7 +101,7 @@ namespace {
     $contentRoutes = (string) file_get_contents($basePath . '/modules/content/routes.php');
     $taxonomyRoutes = (string) file_get_contents($basePath . '/modules/taxonomy/routes.php');
     $adminRoutes = (string) file_get_contents($basePath . '/routes/admin.php');
-    $contentRepository = (string) file_get_contents($basePath . '/modules/content/Services/ContentRepository.php');
+    $contentRepository = (string) file_get_contents($basePath . '/app/Core/ContentRepository.php');
     $assert(str_contains($adminRoutes, "'core.system-overview'") && str_contains($adminRoutes, "'owner' => 'core'"), 'Core system overview is not registered through the shared registry.');
     foreach (['content.drafts', 'content.recent', 'content.overview'] as $id) {
         $assert(str_contains($contentRoutes, "'{$id}'"), "Content contribution [{$id}] is missing.");
