@@ -85,6 +85,9 @@ workstream:
 - `content`;
 - `media`;
 - `media_usages`;
+- `navigation_menus`;
+- `navigation_items`;
+- `redirects`;
 - `core_migration_history`;
 - `core_schema_generation`.
 
@@ -96,11 +99,13 @@ platform registry/lifecycle schema despite their names.
 
 The following current bundled capability tables are classified as Module-owned:
 
-### Navigation
+### Navigation Manager advanced state
 
-- `navigation_menus`;
-- `navigation_items`;
 - `navigation_menu_assignments`.
+
+Baseline `navigation_menus` and `navigation_items` are Webcore-owned after the
+accepted WU5 transition. Navigation Manager may extend the baseline through
+bounded contracts, but does not own those tables.
 
 ### Taxonomy
 
@@ -116,9 +121,9 @@ Baseline `media` and `media_usages` are Webcore-owned after the accepted WU4
 transition. Media Manager may consume and extend the baseline through bounded
 contracts, but does not own or implicitly authorize mutation of those tables.
 
-### Redirects
-
-- `redirects`.
+Redirects are Webcore-owned after the accepted WU5 transition. Redirect Manager
+remains historical/compatibility evidence and does not own baseline Redirects
+state.
 
 ### Form Manager
 

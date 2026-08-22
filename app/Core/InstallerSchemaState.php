@@ -15,6 +15,9 @@ class InstallerSchemaState
         'content',
         'media',
         'media_usages',
+        'navigation_menus',
+        'navigation_items',
+        'redirects',
         'core_migration_history',
     ];
 
@@ -24,6 +27,7 @@ class InstallerSchemaState
         'taxonomy_types',
         'taxonomy_terms',
         'taxonomy_assignments',
+        'navigation_menu_assignments',
         'media_variants',
     ];
 

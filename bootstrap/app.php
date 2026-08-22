@@ -22,6 +22,20 @@ Env::load($basePath . '/.env');
 $app = new Application($deploymentContext);
 $app->session()->start();
 
+$app->frontendThemeContext()->register(new \Copot\Core\NavigationFrontendContextContributor($app->database()));
+
+try {
+    $redirectsEnabled = ((new \Copot\Core\ModuleRepository($app->database()))->findByName('redirects')['status'] ?? null) === 'enabled';
+} catch (Throwable) {
+    $redirectsEnabled = false;
+}
+if (!$redirectsEnabled) {
+    $app->router()->setUnresolvedRouteResolver(new \Copot\Core\RedirectResolver(
+        new \Copot\Core\RedirectRepository($app->database()),
+        $app->adminUrl()->baseUrl()
+    ));
+}
+
 require $basePath . '/routes/web.php';
 require $basePath . '/routes/auth.php';
 require $basePath . '/routes/admin.php';

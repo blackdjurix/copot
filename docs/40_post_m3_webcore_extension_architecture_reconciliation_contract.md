@@ -14,7 +14,9 @@ WU3 technical validation: PASS
 WU3 implementation: COMPLETE AND CLOSED
 WU4 technical validation: PASS
 WU4 implementation: COMPLETE AND CLOSED
-WU5-WU7: NOT STARTED
+WU5 technical validation: PASS
+WU5 implementation: COMPLETE AND CLOSED
+WU6-WU7: NOT STARTED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
 MR.2 WU3 onward: ON HOLD until this workstream closes
@@ -232,6 +234,28 @@ The following concerns remain distinct:
 “Addressing” is not a required umbrella capability name. Redirect Manager is
 planned for retirement and Redirects become Webcore-native.
 
+### WU5 implementation result
+
+WU5 moves the baseline primary Navigation capability and Redirects behavior into
+Webcore. Webcore now provides one usable primary menu with ordered items,
+bounded hierarchy, custom URL targets, and published Webcore Content targets.
+The Built-in Public View consumes the Core Navigation contract and remains
+usable without Navigation Manager.
+
+Navigation Manager remains a Bundled Module that **EXTENDS** Webcore
+Navigation. `navigation_menu_assignments` remains Navigation Manager-owned
+advanced location-specific state; advanced multi-menu, location, and provider
+behavior is not required for baseline operation.
+
+Redirects are now Webcore-native for explicit source-path to target redirection.
+Internal Routing remains request dispatch, and Content retains ownership of
+slug/public URL identity. No Addressing abstraction, generic provider
+framework, Content slug change, or routing framework redesign was introduced.
+
+WU5 technical validation is PASS and WU5 is COMPLETE AND CLOSED. No WU6
+installer/package reconciliation, taxonomy migration, or destructive cleanup is
+included.
+
 ## Taxonomy boundary
 
 Webcore has no default taxonomy system. Taxonomy semantics and state are
@@ -310,9 +334,10 @@ Current workstream execution state:
 - WU2 — COMPLETE AND CLOSED.
 - WU3 — COMPLETE AND CLOSED.
 - WU4 — COMPLETE AND CLOSED.
-- WU5-WU7 — NOT STARTED.
+- WU5 — COMPLETE AND CLOSED.
+- WU6-WU7 — NOT STARTED.
 
-WU4 is complete. WU5 — Webcore Navigation & Redirects Extraction is the next
+WU5 is complete. WU6 — Bundled Module & Installer Reconciliation is the next
 work unit and has not started.
 
 MR.2 WU1 and WU2 are already complete and closed. MR.2 WU3 onward remains on
@@ -324,8 +349,8 @@ execution slice.
 
 The current ownership catalog remains the enforcement authority for the
 delivered runtime. WU1 established the target ownership and transition-work-
-unit metadata; WU3 and WU4 have now completed the Content and baseline Media
-transitions. WU5 extraction remains future work.
+unit metadata; WU3, WU4, and WU5 have now completed the Content, baseline Media,
+and baseline Navigation/Redirect transitions. WU6 and WU7 remain future work.
 
 | Table family | Current enforced owner | Target owner | Transition |
 |---|---|---|---|
@@ -333,10 +358,10 @@ transitions. WU5 extraction remains future work.
 | `media` | Webcore | Webcore | WU4 complete |
 | `media_usages` | Webcore | Webcore | WU4 complete |
 | `media_variants` | Media Module | Media Manager / Media Module | No ownership move; advanced state remains Module-owned |
-| `navigation_menus` | Navigation Module | Webcore | WU5 |
-| `navigation_items` | Navigation Module | Webcore | WU5 |
-| `navigation_menu_assignments` | Navigation Module | Navigation Manager / Navigation Module | WU5; advanced location-specific state remains Module-owned |
-| `redirects` | Redirects Module | Webcore | WU5 |
+| `navigation_menus` | Webcore | Webcore | WU5 complete |
+| `navigation_items` | Webcore | Webcore | WU5 complete |
+| `navigation_menu_assignments` | Navigation Module | Navigation Manager / Navigation Module | No ownership move; advanced location-specific state remains Module-owned |
+| `redirects` | Webcore | Webcore | WU5 complete |
 | `taxonomy_types` | Taxonomy Module | Taxonomy Module | No Webcore move |
 | `taxonomy_terms` | Taxonomy Module | Taxonomy Module | No Webcore move |
 | `taxonomy_assignments` | Taxonomy Module | Taxonomy Module | No Webcore move |

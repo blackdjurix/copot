@@ -72,7 +72,7 @@ try {
     $catalog = DatabaseTableOwnershipCatalog::current();
     $assert($catalog->owner('content')->isWebcore() && !$catalog->ownership('content')->isTargetTransitionPending(), 'Content ownership transition was not closed as Webcore-owned.');
     $assert($catalog->owner('media')->isWebcore() && $catalog->owner('media_variants')->moduleIdentity()?->value() === 'media', 'WU3/WU4 Media ownership boundary is invalid.');
-    $assert($catalog->owner('navigation_menus')->moduleIdentity()?->value() === 'navigation' && $catalog->owner('redirects')->moduleIdentity()?->value() === 'redirects', 'WU3 changed Navigation or Redirect ownership.');
+    $assert($catalog->owner('navigation_menus')->isWebcore() && $catalog->owner('redirects')->isWebcore(), 'WU3/WU5 Navigation or Redirect ownership boundary is invalid.');
     $assert($catalog->owner('taxonomy_terms')->moduleIdentity()?->value() === 'taxonomy', 'WU3 changed Taxonomy ownership.');
     $webcore = new MigrationAuthorizationContext(InstallationIdentity::generate(), new DatabaseTableNames(), 'wu3-webcore', 'upgrade', DatabaseTableOwner::webcore(), 'webcore.content', str_repeat('a', 64), '1.0.0', '1.1.0', true, new MigrationSchemaSurface(['content']));
     $webcore->authorizeTable($catalog, 'content');

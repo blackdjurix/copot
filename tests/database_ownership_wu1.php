@@ -39,10 +39,10 @@ $targetOwners = [
     'media' => ['webcore', null],
     'media_usages' => ['webcore', null],
     'media_variants' => ['module:media', null],
-    'navigation_menus' => ['webcore', 'WU5'],
-    'navigation_items' => ['webcore', 'WU5'],
-    'navigation_menu_assignments' => ['module:navigation', 'WU5'],
-    'redirects' => ['webcore', 'WU5'],
+    'navigation_menus' => ['webcore', null],
+    'navigation_items' => ['webcore', null],
+    'navigation_menu_assignments' => ['module:navigation', null],
+    'redirects' => ['webcore', null],
     'taxonomy_types' => ['module:taxonomy', null],
     'taxonomy_terms' => ['module:taxonomy', null],
     'taxonomy_assignments' => ['module:taxonomy', null],
@@ -91,12 +91,13 @@ $webcoreAuthorization->authorizeTable($catalog, 'content');
 foreach (['users', 'roles', 'settings', 'themes', 'modules', 'module_permissions', 'core_migration_history', 'core_schema_generation'] as $table) {
     $assert($catalog->owner($table)->isWebcore(), $table . ' is not Webcore-owned.');
 }
-foreach (['navigation_menus' => 'navigation', 'taxonomy_terms' => 'taxonomy', 'media_variants' => 'media', 'redirects' => 'redirects', 'forms' => 'form-manager'] as $table => $module) {
+foreach (['navigation_menu_assignments' => 'navigation', 'taxonomy_terms' => 'taxonomy', 'media_variants' => 'media', 'forms' => 'form-manager'] as $table => $module) {
     $owner = $catalog->owner($table);
     $assert($owner->isModule() && $owner->moduleIdentity()?->value() === $module, $table . ' has the wrong Module owner.');
     $assert($catalog->ownership($table)->isHistoricallyPreProvisioned(), $table . ' lost historical pre-provisioning classification.');
 }
 $assert($catalog->owner('media')->isWebcore() && $catalog->owner('media_usages')->isWebcore(), 'WU4 baseline Media tables are not Webcore-owned.');
+$assert($catalog->owner('navigation_menus')->isWebcore() && $catalog->owner('navigation_items')->isWebcore() && $catalog->owner('redirects')->isWebcore(), 'WU5 baseline Navigation/Redirect ownership is not Webcore-owned.');
 $assert(!$catalog->ownership('users')->isHistoricallyPreProvisioned(), 'Webcore table was incorrectly classified as historically Module-provisioned.');
 $assert(count($catalog->extensions()) === 2, 'Current catalog did not register the evidenced Media-to-Content extensions.');
 $columnGrant = $catalog->extension('media', 'content', DatabaseTableExtensionGrant::ADD_COLUMN, 'featured_media_id');

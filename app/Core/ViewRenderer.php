@@ -25,8 +25,8 @@ class ViewRenderer
         } catch (ThemeException) {
             $theme = null;
         }
-        if ($theme !== null && $this->frontendThemeContext !== null) {
-            $context = array_replace($context, $this->frontendThemeContext->compose($theme));
+        if ($this->frontendThemeContext !== null) {
+            $context = array_replace($context, $this->frontendThemeContext->compose($theme ?? ['theme_id' => '', 'metadata' => []]));
         }
         $themeAsset = $theme === null ? null : fn (string $path): string => $this->themeAssets->url($path);
         $title = $title ?? $this->branding->name();

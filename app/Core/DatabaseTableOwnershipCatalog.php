@@ -42,12 +42,11 @@ final class DatabaseTableOwnershipCatalog
     public static function current(): self
     {
         $webcore = ['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','content','core_migration_history','core_schema_generation'];
-        $webcore = array_merge($webcore, ['media', 'media_usages']);
+        $webcore = array_merge($webcore, ['media', 'media_usages', 'navigation_menus', 'navigation_items', 'redirects']);
         $modules = [
-            'navigation' => ['navigation_menus','navigation_items','navigation_menu_assignments'],
+            'navigation' => ['navigation_menu_assignments'],
             'taxonomy' => ['taxonomy_types','taxonomy_terms','taxonomy_assignments'],
             'media' => ['media_variants'],
-            'redirects' => ['redirects'],
             'form-manager' => ['forms','form_fields','form_field_options','form_submissions','form_submission_values','form_submission_attempts'],
         ];
         $entries = [];
@@ -81,8 +80,8 @@ final class DatabaseTableOwnershipCatalog
     private static function lockedOwners(): array
     {
         $catalog = [];
-        foreach (['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','media','media_usages','core_migration_history','core_schema_generation'] as $table) $catalog[$table] = DatabaseTableOwner::webcore();
-        foreach (['navigation'=>['navigation_menus','navigation_items','navigation_menu_assignments'],'taxonomy'=>['taxonomy_types','taxonomy_terms','taxonomy_assignments'],'media'=>['media_variants'],'redirects'=>['redirects'],'form-manager'=>['forms','form_fields','form_field_options','form_submissions','form_submission_values','form_submission_attempts']] as $module=>$tables) foreach ($tables as $table) $catalog[$table] = DatabaseTableOwner::module($module);
+        foreach (['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','media','media_usages','navigation_menus','navigation_items','redirects','core_migration_history','core_schema_generation'] as $table) $catalog[$table] = DatabaseTableOwner::webcore();
+        foreach (['navigation'=>['navigation_menu_assignments'],'taxonomy'=>['taxonomy_types','taxonomy_terms','taxonomy_assignments'],'media'=>['media_variants'],'form-manager'=>['forms','form_fields','form_field_options','form_submissions','form_submission_values','form_submission_attempts']] as $module=>$tables) foreach ($tables as $table) $catalog[$table] = DatabaseTableOwner::module($module);
         $catalog['content'] = DatabaseTableOwner::webcore();
         return $catalog;
     }
@@ -101,7 +100,6 @@ final class DatabaseTableOwnershipCatalog
     private static function transitionWorkUnitFor(string $table): ?string
     {
         return match ($table) {
-            'navigation_menus', 'navigation_items', 'navigation_menu_assignments', 'redirects' => 'WU5',
             default => null,
         };
     }

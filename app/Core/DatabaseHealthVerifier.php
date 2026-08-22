@@ -8,7 +8,8 @@ final class DatabaseHealthVerifier
 {
     private const TABLES = [
         'users', 'roles', 'permissions', 'user_roles', 'role_permissions', 'settings',
-        'modules', 'module_permissions', 'themes', 'content', 'taxonomy_types',
+        'modules', 'module_permissions', 'themes', 'content', 'media', 'media_usages',
+        'navigation_menus', 'navigation_items', 'redirects', 'taxonomy_types',
         'taxonomy_terms', 'taxonomy_assignments', 'core_migration_history',
     ];
 
