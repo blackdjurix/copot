@@ -12,7 +12,9 @@ WU2 human visual/product acceptance: PASS
 WU2 implementation: COMPLETE AND CLOSED
 WU3 technical validation: PASS
 WU3 implementation: COMPLETE AND CLOSED
-WU4-WU7: NOT STARTED
+WU4 technical validation: PASS
+WU4 implementation: COMPLETE AND CLOSED
+WU5-WU7: NOT STARTED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
 MR.2 WU3 onward: ON HOLD until this workstream closes
@@ -154,6 +156,25 @@ namespace identity. Content Manager cannot authorize baseline table mutation.
 Taxonomy remains Module-owned, Media remains outside the WU3 ownership
 transition, and no rich-text/editor capability was introduced.
 
+### WU4 implementation result
+
+WU4 moves baseline Media ownership and service boundaries into Webcore. The
+Core Media surface provides upload validation, safe original storage, stable
+identity and metadata, controlled delivery, basic selection/reference and
+usage awareness, and reference-safe deletion. `media` and `media_usages` use
+the Webcore table boundary.
+
+Media Manager remains a Bundled Module that **EXTENDS** Webcore Media. Its
+Admin workspace, processing pipeline, and derivative/variant services remain
+optional extension capability. `media_variants` remains Media Manager-owned;
+advanced processing is not required for baseline Media operation. Existing
+Content featured-media references continue through the baseline seam without
+moving taxonomy or Content processing into WU4.
+
+WU4 technical validation is PASS and WU4 is COMPLETE AND CLOSED. No WU5
+Navigation/Redirect extraction, taxonomy migration, installer reconciliation,
+package retirement, or destructive cleanup is included.
+
 ## Webcore Content
 
 Webcore owns the baseline Content capability and state, including:
@@ -288,10 +309,11 @@ Current workstream execution state:
 - WU1 — COMPLETE AND CLOSED.
 - WU2 — COMPLETE AND CLOSED.
 - WU3 — COMPLETE AND CLOSED.
-- WU4-WU7 — NOT STARTED.
+- WU4 — COMPLETE AND CLOSED.
+- WU5-WU7 — NOT STARTED.
 
-WU3 is complete. WU4 — Webcore Media Extraction is the next work unit and has
-not started.
+WU4 is complete. WU5 — Webcore Navigation & Redirects Extraction is the next
+work unit and has not started.
 
 MR.2 WU1 and WU2 are already complete and closed. MR.2 WU3 onward remains on
 hold until this workstream closes. This workstream does not reopen MR.2 and
@@ -302,14 +324,14 @@ execution slice.
 
 The current ownership catalog remains the enforcement authority for the
 delivered runtime. WU1 established the target ownership and transition-work-
-unit metadata; WU3 has now completed the Content transition. WU4 and WU5
-extractions remain future work.
+unit metadata; WU3 and WU4 have now completed the Content and baseline Media
+transitions. WU5 extraction remains future work.
 
 | Table family | Current enforced owner | Target owner | Transition |
 |---|---|---|---|
 | `content` | Webcore | Webcore | WU3 complete |
-| `media` | Media Module | Webcore | WU4 |
-| `media_usages` | Media Module | Webcore | WU4 |
+| `media` | Webcore | Webcore | WU4 complete |
+| `media_usages` | Webcore | Webcore | WU4 complete |
 | `media_variants` | Media Module | Media Manager / Media Module | No ownership move; advanced state remains Module-owned |
 | `navigation_menus` | Navigation Module | Webcore | WU5 |
 | `navigation_items` | Navigation Module | Webcore | WU5 |

@@ -1,16 +1,3 @@
 <?php
-
-final class MediaId
-{
-    public function __construct(private int $value)
-    {
-        if ($value <= 0) {
-            throw new InvalidArgumentException('Media ID must be positive.');
-        }
-    }
-
-    public function value(): int
-    {
-        return $this->value;
-    }
-}
+require_once dirname(__DIR__,3).'/app/Core/MediaId.php';
+if(!class_exists('MediaId',false))class_alias(\Copot\Core\MediaId::class,'MediaId');

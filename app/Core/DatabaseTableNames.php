@@ -10,7 +10,7 @@ final class DatabaseTableNames
     /** @var list<string> */
     private const CORE_TABLES = [
         'users', 'roles', 'permissions', 'user_roles', 'role_permissions',
-        'settings', 'themes', 'content', 'core_migration_history', 'core_schema_generation',
+        'settings', 'themes', 'content', 'media', 'media_usages', 'core_migration_history', 'core_schema_generation',
     ];
 
     /** @var list<string> */
@@ -18,7 +18,7 @@ final class DatabaseTableNames
         'modules', 'module_permissions',
         'navigation_menus', 'navigation_items', 'navigation_menu_assignments',
         'taxonomy_types', 'taxonomy_terms', 'taxonomy_assignments',
-        'media', 'media_variants', 'media_usages', 'redirects',
+        'media_variants', 'redirects',
         'forms', 'form_fields', 'form_field_options', 'form_submissions',
         'form_submission_values', 'form_submission_attempts',
     ];

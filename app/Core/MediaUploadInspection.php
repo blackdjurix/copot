@@ -1,0 +1,4 @@
+<?php
+namespace Copot\Core;
+require_once __DIR__ . '/MediaUploadExceptions.php';
+final class MediaUploadInspection{public function __construct(private string $mimeType,private string $extension,private int $byteSize,private ?int $width,private ?int $height){if($byteSize<=0)throw new MediaUploadValidationException('The uploaded file is empty or invalid.');}public function mimeType():string{return $this->mimeType;}public function extension():string{return $this->extension;}public function byteSize():int{return $this->byteSize;}public function width():?int{return $this->width;}public function height():?int{return $this->height;}public function sameFacts(self $o):bool{return $this->mimeType===$o->mimeType&&$this->extension===$o->extension&&$this->byteSize===$o->byteSize&&$this->width===$o->width&&$this->height===$o->height;}}

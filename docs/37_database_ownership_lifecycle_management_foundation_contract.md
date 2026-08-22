@@ -83,6 +83,8 @@ workstream:
 - `modules`;
 - `module_permissions`;
 - `content`;
+- `media`;
+- `media_usages`;
 - `core_migration_history`;
 - `core_schema_generation`.
 
@@ -106,11 +108,13 @@ The following current bundled capability tables are classified as Module-owned:
 - `taxonomy_terms`;
 - `taxonomy_assignments`.
 
-### Media
+### Media Manager advanced state
 
-- `media`;
-- `media_variants`;
-- `media_usages`.
+- `media_variants`.
+
+Baseline `media` and `media_usages` are Webcore-owned after the accepted WU4
+transition. Media Manager may consume and extend the baseline through bounded
+contracts, but does not own or implicitly authorize mutation of those tables.
 
 ### Redirects
 

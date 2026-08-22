@@ -1,8 +1,3 @@
 <?php
-
-final class MediaStagedFile
-{
-    public function __construct(private string $path, private string $token) {}
-    public function path(): string { return $this->path; }
-    public function token(): string { return $this->token; }
-}
+require_once dirname(__DIR__,3).'/app/Core/MediaStagedFile.php';
+if(!class_exists('MediaStagedFile',false))class_alias(\Copot\Core\MediaStagedFile::class,'MediaStagedFile');

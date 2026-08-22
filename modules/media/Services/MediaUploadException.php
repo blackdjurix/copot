@@ -1,6 +1,3 @@
 <?php
-
-class MediaUploadException extends RuntimeException {}
-class MediaUploadValidationException extends MediaUploadException {}
-class MediaStorageException extends MediaUploadException {}
-class MediaDeliveryException extends RuntimeException {}
+require_once dirname(__DIR__,3).'/app/Core/MediaUploadExceptions.php';
+foreach([\Copot\Core\MediaUploadException::class=>'MediaUploadException',\Copot\Core\MediaUploadValidationException::class=>'MediaUploadValidationException',\Copot\Core\MediaStorageException::class=>'MediaStorageException',\Copot\Core\MediaDeliveryException::class=>'MediaDeliveryException'] as $s=>$a)if(!class_exists($a,false))class_alias($s,$a);

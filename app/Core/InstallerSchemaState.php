@@ -13,6 +13,8 @@ class InstallerSchemaState
         'settings',
         'themes',
         'content',
+        'media',
+        'media_usages',
         'core_migration_history',
     ];
 
@@ -22,6 +24,7 @@ class InstallerSchemaState
         'taxonomy_types',
         'taxonomy_terms',
         'taxonomy_assignments',
+        'media_variants',
     ];
 
     public function __construct(private Database $database)

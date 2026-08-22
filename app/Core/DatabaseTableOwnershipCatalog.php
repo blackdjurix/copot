@@ -41,18 +41,18 @@ final class DatabaseTableOwnershipCatalog
 
     public static function current(): self
     {
-        $webcore = ['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','core_migration_history','core_schema_generation'];
+        $webcore = ['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','content','core_migration_history','core_schema_generation'];
+        $webcore = array_merge($webcore, ['media', 'media_usages']);
         $modules = [
             'navigation' => ['navigation_menus','navigation_items','navigation_menu_assignments'],
             'taxonomy' => ['taxonomy_types','taxonomy_terms','taxonomy_assignments'],
-            'media' => ['media','media_variants','media_usages'],
+            'media' => ['media_variants'],
             'redirects' => ['redirects'],
             'form-manager' => ['forms','form_fields','form_field_options','form_submissions','form_submission_values','form_submission_attempts'],
         ];
         $entries = [];
         foreach ($webcore as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::webcore(), 'database/schema.sql', null, self::targetOwnerFor($table), self::transitionWorkUnitFor($table));
         foreach ($modules as $module => $tables) foreach ($tables as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::module($module), 'database/schema.sql', 'aggregate-installer:database/schema.sql', self::targetOwnerFor($table), self::transitionWorkUnitFor($table));
-        $entries[] = new DatabaseTableOwnership('content', DatabaseTableOwner::webcore(), 'database/schema.sql');
         return new self($entries, [
             new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::webcore(), DatabaseTableExtensionGrant::ADD_COLUMN, 'featured_media_id', 'database/upgrades/m3_8_media_library.sql', 'm3.8-wu7-pre-m3.8-upgrade'),
             new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::webcore(), DatabaseTableExtensionGrant::ADD_INDEX, 'idx_content_featured_media', 'database/upgrades/m3_8_media_library.sql', 'm3.8-wu7-pre-m3.8-upgrade'),
@@ -81,8 +81,8 @@ final class DatabaseTableOwnershipCatalog
     private static function lockedOwners(): array
     {
         $catalog = [];
-        foreach (['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','core_migration_history','core_schema_generation'] as $table) $catalog[$table] = DatabaseTableOwner::webcore();
-        foreach (['navigation'=>['navigation_menus','navigation_items','navigation_menu_assignments'],'taxonomy'=>['taxonomy_types','taxonomy_terms','taxonomy_assignments'],'media'=>['media','media_variants','media_usages'],'redirects'=>['redirects'],'form-manager'=>['forms','form_fields','form_field_options','form_submissions','form_submission_values','form_submission_attempts']] as $module=>$tables) foreach ($tables as $table) $catalog[$table] = DatabaseTableOwner::module($module);
+        foreach (['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','media','media_usages','core_migration_history','core_schema_generation'] as $table) $catalog[$table] = DatabaseTableOwner::webcore();
+        foreach (['navigation'=>['navigation_menus','navigation_items','navigation_menu_assignments'],'taxonomy'=>['taxonomy_types','taxonomy_terms','taxonomy_assignments'],'media'=>['media_variants'],'redirects'=>['redirects'],'form-manager'=>['forms','form_fields','form_field_options','form_submissions','form_submission_values','form_submission_attempts']] as $module=>$tables) foreach ($tables as $table) $catalog[$table] = DatabaseTableOwner::module($module);
         $catalog['content'] = DatabaseTableOwner::webcore();
         return $catalog;
     }
@@ -101,7 +101,6 @@ final class DatabaseTableOwnershipCatalog
     private static function transitionWorkUnitFor(string $table): ?string
     {
         return match ($table) {
-            'media', 'media_usages' => 'WU4',
             'navigation_menus', 'navigation_items', 'navigation_menu_assignments', 'redirects' => 'WU5',
             default => null,
         };
