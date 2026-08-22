@@ -5,7 +5,9 @@
 ```text
 Post-M3 track: Webcore & Extension Architecture Reconciliation
 Contract status: PROMOTED / CONTRACT LOCKED
-Implementation status: NOT STARTED
+WU1 implementation: COMPLETE AND CLOSED
+WU1 focused validation: PASS
+WU2-WU7 implementation: NOT STARTED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
 MR.2 WU3 onward: ON HOLD until this workstream closes
@@ -21,6 +23,10 @@ Where an earlier milestone document records the architecture that was
 implemented at that milestone, that record remains historical. This contract
 controls the current target architecture and supersedes conflicting
 forward-looking assumptions in those records.
+
+WU1 establishes the minimum explicit target-ownership metadata needed by later
+extraction WUs. It does not change the currently enforced owner, physical table
+resolution, migration authority, installer materialization, or package layout.
 
 ## Baseline architecture
 
@@ -220,6 +226,33 @@ MR.2 WU1 and WU2 are already complete and closed. MR.2 WU3 onward remains on
 hold until this workstream closes. This workstream does not reopen MR.2 and
 does not authorize implementation of any WU beyond the separately authorized
 execution slice.
+
+## WU1 ownership result
+
+The current ownership catalog remains the enforcement authority for the
+delivered runtime. WU1 adds target ownership and transition-work-unit metadata;
+it does not pretend that WU3, WU4, or WU5 extraction has already occurred.
+
+| Table family | Current enforced owner | Target owner | Transition |
+|---|---|---|---|
+| `content` | Content Module | Webcore | WU3 |
+| `media` | Media Module | Webcore | WU4 |
+| `media_usages` | Media Module | Webcore | WU4 |
+| `media_variants` | Media Module | Media Manager / Media Module | No ownership move; advanced state remains Module-owned |
+| `navigation_menus` | Navigation Module | Webcore | WU5 |
+| `navigation_items` | Navigation Module | Webcore | WU5 |
+| `navigation_menu_assignments` | Navigation Module | Navigation Manager / Navigation Module | WU5; advanced location-specific state remains Module-owned |
+| `redirects` | Redirects Module | Webcore | WU5 |
+| `taxonomy_types` | Taxonomy Module | Taxonomy Module | No Webcore move |
+| `taxonomy_terms` | Taxonomy Module | Taxonomy Module | No Webcore move |
+| `taxonomy_assignments` | Taxonomy Module | Taxonomy Module | No Webcore move |
+| Form Manager tables | Form Manager | Form Manager | No ownership move |
+
+The target metadata is descriptive and transition-scoped. It does not grant a
+Module authority over a Webcore target table, grant Webcore authority over a
+currently Module-owned table, or authorize cross-owner mutation. Existing
+namespace-aware physical resolution and owner-bounded extension grants remain
+unchanged.
 
 ## Acceptance and implementation boundary
 

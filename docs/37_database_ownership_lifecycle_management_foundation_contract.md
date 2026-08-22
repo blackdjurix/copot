@@ -43,6 +43,13 @@ and lifecycle transition behavior for that schema surface.
 Ownership is logical. Physical table names remain resolved through the accepted
 installation namespace/table-name boundary.
 
+The catalog in this contract records and enforces the delivered current
+ownership baseline. WU1 of the Post-M3 Webcore & Extension Architecture
+Reconciliation adds explicit target-owner and transition-work-unit metadata
+without changing current runtime authorization. A target transition is not a
+runtime reclassification: the current owner continues to authorize schema and
+data mutation until its later extraction WU closes.
+
 ## Authoritative ownership model
 
 The target architecture requires one authoritative logical ownership

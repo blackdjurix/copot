@@ -51,8 +51,8 @@ final class DatabaseTableOwnershipCatalog
             'form-manager' => ['forms','form_fields','form_field_options','form_submissions','form_submission_values','form_submission_attempts'],
         ];
         $entries = [];
-        foreach ($webcore as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::webcore(), 'database/schema.sql');
-        foreach ($modules as $module => $tables) foreach ($tables as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::module($module), 'database/schema.sql', 'aggregate-installer:database/schema.sql');
+        foreach ($webcore as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::webcore(), 'database/schema.sql', null, self::targetOwnerFor($table), self::transitionWorkUnitFor($table));
+        foreach ($modules as $module => $tables) foreach ($tables as $table) $entries[] = new DatabaseTableOwnership($table, DatabaseTableOwner::module($module), 'database/schema.sql', 'aggregate-installer:database/schema.sql', self::targetOwnerFor($table), self::transitionWorkUnitFor($table));
         return new self($entries, [
             new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::module('content'), DatabaseTableExtensionGrant::ADD_COLUMN, 'featured_media_id', 'database/upgrades/m3_8_media_library.sql', 'm3.8-wu7-pre-m3.8-upgrade'),
             new DatabaseTableExtensionGrant('media', 'content', DatabaseTableOwner::module('content'), DatabaseTableExtensionGrant::ADD_INDEX, 'idx_content_featured_media', 'database/upgrades/m3_8_media_library.sql', 'm3.8-wu7-pre-m3.8-upgrade'),
@@ -64,6 +64,8 @@ final class DatabaseTableOwnershipCatalog
         return $this->byTable[$logicalName] ?? throw new \InvalidArgumentException('Database table ownership is unknown.');
     }
     public function owner(string $logicalName): DatabaseTableOwner { return $this->ownership($logicalName)->owner(); }
+    public function targetOwner(string $logicalName): DatabaseTableOwner { return $this->ownership($logicalName)->targetOwner(); }
+    public function targetTransitionWorkUnit(string $logicalName): ?string { return $this->ownership($logicalName)->targetTransitionWorkUnit(); }
     public function physicalName(string $logicalName, DatabaseTableNames $tables): string { return $this->ownership($logicalName)->physicalName($tables); }
     /** @return list<DatabaseTableOwnership> */
     public function all(): array { return array_values($this->byTable); }
@@ -82,5 +84,26 @@ final class DatabaseTableOwnershipCatalog
         foreach (['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','core_migration_history','core_schema_generation'] as $table) $catalog[$table] = DatabaseTableOwner::webcore();
         foreach (['navigation'=>['navigation_menus','navigation_items','navigation_menu_assignments'],'content'=>['content'],'taxonomy'=>['taxonomy_types','taxonomy_terms','taxonomy_assignments'],'media'=>['media','media_variants','media_usages'],'redirects'=>['redirects'],'form-manager'=>['forms','form_fields','form_field_options','form_submissions','form_submission_values','form_submission_attempts']] as $module=>$tables) foreach ($tables as $table) $catalog[$table] = DatabaseTableOwner::module($module);
         return $catalog;
+    }
+
+    private static function targetOwnerFor(string $table): DatabaseTableOwner
+    {
+        return match ($table) {
+            'content' => DatabaseTableOwner::webcore(),
+            'media', 'media_usages' => DatabaseTableOwner::webcore(),
+            'navigation_menus', 'navigation_items' => DatabaseTableOwner::webcore(),
+            'redirects' => DatabaseTableOwner::webcore(),
+            default => self::lockedOwners()[$table],
+        };
+    }
+
+    private static function transitionWorkUnitFor(string $table): ?string
+    {
+        return match ($table) {
+            'content' => 'WU3',
+            'media', 'media_usages' => 'WU4',
+            'navigation_menus', 'navigation_items', 'navigation_menu_assignments', 'redirects' => 'WU5',
+            default => null,
+        };
     }
 }

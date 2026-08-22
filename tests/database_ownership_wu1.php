@@ -7,6 +7,9 @@ use Copot\Core\DatabaseTableNames;
 use Copot\Core\DatabaseTableOwner;
 use Copot\Core\DatabaseTableOwnership;
 use Copot\Core\DatabaseTableOwnershipCatalog;
+use Copot\Core\InstallationIdentity;
+use Copot\Core\MigrationAuthorizationContext;
+use Copot\Core\MigrationSchemaSurface;
 use Copot\Core\ModuleIdentity;
 
 $basePath = dirname(__DIR__);
@@ -22,10 +25,66 @@ $throws = static function (callable $callback, string $message) use ($assert): v
     try { $callback(); } catch (InvalidArgumentException) { return; }
     $assert(false, $message);
 };
+$throwsRuntime = static function (callable $callback, string $message) use ($assert): void {
+    try { $callback(); } catch (RuntimeException) { return; }
+    $assert(false, $message);
+};
 
 $catalog = DatabaseTableOwnershipCatalog::current();
 $assert(count($catalog->all()) === 28, 'Locked ownership catalog does not contain every table surface exactly once.');
 $assert(count(array_unique(array_map(static fn (DatabaseTableOwnership $entry): string => $entry->logicalName(), $catalog->all()))) === 28, 'Ownership catalog contains duplicate logical identities.');
+
+$targetOwners = [
+    'content' => ['webcore', 'WU3'],
+    'media' => ['webcore', 'WU4'],
+    'media_usages' => ['webcore', 'WU4'],
+    'media_variants' => ['module:media', null],
+    'navigation_menus' => ['webcore', 'WU5'],
+    'navigation_items' => ['webcore', 'WU5'],
+    'navigation_menu_assignments' => ['module:navigation', 'WU5'],
+    'redirects' => ['webcore', 'WU5'],
+    'taxonomy_types' => ['module:taxonomy', null],
+    'taxonomy_terms' => ['module:taxonomy', null],
+    'taxonomy_assignments' => ['module:taxonomy', null],
+    'forms' => ['module:form-manager', null],
+];
+foreach ($targetOwners as $table => [$owner, $workUnit]) {
+    $assert($catalog->targetOwner($table)->key() === $owner, $table . ' has the wrong target owner.');
+    $assert($catalog->targetTransitionWorkUnit($table) === $workUnit, $table . ' has the wrong target transition WU.');
+}
+$assert($catalog->owner('content')->key() === 'module:content', 'Content current owner was prematurely reclassified.');
+$assert($catalog->owner('content')->key() !== $catalog->targetOwner('content')->key(), 'Content target transition is not explicit.');
+$assert($catalog->ownership('content')->isTargetTransitionPending(), 'Content target transition is not pending.');
+$assert($catalog->owner('media_variants')->key() === $catalog->targetOwner('media_variants')->key(), 'Media variant advanced state changed owner during WU1.');
+
+$moduleAuthorization = new MigrationAuthorizationContext(
+    InstallationIdentity::generate(),
+    new DatabaseTableNames(''),
+    'wu1-module-current-owner',
+    'upgrade',
+    DatabaseTableOwner::module('content'),
+    'content.migration.1',
+    str_repeat('a', 64),
+    '1.0.0',
+    '1.1.0',
+    true,
+    new MigrationSchemaSurface(['content'])
+);
+$moduleAuthorization->authorizeTable($catalog, 'content');
+$webcoreAuthorization = new MigrationAuthorizationContext(
+    InstallationIdentity::generate(),
+    new DatabaseTableNames(''),
+    'wu1-webcore-target-only',
+    'upgrade',
+    DatabaseTableOwner::webcore(),
+    'webcore.migration.1',
+    str_repeat('b', 64),
+    '1.0.0',
+    '1.1.0',
+    true,
+    new MigrationSchemaSurface(['content'])
+);
+$throwsRuntime(static fn () => $webcoreAuthorization->authorizeTable($catalog, 'content'), 'Target ownership metadata implicitly authorized premature Webcore mutation.');
 
 foreach (['users', 'roles', 'settings', 'themes', 'modules', 'module_permissions', 'core_migration_history', 'core_schema_generation'] as $table) {
     $assert($catalog->owner($table)->isWebcore(), $table . ' is not Webcore-owned.');
@@ -54,6 +113,7 @@ $assert($catalog->physicalName('content', $empty) === 'content', 'Empty namespac
 $throws(static fn () => new DatabaseTableOwnershipCatalog([
     new DatabaseTableOwnership('users', DatabaseTableOwner::module('content'), 'database/schema.sql'),
 ]), 'Unauthorized cross-owner table claim was accepted.');
+$throws(static fn () => new DatabaseTableOwnership('content', DatabaseTableOwner::module('content'), 'database/schema.sql', 'aggregate-installer:database/schema.sql', DatabaseTableOwner::webcore()), 'Target owner without a transition WU was accepted.');
 $throws(static fn () => new DatabaseTableOwnershipCatalog([
     new DatabaseTableOwnership('users', DatabaseTableOwner::webcore(), 'database/schema.sql'),
     new DatabaseTableOwnership('users', DatabaseTableOwner::webcore(), 'database/schema.sql'),
