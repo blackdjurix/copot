@@ -26,17 +26,10 @@ final class SystemManagerModulePackageFallback
     public function execute(?array $upload, bool $moduleManagerOperational = false, string $requestedAction = 'Module lifecycle'): ?array
     {
         if (strcasecmp(trim($requestedAction), 'Module lifecycle') !== 0) return $this->rejected('');
-        $classification = (new ModulePackageOperator($this->app))->executeUpload($upload ?? []);
-        return [
-            'accepted' => true,
-            'status' => 'completed',
-            'reason' => '',
-            'action' => 'Module lifecycle',
-            'classification' => $classification,
-            'package_type' => ModulePackageContract::MODULE_PACKAGE_TYPE,
-            'module' => '',
-            'title' => '',
-        ];
+        $result = (new ModulePackageOperator($this->app))->executeUploadResult($upload ?? []);
+        $result['action'] = 'Module lifecycle';
+        $result['package_type'] = ModulePackageContract::MODULE_PACKAGE_TYPE;
+        return $result;
     }
 
     private function rejected(string $module): array

@@ -73,7 +73,7 @@ final class SystemManagerModuleFallback
         foreach (['install', 'enable', 'disable', 'uninstall'] as $action) { $actions[$action] = ['visible' => false, 'enabled' => false]; $reasons[$action] = []; }
         if ($lifecycle === 'not_installed') { $actions['install']['visible'] = true; if ($discovery === 'valid') $actions['install']['enabled'] = true; else $reasons['install'] = [$discovery === 'missing' ? 'discovery_missing' : 'invalid_metadata']; }
         if ($lifecycle === 'installed_disabled') { $actions['enable']['visible'] = true; $actions['uninstall']['visible'] = true; $reasons['enable'] = $this->enableReasons($codes); $actions['enable']['enabled'] = $reasons['enable'] === []; $reasons['uninstall'] = in_array('enabled_dependent', $codes, true) ? ['enabled_dependent'] : []; $actions['uninstall']['enabled'] = $reasons['uninstall'] === []; }
-        if ($lifecycle === 'installed_enabled') { $actions['disable']['visible'] = true; $reasons['disable'] = in_array('enabled_dependent', $codes, true) ? ['enabled_dependent'] : ($name === 'module-manager' ? ['canonical_operator'] : []); $actions['disable']['enabled'] = $reasons['disable'] === []; $reasons['uninstall'] = ['enabled_module']; }
+        if ($lifecycle === 'installed_enabled') { $actions['disable']['visible'] = true; $reasons['disable'] = in_array('enabled_dependent', $codes, true) ? ['enabled_dependent'] : []; $actions['disable']['enabled'] = $reasons['disable'] === []; $reasons['uninstall'] = ['enabled_module']; }
         if ($lifecycle === 'invalid') { $reasons['enable'] = $reasons['disable'] = $reasons['uninstall'] = ['invalid_stored_status']; }
         return ['available_actions' => $actions, 'denial_reasons' => $reasons];
     }

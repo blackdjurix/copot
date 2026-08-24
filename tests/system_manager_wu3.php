@@ -12,6 +12,7 @@ $routes = file_get_contents($base . '/routes/system_manager.php');
 $upload = file_get_contents($base . '/app/Core/SystemManagerPackageUpload.php');
 $coreOperator = file_get_contents($base . '/app/Core/ModulePackageOperator.php');
 $modulePackageFallback = file_get_contents($base . '/app/Core/SystemManagerModulePackageFallback.php');
+$fallback = file_get_contents($base . '/app/Core/SystemManagerModuleFallback.php');
 $assert(is_string($service) && str_contains($service, "TransitionPlan::PATCH, TransitionPlan::UPDATE => 'Update'"), 'Patch/update action mapping missing.');
 $assert(str_contains($service, "TransitionPlan::UPGRADE => 'Upgrade'"), 'Upgrade action mapping missing.');
 $assert(str_contains($service, "TransitionPlan::REPAIR => 'Repair'"), 'Repair action mapping missing.');
@@ -32,4 +33,6 @@ $assert(str_contains($routes, "'modules' => 'Modules'") && !str_contains($routes
 $assert(is_string($coreOperator) && str_contains($coreOperator, 'class ModulePackageOperator'), 'Core-owned Module package operator boundary is missing.');
 $assert(is_string($coreOperator) && !str_contains($coreOperator, '$classification === ModuleTransitionPlan::INSTALL'), 'Core Module package operator contains the preflight undefined-classification defect.');
 $assert(is_string($modulePackageFallback) && !str_contains($modulePackageFallback, 'if ($classification === ModuleTransitionPlan::INSTALL)'), 'System Manager Module preflight retains the undefined classification defect.');
+$assert(is_string($fallback) && !str_contains($fallback, 'canonical_operator'), 'System Manager retains stale standalone-operator self-management denial.');
+$assert(is_string($coreOperator) && str_contains($coreOperator, 'executeUploadResult') && str_contains($coreOperator, "'next_action' => 'Review Module state'"), 'Module package completion evidence is incomplete.');
 echo "system_manager_wu3: {$assertions} assertions passed\n";

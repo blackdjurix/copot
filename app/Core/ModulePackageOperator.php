@@ -35,13 +35,29 @@ class ModulePackageOperator
     {
         if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_string($file['tmp_name'] ?? null) || !is_uploaded_file($file['tmp_name'])) throw new \InvalidArgumentException('A local Module package ZIP is required.');
         $inspection = $this->inspect((string) $file['tmp_name']);
-        try { [$transition, $conflicts] = $this->planInspection($inspection); $accepted = $transition->accepted() && $conflicts->accepted(); return ['accepted' => $accepted, 'status' => $accepted ? 'ready' : 'blocked', 'reason' => $accepted ? '' : ($transition->reason() ?: 'Module dependency or conflict resolution is required.'), 'classification' => $transition->classification(), 'module' => $inspection->contract()->moduleIdentity()->value(), 'title' => $inspection->contract()->title()]; }
+        try { [$transition, $conflicts] = $this->planInspection($inspection); $accepted = $transition->accepted() && $conflicts->accepted(); return ['accepted' => $accepted, 'status' => $accepted ? 'ready' : 'blocked', 'reason' => $accepted ? '' : ($transition->reason() ?: 'Module dependency or conflict resolution is required.'), 'classification' => $transition->classification(), 'module' => $inspection->contract()->moduleIdentity()->value(), 'title' => $inspection->contract()->title(), 'next_action' => $accepted ? 'Apply Module lifecycle' : 'Review the blocking evidence']; }
         finally { $inspection->livePayload()->cleanup(); }
     }
 
     public function executeUpload(array $file): string
     {
-        return $this->execute((string) ($this->registerUpload($file)['candidate_key'] ?? ''));
+        return (string) ($this->executeUploadResult($file)['classification'] ?? '');
+    }
+
+    public function executeUploadResult(array $file): array
+    {
+        $candidate = $this->registerUpload($file);
+        $classification = $this->execute((string) ($candidate['candidate_key'] ?? ''));
+        return [
+            'accepted' => true,
+            'status' => 'completed',
+            'reason' => '',
+            'classification' => $classification,
+            'module' => (string) ($candidate['technical_module_identity'] ?? ''),
+            'title' => (string) ($candidate['title'] ?? ''),
+            'next_action' => 'Review Module state',
+            'guidance' => 'Module lifecycle completed. Review the canonical Modules area for the resulting state and next eligible action.',
+        ];
     }
 
     public function execute(string $candidateKey): string

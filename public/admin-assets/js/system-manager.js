@@ -77,8 +77,13 @@
         const heading = document.createElement('strong');
         heading.textContent = payload.accepted ? 'Preflight accepted' : 'Lifecycle request blocked';
         const detail = document.createElement('p');
-        detail.textContent = [payload.status, payload.action, payload.reason].filter(Boolean).join(' · ');
+        detail.textContent = [payload.status, payload.action, payload.module, payload.title, payload.classification, payload.reason].filter(Boolean).join(' · ');
         result.append(heading, detail);
+        if (payload.next_action) {
+            const next = document.createElement('p');
+            next.textContent = 'Next action: ' + payload.next_action;
+            result.appendChild(next);
+        }
         if (payload.guidance) {
             const guidance = document.createElement('p');
             guidance.textContent = payload.guidance;

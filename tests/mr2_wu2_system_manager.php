@@ -138,7 +138,7 @@ $assert(str_contains($systemJs, 'ResizeObserver') && str_contains($systemJs, 'is
 $assert(str_contains($systemJs, 'MutationObserver'), 'Lifecycle content changes do not trigger re-evaluation.');
 $assert(str_contains($systemJs, 'cloneNode(true)') && str_contains($systemJs, 'fitTolerance'), 'Lifecycle fit evaluation lacks stable canonical measurement and tolerance.');
 $assert(!str_contains($systemJs, 'detailList.classList.remove(\'is-stacked\')'), 'Lifecycle evaluator still measures by mutating the live layout state.');
-$assert(str_contains($systemJs, 'payload.guidance'), 'Module completion guidance is not rendered by package feedback.');
+$assert(str_contains($systemJs, 'payload.guidance') && str_contains($systemJs, 'payload.next_action') && str_contains($systemJs, 'payload.module'), 'Module completion evidence and next action are not rendered by package feedback.');
 $assert(str_contains($systemJs, 'validHex') && str_contains($systemJs, 'data-color-native') && !str_contains($systemJs, 'data-color-format'), 'Canonical native color control synchronization is missing.');
 $capabilityJs = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-form-capabilities.js');
 $assert(str_contains($capabilityJs, 'is-level-1') && str_contains($capabilityJs, 'is-level-2') && str_contains($capabilityJs, 'is-level-3'), 'Three-level fit layout capability is incomplete.');
