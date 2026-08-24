@@ -31,8 +31,9 @@ technical validation and human UI acceptance are PASS / APPROVED.
 
 Post-M3 Webcore & Extension Architecture Reconciliation is PROMOTED / CONTRACT
 LOCKED at `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`;
-implementation has NOT STARTED. Its seven-WU topology is authoritative. MR.2
-WU3 onward remains ON HOLD until this workstream closes.
+WU1-WU7 implementation and cross-lifecycle acceptance are COMPLETE AND CLOSED.
+Its seven-WU topology remains authoritative. MR.2 WU3 onward remains ON HOLD
+and separately authorized; this closure does not reopen MR.2.
 
 ### Current authoritative post-M3 state
 
