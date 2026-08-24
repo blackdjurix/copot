@@ -23,7 +23,8 @@ WU7 implementation: COMPLETE AND CLOSED
 Post-M3 workstream: COMPLETE AND CLOSED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
-MR.2 WU3 onward: ON HOLD / separately authorized; not reopened by this closure
+MR.2 WU3: preparation subsequently promoted separately; runtime implementation
+not started; this closure did not authorize implementation
 ```
 
 This contract promotes the Post-M3 Webcore and Extension Architecture
@@ -295,6 +296,12 @@ a subsection. Module lifecycle remains a Webcore/System Manager
 responsibility. Settings Platform remains reusable internal machinery and is
 not thereby promoted to a user-facing Settings Manager ownership boundary.
 
+The WU6 closure references to the existing singular Module Manager lifecycle
+describe the accepted implementation machinery at that historical checkpoint;
+they do not restore Module Manager as a current or future preferred
+product-facing operator. MR.2 WU3 now carries the separately authorized
+System Manager re-homing and UX refinement contract.
+
 ## Installation and Bundled Module policy
 
 Fresh installation must require zero mandatory optional Modules and zero
@@ -420,9 +427,11 @@ Current workstream execution state:
 
 WU1-WU7 are complete and closed for this accepted workstream.
 
-MR.2 WU1 and WU2 are complete and closed. MR.2 WU3 onward remains on hold and
-separately authorized; this closure does not reopen MR.2 or authorize any MR.2
-implementation.
+MR.2 WU1 and WU2 are complete and closed. At the time of this architecture
+closure, MR.2 WU3 onward remained on hold and separately authorized. The
+current WU3 preparation and contract promotion are recorded separately at
+`docs/41_mr_2_wu3_system_manager_lifecycle_modules_ux_refinement_contract.md`;
+this architecture closure did not authorize WU3 implementation.
 
 ## WU1 ownership result
 

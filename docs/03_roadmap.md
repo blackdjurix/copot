@@ -1293,8 +1293,11 @@ Architecture Contract & Ownership Reconciliation, WU2 Built-in Public View &
 Theme Decoupling, WU3 Webcore Content Extraction, WU4 Webcore Media Extraction,
 WU5 Webcore Navigation & Redirects Extraction, WU6 Bundled Module & Installer
 Reconciliation, and WU7 Cross-Lifecycle Acceptance & Architecture Closure.
-MR.2 WU1 and WU2 are complete; MR.2 WU3 onward remains ON HOLD and separately
-authorized. This closure does not reopen MR.2.
+MR.2 WU1 and WU2 are complete. MR.2 WU3 preparation is complete and its
+promoted, contract-locked scope is recorded at
+`docs/41_mr_2_wu3_system_manager_lifecycle_modules_ux_refinement_contract.md`;
+WU3 runtime implementation remains not started and separately authorized.
+This closure does not reopen accepted WU1/WU2 implementation.
 
 ---
 
