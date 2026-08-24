@@ -34,9 +34,7 @@ $settings = static fn (): SystemManagerSettingsService => new SystemManagerSetti
 $moduleFallback = static fn (): SystemManagerModuleFallback => new SystemManagerModuleFallback(
     new ModuleDiscovery($app->path('modules')), new ModuleRepository($app->database())
 );
-$modulePackageFallback = static fn (): SystemManagerModulePackageFallback => new SystemManagerModulePackageFallback(
-    $app, new SystemManagerPackageUpload($app->path('storage/.system-manager-packages'))
-);
+$modulePackageFallback = static fn (): SystemManagerModulePackageFallback => new SystemManagerModulePackageFallback($app);
 $app->adminNavigation()->add('System Manager', $path, $permission, 'settings', 75);
 
 $requireUser = static function ($request) use ($app, $permission) {

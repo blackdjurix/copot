@@ -142,8 +142,8 @@ $assert(!str_contains($route, 'class="admin-tabs"'), 'System Manager still uses 
 $assert(str_contains($route, "SystemManagerRecoveryGate.php"), 'System Manager recovery gate authority is not loadable from the route.');
 $assert(str_contains($route, 'SystemManagerModuleFallback'), 'Conditional Modules fallback is not wired.');
 $assert(str_contains($route, 'SystemManagerModulePackageFallback'), 'System Manager Module package fallback is not wired.');
-$assert(str_contains($modulePackageFallback, 'Module packages must be handled through Module Manager.'), 'Module Manager routing guidance is missing.');
-$assert(str_contains($modulePackageFallback, 'Fresh Module install completed') && str_contains($modulePackageFallback, 'ModuleTransitionPlan::INSTALL'), 'Fresh Module install guidance is missing or not classification-gated.');
+$assert(str_contains($modulePackageFallback, 'canonical System Manager Modules area'), 'Canonical System Manager routing guidance is missing.');
+$assert(str_contains($modulePackageFallback, 'Module package preflight passed') && str_contains($modulePackageFallback, 'ModuleTransitionPlan::INSTALL'), 'Module package preflight guidance is missing or not classification-gated.');
 $assert(!str_contains($route, 'Plugin'), 'Plugin package handling was introduced unexpectedly.');
 $assert(str_contains($route, 'systemHealthReport'), 'System Health report authority is not consumed.');
 $assert(str_contains($route, 'preflightUpload') && str_contains($route, 'executeUpload'), 'Lifecycle intake and execution endpoints are not preserved.');

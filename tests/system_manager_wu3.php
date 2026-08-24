@@ -10,6 +10,8 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 $service = file_get_contents($base . '/app/Core/SystemManagerLifecycleService.php');
 $routes = file_get_contents($base . '/routes/system_manager.php');
 $upload = file_get_contents($base . '/app/Core/SystemManagerPackageUpload.php');
+$coreOperator = file_get_contents($base . '/app/Core/ModulePackageOperator.php');
+$modulePackageFallback = file_get_contents($base . '/app/Core/SystemManagerModulePackageFallback.php');
 $assert(is_string($service) && str_contains($service, "TransitionPlan::PATCH, TransitionPlan::UPDATE => 'Update'"), 'Patch/update action mapping missing.');
 $assert(str_contains($service, "TransitionPlan::UPGRADE => 'Upgrade'"), 'Upgrade action mapping missing.');
 $assert(str_contains($service, "TransitionPlan::REPAIR => 'Repair'"), 'Repair action mapping missing.');
@@ -25,4 +27,8 @@ $assert(str_contains($routes, "add('System Manager'"), 'Settings-area navigation
 $assert(is_string($upload) && str_contains($upload, "storage/.system-manager-packages") === false, 'Upload adapter must not hardcode a public directory.');
 $assert(str_contains($upload, 'is_uploaded_file'), 'Browser execution paths are not rejected.');
 $assert(str_contains($upload, '0600'), 'Private staged package permissions missing.');
+$assert(!str_contains($routes, 'modules/module-manager/Services/ModulePackageOperator.php'), 'System Manager still requires the standalone Module package operator.');
+$assert(is_string($coreOperator) && str_contains($coreOperator, 'class ModulePackageOperator'), 'Core-owned Module package operator boundary is missing.');
+$assert(is_string($coreOperator) && !str_contains($coreOperator, '$classification === ModuleTransitionPlan::INSTALL'), 'Core Module package operator contains the preflight undefined-classification defect.');
+$assert(is_string($modulePackageFallback) && !str_contains($modulePackageFallback, 'if ($classification === ModuleTransitionPlan::INSTALL)'), 'System Manager Module preflight retains the undefined classification defect.');
 echo "system_manager_wu3: {$assertions} assertions passed\n";
