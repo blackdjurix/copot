@@ -9,7 +9,8 @@ Implementation: WU1 COMPLETE AND CLOSED; WU2 COMPLETE AND CLOSED; WU3 COMPLETE A
 WU topology: WU1–WU6 LOCKED
 Next active implementation target: NONE within this six-WU topology
 Implementation authorization: NOT IMPLIED BY THIS CONTRACT
-Branch lifecycle: integrated WU6 state is on `main`; `feature/database-lifecycle-wu6-cross-lifecycle-acceptance` remains fully contained in `main` with zero commits ahead, pending separately authorized cleanup
+Branch lifecycle: main-only / no-op; integrated WU6 state is on `main` and no
+active feature branch remains for this contract.
 ```
 
 This is the authoritative repository contract for the Post-M3 Database Ownership
@@ -47,7 +48,8 @@ The catalog in this contract records and enforces the delivered current
 ownership baseline. WU1 of the Post-M3 Webcore & Extension Architecture
 Reconciliation added explicit target-owner and transition-work-unit metadata.
 The later WU3 Content transition is now closed and Content is Webcore-owned;
-the remaining target transitions are still future work.
+the WU4 Media and WU5 Navigation/Redirect transitions are also closed. The
+delivered ownership baseline reflects those completed transitions.
 
 ## Authoritative ownership model
 

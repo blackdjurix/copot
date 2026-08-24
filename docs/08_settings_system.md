@@ -10,8 +10,9 @@ authority; see `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`.
 
 The current Post-M3 reconciliation additionally plans to retire Settings
 Manager as a product-facing ownership boundary while retaining Settings
-Platform as reusable internal machinery. This is a documentation target only;
-implementation has not started. The authoritative disposition is in
+Platform as reusable internal machinery. This disposition is accepted in the
+closed Post-M3 workstream; no separate retirement implementation is authorized
+by this documentation correction. The authoritative disposition is in
 `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`.
 
 ## Purpose
@@ -20,13 +21,16 @@ M1.7 Settings Foundation provides global settings for one copot installation. Se
 
 Core owns setting persistence, retrieval, validation, and type casting. The Admin Settings UI is also part of the platform foundation. M1.7 is limited to global/site settings and basic localization settings.
 
-## Future Settings Manager Boundary
+## Historical / retained Settings Manager boundary
 
 The Admin Settings UI introduced in M1.7 is a minimal platform-foundation interface for the six approved General and Localization settings.
 
-It is not the future M3 Settings Manager.
+It is not a required Webcore baseline Module and is not the target product
+surface after the accepted Settings Manager retirement disposition.
 
-The future Settings Manager will remain built on `SettingsService` and may provide broader registered-settings organization, reusable field rendering, module-contributed settings sections, and permission-aware management UI.
+Any retained compatibility surface remains built on `SettingsService` and may
+provide broader registered-settings organization, reusable field rendering,
+module-contributed settings sections, and permission-aware management UI.
 
 Historical branding planning is not an implemented runtime contract. Site Settings must not claim to provide or make editable a Core palette or semantic mapping that is not implemented.
 

@@ -21,14 +21,16 @@ The layers have different responsibilities:
 * Modules provide reusable management functionality or domain-specific application behavior.
 * Themes provide frontend presentation only.
 
-Modules are further classified as:
+Historically, Modules were further classified in milestone planning as:
 
 ```text
 Core Modules
 Business / Application Modules
 ```
 
-Core Modules are reusable first-party management modules.
+That historical classification remains useful for milestone records below.
+The current Post-M3 authority uses `Module` for an executable capability
+extension and `Bundled Module` for an optional COPOT-distributed Module.
 
 Business/Application Modules implement specific domains or use cases.
 
@@ -44,7 +46,8 @@ Webcore owns complete minimum viability, including baseline Content, Media,
 Navigation, Redirects, and the always-available Built-in Public View. Optional
 Modules and Themes must not be required for a usable installation. The earlier
 M1/M3 ownership descriptions below remain milestone history where they differ
-from this promoted target; implementation has not started.
+from this promoted target; WU1-WU7 implementation and cross-lifecycle
+acceptance are complete and closed.
 
 ---
 
@@ -176,7 +179,9 @@ Theme Manager
 
 The Theme System provides discovery, validation, registry, activation, view resolution, and rendering lifecycle behavior.
 
-Theme Manager is a future M3 Core Module that provides administrative theme listing, activation controls, validation status, and theme-settings UI.
+Theme Manager is a retained optional Bundled Module that provides
+administrative theme listing, activation controls, validation status, and
+theme-settings UI.
 
 ```text
 SettingsService
@@ -186,11 +191,17 @@ Settings Manager
 
 SettingsService provides definitions, persistence, retrieval, type casting, and validation.
 
-Settings Manager is a future M3 Core Module that expands administrator-facing settings management on top of the existing SettingsService foundation.
+Settings Manager is a planned-retirement product-facing boundary. Settings
+Platform and `SettingsService` remain reusable internal machinery; no separate
+retirement implementation is authorized by this documentation correction.
 
-The minimal Admin Settings UI introduced in M1.7 remains part of the M1 platform foundation and is not itself the future Settings Manager.
+The minimal Admin Settings UI introduced in M1.7 remains part of the M1
+platform foundation. It is not a required product-facing Settings Manager
+boundary under the accepted retirement disposition.
 
-The future Settings Manager may organize registered settings sections, render reusable setting field types, and support module-contributed settings without allowing arbitrary unregistered keys.
+Any retained Settings Manager compatibility surface may organize registered
+settings sections, render reusable setting field types, and support
+module-contributed settings without allowing arbitrary unregistered keys.
 
 ```text
 Minimal Site Capabilities
@@ -212,7 +223,9 @@ Media Library
 
 Media Foundation and Image Service provide storage, metadata, references, delivery, and image processing.
 
-Media Library is a future M3 Core Module that provides upload, browsing, selection, metadata management, usage visibility, and basic image-editing UI.
+Media Manager is a retained optional Bundled Module for advanced library and
+processing capability. Webcore owns baseline Media and does not require Media
+Manager for minimum viability.
 
 ---
 
@@ -439,9 +452,12 @@ Modules provide reusable user-facing functionality or domain-specific applicatio
 
 Modules are classified as either Core Modules or Business/Application Modules.
 
-### Core Modules
+### Historical M3 Core Module classification
 
-Core Modules are first-party reusable modules that provide general management functionality.
+In the historical M3 planning model, Core Modules were first-party reusable
+modules that provided general management functionality. This classification
+does not create a second lifecycle or override the current Module/Bundled
+Module vocabulary in the promoted Post-M3 contract.
 
 They:
 

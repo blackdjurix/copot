@@ -4,7 +4,7 @@
 
 The module system allows copot projects to add reusable management functionality and domain-specific application behavior without mixing those responsibilities into Core Infrastructure, Platform Capabilities, or Themes.
 
-Modules may be classified as:
+Historical milestone planning classified Modules as:
 
 * Core Modules
 * Business/Application Modules
@@ -17,9 +17,9 @@ The promoted target in
 `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`
 defines a Module as an executable capability extension and a Bundled Module as
 optional distribution, not mandatory installation or enablement. Module
-lifecycle remains a Webcore/System Manager responsibility. The M1.3 lifecycle
-record below is historical where it conflicts with this target; reconciliation
-implementation has not started.
+lifecycle remains a Webcore/System Manager responsibility. WU1-WU7
+implementation and cross-lifecycle acceptance are complete and closed. The
+M1.3 lifecycle record below is historical where it conflicts with this target.
 
 ---
 
@@ -53,7 +53,9 @@ Excluded:
 * Remote module download
 * Module permission auto-sync into core permissions
 
-Core Modules and Business/Application Modules use the same Module Manager lifecycle.
+Retained Bundled Modules and Business/Application Modules use the same Module
+Manager lifecycle. The historical Core Module label does not create a second
+installation or registry mechanism.
 
 The classification describes module responsibility, not a separate installation or registry mechanism.
 
@@ -362,8 +364,9 @@ invariant, but separates package identity from technical module identity. The
 first package shape is one package to one technical module. Module Manager is
 the operator/Admin consumer, not the lifecycle engine.
 
-The preparation does not authorize runtime implementation, a migration runner
-inside Module Manager, remote package distribution, multi-module packages,
-automatic dependency mutation, capability/provider arbitration, or automatic
-permission grants. Module Package Lifecycle implementation and WU1 remain not
-started.
+The preparation does not authorize a second migration runner inside Module
+Manager, remote package distribution, multi-module packages, automatic
+dependency mutation, capability/provider arbitration, or automatic permission
+grants. The separately accepted Module Package Lifecycle WU1-WU7
+implementation and acceptance are complete and closed; those exclusions
+remain outside that accepted scope.
