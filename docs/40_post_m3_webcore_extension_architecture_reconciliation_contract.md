@@ -18,10 +18,12 @@ WU5 technical validation: PASS
 WU5 implementation: COMPLETE AND CLOSED
 WU6 technical validation: PASS
 WU6 implementation: COMPLETE AND CLOSED
-WU7: NOT STARTED
+WU7 technical validation: PASS
+WU7 implementation: COMPLETE AND CLOSED
+Post-M3 workstream: COMPLETE AND CLOSED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
-MR.2 WU3 onward: ON HOLD until this workstream closes
+MR.2 WU3 onward: ON HOLD / separately authorized; not reopened by this closure
 ```
 
 This contract promotes the Post-M3 Webcore and Extension Architecture
@@ -332,8 +334,8 @@ Built-in Public View remains valid when no Theme is registered or active, and
 omitting or disabling retained Bundled Modules does not invalidate Webcore
 minimum viability. WU6 does not alter the accepted WU3-WU5 ownership matrix.
 
-WU6 technical validation is PASS and WU6 is COMPLETE AND CLOSED. WU7 remains
-the next work unit and is NOT STARTED.
+WU6 technical validation is PASS and WU6 is COMPLETE AND CLOSED. WU7 closure
+is recorded below.
 
 ### WU6 table materialization categories
 
@@ -355,6 +357,33 @@ The current Webcore baseline includes `content`, `media`, `media_usages`,
 includes `media_variants`, `navigation_menu_assignments`, taxonomy tables, and
 Form Manager tables. One Module may own multiple tables; no table has shared
 ownership.
+
+### WU7 cross-lifecycle acceptance result
+
+WU7 acceptance rechecked the delivered WU1-WU6 boundaries against the exact
+authoritative `main` state. Webcore baseline operation remains independent of
+optional Modules and Themes; Built-in Public View remains the no-Theme
+fallback; Content, baseline Media, primary Navigation, and Redirects remain
+Webcore-owned; and retained Managers remain extension boundaries. The
+owner-scoped Module schema declarations for Taxonomy, Navigation, Media, and
+Form Manager remain behind the singular Module Manager lifecycle, with
+namespace-aware resolution, idempotent provisioning, and owner-bounded
+authorization. No Webcore capability depends on a Module-owned table.
+
+The accepted WU1-WU6 focused evidence was reused because no regression signal
+or source change was found. Current pure checks passed for Built-in Public View
+(8 assertions), ownership enforcement (62 assertions), Bundled Module and
+installer reconciliation (27 assertions), and Module package lifecycle (9
+assertions). The DB-backed schema materialization and extraction checks remain
+the accepted evidence from this exact commit; a repeat in the current shell
+was environment-blocked because its PHP runtime does not load `pdo_mysql`.
+No implementation conflict, ownership change, or new architecture decision
+was found.
+
+WU7 technical validation is PASS and WU7 is COMPLETE AND CLOSED. The full
+Post-M3 Webcore & Extension Architecture Reconciliation workstream WU1-WU7 is
+COMPLETE AND CLOSED. This closure does not authorize MR.2 WU3 onward, package
+retirement, destructive cleanup, or release/publication work.
 
 ## Development migration boundary
 
@@ -387,15 +416,13 @@ Current workstream execution state:
 - WU4 — COMPLETE AND CLOSED.
 - WU5 — COMPLETE AND CLOSED.
 - WU6 — COMPLETE AND CLOSED.
-- WU7 — NOT STARTED.
+- WU7 — COMPLETE AND CLOSED.
 
-WU6 is complete. WU7 — Cross-Lifecycle Acceptance & Architecture Closure is
-the next work unit and has not started.
+WU1-WU7 are complete and closed for this accepted workstream.
 
-MR.2 WU1 and WU2 are already complete and closed. MR.2 WU3 onward remains on
-hold until this workstream closes. This workstream does not reopen MR.2 and
-does not authorize implementation of any WU beyond the separately authorized
-execution slice.
+MR.2 WU1 and WU2 are complete and closed. MR.2 WU3 onward remains on hold and
+separately authorized; this closure does not reopen MR.2 or authorize any MR.2
+implementation.
 
 ## WU1 ownership result
 
@@ -403,7 +430,8 @@ The current ownership catalog remains the enforcement authority for the
 delivered runtime. WU1 established the target ownership and transition-work-
 unit metadata; WU3, WU4, and WU5 completed the Content, baseline Media, and
 baseline Navigation/Redirect transitions. WU6 reconciled installer optionality
-without changing the ownership matrix. WU7 remains future work.
+without changing the ownership matrix. WU7 cross-lifecycle acceptance
+confirmed that these boundaries remain consistent and closed the workstream.
 
 | Table family | Current enforced owner | Target owner | Transition |
 |---|---|---|---|
