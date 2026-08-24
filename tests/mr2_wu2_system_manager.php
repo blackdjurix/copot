@@ -101,6 +101,28 @@ $assert(!str_contains($brandingPage, 'Localization'), 'Localization remains pres
 $assert(!str_contains($brandingPage, 'Save Branding'), 'Branding still exposes a capability-level Save action.');
 $assert(substr_count($systemPage, 'data-admin-fit-group') === 2 && substr_count($brandingPage, 'data-admin-fit-group') === 2, 'Localization and Branding do not use two-field-set fit groups.');
 
+$modulesPage = $render('resources/views/admin/system-manager.php', [
+    'section' => 'modules', 'status' => [], 'branding' => [], 'localization' => [], 'health' => [],
+    'modules' => [[
+        'name' => 'sample', 'title' => 'Sample Module', 'version' => '1.2.0', 'stored_version' => '1.1.0',
+        'discovered_version' => '1.2.0', 'lifecycle_state' => 'installed_disabled', 'discovery_state' => 'valid',
+        'dependencies' => ['content'], 'diagnostics' => [['severity' => 'warning', 'code' => 'metadata_drift']],
+        'available_actions' => [
+            'install' => ['visible' => false, 'enabled' => false],
+            'enable' => ['visible' => true, 'enabled' => true],
+            'disable' => ['visible' => false, 'enabled' => false],
+            'uninstall' => ['visible' => true, 'enabled' => false],
+        ], 'denial_reasons' => ['uninstall' => ['enabled_dependent']],
+    ]], 'release' => [],
+    'systemManagerPath' => '/dapur/settings/system-manager', 'preflightPath' => '/dapur/settings/system-manager/preflight', 'applyPath' => '/dapur/settings/system-manager/apply',
+    'retryPath' => '/dapur/settings/system-manager/retry', 'reconcilePath' => '/dapur/settings/system-manager/reconcile', 'brandingPath' => '/dapur/settings/system-manager/branding',
+    'localizationPath' => '/dapur/settings/system-manager/localization', 'moduleActionPath' => '/dapur/settings/system-manager/modules/action', 'csrfToken' => 'token',
+]);
+$assert(str_contains($modulesPage, 'Canonical Module inventory'), 'Canonical Modules description is missing.');
+$assert(str_contains($modulesPage, 'Sample Module') && str_contains($modulesPage, 'Diagnostics (1)'), 'Module evidence and diagnostics did not render.');
+$assert(str_contains($modulesPage, 'Enable') && str_contains($modulesPage, 'enabled_dependent'), 'Module action eligibility and denial reason did not render.');
+$assert(!str_contains($modulesPage, 'Module recovery fallback') && !str_contains($modulesPage, 'Module Manager is not operationally available'), 'Obsolete fallback presentation copy remains.');
+
 $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
 $assert(str_contains($adminCss, 'grid-template-columns: minmax(10rem, 11rem) minmax(0, 1fr)'), 'Lifecycle fixed label column is missing.');
 $assert(str_contains($adminCss, ".system-manager-status-grid {\n    display: grid;\n    grid-template-columns: 1fr;"), 'Lifecycle detail list is not explicitly single-column.');

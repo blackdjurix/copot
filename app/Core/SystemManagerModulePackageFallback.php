@@ -12,9 +12,8 @@ final class SystemManagerModulePackageFallback
     {
     }
 
-    public function preflight(?array $upload, bool $moduleManagerOperational): ?array
+    public function preflight(?array $upload, bool $moduleManagerOperational = false): ?array
     {
-        if ($moduleManagerOperational) return $this->rejected('');
         $result = (new ModulePackageOperator($this->app))->preflightUpload($upload ?? []);
         $result['action'] = 'Module lifecycle';
         $result['package_type'] = ModulePackageContract::MODULE_PACKAGE_TYPE;
@@ -24,9 +23,9 @@ final class SystemManagerModulePackageFallback
         return $result;
     }
 
-    public function execute(?array $upload, bool $moduleManagerOperational, string $requestedAction): ?array
+    public function execute(?array $upload, bool $moduleManagerOperational = false, string $requestedAction = 'Module lifecycle'): ?array
     {
-        if ($moduleManagerOperational || strcasecmp(trim($requestedAction), 'Module lifecycle') !== 0) return $this->rejected('');
+        if (strcasecmp(trim($requestedAction), 'Module lifecycle') !== 0) return $this->rejected('');
         $classification = (new ModulePackageOperator($this->app))->executeUpload($upload ?? []);
         return [
             'accepted' => true,

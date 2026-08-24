@@ -28,6 +28,7 @@ $assert(is_string($upload) && str_contains($upload, "storage/.system-manager-pac
 $assert(str_contains($upload, 'is_uploaded_file'), 'Browser execution paths are not rejected.');
 $assert(str_contains($upload, '0600'), 'Private staged package permissions missing.');
 $assert(!str_contains($routes, 'modules/module-manager/Services/ModulePackageOperator.php'), 'System Manager still requires the standalone Module package operator.');
+$assert(str_contains($routes, "'modules' => 'Modules'") && !str_contains($routes, "if (\$operational && \$section === 'modules')"), 'Modules is still conditionally suppressed by standalone Module Manager availability.');
 $assert(is_string($coreOperator) && str_contains($coreOperator, 'class ModulePackageOperator'), 'Core-owned Module package operator boundary is missing.');
 $assert(is_string($coreOperator) && !str_contains($coreOperator, '$classification === ModuleTransitionPlan::INSTALL'), 'Core Module package operator contains the preflight undefined-classification defect.');
 $assert(is_string($modulePackageFallback) && !str_contains($modulePackageFallback, 'if ($classification === ModuleTransitionPlan::INSTALL)'), 'System Manager Module preflight retains the undefined classification defect.');

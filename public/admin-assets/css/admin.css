@@ -1111,6 +1111,81 @@ dd {
     color: var(--admin-color-muted);
 }
 
+.system-manager-module-card {
+    display: grid;
+    gap: var(--admin-space-4);
+    padding: var(--admin-space-4);
+    border: 1px solid var(--admin-color-border);
+    border-radius: var(--admin-radius-md);
+    background: var(--admin-color-surface);
+}
+
+.system-manager-module-card__header,
+.system-manager-module-card__status,
+.system-manager-module-card__actions,
+.system-manager-module-evidence {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--admin-space-2);
+}
+
+.system-manager-module-card__header {
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.system-manager-module-card__identity {
+    margin-top: var(--admin-space-1) !important;
+}
+
+.system-manager-module-evidence {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    margin: 0;
+}
+
+.system-manager-module-evidence > div {
+    min-width: 0;
+    padding: var(--admin-space-2) var(--admin-space-3);
+    border-left: 3px solid var(--admin-color-border);
+}
+
+.system-manager-module-evidence dt {
+    color: var(--admin-color-muted);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.system-manager-module-evidence dd {
+    margin: var(--admin-space-1) 0 0;
+    overflow-wrap: anywhere;
+}
+
+.system-manager-module-diagnostics {
+    color: var(--admin-color-muted);
+}
+
+.system-manager-module-diagnostics summary {
+    cursor: pointer;
+    color: var(--admin-color-text);
+    font-weight: 700;
+}
+
+.system-manager-module-diagnostics ul {
+    display: grid;
+    gap: var(--admin-space-1);
+    margin: var(--admin-space-2) 0 0;
+    padding-left: 20px;
+}
+
+.system-manager-module-card__actions form {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--admin-space-2);
+}
+
 .admin-tabs {
     display: flex;
     flex-wrap: wrap;
@@ -1143,8 +1218,20 @@ dd {
 
     .system-manager-system-overview,
     .system-manager-form,
-    .system-manager-module-list .admin-status-card {
+    .system-manager-module-list .admin-status-card,
+    .system-manager-module-card__header {
         grid-template-columns: 1fr;
+    }
+
+    .system-manager-module-card__header,
+    .system-manager-module-card__actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .system-manager-module-card__actions form,
+    .system-manager-module-card__actions .admin-button {
+        width: 100%;
     }
 
     .system-manager-detail-row {

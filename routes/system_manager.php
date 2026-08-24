@@ -1,6 +1,7 @@
 <?php
 
 use Copot\Core\ModuleDiscovery;
+use Copot\Core\ModulePackageOperator;
 use Copot\Core\ModuleRepository;
 use Copot\Core\Response;
 use Copot\Core\SystemHealthDashboardConsumer;
@@ -32,7 +33,7 @@ $manager = static fn (): SystemManagerLifecycleService => new SystemManagerLifec
 $branding = static fn (): SystemManagerBrandingService => new SystemManagerBrandingService($app->settings(), $app->database());
 $settings = static fn (): SystemManagerSettingsService => new SystemManagerSettingsService($app->settings(), $app->database());
 $moduleFallback = static fn (): SystemManagerModuleFallback => new SystemManagerModuleFallback(
-    new ModuleDiscovery($app->path('modules')), new ModuleRepository($app->database())
+    new ModuleDiscovery($app->path('modules')), new ModuleRepository($app->database()), new ModulePackageOperator($app)
 );
 $modulePackageFallback = static fn (): SystemManagerModulePackageFallback => new SystemManagerModulePackageFallback($app);
 $app->adminNavigation()->add('System Manager', $path, $permission, 'settings', 75);
@@ -64,15 +65,12 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
         $lifecycleStatus = $manager()->status();
         $brandingState = $branding()->effective();
         $localization = $settings()->localization();
-        $operational = $moduleFallback()->operational();
-        $modules = $operational ? [] : $moduleFallback()->inventory();
+        $modules = $moduleFallback()->inventory();
         $health = (new SystemHealthDashboardConsumer())->content($app->systemHealthReport($user));
     } catch (Throwable) {
         return $app->adminErrors()->response($request, 503);
     }
-    if ($operational && $section === 'modules') $section = 'system';
-    $labels = ['system' => 'System', 'branding' => 'Branding', 'health' => 'System Health'];
-    if (!$operational) $labels['modules'] = 'Modules';
+    $labels = ['system' => 'System', 'branding' => 'Branding', 'modules' => 'Modules', 'health' => 'System Health'];
     $tabs = [];
     foreach ($labels as $key => $label) {
         $tabs[] = '<a class="admin-settings-tab' . ($section === $key ? ' is-active' : '') . '" data-admin-capability-tab="' . htmlspecialchars($key, ENT_QUOTES, 'UTF-8') . '" href="' . htmlspecialchars($path . '?section=' . $key, ENT_QUOTES, 'UTF-8') . '"' . ($section === $key ? ' aria-current="page"' : '') . '>' . htmlspecialchars($label, ENT_QUOTES, 'UTF-8') . '<span class="admin-capability-tab__dirty" aria-hidden="true" hidden>•</span></a>';
@@ -172,7 +170,7 @@ $app->router()->post($moduleActionPath, function ($request) use ($app, $requireU
     $user = $requireUser($request); if ($user instanceof Response) return $user;
     if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
     $name = (string) $request->post('module', ''); $action = (string) $request->post('action', '');
-    if ($moduleFallback()->operational() || !preg_match('/^[a-z0-9][a-z0-9_-]*$/', $name) || !in_array($action, ['install', 'enable', 'disable', 'uninstall'], true)) return Response::redirect($path . '?section=modules');
+    if (!preg_match('/^[a-z0-9][a-z0-9_-]*$/', $name) || !in_array($action, ['install', 'enable', 'disable', 'uninstall'], true) || !$moduleFallback()->actionAllowed($name, $action)) return Response::redirect($path . '?section=modules');
     try {
         match ($action) {
             'install' => $app->modules()->install($name), 'enable' => $app->modules()->enable($name),
@@ -189,7 +187,7 @@ $app->router()->post($preflightPath, function ($request) use ($app, $requireUser
     if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
     try {
         $upload = $request->file('package');
-        $moduleResult = $modulePackageFallback()->preflight($upload, $moduleFallback()->operational());
+        $moduleResult = $modulePackageFallback()->preflight($upload, false);
         if (is_array($moduleResult)) return Response::content(json_encode($moduleResult, JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']);
         return Response::content(json_encode($manager()->preflightUpload($upload), JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']);
     }
@@ -200,7 +198,7 @@ $app->router()->post($applyPath, function ($request) use ($app, $requireUser, $m
     if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
     try {
         $upload = $request->file('package');
-        $moduleResult = $modulePackageFallback()->execute($upload, $moduleFallback()->operational(), (string) $request->post('action', ''));
+        $moduleResult = $modulePackageFallback()->execute($upload, false, (string) $request->post('action', ''));
         if (is_array($moduleResult)) return Response::content(json_encode($moduleResult, JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']);
         return Response::content(json_encode($manager()->executeUpload($upload, (string) $request->post('action', '')), JSON_UNESCAPED_SLASHES), 200, ['Content-Type' => 'application/json']);
     }
