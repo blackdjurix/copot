@@ -649,6 +649,7 @@ Current release metadata: Webcore release.json and per-module release.json files
 Release advancement policy: release-based, not feature-based; REPAIR is not a release event
 Current boundary: production Webcore reconciliation remains NOT STARTED and separately authorized; Server-empty Bootstrap remains DEFERRED / UNSCHEDULED; v0.13.0 tag and publication are complete, while future release actions remain separately controlled.
 System Health & Status: PROMOTED / COMPLETE / CLOSED / CONTRACT LOCKED at `docs/35_system_health_status_contract.md`; WU1–WU6 implementation and validation are COMPLETE for the accepted contract scope. The current static Framework Status remains presentation content; the System Health widget is the authorized health consumer. MR.x refinement remains separate, and no follow-on work is automatically authorized.
+MR.2 WU3 — System Manager Lifecycle & Modules UX Refinement: COMPLETE AND CLOSED for the accepted bounded scope. System Manager is the canonical product-facing Module lifecycle surface, with richer inventory/lifecycle evidence, diagnostics, package/result guidance, scalable search/filtering, and Module Detail presentation. This does not claim that all System Manager tabs or later MR.2 refinement work is complete; the authoritative contract is `docs/41_mr_2_wu3_system_manager_lifecycle_modules_ux_refinement_contract.md`.
 Module Permission Dependency / Base Access: separate planning concern; not a System Health dependency.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
@@ -1293,11 +1294,13 @@ Architecture Contract & Ownership Reconciliation, WU2 Built-in Public View &
 Theme Decoupling, WU3 Webcore Content Extraction, WU4 Webcore Media Extraction,
 WU5 Webcore Navigation & Redirects Extraction, WU6 Bundled Module & Installer
 Reconciliation, and WU7 Cross-Lifecycle Acceptance & Architecture Closure.
-MR.2 WU1 and WU2 are complete. MR.2 WU3 preparation is complete and its
-promoted, contract-locked scope is recorded at
+MR.2 WU1 and WU2 are complete. MR.2 WU3 is COMPLETE AND CLOSED for its
+accepted bounded scope, and its promoted contract and closure record are
+available at
 `docs/41_mr_2_wu3_system_manager_lifecycle_modules_ux_refinement_contract.md`;
-WU3 runtime implementation remains not started and separately authorized.
-This closure does not reopen accepted WU1/WU2 implementation.
+System Manager is the canonical product-facing Module lifecycle surface. This
+does not claim that all System Manager tabs or later MR.2 refinement work is
+complete and does not reopen accepted WU1/WU2 implementation.
 
 ---
 

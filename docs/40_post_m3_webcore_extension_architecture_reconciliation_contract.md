@@ -23,8 +23,9 @@ WU7 implementation: COMPLETE AND CLOSED
 Post-M3 workstream: COMPLETE AND CLOSED
 MR.2 WU1: COMPLETE AND CLOSED
 MR.2 WU2: COMPLETE AND CLOSED
-MR.2 WU3: preparation subsequently promoted separately; runtime implementation
-not started; this closure did not authorize implementation
+MR.2 WU3: COMPLETE AND CLOSED under the separately promoted WU3 contract;
+this architecture closure remains historical and does not define later MR.2
+scope
 ```
 
 This contract promotes the Post-M3 Webcore and Extension Architecture

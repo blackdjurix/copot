@@ -9,15 +9,18 @@ WU2: COMPLETE AND CLOSED
 WU3 scope: System Manager Lifecycle & Modules UX Refinement
 WU3 preparation/audit: COMPLETE
 WU3 contract: PROMOTED / CONTRACT LOCKED
-WU3 runtime implementation: NOT STARTED
-WU3 source mutation: NOT AUTHORIZED by this promotion
+WU3 runtime implementation: COMPLETE AND CLOSED
+WU3 objective validation: PASS
+WU3 human/product acceptance: PASS
+WU3 lifecycle state: COMPLETE AND CLOSED
 ```
 
 This contract promotes the bounded WU3 preparation audit into the
 authoritative repository contract. It defines the refinement target and its
-ownership boundaries; it does not authorize runtime implementation, package
-deletion, schema changes, installer changes, production reconciliation,
-release work, or adoption of a Deferred Item.
+ownership boundaries and records the accepted implementation and closure
+result. It does not authorize package deletion, schema changes, installer
+changes, production reconciliation, release work, or adoption of a Deferred
+Item.
 
 The accepted WU2 System Manager baseline remains a historical implementation
 and acceptance record. In particular, WU2's conditional fallback and
@@ -129,16 +132,17 @@ next-action presentation.
 System Manager remains a consumer and coordinator of these authorities, not a
 package, migration, recovery, schema, or release-metadata engine.
 
-## Concrete preparation finding
+## Concrete preparation finding and resolution
 
 The current `app/Core/SystemManagerModulePackageFallback.php` contains an
 undefined `$classification` reference in `preflight()`. This is a concrete
 WU3 correctness finding because package preflight and completion guidance are
-part of the re-homed Modules operator boundary. It must be addressed and
-covered by focused validation during separately authorized WU3 implementation.
+part of the re-homed Modules operator boundary. It was addressed and covered
+by focused validation during the separately authorized WU3 implementation.
 
-This promotion records the finding only. It does not modify runtime source or
-authorize a fix in the current task.
+The finding was resolved in the accepted WU3 implementation. Focused package
+preflight and lifecycle-result validation confirms that classification is
+defined and preserved through the canonical System Manager package flow.
 
 ## Presentation and integration boundaries
 
@@ -180,10 +184,22 @@ validation demonstrate that:
 - no schema, installer, release, production-reconciliation, destructive
   retirement, second lifecycle engine, or generic framework is introduced.
 
+## Accepted WU3 closure result
+
+WU3 is COMPLETE AND CLOSED for this bounded refinement scope. System Manager
+is the canonical product-facing Module lifecycle surface; standalone Module
+Manager is no longer the preferred product-facing destination. The accepted
+implementation delivers the richer Module inventory, lifecycle evidence,
+diagnostics, dependency/conflict and action guidance, package/result and
+next-action presentation, scalable client-side search/filtering, and a
+canonical Module Detail surface backed by existing authoritative evidence.
+
+Objective focused validation and human/product acceptance passed. This closure
+does not claim that every System Manager area or future System Manager
+refinement is complete.
+
 ## Explicit exclusions
 
-- WU3 runtime/source implementation in this promotion;
-- fixing the recorded `$classification` defect in this promotion;
 - destructive Module Manager package or runtime deletion;
 - a second Module lifecycle engine, planner, ledger, migration authority, or
   schema authority;
