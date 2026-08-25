@@ -3749,6 +3749,19 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
     min-width: 0;
 }
 
+.admin-content-form-sidebar [data-media-picker],
+.admin-content-form-sidebar [data-media-picker] .admin-actions,
+.admin-content-form-sidebar [data-media-picker] input[type="file"],
+.admin-content-form-sidebar [data-media-picker] .admin-button {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.admin-content-form-sidebar [data-media-picker] input[type="file"] {
+    width: 100%;
+}
+
 .admin-content-form-section {
     display: grid;
     gap: var(--admin-space-4);

@@ -50,6 +50,7 @@ $assert(str_contains($form, 'name="category_ids[]"') && str_contains($form, 'nam
 
 $assert(str_contains($css, '.admin-content-filters') && str_contains($css, '@media (max-width: 680px)'), 'Content responsive filter styles are missing.');
 $assert(str_contains($css, '.admin-content-filter-summary__label') && str_contains($css, '.admin-content-result-context'), 'Content filter/result hierarchy styles are missing.');
+$assert(str_contains($css, '[data-media-picker] input[type="file"]') && str_contains($css, 'max-width: 100%'), 'Content Featured Media controls are not bounded for narrow layouts.');
 $assert(str_contains($css, '.admin-content-table-panel .admin-table td::before'), 'Responsive Content row labels are missing from CSS.');
 $assert(str_contains($css, '.admin-content-form-layout') && str_contains($css, '.admin-content-form-actions'), 'Content form responsive layout styles are missing.');
 
