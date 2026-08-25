@@ -60,5 +60,7 @@ $assert(is_string($fallback) && str_contains($fallback, 'public function detail'
 $assert(is_string($operator) && str_contains($operator, 'available_package_dependencies'), 'Package dependency evidence is not reused.');
 $assert(is_string($javascript) && str_contains($javascript, 'data-system-manager-module-search'), 'Client-side inventory filtering is missing.');
 $assert(is_string($javascript) && str_contains($javascript, 'data-system-manager-module-no-match'), 'Client-side no-match behavior is missing.');
+$css = file_get_contents(__DIR__ . '/../public/admin-assets/css/admin.css');
+$assert(is_string($css) && str_contains($css, '.system-manager-module-card[hidden]'), 'Hidden Module cards are not explicitly removed from the authored grid display.');
 
 echo "system_manager_wu3_module_detail: {$assertions} assertions passed\n";

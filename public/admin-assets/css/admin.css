@@ -1199,6 +1199,10 @@ dd {
     background: var(--admin-color-surface);
 }
 
+.system-manager-module-card[hidden] {
+    display: none !important;
+}
+
 .system-manager-module-card__header,
 .system-manager-module-card__status,
 .system-manager-module-card__actions,
