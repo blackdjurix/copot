@@ -9,15 +9,17 @@ MR.2 WU3: COMPLETE AND CLOSED
 WU4 scope: Content Manager Refinement
 WU4 preparation/audit: COMPLETE
 WU4 contract: PROMOTED / CONTRACT LOCKED
-WU4 runtime implementation: NOT STARTED
-WU4 source mutation: NOT AUTHORIZED by this promotion
+WU4 runtime implementation: COMPLETE
+WU4 objective validation: PASS
+WU4 human/product acceptance: PASS
+WU4 lifecycle state: COMPLETE AND CLOSED
 ```
 
 This contract promotes the bounded WU4 preparation audit into the authoritative
 repository contract. It defines a refinement target around the accepted
-Content implementation and does not authorize runtime or source
-implementation, schema changes, Deferred Item adoption, production
-reconciliation, release work, or any later MR.2 work.
+Content implementation and records the accepted implementation and closure
+result. It does not authorize schema changes, Deferred Item adoption,
+production reconciliation, release work, or any later MR.2 work.
 
 ## Objective
 
@@ -169,6 +171,24 @@ validation demonstrate that:
   indexing system, bulk workflow, revision system, preview engine, or
   unrelated capability is introduced; and
 - no System Manager or retired-manager ownership is pulled into WU4.
+
+## Accepted WU4 closure result
+
+WU4 is COMPLETE AND CLOSED for this bounded refinement scope. The accepted
+Content list and form refinement improves hierarchy, scanability, filter and
+result comprehension, lifecycle action grouping, validation recovery, and
+responsive behavior while preserving the existing Webcore Content ownership
+boundary and Content Manager extension model.
+
+The accepted implementation also corrects the narrow-screen Featured Media
+control overflow by constraining the existing Content-form Media controls to
+their available container width. Media picker, upload, reference, and
+processing behavior remain unchanged.
+
+Objective validation and human/product acceptance passed. Rich-text/editor,
+revisions, preview/workflow, bulk operations, new search infrastructure,
+ownership changes, and all other explicit exclusions remain outside WU4. This
+closure does not authorize or implement WU5.
 
 ## Recommended focused validation surface
 

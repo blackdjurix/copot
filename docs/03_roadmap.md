@@ -1301,6 +1301,13 @@ available at
 System Manager is the canonical product-facing Module lifecycle surface. This
 does not claim that all System Manager tabs or later MR.2 refinement work is
 complete and does not reopen accepted WU1/WU2 implementation.
+MR.2 WU4 — Content Manager Refinement is COMPLETE AND CLOSED for its accepted
+bounded scope. The Content list/form refinement and narrow-screen Featured
+Media control correction passed objective validation and human/product
+acceptance; Webcore Content ownership and the retained Content Manager
+extension model remain unchanged. Rich-text/editor and later MR.2 work remain
+outside this closure. The authoritative contract is
+`docs/42_mr_2_wu4_content_manager_refinement_contract.md`.
 
 ---
 

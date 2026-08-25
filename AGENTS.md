@@ -41,6 +41,16 @@ Module Detail presentation are complete and accepted. This closure does not
 claim that all System Manager refinement or later MR.2 work is complete and
 does not reopen accepted WU1/WU2 implementation.
 
+MR.2 WU4 — Content Manager Refinement is COMPLETE AND CLOSED for its accepted
+bounded scope under
+`docs/42_mr_2_wu4_content_manager_refinement_contract.md`. The accepted list
+and form refinement, accessible filter/result and action presentation,
+responsive behavior, and narrow-screen Featured Media control correction are
+complete with objective validation and human/product acceptance PASS. Webcore
+Content ownership and the retained Content Manager extension model remain
+unchanged; rich-text/editor and later MR.2 work remain separate and are not
+authorized by this closure.
+
 ### Current authoritative post-M3 state
 
 M3 Core Modules: COMPLETE AND CLOSED
