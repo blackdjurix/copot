@@ -12,7 +12,8 @@ final class SystemManagerModuleFallback
     public function __construct(
         private ModuleDiscovery $discovery,
         private ModuleRepository $repository,
-        private ?ModulePackageOperator $packages = null
+        private ?ModulePackageOperator $packages = null,
+        private ?string $storagePath = null
     ) {
     }
 
@@ -47,10 +48,36 @@ final class SystemManagerModuleFallback
             foreach ($installed as $dependentName => $dependent) if ($dependentName !== $name && ($dependent['status'] ?? null) === 'enabled' && $definition instanceof ModuleDefinition && in_array($name, $this->dependencyNames($definitions[$dependentName] ?? null), true)) $diagnostics[] = $this->diagnostic('enabled_dependent', 'error', ['disable', 'uninstall']);
             $diagnosticCodes = array_values(array_map(static fn (array $item): string => $item['code'], $diagnostics));
             $actions = $this->actions($lifecycle, $discovery, $diagnosticCodes, $name);
-            $items[] = ['name' => $name, 'title' => $definition?->title() ?? (string) ($row['title'] ?? $name), 'version' => $definition?->version() ?? (string) ($row['version'] ?? ''), 'stored_version' => is_array($row) ? (string) ($row['version'] ?? '') : null, 'discovered_version' => $definition?->version(), 'lifecycle_state' => $lifecycle, 'discovery_state' => $discovery, 'dependencies' => $definition instanceof ModuleDefinition ? $this->dependencyNames($definition) : [], 'diagnostics' => $diagnostics, 'available_actions' => $actions['available_actions'], 'denial_reasons' => $actions['denial_reasons']];
+            $items[] = ['name' => $name, 'title' => $definition?->title() ?? (string) ($row['title'] ?? $name), 'version' => $definition?->version() ?? (string) ($row['version'] ?? ''), 'stored_version' => is_array($row) ? (string) ($row['version'] ?? '') : null, 'discovered_version' => $definition?->version(), 'lifecycle_state' => $lifecycle, 'discovery_state' => $discovery, 'description' => $definition?->description(), 'author' => $definition?->author(), 'dependencies' => $definition instanceof ModuleDefinition ? $this->dependencyNames($definition) : [], 'permissions' => $definition instanceof ModuleDefinition ? $definition->permissions() : [], 'permission_metadata' => $this->repositoryPermissions($name), 'diagnostics' => $diagnostics, 'available_actions' => $actions['available_actions'], 'denial_reasons' => $actions['denial_reasons']];
         }
         if ($this->packages !== null) $items = $this->packages->enrich($items);
         return $items;
+    }
+
+    public function detail(string $name): ?array
+    {
+        foreach ($this->inventory() as $item) {
+            if (($item['name'] ?? null) !== $name) continue;
+
+            $item['operation'] = null;
+            $item['lifecycle_evidence'] = null;
+            try {
+                $state = $this->storagePath === null ? null : (new ModuleLifecycleStateStore($this->storagePath))->read($name);
+                if ($state instanceof ModuleLifecycleState) $item['lifecycle_evidence'] = $state->toArray();
+            } catch (\Throwable) {
+                $item['lifecycle_evidence_error'] = 'Lifecycle state evidence is unavailable.';
+            }
+            try {
+                $operation = $this->storagePath === null ? null : (new ModuleLifecycleOperationStore($this->storagePath))->read();
+                if ($operation instanceof ModuleLifecycleOperationRecord && $operation->module()->value() === $name) $item['operation'] = $operation->toArray();
+            } catch (\Throwable) {
+                $item['operation_evidence_error'] = 'Lifecycle operation evidence is unavailable.';
+            }
+
+            return $item;
+        }
+
+        return null;
     }
 
     public function actionAllowed(string $name, string $action): bool
@@ -65,6 +92,15 @@ final class SystemManagerModuleFallback
         $names = [];
         foreach (($definition->requires()['modules'] ?? []) as $dependency) { $name = is_array($dependency) ? (string) ($dependency['name'] ?? '') : (string) $dependency; if ($name !== '') $names[] = $name; }
         return array_values(array_unique($names));
+    }
+
+    private function repositoryPermissions(string $name): array
+    {
+        try {
+            return $this->repository->permissionsFor($name);
+        } catch (\Throwable) {
+            return [];
+        }
     }
 
     private function actions(string $lifecycle, string $discovery, array $codes, string $name): array

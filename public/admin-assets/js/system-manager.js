@@ -67,6 +67,26 @@
         schedule();
     }
 
+    const moduleSearch = document.querySelector('[data-system-manager-module-search]');
+    if (moduleSearch) {
+        const cards = Array.from(document.querySelectorAll('[data-system-manager-module-card]'));
+        const noMatch = document.querySelector('[data-system-manager-module-no-match]');
+        const count = document.querySelector('[data-system-manager-module-count]');
+        const updateModuleFilter = () => {
+            const needle = moduleSearch.value.trim().toLowerCase();
+            let visible = 0;
+            cards.forEach((card) => {
+                const matches = needle === '' || (card.getAttribute('data-module-search') || '').includes(needle);
+                card.hidden = !matches;
+                if (matches) visible += 1;
+            });
+            if (noMatch) noMatch.hidden = visible !== 0;
+            if (count) count.textContent = needle === '' ? `${cards.length} Modules` : `${visible} matching Module${visible === 1 ? '' : 's'}`;
+        };
+        moduleSearch.addEventListener('input', updateModuleFilter);
+        updateModuleFilter();
+    }
+
     const form = document.querySelector('[data-system-manager-upload]');
     const result = document.querySelector('[data-system-manager-result]');
     if (!form || !result || typeof window.fetch !== 'function') return;

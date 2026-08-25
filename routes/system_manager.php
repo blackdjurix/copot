@@ -25,6 +25,7 @@ $brandingPath = $path . '/branding';
 $localizationPath = $path . '/localization';
 $workspaceSavePath = $path . '/save';
 $moduleActionPath = $path . '/modules/action';
+$moduleDetailPath = $path . '/modules';
 $permission = 'system.webcore.manage';
 $manager = static fn (): SystemManagerLifecycleService => new SystemManagerLifecycleService(
     $app->packageLifecycle(), new UnavailableSystemManagerRecoveryGate(),
@@ -33,7 +34,7 @@ $manager = static fn (): SystemManagerLifecycleService => new SystemManagerLifec
 $branding = static fn (): SystemManagerBrandingService => new SystemManagerBrandingService($app->settings(), $app->database());
 $settings = static fn (): SystemManagerSettingsService => new SystemManagerSettingsService($app->settings(), $app->database());
 $moduleFallback = static fn (): SystemManagerModuleFallback => new SystemManagerModuleFallback(
-    new ModuleDiscovery($app->path('modules')), new ModuleRepository($app->database()), new ModulePackageOperator($app)
+    new ModuleDiscovery($app->path('modules')), new ModuleRepository($app->database()), new ModulePackageOperator($app), $app->path('storage')
 );
 $modulePackageFallback = static fn (): SystemManagerModulePackageFallback => new SystemManagerModulePackageFallback($app);
 $app->adminNavigation()->add('System Manager', $path, $permission, 'settings', 75);
@@ -54,9 +55,9 @@ $releaseMetadata = static function () use ($app): array {
     return is_array($metadata) ? $metadata : [];
 };
 
-$render = static function ($request, $user, ?string $message = null, ?string $error = null, int $statusCode = 200, ?string $sectionOverride = null) use (
+$render = static function ($request, $user, ?string $message = null, ?string $error = null, int $statusCode = 200, ?string $sectionOverride = null, ?array $moduleDetail = null) use (
     $app, $path, $preflightPath, $applyPath, $retryPath, $reconcilePath, $brandingPath, $workspaceSavePath,
-    $localizationPath, $moduleActionPath, $manager, $branding, $settings, $moduleFallback,
+    $localizationPath, $moduleActionPath, $moduleDetailPath, $manager, $branding, $settings, $moduleFallback,
     $releaseMetadata
 ): Response {
     $section = $sectionOverride ?? (string) $request->input('section', 'system');
@@ -82,7 +83,8 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
         'release' => $releaseMetadata(), 'message' => $message, 'error' => $error,
         'systemManagerPath' => $path, 'preflightPath' => $preflightPath, 'applyPath' => $applyPath,
         'retryPath' => $retryPath, 'reconcilePath' => $reconcilePath, 'brandingPath' => $brandingPath,
-        'localizationPath' => $localizationPath, 'moduleActionPath' => $moduleActionPath,
+        'localizationPath' => $localizationPath, 'moduleActionPath' => $moduleActionPath, 'moduleDetailPath' => $moduleDetailPath,
+        'moduleDetail' => $moduleDetail,
         'csrfToken' => $app->csrf()->token(),
         'clearCapability' => match ($request->input('notice')) {
             'localization_saved' => 'localization',
@@ -114,6 +116,15 @@ $app->router()->get($path, function ($request) use ($requireUser, $render) {
         default => null,
     };
     return $render($request, $user, $notice);
+});
+
+$app->router()->get($moduleDetailPath . '/{module}', function ($request, array $params) use ($requireUser, $render, $moduleFallback) {
+    $user = $requireUser($request); if ($user instanceof Response) return $user;
+    $name = (string) ($params['module'] ?? '');
+    if (!preg_match('/^[a-z0-9][a-z0-9_-]*$/', $name)) return Response::html('404 Not Found', 404);
+    $detail = $moduleFallback()->detail($name);
+    if ($detail === null) return Response::html('404 Not Found', 404);
+    return $render($request, $user, null, null, 200, 'modules', $detail);
 });
 
 $app->router()->post($workspaceSavePath, function ($request) use ($app, $requireUser, $render, $path) {
