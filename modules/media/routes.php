@@ -155,16 +155,27 @@ $mediaNormalizeWorkspace = static function ($request): array {
     ];
 };
 $mediaPage = static function (array $workspace): int { return max(1, (int) ceil($workspace['total'] / MediaAdmin::PAGE_SIZE)); };
-$mediaRenderList = static function ($request, $user, array $filters, array $workspace, ?string $error = null) use ($app, $mediaRenderView, $mediaRenderAdmin, $mediaAdminUrl, $mediaAdmin, $mediaPage): Response {
+$mediaRenderList = static function ($request, $user, array $filters, array $workspace, ?string $error = null) use ($app, $mediaRenderView, $mediaRenderAdmin, $mediaAdminUrl, $mediaAdmin, $mediaPage, $mediaUsages, $mediaVariants): Response {
     $lastPage = $mediaPage($workspace);
     $query = array_filter(['q' => $filters['search'], 'kind' => $filters['kind'], 'capability' => $filters['capability']], static fn ($value): bool => $value !== null && $value !== '');
     $paginationUrl = static fn (int $page): string => $mediaAdminUrl->childUrl('media') . '?' . http_build_query(array_merge($query, ['page' => $page]));
+    $evidence = [];
+    foreach ($workspace['items'] as $item) {
+        $id = $item->id()->value();
+        $usages = $mediaUsages->forMedia($item->id());
+        $variants = $mediaVariants->forMedia($item->id());
+        $evidence[$id] = [
+            'usageCount' => count($usages),
+            'variantCount' => count($variants),
+            'variantWidths' => array_values(array_unique(array_filter(array_map(static fn (MediaVariant $variant): ?int => $variant->width(), $variants), static fn (?int $width): bool => $width !== null))),
+        ];
+    }
     $content = $mediaRenderView('list', [
         'mediaItems' => $workspace['items'], 'total' => $workspace['total'], 'page' => $filters['page'], 'lastPage' => $lastPage,
         'paginationUrl' => $paginationUrl, 'query' => $query, 'search' => $filters['search'], 'selectedKind' => $filters['kind'],
         'selectedCapability' => $filters['capability'], 'hasFilters' => $filters['search'] !== '' || $filters['kind'] !== null || $filters['capability'] !== null,
         'canEdit' => $user->can('media.edit'), 'canDelete' => $user->can('media.delete'), 'canUpload' => $user->can('media.upload'), 'csrfToken' => $app->csrf()->token(), 'notice' => $request->input('notice'), 'error' => $error,
-        'isEditable' => static fn (Media $item): bool => $mediaAdmin->isEditable($item),
+        'isEditable' => static fn (Media $item): bool => $mediaAdmin->isEditable($item), 'evidence' => $evidence,
     ]);
     return $mediaRenderAdmin('Media', $content, $user, $request->path());
 };

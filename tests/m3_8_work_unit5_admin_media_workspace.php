@@ -140,15 +140,20 @@ try {
 
     $html = $contentOf($app->run(new Request('GET', $mediaPath, ['q' => 'original.png', 'kind' => 'image', 'capability' => 'editable'])));
     $assert(str_contains($html, 'admin-media-filters') && str_contains($html, 'admin-media-grid-panel') && str_contains($html, 'admin-media-grid') && str_contains($html, 'data-media-card') && str_contains($html, 'role="button"') && str_contains($html, 'admin-panel__body'), 'Media workspace did not use the accepted interactive grid/card presentation structure.');
+    $assert(str_contains($html, 'Find media') && str_contains($html, 'Showing 1 item matching the current filters.') && str_contains($html, 'media-filter-help') && str_contains($html, 'Clear filters'), 'Media filter guidance and result context are incomplete.');
     $assert(str_contains($html, 'A &lt;hero&gt; image') && str_contains($html, '/media/' . $mediaId), 'Media output was not escaped or controlled.');
     $assert(!str_contains($html, 'storage/media') && !str_contains($html, 'storage_key') && !str_contains($html, '.tmp'), 'Media workspace leaked storage details.');
     $assert(str_contains($html, 'Uploaded') && str_contains($html, 'admin-media-card__separator'), 'Media cards do not present compact uploaded metadata.');
+    $assert(str_contains($html, 'data-media-usage-count="0"') && str_contains($html, 'data-media-variant-count="0"') && str_contains($html, 'Editable'), 'Media cards did not expose authoritative usage, variant, and eligibility evidence.');
     $assert(str_contains($html, 'admin-media-preview') && str_contains($html, 'role="dialog"') && str_contains($html, 'aria-modal="true"') && str_contains($html, 'Previous media') && str_contains($html, 'Next media') && str_contains($html, 'Save changes') && !str_contains($html, 'Open public view') && !str_contains($html, 'Square') && !str_contains($html, 'Landscape') && !str_contains($html, 'Contain'), 'Media workspace preview actions do not match the focused Media metadata boundary.');
     $assert(!str_contains($html, 'admin-media-card__actions') && !str_contains($html, 'Download') && !str_contains($html, '/download'), 'Media Manager exposed a removed card action or Admin download affordance.');
     $adminCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
     $adminJs = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-media.js');
     $assert(str_contains($adminCss, '.admin-media-grid') && str_contains($adminCss, 'repeat(auto-fill, minmax(min(100%, 18rem), 18rem))') && str_contains($adminCss, 'justify-content: start;') && str_contains($adminCss, 'overflow-wrap: anywhere;'), 'Media responsive grid styles do not retain bounded cards.');
     $assert(str_contains($adminJs, "event.key === 'Escape'") && str_contains($adminJs, 'setBackgroundInactive') && str_contains($adminJs, 'lockedScrollY') && str_contains($adminJs, 'origin.focus'), 'Media preview interaction script lacks focus, escape, or background-inert handling.');
+    $assert(str_contains($adminJs, "addDetail('Usage'") && str_contains($adminJs, "addDetail('Variants'") && str_contains($adminJs, 'data-preview-delete-help'), 'Media preview did not consume authoritative usage and variant evidence.');
+    $noMatchHtml = $contentOf($app->run(new Request('GET', $mediaPath, ['q' => 'no-such-media'] )));
+    $assert(str_contains($noMatchHtml, 'No matching media') && str_contains($noMatchHtml, 'Try changing the search or filters') && str_contains($noMatchHtml, 'Clear filters'), 'Media no-match recovery did not remain accessible.');
     $assert($statusOf($app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['title' => 'No CSRF']))) === 419, 'Title mutation did not reject missing CSRF.');
     $titleResponse = $app->run(new Request('POST', $app->adminUrl()->childUrl('media/' . $mediaId . '/title'), [], ['_token' => $csrf(), 'title' => 'Updated title']));
     $assert($statusOf($titleResponse) === 302 && str_contains($locationOf($titleResponse), 'notice=title-updated'), 'Title update did not use PRG.');
