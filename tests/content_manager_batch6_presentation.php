@@ -25,11 +25,14 @@ $css = $source('public/admin-assets/css/admin.css');
 
 $assert(str_contains($list, 'class="admin-content-header"'), 'Content list header hierarchy is missing.');
 $assert(str_contains($list, 'name="q"') && str_contains($list, 'id="content-search"'), 'Content search label or request field regressed.');
+$assert(str_contains($list, 'content-search-help') && str_contains($list, 'Search matches Content titles and slugs.'), 'Content search guidance is missing.');
 $assert(str_contains($list, 'id="content-type"') && str_contains($list, 'id="content-status"') && str_contains($list, 'id="content-per-page"'), 'Content filter controls are incomplete.');
 $assert(str_contains($list, 'No content yet') && str_contains($list, 'No matching content'), 'Distinct Content empty states are missing.');
 $assert(str_contains($list, 'admin-content-type-badge') && str_contains($list, '$typeLabels'), 'Human-readable Content type presentation is missing.');
 $assert(str_contains($list, '$statusLabels') && str_contains($list, 'admin-badge--success'), 'Human-readable Content status presentation is missing.');
 $assert(str_contains($list, 'data-label="Title"') && str_contains($list, 'data-label="Actions"'), 'Responsive Content row labels are missing.');
+$assert(str_contains($list, 'aria-live="polite"') && str_contains($list, 'admin-content-result-context'), 'Content result context is not exposed accessibly.');
+$assert(str_contains($list, 'role="group" aria-label="Actions for'), 'Content row actions are not grouped accessibly.');
 $assert(str_contains($list, 'admin-content-slug-column'), 'Narrow-screen reduced-column hook is missing.');
 $assert(str_contains($list, "\$paginationUrl(\$currentPage - 1)") && str_contains($list, "\$paginationUrl(\$currentPage + 1)"), 'Content pagination links are incomplete.');
 $assert(!str_contains($list, 'type="checkbox" name="selected'), 'Unsupported bulk-selection controls were introduced.');
@@ -39,12 +42,14 @@ $assert(preg_match('/<fieldset class="[^"]*admin-content-form-section--main/', $
 $assert(str_contains($form, '<legend>Status</legend>') && str_contains($form, '<legend>Taxonomy</legend>'), 'Content form group semantics are incomplete.');
 $assert(str_contains($form, 'id="content-form-errors"') && str_contains($form, 'aria-describedby="content-form-errors"'), 'Global Content validation recovery association is missing.');
 $assert(str_contains($form, 'aria-invalid="true"') && str_contains($form, '$fieldErrorId'), 'Field-level Content validation association is missing.');
+$assert(str_contains($form, 'role="alert"'), 'Field-level Content errors are not announced as alerts.');
 $assert(str_contains($form, '$renderFieldErrors') && str_contains($form, 'id="taxonomy"'), 'Field errors must have one stable association target per field, including Taxonomy.');
 $assert(str_contains($form, '$errorTarget = $field === \'taxonomy\' && !$taxonomyAvailable ? null : $field;'), 'Unavailable Taxonomy errors must not link to a missing form target.');
 $assert(str_contains($form, 'name="expected_updated_at"'), 'Stale-write form token was removed.');
 $assert(str_contains($form, 'name="category_ids[]"') && str_contains($form, 'name="tag_ids[]"'), 'Taxonomy field names changed.');
 
 $assert(str_contains($css, '.admin-content-filters') && str_contains($css, '@media (max-width: 680px)'), 'Content responsive filter styles are missing.');
+$assert(str_contains($css, '.admin-content-filter-summary__label') && str_contains($css, '.admin-content-result-context'), 'Content filter/result hierarchy styles are missing.');
 $assert(str_contains($css, '.admin-content-table-panel .admin-table td::before'), 'Responsive Content row labels are missing from CSS.');
 $assert(str_contains($css, '.admin-content-form-layout') && str_contains($css, '.admin-content-form-actions'), 'Content form responsive layout styles are missing.');
 

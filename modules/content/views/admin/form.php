@@ -42,7 +42,7 @@ $renderFieldErrors = static function (string $field) use ($fieldErrors, $fieldEr
         return;
     }
 
-    echo '<div class="admin-field__error" id="' . htmlspecialchars($fieldErrorId($field), ENT_QUOTES, 'UTF-8') . '">';
+    echo '<div class="admin-field__error" id="' . htmlspecialchars($fieldErrorId($field), ENT_QUOTES, 'UTF-8') . '" role="alert">';
     foreach ($fieldErrors[$field] as $error) {
         echo '<p>' . htmlspecialchars($error, ENT_QUOTES, 'UTF-8') . '</p>';
     }

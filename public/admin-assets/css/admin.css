@@ -3509,15 +3509,26 @@ html.admin-nav-open body {
 }
 
 .admin-content-filter-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--admin-space-2);
     margin: calc(var(--admin-space-2) * -1) 0 0;
     color: var(--admin-color-muted);
     font-size: 13px;
 }
 
+.admin-content-filter-summary__label {
+    font-weight: 800;
+}
+
 .admin-content-filter-summary strong {
     display: inline-block;
-    margin-left: var(--admin-space-1);
+    padding: 4px 8px;
+    border: 1px solid var(--admin-color-border);
+    border-radius: 999px;
     color: var(--admin-color-text);
+    background: var(--admin-color-surface);
     font-weight: 700;
 }
 
@@ -3549,6 +3560,16 @@ html.admin-nav-open body {
     margin: var(--admin-space-1) 0 0;
     color: var(--admin-color-muted);
     font-size: 13px;
+}
+
+.admin-content-result-context {
+    display: grid;
+    gap: 2px;
+}
+
+.admin-content-result-context strong {
+    color: var(--admin-color-text);
+    font-size: 14px;
 }
 
 .admin-content-table-panel .admin-table-wrap {

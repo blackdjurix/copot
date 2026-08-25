@@ -52,7 +52,8 @@ if ($lastPageNumber <= 7) {
         <form class="admin-panel admin-content-filters" method="get" action="<?= htmlspecialchars($adminUrl('content'), ENT_QUOTES, 'UTF-8') ?>" aria-label="Content filters">
             <div class="admin-content-filter-field admin-content-search">
                 <label for="content-search">Search</label>
-                <input id="content-search" type="search" name="q" value="<?= htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Search title or slug">
+                <input id="content-search" type="search" name="q" value="<?= htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Search title or slug" aria-describedby="content-search-help">
+                <p class="admin-field__help" id="content-search-help">Search matches Content titles and slugs.</p>
             </div>
 
             <div class="admin-content-filter-field">
@@ -92,8 +93,8 @@ if ($lastPageNumber <= 7) {
         </form>
 
         <?php if (!empty($hasFilters)): ?>
-            <p class="admin-content-filter-summary" role="status">
-                Active filters:
+            <p class="admin-content-filter-summary" role="status" aria-live="polite">
+                <span class="admin-content-filter-summary__label">Active filters</span>
                 <?php if (($search ?? '') !== ''): ?><strong>search “<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>”</strong><?php endif; ?>
                 <?php if (($selectedType ?? null) !== null): ?><strong><?= htmlspecialchars($typeLabels[$selectedType] ?? $selectedType, ENT_QUOTES, 'UTF-8') ?></strong><?php endif; ?>
                 <?php if (($selectedStatus ?? null) !== null): ?><strong><?= htmlspecialchars($statusLabels[$selectedStatus] ?? $selectedStatus, ENT_QUOTES, 'UTF-8') ?></strong><?php endif; ?>
@@ -123,7 +124,7 @@ if ($lastPageNumber <= 7) {
                 <header class="admin-content-table-panel__header">
                     <div>
                         <h3 id="content-entries-title">Content entries</h3>
-                        <p>Showing <?= $firstResult ?>–<?= $lastResult ?> of <?= $totalResults ?> results.</p>
+                        <p class="admin-content-result-context" role="status" aria-live="polite"><strong><?= $totalResults ?> <?= $totalResults === 1 ? 'entry' : 'entries' ?></strong><span>Showing <?= $firstResult ?>–<?= $lastResult ?> of <?= $totalResults ?> results.</span></p>
                     </div>
                 </header>
 
@@ -180,7 +181,7 @@ if ($lastPageNumber <= 7) {
                                     <td data-label="Status"><span class="admin-badge <?= htmlspecialchars($statusBadgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($statusLabel, ENT_QUOTES, 'UTF-8') ?></span></td>
                                     <td data-label="Updated"><span class="admin-table-meta admin-table-wrap-anywhere"><?= htmlspecialchars($item->updatedAt(), ENT_QUOTES, 'UTF-8') ?></span></td>
                                     <td data-label="Actions">
-                                        <div class="admin-row-actions">
+                                        <div class="admin-row-actions" role="group" aria-label="Actions for <?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?>">
                                             <?php if (!empty($canUpdate)): ?>
                                                 <a class="admin-button admin-button--link" href="<?= htmlspecialchars($adminUrl('content/' . $item->id() . '/edit'), ENT_QUOTES, 'UTF-8') ?>" aria-label="Edit <?= htmlspecialchars($title, ENT_QUOTES, 'UTF-8') ?>">Edit</a>
                                             <?php endif; ?>
