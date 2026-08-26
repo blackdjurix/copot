@@ -1,5 +1,5 @@
 # COPOT Workplan
-Date version: 2026-08-26 21:22:01 WIB
+Date version: 2026-08-26 22:04:00 WIB
 
 Lifecycle: CURRENT / EARLY MATERIAL UPDATE
 Project: COPOT
@@ -36,6 +36,7 @@ Maintenance rule from this revision forward:
 This canonical revision reconciles the File Library Workplan lineage recovered from the following versions:
 
 - `COPOT_Post_M3_Workplan_260805_110353.md`
+- `COPOT_Post_M3_Workplan_260806_094921.md`
 - `workplan_260806_225454.md`
 - `workplan_260806_232410.md`
 - `workplan_260807_055035.md`
@@ -64,6 +65,10 @@ The previous GitHub planning file was also compared directly:
 - `workplan_260826_193300.md` at repository root.
 
 Historical versions remain provenance. This file consolidates their still-material logical identities and current dispositions rather than copying stale intermediate execution states wholesale.
+
+Reconciliation note:
+- the previously omitted `COPOT_Post_M3_Workplan_260806_094921.md` is now included in the lineage basis;
+- its still-material Version & Release Reconciliation / release-data / What's New lineage is preserved below without restoring obsolete August 6 execution sequencing.
 
 ## 3. Current Durable Repository State Relevant to Planning
 
@@ -100,6 +105,17 @@ Class: PROMOTED
 Status: COMPLETE / CLOSED
 Authority: `docs/31_backup_recovery_foundation_contract.md`
 Planning action: NONE / PROVENANCE
+
+### Version & Release Reconciliation
+Class: HISTORICAL CLOSURE GATE / RELEASE-DATA PROVENANCE
+Status: COMPLETE / INCORPORATED
+Historical source: `COPOT_Post_M3_Workplan_260806_094921.md`
+Current disposition:
+- the historical gate reconciled Webcore and per-Module version/release lineage before later lifecycle/release work advanced;
+- release/version metadata remains package/source-owned rather than Admin-UI-owned;
+- technical release facts and human-facing What's New content remain distinct concerns;
+- future What's New presentation must consume authoritative release/package metadata rather than invent or duplicate release history.
+Planning action: NONE / PROVENANCE; preserve the release-information lineage for future consumer re-audit.
 
 ### Webcore Deployment & Portability Foundation
 Class: PROMOTED
@@ -534,6 +550,7 @@ Preparation questions:
 
 Compared with the previous GitHub Workplan, this canonical file restores or explicitly carries forward logical entries that earlier compressed revisions risked losing:
 - full promoted/closed platform-foundation provenance;
+- Version & Release Reconciliation historical closure-gate and release-data provenance;
 - Refinement Milestone Governance and MR.x backlog provenance;
 - Core Modules & Dashboard umbrella decomposition provenance;
 - Dashboard Composition, System Health Presentation, Widget Foundation, and Future Widget Layout identities;
