@@ -121,11 +121,11 @@
         addDetail('Access', card.dataset.mediaEditable === '1' ? 'Editable' : 'Manage-only');
         addDetail('Usage', card.dataset.mediaUsageCount === '0' ? 'Not currently referenced' : `${card.dataset.mediaUsageCount} active reference${card.dataset.mediaUsageCount === '1' ? '' : 's'}`);
         addDetail('Variants', card.dataset.mediaVariantCount === '0' ? 'No generated variants' : `${card.dataset.mediaVariantCount} generated variant${card.dataset.mediaVariantCount === '1' ? '' : 's'}${card.dataset.mediaVariantWidths ? ` (${card.dataset.mediaVariantWidths}px widths)` : ''}`);
-        const deleteHelp = preview.querySelector('[data-preview-delete-help]');
-        if (deleteHelp) deleteHelp.textContent = card.dataset.mediaUsageCount === '0' ? 'This item is currently eligible for deletion if you have permission.' : 'Deletion is blocked automatically while this media is in use.';
         renderStage(card);
         const actions = preview.querySelector('[data-media-preview-actions]');
         actions.replaceChildren(renderActions(card));
+        const deleteHelp = preview.querySelector('[data-preview-delete-help]');
+        if (deleteHelp) deleteHelp.textContent = card.dataset.mediaUsageCount === '0' ? 'This item is currently eligible for deletion if you have permission.' : 'Deletion is blocked automatically while this media is in use.';
         previousButton.disabled = currentIndex === 0;
         nextButton.disabled = currentIndex === cards.length - 1;
         dialog.scrollTop = 0;

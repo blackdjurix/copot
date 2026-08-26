@@ -95,7 +95,7 @@ $mediaValidateCsrf = static function ($request) use ($app): ?Response {
         ? $app->adminErrors()->response($request, 419)
         : null;
 };
-$app->router()->get($mediaPickerPath, function ($request) use ($mediaRequireAdmin, $mediaRepository, $mediaVariants): Response {
+$app->router()->get($mediaPickerPath, function ($request) use ($mediaRequireAdmin, $mediaRepository, $mediaVariants, $mediaUrl): Response {
     $user = $mediaRequireAdmin($request, ['media.use']);
     if ($user instanceof Response) return $user;
     if ((string) $request->input('consumer', '') !== 'content') return Response::content(json_encode(['error' => 'Unavailable picker context.']), 422, ['Content-Type' => 'application/json; charset=UTF-8']);

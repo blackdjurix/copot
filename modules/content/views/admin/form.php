@@ -142,20 +142,20 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
                         <legend>Featured Media</legend>
                         <input type="hidden" name="featured_media_id" value="<?= htmlspecialchars((string) ($content['featured_media_id'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" data-media-picker-input>
                         <input type="hidden" name="featured_media_pending_token" value="" data-media-picker-pending-input>
-                        <p class="admin-field__help" data-media-picker-status aria-live="polite"><?= !empty($content['featured_media_id']) ? 'A featured image is selected.' : 'Optional. Select an image for this content entry.' ?></p>
+                        <p class="admin-field__help" data-media-picker-status aria-live="polite"><?= !empty($content['featured_media_id']) ? 'A featured image is selected.' : 'Select an image for this content entry.' ?></p>
                         <div class="admin-media-picker__selected" data-media-picker-selected hidden></div>
                         <?php $renderFieldErrors('featured_media'); ?>
                         <div class="admin-actions">
                             <button class="admin-button admin-button--secondary" type="button" data-media-picker-open>Select Media</button>
                             <button class="admin-button admin-button--link" type="button" data-media-picker-clear>Clear</button>
                         </div>
-                        <label class="admin-field__label" for="featured-media-upload">Upload one image</label>
+                        <label class="admin-field__label" for="featured-media-upload">Upload image</label>
                         <input id="featured-media-upload" type="file" accept="image/jpeg,image/png,image/webp" data-media-picker-upload>
                         <button class="admin-button admin-button--secondary" type="button" data-media-picker-upload-button>Upload and prepare</button>
                         <dialog class="admin-media-picker" data-media-picker-dialog aria-labelledby="media-picker-title">
                             <div class="admin-media-picker__panel">
                                 <h3 id="media-picker-title">Select featured Media</h3>
-                                <label for="media-picker-search">Search title or original filename</label>
+                                <label for="media-picker-search" data-media-picker-search-label>Search title or original filename</label>
                                 <input id="media-picker-search" type="search" data-media-picker-search>
                                 <div class="admin-media-picker__results" data-media-picker-results aria-live="polite"></div>
                                 <div class="admin-media-picker__prepare" data-media-picker-prepare hidden><p data-media-picker-prepare-status aria-live="polite">Prepare featured image</p><div class="admin-media-picker__crop-frame" data-media-picker-crop-frame><img data-media-picker-crop-image alt="Source image for crop" draggable="false"><div class="admin-media-picker__crop-box" data-media-picker-crop-box role="group" tabindex="0" aria-label="16:9 crop box. Drag to move. Use arrow keys to position; Shift plus arrow keys to resize."><span class="admin-media-picker__crop-handle admin-media-picker__crop-handle--nw" data-media-picker-crop-handle="nw" aria-hidden="true"></span><span class="admin-media-picker__crop-handle admin-media-picker__crop-handle--ne" data-media-picker-crop-handle="ne" aria-hidden="true"></span><span class="admin-media-picker__crop-handle admin-media-picker__crop-handle--sw" data-media-picker-crop-handle="sw" aria-hidden="true"></span><span class="admin-media-picker__crop-handle admin-media-picker__crop-handle--se" data-media-picker-crop-handle="se" aria-hidden="true"></span></div></div><input type="hidden" value="0" data-media-picker-crop-x><input type="hidden" value="0" data-media-picker-crop-y><input type="hidden" value="0" data-media-picker-crop-width><input type="hidden" value="0" data-media-picker-crop-height><div class="admin-actions"><button type="button" class="admin-button admin-button--primary" data-media-picker-process>Confirm crop</button><button type="button" class="admin-button admin-button--secondary" data-media-picker-process-cancel data-media-picker-choose-another>Choose another</button></div></div>

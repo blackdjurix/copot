@@ -92,6 +92,8 @@ try {
     $assert($statusOf($app->run(new Request('GET', $mediaPath))) === 200, 'Media Admin workspace did not render.');
     $uploadPageHtml = $contentOf($app->run(new Request('GET', $uploadPath)));
     $assert(str_contains($uploadPageHtml, 'admin-panel__body') && str_contains($uploadPageHtml, 'admin-form'), 'Media upload form did not use the established Admin panel spacing structure.');
+    $uploadSource = (string) file_get_contents($basePath . '/modules/media/views/admin/upload.php');
+    $assert(!str_contains($uploadSource, '>File</label>') && str_contains($uploadSource, 'admin-media-upload__title-row') && strpos($uploadSource, 'media-file-help') < strpos($uploadSource, 'id="media-file"') && strpos($uploadSource, 'id="media-file"') < strpos($uploadSource, 'admin-media-upload__title-row') && str_contains($uploadSource, 'Optional, defaults to the filename.') && !str_contains($uploadSource, 'optional; defaults'), 'Media upload intake order or title helper presentation regressed.');
     $temporaryFiles[] = $source = tempnam(sys_get_temp_dir(), 'copot-wu5-');
     file_put_contents($source, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', true));
     $upload = new Request('POST', $uploadPath, [], ['_token' => $csrf(), 'title' => 'A <hero> image'], ['media' => ['name' => 'unsafe/original.png', 'type' => 'image/png', 'tmp_name' => $source, 'error' => UPLOAD_ERR_OK, 'size' => filesize($source)]]);
