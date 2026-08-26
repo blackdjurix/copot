@@ -1,5 +1,5 @@
 # COPOT Workplan
-Date version: 2026-08-26 22:04:00 WIB
+Date version: 2026-08-26 23:24:37 WIB
 
 Lifecycle: CURRENT / EARLY MATERIAL UPDATE
 Project: COPOT
@@ -593,3 +593,107 @@ Not authorized by this Workplan alone:
 - production reconciliation;
 - branch deletion;
 - release/tag/publication/external distribution.
+
+## 18. Historical Planning Identity Retention Registry
+
+This section restores historical planning identities that were explicit in earlier Workplan revisions but were later compressed into broader concepts, incorporated workstreams, or current-architecture wording. Retention here preserves planning provenance; it does not reopen closed scope, restore obsolete ownership, or create implementation authority.
+
+### Copot Update, Upgrade, and Migration
+Class: HISTORICAL CONCEPT
+Status: INCORPORATED / PROVENANCE
+Sources:
+- `copot_update_upgrade_migration_concept.md` [PRIMARY HISTORICAL]
+Relations:
+- incorporated into Package Lifecycle & Migration Foundation.
+Authority:
+- `docs/28_package_lifecycle_migration_foundation_contract.md` for promoted lifecycle scope.
+Planning action: NONE / PROVENANCE.
+
+### Roles Permission Accordion
+Class: EMBEDDED REFINEMENT CONCEPT
+Status: FUTURE / RE-HOMED / NOT ADOPTED
+Sources:
+- `copot_refinement_milestone_governance_concept_260803_220452.md` — Roles Permission Accordion section [PRIMARY HISTORICAL]
+- `copot_concept_disposition_index_260803_220452.md` — `§ 2.6 Roles Permission Accordion` [HISTORICAL INDEX]
+Relations:
+- historical refinement input;
+- related to Module Permission Dependency & Base Access;
+- any future ownership must be reconciled against current Users & Access architecture rather than old Core Module wording.
+Planning action: KEEP REGISTERED / REVALIDATE BEFORE ADOPTION.
+
+### Admin UX Refinement
+Class: HISTORICAL REFINEMENT CONCEPT
+Status: DECOMPOSED / PROVENANCE
+Sources:
+- `copot_consolidated_refinement_concepts_260810_020950.md` — `§ 7. Admin UX Refinement` [PRIMARY HISTORICAL]
+- Refinement Milestone Governance lineage [SUPPORTING]
+Relations:
+- shared Admin presentation concerns now feed MR.2 shared primitives;
+- Dashboard/shared-shell concerns remain under Admin Shell / Dashboard Refinement;
+- domain-specific concerns belong to their current owner workstreams.
+Planning action: KEEP REGISTERED / DECOMPOSED PROVENANCE.
+
+### Widget Stage 1 — Widget Foundation + Auto Layout
+Class: HISTORICAL / FUTURE WIDGET STAGE
+Status: PARTLY DELIVERED / AUDIT AGAINST CURRENT DASHBOARD BASELINE
+Sources:
+- Future Widget Layout Concept lineage.
+Authority:
+- `docs/25_m3_9_internal_dashboard_contract.md` for delivered Dashboard baseline only.
+Planning action: KEEP REGISTERED; do not rebuild delivered capability without a focused gap audit.
+
+### Widget Stage 2 — Layout Persistence + Management
+Class: FUTURE WIDGET STAGE
+Status: FUTURE / NOT PROMOTED
+Sources:
+- Future Widget Layout Concept lineage.
+Planning action: KEEP REGISTERED / FUTURE.
+
+### Widget Stage 3 — Android-Style Interactive Grid
+Class: FUTURE WIDGET STAGE
+Status: FUTURE / NOT PROMOTED
+Sources:
+- Future Widget Layout Concept lineage.
+Planning action: KEEP REGISTERED / FUTURE.
+
+### M6 — Distribution & Ecosystem
+Class: FUTURE ROADMAP CONCEPT
+Status: LATER / FUTURE
+Sources:
+- `COPOT_Post_M3_Workplan_260805_110353.md` — `§ M6 — Distribution & Ecosystem` [PRIMARY EMBEDDED SOURCE]
+- Package Lifecycle Concept lineage — remote update/distribution direction [SUPPORTING]
+- Module Package Identity & Capability Provider lineage [SUPPORTING]
+Relations:
+- encompasses the broader historical ecosystem direction behind the narrower Official Remote Update / Distribution Ecosystem entry.
+Planning action: KEEP REGISTERED / NO AUTOMATIC SEQUENCING.
+
+### System Health Dashboard Integration
+Class: DERIVED / REFINEMENT CONCEPT
+Status: FUNCTIONAL BASELINE DELIVERED / PRESENTATION REFINEMENT REMAINS
+Sources:
+- `COPOT_Post_M3_Workplan_260805_110353.md` — historical Dashboard adoption lineage
+- System Health Concept lineage [SUPPORTING]
+- Future Widget Layout lineage [SUPPORTING]
+Relations:
+- functional System Health boundary incorporated into closed System Health & Status;
+- remaining Dashboard presentation concern represented by System Health Presentation / Admin Shell & Dashboard refinement.
+Authority:
+- `docs/35_system_health_status_contract.md` for delivered functional boundary.
+Planning action: INCORPORATED / PROVENANCE.
+
+### What's New Admin Surfaces
+Class: HISTORICAL RELEASE-PRESENTATION CONCEPT
+Status: INCORPORATED / CONSUMER RE-AUDIT REQUIRED BEFORE FUTURE IMPLEMENTATION
+Sources:
+- Version & Release Reconciliation Workplan lineage [PRIMARY HISTORICAL]
+- Package/release metadata authority [CURRENT DATA SOURCE]
+Relations:
+- Webcore historical consumer: System Manager;
+- Module historical consumer: Module detail/lifecycle surface;
+- current architecture must determine the correct consumer without duplicating release history.
+Planning action: KEEP REGISTERED / PROVENANCE; consume authoritative release metadata only.
+
+Retention rule from this revision forward:
+- once a planning identity has been validly registered, completion, promotion, incorporation, decomposition, supersession, retirement, or architecture re-homing changes its disposition but does not erase the identity;
+- future Workplan consolidation may shorten closed execution detail, but must preserve the identity, latest disposition, and enough source/authority linkage to reconstruct why it existed;
+- an identity may be removed only when evidence proves it was a duplicate, erroneous/non-valid registration, or explicitly invalidated with no independent historical planning value.
