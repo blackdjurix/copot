@@ -1,4 +1,4 @@
-# COPOT Concept Registry — Date version: 2026-08-26 20:07:08 WIB
+# COPOT Concept Registry — Date version: 2026-08-26 22:04:00 WIB
 
 Status: CURRENT / CONSOLIDATED CONCEPT REGISTRY
 Project: COPOT
@@ -31,9 +31,9 @@ Maintenance rule from this revision forward:
 
 This registry was reconstructed from historical Concept files, consolidated Concept revisions, old Concept disposition/index files, and Workplan Concept registries.
 
-Material source families recovered include at least:
+Exact distinct source inventory recovered: **29 filenames**, after duplicate uploads with the same filename/content are deduplicated as one historical source artifact.
 
-### Package / Lifecycle lineage
+### Package / Lifecycle lineage — 7
 - `copot_update_upgrade_migration_concept.md`
 - `copot_release_update_migration_concept_260803_171900.md`
 - `copot_package_lifecycle_migration_concept_260803_220452.md`
@@ -42,21 +42,22 @@ Material source families recovered include at least:
 - `copot_module_package_identity_and_capability_provider_concept_260803_220452.md`
 - `copot_module_package_identity_and_capability_provider_concept.md`
 
-### Multi-installation / database ownership lineage
+### Multi-installation / database ownership lineage — 5
 - `multi_installation_isolation_foundation_concept_260804_092611.md`
 - `COPOT_Webcore_Module_Database_Table_Ownership_Separation_Concept_260813_131300.md`
 - `COPOT_Webcore_Module_Database_Table_Ownership_Separation_Concept_260814_151800.md`
 - `COPOT_Webcore_Module_Database_Table_Ownership_Separation_Concept_260814_172800.md`
 - `COPOT_Webcore_Module_Database_Table_Ownership_Separation_Concept_260816_194431.md`
 
-### System / authorization / widget lineage
-- `copot_system_health_status_concept_260809_210842.md` and earlier revisions
+### System / authorization / widget lineage — 6
+- `copot_system_health_status_concept_260805_083932.md`
+- `copot_system_health_status_concept_260809_210842.md`
 - `copot_module_permission_dependency_base_access_concept_260809_210842.md`
 - `concept_future_widget_layout_260810_060139.md`
 - `Future_Widget_Layout_Contract_260804_161738.md`
 - `Future_Widget_Layout_Contract_260716_111602.md`
 
-### Refinement lineage
+### Refinement lineage — 8
 - `copot_refinement_milestone_governance_concept_260803_220452.md`
 - `core_modules_dashboard_refinement_concept_260804_161738.md`
 - `concept_mrx_session_refinement_backlog_260809_093844.md`
@@ -66,14 +67,16 @@ Material source families recovered include at least:
 - `copot_consolidated_refinement_concepts_260814_151800.md`
 - `copot_consolidated_refinement_concepts_260816_194432.md`
 
-### Architecture reconciliation lineage
+### Architecture reconciliation lineage — 2
 - `concept_webcore_extension_architecture_reconciliation_260820_120500.md`
 - `concept_webcore_extension_architecture_reconciliation_260820_234300.md`
 
-### Historical index lineage
+### Historical index lineage — 1
 - `copot_concept_disposition_index_260803_220452.md`
 
-Duplicate uploads of identical historical files are one Concept source, not separate Concept identities.
+Inventory total: `7 + 5 + 6 + 8 + 2 + 1 = 29` distinct source filenames.
+
+Duplicate uploads of identical historical files are one Concept source, not separate Concept identities. This exact inventory replaces the earlier shorthand `and earlier revisions` so source-level reconciliation can be checked deterministically.
 
 ## 3. Promoted / Incorporated Concept Provenance
 
@@ -140,6 +143,9 @@ Status: INCORPORATED / PROMOTED / COMPLETE / CLOSED PROVENANCE
 
 Primary source:
 - `copot_system_health_status_concept_260809_210842.md`
+
+Earlier source:
+- `copot_system_health_status_concept_260805_083932.md`
 
 Repository authority:
 - `docs/35_system_health_status_contract.md`
@@ -741,6 +747,8 @@ The Concept audit found that later compressed Workplans and the absence of a can
 - Shared File Intake Interaction Pattern;
 - future dedicated Bundled Module refinement identities;
 - Taxonomy Manager retirement-candidate disposition.
+
+Source-level reconciliation in this revision additionally makes all 29 distinct historical Concept/source filenames explicit, including the previously shorthand System Health earlier revision.
 
 Resolved concepts are preserved with their current resolved/provenance status rather than resurrected as active work.
 
