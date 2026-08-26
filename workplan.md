@@ -1,4 +1,5 @@
-# COPOT Workplan — Date version: 2026-08-26 20:07:08 WIB
+# COPOT Workplan
+Date version: 2026-08-26 21:22:01 WIB
 
 Lifecycle: CURRENT / EARLY MATERIAL UPDATE
 Project: COPOT
@@ -17,13 +18,14 @@ Registry rules:
 - previously valid logical planning or Concept identities must not disappear merely because they were promoted, incorporated, decomposed, superseded, retired, or closed;
 - promoted/closed items remain lightweight provenance entries;
 - unresolved, future, deferred, excluded, and operational-gate states remain distinct;
-- detailed semantic content belongs in `concept.md`, historical Concept sources, or authoritative repository contracts;
+- detailed semantic content belongs in the relevant individual Concept files, historical Concept sources, or authoritative repository contracts;
 - Workplan planning state is not implementation authority;
 - a Workplan entry may be promoted only through an explicit decision plus durable repository authority.
 
 Maintenance rule from this revision forward:
 - canonical filename remains exactly `workplan.md`;
-- the date version is embedded in the first line and must change on every material revision;
+- line 1 is the Workplan title and line 2 is `Date version: YYYY-MM-DD HH:mm:ss WIB`;
+- the line-2 date version must change on every material revision;
 - do not create new timestamped Workplan filenames for routine revisions;
 - historical timestamped Workplans remain provenance and must not be deleted or rewritten merely to normalize naming;
 - future routine maintenance should be performed by Codex against the authoritative repository, with focused lineage comparison before mutation;
@@ -31,8 +33,9 @@ Maintenance rule from this revision forward:
 
 ## 2. Lineage Audit Basis
 
-This canonical revision reconciles the File Library Workplan lineage recovered from at least the following versions:
+This canonical revision reconciles the File Library Workplan lineage recovered from the following versions:
 
+- `COPOT_Post_M3_Workplan_260805_110353.md`
 - `workplan_260806_225454.md`
 - `workplan_260806_232410.md`
 - `workplan_260807_055035.md`
@@ -435,9 +438,16 @@ Class: FUTURE / SEPARATE WORKSTREAM
 Status: KEEP
 Boundary: Dashboard composition, widget layout, sidebar/topbar redesign, and Dashboard-specific behavior remain outside MR.2 unless explicitly reclassified.
 
-### External Simulation Gate / Ecosystem Lineage
-Class: FUTURE VALIDATION / ROADMAP LINEAGE
-Status: KEEP REGISTERED
+### External Simulation Gate Preparation
+Class: FUTURE VALIDATION / ECOSYSTEM LINEAGE
+Status: KEEP REGISTERED / UNSCHEDULED
+Source: `COPOT_Post_M3_Workplan_260805_110353.md`
+Planning action: NO AUTOMATIC SEQUENCING
+
+### External Simulation #1 — Custom Theme
+Class: FUTURE VALIDATION / ECOSYSTEM LINEAGE
+Status: KEEP REGISTERED / UNSCHEDULED
+Source: `COPOT_Post_M3_Workplan_260805_110353.md`
 Planning action: NO AUTOMATIC SEQUENCING
 
 ### Official Remote Update / Distribution Ecosystem
@@ -490,7 +500,7 @@ The following logical refinement identities remain registered even when their or
 - Webcore Lifecycle Settings/Admin UX, retained only where current ownership makes it applicable;
 - What's New presentation lineage, sourced from authoritative package/release metadata and requiring current-architecture consumer re-audit before future implementation.
 
-Detailed current Concept disposition belongs in `concept.md`.
+Detailed current Concept disposition remains in the relevant individual Concept files and authoritative repository contracts; this Workplan stores only the planning index/disposition needed for continuity.
 
 ## 14. Thread-Level Continuity Reconciliation
 
@@ -531,7 +541,7 @@ Compared with the previous GitHub Workplan, this canonical file restores or expl
 - Server-Empty Bootstrap Deferred Item;
 - Module Permission Dependency & Base Access;
 - Module Package Identity & Capability Provider;
-- External Simulation / ecosystem lineage;
+- External Simulation Gate Preparation and External Simulation #1 — Custom Theme;
 - remote update/distribution future concept;
 - Database historical release-support policy question;
 - Installation & Runtime Identity Exposure;
