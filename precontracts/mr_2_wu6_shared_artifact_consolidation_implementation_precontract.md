@@ -1,8 +1,8 @@
 # MR.2 WU6 — Shared Artifact Consolidation & Implementation — Pre-contract
 
-Lifecycle: DRAFT / TRIAL / NOT AUTHORITATIVE
+Lifecycle: PROMOTED / HISTORICAL PROVENANCE
 Workplan role: forward MR.2 WU6 planning boundary
-Promotion status: NOT PROMOTED
+Promotion status: PROMOTED INTO `docs/45_mr_2_wu6_shared_artifact_consolidation_implementation_contract.md`
 Reconciliation classification: REVIEW-READY
 Implementation authority: bounded by the promoted MR.2 governance boundary; this pre-contract does not authorize out-of-scope work
 Dependency: WU5 authoritative shared-primitive contract or explicitly accepted equivalent planning boundary
