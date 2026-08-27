@@ -677,8 +677,8 @@ Relations:
 Planning action: HOLD MEDIA-SPECIFIC CONTINUATION / AUDIT AGAINST SHARED BASELINE
 
 ### WU5 — Shared Admin Primitive Audit & Contract
-Class: MR.2 WORK UNIT / PREPARATION TARGET
-Status: NEXT
+Class: MR.2 WORK UNIT / PREPARATION AUDIT
+Status: AUDIT COMPLETE / PRE-CONTRACT REVIEW-READY / PROMOTION PENDING
 
 Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL DESIGN INPUT]
@@ -689,7 +689,7 @@ Sources:
 Pre-contract:
 - `precontracts/mr_2_wu5_shared_admin_primitive_audit_precontract.md`
 
-Pre-contract status: DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
+Pre-contract status: REVIEW-READY / DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
 
 Objective:
 Audit current Admin presentation implementation and accepted refinement lineage, identify canonical shared primitives versus duplicated/local variants, and define a bounded forward shared-primitive contract only through explicit authorization.
@@ -707,7 +707,7 @@ Minimum audit surface:
 - responsive/accessibility behavior;
 - shared CSS/token/artifact ownership.
 
-Planning action: PREPARATION NEXT / REVIEW PRE-CONTRACT / NO IMPLEMENTATION AUTHORIZED BY WORKPLAN OR PRE-CONTRACT
+Planning action: PREPARATION COMPLETE / REVIEW-READY / AUTHORITATIVE CONTRACT PROMOTION SEPARATELY AUTHORIZED / NO IMPLEMENTATION AUTHORIZED BY WORKPLAN OR PRE-CONTRACT
 
 ### WU6 — Shared Artifact Consolidation & Implementation
 Class: MR.2 WORK UNIT
@@ -828,12 +828,21 @@ No individual Concept file currently owns this thread-level payload, so this sec
 
 Classification:
 - MR.2 CONTINUATION;
-- PREPARATION NEXT;
-- PRE-CONTRACT MATERIALIZED / DRAFT / TRIAL;
+- PREPARATION AUDIT COMPLETE;
+- PRE-CONTRACT REVIEW-READY / DRAFT / TRIAL;
 - NO TECHNICAL IMPLEMENTATION AUTHORIZED BY THIS WORKPLAN OR PRE-CONTRACT;
 - old rejected Media WU5 is evidence only;
 - no Deferred adoption;
 - repository-side contract promotion/amendment remains separately authorized.
+
+Audit result:
+- canonical Admin tokens, buttons, panels, fields/helpers/errors, Page Frame, empty states, table wrappers, and action rows are evidenced as shared artifacts;
+- page-heading/kicker, filter-toolbar composition, control-to-result spacing, and inline-field layout are duplicated/local compositions suitable for bounded WU6 consolidation;
+- System Manager, Media, Dashboard, dialog, lifecycle, and consumer-specific interactions remain legitimate domain specializations or reference evidence;
+- no unresolved architecture/product decision blocks a bounded WU6 implementation boundary;
+- old Media WU5 remains historical evidence and is not resumed.
+
+Immediate next gate: REVIEW WU5 PRE-CONTRACT / SEPARATE AUTHORITATIVE CONTRACT PROMOTION DECISION.
 
 Preparation questions:
 1. Which shared Admin visual primitives already have a real single-source implementation?
