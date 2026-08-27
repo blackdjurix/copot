@@ -1,8 +1,8 @@
 # MR.2 WU5 — Shared Admin Primitive Audit & Contract — Pre-contract
 
-Lifecycle: DRAFT / TRIAL / NOT AUTHORITATIVE
+Lifecycle: PROMOTED / HISTORICAL PROVENANCE
 Workplan role: forward MR.2 WU5 planning boundary
-Promotion status: NOT PROMOTED
+Promotion status: PROMOTED INTO `docs/44_mr_2_wu5_shared_admin_primitive_audit_contract.md`
 Audit classification: REVIEW-READY
 Implementation authorization: NONE
 
