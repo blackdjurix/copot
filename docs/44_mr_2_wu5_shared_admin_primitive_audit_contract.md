@@ -11,13 +11,14 @@ WU5 scope: Shared Admin Primitive Audit & Contract
 WU5 preparation/audit: COMPLETE
 WU5 contract: PROMOTED / CONTRACT LOCKED
 WU5 implementation: NOT AUTHORIZED
-WU5 lifecycle state: CONTRACT LOCKED / WU6 HOLD
+WU5 lifecycle state: COMPLETE / CONTRACT LOCKED
 ```
 
 This contract promotes the reviewed WU5 pre-contract into authoritative
 repository documentation. The pre-contract remains preserved as historical
 provenance. This contract defines the bounded shared-presentation boundary
-for later WU6 planning and does not authorize WU6 implementation.
+for WU6 continuation within the accepted MR.2 workstream. WU5 does not itself
+implement WU6.
 
 The historical Media Manager contract at
 `docs/43_mr_2_wu5_media_manager_refinement_contract.md` remains intact and is
@@ -121,7 +122,9 @@ No Media-specific refinement is resumed by this contract.
 
 ## Exact WU6 implementation boundary
 
-After separate WU6 implementation authorization, WU6 may implement only:
+WU6 is the next in-scope MR.2 work unit and may proceed through a GPT-framed
+Agent Instruction under the existing accepted and promoted MR.2 workstream
+authorization. It may implement only:
 
 1. an optional page-heading composition for title, optional kicker,
    description, and action regions;
@@ -141,6 +144,15 @@ form, workflow, or lifecycle engine; new JavaScript behavior authority;
 schema/persistence; domain state or authorization ownership; per-Module
 refinement; Dashboard/Admin Shell redesign; retired-manager restoration; or
 Deferred capability adoption.
+
+Routine continuation from WU5 into this bounded WU6 scope does not require a
+fresh user approval merely because the work unit has changed. Fresh explicit
+approval remains required if execution would cross a real governance boundary,
+including scope expansion beyond this accepted MR.2 scope, Deferred Item
+adoption, an unlocked product or architecture decision, destructive or
+irreversible action, production reconciliation or similarly sensitive
+operations, release/tag/publication/external distribution, or another approval
+gate explicitly reserved to the user.
 
 ## Acceptance criteria for WU6 promotion and implementation
 
@@ -186,7 +198,6 @@ impact or regression signal.
 
 This contract does not authorize:
 
-- WU6 implementation;
 - shared CSS/markup/token migration;
 - broad Admin Shell or Dashboard redesign;
 - per-Bundled-Module refinement or Media-specific continuation;
@@ -201,7 +212,9 @@ This contract does not authorize:
 - unrelated cleanup.
 
 WU5 authoritative promotion is complete when this contract is durably pushed
-to `main` and independently verified. WU6 remains HOLD and NOT AUTHORIZED.
+to `main` and independently verified. WU6 remains bounded by this contract
+and its execution remains subject to a GPT-framed Agent Instruction; no fresh
+user approval is required solely for routine continuation within this scope.
 
 ## Source and provenance references
 
