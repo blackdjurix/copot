@@ -22,7 +22,7 @@ $noticeText = match ($notice ?? null) {
 </header>
 <?php if ($noticeText): ?><div class="admin-alert admin-alert--success" role="status"><?= $esc($noticeText) ?></div><?php endif; ?>
 <?php if ($error): ?><div class="admin-alert admin-alert--danger" role="alert"><?= $esc($error) ?></div><?php endif; ?>
-<form class="admin-panel admin-content-filters admin-media-filters" method="get" action="<?= $esc($adminUrl('media')) ?>" aria-label="Media filters">
+<form class="admin-panel admin-content-filters admin-media-filters admin-filter-toolbar" method="get" action="<?= $esc($adminUrl('media')) ?>" aria-label="Media filters">
     <div class="admin-media-filters__heading"><strong>Find media</strong><span>Search by title or original filename, then narrow by kind or capability.</span></div>
     <label>Search<input type="search" name="q" value="<?= $esc($search) ?>" placeholder="Title or original filename" aria-describedby="media-filter-help"></label>
     <label>Kind<select name="kind"><option value="">All</option><option value="image"<?= $selectedKind === 'image' ? ' selected' : '' ?>>Image</option><option value="document"<?= $selectedKind === 'document' ? ' selected' : '' ?>>Document</option></select></label>

@@ -6,7 +6,7 @@
         <input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>">
         <p class="admin-form__hint admin-media-upload__guidance" id="media-file-help">Upload one supported image or PDF document. File contents are inspected, and browser-provided type information is not trusted.</p>
         <input id="media-file" name="media" type="file" aria-describedby="media-file-help" required>
-        <div class="admin-media-upload__title-row"><label for="media-title">Title</label><div><input id="media-title" name="title" value="<?= $esc($title) ?>" maxlength="190" aria-describedby="media-title-help"><p class="admin-form__hint" id="media-title-help">Optional, defaults to the filename.</p></div></div>
+        <div class="admin-media-upload__title-row admin-inline-field"><label for="media-title">Title</label><div><input id="media-title" name="title" value="<?= $esc($title) ?>" maxlength="190" aria-describedby="media-title-help"><p class="admin-form__hint" id="media-title-help">Optional, defaults to the filename.</p></div></div>
         <div class="admin-form__actions"><a class="admin-button admin-button--secondary" href="<?= $esc($adminUrl('media')) ?>">Cancel</a><button class="admin-button admin-button--primary" type="submit">Upload media</button></div>
     </div>
 </form>

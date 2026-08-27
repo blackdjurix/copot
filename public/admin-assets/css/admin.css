@@ -842,6 +842,80 @@ dd {
     border-top: 1px solid var(--admin-color-border);
 }
 
+/* MR.2 WU6 shared presentation composition. Consumer semantics remain local. */
+.admin-page-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--admin-space-5);
+    min-width: 0;
+}
+
+.admin-page-heading__copy,
+.admin-page-heading__actions {
+    min-width: 0;
+}
+
+.admin-page-heading__kicker {
+    margin: 0 0 var(--admin-space-2);
+}
+
+.admin-page-heading__title,
+.admin-page-heading__description {
+    overflow-wrap: anywhere;
+}
+
+.admin-page-heading__title {
+    margin: 0;
+}
+
+.admin-page-heading__description {
+    margin: var(--admin-space-2) 0 0;
+    color: var(--admin-color-muted);
+}
+
+.admin-filter-toolbar {
+    display: grid;
+    gap: var(--admin-space-3);
+    min-width: 0;
+}
+
+.admin-filter-toolbar__field {
+    display: grid;
+    gap: var(--admin-space-2);
+    min-width: 0;
+}
+
+.admin-filter-toolbar__actions,
+.admin-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--admin-space-3);
+}
+
+.admin-stack {
+    display: grid;
+    gap: var(--admin-space-5);
+    min-width: 0;
+}
+
+.admin-inline-field {
+    display: grid;
+    grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+    gap: var(--admin-space-4);
+    align-items: start;
+    min-width: 0;
+}
+
+.admin-inline-field > :first-child {
+    padding-top: var(--admin-space-2);
+}
+
+.admin-inline-field > :last-child {
+    min-width: 0;
+}
+
 .system-manager-workspace {
     display: grid;
     gap: var(--admin-space-6);

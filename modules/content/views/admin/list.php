@@ -37,26 +37,26 @@ if ($lastPageNumber <= 7) {
 }
 ?>
 <section class="admin-content-page" aria-labelledby="content-list-title">
-    <div class="admin-content-layout">
-        <header class="admin-content-header">
-            <div class="admin-content-header__copy">
-                <p class="admin-content-eyebrow">Content workspace</p>
-                <h2 id="content-list-title">Content</h2>
-                <p>Manage pages, articles, publishing status, and taxonomy assignments.</p>
+    <div class="admin-content-layout admin-stack">
+        <header class="admin-content-header admin-page-heading">
+            <div class="admin-content-header__copy admin-page-heading__copy">
+                <p class="admin-content-eyebrow admin-page-heading__kicker">Content workspace</p>
+                <h2 class="admin-page-heading__title" id="content-list-title">Content</h2>
+                <p class="admin-page-heading__description">Manage pages, articles, publishing status, and taxonomy assignments.</p>
             </div>
             <?php if (!empty($canCreate)): ?>
                 <a class="admin-button admin-button--primary" href="<?= htmlspecialchars($adminUrl('content/create'), ENT_QUOTES, 'UTF-8') ?>">Create content</a>
             <?php endif; ?>
         </header>
 
-        <form class="admin-panel admin-content-filters" method="get" action="<?= htmlspecialchars($adminUrl('content'), ENT_QUOTES, 'UTF-8') ?>" aria-label="Content filters">
-            <div class="admin-content-filter-field admin-content-search">
+        <form class="admin-panel admin-content-filters admin-filter-toolbar" method="get" action="<?= htmlspecialchars($adminUrl('content'), ENT_QUOTES, 'UTF-8') ?>" aria-label="Content filters">
+            <div class="admin-content-filter-field admin-filter-toolbar__field admin-content-search">
                 <label for="content-search">Search</label>
                 <input id="content-search" type="search" name="q" value="<?= htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8') ?>" placeholder="Search title or slug" aria-describedby="content-search-help">
                 <p class="admin-field__help" id="content-search-help">Search matches Content titles and slugs.</p>
             </div>
 
-            <div class="admin-content-filter-field">
+            <div class="admin-content-filter-field admin-filter-toolbar__field">
                 <label for="content-type">Type</label>
                 <select id="content-type" name="type">
                     <option value="">All types</option>
@@ -65,7 +65,7 @@ if ($lastPageNumber <= 7) {
                 </select>
             </div>
 
-            <div class="admin-content-filter-field">
+            <div class="admin-content-filter-field admin-filter-toolbar__field">
                 <label for="content-status">Status</label>
                 <select id="content-status" name="status">
                     <option value="">All statuses</option>
@@ -75,7 +75,7 @@ if ($lastPageNumber <= 7) {
                 </select>
             </div>
 
-            <div class="admin-content-filter-field">
+            <div class="admin-content-filter-field admin-filter-toolbar__field">
                 <label for="content-per-page">Per page</label>
                 <select id="content-per-page" name="per_page">
                     <?php foreach ([25, 50, 100] as $pageSizeOption): ?>
@@ -84,7 +84,7 @@ if ($lastPageNumber <= 7) {
                 </select>
             </div>
 
-            <div class="admin-content-filter-actions">
+            <div class="admin-content-filter-actions admin-filter-toolbar__actions">
                 <button class="admin-button admin-button--secondary" type="submit">Apply filters</button>
                 <?php if (!empty($hasFilters)): ?>
                     <a class="admin-button admin-button--link" href="<?= htmlspecialchars($adminUrl('content'), ENT_QUOTES, 'UTF-8') ?>">Clear filters</a>
@@ -93,7 +93,7 @@ if ($lastPageNumber <= 7) {
         </form>
 
         <?php if (!empty($hasFilters)): ?>
-            <p class="admin-content-filter-summary" role="status" aria-live="polite">
+            <p class="admin-content-filter-summary admin-filter-result-context" role="status" aria-live="polite">
                 <span class="admin-content-filter-summary__label">Active filters</span>
                 <?php if (($search ?? '') !== ''): ?><strong>search “<?= htmlspecialchars($search, ENT_QUOTES, 'UTF-8') ?>”</strong><?php endif; ?>
                 <?php if (($selectedType ?? null) !== null): ?><strong><?= htmlspecialchars($typeLabels[$selectedType] ?? $selectedType, ENT_QUOTES, 'UTF-8') ?></strong><?php endif; ?>

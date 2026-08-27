@@ -54,11 +54,11 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
     : static fn (string $path = ''): string => '/' . trim($path, '/');
 ?>
 <section class="admin-content-form-page" aria-labelledby="content-form-title">
-    <header class="admin-content-form-header">
-        <div>
-            <p class="admin-content-eyebrow"><?= ($formMode ?? 'create') === 'edit' ? 'Content workspace' : 'Content workspace' ?></p>
-            <h2 id="content-form-title"><?= htmlspecialchars($heading ?? 'Content details', ENT_QUOTES, 'UTF-8') ?></h2>
-            <p><?= ($formMode ?? 'create') === 'edit' ? 'Update the content entry and its publishing details.' : 'Create a page or article and prepare it for publishing.' ?></p>
+    <header class="admin-content-form-header admin-page-heading">
+        <div class="admin-page-heading__copy">
+            <p class="admin-content-eyebrow admin-page-heading__kicker"><?= ($formMode ?? 'create') === 'edit' ? 'Content workspace' : 'Content workspace' ?></p>
+            <h2 class="admin-page-heading__title" id="content-form-title"><?= htmlspecialchars($heading ?? 'Content details', ENT_QUOTES, 'UTF-8') ?></h2>
+            <p class="admin-page-heading__description"><?= ($formMode ?? 'create') === 'edit' ? 'Update the content entry and its publishing details.' : 'Create a page or article and prepare it for publishing.' ?></p>
         </div>
         <a class="admin-button admin-button--secondary" href="<?= htmlspecialchars($contentAdminUrl('content'), ENT_QUOTES, 'UTF-8') ?>">Back to content</a>
     </header>
@@ -223,7 +223,7 @@ $contentAdminUrl = is_callable($adminUrl ?? null)
                 </div>
             </div>
 
-            <div class="admin-actions admin-form__actions admin-content-form-actions">
+            <div class="admin-actions admin-form__actions admin-content-form-actions admin-action-row">
                 <a class="admin-button admin-button--secondary" href="<?= htmlspecialchars($contentAdminUrl('content'), ENT_QUOTES, 'UTF-8') ?>">Cancel</a>
                 <button class="admin-button admin-button--primary" type="submit"><?= htmlspecialchars($submitLabel ?? 'Save content', ENT_QUOTES, 'UTF-8') ?></button>
             </div>

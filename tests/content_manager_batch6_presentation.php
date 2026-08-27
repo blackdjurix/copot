@@ -23,7 +23,8 @@ $list = $source('modules/content/views/admin/list.php');
 $form = $source('modules/content/views/admin/form.php');
 $css = $source('public/admin-assets/css/admin.css');
 
-$assert(str_contains($list, 'class="admin-content-header"'), 'Content list header hierarchy is missing.');
+$assert(str_contains($list, 'admin-content-header') && str_contains($list, 'admin-page-heading'), 'Content list header hierarchy is missing.');
+$assert(str_contains($list, 'admin-filter-toolbar') && str_contains($list, 'admin-filter-result-context') && str_contains($list, 'admin-stack'), 'Content did not adopt the shared WU6 presentation primitives.');
 $assert(str_contains($list, 'name="q"') && str_contains($list, 'id="content-search"'), 'Content search label or request field regressed.');
 $assert(str_contains($list, 'content-search-help') && str_contains($list, 'Search matches Content titles and slugs.'), 'Content search guidance is missing.');
 $assert(str_contains($list, 'id="content-type"') && str_contains($list, 'id="content-status"') && str_contains($list, 'id="content-per-page"'), 'Content filter controls are incomplete.');
@@ -53,6 +54,7 @@ $assert(str_contains($css, '.admin-content-filter-summary__label') && str_contai
 $assert(str_contains($css, '[data-media-picker] input[type="file"]') && str_contains($css, 'max-width: 100%'), 'Content Featured Media controls are not bounded for narrow layouts.');
 $assert(str_contains($css, '.admin-content-table-panel .admin-table td::before'), 'Responsive Content row labels are missing from CSS.');
 $assert(str_contains($css, '.admin-content-form-layout') && str_contains($css, '.admin-content-form-actions'), 'Content form responsive layout styles are missing.');
+$assert(str_contains($css, '.admin-page-heading') && str_contains($css, '.admin-filter-toolbar') && str_contains($css, '.admin-inline-field'), 'WU6 shared presentation artifacts are missing.');
 
 $permissions = new class extends PermissionChecker {
     public function __construct()
