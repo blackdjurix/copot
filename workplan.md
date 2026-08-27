@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-08-27 05:56:56 WIB
+Date version: 2026-08-27 07:15:00 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -12,7 +12,7 @@ It does not:
 - authorize implementation;
 - auto-adopt Deferred Items;
 - create repository lifecycle state;
-- automatically promote Concept scope;
+- automatically promote Concept or Pre-contract scope;
 - authorize production reconciliation;
 - authorize release/tag/publication/external distribution.
 
@@ -20,13 +20,19 @@ Repository contracts, committed source/tests, and independently verified remote 
 
 Registry rules:
 - Workplan stores logical Concept/work-item registration and minimal lifecycle/provenance metadata;
-- detailed semantic content stays in individual Concept source files or authoritative repository contracts;
+- detailed semantic content stays in individual Concept source files, target-specific Pre-contracts, or authoritative repository contracts according to artifact role;
 - `Sources` refers directly to individual Concept files, never to a consolidated Concept registry intermediary;
+- `Pre-contract` identifies a target-specific pre-promotion planning artifact and is indexed directly by Workplan;
+- Pre-contract is not repository authority and does not authorize implementation or promotion by itself;
+- Concept files do not need to index the Pre-contracts that consume them;
+- after promotion, repository contract authority belongs under `Authority` while the reviewed Pre-contract remains provenance;
 - complete/closed items remain registered as provenance;
 - a valid planning identity is not erased merely because it is completed, promoted, incorporated, decomposed, superseded, retired, rejected, or re-homed;
 - future, deferred, excluded, unresolved, and operational-gate states remain distinct;
 - Workplan planning state is not repository implementation authority;
 - promotion requires explicit decision plus durable repository authority.
+
+The Workplan + Concept + Pre-contract model is currently being trialed within MR.2 before governance-wide promotion. Trial materialization does not itself amend GPT-side governance.
 
 ## 2. Current Authoritative State Anchor
 
@@ -39,6 +45,7 @@ Current durable planning state:
 - MR.2 WU1–WU4: COMPLETE AND CLOSED;
 - old MR.2 Media WU5 implementation: EXISTS / NOT ACCEPTED;
 - current forward target: MR.2 WU5 — Shared Admin Primitive Audit & Contract;
+- MR.2 Pre-contract trial layer: MATERIALIZED for historical/promoted WU1–WU4, old Media WU5 evidence, and forward WU5–WU8;
 - per-Bundled-Module refinement: redistributed to dedicated future workstreams;
 - Dashboard: separate from MR.2;
 - `DI-PACKAGE-LIFECYCLE-WU7-01`: KEEP DEFERRED / UNSCHEDULED;
@@ -52,6 +59,8 @@ Each logical entry uses only relevant fields:
 - `Class`
 - `Status`
 - `Sources`
+- `Pre-contract`
+- `Pre-contract status`
 - `Relations`
 - `Authority`
 - `Planning action`
@@ -62,7 +71,7 @@ Source tags:
 - `[HISTORICAL]`
 - `[ANCESTOR]`
 
-`Sources` must name individual Concept files. Repository contracts and other delivered truth belong under `Authority`, not `Sources`.
+`Sources` must name individual Concept files. `Pre-contract` is a separate planning/provenance field and must not be hidden under `Sources` or `Authority`. Repository contracts and other delivered truth belong under `Authority`, not `Sources` or `Pre-contract`.
 
 ## 4. Promoted / Closed Provenance Registry
 
@@ -224,6 +233,11 @@ Sources:
 - `copot_refinement_milestone_governance_concept_260803_220452.md` [SUPPORTING]
 - `core_modules_dashboard_refinement_concept_260804_161738.md` [SUPPORTING]
 
+Pre-contract:
+- `precontracts/38_mr_2_wu1_webcore_admin_view_foundation_precontract.md`
+
+Pre-contract status: MATERIALIZED HISTORICAL SNAPSHOT / TRIAL PROVENANCE
+
 Authority:
 - `docs/38_mr_2_wu1_webcore_admin_view_foundation_contract.md`
 
@@ -236,6 +250,11 @@ Status: COMPLETE AND CLOSED
 Sources:
 - `copot_consolidated_refinement_concepts_260816_194432.md` [PRIMARY PLANNING LINEAGE]
 - `concept_webcore_extension_architecture_reconciliation_260820_234300.md` [SUPPORTING ARCHITECTURE]
+
+Pre-contract:
+- `precontracts/39_mr_2_wu2_webcore_system_manager_baseline_precontract.md`
+
+Pre-contract status: MATERIALIZED HISTORICAL SNAPSHOT / TRIAL PROVENANCE
 
 Authority:
 - `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md`
@@ -251,6 +270,11 @@ Sources:
 - `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
 - `concept_webcore_extension_architecture_reconciliation_260820_234300.md` [SUPPORTING ARCHITECTURE]
 
+Pre-contract:
+- `precontracts/41_mr_2_wu3_system_manager_lifecycle_modules_ux_refinement_precontract.md`
+
+Pre-contract status: MATERIALIZED HISTORICAL SNAPSHOT / TRIAL PROVENANCE
+
 Authority:
 - `docs/41_mr_2_wu3_system_manager_lifecycle_modules_ux_refinement_contract.md`
 
@@ -264,6 +288,11 @@ Status: COMPLETE AND CLOSED
 Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL REFINEMENT INPUT]
 - `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
+
+Pre-contract:
+- `precontracts/42_mr_2_wu4_content_manager_refinement_precontract.md`
+
+Pre-contract status: MATERIALIZED HISTORICAL SNAPSHOT / TRIAL PROVENANCE
 
 Authority:
 - `docs/42_mr_2_wu4_content_manager_refinement_contract.md`
@@ -631,13 +660,19 @@ Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` — Media refinement section [PRIMARY HISTORICAL INTENT]
 - `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
 
+Pre-contract:
+- `precontracts/43_mr_2_wu5_media_manager_refinement_precontract.md`
+
+Pre-contract status: MATERIALIZED HISTORICAL SNAPSHOT / SUPERSEDED FORWARD SCOPE / TRIAL PROVENANCE
+
 Authority / repository evidence:
 - `docs/43_mr_2_wu5_media_manager_refinement_contract.md`
 
 Relations:
 - objective/correctness evidence may be reused where valid;
 - implementation must be classified into correctness fixes, shared-artifact candidates, future Media-specific refinement, and local redesign that should not survive;
-- commit/contract existence does not establish accepted WU5 closure.
+- commit/contract existence does not establish accepted WU5 closure;
+- this historical WU5 identity is distinct from current forward WU5 Shared Admin Primitive Audit & Contract.
 
 Planning action: HOLD MEDIA-SPECIFIC CONTINUATION / AUDIT AGAINST SHARED BASELINE
 
@@ -650,6 +685,11 @@ Sources:
 - `copot_consolidated_refinement_concepts_260816_194432.md` [PRIMARY SHARED REFINEMENT INPUT]
 - `copot_consolidated_refinement_concepts_260814_151800.md` [HISTORICAL]
 - `core_modules_dashboard_refinement_concept_260804_161738.md` [SUPPORTING]
+
+Pre-contract:
+- `precontracts/mr_2_wu5_shared_admin_primitive_audit_precontract.md`
+
+Pre-contract status: DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
 
 Objective:
 Audit current Admin presentation implementation and accepted refinement lineage, identify canonical shared primitives versus duplicated/local variants, and define a bounded forward shared-primitive contract only through explicit authorization.
@@ -667,7 +707,7 @@ Minimum audit surface:
 - responsive/accessibility behavior;
 - shared CSS/token/artifact ownership.
 
-Planning action: PREPARATION NEXT / NO IMPLEMENTATION AUTHORIZED BY WORKPLAN
+Planning action: PREPARATION NEXT / REVIEW PRE-CONTRACT / NO IMPLEMENTATION AUTHORIZED BY WORKPLAN OR PRE-CONTRACT
 
 ### WU6 — Shared Artifact Consolidation & Implementation
 Class: MR.2 WORK UNIT
@@ -677,10 +717,18 @@ Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL DESIGN INPUT]
 - `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
 
+Pre-contract:
+- `precontracts/mr_2_wu6_shared_artifact_consolidation_implementation_precontract.md`
+
+Pre-contract status: DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
+
+Relations:
+- HARD sequencing dependency on accepted/promoted WU5 boundary before WU6 implementation authorization.
+
 Objective:
 Implement bounded canonical shared primitives using single-source Admin artifacts/tokens/classes while preserving domain behavior.
 
-Planning action: FUTURE / REQUIRES SEPARATE AUTHORIZATION
+Planning action: FUTURE / PRE-CONTRACT EXISTS / REQUIRES SEPARATE PROMOTION AND IMPLEMENTATION AUTHORIZATION
 
 ### WU7 — Representative Adoption & Propagation Proof
 Class: MR.2 WORK UNIT
@@ -690,10 +738,18 @@ Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL DESIGN INPUT]
 - `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
 
+Pre-contract:
+- `precontracts/mr_2_wu7_representative_adoption_propagation_proof_precontract.md`
+
+Pre-contract status: DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
+
+Relations:
+- HARD sequencing dependency on accepted WU6 shared-artifact implementation baseline.
+
 Objective:
 Normalize a small representative set of accepted Admin consumers sufficient to prove shared primitive propagation, responsive/accessibility compatibility, and explicit exception handling.
 
-Planning action: FUTURE / REPRESENTATIVE PROOF ONLY, NOT PER-MODULE REFINEMENT PASS
+Planning action: FUTURE / PRE-CONTRACT EXISTS / REPRESENTATIVE PROOF ONLY, NOT PER-MODULE REFINEMENT PASS
 
 ### WU8 — Cross-Surface Verification & MR.2 Closure
 Class: MR.2 WORK UNIT / CLOSURE GATE
@@ -704,9 +760,18 @@ Sources:
 - `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
 - `concept_webcore_extension_architecture_reconciliation_260820_234300.md` [SUPPORTING CURRENT ARCHITECTURE]
 
+Pre-contract:
+- `precontracts/mr_2_wu8_cross_surface_verification_closure_precontract.md`
+
+Pre-contract status: DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
+
+Relations:
+- HARD sequencing dependency on accepted WU7 propagation proof;
+- closure must reconcile current authoritative documentation without rewriting valid historical records.
+
 Must verify shared primitive single-source behavior, consistency, explicit exceptions, System Manager shared presentation without domain takeover, no retired-manager restoration, truthful unsupported states, no domain capability expansion, no Dashboard redesign, documentation consistency, and disposition of unresolved MR.2 thread-level planning payload.
 
-Planning action: FUTURE / MR.2 CLOSURE GATE
+Planning action: FUTURE / PRE-CONTRACT EXISTS / MR.2 CLOSURE GATE
 
 ## 7. Dedicated Future Bundled Module Refinement Workstreams
 
@@ -746,7 +811,8 @@ Planning action: KEEP; functional findings must not be disguised as styling.
 
 Durably reconciled into MR.2 planning:
 - Shared Admin Visual Primitive Single-Source Rule;
-- Shared Admin Action Placement & Button Sizing Pattern.
+- Shared Admin Action Placement & Button Sizing Pattern;
+- Workplan Set trial model: Workplan indexes Concept sources and target-specific Pre-contracts; Pre-contract remains non-authoritative until explicit promotion.
 
 Still unresolved:
 - Shared File Intake Interaction Pattern: native picker selection may eventually trigger upload/intake immediately and continue to the next meaningful validation/preview/crop/attach/confirm state;
@@ -763,7 +829,8 @@ No individual Concept file currently owns this thread-level payload, so this sec
 Classification:
 - MR.2 CONTINUATION;
 - PREPARATION NEXT;
-- NO TECHNICAL IMPLEMENTATION AUTHORIZED BY THIS WORKPLAN;
+- PRE-CONTRACT MATERIALIZED / DRAFT / TRIAL;
+- NO TECHNICAL IMPLEMENTATION AUTHORIZED BY THIS WORKPLAN OR PRE-CONTRACT;
 - old rejected Media WU5 is evidence only;
 - no Deferred adoption;
 - repository-side contract promotion/amendment remains separately authorized.
@@ -776,27 +843,31 @@ Preparation questions:
 5. Which primitive changes can be introduced without domain redesign?
 6. How should the old Media WU5 delta be classified against the shared baseline?
 7. Which contracts/docs require forward-authoritative amendment without rewriting accepted historical records?
+8. Does the WU5 Pre-contract accurately capture the audit boundary before promotion?
 
 ## 10. Retention and Planning Freshness
 
 Retention rule:
 - once a planning identity is validly registered, completion, promotion, incorporation, decomposition, supersession, retirement, rejection, or architecture re-homing changes its disposition but does not erase the identity;
 - closed execution detail may be shortened, but identity, latest disposition, and enough source/authority linkage to reconstruct why it existed must remain;
+- reviewed/promoted Pre-contract snapshots remain provenance and must not be retroactively rewritten to impersonate later authoritative contract revisions;
 - removal is allowed only when evidence proves duplicate identity, erroneous/non-valid registration, or explicit invalidation with no independent historical planning value.
 
 Planning freshness:
 - repository truth remains authoritative for delivered/current implementation state;
 - Workplan does not require continuous synchronization after every repository commit;
-- Workplan must be reconciled when material planning, sequencing, lifecycle disposition, Concept provenance, or next-target selection changes;
-- detailed semantics are read from the individual Concept files named under each entry.
+- Workplan must be reconciled when material planning, sequencing, lifecycle disposition, Concept provenance, Pre-contract disposition, or next-target selection changes;
+- detailed semantics are read from the individual Concept files and target-specific Pre-contracts named under each entry according to their artifact roles.
 
 ## 11. Authorization Boundary
 
-This Workplan authorizes no technical implementation by itself.
+This Workplan and every indexed Pre-contract authorize no technical implementation by themselves.
 
-Not authorized by this Workplan alone:
+Not authorized by this Workplan or indexed Pre-contracts alone:
 - source/runtime/test/schema/config mutation;
 - contract promotion/amendment;
+- treating a Pre-contract as authoritative repository contract;
+- auto-promoting a Pre-contract because review completed;
 - old Media WU5 continuation;
 - broad CSS migration;
 - per-Bundled-Module implementation;
