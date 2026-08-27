@@ -3,14 +3,18 @@
 Lifecycle: DRAFT / TRIAL / NOT AUTHORITATIVE
 Workplan role: forward MR.2 WU6 planning boundary
 Promotion status: NOT PROMOTED
-Implementation authorization: NONE
+Reconciliation classification: REVIEW-READY
+Implementation authority: bounded by the promoted MR.2 governance boundary; this pre-contract does not authorize out-of-scope work
 Dependency: WU5 authoritative shared-primitive contract or explicitly accepted equivalent planning boundary
 
 ## Purpose
 
 Define the bounded implementation unit that follows WU5 after canonical shared Admin primitives and their exception model have been accepted.
 
-This file is a planning artifact. It does not authorize implementation, does not override repository contracts, and must not be used to infer that WU5 has been completed or promoted.
+This file remains a planning artifact and is not an authoritative WU6
+contract. It does not override repository contracts or authorize work outside
+the accepted WU6 boundary. WU5 is now complete and contract-locked under
+`docs/44_mr_2_wu5_shared_admin_primitive_audit_contract.md`.
 
 ## Objective
 
@@ -33,19 +37,18 @@ If WU6 implementation exposes an unresolved product, architecture, ownership, or
 
 ## In-scope implementation
 
-WU6 may implement only primitives accepted through WU5, including where applicable:
-- page title / eyebrow / page-header composition;
-- shared surface/card treatment;
-- toolbar/search/filter presentation;
-- shared spacing relationships;
-- form-field and helper-text presentation;
-- action-row and paired-button treatment;
-- modal/dialog action spacing;
-- typography tokens/classes;
-- spacing/grid tokens/classes;
-- radius/flat-surface rules;
-- responsive/accessibility shared behavior;
-- bounded shared CSS/token/class/artifact ownership.
+WU6 may implement only the following primitives accepted through WU5:
+1. optional page-heading composition for title, optional kicker, description,
+   and action regions;
+2. shared filter-toolbar layout with optional search/filter fields,
+   active-filter/result context, and recovery presentation, while consumers
+   retain query/filter semantics;
+3. bounded stack/section spacing and optional inline-field layout using
+   existing tokens;
+4. equivalent action-row/button normalization using existing button semantics;
+5. selector-level radius/flat-surface dispositions with explicit intent; and
+6. focused representative adoption proving propagation, responsive behavior,
+   accessibility, and documented exceptions.
 
 Implementation should prefer the smallest stable shared abstraction that removes proven duplication. It must not create a generic component framework merely because several pages look similar.
 
@@ -115,4 +118,12 @@ WU6 completion does not imply every Admin consumer has been normalized. That pro
 
 This pre-contract may be revised during review.
 
-Only explicit promotion may create an authoritative WU6 contract. Separate implementation authorization is still required after promotion unless the promoting action explicitly authorizes the bounded implementation slice.
+Only explicit promotion may create an authoritative WU6 contract. Routine
+continuation from WU5 into the bounded WU6 scope does not require fresh user
+approval merely because the work unit changes; execution proceeds through a
+GPT-framed Agent Instruction under the accepted MR.2 workstream. Fresh
+explicit approval remains required for scope expansion, Deferred Item
+adoption, an unlocked product or architecture decision, destructive or
+irreversible action, production reconciliation or similarly sensitive
+operations, release/tag/publication/external distribution, or another gate
+explicitly reserved to the user.
