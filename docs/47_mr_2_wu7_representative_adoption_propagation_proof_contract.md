@@ -11,14 +11,21 @@ MR.2 WU5: COMPLETE / CONTRACT LOCKED
 MR.2 WU6: COMPLETE / IMPLEMENTED AND ACCEPTED
 WU7 scope: Representative Adoption & Propagation Proof
 WU7 contract: PROMOTED / CONTRACT LOCKED
-WU7 runtime/source implementation: NOT STARTED
-WU7 lifecycle state: CONTRACT LOCKED / IMPLEMENTATION READY
+WU7 runtime/source implementation: COMPLETE
+WU7 objective validation: COMPLETE / PASS
+WU7 AI acceptance: PASS
+WU7 human acceptance: NOT REQUIRED
+WU7 lifecycle state: COMPLETE / CLOSED
 ```
 
 This contract is the authoritative promotion of the reviewed WU7 Pre-contract.
 The Pre-contract remains preserved as historical planning provenance. Promotion
 defines the bounded WU7 implementation scope and does not authorize WU8 work or
 any capability outside this contract.
+
+The accepted implementation is anchored at
+`dd8c85ad1a8544c05c7753dba84f518593e985e0` (`feat(mr.2): prove WU7
+representative propagation`).
 
 ## Objective
 
@@ -156,6 +163,18 @@ domain semantics remain unchanged. Human/product review is required only where
 visual judgment or interaction comprehension cannot be established
 deterministically.
 
+The historical Media workspace test
+`tests/m3_8_work_unit5_admin_media_workspace.php` remains classified as
+**NON-BLOCKING PRE-EXISTING VALIDATION DEBT**. It produces an undefined
+`$mediaAdminPath` warning from `modules/media/routes.php:192` and fails the
+expected Media upload-form presentation assertion at test line 94. The same
+warning and assertion failure reproduce identically at the immediate WU7 parent
+`f73e60ea7d507c447353c9aa258bd2012a80b3fa`; the Media route source is identical
+between parent and WU7 implementation, and no WU7-changed file participates in
+that path. The historical assertion is not required to prove WU7 propagation,
+independent WU7 Media evidence is sufficient, and no WU7 acceptance criterion
+remains unproven.
+
 ## Completion direction
 
 WU7 is complete when representative evidence demonstrates that the shared
@@ -163,6 +182,18 @@ foundation is reusable, propagating, exception-aware, responsive,
 accessible, and non-destructive. Completion does not mean every future consumer
 is migrated. WU8 determines whether remaining cross-surface inconsistencies are
 material blockers to MR.2 closure or belong to later owner workstreams.
+
+## Closure record
+
+WU7 implementation and objective validation are complete and accepted for the
+locked representative proof set. No human acceptance was required for this
+bounded source/test delta. WU7 proves representative propagation only and does
+not claim that every Admin consumer has been migrated or refined.
+
+The branch lifecycle is **main-only / no-op**: the accepted work was performed
+on authoritative `main`, with no WU7-specific feature branch requiring cleanup.
+MR.2 WU8 — Cross-Surface Verification & MR.2 Closure remains the next work unit
+and is **NOT STARTED**. This closure does not implement or authorize WU8.
 
 ## Authorization and governance boundary
 
