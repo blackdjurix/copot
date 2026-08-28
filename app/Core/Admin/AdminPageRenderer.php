@@ -30,7 +30,8 @@ class AdminPageRenderer
         User $user,
         string $csrfToken,
         ?string $currentPath = null,
-        ?array $pageFrame = null
+        ?array $pageFrame = null,
+        ?array $breadcrumbItems = null
     ): string {
         $navigation = $this->resolveNavigation($this->navigation->itemsFor($user), $currentPath);
 
@@ -39,6 +40,8 @@ class AdminPageRenderer
                 'title' => $title,
                 'content' => $content,
             ]);
+        } else {
+            $content = $this->renderStandalonePageHeading($title) . $content;
         }
 
         return $this->view->render('admin/layout', [
@@ -54,10 +57,58 @@ class AdminPageRenderer
             'userName' => $user->name(),
             'userEmail' => $user->email(),
             'currentPath' => $currentPath === null ? null : $this->adminUrl->url($currentPath),
+            'breadcrumbs' => $this->breadcrumbs($title, $currentPath, $breadcrumbItems),
             'navigation' => $navigation,
             'renderAdminIcon' => fn (?string $key, string $class = 'admin-icon'): string => $this->icons->render($key, $class),
             'content' => $content,
         ]);
+    }
+
+    private function renderStandalonePageHeading(string $title): string
+    {
+        $titleId = 'admin-page-heading-title-' . substr(hash('sha256', trim($title)), 0, 12);
+
+        return '<header class="admin-page-heading admin-page-heading--standalone" aria-labelledby="' . htmlspecialchars($titleId, ENT_QUOTES, 'UTF-8') . '">'
+            . '<div class="admin-page-heading__copy"><h1 class="admin-page-heading__title" id="' . htmlspecialchars($titleId, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars(trim($title), ENT_QUOTES, 'UTF-8') . '</h1></div>'
+            . '</header>';
+    }
+
+    private function breadcrumbs(string $title, ?string $currentPath, ?array $items): array
+    {
+        $current = $this->normalizePath($currentPath ?? '');
+        $base = $this->normalizePath($this->adminUrl->routeBaseUrl());
+
+        if ($current !== '' && $current === $base) {
+            return [['label' => 'Dashboard', 'url' => null, 'current' => true]];
+        }
+
+        $resolved = [['label' => 'Dashboard', 'url' => $this->adminUrl->baseUrl(), 'current' => false]];
+
+        if (is_array($items) && $items !== []) {
+            foreach ($items as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+
+                $label = is_scalar($item['label'] ?? null) ? trim((string) $item['label']) : '';
+                if ($label === '') {
+                    continue;
+                }
+
+                $url = is_scalar($item['url'] ?? null) ? trim((string) $item['url']) : '';
+                $resolved[] = ['label' => $label, 'url' => $url !== '' ? $url : null, 'current' => false];
+            }
+        }
+
+        if (count($resolved) === 1) {
+            $resolved[] = ['label' => trim($title) !== '' ? trim($title) : 'Admin Shell', 'url' => null, 'current' => true];
+        } else {
+            $last = array_key_last($resolved);
+            $resolved[$last]['url'] = null;
+            $resolved[$last]['current'] = true;
+        }
+
+        return $resolved;
     }
 
     /**

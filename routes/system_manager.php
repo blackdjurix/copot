@@ -96,13 +96,21 @@ $render = static function ($request, $user, ?string $message = null, ?string $er
     $content = '<div class="system-manager-workspace-shell" data-admin-draft-scope data-admin-clear-workspace="' . ($request->input('notice') === 'workspace_saved' ? '1' : '0') . '" data-admin-workspace-capabilities="localization,branding">' . $tabsMarkup . $view . $saveMarkup . '</div>';
     $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/admin-form-capabilities.js?v=wu2-workspace-save-3'), ENT_QUOTES, 'UTF-8') . '"></script>';
     $content .= '<script defer src="' . htmlspecialchars($app->adminUrl()->url('/admin-assets/js/system-manager.js?v=wu2-lifecycle-stable'), ENT_QUOTES, 'UTF-8') . '"></script>';
+    $breadcrumbs = [['label' => 'System Manager', 'url' => $path]];
+    if ($section !== 'system') {
+        $breadcrumbs[] = ['label' => $labels[$section], 'url' => $path . '?section=' . rawurlencode($section)];
+    }
+    if ($moduleDetail !== null) {
+        $breadcrumbs[] = ['label' => (string) ($moduleDetail['title'] ?? $moduleDetail['name'] ?? 'Module')];
+    }
+
     return Response::html($app->adminPageRenderer()->render(
         'System Manager', $content, $user, $app->csrf()->token(), $request->path(), [
             'title' => 'System Manager',
             'description' => 'Webcore-owned system administration and recovery baseline.',
             'bar' => null,
             'surface' => 'transparent', 'spacing' => 'default',
-        ]
+        ], $breadcrumbs
     ), $statusCode);
 };
 

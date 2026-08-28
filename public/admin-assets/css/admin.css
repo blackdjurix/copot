@@ -851,6 +851,10 @@ dd {
     min-width: 0;
 }
 
+.admin-page-heading--standalone {
+    margin-bottom: var(--admin-space-6);
+}
+
 .admin-page-heading__copy,
 .admin-page-heading__actions {
     min-width: 0;
@@ -3135,6 +3139,7 @@ html.admin-nav-open body {
 .admin-breadcrumb ol {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     min-width: 0;
     gap: 12px;
     margin: 0;
@@ -3161,7 +3166,7 @@ html.admin-nav-open body {
     color: var(--admin-color-muted);
 }
 
-.admin-breadcrumb h1 {
+.admin-breadcrumb span {
     margin: 0;
     overflow: hidden;
     color: var(--admin-color-text);
@@ -3170,7 +3175,8 @@ html.admin-nav-open body {
     letter-spacing: 0;
     line-height: 1.4;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .admin-topbar__actions {
@@ -3452,7 +3458,7 @@ html.admin-nav-open body {
         display: none;
     }
 
-    .admin-breadcrumb h1 {
+    .admin-breadcrumb span {
         font-size: 13px;
     }
 

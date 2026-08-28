@@ -44,7 +44,7 @@ try {
     ]);
     $assert(str_contains($complete, 'admin-page-frame--surface-panel'), 'Panel surface intent was not rendered.');
     $assert(str_contains($complete, 'admin-page-frame--spacing-default'), 'Default spacing intent was not rendered.');
-    $assert(str_contains($complete, '<h2') && str_contains($complete, 'Users &lt;test&gt;'), 'Frame title was not rendered and escaped.');
+    $assert(str_contains($complete, '<h1') && str_contains($complete, 'Users &lt;test&gt;'), 'Frame title was not rendered as the primary heading and escaped.');
     $assert(str_contains($complete, 'Description &lt;test&gt;'), 'Frame description was not rendered and escaped.');
     $assert(str_contains($complete, '<button type="button">Action</button>'), 'Optional bar content was rewritten.');
     $assert(str_contains($complete, '<div data-consumer-owned><strong>Consumer content</strong></div>'), 'Consumer content was rewritten.');

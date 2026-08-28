@@ -22,6 +22,7 @@ $normalizePath = static function (mixed $path): string {
 $normalizedCurrentPath = $normalizePath($currentPath ?? '');
 $normalizedAdminBase = $normalizePath($adminBaseUrl ?? '');
 $isAdminRoot = $normalizedCurrentPath !== '' && $normalizedCurrentPath === $normalizedAdminBase;
+$breadcrumbItems = is_array($breadcrumbs ?? null) ? $breadcrumbs : [];
 $adminBranding = $adminBranding ?? null;
 $adminBrandingMode = $adminBranding?->identityMode() ?? 'text';
 $adminBrandingLogo = $adminBrandingMode === 'logo' ? $adminBranding?->logoUrl() : null;
@@ -119,11 +120,16 @@ $adminBrandingStyle = is_string($adminBrandingTextColor) && preg_match('/^#[0-9a
 
                 <nav class="admin-breadcrumb" aria-label="Breadcrumb">
                     <ol>
-                        <?php if (!$isAdminRoot): ?>
-                            <li><a href="<?= htmlspecialchars($adminBaseUrl, ENT_QUOTES, 'UTF-8') ?>">Dashboard</a></li>
-                            <li class="admin-breadcrumb__separator" aria-hidden="true">›</li>
-                        <?php endif; ?>
-                        <li aria-current="page"><h1><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></h1></li>
+                        <?php foreach ($breadcrumbItems as $index => $breadcrumb): ?>
+                            <?php if ($index > 0): ?><li class="admin-breadcrumb__separator" aria-hidden="true">›</li><?php endif; ?>
+                            <li<?= !empty($breadcrumb['current']) ? ' aria-current="page"' : '' ?>>
+                                <?php if (!empty($breadcrumb['url']) && empty($breadcrumb['current'])): ?>
+                                    <a href="<?= htmlspecialchars((string) $breadcrumb['url'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $breadcrumb['label'], ENT_QUOTES, 'UTF-8') ?></a>
+                                <?php else: ?>
+                                    <span><?= htmlspecialchars((string) ($breadcrumb['label'] ?? ''), ENT_QUOTES, 'UTF-8') ?></span>
+                                <?php endif; ?>
+                            </li>
+                        <?php endforeach; ?>
                     </ol>
                 </nav>
 

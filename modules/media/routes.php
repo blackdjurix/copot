@@ -77,8 +77,8 @@ $mediaRenderView = static function (string $view, array $data = []) use ($app, $
     try { require $file; return (string) ob_get_clean(); }
     catch (Throwable $exception) { ob_end_clean(); throw $exception; }
 };
-$mediaRenderAdmin = static function (string $title, string $content, $user, string $path, int $status = 200) use ($app): Response {
-    return Response::html($app->adminPageRenderer()->render($title, $content, $user, $app->csrf()->token(), $path), $status);
+$mediaRenderAdmin = static function (string $title, string $content, $user, string $path, int $status = 200, ?array $breadcrumbs = null) use ($app): Response {
+    return Response::html($app->adminPageRenderer()->render($title, $content, $user, $app->csrf()->token(), $path, null, $breadcrumbs), $status);
 };
 $mediaCanAny = static function ($user, array $permissions): bool {
     foreach ($permissions as $permission) if ($user?->can($permission)) return true;
@@ -188,7 +188,10 @@ $app->router()->get($mediaAdminPath, function ($request) use ($mediaRequireAdmin
 });
 $app->router()->get($mediaUploadPath, function ($request) use ($mediaRequireAdmin, $mediaRenderView, $mediaRenderAdmin, $app): Response {
     $user = $mediaRequireAdmin($request, ['media.upload']); if ($user instanceof Response) return $user;
-    return $mediaRenderAdmin('Upload Media', $mediaRenderView('upload', ['csrfToken' => $app->csrf()->token(), 'error' => null, 'title' => '']), $user, $request->path());
+    return $mediaRenderAdmin('Upload Media', $mediaRenderView('upload', ['csrfToken' => $app->csrf()->token(), 'error' => null, 'title' => '']), $user, $request->path(), 200, [
+        ['label' => 'Media', 'url' => $mediaAdminPath],
+        ['label' => 'Upload'],
+    ]);
 });
 $app->router()->post($mediaUploadPath, function ($request) use ($mediaRequireAdmin, $mediaValidateCsrf, $mediaAdmin, $mediaRenderView, $mediaRenderAdmin, $app, $mediaUploadPath, $mediaAdminPath): Response {
     $user = $mediaRequireAdmin($request, ['media.upload']); if ($user instanceof Response) return $user;

@@ -479,14 +479,17 @@ $contentRenderAdmin = function (
     string $content,
     $user,
     string $currentPath,
-    int $status = 200
+    int $status = 200,
+    ?array $breadcrumbs = null
 ) use ($app): Response {
     return Response::html($app->adminPageRenderer()->render(
         $title,
         $content,
         $user,
         $app->session()->csrfToken(),
-        $currentPath
+        $currentPath,
+        null,
+        $breadcrumbs
     ), $status);
 };
 
@@ -591,7 +594,10 @@ $app->router()->get($app->adminUrl()->childUrl('content/create'), function ($req
         'selectedTaxonomy' => $contentSelectedTaxonomy(),
     ]);
 
-    return $contentRenderAdmin('Create Content', $content, $user, $request->path());
+    return $contentRenderAdmin('Create Content', $content, $user, $request->path(), 200, [
+        ['label' => 'Content', 'url' => $app->adminUrl()->childUrl('content')],
+        ['label' => 'Create'],
+    ]);
 });
 
 $app->router()->get($app->adminUrl()->childUrl('content/{id}/edit'), function ($request, array $params) use (
@@ -633,7 +639,11 @@ $app->router()->get($app->adminUrl()->childUrl('content/{id}/edit'), function ($
         'selectedTaxonomy' => $contentSelectedTaxonomy($entry),
     ]);
 
-    return $contentRenderAdmin('Edit Content', $content, $user, $request->path());
+    return $contentRenderAdmin('Edit Content', $content, $user, $request->path(), 200, [
+        ['label' => 'Content', 'url' => $app->adminUrl()->childUrl('content')],
+        ['label' => $entry->title(), 'url' => $app->adminUrl()->childUrl('content/' . $entry->id())],
+        ['label' => 'Edit'],
+    ]);
 });
 
 $app->router()->post($app->adminUrl()->childUrl('content'), function ($request) use (

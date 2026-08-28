@@ -90,7 +90,8 @@ $usersRenderAdmin = static function (
     $user,
     string $currentPath,
     int $status = 200,
-    ?array $pageFrame = null
+    ?array $pageFrame = null,
+    ?array $breadcrumbs = null
 ) use ($app): Response {
     return Response::html($app->adminPageRenderer()->render(
         $title,
@@ -98,7 +99,8 @@ $usersRenderAdmin = static function (
         $user,
         $app->session()->csrfToken(),
         $currentPath,
-        $pageFrame
+        $pageFrame,
+        $breadcrumbs
     ), $status);
 };
 
@@ -165,7 +167,10 @@ $usersRenderCreate = static function (
         'values' => $usersCreateData($values),
     ]);
 
-    return $usersRenderAdmin('Create User', $content, $user, $request->path(), $status);
+    return $usersRenderAdmin('Create User', $content, $user, $request->path(), $status, null, [
+        ['label' => 'Users', 'url' => $usersAdminUrl('users')],
+        ['label' => 'Create'],
+    ]);
 };
 
 $usersRenderEdit = static function (
@@ -204,7 +209,11 @@ $usersRenderEdit = static function (
         'notice' => $notice,
     ]);
 
-    return $usersRenderAdmin('User Details', $content, $user, $request->path(), $status);
+    return $usersRenderAdmin('User Details', $content, $user, $request->path(), $status, null, [
+        ['label' => 'Users', 'url' => $usersAdminUrl('users')],
+        ['label' => $target->name(), 'url' => $usersAdminUrl('users/' . $target->id())],
+        ['label' => 'Edit'],
+    ]);
 };
 
 $app->router()->get($usersAdminUrl('users'), function ($request) use (
@@ -240,6 +249,8 @@ $app->router()->get($usersAdminUrl('users'), function ($request) use (
             : null,
         'surface' => 'panel',
         'spacing' => 'default',
+    ], [
+        ['label' => 'Users', 'url' => $usersAdminUrl('users')],
     ]);
 });
 
