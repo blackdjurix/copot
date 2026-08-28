@@ -43,8 +43,11 @@ Current durable planning state:
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
 - MR.2: OPEN;
 - MR.2 WU1–WU4: COMPLETE AND CLOSED;
+- Webcore Content Admin Baseline: COMPLETE / CLOSED; corrective prerequisite
+  for MR.2 WU7 is satisfied;
 - old MR.2 Media WU5 implementation: EXISTS / NOT ACCEPTED;
-- current forward target: MR.2 WU5 — Shared Admin Primitive Audit & Contract;
+- current forward target after the corrective prerequisite: MR.2 WU7 —
+  Representative Adoption & Propagation Proof;
 - MR.2 Pre-contract trial layer: MATERIALIZED for historical/promoted WU1–WU4, old Media WU5 evidence, and forward WU5–WU8;
 - per-Bundled-Module refinement: redistributed to dedicated future workstreams;
 - Dashboard: separate from MR.2;
@@ -298,6 +301,32 @@ Authority:
 - `docs/42_mr_2_wu4_content_manager_refinement_contract.md`
 
 Final accepted anchor: `086f53452ff029933d0dff08cfee75ee98407230`
+Planning action: NONE / PROVENANCE
+
+### Webcore Content Admin Baseline
+Class: CORRECTIVE WEBCORE BASELINE WORKSTREAM / ARCHITECTURE-TO-RUNTIME CONFORMANCE CORRECTION
+Status: COMPLETE / CLOSED
+
+Concept source:
+- `concept_webcore_extension_architecture_reconciliation_260820_234300.md`
+  [EXISTING ARCHITECTURE PROVENANCE]
+
+Pre-contract:
+- `precontracts/webcore_content_admin_baseline_precontract.md`
+
+Pre-contract status: PROMOTED / HISTORICAL PROVENANCE
+
+Authority:
+- `docs/46_webcore_content_admin_baseline_contract.md`
+
+Accepted implementation anchor:
+- `595e9a3e81b61793c439bd0f6688e4f32b58c989`
+
+Relations:
+- prerequisite before MR.2 WU7 resumes;
+- separate from Content Manager refinement;
+- separate from MR.2 shared-artifact implementation.
+
 Planning action: NONE / PROVENANCE
 
 ## 5. Active / Future / Deferred / Operational Registry
@@ -824,35 +853,24 @@ No individual Concept file currently owns this thread-level payload, so this sec
 
 ## 9. Immediate Next Planning Target
 
-### MR.2 WU5 — Shared Admin Primitive Audit & Contract
+### MR.2 WU7 — Representative Adoption & Propagation Proof
 
 Classification:
 - MR.2 CONTINUATION;
-- PREPARATION AUDIT COMPLETE;
-- PRE-CONTRACT REVIEW-READY / DRAFT / TRIAL;
+- Webcore Content Admin corrective prerequisite COMPLETE / CLOSED;
+- WU5 and WU6 shared-artifact foundation accepted for current sequencing;
+- PRE-CONTRACT EXISTS / TRIAL / NOT AUTHORITATIVE;
 - NO TECHNICAL IMPLEMENTATION AUTHORIZED BY THIS WORKPLAN OR PRE-CONTRACT;
-- old rejected Media WU5 is evidence only;
 - no Deferred adoption;
-- repository-side contract promotion/amendment remains separately authorized.
+- WU7 authoritative promotion remains a separate planning/contract gate.
 
-Audit result:
-- canonical Admin tokens, buttons, panels, fields/helpers/errors, Page Frame, empty states, table wrappers, and action rows are evidenced as shared artifacts;
-- page-heading/kicker, filter-toolbar composition, control-to-result spacing, and inline-field layout are duplicated/local compositions suitable for bounded WU6 consolidation;
-- System Manager, Media, Dashboard, dialog, lifecycle, and consumer-specific interactions remain legitimate domain specializations or reference evidence;
-- no unresolved architecture/product decision blocks a bounded WU6 implementation boundary;
-- old Media WU5 remains historical evidence and is not resumed.
+The corrective Webcore Content Admin Baseline is COMPLETE / CLOSED and does
+not alter WU7’s representative shared-artifact propagation scope or WU8’s
+cross-surface closure scope.
 
-Immediate next gate: REVIEW WU5 PRE-CONTRACT / SEPARATE AUTHORITATIVE CONTRACT PROMOTION DECISION.
-
-Preparation questions:
-1. Which shared Admin visual primitives already have a real single-source implementation?
-2. Which consumers locally recreate equivalent primitives?
-3. Which accepted surfaces are valid reference evidence for each primitive?
-4. Which differences are semantic exceptions versus accidental inconsistency?
-5. Which primitive changes can be introduced without domain redesign?
-6. How should the old Media WU5 delta be classified against the shared baseline?
-7. Which contracts/docs require forward-authoritative amendment without rewriting accepted historical records?
-8. Does the WU5 Pre-contract accurately capture the audit boundary before promotion?
+Immediate next gate: prepare/review the WU7 Pre-contract for separate
+authoritative promotion. Routine WU7 implementation is not authorized by this
+Workplan entry alone.
 
 ## 10. Retention and Planning Freshness
 

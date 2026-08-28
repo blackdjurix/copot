@@ -7,7 +7,9 @@ Workstream: Separate corrective Webcore baseline
 Classification: Architecture-to-runtime conformance correction
 Placement: Prerequisite before MR.2 WU7 resumes
 Contract status: PROMOTED / CONTRACT LOCKED
-Implementation status: IMPLEMENTATION READY
+Implementation status: COMPLETE / ACCEPTED
+Objective validation: PASS
+Repository lifecycle: COMPLETE / CLOSED
 ```
 
 This contract is the authoritative promotion of the reviewed Webcore Content
@@ -194,6 +196,18 @@ capability.
 This promotion establishes implementation authority only for this bounded
 baseline. It does not authorize implementation of MR.2 WU7/WU8 or any excluded
 capability.
+
+## Closure record
+
+The Core-owned Content Admin baseline is implemented and accepted. With
+Content Manager disabled, `/admin/content` remains available through Core-owned
+routing and provides the baseline list, create, edit, publish, and archive
+operations. Content Manager remains an extending Bundled Module; the
+extension-only exclusions above are unchanged.
+
+The accepted implementation is anchored at
+`595e9a3e81b61793c439bd0f6688e4f32b58c989`. This closure does not claim that
+MR.2 WU7 implementation is authorized by Workplan state alone.
 
 ## Provenance and references
 
