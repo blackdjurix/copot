@@ -10,7 +10,8 @@ Dependency: WU6 shared artifact implementation accepted and stable enough for pr
 
 Define the bounded proof unit that demonstrates the WU6 shared Admin artifacts actually propagate across representative consumers without erasing valid domain differences.
 
-This file is a planning artifact. It does not authorize implementation and does not imply WU6 completion.
+This file is a planning artifact. The WU6 shared-artifact implementation is
+accepted; this Pre-contract itself authorizes no WU7 implementation.
 
 ## Objective
 
@@ -37,6 +38,23 @@ Selection should cover, where available and useful:
 Accepted WU1–WU4 consumers are preferred evidence because their behavior and product boundaries are already established.
 
 Consumer selection must be based on proof value, not on a desire to touch every surface.
+
+### Locked representative proof set
+
+The bounded representative proof set is:
+
+- **Core Webcore Content Admin:** the list plus create/edit form surfaces. This
+  is the preferred Webcore-owned baseline representative because the Webcore
+  Content Admin Baseline is now complete and closed.
+- **System Manager:** the representative Modules/reference surface, including
+  its state, detail, and lifecycle-action presentation.
+- **Media Manager:** the representative library/list plus upload surfaces,
+  included only as a shared-artifact propagation consumer and not as renewed
+  Media-specific refinement scope.
+
+Coverage may use these bounded route/surface families rather than requiring
+whole-module migration. The proof set is not a full migration of each surface
+family.
 
 ## Proof requirements
 
