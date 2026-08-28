@@ -1,8 +1,8 @@
 # MR.2 WU7 — Representative Adoption & Propagation Proof — Pre-contract
 
-Lifecycle: DRAFT / TRIAL / NOT AUTHORITATIVE
+Lifecycle: PROMOTED / HISTORICAL PROVENANCE
 Workplan role: forward MR.2 WU7 planning boundary
-Promotion status: NOT PROMOTED
+Promotion status: PROMOTED — `docs/47_mr_2_wu7_representative_adoption_propagation_proof_contract.md`
 Implementation authorization: NONE
 Dependency: WU6 shared artifact implementation accepted and stable enough for propagation proof
 
