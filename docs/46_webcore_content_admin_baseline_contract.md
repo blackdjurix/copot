@@ -1,26 +1,32 @@
-# Webcore Content Admin Baseline — Corrective Workstream Pre-contract
+# Webcore Content Admin Baseline Contract
 
-Lifecycle: PROMOTED / HISTORICAL PROVENANCE
-Workplan role: separate corrective Webcore baseline workstream
-Placement: prerequisite before MR.2 WU7 resumes
-Classification: architecture-to-runtime conformance correction
-Promotion status: PROMOTED INTO `docs/46_webcore_content_admin_baseline_contract.md`
-Implementation authorization: NONE
+## Status and authority
 
-## Purpose
+```text
+Workstream: Separate corrective Webcore baseline
+Classification: Architecture-to-runtime conformance correction
+Placement: Prerequisite before MR.2 WU7 resumes
+Contract status: PROMOTED / CONTRACT LOCKED
+Implementation status: IMPLEMENTATION READY
+```
 
-Define the smallest corrective Webcore Admin projection required to satisfy
-the already-authoritative Webcore Content boundary. This is a separate
-baseline workstream. It is not Content Manager refinement, MR.2 shared-artifact
-implementation, or a redefinition of MR.2 WU7 or WU8.
+This contract is the authoritative promotion of the reviewed Webcore Content
+Admin Baseline Pre-contract. It does not create an MR.2 Work Unit, redefine
+MR.2 WU7 or WU8, or authorize work outside the boundary below.
 
-This file is a planning artifact only. It does not override authoritative
-contracts, authorize implementation, or establish a new MR.2 Work Unit number.
+## Objective
 
-## Authoritative basis
+Provide an always-available, Core-owned Content Admin projection that remains
+usable when Content Manager is disabled, while preserving Webcore Content
+persistence, lifecycle, authorization, transaction, stale-write, and public
+delivery authority.
 
-`docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`
-requires Webcore to own:
+Content Manager remains a retained Bundled Module that **EXTENDS** Webcore
+Content. It must not replace, fork, or become a dependency of this baseline.
+
+## Authoritative baseline
+
+Webcore Content owns:
 
 - Page and Article baseline types;
 - persistence;
@@ -32,20 +38,9 @@ requires Webcore to own:
 - public delivery; and
 - normalized render data.
 
-Content Manager remains a retained Bundled Module that **EXTENDS** Webcore
-Content. Its richer Admin behavior and optional integrations must not become a
-reverse dependency of the Webcore baseline.
+## Bounded implementation scope
 
-## Objective
-
-Provide an always-available, Core-owned Content Admin projection that remains
-usable when Content Manager is disabled, while preserving the existing Core
-Content persistence, lifecycle, authorization, transaction, stale-write, and
-public-delivery authorities.
-
-## Minimum implementation boundary
-
-The future implementation may contain only:
+The implementation may provide only:
 
 - Core-owned Content Admin routes;
 - a Core-owned Content list view;
@@ -67,7 +62,7 @@ Content Manager routes.
 
 ## Dependency and ownership boundary
 
-The required dependency direction is:
+The required direction is:
 
 ```text
 Core Content Admin routes/views
@@ -86,13 +81,12 @@ Webcore Content Admin must not depend on:
 - another optional Module implementation.
 
 Existing Content Manager source may be used as implementation evidence or
-adapted carefully, but the final Webcore baseline must not import the Module
-or establish a reverse dependency. Enabling Content Manager must extend the
-Core baseline rather than replace or fork it.
+adapted carefully, but the final baseline must not import the Module or create
+a reverse dependency. Enabling Content Manager must extend the Core baseline.
 
 ## Baseline and extension split
 
-The following are baseline requirements:
+Baseline requirements are:
 
 - list;
 - create;
@@ -104,8 +98,7 @@ The following are baseline requirements:
 - required authorization, CSRF, validation, transaction, stale-write, and
   sanitized-error behavior.
 
-The following remain extension-only unless stronger authoritative evidence is
-accepted before implementation:
+The following remain extension-only:
 
 - taxonomy assignment;
 - restore;
@@ -119,84 +112,61 @@ accepted before implementation:
 - bulk actions; and
 - Module-specific presentation or workflow.
 
-The baseline must not silently absorb any of these capabilities merely
-because Content Manager currently implements them.
+The baseline must not absorb these capabilities merely because Content Manager
+currently implements them.
 
 ## Presentation boundary
 
-The projection should reuse the accepted Webcore Admin grammar:
+The projection must reuse the accepted Webcore Admin grammar where applicable:
 
 - Page Frame/page-heading baseline;
 - semantic breadcrumb rendering;
-- existing Admin authorization/access-denied handling;
+- existing Admin access-denied handling; and
 - existing shared field, action, and error presentation primitives.
 
-Shared artifacts remain presentation-only. Content routes and services retain
+Shared artifacts own presentation only. Content routes and services retain
 workflow, lifecycle state, permissions, validation meaning, and domain
-semantics.
+semantics. This contract does not authorize Content Manager visual redesign.
 
-No additional Content Manager visual redesign is included. Human visual
-acceptance is required only if implementation introduces materially new
-subjective presentation beyond the accepted Webcore Admin grammar.
+## Acceptance criteria
 
-## Acceptance direction
-
-The future implementation must demonstrate:
+The implementation is acceptable only when evidence demonstrates:
 
 1. With Content Manager disabled, `/admin/content` remains available through
    Webcore-owned routing.
 2. Core list, create, edit, publish, and archive operations work.
 3. Webcore Content remains the sole persistence and lifecycle authority.
 4. No optional Module is required for the baseline projection.
-5. Enabling Content Manager extends rather than replaces or forks the Core
-   baseline.
-6. Breadcrumbs, page headings, and shared Admin presentation remain
-   consistent with accepted Webcore baselines.
+5. Enabling Content Manager extends rather than replaces or forks the baseline.
+6. Breadcrumbs, page headings, and shared Admin presentation remain consistent
+   with accepted Webcore baselines.
 7. Taxonomy, rich Media workflows, editor capability, and other excluded
    Content Manager features do not leak into the baseline.
 8. Existing public Content delivery and normalized render data remain
    compatible.
 
-## Focused validation direction
+## Focused validation
 
-Validation should cover, at minimum:
+Validation must cover, as applicable:
 
 - route availability with Content Manager disabled;
 - list rendering and Core-owned data access;
 - create/edit validation and sanitized failures;
 - publish/archive authorization and state transitions;
 - CSRF rejection;
-- transaction and stale-write behavior where the touched route path depends
-  on it;
+- transaction and stale-write behavior;
 - basic Media reference compatibility;
 - semantic breadcrumb and Page Frame output;
-- public Content delivery after baseline changes;
-- optional Content Manager coexistence without route or authority fork; and
-- PHP/static checks and `git diff --check` for the implementation delta.
+- public Content delivery after baseline changes; and
+- optional Content Manager coexistence without a route or authority fork.
 
-Broad historical Content regression suites are not implied unless an actual
-impact or regression signal warrants them.
-
-## Sequencing and governance
-
-This corrective workstream is a prerequisite before MR.2 WU7
-Representative Adoption & Propagation Proof resumes. MR.2 WU7 remains a
-shared-artifact propagation proof unit; MR.2 WU8 remains cross-surface
-verification and closure. Neither unit absorbs missing Webcore domain
-capability.
-
-This Pre-contract requires explicit authoritative promotion before it becomes
-repository implementation authority. Promotion must preserve the accepted
-Webcore/Content Manager ownership boundary and must not invent a new MR.2
-number or alter WU7/WU8 semantics.
-
-No Workplan update is made by this Pre-contract framing. A material early
-Workplan topology update is expected during planning reconciliation if this
-corrective workstream is accepted for promotion.
+Run PHP/static checks and `git diff --check` for the implementation delta.
+Broad historical Content suites are not implied unless an impact or regression
+signal warrants them.
 
 ## Explicit exclusions
 
-This workstream does not authorize:
+This contract does not authorize:
 
 - Content Manager redesign;
 - taxonomy implementation or ownership transfer;
@@ -213,20 +183,32 @@ This workstream does not authorize:
 - production reconciliation; or
 - release, tag, publication, or distribution work.
 
-## Source and provenance references
+## Sequencing and governance
 
+This separate corrective workstream is a prerequisite before MR.2 WU7
+Representative Adoption & Propagation Proof resumes. WU7 remains a
+shared-artifact propagation proof unit, and WU8 remains cross-surface
+verification and MR.2 closure. Neither absorbs missing Webcore domain
+capability.
+
+This promotion establishes implementation authority only for this bounded
+baseline. It does not authorize implementation of MR.2 WU7/WU8 or any excluded
+capability.
+
+## Provenance and references
+
+- `precontracts/webcore_content_admin_baseline_precontract.md` — promoted
+  historical planning provenance;
 - `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md`
-  — primary authority;
+  — primary ownership authority;
 - `docs/38_mr_2_wu1_webcore_admin_view_foundation_contract.md` — accepted
-  Admin Page Frame foundation;
+  Page Frame foundation;
 - `docs/44_mr_2_wu5_shared_admin_primitive_audit_contract.md` — shared
   presentation boundary;
 - `docs/45_mr_2_wu6_shared_artifact_consolidation_implementation_contract.md`
-  — shared-artifact implementation boundary;
-- `workplan.md` — current MR.2 sequencing and provenance state;
+  — shared-artifact boundary;
 - `app/Core/Content.php`;
 - `app/Core/ContentRepository.php`;
 - `app/Core/ContentService.php`;
 - `routes/admin.php`; and
-- `modules/content/routes.php` — extension evidence only, not a Webcore
-  dependency.
+- `modules/content/routes.php` — extension evidence only.
