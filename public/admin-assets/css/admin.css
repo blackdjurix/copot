@@ -3586,8 +3586,6 @@ html.admin-nav-open body {
 /* M3.4 Batch 6: Content workspace presentation */
 .admin-content-page,
 .admin-content-form-page {
-    display: grid;
-    gap: var(--admin-space-5);
     min-width: 0;
 }
 
