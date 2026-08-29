@@ -38,11 +38,12 @@ Registry rules:
 - Workplan planning state is not repository implementation authority;
 - promotion requires explicit decision plus durable repository authority.
 
-The Workplan + Concept + Pre-contract model is currently being trialed within
-MR.2 before governance-wide promotion. Trial materialization does not itself
-amend GPT-side governance. Direct individual Concept-file references remain the
-semantic source model; no consolidated Concept registry is a substitute for
-those references.
+The Workplan + Concept + Pre-contract model is the retained current planning
+and provenance model. Its earlier trial/use within MR.2 is historical and does
+not make MR.2 active. Trial materialization does not itself amend GPT-side
+governance. Direct individual Concept-file references remain the semantic
+source model; no consolidated Concept registry is a substitute for those
+references.
 
 ## 2. Current Authoritative State Anchor
 
@@ -708,8 +709,8 @@ Relations:
   success, information, validation, and destructive states;
 - no second global Admin color authority is created.
 
-No individual Concept file is materialized for this identity in the current
-repository Workplan.
+The canonical Git Concept is materialized at
+`concepts/copot_site_color_scheme_concept.md`.
 
 Planning action: KEEP FUTURE / PLANNING ONLY
 
@@ -729,8 +730,8 @@ Relations:
 - related to Future Widget Layout / Dashboard personalization;
 - distinct ownership from site-level Site Color Scheme.
 
-No individual Concept file is materialized for this identity in the current
-repository Workplan.
+The canonical Git Concept is materialized at
+`concepts/copot_per_user_admin_appearance_concept.md`.
 
 Planning action: KEEP FUTURE / SEPARATE FROM FUTURE WIDGET LAYOUT
 
