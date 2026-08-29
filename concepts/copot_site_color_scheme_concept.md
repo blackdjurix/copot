@@ -10,19 +10,37 @@ authorization.
 
 ## Site-level appearance authority
 
-Site Color Scheme is the site-level authority for bounded brand-facing
-appearance. Where supported by the accepted appearance contract, it may govern
-primary or accent brand color, supporting neutral and color relationships,
-public/Built-in View appearance, and bounded Admin branding, navigation, or
-accent inheritance.
+Site Color Scheme is a simplified site-level product-facing projection and
+resolution layer for bounded brand-facing appearance. It does not supersede,
+erase, or destructively replace the richer Webcore Branding / Brand Colors
+lineage. The conservative relationship is:
+
+```text
+Brand Colors / Webcore Branding data
+-> bounded resolved Site Color Scheme
+-> Built-in Public View / Theme / permitted bounded Admin consumers
+```
+
+The initial upstream source may remain the existing Core Branding settings:
+`branding.main`, `branding.accent`, `branding.neutral-dark`, and
+`branding.neutral-light`. Site Color Scheme is not a second independent
+storage or ownership authority, and this Concept does not imply new
+`site_color_scheme.*` keys or destructive migration.
+
+Where supported by the accepted appearance contract, the resolved projection
+may govern primary or accent brand color, supporting neutral and color
+relationships, public/Built-in View appearance, and bounded Admin branding,
+navigation, or accent inheritance.
 
 Theme and other site-facing consumers read the accepted appearance contract
 and do not independently invent competing site color authorities. Theme
 lifecycle and implementation ownership remain outside this Concept.
 
 Webcore retains ownership of site-level configuration and identity where that
-ownership is already accepted. Exact storage, configuration, defaults, and
-consumer contracts remain future contract work.
+ownership is already accepted, including the upstream Branding data. Exact
+future projection mechanics, configuration presentation, and consumer
+contracts remain future contract work; this Concept does not authorize
+implementation.
 
 ## Semantic operational color boundary
 
@@ -70,8 +88,10 @@ or incomplete.
 
 Future implementation should provide a stable default or fallback Site Color
 Scheme. Invalid, incomplete, or unavailable configuration must not break Admin
-or public rendering. Exact defaults, validation algorithms, and
-storage/configuration mechanisms remain unresolved future contract work.
+or public rendering. Existing Webcore Branding defaults, validation, resolved
+palette behavior, and fallback remain the relevant accepted lineage; exact
+future projection mechanics remain contract work. This Concept does not
+authorize a schema migration, new provider framework, or generic color engine.
 
 ## Ownership boundaries and exclusions
 
@@ -85,6 +105,13 @@ Site Color Scheme does not own:
 - Theme lifecycle;
 - Module-specific presentation; or
 - System Manager lifecycle authority.
+
+Theme may consume the resolved Site Color Scheme and may provide
+active-Theme-scoped appearance overrides where separately supported. Such
+overrides must remain within Theme scope and must not write back to or take
+ownership of Webcore site-level Branding data. Theme-specific advanced
+appearance, advanced Brand Kit, multi-brand, and white-label concerns remain
+outside this Concept.
 
 It does not reopen MR.2 shared Admin primitive scope, define a global
 flat/radius policy, change Admin CSS, alter Theme behavior, or authorize
