@@ -697,6 +697,9 @@ Planning action: KEEP FUTURE / PREPARATION REQUIRED / DO NOT REOPEN MR.2 WU4
 Class: FUTURE EXTENSION / APPEARANCE RECONCILIATION
 Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
 
+Sources:
+- `concepts/copot_site_color_scheme_concept.md` [PRIMARY GIT CONCEPT]
+
 Relations:
 - extension/reconciliation of existing Site Identity and appearance lineage;
 - site-level appearance authority is consumed by the public/Built-in View;
