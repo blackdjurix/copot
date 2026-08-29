@@ -184,7 +184,8 @@ Class: PROMOTED
 Status: COMPLETE / CLOSED / CONTRACT LOCKED
 
 Sources:
-- `copot_system_health_status_concept_260809_210842.md` [PRIMARY]
+- `concepts/copot_system_health_status_concept.md` [PRIMARY GIT CONCEPT]
+- `copot_system_health_status_concept_260809_210842.md` [HISTORICAL/CORRECTION INPUT]
 - `copot_system_health_status_concept_260805_083932.md` [HISTORICAL]
 - `concept_future_widget_layout_260810_060139.md` [SUPPORTING]
 - `Future_Widget_Layout_Contract_260804_161738.md` [HISTORICAL / SUPPORTING]
