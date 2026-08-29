@@ -399,7 +399,8 @@ Class: CONCEPT / FUTURE ECOSYSTEM
 Status: INDEXED / FUTURE
 
 Sources:
-- `copot_module_package_identity_and_capability_provider_concept.md` [PRIMARY]
+- `concepts/copot_module_package_identity_and_capability_provider_concept.md` [PRIMARY GIT CONCEPT]
+- `copot_module_package_identity_and_capability_provider_concept.md` [HISTORICAL/CORRECTION INPUT]
 - `copot_module_package_identity_and_capability_provider_concept_260803_220452.md` [HISTORICAL]
 - `copot_update_upgrade_migration_concept.md` [ANCESTOR]
 
