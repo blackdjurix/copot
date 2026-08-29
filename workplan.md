@@ -3,6 +3,11 @@ Date version: 2026-08-27 07:15:00 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
+Current Workplan source: this repository file, `workplan.md`. GPT/File Library
+Workplan versions are historical evidence and correction sources only; they do
+not override the current Git Workplan. Neither this Workplan nor historical GPT
+Workplans are implementation or repository-lifecycle authority.
+
 ## 1. Purpose and Authority
 
 This Workplan is the living COPOT planning, sequencing, lifecycle-index, and provenance registry.
@@ -12,6 +17,7 @@ It does not:
 - authorize implementation;
 - auto-adopt Deferred Items;
 - create repository lifecycle state;
+- assert or establish repository lifecycle truth;
 - automatically promote Concept or Pre-contract scope;
 - authorize production reconciliation;
 - authorize release/tag/publication/external distribution.
@@ -32,7 +38,11 @@ Registry rules:
 - Workplan planning state is not repository implementation authority;
 - promotion requires explicit decision plus durable repository authority.
 
-The Workplan + Concept + Pre-contract model is currently being trialed within MR.2 before governance-wide promotion. Trial materialization does not itself amend GPT-side governance.
+The Workplan + Concept + Pre-contract model is currently being trialed within
+MR.2 before governance-wide promotion. Trial materialization does not itself
+amend GPT-side governance. Direct individual Concept-file references remain the
+semantic source model; no consolidated Concept registry is a substitute for
+those references.
 
 ## 2. Current Authoritative State Anchor
 
@@ -182,7 +192,20 @@ Sources:
 Authority:
 - `docs/35_system_health_status_contract.md`
 
-Planning action: NONE / PROVENANCE
+Future semantic extension of the same logical identity remains planning-only:
+- hybrid pull + push health model;
+- lifecycle-triggered, on-demand, and selectively periodic deterministic checks;
+- normalized findings from subsystem/Extension owners;
+- capability/provider resolution and provider-transition/migration health;
+- missing, disabled, or conflicting provider; degraded or blocked capability;
+- migration available, in-progress, failed, incomplete cutover, and stale or
+  orphaned provider state;
+- remediation and impact reporting.
+
+System Health does not own provider selection or provider migration authority;
+this extension does not reopen the completed `docs/35` foundation.
+
+Planning action: KEEP FUTURE SEMANTIC EXTENSION / DO NOT REOPEN FOUNDATION
 
 ### MR.1 — Installation Refinement
 Class: PROMOTED / MR
@@ -383,7 +406,22 @@ Sources:
 Relations:
 - candidate home: M6 — Distribution & Ecosystem;
 - related to Package Lifecycle & Migration;
-- preserves independent module repository/governance, stable package identity, publisher provenance, capability/provider and conflict direction.
+- preserves independent module repository/governance, stable package identity,
+  publisher provenance, capability/provider and conflict direction;
+- future direction includes consumer capability requirements, mandatory,
+  optional, and fallback-capable semantics, provider discovery distinct from
+  provider selection, and installed-provider state distinct from an active or
+  enabled compatible provider;
+- future runtime outcomes include FULL, DEGRADED, BLOCKED, provider
+  unavailable, provider selection required, and migration available;
+- one authoritative provider per consumer-capability is the default unless an
+  explicit capability contract supports aggregation or multi-provider use;
+- future provider transition and capability-state migration includes explicit
+  preflight, state mapping/migration, verification, controlled cutover,
+  rollback/fallback preservation, and no automatic takeover merely because a
+  new provider appears;
+- future developer-facing capability/provider declaration and lifecycle
+  guidance remains planning-only.
 
 Planning action: KEEP REGISTERED / FUTURE
 
@@ -626,6 +664,85 @@ Sources:
 
 Planning action: NO DEDICATED REFINEMENT WORKSTREAM UNLESS LATER EVIDENCE CHANGES DISPOSITION
 
+### Content Manager Refinement
+Class: FUTURE DEDICATED BUNDLED MODULE REFINEMENT
+Status: FUTURE / PREPARATION REQUIRED
+
+Sources:
+- `copot_core_module_refinement_concept_260810_184600.md` [HISTORICAL REFINEMENT INPUT]
+- `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
+- `docs/42_mr_2_wu4_content_manager_refinement_contract.md` [CLOSED HISTORICAL
+  PROVENANCE]
+
+Relations:
+- Content Manager consumes capability contracts rather than concrete provider
+  package identities;
+- taxonomy capability may be satisfied by self/fallback or a compatible
+  provider, while Taxonomy Manager retirement disposition is not reversed;
+- a provider's appearance does not automatically take over existing state;
+  provider transition/state migration is required when state ownership changes;
+- media capability consumption may use the Webcore Media baseline or richer
+  compatible providers;
+- future editorial/rich-formatting capability may include bold, italic,
+  headings, links, lists, and inline media;
+- exact editor, storage, rendering, and sanitization contract remains
+  unresolved and is not implementation-authorized.
+
+Planning action: KEEP FUTURE / PREPARATION REQUIRED / DO NOT REOPEN MR.2 WU4
+
+### Site Color Scheme
+Class: FUTURE EXTENSION / APPEARANCE RECONCILIATION
+Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+Relations:
+- extension/reconciliation of existing Site Identity and appearance lineage;
+- site-level appearance authority is consumed by the public/Built-in View;
+- Admin may inherit bounded brand, navigation, or accent appearance;
+- semantic operational colors remain independent, including warning, danger,
+  success, information, validation, and destructive states;
+- no second global Admin color authority is created.
+
+No individual Concept file is materialized for this identity in the current
+repository Workplan.
+
+Planning action: KEEP FUTURE / PLANNING ONLY
+
+### Per-user Admin Appearance
+Class: CONCEPT / FUTURE ADMIN PERSONALIZATION
+Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+Relations:
+- user-specific Admin presentation preference with default inheritance from
+  Site Color Scheme;
+- potential future override family includes color scheme, light/dark
+  appearance, density, Dashboard layout/widget placement, and related Admin
+  personalization;
+- related to Future Widget Layout / Dashboard personalization;
+- distinct ownership from site-level Site Color Scheme.
+
+No individual Concept file is materialized for this identity in the current
+repository Workplan.
+
+Planning action: KEEP FUTURE / SEPARATE FROM FUTURE WIDGET LAYOUT
+
+### Shared File Intake Interaction Pattern
+Class: CONCEPT / FUTURE CROSS-SURFACE
+Status: ADOPTED / GPT-THREAD LEVEL / NOT MATERIALIZED
+
+Relations:
+- ADOPT / FUTURE CROSS-SURFACE CONCEPT / OUTSIDE MR.2 /
+  NOT IMPLEMENTATION-AUTHORIZED;
+- candidate consumers include Media, Content Featured Media, Module/package
+  ZIP intake, and future Admin upload surfaces;
+- likely pattern may include native picker, immediate intake/upload, validation,
+  preview or preparation, crop where relevant, attach, and confirmation;
+- exact semantics remain pending individual Concept materialization.
+
+No individual Concept file or `Sources` reference exists for this identity;
+this entry preserves the GPT/thread-level saved Concept without fabricating one.
+
+Planning action: KEEP FUTURE / NO IMPLEMENTATION
+
 ### Copot Update, Upgrade, and Migration
 Class: HISTORICAL CONCEPT
 Status: INCORPORATED / PROVENANCE
@@ -664,7 +781,7 @@ Planning action: KEEP REGISTERED / PROVENANCE
 
 ### MR.2 — Shared Admin Refinement Continuation
 Class: ACTIVE REFINEMENT MILESTONE
-Status: OPEN
+Status: COMPLETE / CLOSED
 
 Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL DETAILED INPUT]
@@ -680,7 +797,7 @@ Relations:
 - per-Bundled-Module refinement is redistributed to dedicated future workstreams;
 - Dashboard remains separate.
 
-Planning action: CONTINUE THROUGH CURRENT WU5–WU8 TOPOLOGY
+Planning action: NONE / PROVENANCE / NO IMMEDIATE MR.2 IMPLEMENTATION TARGET
 
 ### Rejected Historical Media WU5 Attempt
 Class: HISTORICAL MR.2 IMPLEMENTATION ATTEMPT
@@ -707,7 +824,7 @@ Relations:
 Planning action: HOLD MEDIA-SPECIFIC CONTINUATION / AUDIT AGAINST SHARED BASELINE
 
 ### WU5 — Shared Admin Primitive Audit & Contract
-Class: MR.2 WORK UNIT / PREPARATION AUDIT
+Class: MR.2 WORK UNIT
 Status: COMPLETE / CONTRACT LOCKED
 
 Sources:
@@ -794,7 +911,7 @@ Planning action: NONE / PROVENANCE / REPRESENTATIVE PROOF ONLY, NOT PER-MODULE R
 
 ### WU8 — Cross-Surface Verification & MR.2 Closure
 Class: MR.2 WORK UNIT / CLOSURE GATE
-Status: VERIFICATION COMPLETE / REPOSITORY CLOSURE READY — PLANNING DISPOSITION PENDING
+Status: COMPLETE / CLOSED
 
 Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL DESIGN INPUT]
@@ -811,9 +928,9 @@ Authority:
 
 Relations:
 - accepted WU7 propagation proof;
-- repository-side verification and closure preparation complete;
-- closure must reconcile current authoritative documentation without rewriting
-  valid historical records;
+- repository-side verification and closure complete;
+- closure reconciled current authoritative documentation without rewriting valid
+  historical records;
 - Shared File Intake planning disposition is resolved at the GPT/user layer as
   a future cross-surface concept outside MR.2 and not implementation-authorized.
 
