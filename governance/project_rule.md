@@ -1,15 +1,17 @@
 # TEMPLATE SOURCE AND PER-INTERACTION LOADING
-Date version: 2026-08-24 12:01:10 WIB
+Date version: 2026-08-29 18:08:49 WIB
 
 ## Source Lock
 
-Untuk project COPOT, source authoritative GPT-side governance dan planning artifacts adalah:
+Untuk project COPOT, source authoritative current governance adalah verified remote Git repository state untuk exact files berikut:
 
-`ChatGPT File Library — copot`
+- `governance/project_rule.md`;
+- `governance/Handoff_Template.md`;
+- `governance/Agent_Instruction_Template.md`.
 
-Jangan fallback ke Google Drive, Dropbox, repository Git, local filesystem, Codex workspace, web, memory, chat history, summary, atau source lain tanpa instruksi eksplisit user.
+ChatGPT File Library — copot is historical/correction evidence only when explicitly needed. Do not treat it as current governance and do not silently fall back to it when current Git governance is unavailable or unverifiable.
 
-Jika source `copot` tidak dapat diakses atau latest applicable artifact tidak dapat diverifikasi, gunakan blocker rules pada file ini. Jangan mengklaim latest governance/planning sudah dibaca.
+Jika required canonical Git governance file tidak dapat dibaca atau accepted repository state tidak dapat diverifikasi, gunakan blocker rules pada file ini. Jangan mengklaim latest governance sudah dibaca.
 
 ## Governance Files
 
@@ -19,54 +21,34 @@ Governance baseline terdiri dari tiga independent version lineages:
 - `Handoff_Template`;
 - `Agent_Instruction_Template`.
 
-Setiap final governance file memakai suffix:
-
-`<BaseName>_YYMMDD_HHMMSS.md`
-
 Line kedua wajib:
 
 `Date version: YYYY-MM-DD HH:mm:ss WIB`
 
-Timestamp filename dan line kedua harus cocok untuk file tersebut.
+Governance filenames are stable canonical filenames. The `Date version` line records the semantic version time for each file whose content changes. Git history is the durable predecessor/version lineage; unchanged files do not need artificial version changes.
 
-Ketiga governance files TIDAK wajib mempunyai timestamp yang sama. File yang tidak berubah tidak perlu diregenerate hanya untuk menyamakan timestamp. Shared timestamp boleh menjadi correlation/integrity hint untuk files yang memang dibuat dalam satu coordinated update, tetapi bukan invariant active governance set.
+## Current Governance Resolution
 
-## Latest Governance Resolution
+Resolve and read these three exact canonical Git paths independently:
 
-Istilah `latest governance files` berarti:
+1. `governance/project_rule.md`;
+2. `governance/Handoff_Template.md`;
+3. `governance/Agent_Instruction_Template.md`.
 
-1. latest applicable `project_rule_*`;
-2. latest applicable `Handoff_Template_*`;
-3. latest applicable `Agent_Instruction_Template_*`;
-
-masing-masing di-resolve secara independen dari File Library folder `copot`.
-
-Gunakan metadata freshness/navigation sebagai signal utama. Filename timestamp adalah signal penting tetapi tidak mengalahkan metadata yang membuktikan versi lain lebih baru atau lebih applicable.
-
-Urutan wajib per basename:
-
-1. enumerate recent/relevant File Library items;
-2. filter exact basename/family;
-3. bandingkan metadata upload/modified dan timestamp filename;
-4. pilih latest applicable candidate;
-5. buka exact file;
-6. baca isi file;
-7. baru report `READ THIS INTERACTION`.
-
-Setelah ketiga file di-resolve, lakukan material cross-file compatibility check. Timestamp berbeda bukan conflict.
+The three files retain independent logical identities. They are not resolved as multiple simultaneously active timestamped files. Verify the accepted repository state and then open and read each exact file. After all three files are read, perform the material cross-file compatibility check.
 
 ## Per-Interaction Loading
 
 Pada setiap interaksi user sebelum feedback COPOT substantif:
 
-1. resolve + read latest applicable `project_rule`;
-2. resolve + read latest applicable `Handoff_Template`;
-3. resolve + read latest applicable `Agent_Instruction_Template`;
+1. resolve + read canonical `governance/project_rule.md`;
+2. resolve + read canonical `governance/Handoff_Template.md`;
+3. resolve + read canonical `governance/Agent_Instruction_Template.md`;
 4. apply ketiganya pada interaksi yang sama.
 
 Pembacaan interaksi sebelumnya tidak berlaku sebagai pengganti. Jangan klaim governance sudah dibaca hanya dari memory, chat history, summary, filename, atau hasil pencarian yang belum dibuka.
 
-Dalam interaksi yang sama tidak perlu baca ulang kecuali file berubah, freshness menjadi ambiguous, bagian material belum terbaca, atau ditemukan conflict.
+Dalam interaksi yang sama tidak perlu baca ulang kecuali file berubah, accepted repository state menjadi unverifiable, bagian material belum terbaca, atau ditemukan conflict.
 
 ## Locked Project Decision Application
 
@@ -82,21 +64,18 @@ Governance tidak dapat membuat capability yang unavailable menjadi available dan
 
 ### Latest-Version Fail-Closed Rule
 
-Never silently fall back to an older governance file when a newer applicable version is known to exist but cannot be read or verified.
+Never silently fall back when a required canonical current Git governance file cannot be read or its accepted repository state cannot be verified.
 
-Jika metadata menunjukkan versi lebih baru untuk suatu basename tetapi file tersebut unreadable/unverifiable:
-- jangan memakai versi lama sebagai pengganti diam-diam;
-- report basename itu sebagai `UNAVAILABLE — LATEST VERSION UNREADABLE/UNVERIFIABLE`;
-- terapkan blocker matrix yang sesuai.
+Do not use an older Git revision, an obsolete timestamped repository file, a historical File Library copy, memory, chat history, or summary as a substitute. Report the unavailable canonical file and apply the relevant blocker matrix.
 
 ### Retrieval Retry Discipline
 
 Sebelum report `UNAVAILABLE`:
-1. retry recent/navigation enumeration;
-2. retry exact basename atau exact filename;
-3. buka kandidat terbaru;
+1. retry retrieval of the exact canonical Git path;
+2. retry verification of the accepted repository state and remote anchor;
+3. open the exact file again;
 4. jika file ditemukan tetapi belum terbaca, lanjutkan retrieval;
-5. baru report unavailable jika source atau exact latest applicable artifact tetap tidak dapat diakses/diverifikasi.
+5. baru report unavailable jika canonical file atau accepted repository state tetap tidak dapat diakses/diverifikasi.
 
 `FOUND BUT NOT READ` adalah internal retry state, bukan final report.
 
@@ -139,9 +118,9 @@ Status: `GOVERNED AGENT-INSTRUCTION GENERATION BLOCKED`
 
 Normal analysis may continue. Do not invent a replacement template unless user explicitly authorizes governance recovery.
 
-## Entire `copot` GPT Library Source Unavailable
+## Required Canonical Git Governance Unavailable
 
-All governance-dependent/high-risk work is blocked. Limit work to safe factual discussion, clarification, dan retrieval recovery.
+Governance-dependent/high-risk work is blocked when a required canonical Git governance file or its accepted repository state is unavailable or unverifiable. Historical File Library unavailability alone does not block normal operation when canonical Git governance is valid and available.
 
 ---
 
@@ -151,7 +130,7 @@ Before substantive COPOT feedback:
 
 Project Rule: `<exact filename> — <READ THIS INTERACTION / UNAVAILABLE>`
 
-Template Source: `ChatGPT File Library — copot — <AVAILABLE / UNAVAILABLE>`
+Governance Source: `Git — canonical governance files at verified remote repository state — <AVAILABLE / UNAVAILABLE>`
 
 Handoff Template: `<exact filename> — <READ THIS INTERACTION / UNAVAILABLE>`
 
@@ -223,8 +202,8 @@ Before device/execution-environment transition, intended work must be committed,
 - Triple backticks / fenced code blocks digunakan hanya untuk actual code atau literal code/config content yang memang perlu dipresentasikan sebagai code.
 - Normal discussion, reasoning, planning prose, Handoff, dan Agent Instruction tidak dibungkus dalam triple-backtick code fence.
 - Handoff dan Agent Instruction harus disampaikan melalui editable writing block ketika capability tersebut tersedia.
-- Detail format khusus Handoff mengikuti latest applicable `Handoff_Template`.
-- Detail format khusus Agent Instruction mengikuti latest applicable `Agent_Instruction_Template`.
+- Detail format khusus Handoff mengikuti canonical `governance/Handoff_Template.md`.
+- Detail format khusus Agent Instruction mengikuti canonical `governance/Agent_Instruction_Template.md`.
 - Rule ini mengatur presentation/delivery dan tidak mengubah authorization, scope, validation, stop conditions, atau lifecycle semantics.
 
 ---
@@ -242,7 +221,7 @@ Locked rules:
    - present it to the user;
    - do not directly invoke/transfer unless the user explicitly requests direct transfer.
 4. When the user explicitly requests direct transfer to Work or Codex:
-   - use the latest applicable Agent Instruction Template;
+   - use canonical `governance/Agent_Instruction_Template.md`;
    - preserve the same target, scope, authorization, validation, stop conditions, and reporting semantics that would apply to a copy/paste instruction;
    - delivery method does not widen authority.
 5. Handoff artifacts remain GPT/session continuity artifacts. They are never executor payloads merely because a direct-transfer tool exists.
@@ -432,7 +411,7 @@ A Workplan is a living project-specific planning artifact for non-linear executi
 
 Filename:
 
-`workplan_YYMMDD_HHMMSS.md`
+`workplan.md`
 
 A Workplan is **not a live mirror of current repository/project lifecycle state**.
 
@@ -690,11 +669,11 @@ Governance files version independently.
 For a coordinated change:
 1. identify which governance files are materially affected;
 2. modify only affected files;
-3. cross-check active latest versions for contradiction;
-4. generate final timestamped files;
-5. place final files in `ChatGPT File Library — copot`;
-6. on subsequent interactions, independently resolve latest applicable version per basename.
+3. cross-check the three canonical governance files for contradiction;
+4. update `Date version` only for files whose semantic content changed;
+5. commit, push, and independently verify the three canonical Git files;
+6. on subsequent interactions, independently resolve the exact canonical paths.
 
 Do not regenerate unchanged governance files merely to synchronize timestamps.
 
-Source authority for COPOT governance/planning artifacts remains `ChatGPT File Library — copot`.
+Source authority for current COPOT governance artifacts is the verified remote Git repository state containing the three canonical governance files. File Library governance remains historical/correction evidence only.

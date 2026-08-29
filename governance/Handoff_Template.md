@@ -1,5 +1,5 @@
-# PROJECT SESSION HANDOFF TEMPLATE
-Date version: 2026-08-24 12:01:10 WIB
+# `<Title> (<Milestone / WU / Batch>)`
+Date version: 2026-08-29 18:08:49 WIB
 
 This is a GPT/model/session continuity artifact for COPOT. It is not an Agent Instruction and must not be copied wholesale to Work, Codex, or another technical executor.
 
@@ -21,13 +21,32 @@ Delivery rule:
 - do not wrap the Handoff in a triple-backtick code fence;
 - fenced code inside the Handoff is allowed only for actual code/config/literal technical content that genuinely requires code formatting.
 
+## HANDOFF TITLE / FIRST-LINE SEMANTICS
+
+The Handoff title is the first line inside the editable writing-block content. Do not use the writing block's external title/name field to carry the Handoff continuity title.
+
+Choose the title from the destination continuity boundary:
+
+- When moving to a new workstream or milestone, use `[Title] ([Milestone])` or `[Title] - [Milestone]`.
+  - Example: `Core Module Refinement (MR.2)`
+  - Example: `Core Module Refinement - MR.2`
+- When moving to a new Work Unit or Batch, use `[Title] ([WU/Batch])` or `[Title] - [WU/Batch]`.
+  - Example: `System Manager (WU2)`
+  - Example: `System Manager - Batch 2`
+
+Use the current accepted project vocabulary when selecting `[Title]`; examples illustrate the heading shape and do not override later terminology decisions.
+
+Do not prepend a generic heading such as `PROJECT SESSION HANDOFF TEMPLATE`, `PROJECT SESSION HANDOFF`, or another wrapper title to a generated Handoff. The destination continuity title is the Handoff's first-line header.
+
+This rule changes only Handoff title/header presentation. All other Handoff structure, continuity semantics, authorization boundaries, NRP rules, bootstrap requirements, and conditional sections remain unchanged.
+
 ## Direct Handoff Boundary
 
-This Handoff reinforces the cross-project routing rule defined in the latest applicable `project_rule`.
+This Handoff reinforces the cross-project routing rule defined in the canonical `governance/project_rule.md`.
 
 - Do not directly transfer this Handoff or invoke Work, Codex, or another execution destination from it unless the user explicitly requests that direct transfer.
 - A new session may recommend Work/Codex or prepare an executor instruction, but recommendation is not permission to invoke.
-- If execution through Work or Codex is requested, derive a separate Agent Instruction using the latest applicable Agent Instruction Template.
+- If execution through Work or Codex is requested, derive a separate Agent Instruction using the canonical `governance/Agent_Instruction_Template.md`.
 - Direct-transfer permission controls transport only; it does not widen technical authorization, scope, validation, stop conditions, or external side-effect permissions.
 - Never use Handoff as the executor payload merely because a direct-transfer capability exists.
 
@@ -405,13 +424,13 @@ Realignment/revalidation: `<detail / N/A>`
 
 # CONTEXT BOOTSTRAP FOR NEXT SESSION
 
-1. Resolve and read latest applicable `project_rule`, `Handoff_Template`, and `Agent_Instruction_Template` independently from ChatGPT File Library `copot`.
-2. Never silently fall back to older governance when a known newer applicable version is unreadable/unverifiable.
+1. Verify and read `governance/project_rule.md`, `governance/Handoff_Template.md`, and `governance/Agent_Instruction_Template.md` from the accepted remote Git repository state.
+2. Never silently fall back to an older Git revision, obsolete timestamped repository file, historical File Library copy, memory, chat history, or summary when canonical governance is unreadable/unverifiable.
 3. Read project instruction.
-4. Apply the latest `project_rule` direct-handoff/execution-routing boundary before considering Work/Codex/agent invocation.
+4. Apply canonical `governance/project_rule.md` direct-handoff/execution-routing boundary before considering Work/Codex/agent invocation.
 5. Read authoritative repo docs/source relevant to the next target.
-6. Resolve/read latest applicable Workplan when planning/sequencing/lineage is material.
-7. Do not assume Workplan must mirror current repository lifecycle state during an active workstream; evaluate it according to the latest planning reconciliation cadence.
+6. Read repository `workplan.md` when planning/sequencing/lineage is material; File Library Workplans are historical/correction evidence only.
+7. Do not assume Workplan must mirror current repository lifecycle state during an active workstream; evaluate it according to the existing planning reconciliation cadence.
 8. Resolve/read only relevant Concept identities and exact source files/headings referenced by Workplan or task.
 9. If Handoff carries unreconciled thread-level saved concepts, preserve them until durable disposition; session change does not clear them.
 10. Verify remote continuity inside the first relevant task.
@@ -420,7 +439,7 @@ Realignment/revalidation: `<detail / N/A>`
 13. Do not infer technical authorization from Handoff, Workplan, Concept, or NRP status.
 14. Do not infer direct-transfer authorization from execution-routing recommendations or tool availability.
 15. Do not infer release/tag/publication authorization from feature/workstream closure.
-16. Before generating any Agent Instruction in the new session, resolve/read the latest applicable `Agent_Instruction_Template`; obtain the instruction structure there rather than from this Handoff.
+16. Before generating any Agent Instruction in the new session, read canonical `governance/Agent_Instruction_Template.md`; obtain the instruction structure there rather than from this Handoff.
 17. Handoff may carry only material segment-level expectations for a future Agent Instruction, such as heading/title semantics, target, Git context when relevant, scope, authorization, validation, stop conditions, report, and conditional segments when material. Do not hardcode, duplicate, or copy the Agent Instruction template structure into this Handoff.
 
 Continuity status: `<MATCH / CHANGED / CONFLICT / UNVERIFIABLE / NOT TRIGGERED>`
@@ -456,7 +475,7 @@ Readiness: `<READY / REQUIRES GOVERNANCE RECOVERY / ANCHOR CONFLICT / WORKSPACE 
 # AUTOMATIC HANDOFF
 
 When user chooses a new session:
-- use latest applicable Handoff Template;
+- use canonical `governance/Handoff_Template.md`;
 - fill required core;
 - include conditional Workplan/Concept context only when material;
 - reconcile/consolidate Workplan at workstream closure before handoff when it is needed to decide or explain the next planning target;
@@ -468,7 +487,7 @@ When user chooses a new session:
 - keep executor instruction concerns out of the Handoff body except routing context necessary for next GPT session;
 - generation of Handoff does **not** authorize direct transfer to Work/Codex/another destination;
 - never invoke or transfer to Work/Codex merely because the Handoff recommends that execution route;
-- if the user explicitly requests direct transfer, derive a separate Agent Instruction using the latest applicable Agent Instruction Template and route only that instruction.
+- if the user explicitly requests direct transfer, derive a separate Agent Instruction using canonical `governance/Agent_Instruction_Template.md` and route only that instruction.
 
 # CLOSURE STATEMENT
 
