@@ -11,8 +11,9 @@ MR.2 WU5: COMPLETE / CONTRACT LOCKED
 WU6 scope: Shared Artifact Consolidation & Implementation
 WU6 preparation/reconciliation: COMPLETE
 WU6 contract: PROMOTED / CONTRACT LOCKED
-WU6 runtime/source implementation: NOT STARTED
-WU6 lifecycle state: CONTRACT LOCKED / IMPLEMENTATION READY
+WU6 runtime/source implementation: COMPLETE / ACCEPTED
+WU6 objective validation: COMPLETE / PASS
+WU6 lifecycle state: COMPLETE / CLOSED
 ```
 
 This contract is the authoritative promotion of the reviewed and reconciled
@@ -218,10 +219,10 @@ impact or regression signal.
 
 ## Promotion and lifecycle
 
-This contract is authoritative for WU6. WU6 runtime/source implementation has
-not started. Implementation remains bounded by this contract and must stop if
-the six slices cannot be implemented without new authority, a Deferred Item,
-or an actual governance approval boundary.
+This contract is authoritative for WU6. WU6 runtime/source implementation and
+objective validation are complete and accepted for the bounded shared-artifact
+scope. WU6 does not claim that every Admin consumer has been normalized; later
+cross-surface verification and dedicated owner workstreams remain separate.
 
 ## Source and provenance references
 

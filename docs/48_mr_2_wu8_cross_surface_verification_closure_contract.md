@@ -12,14 +12,19 @@ MR.2 WU6: COMPLETE / IMPLEMENTED AND ACCEPTED
 MR.2 WU7: COMPLETE / CLOSED
 WU8 scope: Cross-Surface Verification & MR.2 Closure
 WU8 contract: PROMOTED / CONTRACT LOCKED
-WU8 verification: NOT STARTED
+WU8 verification: COMPLETE / REPOSITORY CLOSURE READY — PLANNING DISPOSITION PENDING
 MR.2 lifecycle: OPEN
 ```
 
 This contract is the authoritative promotion of the reviewed WU8 Pre-contract.
 The Pre-contract remains preserved as historical planning provenance. Promotion
-establishes the bounded WU8 verification and closure boundary only; it does not
-execute WU8 verification or close MR.2.
+established the bounded WU8 verification and closure boundary. The
+evidence-backed WU8 verification and repository-side closure-preparation result
+is recorded in the status above; it does not close MR.2.
+
+The repository-side closure criteria are complete for the accepted bounded
+MR.2 evidence, with final MR.2 closure pending durable GPT/user planning
+disposition of the unresolved Shared File Intake Interaction Pattern.
 
 ## Objective
 

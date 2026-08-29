@@ -1309,6 +1309,17 @@ extension model remain unchanged. Rich-text/editor and later MR.2 work remain
 outside this closure. The authoritative contract is
 `docs/42_mr_2_wu4_content_manager_refinement_contract.md`.
 
+MR.2 WU5 shared Admin primitive audit/contract, WU6 shared-artifact
+implementation, and WU7 representative propagation proof are COMPLETE AND
+CLOSED/ACCEPTED for their bounded scopes. WU8 cross-surface verification and
+MR.2 repository-side closure preparation is COMPLETE / READY under
+`docs/48_mr_2_wu8_cross_surface_verification_closure_contract.md`; final MR.2
+closure remains pending durable GPT/user planning disposition of the unresolved
+Shared File Intake Interaction Pattern. WU8 does not authorize global
+flat/radius policy, standard eyebrow restoration, per-Module refinement, or
+repair of the accepted NON-BLOCKING PRE-EXISTING VALIDATION DEBT in the
+historical Media test.
+
 ---
 
 ## Historical M3 Core Modules Context

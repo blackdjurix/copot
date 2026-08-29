@@ -41,13 +41,15 @@ Authoritative branch: `main`
 
 Current durable planning state:
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
-- MR.2: OPEN;
-- MR.2 WU1–WU4: COMPLETE AND CLOSED;
+- MR.2: REPOSITORY CLOSURE READY — SHARED FILE INTAKE PLANNING DISPOSITION PENDING;
+- MR.2 WU1–WU7: COMPLETE AND CLOSED; WU8 repository-side verification
+  complete / closure ready pending planning disposition;
 - Webcore Content Admin Baseline: COMPLETE / CLOSED; corrective prerequisite
   for MR.2 WU7 is satisfied;
 - old MR.2 Media WU5 implementation: EXISTS / NOT ACCEPTED;
-- current forward target after the corrective prerequisite: MR.2 WU7 —
-  Representative Adoption & Propagation Proof;
+- current MR.2 repository-side closure preparation: COMPLETE / READY;
+- final MR.2 closure remains pending durable GPT/user disposition of the
+  unresolved Shared File Intake Interaction Pattern;
 - MR.2 Pre-contract trial layer: MATERIALIZED for historical/promoted WU1–WU4, old Media WU5 evidence, and forward WU5–WU8;
 - per-Bundled-Module refinement: redistributed to dedicated future workstreams;
 - Dashboard: separate from MR.2;
@@ -707,7 +709,7 @@ Planning action: HOLD MEDIA-SPECIFIC CONTINUATION / AUDIT AGAINST SHARED BASELIN
 
 ### WU5 — Shared Admin Primitive Audit & Contract
 Class: MR.2 WORK UNIT / PREPARATION AUDIT
-Status: AUDIT COMPLETE / PRE-CONTRACT REVIEW-READY / PROMOTION PENDING
+Status: COMPLETE / CONTRACT LOCKED
 
 Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL DESIGN INPUT]
@@ -718,7 +720,10 @@ Sources:
 Pre-contract:
 - `precontracts/mr_2_wu5_shared_admin_primitive_audit_precontract.md`
 
-Pre-contract status: REVIEW-READY / DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
+Pre-contract status: PROMOTED / HISTORICAL PROVENANCE
+
+Authority:
+- `docs/44_mr_2_wu5_shared_admin_primitive_audit_contract.md`
 
 Objective:
 Audit current Admin presentation implementation and accepted refinement lineage, identify canonical shared primitives versus duplicated/local variants, and define a bounded forward shared-primitive contract only through explicit authorization.
@@ -736,11 +741,11 @@ Minimum audit surface:
 - responsive/accessibility behavior;
 - shared CSS/token/artifact ownership.
 
-Planning action: PREPARATION COMPLETE / REVIEW-READY / AUTHORITATIVE CONTRACT PROMOTION SEPARATELY AUTHORIZED / NO IMPLEMENTATION AUTHORIZED BY WORKPLAN OR PRE-CONTRACT
+Planning action: NONE / PROVENANCE
 
 ### WU6 — Shared Artifact Consolidation & Implementation
 Class: MR.2 WORK UNIT
-Status: PLANNED / FUTURE
+Status: COMPLETE / IMPLEMENTED AND ACCEPTED
 
 Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL DESIGN INPUT]
@@ -749,19 +754,23 @@ Sources:
 Pre-contract:
 - `precontracts/mr_2_wu6_shared_artifact_consolidation_implementation_precontract.md`
 
-Pre-contract status: DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
+Pre-contract status: PROMOTED / HISTORICAL PROVENANCE
+
+Authority:
+- `docs/45_mr_2_wu6_shared_artifact_consolidation_implementation_contract.md`
 
 Relations:
-- HARD sequencing dependency on accepted/promoted WU5 boundary before WU6 implementation authorization.
+- accepted implementation of the WU5 shared-artifact boundary;
+- representative adoption and propagation proof continued in WU7.
 
 Objective:
 Implement bounded canonical shared primitives using single-source Admin artifacts/tokens/classes while preserving domain behavior.
 
-Planning action: FUTURE / PRE-CONTRACT EXISTS / REQUIRES SEPARATE PROMOTION AND IMPLEMENTATION AUTHORIZATION
+Planning action: NONE / PROVENANCE
 
 ### WU7 — Representative Adoption & Propagation Proof
 Class: MR.2 WORK UNIT
-Status: PLANNED / FUTURE
+Status: COMPLETE / CLOSED
 
 Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL DESIGN INPUT]
@@ -770,19 +779,23 @@ Sources:
 Pre-contract:
 - `precontracts/mr_2_wu7_representative_adoption_propagation_proof_precontract.md`
 
-Pre-contract status: DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
+Pre-contract status: PROMOTED / HISTORICAL PROVENANCE
+
+Authority:
+- `docs/47_mr_2_wu7_representative_adoption_propagation_proof_contract.md`
 
 Relations:
-- HARD sequencing dependency on accepted WU6 shared-artifact implementation baseline.
+- accepted WU6 shared-artifact implementation baseline;
+- WU8 cross-surface verification and MR.2 closure followed.
 
 Objective:
 Normalize a small representative set of accepted Admin consumers sufficient to prove shared primitive propagation, responsive/accessibility compatibility, and explicit exception handling.
 
-Planning action: FUTURE / PRE-CONTRACT EXISTS / REPRESENTATIVE PROOF ONLY, NOT PER-MODULE REFINEMENT PASS
+Planning action: NONE / PROVENANCE / REPRESENTATIVE PROOF ONLY, NOT PER-MODULE REFINEMENT PASS
 
 ### WU8 — Cross-Surface Verification & MR.2 Closure
 Class: MR.2 WORK UNIT / CLOSURE GATE
-Status: PLANNED / FUTURE
+Status: VERIFICATION COMPLETE / REPOSITORY CLOSURE READY — PLANNING DISPOSITION PENDING
 
 Sources:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY HISTORICAL DESIGN INPUT]
@@ -792,15 +805,22 @@ Sources:
 Pre-contract:
 - `precontracts/mr_2_wu8_cross_surface_verification_closure_precontract.md`
 
-Pre-contract status: DRAFT / TRIAL / NOT AUTHORITATIVE / NOT PROMOTED
+Pre-contract status: PROMOTED / HISTORICAL PROVENANCE
+
+Authority:
+- `docs/48_mr_2_wu8_cross_surface_verification_closure_contract.md`
 
 Relations:
-- HARD sequencing dependency on accepted WU7 propagation proof;
-- closure must reconcile current authoritative documentation without rewriting valid historical records.
+- accepted WU7 propagation proof;
+- repository-side verification and closure preparation complete;
+- closure must reconcile current authoritative documentation without rewriting
+  valid historical records;
+- final MR.2 closure remains pending durable GPT/user disposition of the
+  unresolved Shared File Intake Interaction Pattern.
 
 Must verify shared primitive single-source behavior, consistency, explicit exceptions, System Manager shared presentation without domain takeover, no retired-manager restoration, truthful unsupported states, no domain capability expansion, no Dashboard redesign, documentation consistency, and disposition of unresolved MR.2 thread-level planning payload.
 
-Planning action: FUTURE / PRE-CONTRACT EXISTS / MR.2 CLOSURE GATE
+Planning action: REPOSITORY CLOSURE READY / SHARED FILE INTAKE DISPOSITION PENDING / NO NEW IMPLEMENTATION TARGET
 
 ## 7. Dedicated Future Bundled Module Refinement Workstreams
 
@@ -853,24 +873,11 @@ No individual Concept file currently owns this thread-level payload, so this sec
 
 ## 9. Immediate Next Planning Target
 
-### MR.2 WU7 — Representative Adoption & Propagation Proof
-
-Classification:
-- MR.2 CONTINUATION;
-- Webcore Content Admin corrective prerequisite COMPLETE / CLOSED;
-- WU5 and WU6 shared-artifact foundation accepted for current sequencing;
-- PRE-CONTRACT EXISTS / TRIAL / NOT AUTHORITATIVE;
-- NO TECHNICAL IMPLEMENTATION AUTHORIZED BY THIS WORKPLAN OR PRE-CONTRACT;
-- no Deferred adoption;
-- WU7 authoritative promotion remains a separate planning/contract gate.
-
-The corrective Webcore Content Admin Baseline is COMPLETE / CLOSED and does
-not alter WU7’s representative shared-artifact propagation scope or WU8’s
-cross-surface closure scope.
-
-Immediate next gate: prepare/review the WU7 Pre-contract for separate
-authoritative promotion. Routine WU7 implementation is not authorized by this
-Workplan entry alone.
+No new MR.2 implementation target is exposed by this closure preparation.
+MR.2 repository-side closure is ready, subject only to durable GPT/user
+planning disposition of the unresolved Shared File Intake Interaction Pattern.
+That disposition is outside WU8 technical authority and must not be invented,
+adopted, rejected, superseded, or implemented by this Workplan reconciliation.
 
 ## 10. Retention and Planning Freshness
 
