@@ -21,8 +21,8 @@ MR.2 lifecycle: COMPLETE / CLOSED
 This contract is the authoritative promotion of the reviewed WU8 Pre-contract.
 The Pre-contract remains preserved as historical planning provenance. Promotion
 established the bounded WU8 verification and closure boundary. The
-evidence-backed WU8 verification and repository-side closure-preparation result
-is recorded in the status above; it does not close MR.2.
+evidence-backed WU8 verification and repository-side closure result is recorded
+above; WU8 and MR.2 are COMPLETE / CLOSED.
 
 The repository-side closure criteria are complete and passed for the accepted
 bounded MR.2 evidence. The Shared File Intake planning disposition is resolved
