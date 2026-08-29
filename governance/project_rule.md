@@ -1,5 +1,5 @@
 # TEMPLATE SOURCE AND PER-INTERACTION LOADING
-Date version: 2026-08-29 18:08:49 WIB
+Date version: 2026-08-29 22:43:53 WIB
 
 ## Source Lock
 
@@ -9,7 +9,7 @@ Untuk project COPOT, source authoritative current governance adalah verified rem
 - `governance/Handoff_Template.md`;
 - `governance/Agent_Instruction_Template.md`.
 
-ChatGPT File Library — copot is historical/correction evidence only when explicitly needed. Do not treat it as current governance and do not silently fall back to it when current Git governance is unavailable or unverifiable.
+ChatGPT File Library — copot hanya merupakan historical/correction evidence bila memang diperlukan secara eksplisit. Jangan memperlakukannya sebagai current governance dan jangan melakukan silent fallback ke sana ketika current Git governance tidak tersedia atau tidak dapat diverifikasi.
 
 Jika required canonical Git governance file tidak dapat dibaca atau accepted repository state tidak dapat diverifikasi, gunakan blocker rules pada file ini. Jangan mengklaim latest governance sudah dibaca.
 
@@ -25,17 +25,52 @@ Line kedua wajib:
 
 `Date version: YYYY-MM-DD HH:mm:ss WIB`
 
-Governance filenames are stable canonical filenames. The `Date version` line records the semantic version time for each file whose content changes. Git history is the durable predecessor/version lineage; unchanged files do not need artificial version changes.
+Governance filenames adalah stable canonical filenames. Baris `Date version` mencatat semantic version time untuk setiap file yang content-nya berubah. Git history adalah durable predecessor/version lineage; file yang tidak berubah tidak memerlukan artificial version change.
+
+## Session Bootstrap Isolation dan Language Routing
+
+GPT/session baru harus menganggap dirinya tidak memiliki reliable knowledge
+tentang sesi ChatGPT sebelumnya selain yang dibawa oleh Handoff dan current
+authoritative sources. Bootstrap dimulai dari current canonical governance,
+supplied Handoff, project instruction, verified authoritative repository state,
+lalu hanya Workplan/Concept/repository sources yang material dan diperlukan oleh
+Handoff atau target saat ini.
+
+Jangan menggunakan atau menggali implicit conversation memory, chat history,
+prior-session summaries, model memory, personal context, project memory, atau
+background context serupa hanya karena tersedia. Additional prior context hanya
+boleh dipakai jika user secara eksplisit meminta recall/recovery/comparison,
+atau Handoff/current authoritative source secara eksplisit menunjuk source yang
+diperlukan oleh task.
+
+Jangan merekonstruksi project decision yang hilang dari memory atau asumsi
+ketika authoritative evidence tidak tersedia. Handoff harus cukup untuk
+bootstrap session baru secara aman.
+
+Default governance prose adalah Bahasa Indonesia. GPT/user-facing
+communication dan generated Handoff default mengikuti primary conversation
+language user; untuk current COPOT usage, berarti Bahasa Indonesia. Generated
+technical Agent Instruction mengikuti dedicated language rule di
+`governance/Agent_Instruction_Template.md`. Identifier, path, command, API
+name, error, status token, filename, dan technical/project vocabulary tetap
+literal bila terjemahan mengurangi precision.
+
+`governance/Handoff_Template.md` adalah detailed Source of Truth untuk struktur
+Handoff, session transition, dan NRP semantics; detail prosedurnya tidak
+diduplicasi penuh di file ini.
 
 ## Current Governance Resolution
 
-Resolve and read these three exact canonical Git paths independently:
+Resolve dan baca tiga exact canonical Git paths berikut secara independen:
 
 1. `governance/project_rule.md`;
 2. `governance/Handoff_Template.md`;
 3. `governance/Agent_Instruction_Template.md`.
 
-The three files retain independent logical identities. They are not resolved as multiple simultaneously active timestamped files. Verify the accepted repository state and then open and read each exact file. After all three files are read, perform the material cross-file compatibility check.
+Ketiga file mempertahankan independent logical identities. File-file tersebut
+tidak di-resolve sebagai beberapa timestamped files yang aktif bersamaan.
+Verifikasi accepted repository state, buka dan baca setiap exact file, lalu
+lakukan material cross-file compatibility check.
 
 ## Per-Interaction Loading
 
@@ -64,9 +99,14 @@ Governance tidak dapat membuat capability yang unavailable menjadi available dan
 
 ### Latest-Version Fail-Closed Rule
 
-Never silently fall back when a required canonical current Git governance file cannot be read or its accepted repository state cannot be verified.
+Jangan pernah melakukan silent fallback ketika required canonical current Git
+governance file tidak dapat dibaca atau accepted repository state tidak dapat
+diverifikasi.
 
-Do not use an older Git revision, an obsolete timestamped repository file, a historical File Library copy, memory, chat history, or summary as a substitute. Report the unavailable canonical file and apply the relevant blocker matrix.
+Jangan gunakan older Git revision, obsolete timestamped repository file,
+historical File Library copy, memory, chat history, atau summary sebagai
+pengganti. Laporkan canonical file yang unavailable dan terapkan blocker matrix
+yang relevan.
 
 ### Retrieval Retry Discipline
 

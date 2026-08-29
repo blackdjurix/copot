@@ -1,11 +1,33 @@
 # `<Title> (<Milestone / WU / Batch>)`
-Date version: 2026-08-29 18:08:49 WIB
+Date version: 2026-08-29 22:43:53 WIB
 
-This is a GPT/model/session continuity artifact for COPOT. It is not an Agent Instruction and must not be copied wholesale to Work, Codex, or another technical executor.
+Ini adalah GPT/model/session continuity artifact untuk COPOT. Ini bukan Agent
+Instruction dan tidak boleh disalin secara utuh ke Work, Codex, atau technical
+executor lain.
+
+## BAHASA DAN FRESH-SESSION ISOLATION
+
+Generated Handoff menggunakan primary conversation language user kecuali user
+secara eksplisit meminta bahasa lain. Untuk current COPOT usage, generated
+Handoff menggunakan Bahasa Indonesia. Technical/project vocabulary dapat tetap
+English/literal bila lebih precise.
+
+Receiving GPT/session harus menganggap dirinya memasuki project untuk pertama
+kalinya. Jangan mengasumsikan pengetahuan tentang session sebelumnya dan jangan
+bergantung pada prior conversation memory, model memory, project memory,
+personal context, prior-session summaries, atau implicit history lain.
+
+Jangan mencari atau merekonstruksi extra prior-session context hanya untuk
+memperkaya continuity. Additional prior-context retrieval hanya diperbolehkan
+ketika user secara eksplisit meminta recall/recovery/comparison, atau ketika
+Handoff/current authoritative source secara eksplisit menunjuk source yang
+diperlukan. Handoff bersama current authoritative sources adalah intended
+bootstrap package.
 
 # USAGE BOUNDARY
 
-The Handoff carries the minimum context required for a new GPT/session to recover:
+Handoff membawa context minimum yang diperlukan new GPT/session untuk
+memulihkan:
 - objective project state;
 - authoritative repository anchors;
 - relevant unresolved/deferred/risks;
@@ -14,18 +36,22 @@ The Handoff carries the minimum context required for a new GPT/session to recove
 - unresolved thread-level continuity payload when not yet durably reconciled;
 - session-transition readiness.
 
-NRP is GPT/session-transition readiness only. Repository project state must use objective lifecycle wording.
+NRP hanya untuk GPT/session-transition readiness. Repository project state harus
+menggunakan objective lifecycle wording.
 
-Delivery rule:
-- deliver the Handoff through an editable writing block when that capability is available;
-- do not wrap the Handoff in a triple-backtick code fence;
-- fenced code inside the Handoff is allowed only for actual code/config/literal technical content that genuinely requires code formatting.
+Aturan delivery:
+- sampaikan Handoff melalui editable writing block bila capability tersebut tersedia;
+- jangan membungkus Handoff dalam triple-backtick code fence;
+- fenced code di dalam Handoff hanya diperbolehkan untuk actual code/config/
+  literal technical content yang memang memerlukan code formatting.
 
 ## HANDOFF TITLE / FIRST-LINE SEMANTICS
 
-The Handoff title is the first line inside the editable writing-block content. Do not use the writing block's external title/name field to carry the Handoff continuity title.
+Judul Handoff adalah baris pertama di dalam editable writing-block content.
+Jangan menggunakan external title/name field dari writing block untuk membawa
+judul continuity Handoff.
 
-Choose the title from the destination continuity boundary:
+Pilih judul berdasarkan destination continuity boundary:
 
 - When moving to a new workstream or milestone, use `[Title] ([Milestone])` or `[Title] - [Milestone]`.
   - Example: `Core Module Refinement (MR.2)`
@@ -34,9 +60,12 @@ Choose the title from the destination continuity boundary:
   - Example: `System Manager (WU2)`
   - Example: `System Manager - Batch 2`
 
-Use the current accepted project vocabulary when selecting `[Title]`; examples illustrate the heading shape and do not override later terminology decisions.
+Gunakan current accepted project vocabulary saat memilih `[Title]`; contoh hanya
+menunjukkan bentuk heading dan tidak mengalahkan terminology decision yang lebih baru.
 
-Do not prepend a generic heading such as `PROJECT SESSION HANDOFF TEMPLATE`, `PROJECT SESSION HANDOFF`, or another wrapper title to a generated Handoff. The destination continuity title is the Handoff's first-line header.
+Jangan menambahkan generic heading seperti `PROJECT SESSION HANDOFF TEMPLATE`,
+`PROJECT SESSION HANDOFF`, atau wrapper title lain ke generated Handoff.
+Destination continuity title adalah first-line header Handoff.
 
 This rule changes only Handoff title/header presentation. All other Handoff structure, continuity semantics, authorization boundaries, NRP rules, bootstrap requirements, and conditional sections remain unchanged.
 
@@ -424,15 +453,32 @@ Realignment/revalidation: `<detail / N/A>`
 
 # CONTEXT BOOTSTRAP FOR NEXT SESSION
 
-1. Verify and read `governance/project_rule.md`, `governance/Handoff_Template.md`, and `governance/Agent_Instruction_Template.md` from the accepted remote Git repository state.
-2. Never silently fall back to an older Git revision, obsolete timestamped repository file, historical File Library copy, memory, chat history, or summary when canonical governance is unreadable/unverifiable.
-3. Read project instruction.
-4. Apply canonical `governance/project_rule.md` direct-handoff/execution-routing boundary before considering Work/Codex/agent invocation.
-5. Read authoritative repo docs/source relevant to the next target.
-6. Read repository `workplan.md` when planning/sequencing/lineage is material; File Library Workplans are historical/correction evidence only.
-7. Do not assume Workplan must mirror current repository lifecycle state during an active workstream; evaluate it according to the existing planning reconciliation cadence.
-8. Resolve/read only relevant Concept identities and exact source files/headings referenced by Workplan or task.
-9. If Handoff carries unreconciled thread-level saved concepts, preserve them until durable disposition; session change does not clear them.
+Receiving GPT/session harus menganggap dirinya memasuki project untuk pertama
+kalinya dan tidak memiliki pengetahuan tentang session sebelumnya di luar
+Handoff serta current authoritative sources. Secara berurutan:
+
+1. resolve, read, dan apply current `governance/project_rule.md`;
+2. resolve, read, dan apply current `governance/Handoff_Template.md`;
+3. resolve, read, dan apply current `governance/Agent_Instruction_Template.md`;
+4. baca supplied Handoff;
+5. baca project instruction;
+6. independently verify current authoritative remote repository state;
+7. baca hanya relevant repository, Workplan, dan Concept sources yang material
+   serta diperlukan oleh Handoff/target;
+8. rekonsiliasi material drift antara Handoff anchor dan current authoritative
+   state;
+9. baru berikan substantive COPOT feedback atau buat Agent Instruction baru.
+
+Jangan menggunakan prior conversation memory, model memory, project memory,
+personal context, prior-session summaries, atau implicit history lain untuk
+melengkapi continuity. Jangan mencari extra prior-session context kecuali user
+secara eksplisit meminta recall/recovery/comparison, atau Handoff/current
+authoritative source menunjuk source tertentu yang diperlukan.
+
+Jangan melakukan silent fallback ke older Git revision, obsolete timestamped
+repository file, historical File Library copy, memory, chat history, atau
+summary ketika canonical governance tidak dapat dibaca/diverifikasi.
+
 10. Verify remote continuity inside the first relevant task.
 11. Do not repeat full accepted audit/validation without concrete regression signal.
 12. Review only materially relevant Deferred Items; do not auto-adopt.

@@ -1,17 +1,19 @@
 # GENERAL AI AGENT INSTRUCTION TEMPLATE
-Date version: 2026-08-24 12:01:10 WIB
+Date version: 2026-08-29 22:43:53 WIB
 
 ## TEMPLATE USAGE
 
 Template modular untuk Codex/technical AI Agent.
 
-Goal: instruksi terkecil yang masih memberi first-pass success reliable.
+Tujuan: instruksi terkecil yang masih memberi first-pass success reliable.
 
 Agent Instruction = minimum execution delta, bukan Handoff yang diformat ulang.
 
-Include a field only if omission risks wrong target/branch/anchor, unauthorized action, missed dependency, invalid validation, unsafe side effect, or missed stop condition.
+Tambahkan field hanya jika omission dapat menyebabkan target/branch/anchor
+salah, unauthorized action, dependency terlewat, validation tidak valid,
+unsafe side effect, atau stop condition terlewat.
 
-Do not copy automatically:
+Jangan menyalin secara otomatis:
 - full Handoff;
 - full lifecycle history;
 - internal NRP/session-transition reasoning;
@@ -23,15 +25,26 @@ Do not copy automatically:
 - thread-level saved-concept history unless one specific unresolved item changes execution;
 - repository history the agent can inspect directly.
 
-Technical instruction default language: English. User-facing conversation remains in user's language.
+Generated technical Agent Instruction default language: English. User-facing
+GPT conversation dan penjelasan tetap menggunakan primary conversation language
+user; untuk current COPOT conversation, Bahasa Indonesia.
+
+Jangan menerjemahkan identifier, path, branch, command, API name, error
+message, filename, status token, atau official technical term bila terjemahan
+mengurangi presisi. Technical/project vocabulary boleh tetap literal.
 
 ## INSTRUCTION PRESENTATION AND HEADING SEMANTICS
 
-- Deliver Agent Instruction through an editable writing block when that capability is available.
-- Do not wrap the Agent Instruction in a triple-backtick code fence. Fenced code inside the writing block is allowed only for actual code/config/literal technical content that genuinely requires code formatting.
-- The instruction short description/title MUST be the first line inside the writing-block content.
-- Do not use the writing block's external title/name field to carry the instruction short description.
-- This placement rule changes only the instruction header-description presentation; all other instruction structure and semantics remain governed by this template.
+- Sampaikan Agent Instruction melalui editable writing block bila capability
+  tersebut tersedia.
+- Jangan membungkus Agent Instruction dalam triple-backtick code fence. Fenced
+  code hanya untuk actual code/config/literal technical content yang memang
+  memerlukan code formatting.
+- Instruction short description/title MUST menjadi baris pertama di dalam
+  writing-block content.
+- Jangan menggunakan external title/name field untuk membawa short description.
+- Aturan placement ini hanya mengubah presentation header-description; seluruh
+  structure dan semantics lain tetap diatur oleh template ini.
 
 Heading semantics:
 - For the first Agent Instruction after entering a new technical-agent session, the first-line short description is a destination/context heading, at the scope of the technical work context being entered, for example `Core Module Refinement (MR.2)` or `System Manager (WU2)`.
@@ -42,17 +55,19 @@ Heading semantics:
 
 ## Local Authenticated Writable Workspace — Default
 
-Use when local environment is available, authenticated, writable, and sufficient.
+Gunakan ketika local environment tersedia, authenticated, writable, dan memadai.
 
-Remote repository/branch remains durable authority.
+Remote repository/branch tetap menjadi durable authority.
 
-For new/resumed/transitioned/untrusted state, verify relevant repo/branch/anchor/workspace/synchronization before write.
+Untuk state baru/resumed/transitioned/untrusted, verifikasi repo/branch/anchor/
+workspace/synchronization yang relevan sebelum write.
 
 For same-thread accepted continuation, use Check-and-Run and do not repeat equivalent continuity verification.
 
-Do not silently normalize drift with reset/stash/clean/discard/force operations.
+Jangan melakukan silent normalization atas drift dengan reset/stash/clean/
+discard/force operations.
 
-Durable work requires authorized commit, push, and independent remote verification.
+Durable work memerlukan authorized commit, push, dan independent remote verification.
 
 ## Remote / Cloud Execution
 
