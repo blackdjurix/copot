@@ -671,6 +671,7 @@ Class: FUTURE DEDICATED BUNDLED MODULE REFINEMENT
 Status: FUTURE / PREPARATION REQUIRED
 
 Sources:
+- `concepts/copot_content_manager_refinement_concept.md` [PRIMARY GIT CONCEPT]
 - `copot_core_module_refinement_concept_260810_184600.md` [HISTORICAL REFINEMENT INPUT]
 - `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
 - `docs/42_mr_2_wu4_content_manager_refinement_contract.md` [CLOSED HISTORICAL
