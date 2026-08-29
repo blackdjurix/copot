@@ -1,8 +1,8 @@
 # MR.2 WU8 — Cross-Surface Verification & MR.2 Closure — Pre-contract
 
-Lifecycle: DRAFT / TRIAL / NOT AUTHORITATIVE
+Lifecycle: PROMOTED / HISTORICAL PROVENANCE
 Workplan role: forward MR.2 WU8 closure boundary
-Promotion status: NOT PROMOTED
+Promotion status: PROMOTED — `docs/48_mr_2_wu8_cross_surface_verification_closure_contract.md`
 Implementation authorization: NONE
 Dependency: WU5–WU7 accepted sufficiently for assembled MR.2 verification
 
