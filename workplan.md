@@ -717,6 +717,9 @@ Planning action: KEEP FUTURE / PLANNING ONLY
 Class: CONCEPT / FUTURE ADMIN PERSONALIZATION
 Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
 
+Sources:
+- `concepts/copot_per_user_admin_appearance_concept.md` [PRIMARY GIT CONCEPT]
+
 Relations:
 - user-specific Admin presentation preference with default inheritance from
   Site Color Scheme;
