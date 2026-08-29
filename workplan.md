@@ -357,6 +357,64 @@ Planning action: NONE / PROVENANCE
 
 ## 5. Active / Future / Deferred / Operational Registry
 
+### Webcore Product Completeness & Stabilization
+Class: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
+Status: FUTURE / NEXT PREPARATION TARGET / AUDIT COMPLETE / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concepts/copot_site_color_scheme_concept.md` [PRIMARY GIT CONCEPT]
+- `concept_webcore_extension_architecture_reconciliation_260820_234300.md` [ARCHITECTURE LINEAGE]
+
+Authority:
+- `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md` for accepted Webcore ownership and boundary evidence only
+- `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md` for accepted System Manager and Branding baseline evidence only
+
+Relations:
+- HARD predecessor to Bundled Module Refinement Preparation & Reconciliation;
+- separate from Bundled Module implementation;
+- separate from release authorization;
+- stabilization readiness boundary is intended to inform v0.14.0 planning only.
+
+Confirmed audit-derived planning scope:
+- Core Media Admin baseline is missing;
+- Core primary Navigation management projection is missing;
+- dedicated Webcore Site Settings projection is missing;
+- localization has duplicated product-facing projections;
+- Site Name, Tagline, Logo, and Favicon operator management is split and
+  dependent on the retained Settings Manager surface;
+- zero-optional product operability is incomplete until the required baseline
+  operator surfaces are corrected.
+
+Preserved negative findings:
+- no major Webcore architecture conflict was found;
+- no schema/settings migration is currently required;
+- existing Core settings and storage authorities should be preserved;
+- Redirect Core Admin CRUD is not currently required;
+- Content baseline and Built-in Public View are already delivered;
+- System Manager is not to be wholesale reopened.
+
+Provisional WU skeleton — all NOT AUTHORIZED / NOT STARTED:
+1. WU1 — Webcore Completeness Contract & Scope Reconciliation
+2. WU2 — Core Media Admin Baseline
+3. WU3 — Core Primary Navigation Admin Baseline
+4. WU4 — Webcore Site Settings & Appearance Consolidation
+5. WU5 — Zero-Optional Product Acceptance
+6. WU6 — Stabilization & v0.14.0 Readiness Closure
+
+Readiness boundary:
+- intended post-workstream release-readiness boundary: v0.14.0;
+- planning target only, not release authorization;
+- release, tag, and publication remain separate explicit gates;
+- after this boundary, major Webcore surgery should be exceptional rather
+  than a normal consequence of Bundled Module refinement; bounded corrections
+  and extension seams remain possible.
+
+Human/product readiness gate:
+- Site Settings human/product review occurs inside this Webcore workstream
+  before relevant scope acceptance.
+
+Planning action: KEEP / NEXT PREPARATION TARGET / PRE-CONTRACT NOT MATERIALIZED
+
 ### Production Webcore Reconciliation
 Class: OPERATIONAL GATE
 Status: NOT STARTED / SEPARATELY AUTHORIZED
@@ -681,6 +739,7 @@ Sources:
 Relations:
 - Content Manager consumes capability contracts rather than concrete provider
   package identities;
+- Content human/product review is required before future refinement scope lock;
 - taxonomy capability may be satisfied by self/fallback or a compatible
   provider, while Taxonomy Manager retirement disposition is not reversed;
 - a provider's appearance does not automatically take over existing state;
@@ -703,6 +762,14 @@ Sources:
 
 Relations:
 - extension/reconciliation of existing Site Identity and appearance lineage;
+- Webcore Branding data is the durable upstream appearance lineage;
+- the intended relationship is Webcore Branding data → bounded resolved Site
+  Color Scheme → Built-in Public View / Theme / permitted bounded Admin
+  consumers;
+- Site Color Scheme is not a second storage or ownership authority and does
+  not destructively replace the existing `branding.*` values;
+- Theme-scoped appearance may override within Theme scope but must not write
+  back to or take ownership of Webcore site-level Branding data;
 - site-level appearance authority is consumed by the public/Built-in View;
 - Admin may inherit bounded brand, navigation, or accent appearance;
 - semantic operational colors remain independent, including warning, danger,
@@ -953,6 +1020,40 @@ Planning action: NONE / PROVENANCE / NO NEW IMPLEMENTATION TARGET
 
 Historical per-module refinement intent survives as separate future workstream identities rather than MR.2 WUs.
 
+### Bundled Module Refinement Preparation & Reconciliation
+Class: FUTURE PREPARATION WORKSTREAM
+Status: FUTURE / PREPARATION REQUIRED / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concept_webcore_extension_architecture_reconciliation_260820_234300.md` [CURRENT ARCHITECTURE INPUT]
+- `concepts/copot_content_manager_refinement_concept.md` [BUNDLED MODULE REFINEMENT INPUT]
+
+Relations:
+- hard predecessor to dedicated Bundled Module refinement scope lock;
+- depends on completion of the Webcore Product Completeness & Stabilization
+  predecessor;
+- Content, Media, Navigation, Theme, Users & Access, and Form Manager are
+  the six dedicated refinement identities after preparation;
+- Taxonomy remains a retirement/reconciliation candidate;
+- Module Manager is re-homed to System Manager/Webcore lifecycle;
+- Settings Manager is re-homed into Webcore/System/Settings Platform concerns;
+- Redirect Manager is re-homed to Webcore Redirect behavior;
+- Dashboard remains separate unless later explicitly reconciled.
+
+Human/product readiness gates before relevant scope lock:
+- Content human/product review;
+- Media human/product review;
+- Navigation human/product review.
+
+These are acceptance/readiness gates, not semantic capability Concepts.
+
+Planning action: KEEP FUTURE / PREPARATION ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+The full visible baseline Bundled Module topology is eight workstreams total:
+one Webcore predecessor, one Bundled Module preparation workstream, and six
+dedicated refinement workstreams. The existing Content Manager Refinement
+entry below is the canonical Content identity in this topology.
+
 Shared sources for this family:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY DETAILED HISTORICAL INPUT]
 - `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
@@ -963,10 +1064,16 @@ Class: FUTURE DEDICATED WORKSTREAM
 Status: FUTURE / PREPARATION REQUIRED
 Planning action: audit old rejected Media delta plus current source before scope lock.
 
+Relations:
+- Media human/product review is required before future refinement scope lock.
+
 ### Navigation Manager Refinement
 Class: FUTURE DEDICATED WORKSTREAM
 Status: FUTURE / PREPARATION REQUIRED
 Planning action: KEEP.
+
+Relations:
+- Navigation human/product review is required before future refinement scope lock.
 
 ### Theme Manager Refinement
 Class: FUTURE DEDICATED WORKSTREAM
