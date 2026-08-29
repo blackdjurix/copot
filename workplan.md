@@ -736,7 +736,10 @@ Planning action: KEEP FUTURE / SEPARATE FROM FUTURE WIDGET LAYOUT
 
 ### Shared File Intake Interaction Pattern
 Class: CONCEPT / FUTURE CROSS-SURFACE
-Status: ADOPTED / GPT-THREAD LEVEL / NOT MATERIALIZED
+Status: ADOPTED / FUTURE / OUTSIDE MR.2 / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concepts/copot_shared_file_intake_interaction_pattern_concept.md` [PRIMARY GIT CONCEPT]
 
 Relations:
 - ADOPT / FUTURE CROSS-SURFACE CONCEPT / OUTSIDE MR.2 /
@@ -745,10 +748,8 @@ Relations:
   ZIP intake, and future Admin upload surfaces;
 - likely pattern may include native picker, immediate intake/upload, validation,
   preview or preparation, crop where relevant, attach, and confirmation;
-- exact semantics remain pending individual Concept materialization.
-
-No individual Concept file or `Sources` reference exists for this identity;
-this entry preserves the GPT/thread-level saved Concept without fabricating one.
+- exact semantics remain bounded by the current Concept and require a future
+  authoritative contract before implementation.
 
 Planning action: KEEP FUTURE / NO IMPLEMENTATION
 
@@ -991,13 +992,14 @@ Durably reconciled into MR.2 planning:
 Resolved at GPT/user planning layer:
 - Shared File Intake Interaction Pattern: ADOPT / FUTURE CROSS-SURFACE CONCEPT /
   OUTSIDE MR.2 / NOT IMPLEMENTATION-AUTHORIZED;
-- remains a thread-level saved concept and is not yet materialized as an
-  individual repository or GPT Library Concept file;
+- is now materialized as a Git Concept while the GPT/thread-level planning
+  lineage remains provenance;
 - candidate consumers include Media, Content Featured Media, Module/package ZIP
   intake, and future Admin upload surfaces;
 - not adopted into current MR.2 implementation.
 
-No individual Concept file currently owns this thread-level payload, so this section records the resolved continuity disposition without fabricating a `Sources` reference.
+The Git Concept records the current semantic source; no GPT/File Library
+Concept file was modified.
 
 ## 9. Immediate Next Planning Target
 
