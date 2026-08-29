@@ -12,8 +12,10 @@ MR.2 WU6: COMPLETE / IMPLEMENTED AND ACCEPTED
 MR.2 WU7: COMPLETE / CLOSED
 WU8 scope: Cross-Surface Verification & MR.2 Closure
 WU8 contract: PROMOTED / CONTRACT LOCKED
-WU8 verification: COMPLETE / REPOSITORY CLOSURE READY — PLANNING DISPOSITION PENDING
-MR.2 lifecycle: OPEN
+WU8 verification: COMPLETE / PASS
+WU8 lifecycle: COMPLETE / CLOSED
+MR.2 shared Admin refinement: COMPLETE / CLOSED
+MR.2 lifecycle: COMPLETE / CLOSED
 ```
 
 This contract is the authoritative promotion of the reviewed WU8 Pre-contract.
@@ -22,9 +24,9 @@ established the bounded WU8 verification and closure boundary. The
 evidence-backed WU8 verification and repository-side closure-preparation result
 is recorded in the status above; it does not close MR.2.
 
-The repository-side closure criteria are complete for the accepted bounded
-MR.2 evidence, with final MR.2 closure pending durable GPT/user planning
-disposition of the unresolved Shared File Intake Interaction Pattern.
+The repository-side closure criteria are complete and passed for the accepted
+bounded MR.2 evidence. The Shared File Intake planning disposition is resolved
+at the GPT/user planning layer as a future cross-surface concept outside MR.2.
 
 ## Objective
 
@@ -126,17 +128,17 @@ signal.
 
 ## Shared File Intake planning boundary
 
-The Shared File Intake Interaction Pattern remains unresolved planning payload.
-It is not WU8 implementation scope. WU8 may verify that closure does not
-silently lose or misrepresent it, but technical execution must not decide its
-final planning disposition. Durable disposition belongs to GPT/user planning
-reconciliation, and MR.2 final closure must not claim that this payload is
-resolved unless that disposition has actually occurred.
+The Shared File Intake Interaction Pattern is resolved at the GPT/user planning
+layer as **ADOPT / FUTURE CROSS-SURFACE CONCEPT / OUTSIDE MR.2 / NOT
+IMPLEMENTATION-AUTHORIZED**. It remains a thread-level saved concept and has
+not been materialized as an individual repository or GPT Library Concept file.
+It is not WU8 implementation scope. WU8 verifies that the payload is not lost
+or misrepresented; technical execution does not implement it or create its
+Concept file.
 
-The separate GPT/user planning reconciliation may promote it into an individual
-Concept/source, re-home it into a future owner workstream, explicitly defer it,
-or reject/supersede it if no longer valid. WU8 does not create, adopt, reject,
-supersede, or implement that concept.
+Individual durable Concept-file materialization may occur in a future planning
+reconciliation if needed. No such file exists as a result of this closure, and
+the future concept remains outside MR.2 implementation authority.
 
 The separate future concepts for Site Color Scheme/Admin Appearance, Module
 Capability Requirement and Provider Resolution, Provider Transition and
@@ -191,8 +193,9 @@ MR.2 may close only when evidence demonstrates that:
 6. domain semantics and ownership remain unchanged unless separately authorized;
 7. no retired-manager ownership was accidentally restored;
 8. no hidden per-module refinement was smuggled into MR.2;
-9. the Shared File Intake planning payload is preserved and routed for durable
-   GPT/user planning disposition rather than claimed resolved by WU8;
+9. the Shared File Intake planning payload is preserved with its resolved
+   GPT/user disposition as a future cross-surface concept outside MR.2 and not
+   implementation-authorized;
 10. materially relevant repository documentation is no longer misleading;
 11. old Media WU5 forward-scope ambiguity is durably reconciled without
     rewriting its historical authority; and
@@ -220,8 +223,8 @@ validation debt as part of closure.
 
 ## Closure result and authorization boundary
 
-WU8 closure establishes only completion of the MR.2 shared Admin refinement
-scope. It does not close future Media, Navigation, Theme, Users & Access, Form
+WU8 closure establishes completion of the MR.2 shared Admin refinement scope.
+It does not close future Media, Navigation, Theme, Users & Access, Form
 Manager, Dashboard, or other dedicated workstreams.
 
 Routine bounded WU8 execution may proceed through a GPT-framed Agent Instruction

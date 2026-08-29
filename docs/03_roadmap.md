@@ -1311,14 +1311,15 @@ outside this closure. The authoritative contract is
 
 MR.2 WU5 shared Admin primitive audit/contract, WU6 shared-artifact
 implementation, and WU7 representative propagation proof are COMPLETE AND
-CLOSED/ACCEPTED for their bounded scopes. WU8 cross-surface verification and
-MR.2 repository-side closure preparation is COMPLETE / READY under
-`docs/48_mr_2_wu8_cross_surface_verification_closure_contract.md`; final MR.2
-closure remains pending durable GPT/user planning disposition of the unresolved
-Shared File Intake Interaction Pattern. WU8 does not authorize global
-flat/radius policy, standard eyebrow restoration, per-Module refinement, or
-repair of the accepted NON-BLOCKING PRE-EXISTING VALIDATION DEBT in the
-historical Media test.
+CLOSED/ACCEPTED for their bounded scopes. WU8 cross-surface verification is
+COMPLETE / PASS and MR.2 shared Admin refinement is COMPLETE / CLOSED under
+`docs/48_mr_2_wu8_cross_surface_verification_closure_contract.md`. Shared File
+Intake is resolved at the GPT/user planning layer as ADOPT / FUTURE
+CROSS-SURFACE CONCEPT / OUTSIDE MR.2 / NOT IMPLEMENTATION-AUTHORIZED; it
+remains a thread-level saved concept without an individual Concept file. WU8
+does not authorize global flat/radius policy, standard eyebrow restoration,
+per-Module refinement, or repair of the accepted NON-BLOCKING PRE-EXISTING
+VALIDATION DEBT in the historical Media test.
 
 ---
 

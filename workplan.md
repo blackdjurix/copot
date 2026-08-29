@@ -41,20 +41,19 @@ Authoritative branch: `main`
 
 Current durable planning state:
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
-- MR.2: REPOSITORY CLOSURE READY — SHARED FILE INTAKE PLANNING DISPOSITION PENDING;
-- MR.2 WU1–WU7: COMPLETE AND CLOSED; WU8 repository-side verification
-  complete / closure ready pending planning disposition;
+- MR.2: COMPLETE / CLOSED;
+- MR.2 WU1–WU8: COMPLETE AND CLOSED;
 - Webcore Content Admin Baseline: COMPLETE / CLOSED; corrective prerequisite
   for MR.2 WU7 is satisfied;
 - old MR.2 Media WU5 implementation: EXISTS / NOT ACCEPTED;
-- current MR.2 repository-side closure preparation: COMPLETE / READY;
-- final MR.2 closure remains pending durable GPT/user disposition of the
-  unresolved Shared File Intake Interaction Pattern;
-- MR.2 Pre-contract trial layer: MATERIALIZED for historical/promoted WU1–WU4, old Media WU5 evidence, and forward WU5–WU8;
+- current MR.2 repository-side closure: COMPLETE / PASS;
+- MR.2 Pre-contract trial layer: MATERIALIZED for historical/promoted WU1–WU4,
+  old Media WU5 evidence, and promoted WU5–WU8 provenance;
 - per-Bundled-Module refinement: redistributed to dedicated future workstreams;
 - Dashboard: separate from MR.2;
 - `DI-PACKAGE-LIFECYCLE-WU7-01`: KEEP DEFERRED / UNSCHEDULED;
-- Shared File Intake Interaction Pattern: unresolved thread-level planning payload / not adopted.
+- Shared File Intake Interaction Pattern: ADOPTED FUTURE CROSS-SURFACE CONCEPT
+  at GPT/user planning layer; outside MR.2 and not implementation-authorized.
 
 Current architecture vocabulary is `Module` / `Bundled Module`; historical `Core Module` wording remains provenance only where it appears in historical Concept sources.
 
@@ -815,12 +814,12 @@ Relations:
 - repository-side verification and closure preparation complete;
 - closure must reconcile current authoritative documentation without rewriting
   valid historical records;
-- final MR.2 closure remains pending durable GPT/user disposition of the
-  unresolved Shared File Intake Interaction Pattern.
+- Shared File Intake planning disposition is resolved at the GPT/user layer as
+  a future cross-surface concept outside MR.2 and not implementation-authorized.
 
-Must verify shared primitive single-source behavior, consistency, explicit exceptions, System Manager shared presentation without domain takeover, no retired-manager restoration, truthful unsupported states, no domain capability expansion, no Dashboard redesign, documentation consistency, and disposition of unresolved MR.2 thread-level planning payload.
+Must verify shared primitive single-source behavior, consistency, explicit exceptions, System Manager shared presentation without domain takeover, no retired-manager restoration, truthful unsupported states, no domain capability expansion, no Dashboard redesign, documentation consistency, and truthful preservation of MR.2 thread-level planning payload.
 
-Planning action: REPOSITORY CLOSURE READY / SHARED FILE INTAKE DISPOSITION PENDING / NO NEW IMPLEMENTATION TARGET
+Planning action: NONE / PROVENANCE / NO NEW IMPLEMENTATION TARGET
 
 ## 7. Dedicated Future Bundled Module Refinement Workstreams
 
@@ -863,21 +862,23 @@ Durably reconciled into MR.2 planning:
 - Shared Admin Action Placement & Button Sizing Pattern;
 - Workplan Set trial model: Workplan indexes Concept sources and target-specific Pre-contracts; Pre-contract remains non-authoritative until explicit promotion.
 
-Still unresolved:
-- Shared File Intake Interaction Pattern: native picker selection may eventually trigger upload/intake immediately and continue to the next meaningful validation/preview/crop/attach/confirm state;
-- candidate consumers include Media, Content Featured Media, Module/package ZIP intake, and future Admin upload surfaces;
-- not adopted into current MR.2 implementation;
-- requires durable Concept disposition before MR.2 closure if it remains material.
+Resolved at GPT/user planning layer:
+- Shared File Intake Interaction Pattern: ADOPT / FUTURE CROSS-SURFACE CONCEPT /
+  OUTSIDE MR.2 / NOT IMPLEMENTATION-AUTHORIZED;
+- remains a thread-level saved concept and is not yet materialized as an
+  individual repository or GPT Library Concept file;
+- candidate consumers include Media, Content Featured Media, Module/package ZIP
+  intake, and future Admin upload surfaces;
+- not adopted into current MR.2 implementation.
 
-No individual Concept file currently owns this thread-level payload, so this section records continuity without fabricating a `Sources` reference.
+No individual Concept file currently owns this thread-level payload, so this section records the resolved continuity disposition without fabricating a `Sources` reference.
 
 ## 9. Immediate Next Planning Target
 
-No new MR.2 implementation target is exposed by this closure preparation.
-MR.2 repository-side closure is ready, subject only to durable GPT/user
-planning disposition of the unresolved Shared File Intake Interaction Pattern.
-That disposition is outside WU8 technical authority and must not be invented,
-adopted, rejected, superseded, or implemented by this Workplan reconciliation.
+MR.2 is complete and closed. No new MR.2 implementation target is exposed by
+this closure. Shared File Intake remains a future cross-surface planning
+concept outside MR.2 and is not implementation-authorized; no next
+implementation workstream is selected here.
 
 ## 10. Retention and Planning Freshness
 
