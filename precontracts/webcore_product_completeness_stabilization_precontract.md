@@ -148,6 +148,12 @@ The invariant is:
 Consolidate presentation and operator access.
 Preserve underlying authority separation.
 
+WU4 is authorized, after promotion and separate execution authorization, to reconcile the currently accepted System Manager and historical Settings product-facing projections into a canonical Webcore Site Settings operator path for Site Identity, Localization, and bounded Appearance. This changes product-facing projection ownership only. It does not transfer Settings, Site Asset, or Branding state, persistence, validation, security, or lifecycle authority.
+
+Existing System Manager or historical Settings projections may remain only where source inspection proves a distinct lifecycle-specific, contextual, compatibility, or recovery purpose. They must not remain competing canonical editors for the same baseline setting family.
+
+Where WU4 supersedes an accepted product-facing delivery location established by `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md` or described by `docs/11_branding_foundation.md`, the WU4 contract and closure documentation must explicitly record that projection-level supersession. Historical accepted authority records remain historical evidence and must not be rewritten to imply that the earlier delivery location never existed.
+
 ### 6.1 Site Identity
 
 Site Settings may expose accepted Site Identity controls such as:
@@ -384,17 +390,18 @@ The WU may organize controls into:
 
 The WU must reconcile duplicated, overlapping, and fragmented product-facing surfaces.
 
-The target is one canonical Site Settings operator path.
+The target is one canonical Site Settings operator path. WU4 may supersede System Manager or historical Settings as the canonical product-facing delivery location for the affected baseline setting family, but only at the projection layer. It must not supersede or duplicate the underlying Settings, Site Asset, or Branding authorities.
 
 However, overlapping controls must not be removed blindly.
 
-A contextual or lifecycle-specific projection may remain when source inspection proves that it serves a distinct justified function.
+A contextual, compatibility, recovery, or lifecycle-specific projection may remain when source inspection proves that it serves a distinct justified function. Any retained projection must not remain a competing canonical editor for the same baseline setting family.
 
 The WU must:
 
 - preserve existing Settings authority;
 - preserve Site Asset authority;
 - preserve Branding authority;
+- explicitly record any projection-level supersession of previously accepted System Manager or historical Settings delivery locations;
 - avoid competing persistence;
 - avoid new provider arbitration;
 - avoid generic settings-editor behavior;
