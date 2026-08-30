@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-08-27 07:15:00 WIB
+Date version: 2026-08-30 13:03:17 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -365,6 +365,11 @@ Sources:
 - `concepts/copot_site_color_scheme_concept.md` [PRIMARY GIT CONCEPT]
 - `concept_webcore_extension_architecture_reconciliation_260820_234300.md` [ARCHITECTURE LINEAGE]
 
+Pre-contract:
+- `precontracts/webcore_product_completeness_stabilization_precontract.md`
+
+Pre-contract status: MATERIALIZED / PRE-PROMOTION PLANNING / NOT AUTHORITATIVE
+
 Authority:
 - `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md` for accepted Webcore ownership and boundary evidence only
 - `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md` for accepted System Manager and Branding baseline evidence only
@@ -413,7 +418,7 @@ Human/product readiness gate:
 - Site Settings human/product review occurs inside this Webcore workstream
   before relevant scope acceptance.
 
-Planning action: KEEP / NEXT PREPARATION TARGET / PRE-CONTRACT NOT MATERIALIZED
+Planning action: KEEP / NEXT PREPARATION TARGET / PRE-CONTRACT MATERIALIZED / PROMOTION REVIEW NEXT
 
 ### Production Webcore Reconciliation
 Class: OPERATIONAL GATE
@@ -432,7 +437,7 @@ Class: DEFERRED ITEM
 Status: KEEP DEFERRED / UNSCHEDULED
 
 Sources:
-- `copot_package_lifecycle_migration_concept_260804_161738.md` — Webcore Clean Install Is Part of Webcore Lifecycle [PRIMARY]
+- `copot_package_lifecycle_migration_concept_260804_092611.md` — Webcore Clean Install Is Part of Webcore Lifecycle [PRIMARY]
 - `copot_release_update_migration_concept_260803_171900.md` — compressed-package/fresh-install direction [HISTORICAL]
 
 Relations:
