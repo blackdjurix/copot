@@ -1,5 +1,5 @@
 # `<Title> (<Milestone / WU / Batch>)`
-Date version: 2026-08-30 11:59:56 WIB
+Date version: 2026-08-30 12:00:41 WIB
 
 Ini adalah GPT/model/session continuity artifact untuk COPOT. Ini bukan Agent
 Instruction dan tidak boleh disalin secara utuh ke Work, Codex, atau technical
@@ -127,7 +127,7 @@ Unreconciled thread-level saved concepts/rules: `<summary / None>`
 
 Planning caveat: `<material caveat / None>`
 
-Rules:
+Aturan:
 - Workplan adalah planning/sequencing/provenance artifact, bukan live mirror dari repository current state;
 - one Workplan may span multiple Work Units, workstreams, and milestones;
 - normal repository advancement during an active workstream does not require immediate Workplan revision;

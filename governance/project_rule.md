@@ -1,5 +1,5 @@
 # TEMPLATE SOURCE AND PER-INTERACTION LOADING
-Date version: 2026-08-30 11:59:13 WIB
+Date version: 2026-08-30 12:00:41 WIB
 
 ## Source Lock
 
@@ -190,9 +190,9 @@ Routing action: `<material consequence only>`
 
 # WORKFLOW V4 — LOCAL-PRIMARY, REMOTE-AUTHORITATIVE
 
-Authoritative Git repository = remote GitHub repository.
+Authoritative Git repository adalah remote GitHub repository.
 
-Authoritative durable implementation state = verified remote branch + commit.
+Authoritative durable implementation state adalah verified remote branch + commit.
 
 Primary execution environment = local authenticated writable workspace bila tersedia dan memadai.
 
@@ -252,7 +252,7 @@ Sebelum device/execution-environment transition, intended work harus di-commit, 
 
 Direct handoff adalah metode transport/routing, bukan bentuk authorization baru dan bukan pengganti Agent Instruction.
 
-Locked rules:
+Aturan yang locked:
 
 1. GPT **never performs a direct handoff, direct agent invocation, or direct transfer to Work, Codex, or any other execution destination unless the user explicitly instructs that direct transfer**.
 2. Tool availability, convenience, inferred efficiency, or GPT preference never counts as explicit user instruction.
@@ -541,7 +541,7 @@ Typical registry lifecycle/disposition values include:
 - `RETIRED`;
 - `REJECTED`.
 
-Promoted/closed entries remain registry/provenance records and carry no active execution detail.
+Promoted/closed entries tetap menjadi registry/provenance records dan tidak membawa active execution detail.
 
 ## Registry Entry Shape
 
