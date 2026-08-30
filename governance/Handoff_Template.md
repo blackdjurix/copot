@@ -1,5 +1,5 @@
 # `<Title> (<Milestone / WU / Batch>)`
-Date version: 2026-08-30 11:06:45 WIB
+Date version: 2026-08-30 11:36:13 WIB
 
 Ini adalah GPT/model/session continuity artifact untuk COPOT. Ini bukan Agent
 Instruction dan tidak boleh disalin secara utuh ke Work, Codex, atau technical
@@ -163,7 +163,7 @@ Device-transition readiness: `<READY / BLOCKED / UNKNOWN / N/A>`
 
 Direct-transfer authorization for next session: `<EXPLICITLY REQUESTED / NOT REQUESTED / N/A>`
 
-Rule: `NOT REQUESTED` means do not directly invoke/transfer to Work/Codex/another destination. Prepare the Agent Instruction in chat if execution guidance is needed.
+Rule: `NOT REQUESTED` berarti jangan melakukan invoke/transfer langsung ke Work/Codex/another destination. Siapkan Agent Instruction di chat bila execution guidance diperlukan.
 
 # STATUS SEBELUMNYA
 
@@ -191,7 +191,7 @@ Still-unreconciled items: `<summary / None>`
 
 Required disposition before closure: `<Concept update / new Concept / Workplan / Deferred / supersede / reject / N/A>`
 
-Rule: session transition does not imply this payload is cleared. Clear only after durable reconciliation or explicit disposition.
+Rule: session transition tidak berarti payload ini cleared. Clear hanya setelah durable reconciliation atau explicit disposition.
 
 ## Conditional Deferred Item Review
 
@@ -243,9 +243,9 @@ Recommended next gate: `<preparation / implementation / validation / human revie
 
 Authorization note: `<what is authorized / what still requires explicit user authorization>`
 
-Rule: Handoff never authorizes the next technical action by itself.
+Rule: Handoff tidak pernah dengan sendirinya mengotorisasi next technical action.
 
-Rule: recommended execution routing never authorizes direct transfer by itself.
+Rule: recommended execution routing tidak pernah dengan sendirinya mengotorisasi direct transfer.
 
 # LAST VERIFIED GIT STATE
 
@@ -345,9 +345,9 @@ Corrections durable: `<YES / NO / NOT REQUIRED / UNKNOWN>`
 
 Final remote verification after correction: `<YES / NO / NOT REQUIRED / UNKNOWN>`
 
-Rule: material current-state inconsistency in authoritative repository documentation must be corrected and durable before NRP CONFIRMED.
+Rule: material current-state inconsistency dalam authoritative repository documentation harus dikoreksi dan dibuat durable sebelum NRP CONFIRMED.
 
-GPT-side Workplan synchronization is governed by the planning reconciliation section below, not by repository documentation consistency.
+GPT-side Workplan synchronization diatur oleh planning reconciliation section di bawah, bukan oleh repository documentation consistency.
 
 ## Conditional Planning Reconciliation / Adequacy Audit
 
@@ -383,13 +383,13 @@ Rule:
 
 NRP status: `<NRP NOT READY / NRP CANDIDATE / NRP CONFIRMED / NRP UNVERIFIABLE>`
 
-Interpretation:
+Interpretasi:
 - NRP NOT READY: state not sufficiently durable/recoverable;
 - NRP CANDIDATE: technical/project state mature but closure/bootstrap evidence not complete;
 - NRP CONFIRMED: final durable repo/documentation/planning bootstrap state is sufficient for session transition;
 - NRP UNVERIFIABLE: required governance/Handoff/evidence cannot be verified.
 
-NRP evaluation considers:
+NRP evaluation mempertimbangkan:
 - accepted objective project state;
 - documentation state;
 - Documentation Consistency Audit;
@@ -402,7 +402,7 @@ NRP evaluation considers:
 - context bootstrap sufficiency;
 - Final Repository Stability Gate.
 
-NRP does not change repository project/work-unit/milestone state.
+NRP tidak mengubah repository project/work-unit/milestone state.
 
 ## Final Repository Stability Gate
 

@@ -1,5 +1,5 @@
 # TEMPLATE SOURCE AND PER-INTERACTION LOADING
-Date version: 2026-08-30 11:06:45 WIB
+Date version: 2026-08-30 11:36:13 WIB
 
 ## Source Lock
 
@@ -160,7 +160,7 @@ Analisis normal dapat berlanjut. Jangan membuat replacement template kecuali use
 
 ## Required Canonical Git Governance Unavailable
 
-Governance-dependent/high-risk work is blocked when a required canonical Git governance file or its accepted repository state is unavailable or unverifiable. Historical File Library unavailability alone does not block normal operation when canonical Git governance is valid and available.
+Governance-dependent/high-risk work terblokir ketika required canonical Git governance file atau accepted repository state tidak tersedia atau tidak dapat diverifikasi. Historical File Library unavailability saja tidak memblokir operasi normal ketika canonical Git governance valid dan tersedia.
 
 ---
 
@@ -194,17 +194,17 @@ Authoritative Git repository = remote GitHub repository.
 
 Authoritative durable implementation state = verified remote branch + commit.
 
-Primary execution environment = local authenticated writable workspace when available and sufficient.
+Primary execution environment = local authenticated writable workspace bila tersedia dan memadai.
 
-Alternative execution environment = Cloud/remote-capable execution when selected or materially preferable.
+Alternative execution environment = Cloud/remote-capable execution bila dipilih atau secara material lebih sesuai.
 
-Local/Cloud are execution environments, not authority.
+Local/Cloud adalah execution environments, bukan authority.
 
-Durable source result when Git write is authorized:
+Durable source result ketika Git write diotorisasi:
 
 `valid work → commit → push → independent remote verification`
 
-Unpushed commits, sandbox state, patches, runtime copies, temporary exports, and local-only changes are not authoritative checkpoints.
+Unpushed commits, sandbox state, patches, runtime copies, temporary exports, dan local-only changes bukan authoritative checkpoints.
 
 ## Execution Continuity
 
@@ -308,7 +308,7 @@ Codex tidak memutuskan NRP, ChatGPT session transition, next milestone authoriza
 
 # AUTHORIZATION SEMANTICS
 
-Authorization boundaries are separate from planning, continuity, transport method, and repository state.
+Authorization boundaries terpisah dari planning, continuity, transport method, dan repository state.
 
 Rules:
 - promotion into authoritative repository documents establishes the accepted workstream/contract scope but does not authorize every future adjacent action;
@@ -336,7 +336,7 @@ Jangan membuat repetitive approval gates untuk continuation rutin dalam scope ya
 
 `Handoff_Template` adalah Source of Truth untuk NRP lifecycle/session-transition semantics. `project_rule` menetapkan cross-cutting project safeguards yang Handoff harus apply, termasuk documentation consistency, branch lifecycle, planning reconciliation/adequacy, direct-handoff routing, dan repository stability.
 
-Project/work-unit state in repository must use objective wording such as:
+Project/work-unit state dalam repository harus menggunakan objective wording seperti:
 
 `NOT STARTED / PARTIAL / IMPLEMENTATION COMPLETE / VALIDATION COMPLETE / ACCEPTED / COMPLETE / CLOSED / BLOCKED`
 
@@ -346,7 +346,7 @@ NRP hanya merupakan GPT/session-transition governance. Jangan menyimpan `NRP CAN
 
 Sebelum promotion dari `NRP CANDIDATE` ke `NRP CONFIRMED`, lakukan focused audit atas repository documentation yang material terhadap latest accepted authoritative repository state.
 
-Audit at minimum where material:
+Audit setidaknya pada bagian berikut bila material:
 - `AGENTS.md`;
 - `README.md`;
 - roadmap/current repository planning docs;
@@ -462,7 +462,7 @@ A single Workplan dapat secara sengaja mencakup:
 - provisional future work;
 - promoted/closed provenance.
 
-Repository contracts/documentation remain authoritative for delivered/current repository lifecycle truth after promotion.
+Repository contracts/documentation tetap authoritative untuk delivered/current repository lifecycle truth setelah promotion.
 
 ## Workplan Roles
 
@@ -489,7 +489,7 @@ Secara khusus, jangan memaksa Workplan refresh hanya karena:
 - an active workstream moves between implementation/validation states;
 - repository documentation records a more current lifecycle state.
 
-During active execution, repository authority wins for current delivered/work-unit/workstream lifecycle truth.
+Selama active execution, repository authority menjadi rujukan untuk current delivered/work-unit/workstream lifecycle truth.
 
 Older planning statement dapat tetap menjadi historical planning context sampai scheduled reconciliation berikutnya, selama tidak disalahrepresentasikan sebagai repository current-state authority.
 
@@ -497,7 +497,7 @@ Older planning statement dapat tetap menjadi historical planning context sampai 
 
 Default Workplan reconciliation dan consolidation terjadi pada **workstream closure / pre-handoff**.
 
-At that gate, reconcile where material:
+Pada gate tersebut, lakukan reconciliation bila material:
 - what the workstream actually delivered;
 - which planning assumptions became stale;
 - which dependencies/blockers changed;
@@ -526,9 +526,9 @@ Jangan memperbarui Workplan mid-workstream hanya demi cosmetic freshness.
 
 ## Registry Persistence Rule
 
-Workplan must not silently forget a previously valid logical planning/Concept identity merely karena item was promoted, completed, incorporated, superseded, or closed.
+Workplan tidak boleh secara silent melupakan logical planning/Concept identity yang sebelumnya valid hanya karena item telah promoted, completed, incorporated, superseded, atau closed.
 
-Instead, retain a lightweight registry entry with current disposition when closure-time reconciliation reaches that item.
+Sebaliknya, pertahankan lightweight registry entry dengan current disposition ketika closure-time reconciliation mencapai item tersebut.
 
 Typical registry lifecycle/disposition values include:
 - `PLANNING / FUTURE`;
@@ -566,9 +566,9 @@ Provisional authority ini TIDAK mengalahkan committed repository truth dan denga
 
 ## Promotion to Authoritative Side
 
-Promotion requires explicit decision and durable repository artifacts. After promotion, repository artifacts become authority for delivered/project lifecycle truth.
+Promotion memerlukan explicit decision dan durable repository artifacts. Setelah promotion, repository artifacts menjadi authority untuk delivered/project lifecycle truth.
 
-Workplan remains planning/sequencing/provenance context and **may intentionally remain unreconciled until workstream closure**.
+Workplan tetap menjadi planning/sequencing/provenance context dan **dapat secara sengaja tetap unreconciled sampai workstream closure**.
 
 Jangan menghapus Workplan registry entry hanya karena repository authority mengambil alih.
 
@@ -582,7 +582,7 @@ Jangan melabeli Workplan materially stale hanya karena belum mencerminkan reposi
 
 Concept adalah stable project-wide semantic identity berdasarkan subject/topic, bukan file, timestamp, stance, option, alternative, atau originating scope.
 
-Line 1 MUST contain the canonical human-readable Concept title for normalized future Concept files.
+Line 1 MUST memuat canonical human-readable Concept title untuk normalized future Concept files.
 
 A Concept dapat:
 - evolve through revisions;
@@ -610,27 +610,27 @@ Jangan melakukan silent overwrite atau melupakan prior Concept lineage.
 
 Consolidated Concept file dapat memuat beberapa independent logical Concept identities.
 
-Workplan should point to the canonical logical identity and, where helpful, exact filename + heading.
+Workplan sebaiknya menunjuk canonical logical identity dan, bila membantu traceability, exact filename + heading.
 
 Jangan menganggap seluruh consolidated file sebagai satu implementation scope.
 
 ## Concept Authority
 
-Concept = semantic/planning authority only.
+Concept = semantic/planning authority saja.
 
-Concept is not implementation authorization.
+Concept bukan implementation authorization.
 
-Repository promotion requires separate explicit promotion/contract/documentation action.
+Repository promotion memerlukan promotion/contract/documentation action yang terpisah dan eksplisit.
 
 ---
 
 # THREAD-LEVEL SAVED CONCEPT CONTINUITY
 
-Thread/session-level saved concepts, planning rules, or unresolved semantic decisions may be carried across sessions while the related workstream/planning concern remains open.
+Thread/session-level saved concepts, planning rules, atau unresolved semantic decisions dapat dibawa lintas session selama workstream/planning concern terkait masih terbuka.
 
-Session change does NOT equal workstream closure and does NOT clear unresolved saved-concept payload.
+Session change TIDAK sama dengan workstream closure dan TIDAK menghapus unresolved saved-concept payload.
 
-At workstream/planning closure, reconcile accumulated thread-level saved concepts into durable disposition:
+Pada workstream/planning closure, rekonsiliasikan accumulated thread-level saved concepts menjadi durable disposition:
 - update an existing Concept;
 - create a new Concept or consolidated Concept heading;
 - register/update Workplan;
@@ -638,11 +638,11 @@ At workstream/planning closure, reconcile accumulated thread-level saved concept
 - mark incorporated/superseded/rejected/not applicable;
 - promote into repository authority only through the normal explicit promotion gate.
 
-Clear the continuity payload only after durable reconciliation is complete.
+Hapus continuity payload hanya setelah durable reconciliation selesai.
 
 Jika beberapa workstream overlap atau workstream dibuka kembali, pertahankan separate continuity/disposition tracking bila diperlukan; jangan menggabungkan saved concepts yang tidak terkait hanya karena berbagi session.
 
-Deferred Items still require their own Deferred governance at closure and must not disappear inside generic saved-concept reconciliation.
+Deferred Items tetap memerlukan Deferred governance tersendiri saat closure dan tidak boleh hilang di dalam generic saved-concept reconciliation.
 
 ---
 
@@ -652,7 +652,7 @@ Ketika Workplan/Concept planning context material terhadap workstream closure, N
 
 Audit tersebut **bukan** pengujian bahwa Workplan terus-menerus mencerminkan setiap repository transition.
 
-At the applicable reconciliation gate, check where material:
+Pada applicable reconciliation gate, periksa bagian berikut bila material:
 - completed/promoted work needs provenance/disposition update;
 - dependencies or blockers changed;
 - closure gates passed;
@@ -664,9 +664,9 @@ At the applicable reconciliation gate, check where material:
 - remaining candidate items need re-audit before selection;
 - current planning context would materially mislead next-target selection or next-session continuity.
 
-Normal mid-workstream mismatch between Workplan planning state and repository lifecycle state is **not itself a freshness failure**.
+Mismatch normal mid-workstream antara Workplan planning state dan repository lifecycle state **bukan dengan sendirinya freshness failure**.
 
-Workplan mismatch does not automatically block technical/project closure.
+Workplan mismatch tidak otomatis memblokir technical/project closure.
 
 Sebelum closure Handoff, Workplan reconciliation hanya diperlukan ketika Workplan/Concept context material untuk memilih atau menjelaskan next target. Jika authoritative repository documentation sudah menentukan immediate next WU dalam workstream yang sama dan tidak ada planning decision yang diperlukan, Workplan refresh dapat tetap ditunda sampai workstream selesai.
 
@@ -680,25 +680,25 @@ Agent Instruction = minimum execution delta.
 
 Jangan mengirim NRP terminology, full Workplan, full Concept library, lifecycle history, old troubleshooting, atau full prior validation inventory kepada Codex kecuali concrete item mengubah execution.
 
-Workplan and Concept artifacts are planning inputs, NOT authorization.
+Workplan dan Concept artifacts adalah planning inputs, BUKAN authorization.
 
 Jangan pernah menginstruksikan agent untuk `read the Workplan and implement whatever is next`.
 
 Jika Workplan/Concept material diperlukan, tentukan exact logical target dan reading purpose.
 
-Direct-transfer tooling does not change this rule. Even when direct transfer is explicitly requested, derive a separate Agent Instruction rather than routing Handoff as executor payload.
+Direct-transfer tooling tidak mengubah rule ini. Bahkan ketika direct transfer diminta secara eksplisit, turunkan separate Agent Instruction dan jangan merutekan Handoff sebagai executor payload.
 
 ---
 
 # RELEASE SEPARATION
 
-Release advancement is release-based, not feature-based.
+Release advancement berbasis release, bukan feature.
 
-Feature/workstream closure does not automatically require a release, tag, publication, or artifact rebuild.
+Feature/workstream closure tidak otomatis memerlukan release, tag, publication, atau artifact rebuild.
 
 New public release hanya diperlukan ketika project secara eksplisit memutuskan untuk menerbitkan distributable boundary baru yang memuat accepted source delta.
 
-Release/tag/publication remain separate authorization gates even when all candidate source work is complete.
+Release/tag/publication tetap merupakan authorization gates terpisah meskipun seluruh candidate source work telah selesai.
 
 ---
 
@@ -716,4 +716,4 @@ Untuk coordinated change:
 
 Jangan regenerate governance files yang unchanged hanya untuk menyelaraskan timestamp.
 
-Source authority for current COPOT governance artifacts is the verified remote Git repository state containing the three canonical governance files. File Library governance remains historical/correction evidence only.
+Source authority untuk current COPOT governance artifacts adalah verified remote Git repository state yang memuat tiga canonical governance files. File Library governance tetap hanya historical/correction evidence.

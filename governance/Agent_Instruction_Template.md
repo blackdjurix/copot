@@ -1,5 +1,5 @@
 # GENERAL AI AGENT INSTRUCTION TEMPLATE
-Date version: 2026-08-30 11:06:45 WIB
+Date version: 2026-08-30 11:36:13 WIB
 
 ## TEMPLATE USAGE
 
@@ -73,11 +73,11 @@ Durable work memerlukan authorized commit, push, dan independent remote verifica
 
 Gunakan ketika dipilih atau secara material lebih sesuai.
 
-Sandbox is not durable authority. Same full-vs-Check-and-Run continuity rule applies.
+Sandbox bukan durable authority. Rule full-vs-Check-and-Run yang sama tetap berlaku.
 
 ## Local Runtime Validation
 
-Runtime workspace is not Git authority. Source fixes belong in the verified writable Git workspace.
+Runtime workspace bukan Git authority. Source fixes harus dilakukan di verified writable Git workspace.
 
 # MINIMUM CORE
 
@@ -156,7 +156,7 @@ Jangan meminta agent membaca GPT governance atau ChatGPT session history.
 
 # WORKPLAN AND CONCEPT INPUT
 
-Workplan and Concept artifacts are planning inputs, not implicit authorization.
+Workplan dan Concept artifacts adalah planning inputs, bukan implicit authorization.
 
 Rules:
 - never implement an item merely because Workplan marks it NEXT/ACTIVE/PROVISIONAL;
@@ -177,7 +177,7 @@ Ketika Concept direferensikan, utamakan canonical Concept title/logical identity
 
 Gunakan hanya ketika GPT secara eksplisit mengotorisasi repository documentation audit/correction task.
 
-Operational target wording should be objective, for example:
+Operational target wording harus objective, misalnya:
 
 `Audit materially relevant current repository documentation against accepted committed repository state. Identify and correct stale, contradictory, or misleading current-state wording.`
 
@@ -189,7 +189,7 @@ Jika corrections diotorisasi, commit/push/remote-verify hanya intended material 
 
 # DEFERRED ITEM EXECUTION
 
-Deferred Item is not authorization.
+Deferred Item bukan authorization.
 
 `Candidate`, `Unscheduled`, `future`, `KEEP DEFERRED`, `NOT APPLICABLE`, `REJECT`, and `SUPERSEDE` do not authorize implementation.
 
@@ -222,7 +222,7 @@ Sertakan hanya jika materially changes execution.
 
 `Operational consequence: <continue / hold / stack / merge blocked>`
 
-Prefer concise accepted predecessor wording and do not reopen without concrete regression signal.
+Utamakan concise accepted predecessor wording dan jangan membuka kembali tanpa concrete regression signal.
 
 # BRANCH LIFECYCLE
 
@@ -245,7 +245,7 @@ Jangan menghapus berdasarkan branch age/name atau assumption.
 
 Jika deletion tidak diotorisasi, audit dan laporkan eligibility saja.
 
-Examples:
+Contoh:
 
 `Fast-forward main only. Do not delete branches.`
 
