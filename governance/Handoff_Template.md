@@ -1,5 +1,5 @@
 # `<Title> (<Milestone / WU / Batch>)`
-Date version: 2026-08-29 22:43:53 WIB
+Date version: 2026-08-30 11:06:45 WIB
 
 Ini adalah GPT/model/session continuity artifact untuk COPOT. Ini bukan Agent
 Instruction dan tidak boleh disalin secara utuh ke Work, Codex, atau technical
@@ -67,17 +67,17 @@ Jangan menambahkan generic heading seperti `PROJECT SESSION HANDOFF TEMPLATE`,
 `PROJECT SESSION HANDOFF`, atau wrapper title lain ke generated Handoff.
 Destination continuity title adalah first-line header Handoff.
 
-This rule changes only Handoff title/header presentation. All other Handoff structure, continuity semantics, authorization boundaries, NRP rules, bootstrap requirements, and conditional sections remain unchanged.
+Aturan ini hanya mengubah presentation title/header Handoff. Seluruh Handoff structure, continuity semantics, authorization boundaries, NRP rules, bootstrap requirements, dan conditional sections lainnya tetap unchanged.
 
 ## Direct Handoff Boundary
 
-This Handoff reinforces the cross-project routing rule defined in the canonical `governance/project_rule.md`.
+Handoff ini menegaskan cross-project routing rule yang ditetapkan dalam canonical `governance/project_rule.md`.
 
-- Do not directly transfer this Handoff or invoke Work, Codex, or another execution destination from it unless the user explicitly requests that direct transfer.
-- A new session may recommend Work/Codex or prepare an executor instruction, but recommendation is not permission to invoke.
-- If execution through Work or Codex is requested, derive a separate Agent Instruction using the canonical `governance/Agent_Instruction_Template.md`.
-- Direct-transfer permission controls transport only; it does not widen technical authorization, scope, validation, stop conditions, or external side-effect permissions.
-- Never use Handoff as the executor payload merely because a direct-transfer capability exists.
+- Jangan melakukan direct transfer Handoff atau invoke Work, Codex, maupun execution destination lain kecuali user secara eksplisit meminta direct transfer tersebut.
+- Session baru boleh merekomendasikan Work/Codex atau menyiapkan executor instruction, tetapi recommendation bukan permission untuk invoke.
+- Jika execution melalui Work atau Codex diminta, turunkan separate Agent Instruction menggunakan canonical `governance/Agent_Instruction_Template.md`.
+- Direct-transfer permission hanya mengatur transport; tidak memperluas technical authorization, scope, validation, stop conditions, atau external side-effect permissions.
+- Jangan pernah menggunakan Handoff sebagai executor payload hanya karena direct-transfer capability tersedia.
 
 # PROJECT — `<name>`
 
@@ -101,7 +101,7 @@ Authoritative sources: `<project instruction + relevant repo docs/contracts/sour
 
 ## Conditional GPT Planning Context
 
-Fill only when Workplan/Concept context materially affects continuity or next-target selection.
+Isi hanya jika Workplan/Concept context secara material memengaruhi continuity atau next-target selection.
 
 Workplan logical source: `workplan`
 
@@ -128,14 +128,14 @@ Unreconciled thread-level saved concepts/rules: `<summary / None>`
 Planning caveat: `<material caveat / None>`
 
 Rules:
-- Workplan is a planning/sequencing/provenance artifact, not a live mirror of repository current state;
+- Workplan adalah planning/sequencing/provenance artifact, bukan live mirror dari repository current state;
 - one Workplan may span multiple Work Units, workstreams, and milestones;
 - normal repository advancement during an active workstream does not require immediate Workplan revision;
 - default Workplan reconciliation/consolidation occurs at workstream closure / pre-handoff;
 - earlier Workplan update is warranted only when planning knowledge materially changes, durable planning context is needed before closure, or the user explicitly requests it;
 - repository contracts/documentation remain authoritative for delivered/current lifecycle truth after promotion;
-- do not copy the full Workplan;
-- do not copy full Concept bodies;
+- jangan menyalin full Workplan;
+- jangan menyalin full Concept bodies;
 - canonical Concept title is the logical key;
 - exact filenames/headings may be included when they improve traceability or continuity;
 - one Concept may have multiple sources and one file may contain multiple Concept identities;
@@ -181,7 +181,7 @@ Known risks: `<detail / None>`
 
 ## Conditional Thread-Level Reconciliation State
 
-Use when saved session/thread concepts or governance-relevant decisions remain material.
+Gunakan ketika saved session/thread concepts atau governance-relevant decisions masih material.
 
 Payload scope: `<workstream/planning concern>`
 
@@ -195,7 +195,7 @@ Rule: session transition does not imply this payload is cleared. Clear only afte
 
 ## Conditional Deferred Item Review
 
-Use only when materially relevant to next target.
+Gunakan hanya jika materially relevant terhadap next target.
 
 Deferred Item ID: `<ID>`
 
@@ -275,7 +275,7 @@ Runtime workspace state: `<synced / stale / dirty / not checked / N/A>`
 
 ## Mandatory Branch Lifecycle Closure Audit
 
-Fill when current unit/workstream is closing and Git branches are material.
+Isi ketika current unit/workstream sedang closing dan Git branches material.
 
 Integrated target: `<main / other>`
 
@@ -303,7 +303,7 @@ Rule: branch age/name is never sufficient deletion evidence.
 
 # FINAL CHANGESET SUMMARY
 
-Fill only for completed/closing work.
+Isi hanya untuk completed/closing work.
 
 Base commit: `<hash + subject>`
 
@@ -333,7 +333,7 @@ Post-Git documentation state: `<PASS / NOT REQUIRED / BLOCKED / UNKNOWN>`
 
 ## NRP Candidate Documentation Consistency Audit
 
-Fill when current readiness is or approaches NRP CANDIDATE.
+Isi ketika current readiness mencapai atau mendekati NRP CANDIDATE.
 
 Audit status: `<NOT STARTED / IN PROGRESS / PASS / MATERIAL FINDINGS / BLOCKED / NOT REQUIRED>`
 
@@ -351,7 +351,7 @@ GPT-side Workplan synchronization is governed by the planning reconciliation sec
 
 ## Conditional Planning Reconciliation / Adequacy Audit
 
-Use when Workplan/Concept context matters to workstream closure, next-target selection, or next-session continuity.
+Gunakan ketika Workplan/Concept context penting bagi workstream closure, next-target selection, atau next-session continuity.
 
 Planning audit status: `<PASS / NEEDS RECONCILIATION / BLOCKED / NOT REQUIRED / UNKNOWN>`
 
@@ -406,7 +406,7 @@ NRP does not change repository project/work-unit/milestone state.
 
 ## Final Repository Stability Gate
 
-Before NRP CONFIRMED record:
+Sebelum `NRP CONFIRMED`, catat:
 - intended project mutations complete;
 - documentation corrections complete;
 - objective closure docs complete where required;
@@ -415,7 +415,7 @@ Before NRP CONFIRMED record:
 - materially relevant planning/Concept continuity is either closure-reconciled or explicitly carried forward without misleading next-target selection;
 - no planned repo mutation remains for this closing state.
 
-If repository changes after the assumed final anchor, refresh closure evidence and remain/return to NRP CANDIDATE until the new final state is verified.
+Jika repository berubah setelah assumed final anchor, refresh closure evidence dan tetap/kembali ke NRP CANDIDATE sampai new final state diverifikasi.
 
 ## Continue or New ChatGPT Session
 
@@ -425,7 +425,7 @@ Keputusan ini tidak diteruskan sebagai concern technical executor.
 
 # CROSS-MILESTONE / CROSS-TRACK DEPENDENCY GOVERNANCE
 
-Use only when predecessor is not fully accepted or provisional work depends on another track.
+Gunakan hanya ketika predecessor belum fully accepted atau provisional work bergantung pada track lain.
 
 - INDEPENDENT: may continue;
 - SOFT: independent slices may continue;
@@ -520,7 +520,7 @@ Readiness: `<READY / REQUIRES GOVERNANCE RECOVERY / ANCHOR CONFLICT / WORKSPACE 
 
 # AUTOMATIC HANDOFF
 
-When user chooses a new session:
+Ketika user memilih session baru:
 - use canonical `governance/Handoff_Template.md`;
 - fill required core;
 - include conditional Workplan/Concept context only when material;
@@ -537,4 +537,4 @@ When user chooses a new session:
 
 # CLOSURE STATEMENT
 
-Handoff is complete when the next GPT/session can recover objective continuity without reconstructing obsolete history, without requiring continuous Workplan mirroring, and without treating the Handoff itself as technical execution authorization or direct-transfer authorization.
+Handoff selesai ketika GPT/session berikutnya dapat memulihkan objective continuity tanpa merekonstruksi obsolete history, tanpa memerlukan continuous Workplan mirroring, dan tanpa memperlakukan Handoff sebagai technical execution authorization atau direct-transfer authorization.

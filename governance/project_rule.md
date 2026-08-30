@@ -1,5 +1,5 @@
 # TEMPLATE SOURCE AND PER-INTERACTION LOADING
-Date version: 2026-08-29 22:43:53 WIB
+Date version: 2026-08-30 11:06:45 WIB
 
 ## Source Lock
 
@@ -156,7 +156,7 @@ Lifecycle-neutral technical work independently authorized may continue if otherw
 
 Status: `GOVERNED AGENT-INSTRUCTION GENERATION BLOCKED`
 
-Normal analysis may continue. Do not invent a replacement template unless user explicitly authorizes governance recovery.
+Analisis normal dapat berlanjut. Jangan membuat replacement template kecuali user secara eksplisit mengotorisasi governance recovery.
 
 ## Required Canonical Git Governance Unavailable
 
@@ -166,7 +166,7 @@ Governance-dependent/high-risk work is blocked when a required canonical Git gov
 
 # REQUIRED INTERACTION REPORT
 
-Before substantive COPOT feedback:
+Sebelum substantive COPOT feedback:
 
 Project Rule: `<exact filename> — <READ THIS INTERACTION / UNAVAILABLE>`
 
@@ -208,21 +208,21 @@ Unpushed commits, sandbox state, patches, runtime copies, temporary exports, and
 
 ## Execution Continuity
 
-Use full task-triggered continuity verification for new/resumed/transitioned/untrusted executor state.
+Gunakan full task-triggered continuity verification untuk executor state yang baru/resumed/transitioned/untrusted.
 
-Use Same-Thread Check-and-Run when:
+Gunakan Same-Thread Check-and-Run ketika:
 - same technical-agent thread;
 - same execution environment;
 - current repo/workspace state previously accepted;
 - no material transition occurred.
 
-Same-thread continuation inherits accepted repository/branch/anchor/workspace/environment and checks only material drift during normal execution. Do not repeat equivalent continuity ceremony.
+Same-thread continuation mewarisi accepted repository/branch/anchor/workspace/environment dan hanya memeriksa material drift selama eksekusi normal. Jangan mengulang continuity ceremony yang setara.
 
 Material drift includes wrong repo/branch/workspace, unexpected dirty/material untracked state, remote mismatch, divergence, unexpected history change, or scope-expanding external state.
 
-Do not silently reset/stash/clean/discard/overwrite/force-update unexpected state.
+Jangan melakukan reset/stash/clean/discard/overwrite/force-update secara silent terhadap state yang unexpected.
 
-Before device/execution-environment transition, intended work must be committed, pushed, and remotely verified unless a documented local-only blocker prevents it.
+Sebelum device/execution-environment transition, intended work harus di-commit, di-push, dan diverifikasi secara remote kecuali documented local-only blocker mencegahnya.
 
 ---
 
@@ -302,7 +302,7 @@ AI digunakan untuk criterion objektif atau sufficiently deterministic. Human waj
 
 Codex boleh melaporkan technical findings, validation evidence, AI-acceptance evidence, possible human-required criterion, blockers/risks, final Git state, dan technical merge eligibility.
 
-Codex does not decide NRP, ChatGPT session transition, next milestone authorization, implied user approval, or automatic Workplan/Concept/Deferred adoption.
+Codex tidak memutuskan NRP, ChatGPT session transition, next milestone authorization, implied user approval, atau automatic Workplan/Concept/Deferred adoption.
 
 ---
 
@@ -328,7 +328,7 @@ Fresh explicit user approval is required when material action includes:
 - release, tag, publication, or external distribution action;
 - any approval gate explicitly reserved to the user.
 
-Do not manufacture repetitive approval gates for routine continuation inside a clearly authorized scope unless material state changed.
+Jangan membuat repetitive approval gates untuk continuation rutin dalam scope yang jelas authorized kecuali material state berubah.
 
 ---
 
@@ -340,11 +340,11 @@ Project/work-unit state in repository must use objective wording such as:
 
 `NOT STARTED / PARTIAL / IMPLEMENTATION COMPLETE / VALIDATION COMPLETE / ACCEPTED / COMPLETE / CLOSED / BLOCKED`
 
-NRP is GPT/session-transition governance only. Do not persist `NRP CANDIDATE`, `NRP CONFIRMED`, or similar as repository lifecycle state, commit message state, Codex responsibility, roadmap status, or contract status.
+NRP hanya merupakan GPT/session-transition governance. Jangan menyimpan `NRP CANDIDATE`, `NRP CONFIRMED`, atau istilah serupa sebagai repository lifecycle state, commit message state, Codex responsibility, roadmap status, atau contract status.
 
 ## NRP Candidate Documentation Consistency Audit
 
-Before promotion from `NRP CANDIDATE` to `NRP CONFIRMED`, perform a focused audit of materially relevant repository documentation against the latest accepted authoritative repository state.
+Sebelum promotion dari `NRP CANDIDATE` ke `NRP CONFIRMED`, lakukan focused audit atas repository documentation yang material terhadap latest accepted authoritative repository state.
 
 Audit at minimum where material:
 - `AGENTS.md`;
@@ -354,13 +354,13 @@ Audit at minimum where material:
 - Deferred Item records/registry;
 - other repository docs carrying current-state claims.
 
-Preserve intentional historical records. Material current-state inconsistency in authoritative repository documentation blocks NRP confirmation until corrected, committed, pushed, and remotely verified when repo mutation is required.
+Pertahankan intentional historical records. Material current-state inconsistency dalam authoritative repository documentation memblokir NRP confirmation sampai dikoreksi, di-commit, di-push, dan diverifikasi secara remote bila repo mutation diperlukan.
 
-A GPT-side Workplan is not an authoritative repository current-state document and is governed separately below.
+GPT-side Workplan bukan authoritative repository current-state document dan diatur secara terpisah di bawah.
 
 ## Mandatory Branch Lifecycle Closure Audit
 
-Before a workstream/work-unit/milestone can be treated as closure-ready for NRP or next-workstream handoff, perform a branch lifecycle audit when Git branches are material.
+Sebelum workstream/work-unit/milestone dianggap closure-ready untuk NRP atau next-workstream Handoff, lakukan branch lifecycle audit bila Git branches material.
 
 Minimum audit:
 1. verify all intended workstream commits are contained in authoritative `main` or other accepted integration target;
@@ -372,11 +372,11 @@ Minimum audit:
 7. verify final workspace cleanliness/synchronization where a workspace is material;
 8. record `main-only` / `no-op` explicitly when no obsolete branch exists or no deletion/prune is required.
 
-Do not infer branch obsolescence from branch age, naming, merged-looking history, or memory alone.
+Jangan menyimpulkan branch obsolescence hanya dari branch age, naming, merged-looking history, atau memory.
 
 ## Final Repository Stability Gate
 
-Before `NRP CONFIRMED`:
+Sebelum `NRP CONFIRMED`:
 - intended implementation is durable;
 - required validation/acceptance is complete or correctly classified;
 - Documentation Consistency Audit is complete;
@@ -388,9 +388,9 @@ Before `NRP CONFIRMED`:
 - closure-time planning reconciliation/consolidation is complete when Workplan/Concept context is material to next-target selection or handoff;
 - no planned repository mutation remains for the state being handed off.
 
-`NRP CANDIDATE` may still mutate the repository to finish closure.
+`NRP CANDIDATE` masih dapat memutasi repository untuk menyelesaikan closure.
 
-`NRP CONFIRMED` must not itself cause a repository commit.
+`NRP CONFIRMED` tidak boleh dengan sendirinya menyebabkan repository commit.
 
 ---
 
@@ -447,15 +447,15 @@ Saat unit/milestone ditutup:
 
 ## Purpose
 
-A Workplan is a living project-specific planning artifact for non-linear execution, sequencing, lifecycle indexing, and provenance tracking.
+Workplan adalah living project-specific planning artifact untuk non-linear execution, sequencing, lifecycle indexing, dan provenance tracking.
 
 Filename:
 
 `workplan.md`
 
-A Workplan is **not a live mirror of current repository/project lifecycle state**.
+Workplan **bukan live mirror dari current repository/project lifecycle state**.
 
-A single Workplan may intentionally span:
+A single Workplan dapat secara sengaja mencakup:
 - multiple Work Units;
 - multiple workstreams;
 - multiple milestones;
@@ -466,7 +466,7 @@ Repository contracts/documentation remain authoritative for delivered/current re
 
 ## Workplan Roles
 
-Workplan may simultaneously serve as:
+Workplan dapat sekaligus berfungsi sebagai:
 - non-linear sequencing canvas;
 - lifecycle registry of logical planning/Concept identities;
 - index of materially relevant Concepts and source locations;
@@ -478,11 +478,11 @@ Workplan may simultaneously serve as:
 
 ## Workplan Non-Synchronization Rule
 
-Workplan does **not** require continuous synchronization merely because repository authority advances during an active workstream.
+Workplan **tidak** memerlukan continuous synchronization hanya karena repository authority maju selama active workstream.
 
-Normal repository progress does not by itself require a new Workplan revision.
+Normal repository progress dengan sendirinya tidak memerlukan Workplan revision baru.
 
-Specifically, do not force Workplan refresh solely because:
+Secara khusus, jangan memaksa Workplan refresh hanya karena:
 - a Work Unit starts or closes;
 - a contract is promoted;
 - a commit advances `main`;
@@ -491,11 +491,11 @@ Specifically, do not force Workplan refresh solely because:
 
 During active execution, repository authority wins for current delivered/work-unit/workstream lifecycle truth.
 
-An older planning statement may remain as historical planning context until the next scheduled reconciliation, provided it is not being misrepresented as repository current-state authority.
+Older planning statement dapat tetap menjadi historical planning context sampai scheduled reconciliation berikutnya, selama tidak disalahrepresentasikan sebagai repository current-state authority.
 
 ## Default Reconciliation / Consolidation Cadence
 
-Default Workplan reconciliation and consolidation occurs at **workstream closure / pre-handoff**.
+Default Workplan reconciliation dan consolidation terjadi pada **workstream closure / pre-handoff**.
 
 At that gate, reconcile where material:
 - what the workstream actually delivered;
@@ -507,11 +507,11 @@ At that gate, reconcile where material:
 - which item can or should become the next workstream/milestone candidate;
 - what must be carried into the next Handoff.
 
-This closure reconciliation is a planning decision gate, not a mechanical repository-state mirroring exercise.
+Closure reconciliation ini adalah planning decision gate, bukan mechanical repository-state mirroring exercise.
 
 ## Earlier Workplan Update Exception
 
-A Workplan may be updated before workstream closure when durable planning context materially changes and waiting would create meaningful planning loss or ambiguity.
+Workplan dapat diperbarui sebelum workstream closure ketika durable planning context berubah secara material dan menunggu akan menimbulkan planning loss atau ambiguity yang berarti.
 
 Examples:
 - workstream topology materially changes;
@@ -522,7 +522,7 @@ Examples:
 - next-target planning is being decided before normal closure;
 - the user explicitly requests Workplan reconciliation/consolidation.
 
-Do not update Workplan mid-workstream merely for cosmetic freshness.
+Jangan memperbarui Workplan mid-workstream hanya demi cosmetic freshness.
 
 ## Registry Persistence Rule
 
@@ -545,7 +545,7 @@ Promoted/closed entries remain registry/provenance records and carry no active e
 
 ## Registry Entry Shape
 
-Use only fields that are materially relevant:
+Gunakan hanya field yang materially relevant:
 - canonical logical title;
 - Class;
 - Status;
@@ -554,15 +554,15 @@ Use only fields that are materially relevant:
 - Authority;
 - Planning action.
 
-For `Sources`, record all materially relevant Concept files. If only a subsection applies, include the chapter/heading. Tags such as `[PRIMARY]`, `[SUPPORTING]`, and `[HISTORICAL]` may be used.
+Untuk `Sources`, catat semua Concept files yang materially relevant. Jika hanya subsection yang berlaku, sertakan chapter/heading. Tag seperti `[PRIMARY]`, `[SUPPORTING]`, dan `[HISTORICAL]` dapat digunakan.
 
-Exact filenames are allowed and preferred in Workplan when they materially improve traceability, even though normal Concept retrieval may still use canonical identity/family resolution.
+Exact filenames diperbolehkan dan diutamakan dalam Workplan bila meningkatkan traceability secara material, meskipun normal Concept retrieval masih dapat menggunakan canonical identity/family resolution.
 
 ## Provisional Authority
 
-For work that has no official milestone home, Workplan may be authoritative for current planning structure and execution framing, including name, decomposition, sequencing, dependencies, planning status, next gate, and closure boundary.
+Untuk pekerjaan yang tidak memiliki official milestone home, Workplan dapat menjadi authoritative untuk current planning structure dan execution framing, termasuk name, decomposition, sequencing, dependencies, planning status, next gate, dan closure boundary.
 
-This provisional authority does NOT override committed repository truth and does NOT by itself authorize implementation.
+Provisional authority ini TIDAK mengalahkan committed repository truth dan dengan sendirinya TIDAK mengotorisasi implementation.
 
 ## Promotion to Authoritative Side
 
@@ -570,9 +570,9 @@ Promotion requires explicit decision and durable repository artifacts. After pro
 
 Workplan remains planning/sequencing/provenance context and **may intentionally remain unreconciled until workstream closure**.
 
-Do not delete the Workplan registry entry merely because repository authority took over.
+Jangan menghapus Workplan registry entry hanya karena repository authority mengambil alih.
 
-Do not label a Workplan materially stale solely because it has not mirrored an in-progress workstream's repository lifecycle transitions.
+Jangan melabeli Workplan materially stale hanya karena belum mencerminkan repository lifecycle transitions dari in-progress workstream.
 
 ---
 
@@ -580,11 +580,11 @@ Do not label a Workplan materially stale solely because it has not mirrored an i
 
 ## Concept Identity
 
-A Concept is a stable project-wide semantic identity based on its subject/topic, not on file, timestamp, stance, option, alternative, or originating scope.
+Concept adalah stable project-wide semantic identity berdasarkan subject/topic, bukan file, timestamp, stance, option, alternative, atau originating scope.
 
 Line 1 MUST contain the canonical human-readable Concept title for normalized future Concept files.
 
-A Concept may:
+A Concept dapat:
 - evolve through revisions;
 - have several source files;
 - be represented by one dedicated file or one heading inside a consolidated Concept;
@@ -592,27 +592,27 @@ A Concept may:
 - become promoted into repository authority;
 - remain as historical/provenance context after promotion.
 
-Do not create a second logical Concept merely because wording, preferred option, scope placement, or implementation target changed.
+Jangan membuat logical Concept kedua hanya karena wording, preferred option, scope placement, atau implementation target berubah.
 
 ## Concept Revision and Source Identity
 
-Concept files are immutable revision/provenance artifacts unless a storage capability explicitly supports versioned replacement without losing prior lineage.
+Concept files adalah immutable revision/provenance artifacts kecuali storage capability secara eksplisit mendukung versioned replacement tanpa kehilangan prior lineage.
 
-When Concept content changes materially:
+Ketika Concept content berubah secara material:
 - create a new timestamped revision;
 - preserve the canonical Concept title;
 - identify superseded/historical source where useful;
 - update Workplan source references/disposition at the next applicable reconciliation gate, or earlier only when planning materially depends on the revision.
 
-Do not silently overwrite or forget prior Concept lineage.
+Jangan melakukan silent overwrite atau melupakan prior Concept lineage.
 
 ## Consolidated Concept Files
 
-A consolidated Concept file may contain several independent logical Concept identities.
+Consolidated Concept file dapat memuat beberapa independent logical Concept identities.
 
 Workplan should point to the canonical logical identity and, where helpful, exact filename + heading.
 
-Do not assume the entire consolidated file is one implementation scope.
+Jangan menganggap seluruh consolidated file sebagai satu implementation scope.
 
 ## Concept Authority
 
@@ -640,7 +640,7 @@ At workstream/planning closure, reconcile accumulated thread-level saved concept
 
 Clear the continuity payload only after durable reconciliation is complete.
 
-If multiple workstreams overlap or a workstream is reopened, maintain separate continuity/disposition tracking where needed; do not collapse unrelated saved concepts merely because they shared a session.
+Jika beberapa workstream overlap atau workstream dibuka kembali, pertahankan separate continuity/disposition tracking bila diperlukan; jangan menggabungkan saved concepts yang tidak terkait hanya karena berbagi session.
 
 Deferred Items still require their own Deferred governance at closure and must not disappear inside generic saved-concept reconciliation.
 
@@ -648,9 +648,9 @@ Deferred Items still require their own Deferred governance at closure and must n
 
 # PLANNING RECONCILIATION / ADEQUACY AUDIT
 
-When Workplan/Concept planning context is material to workstream closure, NRP/session handoff, or next-target selection, perform a focused planning reconciliation/adequacy audit.
+Ketika Workplan/Concept planning context material terhadap workstream closure, NRP/session Handoff, atau next-target selection, lakukan focused planning reconciliation/adequacy audit.
 
-The audit is **not** a test that Workplan has continuously mirrored every repository transition.
+Audit tersebut **bukan** pengujian bahwa Workplan terus-menerus mencerminkan setiap repository transition.
 
 At the applicable reconciliation gate, check where material:
 - completed/promoted work needs provenance/disposition update;
@@ -668,7 +668,7 @@ Normal mid-workstream mismatch between Workplan planning state and repository li
 
 Workplan mismatch does not automatically block technical/project closure.
 
-Before a closure Handoff, Workplan reconciliation is required only when Workplan/Concept context is material to choosing or explaining the next target. If authoritative repository documentation already determines the immediate next WU inside the same workstream and no planning decision is required, Workplan refresh may remain deferred until the workstream closes.
+Sebelum closure Handoff, Workplan reconciliation hanya diperlukan ketika Workplan/Concept context material untuk memilih atau menjelaskan next target. Jika authoritative repository documentation sudah menentukan immediate next WU dalam workstream yang sama dan tidak ada planning decision yang diperlukan, Workplan refresh dapat tetap ditunda sampai workstream selesai.
 
 ---
 
@@ -678,13 +678,13 @@ Handoff = GPT/session continuity artifact.
 
 Agent Instruction = minimum execution delta.
 
-Do not send NRP terminology, full Workplan, full Concept library, lifecycle history, old troubleshooting, or full prior validation inventory to Codex unless a concrete item changes execution.
+Jangan mengirim NRP terminology, full Workplan, full Concept library, lifecycle history, old troubleshooting, atau full prior validation inventory kepada Codex kecuali concrete item mengubah execution.
 
 Workplan and Concept artifacts are planning inputs, NOT authorization.
 
-Never instruct an agent to `read the Workplan and implement whatever is next`.
+Jangan pernah menginstruksikan agent untuk `read the Workplan and implement whatever is next`.
 
-If Workplan/Concept material is needed, specify exact logical target and reading purpose.
+Jika Workplan/Concept material diperlukan, tentukan exact logical target dan reading purpose.
 
 Direct-transfer tooling does not change this rule. Even when direct transfer is explicitly requested, derive a separate Agent Instruction rather than routing Handoff as executor payload.
 
@@ -696,7 +696,7 @@ Release advancement is release-based, not feature-based.
 
 Feature/workstream closure does not automatically require a release, tag, publication, or artifact rebuild.
 
-A new public release is required only when the project explicitly decides to publish a new distributable boundary containing the accepted source delta.
+New public release hanya diperlukan ketika project secara eksplisit memutuskan untuk menerbitkan distributable boundary baru yang memuat accepted source delta.
 
 Release/tag/publication remain separate authorization gates even when all candidate source work is complete.
 
@@ -704,9 +704,9 @@ Release/tag/publication remain separate authorization gates even when all candid
 
 # GOVERNANCE CHANGE DISCIPLINE
 
-Governance files version independently.
+Governance files memiliki versioning secara independen.
 
-For a coordinated change:
+Untuk coordinated change:
 1. identify which governance files are materially affected;
 2. modify only affected files;
 3. cross-check the three canonical governance files for contradiction;
@@ -714,6 +714,6 @@ For a coordinated change:
 5. commit, push, and independently verify the three canonical Git files;
 6. on subsequent interactions, independently resolve the exact canonical paths.
 
-Do not regenerate unchanged governance files merely to synchronize timestamps.
+Jangan regenerate governance files yang unchanged hanya untuk menyelaraskan timestamp.
 
 Source authority for current COPOT governance artifacts is the verified remote Git repository state containing the three canonical governance files. File Library governance remains historical/correction evidence only.
