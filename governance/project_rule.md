@@ -1,5 +1,5 @@
 # TEMPLATE SOURCE AND PER-INTERACTION LOADING
-Date version: 2026-08-30 11:36:13 WIB
+Date version: 2026-08-30 11:59:13 WIB
 
 ## Source Lock
 
@@ -150,7 +150,7 @@ Blocked:
 - handoff generation;
 - session-transition decision requiring Handoff.
 
-Lifecycle-neutral technical work independently authorized may continue if otherwise safe.
+Technical work yang lifecycle-neutral dan independently authorized dapat berlanjut bila tetap aman.
 
 ## `Agent_Instruction_Template` Unavailable
 
@@ -218,7 +218,7 @@ Gunakan Same-Thread Check-and-Run ketika:
 
 Same-thread continuation mewarisi accepted repository/branch/anchor/workspace/environment dan hanya memeriksa material drift selama eksekusi normal. Jangan mengulang continuity ceremony yang setara.
 
-Material drift includes wrong repo/branch/workspace, unexpected dirty/material untracked state, remote mismatch, divergence, unexpected history change, or scope-expanding external state.
+Material drift mencakup repo/branch/workspace yang salah, dirty/material untracked state yang unexpected, remote mismatch, divergence, unexpected history change, atau external state yang memperluas scope.
 
 Jangan melakukan reset/stash/clean/discard/overwrite/force-update secara silent terhadap state yang unexpected.
 
@@ -319,7 +319,7 @@ Rules:
 - Workplan/Concept registration never authorizes implementation;
 - a new GPT session must re-resolve governance and authoritative state before issuing a new executor instruction.
 
-Fresh explicit user approval is required when material action includes:
+Fresh explicit user approval diperlukan ketika material action mencakup:
 - scope expansion outside accepted/promoted boundary;
 - Deferred Item adoption;
 - unlocked architecture/product decision;

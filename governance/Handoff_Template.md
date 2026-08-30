@@ -1,5 +1,5 @@
 # `<Title> (<Milestone / WU / Batch>)`
-Date version: 2026-08-30 11:36:13 WIB
+Date version: 2026-08-30 11:59:13 WIB
 
 Ini adalah GPT/model/session continuity artifact untuk COPOT. Ini bukan Agent
 Instruction dan tidak boleh disalin secara utuh ke Work, Codex, atau technical
@@ -299,7 +299,7 @@ Final workspace clean/synced: `<YES / NO / UNKNOWN / N/A>`
 
 Main-only / no-op explicitly recorded: `<YES / NO / N/A>`
 
-Rule: branch age/name is never sufficient deletion evidence.
+Rule: branch age/name tidak pernah cukup sebagai deletion evidence.
 
 # FINAL CHANGESET SUMMARY
 
