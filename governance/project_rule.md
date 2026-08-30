@@ -1,5 +1,5 @@
 # TEMPLATE SOURCE AND PER-INTERACTION LOADING
-Date version: 2026-08-30 12:00:41 WIB
+Date version: 2026-08-30 12:19:25 WIB
 
 ## Source Lock
 
@@ -47,13 +47,15 @@ Jangan merekonstruksi project decision yang hilang dari memory atau asumsi
 ketika authoritative evidence tidak tersedia. Handoff harus cukup untuk
 bootstrap session baru secara aman.
 
-Default governance prose adalah Bahasa Indonesia. GPT/user-facing
-communication dan generated Handoff default mengikuti primary conversation
-language user; untuk current COPOT usage, berarti Bahasa Indonesia. Generated
-technical Agent Instruction mengikuti dedicated language rule di
-`governance/Agent_Instruction_Template.md`. Identifier, path, command, API
-name, error, status token, filename, dan technical/project vocabulary tetap
-literal bila terjemahan mengurangi precision.
+Language role governance mengikuti audience. GPT/user-facing governance dan
+generated Handoff default mengikuti primary conversation language user; untuk
+current COPOT usage, keduanya menggunakan Bahasa Indonesia. Karena itu,
+`project_rule.md` dan `Handoff_Template.md` menggunakan Bahasa Indonesia sebagai
+prose utama. `Agent_Instruction_Template.md` adalah executor-facing technical
+template dan menggunakan English; generated technical Agent Instruction juga
+default menggunakan English. Identifier, path, command, API name, error, status
+token, filename, dan technical/project vocabulary tetap literal bila terjemahan
+mengurangi precision.
 
 `governance/Handoff_Template.md` adalah detailed Source of Truth untuk struktur
 Handoff, session transition, dan NRP semantics; detail prosedurnya tidak
@@ -254,21 +256,21 @@ Direct handoff adalah metode transport/routing, bukan bentuk authorization baru 
 
 Aturan yang locked:
 
-1. GPT **never performs a direct handoff, direct agent invocation, or direct transfer to Work, Codex, or any other execution destination unless the user explicitly instructs that direct transfer**.
-2. Tool availability, convenience, inferred efficiency, or GPT preference never counts as explicit user instruction.
-3. Default behavior when Work/Codex execution would be useful is:
-   - prepare the appropriate Agent Instruction;
-   - present it to the user;
-   - do not directly invoke/transfer unless the user explicitly requests direct transfer.
-4. When the user explicitly requests direct transfer to Work or Codex:
-   - use canonical `governance/Agent_Instruction_Template.md`;
-   - preserve the same target, scope, authorization, validation, stop conditions, and reporting semantics that would apply to a copy/paste instruction;
-   - delivery method does not widen authority.
-5. Handoff artifacts remain GPT/session continuity artifacts. They are never executor payloads merely because a direct-transfer tool exists.
-6. Never copy or route a full Handoff directly to Work, Codex, or another executor. Derive a separate Agent Instruction instead.
-7. A user instruction such as `handoff ke Work`, `kirim langsung ke Codex`, or an unambiguous equivalent is sufficient explicit authorization for the transport method only. It does not imply extra technical scope beyond the instruction itself.
-8. This routing rule does not prohibit generating Handoff, Agent Instruction, Workplan, Concept, or other artifacts in-chat when requested.
-9. This routing rule does not alter system/safety/capability constraints.
+1. GPT **tidak pernah melakukan direct handoff, direct agent invocation, atau direct transfer ke Work, Codex, atau execution destination lain kecuali user secara eksplisit menginstruksikan direct transfer tersebut**.
+2. Tool availability, convenience, inferred efficiency, atau GPT preference tidak pernah dianggap sebagai explicit user instruction.
+3. Default behavior ketika Work/Codex execution berguna adalah:
+   - siapkan Agent Instruction yang sesuai;
+   - sampaikan kepada user;
+   - jangan melakukan direct invoke/transfer kecuali user secara eksplisit meminta direct transfer.
+4. Ketika user secara eksplisit meminta direct transfer ke Work atau Codex:
+   - gunakan canonical `governance/Agent_Instruction_Template.md`;
+   - pertahankan target, scope, authorization, validation, stop conditions, dan reporting semantics yang sama seperti copy/paste instruction;
+   - delivery method tidak memperluas authority.
+5. Handoff artifacts tetap merupakan GPT/session continuity artifacts. Handoff tidak pernah menjadi executor payload hanya karena direct-transfer tool tersedia.
+6. Jangan pernah menyalin atau merutekan full Handoff langsung ke Work, Codex, atau executor lain. Turunkan separate Agent Instruction.
+7. User instruction seperti `handoff ke Work`, `kirim langsung ke Codex`, atau padanan yang tidak ambigu hanya memberi explicit authorization untuk transport method. Itu tidak menambah technical scope.
+8. Routing rule ini tidak melarang pembuatan Handoff, Agent Instruction, Workplan, Concept, atau artifact lain di chat ketika diminta.
+9. Routing rule ini tidak mengubah system/safety/capability constraints.
 
 ---
 
@@ -278,7 +280,7 @@ GPT:
 - governance;
 - planning;
 - Workplan/Concept reasoning;
-- scope and dependency decisions;
+- keputusan tentang scope dan dependency;
 - technical-agent instruction design;
 - project/work-unit closure evaluation;
 - session-transition readiness.
@@ -310,23 +312,23 @@ Codex tidak memutuskan NRP, ChatGPT session transition, next milestone authoriza
 
 Authorization boundaries terpisah dari planning, continuity, transport method, dan repository state.
 
-Rules:
-- promotion into authoritative repository documents establishes the accepted workstream/contract scope but does not authorize every future adjacent action;
-- GPT may select and frame the next in-scope WU/Batch inside an already-authorized/promoted workstream when no fresh approval gate is required;
-- an Agent Instruction is the executor-facing execution boundary for the specifically authorized slice;
-- direct-transfer permission controls transport only and does not widen execution scope;
-- Handoff never authorizes execution merely by carrying a next target;
-- Workplan/Concept registration never authorizes implementation;
-- a new GPT session must re-resolve governance and authoritative state before issuing a new executor instruction.
+Aturan:
+- promotion ke authoritative repository documents menetapkan accepted workstream/contract scope, tetapi tidak mengotorisasi setiap adjacent action di masa depan;
+- GPT dapat memilih dan membingkai next in-scope WU/Batch dalam workstream yang sudah authorized/promoted ketika tidak diperlukan fresh approval gate;
+- Agent Instruction adalah executor-facing execution boundary untuk specifically authorized slice;
+- direct-transfer permission hanya mengatur transport dan tidak memperluas execution scope;
+- Handoff tidak pernah mengotorisasi execution hanya dengan membawa next target;
+- Workplan/Concept registration tidak pernah mengotorisasi implementation;
+- session GPT baru harus me-resolve ulang governance dan authoritative state sebelum menerbitkan executor instruction baru.
 
 Fresh explicit user approval diperlukan ketika material action mencakup:
 - scope expansion outside accepted/promoted boundary;
 - Deferred Item adoption;
 - unlocked architecture/product decision;
-- destructive or irreversible action;
-- production reconciliation or similarly sensitive operational action;
-- release, tag, publication, or external distribution action;
-- any approval gate explicitly reserved to the user.
+- tindakan destructive atau irreversible;
+- production reconciliation atau tindakan operasional sensitif yang serupa;
+- tindakan release, tag, publication, atau external distribution;
+- approval gate apa pun yang secara eksplisit dicadangkan untuk user.
 
 Jangan membuat repetitive approval gates untuk continuation rutin dalam scope yang jelas authorized kecuali material state berubah.
 
@@ -377,16 +379,16 @@ Jangan menyimpulkan branch obsolescence hanya dari branch age, naming, merged-lo
 ## Final Repository Stability Gate
 
 Sebelum `NRP CONFIRMED`:
-- intended implementation is durable;
-- required validation/acceptance is complete or correctly classified;
-- Documentation Consistency Audit is complete;
-- material repository-documentation corrections are durable;
-- objective closure documentation is complete where required;
-- required branch lifecycle/merge/post-merge state is complete;
-- final authoritative remote SHA is verified;
-- unresolved/deferred/risks and next target are explicit;
-- closure-time planning reconciliation/consolidation is complete when Workplan/Concept context is material to next-target selection or handoff;
-- no planned repository mutation remains for the state being handed off.
+- implementation yang dimaksud sudah durable;
+- validation/acceptance yang diperlukan sudah selesai atau diklasifikasikan dengan benar;
+- Documentation Consistency Audit sudah selesai;
+- koreksi repository documentation yang material sudah durable;
+- objective closure documentation sudah lengkap bila diperlukan;
+- branch lifecycle/merge/post-merge state yang diperlukan sudah lengkap;
+- final authoritative remote SHA sudah diverifikasi;
+- unresolved/deferred/risks dan next target sudah eksplisit;
+- planning reconciliation/consolidation saat closure sudah selesai bila Workplan/Concept context material untuk pemilihan next target atau Handoff;
+- tidak ada planned repository mutation yang tersisa untuk state yang di-Handoff.
 
 `NRP CANDIDATE` masih dapat memutasi repository untuk menyelesaikan closure.
 
@@ -498,14 +500,14 @@ Older planning statement dapat tetap menjadi historical planning context sampai 
 Default Workplan reconciliation dan consolidation terjadi pada **workstream closure / pre-handoff**.
 
 Pada gate tersebut, lakukan reconciliation bila material:
-- what the workstream actually delivered;
-- which planning assumptions became stale;
-- which dependencies/blockers changed;
-- which Concepts were incorporated, superseded, promoted, deferred, rejected, or remain unresolved;
-- which registry/provenance entries need disposition updates;
-- which remaining Workplan items are still valid;
-- which item can or should become the next workstream/milestone candidate;
-- what must be carried into the next Handoff.
+    - apa yang benar-benar delivered oleh workstream;
+    - planning assumptions mana yang menjadi stale;
+    - dependency/blocker mana yang berubah;
+    - Concept mana yang incorporated, superseded, promoted, deferred, rejected, atau tetap unresolved;
+    - registry/provenance entry mana yang memerlukan disposition update;
+    - Workplan item tersisa mana yang masih valid;
+    - item mana yang dapat atau seharusnya menjadi candidate workstream/milestone berikutnya;
+    - apa yang harus dibawa ke Handoff berikutnya.
 
 Closure reconciliation ini adalah planning decision gate, bukan mechanical repository-state mirroring exercise.
 
@@ -514,13 +516,13 @@ Closure reconciliation ini adalah planning decision gate, bukan mechanical repos
 Workplan dapat diperbarui sebelum workstream closure ketika durable planning context berubah secara material dan menunggu akan menimbulkan planning loss atau ambiguity yang berarti.
 
 Examples:
-- workstream topology materially changes;
-- a new HARD dependency changes sequencing;
-- a product/architecture decision changes future planned scope;
-- a provisional item is explicitly added/removed/reclassified;
-- a material Concept revision must be registered for continuity;
-- next-target planning is being decided before normal closure;
-- the user explicitly requests Workplan reconciliation/consolidation.
+- workstream topology berubah secara material;
+- HARD dependency baru mengubah sequencing;
+- keputusan product/architecture mengubah planned scope masa depan;
+- provisional item secara eksplisit ditambahkan/dihapus/diklasifikasikan ulang;
+- revisi Concept yang material harus didaftarkan untuk continuity;
+- next-target planning diputuskan sebelum closure normal;
+- user secara eksplisit meminta Workplan reconciliation/consolidation.
 
 Jangan memperbarui Workplan mid-workstream hanya demi cosmetic freshness.
 
@@ -586,11 +588,11 @@ Line 1 MUST memuat canonical human-readable Concept title untuk normalized futur
 
 A Concept dapat:
 - evolve through revisions;
-- have several source files;
-- be represented by one dedicated file or one heading inside a consolidated Concept;
-- be incorporated into another Concept;
-- become promoted into repository authority;
-- remain as historical/provenance context after promotion.
+- memiliki beberapa source file;
+- direpresentasikan oleh satu dedicated file atau satu heading di dalam consolidated Concept;
+- diincorporate ke Concept lain;
+- dipromosikan menjadi repository authority;
+- tetap menjadi historical/provenance context setelah promotion.
 
 Jangan membuat logical Concept kedua hanya karena wording, preferred option, scope placement, atau implementation target berubah.
 
@@ -600,9 +602,9 @@ Concept files adalah immutable revision/provenance artifacts kecuali storage cap
 
 Ketika Concept content berubah secara material:
 - create a new timestamped revision;
-- preserve the canonical Concept title;
-- identify superseded/historical source where useful;
-- update Workplan source references/disposition at the next applicable reconciliation gate, or earlier only when planning materially depends on the revision.
+- pertahankan canonical Concept title;
+- identifikasi superseded/historical source bila berguna;
+- perbarui Workplan source references/disposition pada reconciliation gate berikutnya yang berlaku, atau lebih awal hanya ketika planning secara material bergantung pada revisi tersebut.
 
 Jangan melakukan silent overwrite atau melupakan prior Concept lineage.
 
@@ -653,16 +655,16 @@ Ketika Workplan/Concept planning context material terhadap workstream closure, N
 Audit tersebut **bukan** pengujian bahwa Workplan terus-menerus mencerminkan setiap repository transition.
 
 Pada applicable reconciliation gate, periksa bagian berikut bila material:
-- completed/promoted work needs provenance/disposition update;
-- dependencies or blockers changed;
-- closure gates passed;
-- planned queue/order should change based on accepted results;
-- Concept reference is missing/ambiguous;
-- Concept source exists but registry identity disappeared without justified disposition;
-- Concept was incorporated/superseded but Workplan still points at obsolete framing needed for future planning;
-- unresolved thread-level saved concepts were not durably reconciled;
-- remaining candidate items need re-audit before selection;
-- current planning context would materially mislead next-target selection or next-session continuity.
+- pekerjaan yang completed/promoted memerlukan provenance/disposition update;
+- dependency atau blocker berubah;
+- closure gate berhasil dilewati;
+- planned queue/order perlu berubah berdasarkan accepted results;
+- Concept reference hilang/ambiguous;
+- Concept source ada tetapi registry identity menghilang tanpa disposition yang beralasan;
+- Concept sudah incorporated/superseded tetapi Workplan masih menunjuk framing obsolete yang diperlukan untuk future planning;
+- unresolved thread-level saved concepts belum direkonsiliasi secara durable;
+- candidate item tersisa memerlukan re-audit sebelum dipilih;
+- current planning context akan secara material menyesatkan next-target selection atau next-session continuity.
 
 Mismatch normal mid-workstream antara Workplan planning state dan repository lifecycle state **bukan dengan sendirinya freshness failure**.
 

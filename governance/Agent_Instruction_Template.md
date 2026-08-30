@@ -1,19 +1,19 @@
 # GENERAL AI AGENT INSTRUCTION TEMPLATE
-Date version: 2026-08-30 11:59:56 WIB
+Date version: 2026-08-30 12:19:25 WIB
 
 ## TEMPLATE USAGE
 
-Template modular untuk Codex/technical AI Agent.
+Modular template for Codex/technical AI Agents.
 
-Tujuan: instruksi terkecil yang masih memberi first-pass success reliable.
+Goal: the smallest instruction that still provides reliable first-pass success.
 
-Agent Instruction = minimum execution delta, bukan Handoff yang diformat ulang.
+Agent Instruction = minimum execution delta, not a reformatted Handoff.
 
-Tambahkan field hanya jika omission dapat menyebabkan target/branch/anchor
-salah, unauthorized action, dependency terlewat, validation tidak valid,
-unsafe side effect, atau stop condition terlewat.
+Include a field only if omission could cause the wrong target/branch/anchor,
+an unauthorized action, a missed dependency, invalid validation, an unsafe side
+effect, or a missed stop condition.
 
-Jangan menyalin secara otomatis:
+Do not copy automatically:
 - full Handoff;
 - full lifecycle history;
 - internal NRP/session-transition reasoning;
@@ -26,25 +26,24 @@ Jangan menyalin secara otomatis:
 - repository history the agent can inspect directly.
 
 Generated technical Agent Instruction default language: English. User-facing
-GPT conversation dan penjelasan tetap menggunakan primary conversation language
-user; untuk current COPOT conversation, Bahasa Indonesia.
+GPT conversation and explanations follow the user's primary conversation
+language; for current COPOT conversations, that is Bahasa Indonesia.
 
-Jangan menerjemahkan identifier, path, branch, command, API name, error
-message, filename, status token, atau official technical term bila terjemahan
-mengurangi presisi. Technical/project vocabulary boleh tetap literal.
+Do not translate an identifier, path, branch, command, API name, error message,
+filename, status token, or official technical term when translation would reduce
+precision. Technical/project vocabulary may remain literal.
 
 ## INSTRUCTION PRESENTATION AND HEADING SEMANTICS
 
-- Sampaikan Agent Instruction melalui editable writing block bila capability
-  tersebut tersedia.
-- Jangan membungkus Agent Instruction dalam triple-backtick code fence. Fenced
-  code hanya untuk actual code/config/literal technical content yang memang
-  memerlukan code formatting.
-- Instruction short description/title MUST menjadi baris pertama di dalam
+- Deliver the Agent Instruction through an editable writing block when available.
+- Do not wrap the Agent Instruction in a triple-backtick code fence. Fenced code
+  is allowed only for actual code/config/literal technical content that genuinely
+  requires code formatting.
+- The instruction short description/title MUST be the first line inside the
   writing-block content.
-- Jangan menggunakan external title/name field untuk membawa short description.
-- Aturan placement ini hanya mengubah presentation header-description; seluruh
-  structure dan semantics lain tetap diatur oleh template ini.
+- Do not use the external title/name field for the short description.
+- This placement rule changes only header-description presentation; all other
+  structure and semantics remain governed by this template.
 
 Heading semantics:
 - For the first Agent Instruction after entering a new technical-agent session, the first-line short description is a destination/context heading, at the scope of the technical work context being entered, for example `Core Module Refinement (MR.2)` or `System Manager (WU2)`.
@@ -55,29 +54,28 @@ Heading semantics:
 
 ## Local Authenticated Writable Workspace — Default
 
-Gunakan ketika local environment tersedia, authenticated, writable, dan memadai.
+Use when the local environment is available, authenticated, writable, and sufficient.
 
-Remote repository/branch tetap menjadi durable authority.
+The remote repository/branch remains the durable authority.
 
-Untuk state baru/resumed/transitioned/untrusted, verifikasi repo/branch/anchor/
-workspace/synchronization yang relevan sebelum write.
+For new/resumed/transitioned/untrusted state, verify the relevant repo/branch/
+anchor/workspace/synchronization before writing.
 
-Untuk same-thread accepted continuation, gunakan Check-and-Run dan jangan mengulang continuity verification yang setara.
+For same-thread accepted continuation, use Check-and-Run and do not repeat equivalent continuity verification.
 
-Jangan melakukan silent normalization atas drift dengan reset/stash/clean/
-discard/force operations.
+Do not silently normalize drift with reset/stash/clean/discard/force operations.
 
-Durable work memerlukan authorized commit, push, dan independent remote verification.
+Durable work requires an authorized commit, push, and independent remote verification.
 
 ## Remote / Cloud Execution
 
-Gunakan ketika dipilih atau secara material lebih sesuai.
+Use when selected or materially preferable.
 
-Sandbox bukan durable authority. Rule full-vs-Check-and-Run yang sama tetap berlaku.
+The sandbox is not durable authority. The same full-vs-Check-and-Run rule applies.
 
 ## Local Runtime Validation
 
-Runtime workspace bukan Git authority. Source fixes harus dilakukan di verified writable Git workspace.
+The runtime workspace is not Git authority. Source fixes belong in the verified writable Git workspace.
 
 # MINIMUM CORE
 
@@ -99,7 +97,7 @@ Runtime workspace bukan Git authority. Source fixes harus dilakukan di verified 
 
 In scope: `<...>`
 
-Di luar scope: `<...>`
+Out of scope: `<...>`
 
 ## AUTHORIZATION
 
@@ -117,11 +115,11 @@ Rules:
 
 Required: `<...>`
 
-Jangan rerun: `<accepted evidence only when repetition must be prevented>`
+Do not rerun: `<accepted evidence only when repetition must be prevented>`
 
 ## STOP CONDITIONS
 
-Stop jika:
+Stop if:
 - remote anchor mismatch;
 - unexpected dirty/material drift;
 - workspace identity cannot be verified;
@@ -133,18 +131,18 @@ Stop jika:
 
 ## REPORT
 
-Laporan compact default:
+Default compact report:
 1. Verification
 2. Changes / Findings
 3. Validation
 4. Blockers / Risks
 5. Final Git / Environment State
 
-Same-thread continuation harus melaporkan material deltas/exceptions, bukan mengonfirmasi ulang accepted state yang tidak berubah.
+Same-thread continuation should report material deltas/exceptions, not reconfirm unchanged accepted state.
 
 # PROJECT SOURCE READING
 
-Gunakan progressive reading:
+Use progressive reading:
 1. project instruction;
 2. target source;
 3. direct dependencies;
@@ -152,11 +150,11 @@ Gunakan progressive reading:
 5. relevant docs/contracts;
 6. expand only if evidence insufficient.
 
-Jangan meminta agent membaca GPT governance atau ChatGPT session history.
+Do not ask the agent to read GPT governance or ChatGPT session history.
 
 # WORKPLAN AND CONCEPT INPUT
 
-Workplan dan Concept artifacts adalah planning inputs, bukan implicit authorization.
+Workplan and Concept artifacts are planning inputs, not implicit authorization.
 
 Rules:
 - never implement an item merely because Workplan marks it NEXT/ACTIVE/PROVISIONAL;
@@ -171,35 +169,35 @@ Rules:
 - Codex may execute provisional Workplan-defined work only when this instruction explicitly authorizes that target;
 - promotion to authoritative repository side must be explicitly authorized as part of the task.
 
-Ketika Concept direferensikan, utamakan canonical Concept title/logical identity dan sertakan exact filename/heading bila task bergantung pada source location tersebut.
+When a Concept is referenced, prefer its canonical Concept title/logical identity and include the exact filename/heading when the task depends on that source location.
 
 # FOCUSED DOCUMENTATION CONSISTENCY AUDIT
 
-Gunakan hanya ketika GPT secara eksplisit mengotorisasi repository documentation audit/correction task.
+Use only when GPT explicitly authorizes a repository documentation audit/correction task.
 
-Operational target wording harus objective, misalnya:
+Operational target wording should be objective, for example:
 
 `Audit materially relevant current repository documentation against accepted committed repository state. Identify and correct stale, contradictory, or misleading current-state wording.`
 
-Jangan mengirim internal `NRP CANDIDATE` terminology kepada agent.
+Do not send internal `NRP CANDIDATE` terminology to the agent.
 
-Pertahankan intentional historical records. Jangan melakukan blind search-and-replace. Non-material style differences bukan blockers.
+Preserve intentional historical records. Do not use blind search-and-replace. Non-material style differences are not blockers.
 
-Jika corrections diotorisasi, commit/push/remote-verify hanya intended material fixes.
+If corrections are authorized, commit/push/remote-verify only intended material fixes.
 
 # DEFERRED ITEM EXECUTION
 
-Deferred Item bukan authorization.
+Deferred Item is not authorization.
 
 `Candidate`, `Unscheduled`, `future`, `KEEP DEFERRED`, `NOT APPLICABLE`, `REJECT`, and `SUPERSEDE` do not authorize implementation.
 
-Hanya explicit instruction/adopted planned scope yang dapat mengeksekusi Deferred Item.
+Only explicit instruction/adopted planned scope may execute a Deferred Item.
 
-Pertahankan stable Deferred Item ID bila tersedia.
+Preserve the stable Deferred Item ID where one exists.
 
 # ACCEPTANCE EVIDENCE
 
-Agent hanya melaporkan technical evidence:
+The agent reports technical evidence only:
 - validation result;
 - AI acceptance evidence;
 - possible human-required criterion;
@@ -207,7 +205,7 @@ Agent hanya melaporkan technical evidence:
 - blocker/risk;
 - final Git/environment state.
 
-Jangan meminta agent memutuskan:
+Do not ask the agent to decide:
 - NRP;
 - ChatGPT session transition;
 - project governance closure;
@@ -216,21 +214,21 @@ Jangan meminta agent memutuskan:
 
 # DEPENDENCY
 
-Sertakan hanya jika materially changes execution.
+Include only if it materially changes execution.
 
 `Dependency: <INDEPENDENT / SOFT / HARD / CLOSURE / BLOCKING>`
 
 `Operational consequence: <continue / hold / stack / merge blocked>`
 
-Utamakan concise accepted predecessor wording dan jangan membuka kembali tanpa concrete regression signal.
+Prefer concise accepted predecessor wording and do not reopen without a concrete regression signal.
 
 # BRANCH LIFECYCLE
 
-Sertakan hanya ketika branch action/audit relevan terhadap authorized task.
+Include only when branch action/audit is relevant to the authorized task.
 
 ## Branch Closure Audit
 
-Untuk workstream closure instruction, jika branch lifecycle termasuk scope, wajibkan evidence untuk:
+For a workstream closure instruction, if branch lifecycle is in scope, require evidence for:
 - workstream commit containment in the accepted integration target;
 - remote branch inventory;
 - ancestry/containment of obsolete candidates;
@@ -241,9 +239,9 @@ Untuk workstream closure instruction, jika branch lifecycle termasuk scope, waji
 - final clean/synchronized workspace where material;
 - explicit `main-only` / `no-op` record when no cleanup is required.
 
-Jangan menghapus berdasarkan branch age/name atau assumption.
+Do not delete based on branch age/name or assumption.
 
-Jika deletion tidak diotorisasi, audit dan laporkan eligibility saja.
+If deletion is not authorized, audit and report eligibility only.
 
 Contoh:
 
@@ -253,23 +251,23 @@ or
 
 `Delete remote feature branch only after containment and zero-ahead verification.`
 
-Jangan menempelkan full governance doctrine ketika concise operation-specific instruction sudah memadai.
+Do not paste the full governance doctrine when a concise operation-specific instruction is sufficient.
 
 # EXECUTION GATES
 
-Gunakan gate sebanyak yang diperlukan task saja.
+Use only as many gates as the task requires.
 
-Untuk same-thread continuation, jangan menambahkan redundant continuity gate hanya untuk mengonfirmasi ulang accepted state.
+For same-thread continuation, do not add a redundant continuity gate merely to reconfirm accepted state.
 
-Jangan melewati failed gate.
+Do not cross a failed gate.
 
 # REMOTE-AUTHORITATIVE GIT RULES
 
-Untuk write task yang initial/resumed/transitioned/untrusted, verifikasi repository identity, remote, branch, anchor, workspace identity/state, included changes, scope, dan authorization yang relevan.
+For initial/resumed/transitioned/untrusted write tasks, verify the relevant repository identity, remote, branch, anchor, workspace identity/state, included changes, scope, and authorization.
 
-Same-thread Check-and-Run mewarisi accepted state dan memeriksa material drift selama eksekusi normal.
+Same-thread Check-and-Run inherits accepted state and checks material drift during normal execution.
 
-Jangan:
+Do not:
 - commit on unexpected branch;
 - push unrelated changes;
 - auto merge/rebase;
@@ -278,15 +276,15 @@ Jangan:
 - treat unpushed commit as authoritative;
 - edit source in unverified runtime copy.
 
-Setelah push, independently verify final remote branch/commit bila memungkinkan.
+After push, independently verify the final remote branch/commit where possible.
 
 # RELEASE / TAG / PUBLICATION
 
-Release advancement terpisah dari feature/workstream completion.
+Release advancement is separate from feature/workstream completion.
 
-Jangan menyimpulkan release need atau release authorization dari completed feature, merged branch, closed workstream, accepted source delta, atau Handoff next target.
+Do not infer release need or release authorization from a completed feature, merged branch, closed workstream, accepted source delta, or Handoff next target.
 
-Tag/release/publication harus diotorisasi dan di-scope secara eksplisit.
+Tag/release/publication must be explicitly authorized and scoped.
 
 # VALIDATION RULES
 
@@ -301,15 +299,15 @@ Tag/release/publication harus diotorisasi dan di-scope secara eksplisit.
 
 # THREAD-LEVEL SAVED CONCEPTS
 
-Technical executors tidak memiliki thread-level saved-concept lifecycle.
+Technical executors do not own the thread-level saved-concept lifecycle.
 
-Jika satu saved Concept secara material memengaruhi execution, GPT harus menerjemahkan hanya required execution delta ke dalam instruction.
+If a saved Concept materially affects execution, GPT must translate only the required execution delta into the instruction.
 
-Jangan meminta Codex merekonstruksi session memory, merekonsiliasi seluruh thread backlog, memutuskan Concept ownership, atau memutuskan apakah saved concept menjadi Workplan/Deferred/repository scope kecuali explicit task memang repository-side documentation/planning implementation dan scope tersebut diotorisasi.
+Do not ask Codex to reconstruct session memory, reconcile the entire thread backlog, decide Concept ownership, or decide whether a saved concept should become Workplan/Deferred/repository scope unless the explicit task is a repository-side documentation/planning implementation and that scope is authorized.
 
 # CONTINUATION TOKEN RULE
 
-Untuk same technical-agent thread, bawa hanya changed target, anchor, authorization, scope, validation, dan stop condition.
+For the same technical-agent thread, carry only the changed target, anchor, authorization, scope, validation, and stop condition.
 
 Use:
 
@@ -323,4 +321,4 @@ Use:
 
 `All other prior boundaries remain unchanged.`
 
-Jangan mengulang governance narrative atau environment/history yang tidak berubah.
+Do not repeat unchanged governance narrative or environment/history.

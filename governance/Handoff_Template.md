@@ -1,5 +1,5 @@
 # `<Title> (<Milestone / WU / Batch>)`
-Date version: 2026-08-30 12:00:41 WIB
+Date version: 2026-08-30 12:19:25 WIB
 
 Ini adalah GPT/model/session continuity artifact untuk COPOT. Ini bukan Agent
 Instruction dan tidak boleh disalin secara utuh ke Work, Codex, atau technical
@@ -53,10 +53,10 @@ judul continuity Handoff.
 
 Pilih judul berdasarkan destination continuity boundary:
 
-- When moving to a new workstream or milestone, use `[Title] ([Milestone])` or `[Title] - [Milestone]`.
+- Saat berpindah ke workstream atau milestone baru, gunakan `[Title] ([Milestone])` atau `[Title] - [Milestone]`.
   - Example: `Core Module Refinement (MR.2)`
   - Example: `Core Module Refinement - MR.2`
-- When moving to a new Work Unit or Batch, use `[Title] ([WU/Batch])` or `[Title] - [WU/Batch]`.
+- Saat berpindah ke Work Unit atau Batch baru, gunakan `[Title] ([WU/Batch])` atau `[Title] - [WU/Batch]`.
   - Example: `System Manager (WU2)`
   - Example: `System Manager - Batch 2`
 
@@ -129,19 +129,19 @@ Planning caveat: `<material caveat / None>`
 
 Aturan:
 - Workplan adalah planning/sequencing/provenance artifact, bukan live mirror dari repository current state;
-- one Workplan may span multiple Work Units, workstreams, and milestones;
-- normal repository advancement during an active workstream does not require immediate Workplan revision;
-- default Workplan reconciliation/consolidation occurs at workstream closure / pre-handoff;
-- earlier Workplan update is warranted only when planning knowledge materially changes, durable planning context is needed before closure, or the user explicitly requests it;
-- repository contracts/documentation remain authoritative for delivered/current lifecycle truth after promotion;
+- satu Workplan dapat mencakup beberapa Work Units, workstreams, dan milestones;
+- normal repository advancement selama active workstream tidak memerlukan immediate Workplan revision;
+- default Workplan reconciliation/consolidation terjadi pada workstream closure / pre-handoff;
+- earlier Workplan update hanya diperlukan ketika planning knowledge berubah secara material, durable planning context dibutuhkan sebelum closure, atau user secara eksplisit memintanya;
+- repository contracts/documentation tetap authoritative untuk delivered/current lifecycle truth setelah promotion;
 - jangan menyalin full Workplan;
 - jangan menyalin full Concept bodies;
-- canonical Concept title is the logical key;
+- canonical Concept title adalah logical key;
 - exact filenames/headings may be included when they improve traceability or continuity;
-- one Concept may have multiple sources and one file may contain multiple Concept identities;
-- promoted/closed Workplan registry entries remain provenance, not execution authority;
-- Workplan/Concept planning context does not override authoritative repository state;
-- session change does not clear unreconciled thread-level saved concepts.
+- satu Concept dapat memiliki beberapa sources dan satu file dapat memuat beberapa Concept identities;
+- promoted/closed Workplan registry entries tetap menjadi provenance, bukan execution authority;
+- Workplan/Concept planning context tidak mengesampingkan authoritative repository state;
+- session change tidak menghapus unreconciled thread-level saved concepts.
 
 ## Conditional Execution Context
 
@@ -374,20 +374,20 @@ Remaining planning assumptions requiring audit before next workstream selection:
 Reconciliation/consolidation required before handoff: `<YES / NO>`
 
 Rule:
-- do not fail this audit merely because repository state advanced during an active workstream;
-- normal default is closure-time reconciliation/consolidation;
-- at closure, reconcile enough planning/provenance state to make next-target selection and handoff non-misleading;
-- if the immediate next WU is already authoritative inside the same active workstream and no planning decision is required, Workplan reconciliation may remain deferred until full workstream closure.
+- jangan menggagalkan audit ini hanya karena repository state maju selama active workstream;
+- default normal adalah reconciliation/consolidation saat closure;
+- saat closure, rekonsiliasikan planning/provenance state secukupnya agar next-target selection dan Handoff tidak menyesatkan;
+- jika next WU langsung sudah authoritative di dalam active workstream yang sama dan tidak diperlukan planning decision, Workplan reconciliation dapat tetap ditunda sampai full workstream closure.
 
 # SESSION-TRANSITION READINESS
 
 NRP status: `<NRP NOT READY / NRP CANDIDATE / NRP CONFIRMED / NRP UNVERIFIABLE>`
 
 Interpretasi:
-- NRP NOT READY: state not sufficiently durable/recoverable;
-- NRP CANDIDATE: technical/project state mature but closure/bootstrap evidence not complete;
-- NRP CONFIRMED: final durable repo/documentation/planning bootstrap state is sufficient for session transition;
-- NRP UNVERIFIABLE: required governance/Handoff/evidence cannot be verified.
+- NRP NOT READY: state belum cukup durable/recoverable;
+- NRP CANDIDATE: technical/project state sudah mature tetapi closure/bootstrap evidence belum lengkap;
+- NRP CONFIRMED: final durable repo/documentation/planning bootstrap state sudah cukup untuk session transition;
+- NRP UNVERIFIABLE: governance/Handoff/evidence yang diperlukan tidak dapat diverifikasi.
 
 NRP evaluation mempertimbangkan:
 - accepted objective project state;
@@ -407,13 +407,13 @@ NRP tidak mengubah repository project/work-unit/milestone state.
 ## Final Repository Stability Gate
 
 Sebelum `NRP CONFIRMED`, catat:
-- intended project mutations complete;
-- documentation corrections complete;
-- objective closure docs complete where required;
-- branch lifecycle/merge/post-merge state complete where required;
-- final authoritative remote SHA verified;
-- materially relevant planning/Concept continuity is either closure-reconciled or explicitly carried forward without misleading next-target selection;
-- no planned repo mutation remains for this closing state.
+    - intended project mutations selesai;
+    - documentation corrections selesai;
+    - objective closure docs selesai bila diperlukan;
+    - branch lifecycle/merge/post-merge state selesai bila diperlukan;
+    - final authoritative remote SHA terverifikasi;
+    - planning/Concept continuity yang material sudah closure-reconciled atau secara eksplisit dibawa ke depan tanpa menyesatkan next-target selection;
+    - tidak ada planned repo mutation yang tersisa untuk closing state ini.
 
 Jika repository berubah setelah assumed final anchor, refresh closure evidence dan tetap/kembali ke NRP CANDIDATE sampai new final state diverifikasi.
 
@@ -479,14 +479,14 @@ Jangan melakukan silent fallback ke older Git revision, obsolete timestamped
 repository file, historical File Library copy, memory, chat history, atau
 summary ketika canonical governance tidak dapat dibaca/diverifikasi.
 
-10. Verify remote continuity inside the first relevant task.
-11. Do not repeat full accepted audit/validation without concrete regression signal.
-12. Review only materially relevant Deferred Items; do not auto-adopt.
-13. Do not infer technical authorization from Handoff, Workplan, Concept, or NRP status.
-14. Do not infer direct-transfer authorization from execution-routing recommendations or tool availability.
-15. Do not infer release/tag/publication authorization from feature/workstream closure.
-16. Before generating any Agent Instruction in the new session, read canonical `governance/Agent_Instruction_Template.md`; obtain the instruction structure there rather than from this Handoff.
-17. Handoff may carry only material segment-level expectations for a future Agent Instruction, such as heading/title semantics, target, Git context when relevant, scope, authorization, validation, stop conditions, report, and conditional segments when material. Do not hardcode, duplicate, or copy the Agent Instruction template structure into this Handoff.
+10. Verifikasi remote continuity di dalam task relevan pertama.
+11. Jangan mengulangi full accepted audit/validation tanpa concrete regression signal.
+12. Review hanya Deferred Item yang material; jangan melakukan auto-adopt.
+13. Jangan menyimpulkan technical authorization dari Handoff, Workplan, Concept, atau NRP status.
+14. Jangan menyimpulkan direct-transfer authorization dari execution-routing recommendation atau tool availability.
+15. Jangan menyimpulkan release/tag/publication authorization dari feature/workstream closure.
+16. Sebelum membuat Agent Instruction apa pun di session baru, baca canonical `governance/Agent_Instruction_Template.md`; ambil struktur instruction dari sana, bukan dari Handoff ini.
+17. Handoff hanya boleh membawa ekspektasi level-segment yang material untuk Agent Instruction masa depan, seperti heading/title semantics, target, Git context bila relevan, scope, authorization, validation, stop conditions, report, dan conditional segments bila material. Jangan hardcode, duplikasi, atau menyalin struktur Agent Instruction template ke dalam Handoff ini.
 
 Continuity status: `<MATCH / CHANGED / CONFLICT / UNVERIFIABLE / NOT TRIGGERED>`
 
@@ -521,19 +521,19 @@ Readiness: `<READY / REQUIRES GOVERNANCE RECOVERY / ANCHOR CONFLICT / WORKSPACE 
 # AUTOMATIC HANDOFF
 
 Ketika user memilih session baru:
-- use canonical `governance/Handoff_Template.md`;
-- fill required core;
-- include conditional Workplan/Concept context only when material;
-- reconcile/consolidate Workplan at workstream closure before handoff when it is needed to decide or explain the next planning target;
-- do not force a Workplan refresh merely because repository state advanced during an active workstream;
-- omit obsolete history, rejected options, resolved troubleshooting, redundant logs, and old planning revisions;
-- preserve exact final remote anchor and next target;
-- preserve material blockers/deferred/risks;
-- preserve unresolved thread-level continuity payload until durable disposition;
-- keep executor instruction concerns out of the Handoff body except routing context necessary for next GPT session;
-- generation of Handoff does **not** authorize direct transfer to Work/Codex/another destination;
-- never invoke or transfer to Work/Codex merely because the Handoff recommends that execution route;
-- if the user explicitly requests direct transfer, derive a separate Agent Instruction using canonical `governance/Agent_Instruction_Template.md` and route only that instruction.
+- gunakan canonical `governance/Handoff_Template.md`;
+- isi required core;
+- sertakan conditional Workplan/Concept context hanya bila material;
+- lakukan reconciliation/consolidation Workplan saat workstream closure sebelum Handoff bila diperlukan untuk menentukan atau menjelaskan planning target berikutnya;
+- jangan memaksa Workplan refresh hanya karena repository state maju selama active workstream;
+- hilangkan obsolete history, rejected options, resolved troubleshooting, redundant logs, dan old planning revisions;
+- pertahankan exact final remote anchor dan next target;
+- pertahankan blocker/deferred/risks yang material;
+- pertahankan unresolved thread-level continuity payload sampai memiliki durable disposition;
+- jangan memasukkan executor instruction concerns ke body Handoff selain routing context yang diperlukan untuk session GPT berikutnya;
+- pembuatan Handoff **tidak** mengotorisasi direct transfer ke Work/Codex/destination lain;
+- jangan pernah melakukan invoke atau transfer ke Work/Codex hanya karena Handoff merekomendasikan execution route tersebut;
+- jika user secara eksplisit meminta direct transfer, turunkan Agent Instruction terpisah menggunakan canonical `governance/Agent_Instruction_Template.md` dan rutekan hanya instruction tersebut.
 
 # CLOSURE STATEMENT
 
