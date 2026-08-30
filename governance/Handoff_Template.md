@@ -1,5 +1,5 @@
 # `<Title> (<Milestone / WU / Batch>)`
-Date version: 2026-08-30 11:59:13 WIB
+Date version: 2026-08-30 11:59:56 WIB
 
 Ini adalah GPT/model/session continuity artifact untuk COPOT. Ini bukan Agent
 Instruction dan tidak boleh disalin secara utuh ke Work, Codex, atau technical
@@ -119,7 +119,7 @@ Promotion candidate(s): `<logical target(s) / None>`
 
 Promoted/closed registry entries still material to lineage: `<logical target(s) / None>`
 
-Relevant Concept identities and sources:
+Relevant Concept identities dan sources:
 - `<canonical title> — <exact source file + heading when material>`
 - `<canonical title> — <exact source file + heading when material>`
 

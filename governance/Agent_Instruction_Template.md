@@ -1,5 +1,5 @@
 # GENERAL AI AGENT INSTRUCTION TEMPLATE
-Date version: 2026-08-30 11:36:13 WIB
+Date version: 2026-08-30 11:59:56 WIB
 
 ## TEMPLATE USAGE
 
@@ -99,7 +99,7 @@ Runtime workspace bukan Git authority. Source fixes harus dilakukan di verified 
 
 In scope: `<...>`
 
-Out of scope: `<...>`
+Di luar scope: `<...>`
 
 ## AUTHORIZATION
 
@@ -121,7 +121,7 @@ Jangan rerun: `<accepted evidence only when repetition must be prevented>`
 
 ## STOP CONDITIONS
 
-Stop if:
+Stop jika:
 - remote anchor mismatch;
 - unexpected dirty/material drift;
 - workspace identity cannot be verified;
@@ -133,7 +133,7 @@ Stop if:
 
 ## REPORT
 
-Default compact report:
+Laporan compact default:
 1. Verification
 2. Changes / Findings
 3. Validation
@@ -199,7 +199,7 @@ Pertahankan stable Deferred Item ID bila tersedia.
 
 # ACCEPTANCE EVIDENCE
 
-Agent reports technical evidence only:
+Agent hanya melaporkan technical evidence:
 - validation result;
 - AI acceptance evidence;
 - possible human-required criterion;
@@ -265,7 +265,7 @@ Jangan melewati failed gate.
 
 # REMOTE-AUTHORITATIVE GIT RULES
 
-Initial/resumed/transitioned/untrusted write tasks verify relevant repository identity, remote, branch, anchor, workspace identity/state, included changes, scope, and authorization.
+Untuk write task yang initial/resumed/transitioned/untrusted, verifikasi repository identity, remote, branch, anchor, workspace identity/state, included changes, scope, dan authorization yang relevan.
 
 Same-thread Check-and-Run mewarisi accepted state dan memeriksa material drift selama eksekusi normal.
 
@@ -282,11 +282,11 @@ Setelah push, independently verify final remote branch/commit bila memungkinkan.
 
 # RELEASE / TAG / PUBLICATION
 
-Release advancement is separate from feature/workstream completion.
+Release advancement terpisah dari feature/workstream completion.
 
 Jangan menyimpulkan release need atau release authorization dari completed feature, merged branch, closed workstream, accepted source delta, atau Handoff next target.
 
-Tag/release/publication must be explicitly authorized and scoped.
+Tag/release/publication harus diotorisasi dan di-scope secara eksplisit.
 
 # VALIDATION RULES
 
