@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-08-30 13:03:17 WIB
+Date version: 2026-08-30 14:40:00 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -52,6 +52,8 @@ Authoritative branch: `main`
 
 Current durable planning state:
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
+- Webcore Product Completeness & Stabilization: PROMOTED / CONTRACT LOCKED /
+  PRE-IMPLEMENTATION / NOT IMPLEMENTATION-AUTHORIZED;
 - MR.2: COMPLETE / CLOSED;
 - MR.2 WU1–WU8: COMPLETE AND CLOSED;
 - Webcore Content Admin Baseline: COMPLETE / CLOSED; corrective prerequisite
@@ -359,7 +361,7 @@ Planning action: NONE / PROVENANCE
 
 ### Webcore Product Completeness & Stabilization
 Class: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
-Status: FUTURE / NEXT PREPARATION TARGET / AUDIT COMPLETE / NOT IMPLEMENTATION-AUTHORIZED
+Status: PROMOTED / CONTRACT LOCKED / PRE-IMPLEMENTATION / NOT IMPLEMENTATION-AUTHORIZED
 
 Sources:
 - `concepts/copot_site_color_scheme_concept.md` [PRIMARY GIT CONCEPT]
@@ -368,9 +370,10 @@ Sources:
 Pre-contract:
 - `precontracts/webcore_product_completeness_stabilization_precontract.md`
 
-Pre-contract status: MATERIALIZED / PRE-PROMOTION PLANNING / NOT AUTHORITATIVE
+Pre-contract status: PROMOTED / HISTORICAL PROVENANCE
 
 Authority:
+- `docs/49_webcore_product_completeness_stabilization_contract.md` [PRIMARY WORKSTREAM AUTHORITY]
 - `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md` for accepted Webcore ownership and boundary evidence only
 - `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md` for accepted System Manager and Branding baseline evidence only
 
@@ -398,7 +401,7 @@ Preserved negative findings:
 - Content baseline and Built-in Public View are already delivered;
 - System Manager is not to be wholesale reopened.
 
-Provisional WU skeleton — all NOT AUTHORIZED / NOT STARTED:
+Promoted WU topology — all implementation NOT AUTHORIZED / NOT STARTED:
 1. WU1 — Webcore Completeness Contract & Scope Reconciliation
 2. WU2 — Core Media Admin Baseline
 3. WU3 — Core Primary Navigation Admin Baseline
@@ -418,7 +421,7 @@ Human/product readiness gate:
 - Site Settings human/product review occurs inside this Webcore workstream
   before relevant scope acceptance.
 
-Planning action: KEEP / NEXT PREPARATION TARGET / PRE-CONTRACT MATERIALIZED / PROMOTION REVIEW NEXT
+Planning action: KEEP / PROMOTED SCOPE LOCKED / WU1 PREPARATION NEXT / IMPLEMENTATION NOT AUTHORIZED
 
 ### Production Webcore Reconciliation
 Class: OPERATIONAL GATE
@@ -1116,10 +1119,10 @@ Concept file was modified.
 
 ## 9. Immediate Next Planning Target
 
-MR.2 is complete and closed. No new MR.2 implementation target is exposed by
-this closure. Shared File Intake remains a future cross-surface planning
-concept outside MR.2 and is not implementation-authorized; no next
-implementation workstream is selected here.
+MR.2 is complete and closed. The next preparation target is WU1 — Webcore
+Completeness Contract & Scope Reconciliation under the promoted
+`docs/49_webcore_product_completeness_stabilization_contract.md` boundary.
+No technical implementation is authorized by this Workplan entry alone.
 
 ## 10. Retention and Planning Freshness
 
