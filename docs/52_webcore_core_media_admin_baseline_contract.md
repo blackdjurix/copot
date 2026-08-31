@@ -14,8 +14,8 @@ Release / tag / publication authorization: NONE
 
 WU2 implementation, focused validation, disposable-runtime verification, and
 human acceptance are complete for the locked baseline boundary. The accepted
-feature state is committed on `feature/webcore-media-wu2-baseline` and awaits
-fast-forward integration into `main`; WU3-WU6 remain not started.
+feature state was fast-forward integrated into `main` at
+`14e7ed09681b9f60d57853826a12359d8e2efd8a`; WU3-WU6 remain not started.
 
 This contract establishes the exact execution boundary for WU2 under
 `docs/49_webcore_product_completeness_stabilization_contract.md` and the locked
