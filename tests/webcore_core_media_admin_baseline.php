@@ -67,15 +67,18 @@ try {
     $assert(substr_count($inventoryHtml, 'admin-page-frame__title') === 1, 'Core inventory still duplicates its shared Page Frame heading.');
     $assert(!str_contains($inventoryHtml, 'name="title"'), 'Core inventory still exposes baseline title editing.');
     $png = tempnam(sys_get_temp_dir(), 'copot-wu2-'); file_put_contents($png, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', true));
-    $request = new Request('POST', $uploadPath, [], ['_token' => $app->csrf()->token(), 'title' => 'Baseline image'], ['media' => ['name' => 'baseline.png', 'type' => 'bad', 'tmp_name' => $png, 'error' => UPLOAD_ERR_OK, 'size' => filesize($png)]]);
+    $request = new Request('POST', $uploadPath, [], ['_token' => $app->csrf()->token()], ['media' => ['name' => 'baseline.png', 'type' => 'bad', 'tmp_name' => $png, 'error' => UPLOAD_ERR_OK, 'size' => filesize($png)]]);
     $uploadResponse = $app->run($request); $assert($status($uploadResponse) === 302 && str_contains($location($uploadResponse), 'notice=uploaded'), 'Core upload failed.');
     $id = (int) $db->query('SELECT id FROM media ORDER BY id DESC LIMIT 1')->fetchColumn(); $assert($id > 0, 'Core upload did not persist Media.');
+    $assert($db->query('SELECT title FROM media WHERE id = ' . $id)->fetchColumn() === 'baseline', 'Upload compatibility fallback did not derive the persisted title from the filename.');
     $assert($status($app->run(new Request('GET', $app->adminUrl()->childUrl('media/select')))) === 200, 'Generic Media selection failed.');
     $assert($status($app->run(new Request('GET', $app->url('/media/' . $id)))) === 200, 'Core original Media delivery failed.');
     $uploadHtml = $body($app->run(new Request('GET', $uploadPath)));
-    $assert(str_contains($uploadHtml, 'admin-page-frame') && str_contains($uploadHtml, 'aria-label="Breadcrumb"'), 'Upload surface did not use the shared Page Frame hierarchy.');
+    $assert(str_contains($uploadHtml, 'admin-page-frame') && str_contains($uploadHtml, 'aria-label="Breadcrumb"') && str_contains($uploadHtml, '>Upload</button>'), 'Upload surface did not use the shared Page Frame hierarchy or accepted action label.');
+    $assert(!str_contains($uploadHtml, 'name="title"') && !str_contains($uploadHtml, 'View Media'), 'Upload surface retained the removed title field or redundant return action.');
     $postUploadHtml = $body($app->run(new Request('GET', $mediaPath)));
-    $assert(str_contains($postUploadHtml, 'data-media-preview-open') && str_contains($postUploadHtml, 'admin-core-media.js'), 'Core Media thumbnail/quick-preview surface is missing.');
+    $assert(str_contains($postUploadHtml, 'data-media-preview-open') && str_contains($postUploadHtml, 'role="button"') && str_contains($postUploadHtml, 'admin-core-media.js'), 'Core Media row activation or quick-preview surface is missing.');
+    $assert(!str_contains($postUploadHtml, '<th scope="col">Action') && !str_contains($postUploadHtml, '>Preview</button>'), 'Core Media retained a dedicated action/preview column.');
     $assert($status($app->run(new Request('POST', $app->adminUrl()->childUrl("media/{$id}/title"), [], ['title' => 'not a baseline route']))) === 404, 'Core baseline retained title editing presentation.');
     $lifecycle = new MediaLifecycleService($app->database(), new MediaRepository($app->database()), null, new MediaUsageRepository($app->database()), new \Copot\Core\MediaFilesystemStorage($basePath . '/storage/media'));
     $lifecycle->registerUsage($id, 'test', 1, 'reference');
@@ -86,6 +89,9 @@ try {
     $source = (string) file_get_contents($basePath . '/routes/media_admin.php'); $module = (string) file_get_contents($basePath . '/modules/media/routes.php');
     $assert(!str_contains($source, 'MediaProcessing') && !str_contains($source, 'MediaVariant') && !str_contains($source, 'MediaPending'), 'Core baseline acquired an extension dependency.');
     $assert(!str_contains($module, "adminNavigation()->add('Media'") && !str_contains($module, "get('/media/{id}'"), 'Media Module retained a competing baseline registration.');
+    $coreScript = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-core-media.js'); $coreCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
+    $assert(str_contains($coreScript, "event.key !== 'Enter'") && str_contains($coreScript, "event.key !== ' '") && str_contains($coreScript, 'origin.focus'), 'Core Media row/preview keyboard and focus behavior is incomplete.');
+    $assert(str_contains($coreScript, 'mediaDeleteEligible') && str_contains($coreScript, 'data-media-preview-close') && str_contains($coreCss, 'object-fit: contain'), 'Core Media preview eligibility or bounded aspect-ratio behavior is incomplete.');
     echo "Webcore Core Media Admin baseline passed ({$assertions} assertions)." . PHP_EOL;
 } finally {
     $server->exec('DROP DATABASE IF EXISTS ' . $quoted);
