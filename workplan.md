@@ -53,7 +53,7 @@ Authoritative branch: `main`
 Current durable planning state:
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
 - Webcore Product Completeness & Stabilization: PROMOTED / CONTRACT LOCKED /
-  PRE-IMPLEMENTATION / NOT IMPLEMENTATION-AUTHORIZED;
+  WU1 COMPLETE / WU2 COMPLETE / WU3-WU6 NOT STARTED;
 - MR.2: COMPLETE / CLOSED;
 - MR.2 WU1–WU8: COMPLETE AND CLOSED;
 - Webcore Content Admin Baseline: COMPLETE / CLOSED; corrective prerequisite
@@ -421,7 +421,7 @@ Human/product readiness gate:
 - Site Settings human/product review occurs inside this Webcore workstream
   before relevant scope acceptance.
 
-Planning action: KEEP / PROMOTED SCOPE LOCKED / WU1 PREPARATION NEXT / IMPLEMENTATION NOT AUTHORIZED
+Planning action: KEEP / PROMOTED SCOPE LOCKED / WU2 COMPLETE / WU3 PREPARATION NEXT
 
 ### Production Webcore Reconciliation
 Class: OPERATIONAL GATE
@@ -1119,10 +1119,12 @@ Concept file was modified.
 
 ## 9. Immediate Next Planning Target
 
-MR.2 is complete and closed. The next preparation target is WU1 — Webcore
-Completeness Contract & Scope Reconciliation under the promoted
-`docs/49_webcore_product_completeness_stabilization_contract.md` boundary.
-No technical implementation is authorized by this Workplan entry alone.
+MR.2 is complete and closed. WU1 — Webcore Completeness Contract & Scope
+Reconciliation is complete, and WU2 — Core Media Admin Baseline is complete on
+its feature branch under the promoted `docs/49_webcore_product_completeness_stabilization_contract.md`
+boundary. The next preparation target is WU3 — Core Primary Navigation Admin
+Baseline. No technical implementation is authorized by this Workplan entry
+alone.
 
 ## 10. Retention and Planning Freshness
 

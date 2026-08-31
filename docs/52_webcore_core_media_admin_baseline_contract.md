@@ -5,10 +5,17 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU2 — Core Media Admin Baseline
 Contract status: PROMOTED / CONTRACT LOCKED
-WU2 implementation: NOT STARTED
+WU2 implementation: COMPLETE / ACCEPTED
 WU3-WU6 implementation: NOT STARTED
 Technical implementation authorization: NONE
 Release / tag / publication authorization: NONE
+
+## WU2 closure record
+
+WU2 implementation, focused validation, disposable-runtime verification, and
+human acceptance are complete for the locked baseline boundary. The accepted
+feature state is committed on `feature/webcore-media-wu2-baseline` and awaits
+fast-forward integration into `main`; WU3-WU6 remain not started.
 
 This contract establishes the exact execution boundary for WU2 under
 `docs/49_webcore_product_completeness_stabilization_contract.md` and the locked

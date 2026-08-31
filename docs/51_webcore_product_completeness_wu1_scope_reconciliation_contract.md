@@ -6,7 +6,8 @@ Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU1 — Webcore Completeness Contract & Scope Reconciliation
 WU1 status: COMPLETE / CONTRACT LOCKED
 Technical implementation performed by WU1: NONE
-WU2-WU6 implementation: NOT STARTED
+WU2 implementation: COMPLETE / ACCEPTED on feature branch
+WU3-WU6 implementation: NOT STARTED
 Release / tag / publication authorization: NONE
 
 This contract closes WU1 as the authoritative scope-reconciliation unit under

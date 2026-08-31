@@ -6,9 +6,9 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Classification: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
 Contract status: PROMOTED / CONTRACT LOCKED
-Workstream implementation: NOT STARTED
-WU1-WU6 implementation: NOT STARTED
-Technical implementation authorization: NONE
+Workstream implementation: PARTIAL — WU1 COMPLETE / WU2 COMPLETE
+WU1-WU6 implementation: WU1 COMPLETE / WU2 COMPLETE / WU3-WU6 NOT STARTED
+Technical implementation authorization: WU2 separately authorized and complete; future units remain separately gated
 Release / tag / publication authorization: NONE
 ```
 
