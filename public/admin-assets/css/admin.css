@@ -227,6 +227,11 @@ table {
 
 .admin-media-baseline-table tr[data-media-preview-open] {
     cursor: pointer;
+    transition: background-color 120ms ease;
+}
+
+.admin-media-baseline-table tr[data-media-preview-open]:hover {
+    background: var(--admin-color-bg);
 }
 
 .admin-media-baseline-table tr[data-media-preview-open]:focus-visible {
@@ -2053,8 +2058,8 @@ dd {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: var(--admin-space-4);
+    padding-right: calc(2.75rem + var(--admin-space-2));
 }
 
 .admin-media-preview__header h2 {
@@ -2063,18 +2068,29 @@ dd {
 }
 
 .admin-media-preview__close {
+    position: absolute;
+    top: var(--admin-space-3);
+    right: var(--admin-space-3);
+    z-index: 2;
     display: grid;
     place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
+    width: 2.75rem;
+    height: 2.75rem;
     min-height: 0;
     padding: 0;
-    border: 1px solid var(--admin-color-border);
-    border-radius: 50%;
-    color: var(--admin-color-text);
-    background: var(--admin-color-surface);
-    font-size: 1.5rem;
+    border: 0;
+    border-radius: 0;
+    color: var(--admin-color-muted);
+    background: transparent;
+    font: inherit;
+    font-size: 1.75rem;
+    font-weight: 400;
     line-height: 1;
+}
+
+.admin-media-preview__close:hover {
+    color: var(--admin-color-text);
+    background: transparent;
 }
 
 .admin-media-preview__stage {
@@ -2156,9 +2172,19 @@ dd {
     grid-column: 2;
     grid-row: 2;
     align-content: start;
-    grid-template-columns: max-content minmax(0, 1fr);
-    gap: var(--admin-space-3) var(--admin-space-4);
+    grid-template-columns: 1fr;
+    gap: var(--admin-space-2);
     color: var(--admin-color-muted);
+}
+
+.admin-media-preview__details dt {
+    font-size: 0.8125rem;
+    font-weight: 800;
+}
+
+.admin-media-preview__details dd {
+    margin: 0 0 var(--admin-space-2);
+    color: var(--admin-color-text);
 }
 
 .admin-media-preview__details strong {
@@ -2263,6 +2289,7 @@ html.admin-media-preview-open body {
     .admin-media-preview__details {
         grid-column: 1;
         grid-row: 3;
+        grid-template-columns: 1fr;
     }
 
     .admin-media-preview__actions {

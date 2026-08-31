@@ -63,7 +63,7 @@ try {
     $mediaPath = $app->adminUrl()->childUrl('media'); $uploadPath = $app->adminUrl()->childUrl('media/upload');
     $assert($status($app->run(new Request('GET', $mediaPath))) === 200, 'Core Media Admin did not operate without the Media Module.');
     $inventoryHtml = $body($app->run(new Request('GET', $mediaPath)));
-    $assert(str_contains($inventoryHtml, 'Core Media inventory') && str_contains($inventoryHtml, 'admin-page-frame'), 'Core inventory view was not rendered through the shared Page Frame.');
+    $assert(!str_contains($inventoryHtml, 'Core Media inventory') && str_contains($inventoryHtml, 'admin-page-frame'), 'Core inventory view was not rendered through the shared Page Frame without the removed caption.');
     $assert(substr_count($inventoryHtml, 'admin-page-frame__title') === 1, 'Core inventory still duplicates its shared Page Frame heading.');
     $assert(!str_contains($inventoryHtml, 'name="title"'), 'Core inventory still exposes baseline title editing.');
     $png = tempnam(sys_get_temp_dir(), 'copot-wu2-'); file_put_contents($png, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', true));
@@ -78,7 +78,7 @@ try {
     $assert(!str_contains($uploadHtml, 'name="title"') && !str_contains($uploadHtml, 'View Media'), 'Upload surface retained the removed title field or redundant return action.');
     $postUploadHtml = $body($app->run(new Request('GET', $mediaPath)));
     $assert(str_contains($postUploadHtml, 'data-media-preview-open') && str_contains($postUploadHtml, 'role="button"') && str_contains($postUploadHtml, 'admin-core-media.js') && str_contains($postUploadHtml, '>Upload</a>'), 'Core Media row activation, quick-preview surface, or accepted upload label is missing.');
-    $assert(!str_contains($postUploadHtml, '<th scope="col">Action') && !str_contains($postUploadHtml, '>Preview</button>'), 'Core Media retained a dedicated action/preview column.');
+    $assert(str_contains($postUploadHtml, 'aria-label="Media"') && !str_contains($postUploadHtml, 'Core Media inventory') && !str_contains($postUploadHtml, '<th scope="col">Action') && !str_contains($postUploadHtml, '>Preview</button>'), 'Core Media retained an inaccessible caption or dedicated action/preview column.');
     $assert($status($app->run(new Request('POST', $app->adminUrl()->childUrl("media/{$id}/title"), [], ['title' => 'not a baseline route']))) === 404, 'Core baseline retained title editing presentation.');
     $lifecycle = new MediaLifecycleService($app->database(), new MediaRepository($app->database()), null, new MediaUsageRepository($app->database()), new \Copot\Core\MediaFilesystemStorage($basePath . '/storage/media'));
     $lifecycle->registerUsage($id, 'test', 1, 'reference');
@@ -92,6 +92,7 @@ try {
     $coreScript = (string) file_get_contents($basePath . '/public/admin-assets/js/admin-core-media.js'); $coreCss = (string) file_get_contents($basePath . '/public/admin-assets/css/admin.css');
     $assert(str_contains($coreScript, "event.key !== 'Enter'") && str_contains($coreScript, "event.key !== ' '") && str_contains($coreScript, 'origin.focus'), 'Core Media row/preview keyboard and focus behavior is incomplete.');
     $assert(str_contains($coreScript, 'mediaDeleteEligible') && str_contains($coreScript, 'data-media-preview-close') && str_contains($coreCss, 'object-fit: contain'), 'Core Media preview eligibility or bounded aspect-ratio behavior is incomplete.');
+    $assert(str_contains($coreCss, 'tr[data-media-preview-open]:hover') && str_contains($coreCss, 'position: absolute') && str_contains($coreCss, 'border: 0') && str_contains($coreCss, 'background: transparent') && str_contains($coreCss, 'grid-template-columns: 1fr'), 'Core Media acceptance affordances do not provide row feedback, a transparent dialog close control, or stacked details.');
     echo "Webcore Core Media Admin baseline passed ({$assertions} assertions)." . PHP_EOL;
 } finally {
     $server->exec('DROP DATABASE IF EXISTS ' . $quoted);

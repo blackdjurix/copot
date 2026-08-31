@@ -12,7 +12,7 @@ $noticeText = match ($notice ?? null) {
 <?php if ($items === []): ?>
     <div class="admin-panel admin-empty-state"><h2>No media yet</h2><p>Upload an image or document to begin.</p></div>
 <?php else: ?>
-    <div class="admin-table-wrap admin-media-baseline-table"><table class="admin-table"><caption class="sr-only">Core Media inventory</caption><thead><tr><th scope="col">Media</th><th scope="col">Type</th><th scope="col">Usage</th></tr></thead><tbody>
+    <div class="admin-table-wrap admin-media-baseline-table"><table class="admin-table" aria-label="Media"><thead><tr><th scope="col">Media</th><th scope="col">Type</th><th scope="col">Usage</th></tr></thead><tbody>
     <?php foreach ($items as $item): $id = $item->id()->value(); $usageCount = count($evidence[$id] ?? []); $eligibleForDelete = $canDelete && $usageCount === 0; ?>
         <tr data-media-preview-open tabindex="0" role="button" aria-label="Preview <?= $esc($item->originalFilename()) ?>" data-media-title="<?= $esc($item->title()) ?>" data-media-filename="<?= $esc($item->originalFilename()) ?>" data-media-kind="<?= $esc($item->kind()) ?>" data-media-mime="<?= $esc($item->mimeType()) ?>" data-media-width="<?= $esc($item->width() ?? '') ?>" data-media-height="<?= $esc($item->height() ?? '') ?>" data-media-url="<?= $esc($mediaUrl($id)) ?>" data-media-usage="<?= $esc($usageCount) ?>" data-media-delete-eligible="<?= $eligibleForDelete ? '1' : '0' ?>" data-media-delete-url="<?= $esc($adminUrl('media/' . $id . '/delete')) ?>">
             <td>
@@ -31,7 +31,8 @@ $noticeText = match ($notice ?? null) {
     <div class="admin-media-preview" data-media-preview hidden aria-hidden="true">
         <div class="admin-media-preview__backdrop" data-media-preview-close></div>
         <section class="admin-media-preview__dialog" role="dialog" aria-modal="true" aria-labelledby="media-preview-title" tabindex="-1">
-            <header class="admin-media-preview__header"><h2 id="media-preview-title">Media preview</h2><button class="admin-media-preview__close" type="button" data-media-preview-close aria-label="Close">×</button></header>
+            <button class="admin-media-preview__close" type="button" data-media-preview-close aria-label="Close">×</button>
+            <header class="admin-media-preview__header"><h2 id="media-preview-title">Media preview</h2></header>
             <div class="admin-media-preview__stage" data-media-preview-stage></div>
             <dl class="admin-media-preview__details" data-media-preview-details></dl>
             <?php if ($canDelete): ?><div class="admin-media-preview__actions"><form method="post" data-media-preview-delete><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><button class="admin-button admin-button--danger" type="submit" data-media-preview-delete-button>Delete</button></form></div><?php endif; ?>
