@@ -40,6 +40,7 @@ require $basePath . '/routes/web.php';
 require $basePath . '/routes/auth.php';
 require $basePath . '/routes/admin.php';
 require $basePath . '/routes/content_admin.php';
+require $basePath . '/routes/media_admin.php';
 require $basePath . '/routes/system_manager.php';
 
 $app->moduleLoader()->loadListeners($app);

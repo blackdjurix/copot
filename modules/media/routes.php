@@ -46,9 +46,7 @@ $mediaId = static function (string $value): ?int { return preg_match('/^[1-9][0-
 $mediaUrl = static fn (string $path): string => method_exists($app, 'url') ? $app->url($path) : $path;
 $mediaUrl = static fn (string $path): string => method_exists($app, 'url') ? $app->url($path) : $path;
 $notFound = static fn (): \Copot\Core\Response => \Copot\Core\Response::content('404 Not Found', 404, ['Content-Type' => 'text/plain; charset=UTF-8', 'Cache-Control' => 'no-store', 'X-Content-Type-Options' => 'nosniff']);
-$app->router()->get('/media/{id}/download', static function ($request, array $params) use ($mediaDelivery, $mediaId, $notFound) { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); try { return $mediaDelivery->download($id); } catch (Throwable) { return $notFound(); } });
 $app->router()->get('/media/{id}/variant/{key}', static function ($request, array $params) use ($mediaVariantDelivery, $mediaId, $notFound): Response { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); return $mediaVariantDelivery->inline($id, (string) ($params['key'] ?? '')); });
-$app->router()->get('/media/{id}', static function ($request, array $params) use ($mediaDelivery, $mediaId, $notFound) { $id = $mediaId($params['id'] ?? ''); if ($id === null) return $notFound(); try { return $mediaDelivery->inline($id); } catch (Throwable) { return $notFound(); } });
 
 if (!method_exists($app, 'adminUrl') || !method_exists($app, 'adminNavigation')) {
     return;
@@ -64,7 +62,6 @@ $mediaAdminBase = $mediaAdminUrl->baseUrl();
 $mediaAdminPath = $mediaAdminUrl->childUrl('media');
 $mediaUploadPath = $mediaAdminUrl->childUrl('media/upload');
 $mediaPickerPath = $mediaAdminUrl->childUrl('media/context-picker');
-$app->adminNavigation()->add('Media', $mediaAdminPath, 'media.view', 'image', 25);
 
 
 $mediaRenderView = static function (string $view, array $data = []) use ($app, $mediaAdminUrl): string {
@@ -108,17 +105,6 @@ $app->router()->get($mediaPickerPath, function ($request) use ($mediaRequireAdmi
     usort($prepared, static fn (MediaVariant $a, MediaVariant $b): int => ($b->width() ?? 0) <=> ($a->width() ?? 0));
     $descriptor = $currentAllowed && $prepared !== [] ? ['id' => $current->id()->value(), 'title' => $current->title(), 'original_filename' => $current->originalFilename(), 'url' => $mediaUrl('/media/' . $current->id()->value() . '/variant/' . rawurlencode($prepared[0]->variantKey())), 'srcset' => implode(', ', array_map(fn (MediaVariant $variant): string => $mediaUrl('/media/' . $current->id()->value() . '/variant/' . rawurlencode($variant->variantKey())) . ' ' . (int) $variant->width() . 'w', $prepared)), 'width' => $prepared[0]->width(), 'height' => $prepared[0]->height(), 'alt' => $current->title() !== '' ? $current->title() : $current->originalFilename()] : null;
     return Response::content(json_encode(['items' => $items, 'total' => $workspace['total'], 'page' => max(1, (int) $request->input('page', 1)), 'per_page' => 24, 'current' => $descriptor, 'stale' => $currentId !== '' && (!$currentAllowed || $descriptor === null)], JSON_THROW_ON_ERROR), 200, ['Content-Type' => 'application/json; charset=UTF-8', 'Cache-Control' => 'no-store']);
-});
-$app->router()->post($app->adminUrl()->childUrl('media/{id}/delete'), function ($request, array $params) use ($app, $mediaRequireAdmin, $mediaValidateCsrf, $mediaLifecycle, $mediaRepository, $mediaUsages, $mediaId, $mediaAdminPath): Response {
-    $user = $mediaRequireAdmin($request, ['media.delete']); if ($user instanceof Response) return $user;
-    $csrf = $mediaValidateCsrf($request); if ($csrf) return $csrf;
-    $id = $mediaId((string) ($params['id'] ?? '')); if ($id === null || !$mediaRepository->findById($id)) return Response::content('404 Not Found', 404);
-    try { $mediaLifecycle->delete($id); return Response::redirect($mediaAdminPath . '?notice=deleted'); }
-    catch (MediaInUseException) {
-        $details = array_map(static function (MediaUsage $usage): string { return $usage->consumerType() === 'content' && $usage->usageKey() === 'featured_media' ? 'Content #' . $usage->consumerId() . ' — Featured media' : 'Media is used by another managed record.'; }, array_slice($mediaUsages->forMedia($id), 0, 8));
-        $message = 'Media cannot be deleted while it is in use.' . ($details !== [] ? ' ' . $details[0] : '');
-        return Response::redirect($mediaAdminPath . '?error=' . rawurlencode($message), 303);
-    } catch (Throwable) { return $app->adminErrors()->response($request, 503); }
 });
 $app->router()->post($mediaPickerPath . '/upload', function ($request) use ($app, $mediaRequireAdmin, $mediaValidateCsrf, $mediaUpload): Response {
     $user = $mediaRequireAdmin($request, ['media.use']);
@@ -180,40 +166,6 @@ $mediaRenderList = static function ($request, $user, array $filters, array $work
     return $mediaRenderAdmin('Media', $content, $user, $request->path());
 };
 
-$app->router()->get($mediaAdminPath, function ($request) use ($mediaRequireAdmin, $mediaAdmin, $mediaNormalizeWorkspace, $mediaPage, $mediaRenderList) {
-    $user = $mediaRequireAdmin($request, ['media.view']); if ($user instanceof Response) return $user;
-    $filters = $mediaNormalizeWorkspace($request); $workspace = $mediaAdmin->workspace($filters, $filters['page']); $lastPage = $mediaPage($workspace);
-    if ($workspace['total'] > 0 && $filters['page'] > $lastPage) { $filters['page'] = $lastPage; $workspace = $mediaAdmin->workspace($filters, $filters['page']); }
-    return $mediaRenderList($request, $user, $filters, $workspace, (string) $request->input('error', ''));
-});
-$app->router()->get($mediaUploadPath, function ($request) use ($mediaRequireAdmin, $mediaRenderView, $mediaRenderAdmin, $app): Response {
-    $user = $mediaRequireAdmin($request, ['media.upload']); if ($user instanceof Response) return $user;
-    return $mediaRenderAdmin('Upload Media', $mediaRenderView('upload', ['csrfToken' => $app->csrf()->token(), 'error' => null, 'title' => '']), $user, $request->path(), 200, [
-        ['label' => 'Media', 'url' => $mediaAdminPath],
-        ['label' => 'Upload'],
-    ]);
-});
-$app->router()->post($mediaUploadPath, function ($request) use ($mediaRequireAdmin, $mediaValidateCsrf, $mediaAdmin, $mediaRenderView, $mediaRenderAdmin, $app, $mediaUploadPath, $mediaAdminPath): Response {
-    $user = $mediaRequireAdmin($request, ['media.upload']); if ($user instanceof Response) return $user;
-    $csrf = $mediaValidateCsrf($request); if ($csrf) return $csrf;
-    $title = trim((string) $request->post('title', '')); $file = $request->file('media');
-    try { $mediaAdmin->upload($file ?? [], $title); return Response::redirect($mediaAdminPath . '?notice=uploaded'); }
-    catch (MediaUploadValidationException $exception) {
-        $error = str_contains($exception->getMessage(), 'PDF structure')
-            ? 'The uploaded PDF is invalid or incomplete.'
-            : 'The uploaded file could not be validated.';
-        return $mediaRenderAdmin('Upload Media', $mediaRenderView('upload', ['csrfToken' => $app->csrf()->token(), 'error' => $error, 'title' => $title]), $user, $request->path(), 422);
-    }
-    catch (MediaUploadException) { return $mediaRenderAdmin('Upload Media', $mediaRenderView('upload', ['csrfToken' => $app->csrf()->token(), 'error' => 'The media could not be uploaded.', 'title' => $title]), $user, $request->path(), 422); }
-});
-$app->router()->post($app->adminUrl()->childUrl('media/{id}/title'), function ($request, array $params) use ($app, $mediaRequireAdmin, $mediaValidateCsrf, $mediaAdmin, $mediaRepository, $mediaId, $mediaAdminPath): Response {
-    $user = $mediaRequireAdmin($request, ['media.edit']); if ($user instanceof Response) return $user;
-    $csrf = $mediaValidateCsrf($request); if ($csrf) return $csrf;
-    $id = $mediaId((string) ($params['id'] ?? '')); if ($id === null || !$mediaRepository->findById($id)) return Response::content('404 Not Found', 404);
-    try { $mediaAdmin->updateTitle($id, (string) $request->post('title', '')); return Response::redirect($mediaAdminPath . '?notice=title-updated'); }
-    catch (InvalidArgumentException) { return $app->adminErrors()->response($request, 422); }
-    catch (Throwable) { return $app->adminErrors()->response($request, 503); }
-});
 $app->router()->post($app->adminUrl()->childUrl('media/{id}/process'), function ($request, array $params) use ($mediaRequireAdmin, $mediaValidateCsrf, $mediaAdmin, $mediaRepository, $mediaId, $mediaAdminPath, $app): Response {
     $user = $mediaRequireAdmin($request, ['media.edit']); if ($user instanceof Response) return $user;
     $csrf = $mediaValidateCsrf($request); if ($csrf) return $csrf;

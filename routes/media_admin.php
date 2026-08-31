@@ -1,0 +1,63 @@
+<?php
+
+use Copot\Core\MediaAdmin;
+use Copot\Core\MediaFileInspector;
+use Copot\Core\MediaFilesystemStorage;
+use Copot\Core\MediaLifecycleService;
+use Copot\Core\MediaRepository;
+use Copot\Core\MediaUploadService;
+use Copot\Core\MediaUsageRepository;
+use Copot\Core\Response;
+
+$mediaRepository = new MediaRepository($app->database());
+$mediaUsages = new MediaUsageRepository($app->database());
+$mediaInspector = new MediaFileInspector();
+$mediaStorage = new MediaFilesystemStorage($app->path('storage/media'));
+$mediaLifecycle = new MediaLifecycleService($app->database(), $mediaRepository, null, $mediaUsages, $mediaStorage);
+$mediaAdmin = new MediaAdmin($mediaRepository, new MediaUploadService($app->database(), $mediaLifecycle, $mediaInspector, $mediaStorage, $app->diagnostics()), $mediaLifecycle, $mediaUsages);
+$mediaPath = $app->adminUrl()->childUrl('media');
+$mediaUploadPath = $app->adminUrl()->childUrl('media/upload');
+$mediaId = static fn (mixed $value): ?int => is_scalar($value) && preg_match('/^[1-9][0-9]*$/', (string) $value) ? (int) $value : null;
+$requireMedia = static function ($request, string $permission) use ($app): mixed {
+    if (!$app->auth()->check()) return Response::redirect($app->adminUrl()->baseUrl());
+    $user = $app->auth()->user();
+    if (!$user?->can('admin.access') || !$user->can($permission)) return $app->adminErrors()->response($request, 403);
+    return $user;
+};
+$render = static function (string $view, array $data, $user, string $path, int $status = 200) use ($app): Response {
+    return Response::html($app->adminPageRenderer()->render($view === 'list' ? 'Media' : 'Upload Media', $app->view()->render('admin/media/' . $view, $data), $user, $app->csrf()->token(), $path), $status);
+};
+$app->adminNavigation()->add('Media', $mediaPath, 'media.view', 'image', 25);
+
+$app->router()->get($mediaPath, function ($request) use ($app, $mediaAdmin, $mediaRepository, $mediaUsages, $requireMedia, $render, $mediaPath): Response {
+    $user = $requireMedia($request, 'media.view'); if ($user instanceof Response) return $user;
+    $items = $mediaAdmin->inventory((int) $request->input('page', 1)); $evidence = [];
+    foreach ($items as $item) $evidence[$item->id()->value()] = $mediaUsages->forMedia($item->id());
+    return $render('list', ['items' => $items, 'evidence' => $evidence, 'canUpload' => $user->can('media.upload'), 'canEdit' => $user->can('media.edit'), 'canDelete' => $user->can('media.delete'), 'csrfToken' => $app->csrf()->token(), 'notice' => $request->input('notice'), 'error' => $request->input('error'), 'adminUrl' => fn (string $path = '') => $app->adminUrl()->childUrl($path)], $user, $request->path());
+});
+$app->router()->get($mediaUploadPath, function ($request) use ($requireMedia, $render, $app): Response { $user = $requireMedia($request, 'media.upload'); if ($user instanceof Response) return $user; return $render('upload', ['csrfToken' => $app->csrf()->token(), 'error' => null, 'title' => '', 'adminUrl' => fn (string $path = '') => $app->adminUrl()->childUrl($path)], $user, $request->path()); });
+$app->router()->get($app->adminUrl()->childUrl('media/select'), function ($request) use ($requireMedia, $mediaRepository, $mediaPath, $app): Response {
+    $user = $requireMedia($request, 'media.use'); if ($user instanceof Response) return $user;
+    $items = $mediaRepository->paginate('', 50, 0);
+    return Response::content(json_encode(['items' => array_map(static fn (\Copot\Core\Media $item): array => ['id' => $item->id()->value(), 'title' => $item->title(), 'original_filename' => $item->originalFilename(), 'mime_type' => $item->mimeType(), 'url' => $app->url('/media/' . $item->id()->value())], $items)], JSON_THROW_ON_ERROR), 200, ['Content-Type' => 'application/json; charset=UTF-8', 'Cache-Control' => 'no-store']);
+});
+$app->router()->post($mediaUploadPath, function ($request) use ($app, $requireMedia, $mediaAdmin, $render, $mediaPath): Response {
+    $user = $requireMedia($request, 'media.upload'); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    $title = trim((string) $request->post('title', ''));
+    try { $mediaAdmin->upload($request->file('media') ?? [], $title); return Response::redirect($mediaPath . '?notice=uploaded'); }
+    catch (\Copot\Core\MediaUploadValidationException) { return $render('upload', ['csrfToken' => $app->csrf()->token(), 'error' => 'The uploaded file could not be validated.', 'title' => $title, 'adminUrl' => fn (string $path = '') => $app->adminUrl()->childUrl($path)], $user, $request->path(), 422); }
+    catch (\Copot\Core\MediaUploadException) { return $render('upload', ['csrfToken' => $app->csrf()->token(), 'error' => 'The media could not be uploaded.', 'title' => $title, 'adminUrl' => fn (string $path = '') => $app->adminUrl()->childUrl($path)], $user, $request->path(), 422); }
+});
+$app->router()->post($app->adminUrl()->childUrl('media/{id}/title'), function ($request, array $params) use ($app, $requireMedia, $mediaAdmin, $mediaRepository, $mediaId, $mediaPath): Response {
+    $user = $requireMedia($request, 'media.edit'); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    $id = $mediaId($params['id'] ?? null); if ($id === null || !$mediaRepository->findById($id)) return $app->adminErrors()->response($request, 404);
+    try { $mediaAdmin->updateTitle($id, (string) $request->post('title', '')); return Response::redirect($mediaPath . '?notice=title-updated'); } catch (\InvalidArgumentException) { return $app->adminErrors()->response($request, 422); } catch (\Throwable) { return $app->adminErrors()->response($request, 503); }
+});
+$app->router()->post($app->adminUrl()->childUrl('media/{id}/delete'), function ($request, array $params) use ($app, $requireMedia, $mediaAdmin, $mediaId, $mediaPath): Response {
+    $user = $requireMedia($request, 'media.delete'); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    $id = $mediaId($params['id'] ?? null); if ($id === null) return $app->adminErrors()->response($request, 404);
+    try { $mediaAdmin->delete($id); return Response::redirect($mediaPath . '?notice=deleted'); } catch (\Copot\Core\MediaInUseException) { return Response::redirect($mediaPath . '?error=' . rawurlencode('Media cannot be deleted while it is in use.'), 303); } catch (\Copot\Core\MediaNotFoundException) { return $app->adminErrors()->response($request, 404); } catch (\Throwable) { return $app->adminErrors()->response($request, 503); }
+});
