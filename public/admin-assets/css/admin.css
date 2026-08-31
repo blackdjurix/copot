@@ -192,6 +192,35 @@ table {
     border-collapse: collapse;
 }
 
+.admin-media-baseline-identity {
+    display: flex;
+    align-items: center;
+    gap: var(--admin-space-3);
+    min-width: 15rem;
+}
+
+.admin-media-baseline-thumbnail {
+    display: grid;
+    place-items: center;
+    flex: 0 0 3.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    overflow: hidden;
+    border: 1px solid var(--admin-color-border);
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-color-bg);
+    color: var(--admin-color-muted);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.admin-media-baseline-thumbnail img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .admin-table th {
     background: var(--admin-color-bg);
 }
