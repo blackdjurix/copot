@@ -227,11 +227,15 @@ table {
 
 .admin-media-baseline-table tr[data-media-preview-open] {
     cursor: pointer;
+}
+
+.admin-media-baseline-table tr[data-media-preview-open] > td {
     transition: background-color 120ms ease;
 }
 
-.admin-media-baseline-table tr[data-media-preview-open]:hover {
-    background: var(--admin-color-bg);
+.admin-media-baseline-table tr[data-media-preview-open]:hover > td,
+.admin-media-baseline-table tr[data-media-preview-open]:focus-visible > td {
+    background: var(--admin-color-control-secondary);
 }
 
 .admin-media-baseline-table tr[data-media-preview-open]:focus-visible {
