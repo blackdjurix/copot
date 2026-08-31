@@ -77,7 +77,7 @@ try {
     $assert(str_contains($uploadHtml, 'admin-page-frame') && str_contains($uploadHtml, 'aria-label="Breadcrumb"') && str_contains($uploadHtml, '>Upload</button>'), 'Upload surface did not use the shared Page Frame hierarchy or accepted action label.');
     $assert(!str_contains($uploadHtml, 'name="title"') && !str_contains($uploadHtml, 'View Media'), 'Upload surface retained the removed title field or redundant return action.');
     $postUploadHtml = $body($app->run(new Request('GET', $mediaPath)));
-    $assert(str_contains($postUploadHtml, 'data-media-preview-open') && str_contains($postUploadHtml, 'role="button"') && str_contains($postUploadHtml, 'admin-core-media.js'), 'Core Media row activation or quick-preview surface is missing.');
+    $assert(str_contains($postUploadHtml, 'data-media-preview-open') && str_contains($postUploadHtml, 'role="button"') && str_contains($postUploadHtml, 'admin-core-media.js') && str_contains($postUploadHtml, '>Upload</a>'), 'Core Media row activation, quick-preview surface, or accepted upload label is missing.');
     $assert(!str_contains($postUploadHtml, '<th scope="col">Action') && !str_contains($postUploadHtml, '>Preview</button>'), 'Core Media retained a dedicated action/preview column.');
     $assert($status($app->run(new Request('POST', $app->adminUrl()->childUrl("media/{$id}/title"), [], ['title' => 'not a baseline route']))) === 404, 'Core baseline retained title editing presentation.');
     $lifecycle = new MediaLifecycleService($app->database(), new MediaRepository($app->database()), null, new MediaUsageRepository($app->database()), new \Copot\Core\MediaFilesystemStorage($basePath . '/storage/media'));
