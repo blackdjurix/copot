@@ -235,7 +235,7 @@ table {
 
 .admin-media-baseline-table tr[data-media-preview-open]:hover > td,
 .admin-media-baseline-table tr[data-media-preview-open]:focus-visible > td {
-    background: var(--admin-color-control-secondary);
+    background: var(--admin-color-bg);
 }
 
 .admin-media-baseline-table tr[data-media-preview-open]:focus-visible {
