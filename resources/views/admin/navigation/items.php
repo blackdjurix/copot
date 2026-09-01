@@ -37,4 +37,4 @@ $renderTree = function (array $nodes) use (&$renderTree, $esc, $selectedId, $nav
         </div>
     </section>
 </div>
-<script defer src="<?= $esc('/admin-assets/js/navigation-admin.js') ?>"></script>
+<script defer src="<?= $esc('/admin-assets/js/navigation-admin.js?v=wu3-mobile') ?>"></script>
