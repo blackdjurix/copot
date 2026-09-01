@@ -21,6 +21,6 @@
         for (var pair of initial.entries()) if (current.getAll(pair[0]).join('|') !== initial.getAll(pair[0]).join('|')) return true;
         return false;
     }
-    workspace.querySelectorAll('[data-navigation-cancel]').forEach(function (link) { link.addEventListener('click', function (event) { if (dirty() && !window.confirm('Discard unsaved changes?')) event.preventDefault(); }); });
+    workspace.querySelectorAll('[data-navigation-cancel]').forEach(function (button) { button.addEventListener('click', function () { if (dirty() && !window.confirm('Discard unsaved changes?')) return; window.location.href = button.dataset.navigationCancelUrl; }); });
     workspace.querySelectorAll('[data-navigation-delete]').forEach(function (deleteForm) { deleteForm.addEventListener('submit', function (event) { if (!window.confirm('Delete this navigation item?')) event.preventDefault(); }); });
 }());
