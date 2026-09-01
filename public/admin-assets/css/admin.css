@@ -4273,4 +4273,5 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
     .admin-navigation-workspace__detail { order: 2; }
     .admin-navigation-tree__select small { display: none; }
     .admin-navigation-tree__row { padding-left: calc(var(--navigation-depth) * .25rem); }
+    .admin-navigation-workspace__detail { position: fixed; z-index: 20; inset: auto 0 0; max-height: 85vh; overflow: auto; border-radius: 1rem 1rem 0 0; box-shadow: 0 -8px 32px rgb(15 35 66 / .2); }
 }
