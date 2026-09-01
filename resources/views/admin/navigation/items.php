@@ -13,14 +13,15 @@ $renderTree = function (array $nodes) use (&$renderTree, $esc, $selectedId, $nav
     }
 };
 ?>
-<div class="admin-navigation-workspace" data-navigation-workspace>
+<div class="admin-navigation-workspace <?= $selected || $creating ? 'has-navigation-detail' : '' ?>" data-navigation-workspace data-navigation-tree-url="<?= $esc($navigationPath) ?>">
     <section class="admin-panel admin-navigation-workspace__master" aria-labelledby="navigation-tree-title">
         <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="navigation-tree-title">Primary Navigation</h2><p class="admin-panel__description">Select an item to view or edit it.</p></div><a class="admin-button admin-button--primary" href="<?= $esc($navigationPath . '?create=1') ?>">Add item</a></header>
         <div class="admin-panel__body">
             <?php if ($tree === []): ?><div class="admin-empty-state"><h3 class="admin-empty-state__title">No navigation items yet</h3><p class="admin-empty-state__description">Add the first Primary Navigation item.</p></div><?php else: ?><nav aria-label="Primary Navigation hierarchy"><ol class="admin-navigation-tree"><?php $renderTree($tree); ?></ol></nav><?php endif; ?>
         </div>
     </section>
-    <section class="admin-panel admin-navigation-workspace__detail" aria-labelledby="navigation-detail-title">
+    <button class="admin-navigation-workspace__backdrop" type="button" data-navigation-dismiss aria-label="Close navigation item detail" <?= $selected || $creating ? '' : 'hidden' ?>></button>
+    <section class="admin-panel admin-navigation-workspace__detail" aria-labelledby="navigation-detail-title" <?= $selected || $creating ? '' : 'hidden' ?>>
         <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="navigation-detail-title"><?= $creating ? 'Add navigation item' : ($selected && !$editing ? 'Navigation item preview' : ($selected ? 'Edit navigation item' : 'Navigation item')) ?></h2><p class="admin-panel__description"><?= $selected || $creating ? 'Configure this item without leaving the navigation workspace.' : 'Choose an item from the hierarchy, or add a new one.' ?></p></div></header>
         <div class="admin-panel__body">
             <?php if ($errors !== []): ?><div class="admin-alert admin-alert--danger" role="alert"><?php foreach ($errors as $group): foreach ((array) $group as $error): ?><p><?= $esc($error) ?></p><?php endforeach; endforeach; ?></div><?php endif; ?>

@@ -14,6 +14,7 @@
     select.addEventListener('change', syncTarget);
     syncTarget();
     var form = workspace.querySelector('[data-navigation-edit-form]');
+    var backdrop = workspace.querySelector('[data-navigation-dismiss]');
     var initial = form ? new FormData(form) : null;
     function dirty() {
         if (!form || !initial) return false;
@@ -21,6 +22,7 @@
         for (var pair of initial.entries()) if (current.getAll(pair[0]).join('|') !== initial.getAll(pair[0]).join('|')) return true;
         return false;
     }
-    workspace.querySelectorAll('[data-navigation-cancel]').forEach(function (button) { button.addEventListener('click', function () { if (dirty() && !window.confirm('Discard unsaved changes?')) return; window.location.href = button.dataset.navigationCancelUrl; }); });
+    workspace.querySelectorAll('[data-navigation-cancel]').forEach(function (button) { button.addEventListener('click', function () { if (dirty() && !window.confirm('Discard unsaved changes?')) return; var mobile = window.matchMedia('(max-width: 760px)').matches; window.location.href = mobile ? (workspace.dataset.navigationTreeUrl || '/admin/navigation') : button.dataset.navigationCancelUrl; }); });
     workspace.querySelectorAll('[data-navigation-delete]').forEach(function (deleteForm) { deleteForm.addEventListener('submit', function (event) { if (!window.confirm('Delete this navigation item?')) event.preventDefault(); }); });
+    if (backdrop) backdrop.addEventListener('click', function () { var cancel = workspace.querySelector('[data-navigation-cancel]'); if (cancel) cancel.click(); else window.location.href = workspace.dataset.navigationTreeUrl || '/admin/navigation'; });
 }());
