@@ -2,7 +2,6 @@
     var workspace = document.querySelector('[data-navigation-workspace]');
     if (!workspace) return;
     var select = document.querySelector('[data-navigation-target]');
-    if (!select) return;
     var panels = document.querySelectorAll('[data-navigation-target-panel]');
     function syncTarget() {
         panels.forEach(function (panel) {
@@ -11,8 +10,10 @@
             panel.querySelectorAll('input, select').forEach(function (control) { control.disabled = !active; });
         });
     }
-    select.addEventListener('change', syncTarget);
-    syncTarget();
+    if (select) {
+        select.addEventListener('change', syncTarget);
+        syncTarget();
+    }
     var form = workspace.querySelector('[data-navigation-edit-form]');
     var backdrop = workspace.querySelector('[data-navigation-dismiss]');
     var initial = form ? new FormData(form) : null;
