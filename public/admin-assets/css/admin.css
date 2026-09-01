@@ -4248,3 +4248,24 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
 .admin-media-picker__crop-handle--ne { right: -9px; top: -9px; cursor: nesw-resize; }
 .admin-media-picker__crop-handle--sw { left: -9px; bottom: -9px; cursor: nesw-resize; }
 .admin-media-picker__crop-handle--se { right: -9px; bottom: -9px; cursor: nwse-resize; }
+
+.admin-navigation-workspace { display: grid; grid-template-columns: minmax(18rem, .9fr) minmax(22rem, 1.1fr); gap: var(--admin-space-6); align-items: start; }
+.admin-navigation-tree { list-style: none; margin: 0; padding: 0; }
+.admin-navigation-tree .admin-navigation-tree { margin-left: 1rem; border-left: 1px solid var(--admin-color-border); }
+.admin-navigation-tree__node { margin: 0; padding: 0; }
+.admin-navigation-tree__row { display: flex; align-items: center; gap: .5rem; min-height: 3rem; padding-left: calc(var(--navigation-depth) * .35rem); border-bottom: 1px solid var(--admin-color-border); }
+.admin-navigation-tree__row.is-selected { background: color-mix(in srgb, var(--admin-color-primary) 8%, var(--admin-color-surface)); box-shadow: inset 3px 0 0 var(--admin-color-primary); }
+.admin-navigation-tree__select { display: flex; align-items: center; gap: .55rem; min-width: 0; flex: 1; padding: .65rem .25rem .65rem .5rem; color: var(--admin-color-text); text-decoration: none; }
+.admin-navigation-tree__select:hover { color: var(--admin-color-primary); }
+.admin-navigation-tree__select:focus-visible { outline: 2px solid var(--admin-color-primary); outline-offset: -2px; }
+.admin-navigation-tree__select small { margin-left: auto; color: var(--admin-color-muted); white-space: nowrap; }
+.admin-navigation-tree__branch { width: 1rem; color: var(--admin-color-primary); text-align: center; }
+.admin-navigation-tree__actions { display: inline-flex; align-items: center; gap: .25rem; padding-right: .5rem; }
+.admin-navigation-tree__actions .admin-button { padding-inline: .35rem; }
+.admin-navigation-workspace .admin-panel__body { min-height: 14rem; }
+@media (max-width: 760px) {
+    .admin-navigation-workspace { grid-template-columns: 1fr; gap: var(--admin-space-4); }
+    .admin-navigation-workspace__detail { order: 2; }
+    .admin-navigation-tree__select small { display: none; }
+    .admin-navigation-tree__row { padding-left: calc(var(--navigation-depth) * .25rem); }
+}
