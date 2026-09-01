@@ -4262,6 +4262,11 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
 .admin-navigation-tree__branch { width: 1rem; color: var(--admin-color-primary); text-align: center; }
 .admin-navigation-tree__actions { display: inline-flex; align-items: center; gap: .25rem; padding-right: .5rem; }
 .admin-navigation-tree__actions .admin-button { padding-inline: .35rem; }
+.admin-form__actions { gap: .75rem; }
+.admin-navigation-preview { display: grid; gap: 1rem; }
+.admin-navigation-preview > div { display: grid; gap: .25rem; }
+.admin-navigation-preview dt { color: var(--admin-color-muted); font-size: .82rem; font-weight: 700; }
+.admin-navigation-preview dd { margin: 0; color: var(--admin-color-text); }
 .admin-navigation-workspace .admin-panel__body { min-height: 14rem; }
 @media (max-width: 760px) {
     .admin-navigation-workspace { grid-template-columns: 1fr; gap: var(--admin-space-4); }
