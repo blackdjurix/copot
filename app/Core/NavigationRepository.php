@@ -36,6 +36,12 @@ final class NavigationRepository
         return $this->menus()[0] ?? null;
     }
 
+    public function canonicalPrimaryMenu(): ?NavigationMenu
+    {
+        $row = $this->row('SELECT * FROM ' . $this->database->tables()->table('navigation_menus') . " WHERE slug = 'primary' LIMIT 1", []);
+        return $row === null ? null : new NavigationMenu($row);
+    }
+
     public function lockMenu(int $id): ?array
     {
         return $this->row('SELECT * FROM ' . $this->database->tables()->table('navigation_menus') . ' WHERE id = :id LIMIT 1 FOR UPDATE', ['id' => $id]);

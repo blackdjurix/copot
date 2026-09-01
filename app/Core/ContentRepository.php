@@ -82,6 +82,16 @@ class ContentRepository
         return is_array($row) ? new Content($row) : null;
     }
 
+    /** @return list<Content> */
+    public function publishedArticles(int $limit = 100): array
+    {
+        $limit = max(1, min($limit, 500));
+        $statement = $this->database->connection()->prepare("SELECT * FROM {$this->table()} WHERE type = 'article' AND status = 'published' ORDER BY published_at DESC, id DESC LIMIT :limit");
+        $statement->bindValue('limit', $limit, PDO::PARAM_INT);
+        $statement->execute();
+        return array_map(fn (array $row): Content => new Content($row), $statement->fetchAll());
+    }
+
     public function create(array $data): int
     {
         $data = $this->normalizePayload($data);

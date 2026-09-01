@@ -46,6 +46,9 @@ final class NavigationFrontendContextContributor implements FrontendThemeContext
     private function resolve(NavigationItem $item): ?NavigationRenderItem
     {
         if ($item->targetKind() === 'custom') return new NavigationRenderItem('custom', '', $item->label(), $item->customUrl(), true);
+        if ($item->targetKind() === 'article_collection' && $item->targetReference() === 'articles') {
+            return new NavigationRenderItem('article_collection', 'articles', $item->label(), '/articles', true);
+        }
         if ($item->targetKind() !== 'content' || !is_string($item->targetReference())) return null;
         $content = (new ContentRepository($this->database))->findPublishedBySlug($item->targetReference());
         return $content instanceof Content ? new NavigationRenderItem('content', $content->slug(), $item->label() ?: $content->title(), '/content/' . $content->slug(), true) : null;

@@ -9,8 +9,14 @@ require_once __DIR__ . '/Services/NavigationService.php';
 
 $navigationAdminBase = $app->adminUrl()->baseUrl();
 $navigationAdminUrlService = $app->adminUrl();
-$navigationAdminUrl = static fn (string $path = ''): string => $navigationAdminUrlService->childUrl($path);
-$navigationPath = $navigationAdminUrl('navigation');
+$navigationAdminUrl = static function (string $path = '') use ($navigationAdminUrlService): string {
+    $path = trim($path, '/');
+    if ($path === 'navigation' || str_starts_with($path, 'navigation/')) {
+        $path = 'navigation-manager' . substr($path, strlen('navigation'));
+    }
+    return $navigationAdminUrlService->childUrl($path);
+};
+$navigationPath = $navigationAdminUrl('navigation-manager');
 $navigationRepository = new NavigationRepository($app->database());
 $navigationService = new NavigationService($app->database(), $navigationRepository);
 
@@ -313,7 +319,7 @@ $app->router()->get($navigationPath, function ($request) use ($app, $navigationR
     }
 });
 
-$app->router()->get($navigationAdminUrlService->childUrl('navigation/create'), function ($request) use ($app, $navigationRequireAdmin, $navigationRenderView, $navigationRenderAdmin, $navigationPath): Response {
+$app->router()->get($navigationAdminUrlService->childUrl('navigation-manager/create'), function ($request) use ($app, $navigationRequireAdmin, $navigationRenderView, $navigationRenderAdmin, $navigationPath): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -358,7 +364,7 @@ $app->router()->post($navigationPath, function ($request) use ($app, $navigation
     return Response::redirect($navigationPath . '?saved=1');
 });
 
-$app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/edit'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationRenderView, $navigationRenderAdmin): Response {
+$app->router()->get($navigationAdminUrlService->childUrl('navigation-manager/{menu}/edit'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationRenderView, $navigationRenderAdmin): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -369,7 +375,7 @@ $app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/edit
     }
 
     $content = $navigationRenderView('menu-form', [
-        'formAction' => $app->adminUrl()->childUrl('navigation/' . $menu->id() . '/edit'),
+        'formAction' => $app->adminUrl()->childUrl('navigation-manager/' . $menu->id() . '/edit'),
         'heading' => 'Edit menu',
         'submitLabel' => 'Save menu',
         'menu' => $menu->toArray(),
@@ -380,7 +386,7 @@ $app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/edit
     return $navigationRenderAdmin('Edit Navigation Menu', $content, $user, $request->path());
 });
 
-$app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/edit'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationMenuData, $navigationRenderView, $navigationRenderAdmin, $navigationPath): Response {
+$app->router()->post($navigationAdminUrlService->childUrl('navigation-manager/{menu}/edit'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationMenuData, $navigationRenderView, $navigationRenderAdmin, $navigationPath): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -394,7 +400,7 @@ $app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/edi
     }
 
     [$data, $errors] = $navigationMenuData($request);
-    $action = $app->adminUrl()->childUrl('navigation/' . $menu->id() . '/edit');
+    $action = $app->adminUrl()->childUrl('navigation-manager/' . $menu->id() . '/edit');
     if ($errors !== []) {
         $content = $navigationRenderView('menu-form', ['formAction' => $action, 'heading' => 'Edit menu', 'submitLabel' => 'Save menu', 'menu' => $data, 'errors' => $errors, 'csrfToken' => $app->csrf()->token()]);
         return $navigationRenderAdmin('Edit Navigation Menu', $content, $user, $request->path(), 422);
@@ -412,7 +418,7 @@ $app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/edi
     return Response::redirect($navigationPath . '?saved=1');
 });
 
-$app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/delete'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationPath): Response {
+$app->router()->post($navigationAdminUrlService->childUrl('navigation-manager/{menu}/delete'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationPath): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -436,9 +442,9 @@ $app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/del
     return Response::redirect($navigationPath . '?deleted=1');
 });
 
-$navigationItemsPath = static fn (int $menuId): string => $navigationAdminUrlService->childUrl('navigation/' . $menuId . '/items');
+$navigationItemsPath = static fn (int $menuId): string => $navigationAdminUrlService->childUrl('navigation-manager/' . $menuId . '/items');
 
-$app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/items'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationTree, $navigationRenderView, $navigationRenderAdmin, $navigationItemsPath): Response {
+$app->router()->get($navigationAdminUrlService->childUrl('navigation-manager/{menu}/items'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationTree, $navigationRenderView, $navigationRenderAdmin, $navigationItemsPath): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -484,7 +490,7 @@ $app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/item
     return $navigationRenderAdmin('Items: ' . $menu->name(), $content, $user, $request->path());
 });
 
-$app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/items/create'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationParentCandidates, $navigationItemFormData, $navigationRenderView, $navigationRenderAdmin): Response {
+$app->router()->get($navigationAdminUrlService->childUrl('navigation-manager/{menu}/items/create'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationParentCandidates, $navigationItemFormData, $navigationRenderView, $navigationRenderAdmin): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -501,7 +507,7 @@ $app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/item
 
     $content = $navigationRenderView('item-form', [
         'menu' => $menu,
-        'formAction' => $app->adminUrl()->childUrl('navigation/' . $menu->id() . '/items'),
+        'formAction' => $app->adminUrl()->childUrl('navigation-manager/' . $menu->id() . '/items'),
         'heading' => 'Create item',
         'submitLabel' => 'Create item',
         'item' => $navigationItemFormData(),
@@ -513,7 +519,7 @@ $app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/item
     return $navigationRenderAdmin('Create Navigation Item', $content, $user, $request->path());
 });
 
-$app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/items'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationParentCandidates, $navigationItemData, $navigationItemFormData, $navigationRenderView, $navigationRenderAdmin, $navigationItemsPath): Response {
+$app->router()->post($navigationAdminUrlService->childUrl('navigation-manager/{menu}/items'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationParentCandidates, $navigationItemData, $navigationItemFormData, $navigationRenderView, $navigationRenderAdmin, $navigationItemsPath): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -543,14 +549,14 @@ $app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/ite
         }
     }
     if ($errors !== []) {
-        $content = $navigationRenderView('item-form', ['menu' => $menu, 'formAction' => $app->adminUrl()->childUrl('navigation/' . $menu->id() . '/items'), 'heading' => 'Create item', 'submitLabel' => 'Create item', 'item' => array_merge($navigationItemFormData(), ['label' => $data['label'], 'parent_id' => $data['parent_id'], 'target_mode' => $data['target_kind'] === 'custom' ? 'custom' : 'provider', 'target_kind' => $data['target_kind'] === 'custom' ? '' : $data['target_kind'], 'target_reference' => $data['target_reference'] ?? '', 'custom_url' => $data['custom_url'] ?? '', 'is_visible' => $data['is_visible']]), 'parentCandidates' => $navigationParentCandidates($items), 'errors' => $errors, 'csrfToken' => $app->csrf()->token()]);
+        $content = $navigationRenderView('item-form', ['menu' => $menu, 'formAction' => $app->adminUrl()->childUrl('navigation-manager/' . $menu->id() . '/items'), 'heading' => 'Create item', 'submitLabel' => 'Create item', 'item' => array_merge($navigationItemFormData(), ['label' => $data['label'], 'parent_id' => $data['parent_id'], 'target_mode' => $data['target_kind'] === 'custom' ? 'custom' : 'provider', 'target_kind' => $data['target_kind'] === 'custom' ? '' : $data['target_kind'], 'target_reference' => $data['target_reference'] ?? '', 'custom_url' => $data['custom_url'] ?? '', 'is_visible' => $data['is_visible']]), 'parentCandidates' => $navigationParentCandidates($items), 'errors' => $errors, 'csrfToken' => $app->csrf()->token()]);
         return $navigationRenderAdmin('Create Navigation Item', $content, $user, $request->path(), 422);
     }
 
     return Response::redirect($navigationItemsPath($menu->id()) . '?saved=1');
 });
 
-$app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/items/{item}/edit'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationParentCandidates, $navigationItemFormData, $navigationRenderView, $navigationRenderAdmin, $navigationRouteId): Response {
+$app->router()->get($navigationAdminUrlService->childUrl('navigation-manager/{menu}/items/{item}/edit'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationParentCandidates, $navigationItemFormData, $navigationRenderView, $navigationRenderAdmin, $navigationRouteId): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -570,11 +576,11 @@ $app->router()->get($navigationAdminUrlService->childUrl('navigation/{menu}/item
         return $app->adminErrors()->response($request, 503);
     }
 
-    $content = $navigationRenderView('item-form', ['menu' => $menu, 'formAction' => $app->adminUrl()->childUrl('navigation/' . $menu->id() . '/items/' . $item->id() . '/edit'), 'heading' => 'Edit item', 'submitLabel' => 'Save item', 'item' => $navigationItemFormData($item), 'parentCandidates' => $navigationParentCandidates($items, $item->id()), 'errors' => [], 'csrfToken' => $app->csrf()->token()]);
+    $content = $navigationRenderView('item-form', ['menu' => $menu, 'formAction' => $app->adminUrl()->childUrl('navigation-manager/' . $menu->id() . '/items/' . $item->id() . '/edit'), 'heading' => 'Edit item', 'submitLabel' => 'Save item', 'item' => $navigationItemFormData($item), 'parentCandidates' => $navigationParentCandidates($items, $item->id()), 'errors' => [], 'csrfToken' => $app->csrf()->token()]);
     return $navigationRenderAdmin('Edit Navigation Item', $content, $user, $request->path());
 });
 
-$app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/items/{item}/edit'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationParentCandidates, $navigationItemData, $navigationItemFormData, $navigationRenderView, $navigationRenderAdmin, $navigationRouteId, $navigationItemsPath): Response {
+$app->router()->post($navigationAdminUrlService->childUrl('navigation-manager/{menu}/items/{item}/edit'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationParentCandidates, $navigationItemData, $navigationItemFormData, $navigationRenderView, $navigationRenderAdmin, $navigationRouteId, $navigationItemsPath): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -609,13 +615,13 @@ $app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/ite
     if ($errors !== []) {
         $formItem = $navigationItemFormData($item);
         $formItem = array_merge($formItem, ['label' => $data['label'], 'parent_id' => $data['parent_id'], 'target_mode' => $data['target_kind'] === 'custom' ? 'custom' : 'provider', 'target_kind' => $data['target_kind'] === 'custom' ? '' : $data['target_kind'], 'target_reference' => $data['target_reference'] ?? '', 'custom_url' => $data['custom_url'] ?? '', 'is_visible' => $data['is_visible']]);
-        $content = $navigationRenderView('item-form', ['menu' => $menu, 'formAction' => $app->adminUrl()->childUrl('navigation/' . $menu->id() . '/items/' . $item->id() . '/edit'), 'heading' => 'Edit item', 'submitLabel' => 'Save item', 'item' => $formItem, 'parentCandidates' => $navigationParentCandidates($items, $item->id()), 'errors' => $errors, 'csrfToken' => $app->csrf()->token()]);
+        $content = $navigationRenderView('item-form', ['menu' => $menu, 'formAction' => $app->adminUrl()->childUrl('navigation-manager/' . $menu->id() . '/items/' . $item->id() . '/edit'), 'heading' => 'Edit item', 'submitLabel' => 'Save item', 'item' => $formItem, 'parentCandidates' => $navigationParentCandidates($items, $item->id()), 'errors' => $errors, 'csrfToken' => $app->csrf()->token()]);
         return $navigationRenderAdmin('Edit Navigation Item', $content, $user, $request->path(), 422);
     }
     return Response::redirect($navigationItemsPath($menu->id()) . '?saved=1');
 });
 
-$app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/items/{item}/delete'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationItemsPath, $navigationRouteId): Response {
+$app->router()->post($navigationAdminUrlService->childUrl('navigation-manager/{menu}/items/{item}/delete'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationItemsPath, $navigationRouteId): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;
@@ -642,7 +648,7 @@ $app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/ite
     return Response::redirect($navigationItemsPath($menu->id()) . '?deleted=1');
 });
 
-$app->router()->post($navigationAdminUrlService->childUrl('navigation/{menu}/items/reorder'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationItemsPath): Response {
+$app->router()->post($navigationAdminUrlService->childUrl('navigation-manager/{menu}/items/reorder'), function ($request, array $params) use ($app, $navigationRequireAdmin, $navigationFindMenu, $navigationService, $navigationItemsPath): Response {
     $user = $navigationRequireAdmin($request);
     if ($user instanceof Response) {
         return $user;

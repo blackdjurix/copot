@@ -36,6 +36,16 @@ $app->router()->get('/content/{slug}', function ($request, array $params) use ($
     ));
 });
 
+$app->router()->get('/articles', function () use ($app, $contentDelivery): Response {
+    $articles = $contentDelivery->publishedArticles();
+    return Response::html($app->viewRenderer()->renderFile(
+        $app->viewResolver()->resolve('core::articles'),
+        ['articles' => $articles],
+        null,
+        'Articles'
+    ));
+});
+
 $app->router()->get('/media/{id}', function ($request, array $params) use ($mediaDelivery): Response {
     $id = (string) ($params['id'] ?? '');
     if (!preg_match('/^[1-9][0-9]*$/', $id)) return Response::content('404 Not Found', 404);

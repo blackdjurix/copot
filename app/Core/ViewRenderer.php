@@ -31,7 +31,7 @@ class ViewRenderer
         $themeAsset = $theme === null ? null : fn (string $path): string => $this->themeAssets->url($path);
         $title = $title ?? $this->branding->name();
         $contentPath = $this->resolveContentPath($contentPath);
-        $variables = [
+        $variables = $context + [
             'title' => $title,
             'theme' => $theme,
             'themeAsset' => $themeAsset,
@@ -49,9 +49,9 @@ class ViewRenderer
             throw new ThemeException('Built-in Public View layout is unavailable.');
         }
 
-        return $this->renderPhpFile($layoutPath, $variables + [
-            'content' => $content,
-        ]);
+        $layoutVariables = $variables;
+        $layoutVariables['content'] = $content;
+        return $this->renderPhpFile($layoutPath, $layoutVariables);
     }
 
     private function resolveContentPath(string $contentPath): string
@@ -80,6 +80,11 @@ class ViewRenderer
             $branding = $__variables['branding'] ?? null;
             $context = $__variables['context'] ?? [];
             $themeSettings = $__variables['themeSettings'] ?? [];
+            $extraVariables = $__variables;
+            foreach (['content', 'title', 'theme', 'themeAsset', 'url', 'branding', 'context', 'themeSettings'] as $reserved) {
+                unset($extraVariables[$reserved]);
+            }
+            extract($extraVariables, EXTR_SKIP);
 
             $initialOutputLevel = ob_get_level();
 

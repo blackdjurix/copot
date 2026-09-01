@@ -13,4 +13,10 @@ final class ContentDeliveryService
     {
         return $this->repository->findPublishedBySlug($slug)?->toRenderData();
     }
+
+    /** @return list<array<string,mixed>> */
+    public function publishedArticles(): array
+    {
+        return array_map(static fn (Content $content): array => $content->toRenderData(), $this->repository->publishedArticles());
+    }
 }
