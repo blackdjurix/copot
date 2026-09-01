@@ -4,6 +4,8 @@ namespace Copot\Core;
 
 
 use Copot\Core\Database;
+use InvalidArgumentException;
+use RuntimeException;
 
 final class NavigationService
 {
