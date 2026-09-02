@@ -51,14 +51,7 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-identity { display: inline-flex; align-items: center; gap: 14px; color: #17202a; text-decoration: none; }
         .builtin-site-identity img { display: block; width: auto; max-width: 180px; height: 48px; object-fit: contain; }
         .builtin-site-identity__name { font-size: 1.15rem; font-weight: 700; }
-        .builtin-site-nav > ul { display: flex; flex-wrap: wrap; gap: 14px 20px; margin: 0; padding: 0; list-style: none; }
-        .builtin-site-nav li { position: relative; list-style: none; }
-        .builtin-site-nav a, .builtin-site-nav__trigger { font-size: .95rem; font-weight: 700; text-decoration: none; }
-        .builtin-site-nav__trigger { padding: 0; border: 0; background: transparent; color: var(--builtin-accent-strong); cursor: pointer; }
-        .builtin-site-nav__trigger span { margin-left: 5px; }
-        .builtin-site-nav__submenu { display: none; position: absolute; z-index: 5; top: calc(100% + 8px); left: 0; min-width: 12rem; margin: 0; padding: 8px; background: #fff; border: 1px solid #d9e0e7; border-radius: 8px; box-shadow: 0 10px 24px rgba(23, 32, 42, .12); }
-        .builtin-site-nav__submenu li + li { margin-top: 7px; }
-        .builtin-site-nav__item:hover > .builtin-site-nav__submenu, .builtin-site-nav__item:focus-within > .builtin-site-nav__submenu, .builtin-site-nav__item.is-open > .builtin-site-nav__submenu { display: block; }
+        .builtin-site-nav { width: auto; }
         .builtin-site-main { min-height: calc(100vh - 170px); padding: 56px 0; }
         .builtin-site-content { max-width: 720px; padding: clamp(24px, 5vw, 48px); background: #fff; border: 1px solid #d9e0e7; border-top: 4px solid var(--builtin-accent); border-radius: 12px; box-shadow: 0 12px 32px rgba(23, 32, 42, .06); }
         .builtin-site-content h1 { margin: 0 0 18px; color: #17202a; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.08; }
@@ -72,8 +65,6 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         @media (max-width: 640px) {
             .builtin-site-header__inner { align-items: flex-start; flex-direction: column; padding: 16px 0; }
             .builtin-site-nav { width: 100%; }
-            .builtin-site-nav > ul { gap: 10px 16px; }
-            .builtin-site-nav__submenu { position: static; min-width: 0; margin-top: 8px; box-shadow: none; }
             .builtin-site-main { min-height: calc(100vh - 220px); padding: 28px 0; }
             .builtin-site-content { padding: 24px 20px; border-radius: 8px; }
         }
@@ -93,6 +84,8 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
                 <nav class="builtin-site-nav" aria-label="Primary navigation">
                     <ul><?php $renderNavigation($navigation); ?></ul>
                 </nav>
+                <link rel="stylesheet" href="/assets/navigation.css?v=wu3">
+                <script defer src="/assets/navigation.js?v=wu3"></script>
             <?php endif; ?>
         </div>
     </header>
@@ -103,14 +96,4 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
     </main>
     <footer class="builtin-site-footer">© <?= date('Y') ?> <?= htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') ?></footer>
 </body>
-<script>
-document.querySelectorAll('.builtin-site-nav__trigger').forEach(function (trigger) {
-    trigger.addEventListener('click', function () {
-        var item = trigger.closest('.builtin-site-nav__item');
-        var open = trigger.getAttribute('aria-expanded') === 'true';
-        trigger.setAttribute('aria-expanded', open ? 'false' : 'true');
-        item.classList.toggle('is-open', !open);
-    });
-});
-</script>
 </html>
