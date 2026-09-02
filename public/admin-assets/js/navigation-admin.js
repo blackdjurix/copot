@@ -62,7 +62,12 @@
     workspace.querySelectorAll('[data-navigation-cancel]').forEach(function (button) { button.addEventListener('click', function () { if (dirty() && !window.confirm('Discard unsaved changes?')) return; var mobile = window.matchMedia('(max-width: 760px)').matches; window.location.href = mobile ? (workspace.dataset.navigationTreeUrl || '/admin/navigation') : button.dataset.navigationCancelUrl; }); });
     workspace.querySelectorAll('[data-navigation-delete]').forEach(function (deleteForm) { deleteForm.addEventListener('submit', function (event) { if (!window.confirm('Delete this navigation item?')) event.preventDefault(); }); });
     if (backdrop) backdrop.addEventListener('click', function () { var cancel = workspace.querySelector('[data-navigation-cancel]'); if (cancel) cancel.click(); else window.location.href = workspace.dataset.navigationTreeUrl || '/admin/navigation'; });
-    workspace.querySelectorAll('[data-navigation-unselect]').forEach(function (surface) { surface.addEventListener('click', function () { window.location.href = workspace.dataset.navigationTreeUrl || '/admin/navigation'; }); });
+    var treeBody = workspace.querySelector('[data-navigation-tree-body]');
+    if (treeBody) treeBody.addEventListener('click', function (event) {
+        if (window.matchMedia('(max-width: 760px)').matches || !workspace.classList.contains('has-navigation-detail')) return;
+        if (event.target.closest('.admin-navigation-tree__row, a, button, input, select, textarea, label, form, [role="button"]')) return;
+        window.location.href = workspace.dataset.navigationTreeUrl || '/admin/navigation';
+    });
     if (form) form.addEventListener('submit', function () { if (window.matchMedia('(max-width: 760px)').matches) sessionStorage.setItem('navigation-saved', '1'); });
     if (window.matchMedia('(max-width: 760px)').matches && sessionStorage.getItem('navigation-saved') === '1') {
         sessionStorage.removeItem('navigation-saved');

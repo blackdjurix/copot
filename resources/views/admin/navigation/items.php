@@ -19,8 +19,8 @@ $renderTree = function (array $nodes) use (&$renderTree, $esc, $selectedId, $nav
 <div class="admin-navigation-workspace <?= $selected || $creating ? 'has-navigation-detail' : '' ?>" data-navigation-workspace data-navigation-tree-url="<?= $esc($navigationPath) ?>" data-navigation-content-options="<?= $esc(json_encode($contentChoices, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG)) ?>">
     <section class="admin-panel admin-navigation-workspace__master" aria-labelledby="navigation-tree-title">
         <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="navigation-tree-title">Primary Navigation</h2><p class="admin-panel__description">Select an item to view or edit it.</p></div><a class="admin-button admin-button--primary" href="<?= $esc($navigationPath . '?create=1') ?>">Add item</a></header>
-        <div class="admin-panel__body">
-            <?php if ($tree === []): ?><div class="admin-empty-state"><h3 class="admin-empty-state__title">No navigation items yet</h3><p class="admin-empty-state__description">Add the first Primary Navigation item.</p></div><?php else: ?><nav aria-label="Primary Navigation hierarchy"><ol class="admin-navigation-tree"><?php $renderTree($tree); ?></ol></nav><?php endif; ?><div class="admin-navigation-tree__empty-area" data-navigation-unselect aria-hidden="true"></div>
+        <div class="admin-panel__body" data-navigation-tree-body>
+            <?php if ($tree === []): ?><div class="admin-empty-state"><h3 class="admin-empty-state__title">No navigation items yet</h3><p class="admin-empty-state__description">Add the first Primary Navigation item.</p></div><?php else: ?><nav aria-label="Primary Navigation hierarchy"><ol class="admin-navigation-tree"><?php $renderTree($tree); ?></ol></nav><?php endif; ?>
         </div>
     </section>
     <button class="admin-navigation-workspace__backdrop" type="button" data-navigation-dismiss aria-label="Close navigation item detail" <?= $selected || $creating ? '' : 'hidden' ?>></button>
