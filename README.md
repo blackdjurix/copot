@@ -6,6 +6,14 @@ COMPLETE and integrated into `main` at
 commit. Feature containment is confirmed. v0.13.0 is released, tagged, and
 published. Deferred integrations remain excluded.
 
+Current Post-M3 workstream: Webcore Product Completeness & Stabilization — WU3
+Core Primary Navigation Admin Baseline is implementation-complete, technically
+validated, AI-accepted, human/product-accepted, and closure-documentation
+reconciled on `feature/webcore-navigation-wu3-baseline` at
+`5f2e79b764cb2a86eaeae4116d497827ce51170f`. Integration and branch lifecycle
+remain pending; WU4-WU6 remain separately controlled. Release, tag, and
+publication remain separately controlled.
+
 MR.2 WU1 — Webcore Admin View Foundation is COMPLETE on the integrated
 `main` baseline. The reusable Admin Page Frame remains inside `admin-main`,
 supports only `panel|transparent` surface and `default|none` spacing intent,
@@ -74,7 +82,7 @@ released, tagged, and published.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 track: System Health & Status WU1–WU6 implementation and validation
+Current active Post-M3 workstream: Webcore Product Completeness & Stabilization — WU3 closure reconciliation
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
@@ -108,7 +116,7 @@ MR.1 Installation Refinement: WU1–WU5 and full MR.1 are COMPLETE AND CLOSED at
 Module Permission Dependency / Base Access: separate planning concern; not a System Health dependency.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
-Current active implementation branch: main
+Current active implementation branch: `feature/webcore-navigation-wu3-baseline` pending integration and branch lifecycle closure
 Database Ownership & Lifecycle Management Foundation: WU1–WU6 COMPLETE AND CLOSED for the accepted scope
 WU4 Database Lifecycle Classification: COMPLETE AND CLOSED; accepted implementation and focused validation are integrated into `main` at `70782fdc9dddeb353cf27cf78f6f20e294e6fa30`
 WU5 Installer Intent Reconciliation: COMPLETE AND CLOSED; Installer intents are Fresh / Coexist / Adopt, with normal existing-install Update / Upgrade / Repair outside Installer under System Manager / Webcore Lifecycle

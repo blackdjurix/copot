@@ -634,7 +634,7 @@ published. Deferred integrations remain excluded.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 track: System Health & Status WU1–WU6 implementation and validation
+Current active Post-M3 workstream: Webcore Product Completeness & Stabilization — WU3 closure reconciliation
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
@@ -653,7 +653,7 @@ MR.2 WU3 — System Manager Lifecycle & Modules UX Refinement: COMPLETE AND CLOS
 Module Permission Dependency / Base Access: separate planning concern; not a System Health dependency.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
-Current active implementation branch: main
+Current active implementation branch: `feature/webcore-navigation-wu3-baseline` pending integration and branch lifecycle closure
 Database Ownership & Lifecycle Management Foundation: WU1–WU6 COMPLETE AND CLOSED for the accepted scope
 WU4 Database Lifecycle Classification: COMPLETE AND CLOSED; accepted implementation and focused validation are integrated into `main` at `70782fdc9dddeb353cf27cf78f6f20e294e6fa30`
 WU5 Installer Intent Reconciliation: COMPLETE AND CLOSED; Installer intents are Fresh / Coexist / Adopt, with normal existing-install Update / Upgrade / Repair outside Installer under System Manager / Webcore Lifecycle
@@ -813,8 +813,13 @@ runtime/quiescence evidence. No
 milestone number is assigned. The Webcore package lifecycle
 first delivery slice is complete and closed for local/operator-provided
 package operation over an existing Copot runtime; it does not claim all
-possible Webcore installation/distribution capability. The latest completed
-Post-M3 track is System Health & Status WU1–WU6 implementation and validation;
+possible Webcore installation/distribution capability. The current active
+Post-M3 workstream is Webcore Product Completeness & Stabilization: WU1 and WU2
+are complete, and WU3 implementation, technical validation, AI acceptance,
+human/product acceptance, and closure-documentation reconciliation are complete
+on `feature/webcore-navigation-wu3-baseline` at
+`5f2e79b764cb2a86eaeae4116d497827ce51170f`; integration and branch lifecycle
+remain pending, while WU4-WU6 remain separately controlled / not started.
 v0.13.0 Release Readiness,
 tag/publication, and Gate 9 verification are complete. Post-release
 documentation reconciliation is complete; Multi-Installation Isolation
