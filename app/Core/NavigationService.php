@@ -104,6 +104,30 @@ final class NavigationService
         });
     }
 
+    public function moveItem(int $menuId, int $itemId, ?int $parentId, array $itemIds): void
+    {
+        $menuId = $this->positiveId($menuId, 'Navigation menu ID');
+        $itemId = $this->positiveId($itemId, 'Navigation item ID');
+        $parentId = $this->nullableId($parentId, 'Navigation parent ID');
+        $this->withinTransaction(function () use ($menuId, $itemId, $parentId, $itemIds): void {
+            $this->requireMenu($menuId);
+            $current = $this->repository->lockItem($itemId);
+            if ($current === null || (int) $current['menu_id'] !== $menuId) { throw new InvalidArgumentException('Navigation item must belong to the target menu.'); }
+            $height = $this->subtreeHeight($menuId, $itemId);
+            $this->validatePlacement($menuId, $parentId, $itemId, $height);
+            if ($parentId !== null) { $this->requireParent($menuId, $parentId); }
+            $siblings = array_values(array_filter($this->repository->siblingRows($menuId, $parentId, true), static fn (array $row): bool => (int) $row['id'] !== $itemId));
+            $expected = array_merge(array_map(static fn (array $row): int => (int) $row['id'], $siblings), [$itemId]);
+            $provided = array_map(fn (mixed $id): int => $this->positiveId($id, 'Navigation move item ID'), $itemIds);
+            if (count($provided) !== count(array_unique($provided)) || count($provided) !== count($expected) || $this->sorted($provided) !== $this->sorted($expected)) { throw new InvalidArgumentException('Navigation move must contain each target sibling exactly once.'); }
+            foreach ($provided as $position => $id) { $this->repository->updateItemParentAndOrder($id, $id === $itemId ? $parentId : ($parentId), $position); }
+            if ($current['parent_id'] !== $parentId) {
+                $oldSiblings = array_values(array_filter($this->repository->siblingRows($menuId, $current['parent_id'] === null ? null : (int) $current['parent_id'], true), static fn (array $row): bool => (int) $row['id'] !== $itemId));
+                foreach ($oldSiblings as $position => $row) { $this->repository->updateItemOrder((int) $row['id'], $position); }
+            }
+        });
+    }
+
     public function itemsForMenu(int $menuId): array
     {
         $menuId = $this->positiveId($menuId, 'Navigation menu ID');

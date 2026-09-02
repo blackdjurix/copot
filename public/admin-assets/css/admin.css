@@ -4259,6 +4259,19 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
 .admin-navigation-tree .admin-navigation-tree { margin-left: 1rem; border-left: 1px solid var(--admin-color-border); }
 .admin-navigation-tree__node { margin: 0; padding: 0; }
 .admin-navigation-tree__row { display: flex; align-items: center; gap: .5rem; min-height: 3rem; padding-left: calc(var(--navigation-depth) * .35rem); border-bottom: 1px solid var(--admin-color-border); transition: background-color 160ms ease; }
+.admin-navigation-tree__row[draggable="true"] { cursor: grab; }
+.admin-navigation-tree__row.is-dragging { opacity: .55; }
+.admin-navigation-tree__row.is-drop-target { outline: 2px dashed var(--admin-color-primary); outline-offset: -2px; }
+.admin-navigation-tree__row.is-drop-before { box-shadow: inset 0 3px 0 var(--admin-color-primary); }
+.admin-navigation-tree__row.is-drop-after { box-shadow: inset 0 -3px 0 var(--admin-color-primary); }
+.admin-navigation-tree__row.is-drop-inside { background: color-mix(in srgb, var(--admin-color-primary) 12%, var(--admin-color-surface)); }
+.admin-navigation-tree__toggle, .admin-navigation-tree__toggle-spacer { flex: 0 0 1.5rem; width: 1.5rem; min-height: 2rem; padding: 0; border: 0; background: transparent; color: var(--admin-color-primary); text-align: center; }
+.admin-navigation-tree__toggle { cursor: pointer; }
+.admin-navigation-tree__toggle[aria-expanded="false"] { transform: rotate(-90deg); }
+.admin-navigation-tree__move { flex: 0 0 2rem; width: 2rem; min-height: 2rem; padding: 0; border: 1px solid var(--admin-color-border); border-radius: .35rem; background: var(--admin-color-surface); color: var(--admin-color-text); cursor: pointer; }
+.admin-navigation-tree__move + .admin-navigation-tree__move { margin-right: .35rem; }
+.admin-navigation-tree__node.is-collapsed > [data-navigation-children] { display: none; }
+.admin-navigation-tree__node.is-dragging-target > .admin-navigation-tree__row { min-height: 4rem; }
 .admin-navigation-tree__row.is-selected { background: color-mix(in srgb, var(--admin-color-primary) 8%, var(--admin-color-surface)); box-shadow: inset 3px 0 0 var(--admin-color-primary); }
 .admin-navigation-tree__row:hover,
 .admin-navigation-tree__row:focus-within { background: color-mix(in srgb, var(--admin-color-primary) 7%, var(--admin-color-surface)); }

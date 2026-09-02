@@ -83,8 +83,10 @@ Required baseline operations:
 - reorder sibling items;
 - change parent within the accepted hierarchy boundary.
 
-The contract requires reorder capability but does not require drag-and-drop as a
-specific interaction technique.
+The accepted WU3 interaction includes bounded drag-and-drop for sibling reorder
+and cross-level reparenting, with a deterministic keyboard/non-pointer fallback.
+This remains specific to the Core Primary Navigation tree and does not authorize
+a generic drag-and-drop framework.
 
 ## Hierarchy boundary
 

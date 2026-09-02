@@ -148,6 +148,12 @@ final class NavigationRepository
         $statement->execute(['id' => $id, 'sort_order' => $sortOrder]);
     }
 
+    public function updateItemParentAndOrder(int $id, ?int $parentId, int $sortOrder): void
+    {
+        $statement = $this->database->prepareModule('UPDATE ' . $this->database->tables()->table('navigation_items') . ' SET parent_id = :parent_id, sort_order = :sort_order, updated_at = NOW() WHERE id = :id');
+        $statement->execute(['id' => $id, 'parent_id' => $parentId, 'sort_order' => $sortOrder]);
+    }
+
     public function deleteItem(int $id): void
     {
         $statement = $this->database->prepareModule('DELETE FROM ' . $this->database->tables()->table('navigation_items') . ' WHERE id = :id');

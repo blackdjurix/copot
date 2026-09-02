@@ -2,23 +2,28 @@
 $editing = (bool) ($editing ?? false);
 $esc = static fn (mixed $value): string => htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 $selectedId = $selected?->id();
+$dragEnabled = !$editing && !$creating;
 $contentChoices = array_map(static fn ($content): array => ['slug' => $content->slug(), 'label' => $content->title() . ' (' . ucfirst($content->type()) . ')'], $contentOptions);
 $targetChoice = $formItem['target_choice'] ?? 'custom';
 $parentLabels = []; foreach ($items as $item) $parentLabels[$item->id()] = $item->label();
-$renderTree = function (array $nodes) use (&$renderTree, $esc, $selectedId, $navigationPath, $itemPath, $csrfToken): void {
+$renderTree = function (array $nodes) use (&$renderTree, $esc, $selectedId, $navigationPath, $itemPath, $csrfToken, $dragEnabled): void {
     foreach ($nodes as $node) {
         $item = $node['item']; $isSelected = $selectedId === $item->id();
-        echo '<li class="admin-navigation-tree__node" style="--navigation-depth:' . (int) min(5, $node['depth']) . '">';
-        echo '<div class="admin-navigation-tree__row ' . ($isSelected ? 'is-selected' : '') . '">';
+        $hasChildren = $node['children'] !== [];
+        echo '<li class="admin-navigation-tree__node" data-navigation-node data-navigation-id="' . $item->id() . '" data-navigation-parent="' . ($item->parentId() ?? '') . '" style="--navigation-depth:' . (int) min(5, $node['depth']) . '">';
+        echo '<div class="admin-navigation-tree__row ' . ($isSelected ? 'is-selected' : '') . '" data-navigation-row data-navigation-id="' . $item->id() . '" draggable="' . ($dragEnabled ? 'true' : 'false') . '">';
+        if ($hasChildren) echo '<button class="admin-navigation-tree__toggle" type="button" data-navigation-toggle aria-expanded="true" aria-label="Collapse ' . $esc($item->label()) . '">▾</button>';
+        else echo '<span class="admin-navigation-tree__toggle-spacer" aria-hidden="true"></span>';
         $kindLabel = $item->targetKind() === 'navigation_group' ? 'Navigation Group' : ($item->targetKind() === 'content' ? 'Content' : ($item->targetKind() === 'article_collection' ? 'Article Collection' : 'Link'));
-        echo '<a class="admin-navigation-tree__select" href="' . $esc($isSelected ? $navigationPath : ($navigationPath . '?item=' . $item->id())) . '" aria-current="' . ($isSelected ? 'page' : 'false') . '"><span class="admin-navigation-tree__branch" aria-hidden="true">' . ($node['children'] !== [] ? '▾' : '•') . '</span><span>' . $esc($item->label()) . '</span><small>' . $esc($kindLabel) . '</small></a>';
+        echo '<a class="admin-navigation-tree__select" href="' . $esc($isSelected ? $navigationPath : ($navigationPath . '?item=' . $item->id())) . '" aria-current="' . ($isSelected ? 'page' : 'false') . '"><span class="admin-navigation-tree__branch" aria-hidden="true">' . ($hasChildren ? '◆' : '•') . '</span><span>' . $esc($item->label()) . '</span><small>' . $esc($kindLabel) . '</small></a>';
+        if ($dragEnabled) echo '<button class="admin-navigation-tree__move" type="button" data-navigation-move="up" aria-label="Move ' . $esc($item->label()) . ' up">↑</button><button class="admin-navigation-tree__move" type="button" data-navigation-move="down" aria-label="Move ' . $esc($item->label()) . ' down">↓</button>';
         echo '</div>';
-        if ($node['children'] !== []) { echo '<ol class="admin-navigation-tree">'; $renderTree($node['children']); echo '</ol>'; }
+        if ($hasChildren) { echo '<ol class="admin-navigation-tree" data-navigation-children>'; $renderTree($node['children']); echo '</ol>'; }
         echo '</li>';
     }
 };
 ?>
-<div class="admin-navigation-workspace <?= $selected || $creating ? 'has-navigation-detail' : '' ?>" data-navigation-workspace data-navigation-tree-url="<?= $esc($navigationPath) ?>" data-navigation-content-options="<?= $esc(json_encode($contentChoices, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG)) ?>">
+<div class="admin-navigation-workspace <?= $selected || $creating ? 'has-navigation-detail' : '' ?>" data-navigation-workspace data-navigation-tree-url="<?= $esc($navigationPath) ?>" data-navigation-reorder-url="<?= $esc($itemPath('/reorder')) ?>" data-navigation-csrf="<?= $esc($csrfToken) ?>" data-navigation-drag-enabled="<?= $dragEnabled ? 'true' : 'false' ?>" data-navigation-content-options="<?= $esc(json_encode($contentChoices, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_HEX_TAG)) ?>">
     <section class="admin-panel admin-navigation-workspace__master" aria-labelledby="navigation-tree-title">
         <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="navigation-tree-title">Primary Navigation</h2><p class="admin-panel__description">Select an item to view or edit it.</p></div><a class="admin-button admin-button--primary" href="<?= $esc($navigationPath . '?create=1') ?>">Add item</a></header>
         <div class="admin-panel__body" data-navigation-tree-body>
