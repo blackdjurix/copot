@@ -5,9 +5,12 @@
 Post-M3 Webcore Product Completeness & Stabilization WU1 is complete and
 contract-locked. WU2 — Core Media Admin Baseline is implemented, focused-tested,
 human-accepted, and fast-forward integrated into `main` at
-`14e7ed09681b9f60d57853826a12359d8e2efd8a`; WU3-WU6 remain not started.
-Release, tag, publication, and WU3 implementation remain separately
-controlled.
+`14e7ed09681b9f60d57853826a12359d8e2efd8a`. WU3 — Core Primary Navigation
+Admin Baseline is implementation-complete, technically validated, AI-accepted,
+and human/product-accepted on `feature/webcore-navigation-wu3-baseline` at
+`5f2e79b764cb2a86eaeae4116d497827ce51170f`; integration and branch lifecycle
+remain pending. WU4-WU6 remain separately controlled. Release, tag, and
+publication remain separately controlled.
 
 ## Project
 

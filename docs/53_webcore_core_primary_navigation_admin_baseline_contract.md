@@ -5,7 +5,9 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU3 — Core Primary Navigation Admin Baseline
 Contract status: PROMOTED / CONTRACT LOCKED
-Technical implementation: SEPARATELY AUTHORIZED / IN PROGRESS
+Technical implementation: COMPLETE / VALIDATED / ACCEPTED ON FEATURE BRANCH
+`feature/webcore-navigation-wu3-baseline` at
+`5f2e79b764cb2a86eaeae4116d497827ce51170f`
 Release / tag / publication authorization: NONE
 
 This contract refines and locks the WU3 boundary established by
@@ -14,9 +16,10 @@ This contract refines and locks the WU3 boundary established by
 against current Core Navigation and Core Content source evidence plus the
 subsequently approved product decisions required to complete the baseline.
 
-Promotion of this contract establishes accepted WU3 scope. It does not by itself
-authorize source, runtime, schema, configuration, package, release, or other
-technical execution.
+Promotion of this contract established the accepted WU3 scope. The separately
+authorized implementation and acceptance work is complete on the feature
+branch named above. This contract does not authorize merge, release, tag,
+publication, or external distribution.
 
 ## WU3 objective
 
@@ -313,9 +316,9 @@ WU3 does not authorize:
 - production reconciliation;
 - release, tag, package, publication, or external distribution.
 
-## Validation requirements for later implementation
+## Recorded WU3 validation scope
 
-A separately authorized technical implementation must validate at minimum:
+The separately authorized implementation validated at minimum:
 
 - canonical `primary` operator-facing behavior;
 - Primary Navigation item add/edit/remove/reorder;
@@ -336,13 +339,13 @@ A separately authorized technical implementation must validate at minimum:
 - directly impacted regression coverage;
 - final diff and unintended-change review.
 
-Subjective Admin usability and comprehension require human/product acceptance
-only where materially necessary after a reviewable implementation exists.
+Admin usability and comprehension were reviewed against the delivered feature
+branch; no known technical blocker remains for the accepted WU3 scope.
 
 ## Contract verdict
 
-WU3 preparation and source/scope reconciliation are complete enough to lock the
-implementation boundary.
+WU3 preparation, implementation, technical validation, AI acceptance, and
+human/product acceptance are complete for the locked boundary.
 
 The accepted WU3 baseline is:
 
@@ -358,8 +361,9 @@ The accepted WU3 baseline is:
 10. preserved Navigation Manager extension boundary; and
 11. no generic provider, collection, assignment, or Taxonomy framework expansion.
 
-Technical implementation is separately authorized and in progress under the
-locked four-target baseline; release, publication, and broader WU3 closure
+Implementation, technical validation, AI acceptance, and human/product
+acceptance are complete under the locked four-target baseline. Integration and
+branch lifecycle remain pending; release, publication, and broader WU3 closure
 remain separately controlled.
 
 ## Authority and provenance

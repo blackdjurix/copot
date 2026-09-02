@@ -6,7 +6,8 @@ Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU2 — Core Media Admin Baseline
 Contract status: PROMOTED / CONTRACT LOCKED
 WU2 implementation: COMPLETE / ACCEPTED
-WU3-WU6 implementation: NOT STARTED
+WU3 implementation/validation/acceptance: COMPLETE / ACCEPTED ON FEATURE BRANCH;
+WU4-WU6 implementation: NOT STARTED
 Technical implementation authorization: NONE
 Release / tag / publication authorization: NONE
 
@@ -15,7 +16,11 @@ Release / tag / publication authorization: NONE
 WU2 implementation, focused validation, disposable-runtime verification, and
 human acceptance are complete for the locked baseline boundary. The accepted
 feature state was fast-forward integrated into `main` at
-`14e7ed09681b9f60d57853826a12359d8e2efd8a`; WU3-WU6 remain not started.
+`14e7ed09681b9f60d57853826a12359d8e2efd8a`. WU3 is implementation-complete,
+technically validated, AI-accepted, and human/product-accepted on
+`feature/webcore-navigation-wu3-baseline` at
+`5f2e79b764cb2a86eaeae4116d497827ce51170f`; its integration and branch
+lifecycle remain pending. WU4-WU6 remain separately controlled.
 
 This contract establishes the exact execution boundary for WU2 under
 `docs/49_webcore_product_completeness_stabilization_contract.md` and the locked
@@ -316,16 +321,15 @@ that baseline Media administration is usable with Media Manager absent, while
 retained Media Manager capability remains a true extension over singular Core
 Media authority.
 
-Completion of this contract does not imply WU2 implementation completion. WU2
-remains `NOT STARTED` until a separately authorized technical execution slice is
-performed and accepted.
+Completion of this contract records the accepted WU2 implementation. It does
+not authorize later Work Unit implementation, merge, release, tag, or
+publication.
 
 ## Next relationship
 
-WU3 — Core Primary Navigation Admin Baseline remains the next work unit after
-WU2 implementation and acceptance.
-
-WU3 is not authorized by this contract.
+WU3 — Core Primary Navigation Admin Baseline is the delivered next Work Unit on
+its feature branch. Integration and branch lifecycle remain pending. WU4-WU6
+remain separately authorized and are not authorized by this contract.
 
 ## References
 

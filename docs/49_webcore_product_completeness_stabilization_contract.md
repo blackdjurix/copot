@@ -6,9 +6,10 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Classification: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
 Contract status: PROMOTED / CONTRACT LOCKED
-Workstream implementation: PARTIAL — WU1 COMPLETE / WU2 COMPLETE
-WU1-WU6 implementation: WU1 COMPLETE / WU2 COMPLETE / WU3-WU6 NOT STARTED
-Technical implementation authorization: WU2 separately authorized and complete; future units remain separately gated
+Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE;
+integration pending
+WU1-WU6 implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE / WU4-WU6 NOT STARTED
+Technical implementation authorization: WU2 and WU3 separately authorized and complete; future units remain separately gated
 Release / tag / publication authorization: NONE
 ```
 
@@ -279,8 +280,9 @@ locked:
 
 ## Work Unit topology
 
-The workstream is locked to six Work Units. All implementation states remain
-`NOT STARTED` and require separate execution authorization.
+The workstream remains locked to six Work Units. WU1, WU2, and WU3 are
+complete for their accepted scopes; WU4-WU6 remain separately gated and
+require separate execution authorization.
 
 ### WU1 — Webcore Completeness Contract & Scope Reconciliation
 
@@ -346,14 +348,18 @@ Required baseline capability includes:
 - remove item;
 - reorder items;
 - bounded hierarchy;
-- custom URL targets;
-- Webcore Content targets;
+- Link targets, including safe bare-domain, path, fragment, and supported-scheme forms;
+- individual published Webcore Page and Article targets;
+- the canonical published-Article Collection at `/articles`;
+- Navigation Group structural targets with bounded public submenu behavior;
 - minimum validation;
 - safe lifecycle behavior; and
-- operation without Navigation Manager.
+- operation without Navigation Manager, Taxonomy, optional Modules, or Themes.
 
-The contract locks capability, not interaction technique. Reordering is
-required; drag-and-drop is not required.
+The accepted WU3 implementation provides bounded drag-and-drop for sibling
+reorder and cross-level reparenting, with a deterministic keyboard/non-pointer
+fallback. This remains specific to the Core Primary Navigation tree and does
+not authorize a generic drag-and-drop framework.
 
 The following are not automatically baseline scope:
 
@@ -369,7 +375,8 @@ The following are not automatically baseline scope:
 
 Navigation Manager remains the extension boundary for advanced capability.
 Redirect management remains separate and must not be silently absorbed into
-WU3. Exact UI mechanics remain WU3 contract work.
+WU3. The delivered bounded tree, master-detail, and public submenu mechanics
+remain specific to this WU3 baseline.
 
 ### WU4 — Webcore Site Settings & Appearance Consolidation
 

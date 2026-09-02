@@ -7,7 +7,8 @@ Work Unit: WU1 — Webcore Completeness Contract & Scope Reconciliation
 WU1 status: COMPLETE / CONTRACT LOCKED
 Technical implementation performed by WU1: NONE
 WU2 implementation: COMPLETE / ACCEPTED on feature branch
-WU3-WU6 implementation: NOT STARTED
+WU3 implementation/validation/acceptance: COMPLETE / ACCEPTED ON FEATURE BRANCH;
+WU4-WU6 implementation: NOT STARTED
 Release / tag / publication authorization: NONE
 
 This contract closes WU1 as the authoritative scope-reconciliation unit under
@@ -153,14 +154,18 @@ Baseline target:
 - add, edit, and remove item;
 - reorder;
 - bounded hierarchy;
-- custom URL targets;
-- Webcore Content targets;
+- Link targets;
+- individual published Webcore Page and Article targets;
+- the canonical published-Article Collection at `/articles`;
+- Navigation Group structural targets with bounded public submenu behavior;
 - minimum validation;
 - safe lifecycle behavior; and
-- operation with Navigation Manager absent.
+- operation with Navigation Manager, Taxonomy, optional Modules, and Themes absent.
 
-The contract requires reorder capability, not drag-and-drop as a specific
-interaction technique.
+The accepted WU3 implementation provides bounded drag-and-drop for sibling
+reorder and cross-level reparenting, with a deterministic keyboard/non-pointer
+fallback. This remains specific to the Core Primary Navigation tree and does
+not authorize a generic drag-and-drop framework.
 
 Not automatic baseline scope:
 
