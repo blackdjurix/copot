@@ -35,7 +35,7 @@ final class NavigationFrontendContextContributor implements FrontendThemeContext
                 if (!$item->isVisible() || isset($path[$item->id()])) continue;
                 $path[$item->id()] = true;
                 $resolved = $this->resolve($item);
-                if (!$resolved || !$resolved->isVisible() || $resolved->url() === null) continue;
+                if (!$resolved || !$resolved->isVisible()) continue;
                 $result[] = ['label' => $resolved->label(), 'url' => $resolved->url(), 'kind' => $resolved->kind(), 'reference' => $resolved->reference() === '' ? null : $resolved->reference(), 'children' => $render($item->id(), $path)];
             }
             return $result;
@@ -45,7 +45,12 @@ final class NavigationFrontendContextContributor implements FrontendThemeContext
 
     private function resolve(NavigationItem $item): ?NavigationRenderItem
     {
-        if ($item->targetKind() === 'custom') return new NavigationRenderItem('custom', '', $item->label(), $item->customUrl(), true);
+        if (in_array($item->targetKind(), ['custom', 'link'], true)) {
+            $url = (string) $item->customUrl();
+            if ($url !== '' && !str_starts_with($url, '/') && !str_starts_with($url, '#') && !preg_match('/^[a-z][a-z0-9+.-]*:/i', $url)) $url = '//' . $url;
+            return new NavigationRenderItem('link', '', $item->label(), $url, true);
+        }
+        if ($item->targetKind() === 'navigation_group') return new NavigationRenderItem('navigation_group', '', $item->label(), null, true);
         if ($item->targetKind() === 'article_collection' && $item->targetReference() === 'articles') {
             return new NavigationRenderItem('article_collection', 'articles', $item->label(), '/articles', true);
         }

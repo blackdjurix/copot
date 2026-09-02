@@ -206,9 +206,12 @@ final class NavigationService
         $kind = isset($data['target_kind']) && is_string($data['target_kind']) ? trim($data['target_kind']) : '';
         $reference = $data['target_reference'] ?? null;
         $customUrl = $data['custom_url'] ?? null;
-        if ($kind === 'custom') {
+        if (in_array($kind, ['custom', 'link'], true)) {
             if ($reference !== null) { throw new InvalidArgumentException('Custom navigation targets cannot have a target reference.'); }
             $customUrl = $this->validateCustomUrl($customUrl);
+            $kind = 'link';
+        } elseif ($kind === 'navigation_group') {
+            if ($reference !== null || $customUrl !== null) { throw new InvalidArgumentException('Navigation Groups cannot have a destination.'); }
         } else {
             if (preg_match('/^[a-z0-9]+(?:[._-][a-z0-9]+)*$/', $kind) !== 1) { throw new InvalidArgumentException('Navigation target kind is invalid.'); }
             if (!is_string($reference) || trim($reference) === '') { throw new InvalidArgumentException('Navigation provider target reference is required.'); }
@@ -222,11 +225,19 @@ final class NavigationService
     {
         if (!is_string($value) || trim($value) === '') { throw new InvalidArgumentException('Navigation custom URL is required.'); }
         $url = trim($value);
-        if (preg_match('/[\x00-\x1F\\\\]/', $url) === 1 || str_starts_with($url, '//')) { throw new InvalidArgumentException('Navigation custom URL is invalid.'); }
+        if (preg_match('/[\x00-\x1F\\\\\x7F]/', $url) === 1 || str_starts_with($url, '//')) { throw new InvalidArgumentException('Navigation Link is invalid.'); }
         if (str_starts_with($url, '/')) { return $url; }
         if (str_starts_with($url, '#')) { return $url; }
+        if (preg_match('/^[a-z][a-z0-9+.-]*:/i', $url) === 1) {
+            $parts = parse_url($url);
+            $scheme = strtolower((string) ($parts['scheme'] ?? ''));
+            if (!in_array($scheme, ['http', 'https', 'ftp', 'mailto', 'tel'], true)) { throw new InvalidArgumentException('Navigation Link scheme is not supported.'); }
+            if (in_array($scheme, ['http', 'https', 'ftp'], true) && (!is_array($parts) || ($parts['host'] ?? '') === '')) { throw new InvalidArgumentException('Navigation Link is invalid.'); }
+            return $url;
+        }
+        if (preg_match('~^(?=.{1,2048}$)(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}(?::[0-9]{1,5})?(?:[/?#][^\s]*)?$~', $url) === 1) { return $url; }
         $parts = parse_url($url);
-        if (!is_array($parts) || !in_array($parts['scheme'] ?? null, ['http', 'https'], true) || !isset($parts['host']) || $parts['host'] === '') { throw new InvalidArgumentException('Navigation custom URL is invalid.'); }
+        if (!is_array($parts) || !in_array($parts['scheme'] ?? null, ['http', 'https'], true) || !isset($parts['host']) || $parts['host'] === '') { throw new InvalidArgumentException('Navigation Link is invalid.'); }
         return $url;
     }
 

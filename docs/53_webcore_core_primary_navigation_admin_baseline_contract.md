@@ -5,7 +5,7 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU3 — Core Primary Navigation Admin Baseline
 Contract status: PROMOTED / CONTRACT LOCKED
-Technical implementation: NOT STARTED / NOT AUTHORIZED BY THIS CONTRACT ALONE
+Technical implementation: SEPARATELY AUTHORIZED / IN PROGRESS
 Release / tag / publication authorization: NONE
 
 This contract refines and locks the WU3 boundary established by
@@ -104,12 +104,22 @@ remain authoritative.
 
 ## Baseline target model
 
-Core Primary Navigation supports exactly three baseline target classes.
+Core Primary Navigation supports exactly four baseline target classes:
 
-### 1. Custom URL
+1. Link;
+2. Content;
+3. Article Collection; and
+4. Navigation Group.
 
-Custom URL represents an arbitrary explicit destination supplied by the
-operator and continues to use existing Core URL validation.
+### 1. Link
+
+Link represents an explicit operator-supplied destination. Accepted forms are
+bare domains (including an optional path), root-relative paths, fragments, and
+the explicit `http`, `https`, `ftp`, `mailto`, and `tel` schemes. Bare domains
+remain unprefixed in persistence and resolve publicly as protocol-relative
+destinations. Unsupported or unsafe schemes, including `javascript:`, `data:`,
+and `file:`, plus control-character, backslash, and malformed values, are
+rejected by the existing Core validation boundary.
 
 ### 2. Webcore Content
 
@@ -124,7 +134,7 @@ Page and Article are one Navigation target family, `Content`; their Content type
 is semantic/type metadata rather than separate Navigation target kinds.
 
 Native Content targeting must be preserved even though an operator could
-technically reproduce an Article URL as a Custom URL. Native targeting keeps the
+technically reproduce an Article URL as a Link. Native targeting keeps the
 Navigation item aware of Content identity, validation, and lifecycle state
 instead of degrading the target to an opaque URL string.
 
@@ -160,6 +170,22 @@ Baseline collection semantics:
 
 Navigation targets the aggregate Article Collection identity, not a stored list
 of Article IDs.
+
+### 4. Navigation Group
+
+Navigation Group is a structural baseline target with a required label and no
+destination or target reference. It may exist without children and may contain
+children within the existing five-level hierarchy boundary. Core public
+resolution retains visible groups with a null URL and distinguishes them from
+destination items.
+
+For the default Webcore public navigation, destination items with children
+expose their submenu on hover and focus while their destination link remains
+activatable. Navigation Groups use a semantic non-link control: pointer hover,
+focus/focus-within, and touch activation expose or toggle their child submenu;
+the Group itself never navigates. This is bounded to the default public
+projection and does not authorize Theme-wide navigation infrastructure or a
+generic menu framework.
 
 ## Bounded Article Collection delivery
 
@@ -259,7 +285,7 @@ including where separately supported:
 - assignment management;
 - generic provider capability or richer provider browsing;
 - advanced visibility;
-- advanced target types beyond the three locked baseline classes;
+- advanced target types beyond the four locked baseline classes;
 - richer workspace conveniences;
 - bulk actions;
 - analytics;
@@ -292,7 +318,7 @@ A separately authorized technical implementation must validate at minimum:
 - canonical `primary` operator-facing behavior;
 - Primary Navigation item add/edit/remove/reorder;
 - five-level hierarchy boundary and invalid-placement rejection;
-- Custom URL targeting;
+- Link targeting, including safe bare-domain, path, fragment, and supported-scheme resolution;
 - individual published Page targeting;
 - individual published Article targeting;
 - safe non-resolution of draft, archived, missing, or stale Content targets;
@@ -301,6 +327,7 @@ A separately authorized technical implementation must validate at minimum:
 - valid empty Article Collection behavior;
 - Article lifecycle-driven collection membership;
 - Navigation resolution of the Article Collection target;
+- Navigation Group creation, persistence, public retention, and bounded submenu interaction;
 - operation with Navigation Manager and Taxonomy absent;
 - permission, CSRF, validation, and sanitized-failure behavior;
 - coexistence with retained Navigation Manager where enabled;
@@ -320,13 +347,14 @@ The accepted WU3 baseline is:
 1. one canonical `primary` Navigation;
 2. one Core Primary Navigation Admin workspace;
 3. item CRUD, reorder, and bounded five-level hierarchy;
-4. Custom URL targets;
+4. Link targets;
 5. individual Webcore Content targets covering Page and Article;
 6. one canonical Article Collection target at `/articles`;
-7. bounded Core Article Collection public delivery;
-8. zero optional Module, Taxonomy, and Theme dependency;
-9. preserved Navigation Manager extension boundary; and
-10. no generic provider, collection, assignment, or Taxonomy framework expansion.
+7. Navigation Group structural targets with bounded public submenu behavior;
+8. bounded Core Article Collection public delivery;
+9. zero optional Module, Taxonomy, and Theme dependency;
+10. preserved Navigation Manager extension boundary; and
+11. no generic provider, collection, assignment, or Taxonomy framework expansion.
 
 Technical implementation remains NOT STARTED until separately authorized.
 

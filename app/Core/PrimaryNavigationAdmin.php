@@ -30,7 +30,11 @@ final class PrimaryNavigationAdmin
         $kind = strtolower(trim((string) ($data['target_kind'] ?? '')));
         $reference = $data['target_reference'] ?? null;
         $customUrl = $data['custom_url'] ?? null;
-        if ($kind === 'custom') {
+        if (in_array($kind, ['custom', 'link'], true)) {
+            return $data;
+        }
+        if ($kind === 'navigation_group') {
+            if ($reference !== null || $customUrl !== null) throw new \InvalidArgumentException('Navigation Group cannot have a destination.');
             return $data;
         }
         if ($kind === 'article_collection') {

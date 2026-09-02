@@ -4,7 +4,7 @@
     var select = document.querySelector('[data-navigation-target]');
     var targetFields = document.querySelector('[data-navigation-target-fields]');
     var contentOptions = [];
-    var targetValues = { custom: '', content: '' };
+    var targetValues = { link: '', content: '' };
     var activeTarget = select ? select.value : '';
     try { contentOptions = JSON.parse(workspace.dataset.navigationContentOptions || '[]'); } catch (error) { contentOptions = []; }
     function field(tag, attributes, text) {
@@ -15,20 +15,20 @@
     }
     function rememberTargetValue() {
         if (!select || !targetFields) return;
-        if (activeTarget === 'custom') targetValues.custom = targetFields.querySelector('[name="custom_url"]')?.value || '';
+        if (activeTarget === 'link' || activeTarget === 'custom') targetValues.link = targetFields.querySelector('[name="custom_url"]')?.value || '';
         if (activeTarget === 'content') targetValues.content = targetFields.querySelector('[name="content_reference"]')?.value || '';
     }
     function syncTarget() {
         if (!select || !targetFields) return;
         rememberTargetValue();
         targetFields.replaceChildren();
-        if (select.value === 'custom') {
+        if (select.value === 'link') {
             var customField = field('div', { 'class': 'admin-field' });
-            customField.append(field('label', { 'class': 'admin-field__label', 'for': 'custom_url' }, 'URL'));
-            var customInput = field('input', { id: 'custom_url', name: 'custom_url', placeholder: 'https://example.com, /internal-path, or #section' });
-            customInput.value = targetValues.custom;
+            customField.append(field('label', { 'class': 'admin-field__label', 'for': 'custom_url' }, 'Link'));
+            var customInput = field('input', { id: 'custom_url', name: 'custom_url', placeholder: 'example.com, /path, #section, or https://example.com' });
+            customInput.value = targetValues.link;
             customField.append(customInput);
-            customField.append(field('p', { 'class': 'admin-field__help' }, 'Use https://example.com, /internal-path, or #section.'));
+            customField.append(field('p', { 'class': 'admin-field__help' }, 'Use example.com, /path, #section, or an explicit supported scheme.'));
             targetFields.append(customField);
         } else if (select.value === 'content') {
             var contentField = field('div', { 'class': 'admin-field' });
@@ -39,11 +39,13 @@
             contentSelect.value = targetValues.content;
             contentField.append(contentSelect);
             targetFields.append(contentField);
-        } else {
+        } else if (select.value === 'article_collection') {
             var help = field('p', { 'class': 'admin-field__help' }, 'Uses the canonical published Articles collection at ');
             help.append(field('code', {}, '/articles'));
             help.append(document.createTextNode('.'));
             targetFields.append(help);
+        } else {
+            targetFields.append(field('p', { 'class': 'admin-field__help' }, 'Navigation Group has no destination and can contain child items.'));
         }
         activeTarget = select.value;
     }

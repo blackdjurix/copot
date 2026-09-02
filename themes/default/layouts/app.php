@@ -9,6 +9,7 @@
     <?php endif; ?>
     <?php if (isset($themeAsset) && is_callable($themeAsset)): ?>
         <link rel="stylesheet" href="<?= htmlspecialchars($themeAsset('css/app.css'), ENT_QUOTES, 'UTF-8') ?>">
+        <script defer src="<?= htmlspecialchars($themeAsset('js/navigation.js'), ENT_QUOTES, 'UTF-8') ?>"></script>
     <?php endif; ?>
 </head>
 <body<?= ($branding?->cssVariables() ?? '') !== '' ? ' style="' . htmlspecialchars($branding->cssVariables(), ENT_QUOTES, 'UTF-8') . '"' : '' ?>>
@@ -28,14 +29,19 @@
 
     <?php $navigationLocations = is_array($context['navigation']['locations'] ?? null) ? $context['navigation']['locations'] : []; ?>
     <?php if ($navigationLocations !== []): ?>
-        <nav aria-label="Primary navigation">
-            <?php $renderNavigation = function (array $items) use (&$renderNavigation): void { ?>
-                <ul>
+        <nav class="site-nav" aria-label="Primary navigation">
+            <?php $renderNavigation = function (array $items, bool $nested = false) use (&$renderNavigation): void { ?>
+                <ul<?= $nested ? ' class="site-nav-submenu"' : '' ?>>
                     <?php foreach ($items as $item): ?>
-                        <li>
-                            <a href="<?= htmlspecialchars((string) ($item['url'] ?? '#'), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) ($item['label'] ?? ''), ENT_QUOTES, 'UTF-8') ?></a>
-                            <?php if (is_array($item['children'] ?? null) && $item['children'] !== []): ?>
-                                <?php $renderNavigation($item['children']); ?>
+                        <?php $hasChildren = is_array($item['children'] ?? null) && $item['children'] !== []; $isGroup = ($item['kind'] ?? '') === 'navigation_group'; ?>
+                        <li class="site-nav-item<?= $hasChildren ? ' has-children' : '' ?>">
+                            <?php if ($isGroup): ?>
+                                <button class="site-nav-group-toggle" type="button" aria-expanded="false"><?= htmlspecialchars((string) ($item['label'] ?? ''), ENT_QUOTES, 'UTF-8') ?></button>
+                            <?php else: ?>
+                                <a href="<?= htmlspecialchars((string) ($item['url'] ?? '#'), ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) ($item['label'] ?? ''), ENT_QUOTES, 'UTF-8') ?></a>
+                            <?php endif; ?>
+                            <?php if ($hasChildren): ?>
+                                <?php $renderNavigation($item['children'], true); ?>
                             <?php endif; ?>
                         </li>
                     <?php endforeach; ?>
