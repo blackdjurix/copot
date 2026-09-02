@@ -5,6 +5,7 @@
     var targetFields = document.querySelector('[data-navigation-target-fields]');
     var contentOptions = [];
     var targetValues = { custom: '', content: '' };
+    var activeTarget = select ? select.value : '';
     try { contentOptions = JSON.parse(workspace.dataset.navigationContentOptions || '[]'); } catch (error) { contentOptions = []; }
     function field(tag, attributes, text) {
         var element = document.createElement(tag);
@@ -14,8 +15,8 @@
     }
     function rememberTargetValue() {
         if (!select || !targetFields) return;
-        if (select.value === 'custom') targetValues.custom = targetFields.querySelector('[name="custom_url"]')?.value || '';
-        if (select.value === 'content') targetValues.content = targetFields.querySelector('[name="content_reference"]')?.value || '';
+        if (activeTarget === 'custom') targetValues.custom = targetFields.querySelector('[name="custom_url"]')?.value || '';
+        if (activeTarget === 'content') targetValues.content = targetFields.querySelector('[name="content_reference"]')?.value || '';
     }
     function syncTarget() {
         if (!select || !targetFields) return;
@@ -44,6 +45,7 @@
             help.append(document.createTextNode('.'));
             targetFields.append(help);
         }
+        activeTarget = select.value;
     }
     if (select) {
         select.addEventListener('change', syncTarget);
