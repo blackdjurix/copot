@@ -5,9 +5,8 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU3 — Core Primary Navigation Admin Baseline
 Contract status: PROMOTED / CONTRACT LOCKED
-Technical implementation: COMPLETE / VALIDATED / ACCEPTED ON FEATURE BRANCH
-`feature/webcore-navigation-wu3-baseline` at
-`5f2e79b764cb2a86eaeae4116d497827ce51170f`
+Technical implementation: COMPLETE / VALIDATED / ACCEPTED / INTEGRATED INTO MAIN
+at `2ade6d22c8ef0c78e0371960617c70bf865854b0`
 Release / tag / publication authorization: NONE
 
 This contract refines and locks the WU3 boundary established by
@@ -17,8 +16,9 @@ against current Core Navigation and Core Content source evidence plus the
 subsequently approved product decisions required to complete the baseline.
 
 Promotion of this contract established the accepted WU3 scope. The separately
-authorized implementation and acceptance work is complete on the feature
-branch named above. This contract does not authorize merge, release, tag,
+authorized implementation and acceptance work is complete and integrated into
+`main` at the commit named above. Feature containment and branch lifecycle
+closure are complete. This contract does not authorize release, tag,
 publication, or external distribution.
 
 ## WU3 objective
@@ -363,7 +363,7 @@ The accepted WU3 baseline is:
 
 Implementation, technical validation, AI acceptance, and human/product
 acceptance are complete under the locked four-target baseline. Integration and
-branch lifecycle remain pending; release, publication, and broader WU3 closure
+branch lifecycle are closed; release, publication, and broader post-WU3 work
 remain separately controlled.
 
 ## Authority and provenance

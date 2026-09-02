@@ -6,7 +6,7 @@ Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU2 — Core Media Admin Baseline
 Contract status: PROMOTED / CONTRACT LOCKED
 WU2 implementation: COMPLETE / ACCEPTED
-WU3 implementation/validation/acceptance: COMPLETE / ACCEPTED ON FEATURE BRANCH;
+WU3 implementation/validation/acceptance: COMPLETE / ACCEPTED / INTEGRATED INTO MAIN;
 WU4-WU6 implementation: NOT STARTED
 Technical implementation authorization: NONE
 Release / tag / publication authorization: NONE
@@ -17,10 +17,11 @@ WU2 implementation, focused validation, disposable-runtime verification, and
 human acceptance are complete for the locked baseline boundary. The accepted
 feature state was fast-forward integrated into `main` at
 `14e7ed09681b9f60d57853826a12359d8e2efd8a`. WU3 is implementation-complete,
-technically validated, AI-accepted, and human/product-accepted on
-`feature/webcore-navigation-wu3-baseline` at
-`5f2e79b764cb2a86eaeae4116d497827ce51170f`; its integration and branch
-lifecycle remain pending. WU4-WU6 remain separately controlled.
+technically validated, AI-accepted, and human/product-accepted. WU3 was
+fast-forward integrated into `main` at
+`2ade6d22c8ef0c78e0371960617c70bf865854b0`; feature containment was verified,
+the local and remote feature branches were deleted, and the branch lifecycle is
+closed. WU4-WU6 remain separately controlled.
 
 This contract establishes the exact execution boundary for WU2 under
 `docs/49_webcore_product_completeness_stabilization_contract.md` and the locked
@@ -327,9 +328,9 @@ publication.
 
 ## Next relationship
 
-WU3 — Core Primary Navigation Admin Baseline is the delivered next Work Unit on
-its feature branch. Integration and branch lifecycle remain pending. WU4-WU6
-remain separately authorized and are not authorized by this contract.
+WU3 — Core Primary Navigation Admin Baseline is complete and integrated into
+`main`; its feature-branch lifecycle is closed. WU4-WU6 remain separately
+authorized and are not authorized by this contract.
 
 ## References
 
