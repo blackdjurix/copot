@@ -9,7 +9,7 @@ $renderTree = function (array $nodes) use (&$renderTree, $esc, $selectedId, $nav
         $item = $node['item']; $isSelected = $selectedId === $item->id();
         echo '<li class="admin-navigation-tree__node" style="--navigation-depth:' . (int) min(5, $node['depth']) . '">';
         echo '<div class="admin-navigation-tree__row ' . ($isSelected ? 'is-selected' : '') . '">';
-        echo '<a class="admin-navigation-tree__select" href="' . $esc($navigationPath . '?item=' . $item->id()) . '" aria-current="' . ($isSelected ? 'page' : 'false') . '"><span class="admin-navigation-tree__branch" aria-hidden="true">' . ($node['children'] !== [] ? '▾' : '•') . '</span><span>' . $esc($item->label()) . '</span><small>' . $esc($item->targetKind() === 'custom' ? 'Custom URL' : ($item->targetKind() === 'content' ? 'Content' : 'Article Collection')) . '</small></a>';
+        echo '<a class="admin-navigation-tree__select" href="' . $esc($isSelected ? $navigationPath : ($navigationPath . '?item=' . $item->id())) . '" aria-current="' . ($isSelected ? 'page' : 'false') . '"><span class="admin-navigation-tree__branch" aria-hidden="true">' . ($node['children'] !== [] ? '▾' : '•') . '</span><span>' . $esc($item->label()) . '</span><small>' . $esc($item->targetKind() === 'custom' ? 'Custom URL' : ($item->targetKind() === 'content' ? 'Content' : 'Article Collection')) . '</small></a>';
         echo '</div>';
         if ($node['children'] !== []) { echo '<ol class="admin-navigation-tree">'; $renderTree($node['children']); echo '</ol>'; }
         echo '</li>';
