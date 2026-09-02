@@ -223,7 +223,7 @@ final class NavigationService
 
     private function validateCustomUrl(mixed $value): string
     {
-        if (!is_string($value) || trim($value) === '') { throw new InvalidArgumentException('Navigation custom URL is required.'); }
+        if (!is_string($value) || trim($value) === '') { throw new InvalidArgumentException('Navigation Link is required.'); }
         $url = trim($value);
         if (preg_match('/[\x00-\x1F\\\\\x7F]/', $url) === 1 || str_starts_with($url, '//')) { throw new InvalidArgumentException('Navigation Link is invalid.'); }
         if (str_starts_with($url, '/')) { return $url; }

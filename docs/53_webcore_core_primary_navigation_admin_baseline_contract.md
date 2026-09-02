@@ -356,7 +356,9 @@ The accepted WU3 baseline is:
 10. preserved Navigation Manager extension boundary; and
 11. no generic provider, collection, assignment, or Taxonomy framework expansion.
 
-Technical implementation remains NOT STARTED until separately authorized.
+Technical implementation is separately authorized and in progress under the
+locked four-target baseline; release, publication, and broader WU3 closure
+remain separately controlled.
 
 ## Authority and provenance
 

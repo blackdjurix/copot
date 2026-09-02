@@ -17,7 +17,12 @@ final class NavigationFrontendContextContributor implements FrontendThemeContext
         if ($context->themeId() !== '' && is_array($declared)) {
             foreach (array_values(array_unique(array_filter($declared, 'is_string'))) as $location) {
                 if (!preg_match('/^[a-z][a-z0-9._-]*$/D', $location)) continue;
-                $assigned = $repository->assignedMenu($context->themeId(), $location);
+                try {
+                    $assigned = $repository->assignedMenu($context->themeId(), $location);
+                } catch (\Throwable) {
+                    // Optional assignment storage is unavailable in the Core-only baseline.
+                    $assigned = null;
+                }
                 $locations[$location] = $assigned ? $this->renderMenu($repository, $assigned) : ($location === 'primary' ? $locations['primary'] : []);
             }
         }
