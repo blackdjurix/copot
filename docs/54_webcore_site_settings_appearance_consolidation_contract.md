@@ -43,7 +43,8 @@ rewrite.
 ## Product surface and routing direction
 
 The current Webcore System Manager product surface evolves into Site Settings
-as its successor parent identity.
+as its successor parent identity. `/admin/settings` is the Webcore-owned
+canonical Site Settings path and product surface.
 
 The canonical Site Settings URL is:
 
@@ -51,14 +52,17 @@ The canonical Site Settings URL is:
 /admin/settings
 ```
 
-`/admin/settings/system-manager` is a noncanonical legacy/compatibility
-surface. WU4 must reconcile that route and its product-facing identity, but
-must not invent an exact redirect, alias, removal, or compatibility mechanism
-unless implementation-time source evidence makes one mandatory.
+`/admin/settings/system-manager` is noncanonical. WU4 does not require a
+retained legacy compatibility route for it. Given the pre-live-site development
+state and the stable v0.13.0 release boundary, WU4 may remove that route and
+reconcile its internal references. The exact route-removal and internal
+reference mechanics remain implementation-time details.
 
-The canonical URL decision does not, by itself, authorize retirement of the
-optional or historical Settings Manager Module. Its overlapping product
-surface requires explicit implementation-time disposition.
+The retired Settings Manager does not own `/admin/settings`. A future
+reactivated Settings Manager or equivalent Module may consume or extend the
+canonical Webcore Site Settings surface, but must not reclaim ownership of that
+path. The canonical URL decision does not by itself authorize package deletion
+or Module lifecycle work.
 
 ## Locked information architecture
 
@@ -102,7 +106,7 @@ The following authorities remain singular and unchanged:
 | --- | --- | --- |
 | Definitions, defaults, validation, typed persistence, effective values | Settings Platform (`SettingsRegistry` / `SettingsService`) | Product projection only |
 | Logo and Favicon validation, storage, activation, cleanup, serving | Site Asset authority (`SiteAssetStorage`) | Existing workflow consumer |
-| Homepage Hero Image selection, reference, usage, and delivery | Core Media authority | Site Settings selection/reference projection |
+| Homepage Hero Image selection, reference, usage, and delivery | Core Media authority | Site Settings selection/reference projection only |
 | System lifecycle, adoption, recovery, and lifecycle semantics | Existing Webcore lifecycle authority | Existing operational projection |
 | Module discovery, permissions, lifecycle, and package behavior | Existing Module lifecycle authority | Existing operational projection |
 | Health production, provider, aggregation, authorization, and sanitization | Existing System Health authority | Existing read-only projection |
@@ -162,13 +166,15 @@ not automatic Built-in Public View page types.
 WU4 owns only the product projection for Homepage configuration initially
 required by the baseline: Hero Image.
 
-Hero Image must consume the accepted Core Media selection, reference, usage,
-and delivery boundary. Site Settings must not take ownership of Media.
+Site Settings owns only the Homepage Hero Image selection/projection. Settings
+Platform owns its typed persistence. Core Media owns Media identity, storage,
+selection/reference, usage, delivery, and deletion safety. Site Settings must
+not take ownership of Media.
 
-Exact storage-key/reference representation, deletion behavior, fallback
-mechanics, and other low-level persistence details remain implementation-time
-execution dispositions unless existing Media authority requires a specific
-answer.
+Exact setting key, reference representation, usage-registration mechanics,
+transaction/removal behavior, fallback mechanics, and other low-level details
+remain implementation-time technical dispositions to be resolved from current
+Core Media source.
 
 WU4 is not a page builder, Homepage content builder, content-assignment
 engine, or arbitrary layout editor. Navigation mechanics beyond the Homepage
@@ -204,8 +210,19 @@ Webcore Color Scheme is locked as:
 - exactly one user-selected `Main Color`;
 - system-derived shades, highlights, tints, or equivalent bounded functional
   variants from that Main Color;
-- black and white as system-owned neutral bases, not user-selected colors;
-- bounded neutral variants derived from black and white where needed.
+- canonical black and white as Webcore-owned neutral bases, not user-selected
+  colors;
+- bounded neutral variants derived from those black and white bases where
+  needed.
+
+Modules and Themes may consume Webcore neutral primitives. They may also define
+local or theme/module-specific presentation colors and derived tokens, but they
+must not mutate or replace canonical Webcore neutral values globally.
+
+Webcore does not own the Branding concept or richer Brand Colors such as
+Branding Main or Branding Accent. Webcore Color Scheme is a separate Webcore
+concept and its canonical user-configurable value is not ownership of legacy
+`branding.main`.
 
 It is not:
 
@@ -220,13 +237,17 @@ accessibility-critical states.
 
 ### Existing four-color Branding disposition
 
-The current four-color `branding.*` implementation is not silently removed or
-migrated by this contract. It is legacy compatibility/transitional
-implementation evidence until WU4 implementation resolves its disposition.
+The current four-color `branding.*` implementation is transitional
+implementation evidence, not canonical Webcore Color Scheme authority. After
+separate WU4 implementation authorization, implementation may perform bounded
+destructive cleanup or remove obsolete legacy Branding/runtime projections
+where required by the accepted ownership model.
 
-Its exact compatibility, deprecation, retention, or migration mechanics are an
-explicit implementation-time disposition. Destructive migration is not
-authorized by this contract.
+Before any cleanup or removal, implementation must identify active consumers
+and must not leave broken references. Exact cleanup, compatibility,
+deprecation, retention, or migration mechanics remain implementation-time
+dispositions. Destructive cleanup is authorized only within this bounded
+condition and does not authorize a general data migration.
 
 The richer Brand Colors model—Main, Accent, Light Neutral, and Dark Neutral—
 is not Webcore ownership and is outside WU4 implementation scope. Its future
@@ -343,7 +364,7 @@ would require a separate authorization.
 
 Validate:
 
-- canonical routing and compatibility obligations;
+- canonical routing and the noncanonical-route reconciliation disposition;
 - authority preservation;
 - zero-Theme Built-in Public View behavior directly affected by WU4;
 - permission boundaries;
@@ -366,13 +387,17 @@ Human/product acceptance is mandatory.
 The following details are deliberately carried into implementation rather than
 silently decided by this contract:
 
-1. Exact compatibility mechanism for `/admin/settings/system-manager`.
-2. Exact disposition of the optional/historical Settings Manager product
-   surface or Module where it overlaps canonical Site Settings.
-3. Exact compatibility, deprecation, retention, or migration mechanics for
-   current four-color `branding.*` storage and behavior.
-4. Exact Homepage Hero Image persistence, reference, deletion, and fallback
-   mechanics.
+1. Exact removal/reconciliation mechanics for noncanonical
+   `/admin/settings/system-manager`; a retained compatibility route is not
+   required by WU4.
+2. Exact disposition of the retired Settings Manager product surface or
+   Module where it overlaps canonical Site Settings; it does not own
+   `/admin/settings`, and package deletion is not authorized here.
+3. Exact compatibility, deprecation, retention, bounded cleanup, or
+   migration mechanics for current four-color `branding.*` storage and
+   runtime projections after active-consumer identification.
+4. Exact Homepage Hero Image setting key, reference, usage-registration,
+   transaction/removal, persistence, and fallback mechanics.
 5. Exhaustive System Page template inventory.
 
 These are implementation-time/source-evidence dispositions bounded by this
@@ -430,7 +455,8 @@ WU4 does not include:
 - Font/Typography configuration system;
 - generic palette/color or derived-color engine;
 - arbitrary semantic/status color mapping;
-- destructive Branding migration without separate authorization;
+- unbounded Branding migration or cleanup beyond the bounded active-consumer
+  and broken-reference safety condition defined above;
 - installer first-admin changes;
 - immutable username implementation;
 - production reconciliation;
@@ -470,7 +496,8 @@ Not authorized by this contract:
 
 - PHP, JavaScript, CSS, schema, settings, data, package, Module, Theme,
   lifecycle, or runtime implementation;
-- runtime mutation or destructive cleanup;
+- runtime mutation or unbounded destructive cleanup outside the bounded legacy
+  Branding condition defined above;
 - release, version bump, tag, package creation, publication, or distribution;
 - adoption of unrelated Deferred Items; or
 - WU4 Batch 1 implementation.
