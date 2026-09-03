@@ -45,8 +45,24 @@ $app->router()->get($mediaPath, function ($request) use ($app, $mediaAdmin, $med
 $app->router()->get($mediaUploadPath, function ($request) use ($requireMedia, $render, $app, $mediaPath): Response { $user = $requireMedia($request, 'media.upload'); if ($user instanceof Response) return $user; return $render('upload', ['csrfToken' => $app->csrf()->token(), 'error' => null, 'title' => '', 'adminUrl' => fn (string $path = '') => $app->adminUrl()->childUrl($path)], $user, $request->path(), 200, ['description' => 'Upload one supported image or PDF document.', 'bar' => null, 'surface' => 'transparent', 'spacing' => 'default'], [['label' => 'Media', 'url' => $mediaPath], ['label' => 'Upload Media']]); });
 $app->router()->get($app->adminUrl()->childUrl('media/select'), function ($request) use ($requireMedia, $mediaRepository, $mediaPath, $app): Response {
     $user = $requireMedia($request, 'media.use'); if ($user instanceof Response) return $user;
-    $items = $mediaRepository->paginate('', 50, 0);
+    $kind = (string) $request->input('kind', '');
+    $items = $mediaRepository->paginate($kind === 'image' ? 'image' : '', 100, 0);
     return Response::content(json_encode(['items' => array_map(static fn (\Copot\Core\Media $item): array => ['id' => $item->id()->value(), 'title' => $item->title(), 'original_filename' => $item->originalFilename(), 'mime_type' => $item->mimeType(), 'url' => $app->url('/media/' . $item->id()->value())], $items)], JSON_THROW_ON_ERROR), 200, ['Content-Type' => 'application/json; charset=UTF-8', 'Cache-Control' => 'no-store']);
+});
+$app->router()->post($app->adminUrl()->childUrl('media/select/upload'), function ($request) use ($app, $requireMedia, $mediaAdmin, $mediaInspector): Response {
+    $user = $requireMedia($request, 'media.upload'); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    try {
+        $file = $request->file('media') ?? [];
+        $facts = $mediaInspector->inspect(is_array($file) ? (string) ($file['tmp_name'] ?? '') : '');
+        if (!in_array($facts->mimeType(), ['image/jpeg', 'image/png', 'image/webp'], true)) throw new \Copot\Core\MediaUploadValidationException('image');
+        $id = $mediaAdmin->upload($file, trim((string) $request->post('title', '')));
+        return Response::content(json_encode(['id' => $id->value()], JSON_THROW_ON_ERROR), 201, ['Content-Type' => 'application/json; charset=UTF-8', 'Cache-Control' => 'no-store']);
+    } catch (\Copot\Core\MediaUploadValidationException) {
+        return Response::content(json_encode(['error' => 'The uploaded image could not be validated.'], JSON_THROW_ON_ERROR), 422, ['Content-Type' => 'application/json; charset=UTF-8']);
+    } catch (\Copot\Core\MediaUploadException) {
+        return Response::content(json_encode(['error' => 'The image could not be uploaded.'], JSON_THROW_ON_ERROR), 422, ['Content-Type' => 'application/json; charset=UTF-8']);
+    }
 });
 $app->router()->post($mediaUploadPath, function ($request) use ($app, $requireMedia, $mediaAdmin, $render, $mediaPath): Response {
     $user = $requireMedia($request, 'media.upload'); if ($user instanceof Response) return $user;

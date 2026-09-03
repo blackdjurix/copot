@@ -45,7 +45,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
                 'date_format' => $value('localization', 'date_format', 'Y-m-d'), 'time_format' => $value('localization', 'time_format', 'H:i'),
                 'main_color' => $value('appearance', 'main_color', '#1769e0'), 'hero_media' => $selected?->id()->value(),
             ],
-            'media' => $media, 'errors' => $errors, 'notice' => $notice,
+            'media' => $media, 'mediaUrl' => static fn (int $id): string => $app->url('/media/' . $id), 'mediaPickerUrl' => $adminUrl->childUrl('media/select'), 'mediaPickerUploadUrl' => $adminUrl->childUrl('media/select/upload'), 'canMediaUpload' => $user->can('media.upload'), 'errors' => $errors, 'notice' => $notice,
             'siteAssets' => $app->siteAssets(),
             'logoUploadAction' => $adminUrl->childUrl('settings/site-assets/logo'),
             'logoRemoveAction' => $adminUrl->childUrl('settings/site-assets/logo/remove'),

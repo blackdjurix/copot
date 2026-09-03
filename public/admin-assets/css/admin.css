@@ -3667,6 +3667,7 @@ html.admin-nav-open body {
 
 .admin-settings-field-grid .admin-field--wide { grid-column: 1 / -1; }
 .admin-settings-form .admin-form__actions { margin-top: var(--admin-space-6); }
+.admin-settings-color-input { width: 3.25rem !important; height: 3.25rem; padding: .2rem; }
 
 .admin-settings-empty-state { margin: 0; }
 .admin-settings-brand-assets {
