@@ -39,8 +39,11 @@ $assert(str_contains($heroService, 'registerUsage') && str_contains($heroService
 $assert(str_contains($web, "'homepageHero'"), 'Built-in Public View does not receive the Hero projection.');
 $assert(str_contains($layout, 'builtin-site-hero') && str_contains($layout, 'builtin-main'), 'Built-in Public View integration is missing.');
 $assert(str_contains($view, 'Webcore Color Scheme — Main Color') && !str_contains($view, 'Branding Accent'), 'Legacy four-color branding remains user-facing.');
-$assert(str_contains($view, 'data-site-settings-hero-picker') && str_contains($view, 'Choose Image') && str_contains($view, 'Upload New') && !str_contains($view, '<select id="hero_media"'), 'Homepage Hero does not use the bounded Core Media picker.');
+$assert(str_contains($view, 'data-site-settings-hero-picker') && str_contains($view, 'data-site-settings-hero-open>Choose</button>') && str_contains($view, 'data-site-settings-hero-clear') && !str_contains($view, '<select id="hero_media"'), 'Homepage Hero does not use the bounded Core Media picker.');
 $assert(str_contains($siteSettings, "childUrl('media/select')") && str_contains($picker, 'aria-pressed') && str_contains($picker, 'FormData'), 'Homepage Hero picker does not preserve bounded selection and upload behavior.');
+$assert(str_contains($view, 'data-site-settings-hero-upload-button>Upload</button>') && str_contains($view, 'class="admin-field" method="post"'), 'Site Settings upload actions do not use shared field/action composition.');
+$assert(str_contains($view, 'data-site-settings-hero-clear') && str_contains($view, 'admin-button--secondary" type="button" data-site-settings-hero-clear'), 'Hero Clear action does not use the shared button treatment.');
+$assert(str_contains($view, '>Upload</button>') && str_contains($view, 'class="admin-actions" method="post"') && str_contains($view, '>Remove</button>'), 'Site Asset actions do not use concise shared button labels.');
 $assert(str_contains($view, '<legend class="admin-fieldset__legend">Site Assets</legend><div class="admin-settings-field-grid">') && str_contains($view, "['logo','Logo'") && str_contains($view, "['favicon','Favicon'"), 'Site Assets sibling layout is missing.');
 $assert(str_contains($view, 'admin-settings-color-input') && str_contains($css, '.admin-settings-color-input'), 'Webcore Main Color does not use a compact shared control.');
 $assert(str_starts_with(ltrim($systemManager), "<?php\n\n//") && str_contains($systemManager, 'return;'), 'Legacy System Manager route is still active.');
