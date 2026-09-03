@@ -2,6 +2,8 @@
 
 namespace Copot\Core;
 
+require_once __DIR__ . '/WebcoreColorScheme.php';
+
 class SettingsRegistry
 {
     private const NAMESPACE_PATTERN = '/^[a-z][a-z0-9_-]{0,63}$/';
@@ -77,6 +79,21 @@ class SettingsRegistry
                     ],
                     512 * 1024
                 )
+            ),
+            new SettingDefinition(
+                'site',
+                'homepage_hero_media',
+                'json',
+                null,
+                static fn (mixed $value): bool => $value === null || (is_int($value) && $value > 0)
+            ),
+            new SettingDefinition(
+                'appearance',
+                'main_color',
+                'string',
+                '#1769e0',
+                static fn (string $value): bool => WebcoreColorScheme::isHexColor($value),
+                metadata: ['max_length' => 7]
             ),
             new SettingDefinition(
                 'branding',

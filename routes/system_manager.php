@@ -1,5 +1,9 @@
 <?php
 
+// The former System Manager product route was superseded by Site Settings.
+// Reusable lifecycle/services remain available for later WU4 batches.
+return;
+
 use Copot\Core\ModuleDiscovery;
 use Copot\Core\ModulePackageOperator;
 use Copot\Core\ModuleRepository;

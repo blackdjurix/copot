@@ -66,7 +66,7 @@ final class SiteBranding
     public function cssVariables(): string
     {
         $variables = [];
-        foreach (['main', 'accent', 'neutral-dark', 'neutral-light'] as $key) {
+        foreach (['main', 'main-soft', 'main-strong', 'main-foreground', 'neutral-black', 'neutral-white', 'neutral-dark', 'neutral-light'] as $key) {
             $value = $this->palette[$key] ?? null;
             if (WebcoreBranding::isHexColor($value)) {
                 $variables[] = '--site-color-' . $key . ':' . strtolower($value);

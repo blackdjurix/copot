@@ -42,7 +42,7 @@ require $basePath . '/routes/admin.php';
 require $basePath . '/routes/content_admin.php';
 require $basePath . '/routes/media_admin.php';
 require $basePath . '/routes/navigation_admin.php';
-require $basePath . '/routes/system_manager.php';
+require $basePath . '/routes/site_settings.php';
 
 $app->moduleLoader()->loadListeners($app);
 $app->moduleLoader()->loadResolvers($app);

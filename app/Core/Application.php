@@ -421,7 +421,7 @@ class Application
             $siteTagline,
             $this->siteAssets->url('logo'),
             $this->siteAssets->url('favicon'),
-            (new SystemManagerBrandingService($this->settings, $this->database))->effective()['palette'],
+            WebcoreColorScheme::resolve($this->settings->get('appearance', 'main_color', '#1769e0')),
             (string) $this->settings->get('admin', 'identity_mode', 'text'),
             (string) $this->settings->get('admin', 'identity_color', 'neutral-light')
         );

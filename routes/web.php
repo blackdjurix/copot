@@ -7,14 +7,21 @@ use Copot\Core\MediaDeliveryService;
 use Copot\Core\MediaFileInspector;
 use Copot\Core\MediaFilesystemStorage;
 use Copot\Core\MediaRepository;
+use Copot\Core\HomepageHeroImageService;
+use Copot\Core\MediaLifecycleService;
+use Copot\Core\MediaUsageRepository;
+
+require_once $app->path('app/Core/HomepageHeroImageService.php');
 
 $contentDelivery = new ContentDeliveryService(new ContentRepository($app->database()));
 $mediaDelivery = new MediaDeliveryService(new MediaRepository($app->database()), new MediaFileInspector(), new MediaFilesystemStorage($app->path('storage/media')));
 
-$app->router()->get('/', function () use ($app): Response {
+$homepageHero = new HomepageHeroImageService($app->settings(), $app->database(), new MediaRepository($app->database()), new MediaUsageRepository($app->database()), new MediaLifecycleService($app->database(), new MediaRepository($app->database()), null, new MediaUsageRepository($app->database())));
+
+$app->router()->get('/', function () use ($app, $homepageHero): Response {
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('core::home'),
-        [],
+        ['homepageHero' => $homepageHero->selected()],
         null,
         $app->branding()->name()
     ));

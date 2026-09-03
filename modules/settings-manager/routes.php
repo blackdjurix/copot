@@ -1,5 +1,8 @@
 <?php
 
+// Retired by WU4 Batch 1: Webcore Site Settings owns /admin/settings.
+return;
+
 use Copot\Core\Response;
 use Copot\Core\SettingsException;
 use Copot\Core\SiteAssetException;
