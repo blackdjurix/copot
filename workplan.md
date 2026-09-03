@@ -52,8 +52,10 @@ Authoritative branch: `main`
 
 Current durable planning state:
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
-- Webcore Product Completeness & Stabilization: PROMOTED / CONTRACT LOCKED /
-  WU1 COMPLETE / WU2 COMPLETE / WU3-WU6 NOT STARTED;
+- Webcore Product Completeness & Stabilization: WU1 COMPLETE / CONTRACT
+  LOCKED; WU2 COMPLETE / ACCEPTED / INTEGRATED; WU3 COMPLETE / ACCEPTED /
+  INTEGRATED / CLOSED; WU4 CONTRACT PROMOTED / CONTRACT LOCKED /
+  IMPLEMENTATION NOT STARTED; WU5-WU6 NOT STARTED;
 - MR.2: COMPLETE / CLOSED;
 - MR.2 WU1–WU8: COMPLETE AND CLOSED;
 - Webcore Content Admin Baseline: COMPLETE / CLOSED; corrective prerequisite
@@ -374,6 +376,7 @@ Pre-contract status: PROMOTED / HISTORICAL PROVENANCE
 
 Authority:
 - `docs/49_webcore_product_completeness_stabilization_contract.md` [PRIMARY WORKSTREAM AUTHORITY]
+- `docs/54_webcore_site_settings_appearance_consolidation_contract.md` [WU4 AUTHORITY]
 - `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md` for accepted Webcore ownership and boundary evidence only
 - `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md` for accepted System Manager and Branding baseline evidence only
 
@@ -388,8 +391,8 @@ Confirmed audit-derived planning scope:
 - Core primary Navigation management projection is missing;
 - dedicated Webcore Site Settings projection is missing;
 - localization has duplicated product-facing projections;
-- Site Name, Tagline, Logo, and Favicon operator management is split and
-  dependent on the retained Settings Manager surface;
+- Site Name, Tagline, Logo, and Favicon operator management is split across
+  historical/current projections and requires WU4 reconciliation;
 - zero-optional product operability is incomplete until the required baseline
   operator surfaces are corrected.
 
@@ -401,13 +404,23 @@ Preserved negative findings:
 - Content baseline and Built-in Public View are already delivered;
 - System Manager is not to be wholesale reopened.
 
-Promoted WU topology — all implementation NOT AUTHORIZED / NOT STARTED:
-1. WU1 — Webcore Completeness Contract & Scope Reconciliation
-2. WU2 — Core Media Admin Baseline
-3. WU3 — Core Primary Navigation Admin Baseline
-4. WU4 — Webcore Site Settings & Appearance Consolidation
-5. WU5 — Zero-Optional Product Acceptance
-6. WU6 — Stabilization & v0.14.0 Readiness Closure
+Promoted WU topology and current disposition:
+1. WU1 — Webcore Completeness Contract & Scope Reconciliation — COMPLETE /
+   CONTRACT LOCKED
+2. WU2 — Core Media Admin Baseline — COMPLETE / ACCEPTED / INTEGRATED
+3. WU3 — Core Primary Navigation Admin Baseline — COMPLETE / ACCEPTED /
+   INTEGRATED / CLOSED
+4. WU4 — Webcore Site Settings & Appearance Consolidation — CONTRACT
+   PROMOTED / CONTRACT LOCKED / IMPLEMENTATION NOT STARTED
+5. WU5 — Zero-Optional Product Acceptance — NOT STARTED
+6. WU6 — Stabilization & v0.14.0 Readiness Closure — NOT STARTED
+
+WU4 implementation authority:
+- `docs/54_webcore_site_settings_appearance_consolidation_contract.md` is the
+  dedicated WU4 implementation authority;
+- WU4 Batch 1 — Site Settings Parent, Site Identity, Homepage & Appearance —
+  is the next implementation target;
+- this Workplan entry does not authorize WU4 implementation.
 
 Readiness boundary:
 - intended post-workstream release-readiness boundary: v0.14.0;
@@ -421,7 +434,8 @@ Human/product readiness gate:
 - Site Settings human/product review occurs inside this Webcore workstream
   before relevant scope acceptance.
 
-Planning action: KEEP / PROMOTED SCOPE LOCKED / WU2 COMPLETE / WU3 PREPARATION NEXT
+Planning action: KEEP / WU1-WU3 COMPLETE / WU4 CONTRACT LOCKED / WU4 BATCH 1
+NEXT IMPLEMENTATION TARGET / NOT IMPLEMENTATION-AUTHORIZED
 
 ### Production Webcore Reconciliation
 Class: OPERATIONAL GATE
@@ -763,17 +777,22 @@ Planning action: KEEP FUTURE / PREPARATION REQUIRED / DO NOT REOPEN MR.2 WU4
 
 ### Site Color Scheme
 Class: FUTURE EXTENSION / APPEARANCE RECONCILIATION
-Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+Status: FUTURE / PLANNING LINEAGE / SUBORDINATE TO WU4 CONTRACT
 
 Sources:
 - `concepts/copot_site_color_scheme_concept.md` [PRIMARY GIT CONCEPT]
+- `docs/54_webcore_site_settings_appearance_consolidation_contract.md`
+  [CURRENT WU4 AUTHORITY]
 
 Relations:
 - extension/reconciliation of existing Site Identity and appearance lineage;
-- Webcore Branding data is the durable upstream appearance lineage;
-- the intended relationship is Webcore Branding data → bounded resolved Site
-  Color Scheme → Built-in Public View / Theme / permitted bounded Admin
-  consumers;
+- the Concept remains retained planning lineage;
+- its older four-color Webcore Branding upstream model is superseded where it
+  conflicts with the WU4 contract;
+- WU4 now defines Webcore Color Scheme as one user-selected Main Color with
+  system-derived bounded variants and system-owned black/white neutral bases;
+- current four-color `branding.*` behavior remains legacy/transitional
+  implementation evidence pending WU4 implementation disposition;
 - Site Color Scheme is not a second storage or ownership authority and does
   not destructively replace the existing `branding.*` values;
 - Theme-scoped appearance may override within Theme scope but must not write
@@ -787,7 +806,8 @@ Relations:
 The canonical Git Concept is materialized at
 `concepts/copot_site_color_scheme_concept.md`.
 
-Planning action: KEEP FUTURE / PLANNING ONLY
+Planning action: KEEP AS PLANNING LINEAGE / SUBORDINATE TO DOCS/54 / NO
+IMPLEMENTATION AUTHORIZATION
 
 ### Per-user Admin Appearance
 Class: CONCEPT / FUTURE ADMIN PERSONALIZATION
@@ -1120,11 +1140,13 @@ Concept file was modified.
 ## 9. Immediate Next Planning Target
 
 MR.2 is complete and closed. WU1 — Webcore Completeness Contract & Scope
-Reconciliation is complete, and WU2 — Core Media Admin Baseline is complete on
-its feature branch under the promoted `docs/49_webcore_product_completeness_stabilization_contract.md`
-boundary. The next preparation target is WU3 — Core Primary Navigation Admin
-Baseline. No technical implementation is authorized by this Workplan entry
-alone.
+Reconciliation, WU2 — Core Media Admin Baseline, and WU3 — Core Primary
+Navigation Admin Baseline are complete in their authoritative states. WU4 is
+contract promoted and locked under
+`docs/54_webcore_site_settings_appearance_consolidation_contract.md`; WU4
+Batch 1 — Site Settings Parent, Site Identity, Homepage & Appearance — is the
+next implementation target. No WU4 technical implementation is authorized by
+this Workplan entry alone.
 
 ## 10. Retention and Planning Freshness
 
