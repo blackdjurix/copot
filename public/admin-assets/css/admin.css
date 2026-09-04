@@ -3643,6 +3643,7 @@ html.admin-nav-open body {
 
 .admin-settings-feedback:empty { display: none; }
 .admin-settings-panel[hidden] { display: none !important; }
+.site-settings-page #site-settings-identity { width: 100%; }
 
 .admin-settings-panel__header {
     margin-bottom: var(--admin-space-6);

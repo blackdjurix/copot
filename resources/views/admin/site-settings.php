@@ -8,7 +8,7 @@ $siteAssets = $siteAssets ?? null;
 $settingsFormId = 'site-settings-identity-form';
 ?>
 <section class="admin-panel admin-settings-page site-settings-page" aria-labelledby="site-settings-title" aria-describedby="site-settings-description" data-site-settings data-settings-page data-initial-tab="site-settings-identity">
-    <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="site-settings-title">Site Settings</h2><p class="admin-panel__description" id="site-settings-description">Configure the site identity and baseline appearance.</p></div></header>
+    <header class="admin-panel__header"><div class="admin-panel__heading"><p class="admin-panel__description" id="site-settings-description">Configure the site identity and baseline appearance.</p></div></header>
     <div class="admin-settings-tabs-wrap">
         <div class="admin-settings-tabs" role="tablist" aria-label="Site Settings areas">
             <?php foreach ($areas as $id => $label): $tabId = 'site-settings-' . $id; ?><button class="admin-settings-tab<?= $id === 'identity' ? ' is-active' : '' ?>" id="<?= $escape($tabId . '-tab') ?>" type="button" role="tab" aria-selected="<?= $id === 'identity' ? 'true' : 'false' ?>" aria-controls="<?= $escape($tabId) ?>" tabindex="<?= $id === 'identity' ? '0' : '-1' ?>" data-settings-tab="<?= $escape($tabId) ?>"><span><?= $escape($label) ?></span><span class="admin-settings-tab__dirty" aria-hidden="true" hidden>•</span></button><?php endforeach; ?>
