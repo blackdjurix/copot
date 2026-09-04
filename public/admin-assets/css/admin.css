@@ -3644,6 +3644,7 @@ html.admin-nav-open body {
 .admin-settings-feedback:empty { display: none; }
 .admin-settings-panel[hidden] { display: none !important; }
 .site-settings-page #site-settings-identity { width: 100%; }
+.site-settings-page > .admin-panel__body > .admin-alert { margin-inline: var(--admin-space-6); }
 
 .admin-settings-panel__header {
     margin-bottom: var(--admin-space-6);
@@ -3666,6 +3667,7 @@ html.admin-nav-open body {
     gap: var(--admin-space-5);
 }
 
+.admin-settings-field-grid--single { grid-template-columns: minmax(0, 1fr); }
 .admin-settings-field-grid .admin-field--wide { grid-column: 1 / -1; }
 .admin-settings-form .admin-form__actions { margin-top: var(--admin-space-6); }
 .admin-settings-color-input { width: 3.25rem !important; height: 3.25rem; padding: .2rem; }
@@ -3686,7 +3688,7 @@ html.admin-nav-open body {
 .site-settings-identity__save { grid-column: 1 / -1; grid-row: 4; }
 .site-settings-asset-stack { display: grid; gap: var(--admin-space-6); }
 .admin-settings-color-control { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--admin-space-3); }
-.admin-settings-color-hex { width: 100%; }
+.admin-settings-color-control .admin-settings-color-hex { width: 11ch; max-width: 100%; }
 
 .admin-settings-empty-state { margin: 0; }
 .admin-settings-brand-assets {
@@ -3718,6 +3720,7 @@ html.admin-nav-open body {
     .admin-settings-tab { padding-inline: .85rem; }
     .admin-settings-feedback,
     .admin-settings-panel { padding: var(--admin-space-5) var(--admin-space-4); }
+    .site-settings-page > .admin-panel__body > .admin-alert { margin-inline: var(--admin-space-4); }
     .admin-settings-field-grid { grid-template-columns: 1fr; }
     .admin-settings-field-grid .admin-field--wide { grid-column: auto; }
     .admin-settings-panel .admin-form__actions .admin-button { width: 100%; }
