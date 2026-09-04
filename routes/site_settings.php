@@ -57,7 +57,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'faviconRemoveAction' => $adminUrl->childUrl('settings/site-assets/favicon/remove'),
             'colorScheme' => WebcoreColorScheme::resolve($value('appearance', 'main_color', '#1769e0')),
         ]);
-        return Response::html($app->adminPageRenderer()->render('Site Settings', $view, $user, $app->csrf()->token(), $request->path()), $status);
+        return Response::html($app->adminPageRenderer()->render('Site Settings', $view, $user, $app->csrf()->token(), $request->path(), ['description' => 'Configure the site identity and baseline appearance.']), $status);
     } catch (Throwable) { return $app->adminErrors()->response($request, 503); }
 };
 
