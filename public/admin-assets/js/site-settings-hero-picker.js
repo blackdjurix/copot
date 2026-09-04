@@ -25,16 +25,20 @@
         };
         const renderSelected = (item) => {
             selected.replaceChildren();
-            selected.hidden = !item;
+            selected.hidden = false;
             if (clearButton) clearButton.hidden = !item;
-            if (!item) return;
+            if (!item) {
+                const empty = document.createElement('span');
+                empty.className = 'site-settings-hero-preview__empty';
+                empty.textContent = 'No Hero Image selected.';
+                selected.append(empty);
+                return;
+            }
             const image = document.createElement('img');
             image.src = item.url;
-            image.alt = item.title || item.original_filename || 'Selected Homepage Hero Image';
+            image.alt = 'Homepage Hero Image';
             image.loading = 'lazy';
-            const text = document.createElement('p');
-            text.textContent = `${item.title || 'Image'} — ${item.original_filename || 'selected'}`;
-            selected.append(image, text);
+            selected.append(image);
         };
         const renderItems = (items) => {
             results.replaceChildren();

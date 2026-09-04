@@ -3675,8 +3675,8 @@ html.admin-nav-open body {
 .site-settings-identity-layout > .admin-fieldset { width: 100%; margin-top: 0; }
 .site-settings-identity__settings,
 .site-settings-identity__media { min-width: 0; }
-.site-settings-identity__settings { display: grid; gap: var(--admin-space-6); align-content: start; grid-column: 2; grid-row: 1; }
-.site-settings-identity__media { display: grid; gap: var(--admin-space-6); align-content: start; grid-column: 1; grid-row: 1; }
+.site-settings-identity__settings { display: grid; gap: var(--admin-space-6); align-content: start; grid-column: 1; grid-row: 1; }
+.site-settings-identity__media { display: grid; gap: var(--admin-space-6); align-content: start; grid-column: 2; grid-row: 1; }
 .site-settings-identity__settings > .admin-fieldset,
 .site-settings-identity__media > .admin-fieldset { width: 100%; margin-top: 0; }
 .site-settings-identity-form { display: contents; }
@@ -3685,8 +3685,20 @@ html.admin-nav-open body {
 .site-settings-identity__hero,
 .site-settings-identity__localization,
 .site-settings-identity__appearance { grid-column: auto; grid-row: auto; }
-.site-settings-identity__save { grid-column: 1 / -1; grid-row: 4; }
+.site-settings-identity__save { grid-column: 1 / -1; grid-row: auto; }
 .site-settings-asset-stack { display: grid; gap: var(--admin-space-6); }
+.site-settings-asset-block { display: grid; gap: var(--admin-space-3); }
+.site-settings-asset-preview-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--admin-space-4); align-items: center; }
+.site-settings-asset-preview { min-height: 120px; }
+.site-settings-asset-preview--favicon { min-height: 120px; }
+.site-settings-asset-preview__empty { color: var(--admin-color-text-muted); font-size: .9rem; text-align: center; }
+.site-settings-asset-actions { display: grid; gap: var(--admin-space-3); align-content: center; min-width: 0; }
+.site-settings-asset-actions .admin-field__label { margin: 0; }
+.site-settings-asset-actions .admin-field { display: grid; gap: var(--admin-space-3); }
+.site-settings-hero-preview { min-height: 12rem; max-width: none; margin: var(--admin-space-3) 0; }
+.site-settings-identity__hero .site-settings-hero-preview img { width: 100%; height: 12rem; object-fit: cover; }
+.site-settings-hero-preview__empty { display: grid; place-items: center; min-height: 12rem; color: var(--admin-color-text-muted); }
+.site-settings-hero-preview__empty[hidden] { display: none; }
 .admin-settings-color-control { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--admin-space-3); }
 .admin-settings-color-control .admin-settings-color-hex { width: 11ch; max-width: 100%; }
 
@@ -3739,6 +3751,7 @@ html.admin-nav-open body {
     .site-settings-identity__localization { order: 4; }
     .site-settings-identity__appearance { order: 5; }
     .site-settings-identity__save { order: 6; }
+    .site-settings-asset-preview-row { grid-template-columns: 1fr; }
 }
 
 /* M3.4 Batch 6: Content workspace presentation */
