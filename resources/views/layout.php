@@ -60,10 +60,10 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-nav { width: auto; }
         .builtin-site-nav__link { position: relative; }
         .builtin-site-nav__link.is-active::after { position: absolute; right: 0; bottom: -8px; left: 0; height: 2px; background: var(--builtin-main); content: ''; }
+        .builtin-site-header__bar { width: 100%; height: 4px; background: var(--builtin-main); }
         .builtin-site-main { min-height: calc(100vh - 170px); padding: 0 0 56px; }
         .builtin-site-content { width: min(900px, 100%); max-width: 900px; margin: 56px auto 0; padding: clamp(24px, 5vw, 48px); background: #fff; border: 1px solid #d9e0e7; border-radius: 12px; box-shadow: 0 12px 32px rgba(23, 32, 42, .06); }
-        .builtin-site-page-strip { width: 100vw; height: 4px; margin-left: 50%; transform: translateX(-50%); background: var(--builtin-main); }
-        .builtin-site-main--general .builtin-site-content { margin-top: 40px; }
+        .builtin-site-main--general .builtin-site-content { margin-top: 0; border-radius: 0 0 12px 12px; }
         .builtin-site-main--system .builtin-site-content { margin-top: 56px; }
          .builtin-site-hero { width: 100%; max-width: 900px; margin: 0 auto 28px; overflow: hidden; border-radius: 0 0 12px 12px; }
          .builtin-site-hero img { display: block; width: 100%; aspect-ratio: 16 / 7; object-fit: cover; }
@@ -85,10 +85,10 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
             .builtin-site-nav { width: 100%; }
             .builtin-site-main { min-height: calc(100vh - 220px); padding: 0 0 28px; }
             .builtin-site-content { width: 100%; padding: 24px 20px; border-radius: 8px; }
-            .builtin-site-hero { width: 100vw; margin-left: 50%; transform: translateX(-50%); border-radius: 0; }
+            .builtin-site-hero { width: calc(100% + 32px); margin-left: -16px; border-radius: 0; }
             .builtin-site-hero img { aspect-ratio: 3 / 4; }
             .builtin-site-featured-image { aspect-ratio: 16 / 9; border-radius: 6px; }
-            .builtin-site-main--general .builtin-site-content { margin-top: 28px; }
+            .builtin-site-main--general .builtin-site-content { margin-top: 0; border-radius: 0 0 8px 8px; }
         }
     </style>
 </head>
@@ -110,9 +110,9 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
                 <script defer src="/assets/navigation.js?v=wu3"></script>
             <?php endif; ?>
         </div>
+        <div class="builtin-site-header__bar" aria-hidden="true"></div>
     </header>
     <main class="builtin-site-main builtin-site-main--<?= htmlspecialchars($pageType, ENT_QUOTES, 'UTF-8') ?>">
-        <?php if ($pageType === 'general'): ?><div class="builtin-site-page-strip" aria-hidden="true"></div><?php endif; ?>
         <?php if ($pageType === 'homepage' && ($homepageHero ?? null) instanceof \Copot\Core\Media): ?><div class="builtin-site-hero"><img src="<?= htmlspecialchars(is_callable($url) ? (string) $url('/media/' . $homepageHero->id()->value()) : '/media/' . $homepageHero->id()->value(), ENT_QUOTES, 'UTF-8') ?>" alt="Homepage hero image"></div><?php endif; ?>
         <div class="builtin-site-content builtin-site-content--<?= htmlspecialchars($pageType, ENT_QUOTES, 'UTF-8') ?>">
             <?= $content ?? '' ?>
