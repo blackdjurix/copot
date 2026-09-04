@@ -3698,6 +3698,7 @@ html.admin-nav-open body {
 .site-settings-hero-actions .admin-button { width: 7rem; }
 .site-settings-identity__media .site-settings-asset-actions .admin-button,
 .site-settings-identity__hero .site-settings-hero-actions .admin-button { width: 7rem; }
+.site-settings-hero-actions .admin-button[hidden] { display: none; }
 .site-settings-hero-actions { min-height: var(--admin-control-height); }
 .site-settings-hero-preview { min-height: 12rem; max-width: none; margin: 0; }
 .site-settings-identity__hero .site-settings-hero-preview img { width: 100%; height: 12rem; object-fit: cover; }
