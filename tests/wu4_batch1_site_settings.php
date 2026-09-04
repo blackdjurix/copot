@@ -52,9 +52,10 @@ $assert(str_contains($view, 'site-settings-identity-layout') && str_contains($vi
 $assert(str_contains($view, 'site-settings-identity__general') && str_contains($view, 'site-settings-identity__localization') && str_contains($view, 'site-settings-identity__appearance'), 'Site Identity settings column composition is missing.');
 $assert(str_contains($view, 'site-settings-identity__settings') && str_contains($view, 'site-settings-identity__media') && str_contains($css, '.site-settings-identity__settings { display: grid; gap: var(--admin-space-6); align-content: start;'), 'Site Identity columns do not use independent top-aligned stacks.');
 $assetsBoundary = strpos($view, 'site-settings-identity__hero');
-$saveBoundary = strpos($view, 'site-settings-identity__save');
+$saveBoundary = strpos($view, 'Save Site Settings');
 $assert($assetsBoundary !== false && substr_count($view, '<fieldset') === 5 && substr_count($view, '</fieldset>') === 5 && $saveBoundary !== false && strrpos($view, '</fieldset>') < $saveBoundary, 'Site Assets/Homepage or Save action structure is not properly separated.');
-$assert(str_contains($css, '.site-settings-identity__save { grid-column: 1 / -1; grid-row: auto; }'), 'Save action is not outside the column stack flow.');
+$assert(str_contains($view, '<div class="admin-actions admin-form__actions"><button class="admin-button admin-button--primary" type="submit" form="<?= $settingsFormId ?>">Save Site Settings</button>') && !str_contains($css, '.site-settings-identity__save'), 'Save action is not outside the column stack flow.');
+$assert(str_contains($siteSettings, "'surface' => 'transparent'") && str_contains($siteSettings, "'spacing' => 'default'"), 'Site Settings does not use the transparent Page Frame intent.');
 $assert(!str_contains($view, 'admin-panel__description') && str_contains($siteSettings, "'description' => 'Configure the site identity and baseline appearance.'"), 'Site Settings description is not owned by the shared Page Frame.');
 $assert(str_contains($css, '.site-settings-asset-preview-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--admin-space-4); align-items: stretch; }') && str_contains($css, '.site-settings-asset-preview { min-height: 120px; height: 100%; }'), 'Site Asset preview/action rows do not use stretch alignment.');
 $assert(str_contains($view, 'PNG, JPG, or WebP up to 16 MB.') && !str_contains($view, 'high-resolution supported image'), 'Hero helper does not reflect Core Media capability.');

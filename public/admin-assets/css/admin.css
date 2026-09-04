@@ -3685,7 +3685,6 @@ html.admin-nav-open body {
 .site-settings-identity__hero,
 .site-settings-identity__localization,
 .site-settings-identity__appearance { grid-column: auto; grid-row: auto; }
-.site-settings-identity__save { grid-column: 1 / -1; grid-row: auto; }
 .site-settings-asset-stack { display: grid; gap: var(--admin-space-6); }
 .site-settings-asset-block { display: grid; }
 .site-settings-asset-preview-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--admin-space-4); align-items: stretch; }
@@ -3743,14 +3742,12 @@ html.admin-nav-open body {
     .site-settings-identity__assets,
     .site-settings-identity__hero,
     .site-settings-identity__localization,
-    .site-settings-identity__appearance,
-    .site-settings-identity__save { grid-column: 1; grid-row: auto; }
+    .site-settings-identity__appearance { grid-column: 1; grid-row: auto; }
     .site-settings-identity__general { order: 1; }
     .site-settings-identity__assets { order: 2; }
     .site-settings-identity__hero { order: 3; }
     .site-settings-identity__localization { order: 4; }
     .site-settings-identity__appearance { order: 5; }
-    .site-settings-identity__save { order: 6; }
     .site-settings-asset-preview-row { grid-template-columns: 1fr; }
 }
 
