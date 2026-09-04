@@ -1,5 +1,7 @@
 <?php
 $colorScheme = $branding?->palette() ?? \Copot\Core\WebcoreColorScheme::defaults();
+$pageTypeValue = $pageType ?? 'homepage';
+$pageType = in_array($pageTypeValue, ['homepage', 'general', 'system'], true) ? $pageTypeValue : 'homepage';
 $cssVariables = sprintf(
     '--builtin-main:%s;--builtin-main-soft:%s;--builtin-main-strong:%s;--builtin-main-foreground:%s',
     $colorScheme['main'] ?? '#1769e0', $colorScheme['main-soft'] ?? '#e7f0fc',
@@ -50,11 +52,19 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-identity img { display: block; width: auto; max-width: 180px; height: 48px; object-fit: contain; }
         .builtin-site-identity__name { font-size: 1.15rem; font-weight: 700; }
         .builtin-site-nav { width: auto; }
-        .builtin-site-main { min-height: calc(100vh - 170px); padding: 56px 0; }
-         .builtin-site-content { max-width: 720px; padding: clamp(24px, 5vw, 48px); background: #fff; border: 1px solid #d9e0e7; border-top: 4px solid var(--builtin-main); border-radius: 12px; box-shadow: 0 12px 32px rgba(23, 32, 42, .06); }
+        .builtin-site-main { min-height: calc(100vh - 170px); padding: 0 0 56px; }
+        .builtin-site-content { width: min(720px, 100%); max-width: 720px; margin: 56px auto 0; padding: clamp(24px, 5vw, 48px); background: #fff; border: 1px solid #d9e0e7; border-radius: 12px; box-shadow: 0 12px 32px rgba(23, 32, 42, .06); }
+        .builtin-site-page-strip { width: 100vw; height: 4px; margin-left: 50%; transform: translateX(-50%); background: var(--builtin-main); }
+        .builtin-site-main--general .builtin-site-content { margin-top: 40px; }
+        .builtin-site-main--system .builtin-site-content { margin-top: 56px; }
          .builtin-site-hero { max-width: 900px; margin: 0 auto 28px; overflow: hidden; border-radius: 12px; }
          .builtin-site-hero img { display: block; width: 100%; aspect-ratio: 16 / 7; object-fit: cover; }
         .builtin-site-content h1 { margin: 0 0 18px; color: #17202a; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.08; }
+        .builtin-site-breadcrumb { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; color: #596674; font-size: .9rem; line-height: 1.4; }
+        .builtin-site-breadcrumb a { color: var(--builtin-main-strong); }
+        .builtin-site-page__intro { margin: -4px 0 18px; font-size: 1.2rem !important; }
+        .builtin-site-page__meta { margin: 0 0 28px; color: #596674 !important; font-size: .9rem !important; }
+        .builtin-site-featured-image { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; margin: 0 0 32px; border-radius: 8px; }
         .builtin-site-content p, .builtin-site-content div { color: #3e4b59; font-size: 1.08rem; line-height: 1.7; }
         .builtin-site-content p + p { margin-top: 12px; }
         .builtin-site-content article > div { white-space: normal; }
@@ -65,8 +75,12 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         @media (max-width: 640px) {
             .builtin-site-header__inner { align-items: flex-start; flex-direction: column; padding: 16px 0; }
             .builtin-site-nav { width: 100%; }
-            .builtin-site-main { min-height: calc(100vh - 220px); padding: 28px 0; }
+            .builtin-site-main { min-height: calc(100vh - 220px); padding: 0 0 28px; }
             .builtin-site-content { padding: 24px 20px; border-radius: 8px; }
+            .builtin-site-hero { width: 100vw; margin-left: 50%; transform: translateX(-50%); border-radius: 0; }
+            .builtin-site-hero img { aspect-ratio: 3 / 4; }
+            .builtin-site-featured-image { aspect-ratio: 16 / 9; border-radius: 6px; }
+            .builtin-site-main--general .builtin-site-content { margin-top: 28px; }
         }
     </style>
 </head>
@@ -89,9 +103,10 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
             <?php endif; ?>
         </div>
     </header>
-    <main class="builtin-site-main">
-        <?php if (($homepageHero ?? null) instanceof \Copot\Core\Media): ?><div class="builtin-site-hero"><img src="<?= htmlspecialchars(is_callable($url) ? (string) $url('/media/' . $homepageHero->id()->value()) : '/media/' . $homepageHero->id()->value(), ENT_QUOTES, 'UTF-8') ?>" alt="Homepage hero image"></div><?php endif; ?>
-        <div class="builtin-site-content">
+    <main class="builtin-site-main builtin-site-main--<?= htmlspecialchars($pageType, ENT_QUOTES, 'UTF-8') ?>">
+        <?php if ($pageType === 'general'): ?><div class="builtin-site-page-strip" aria-hidden="true"></div><?php endif; ?>
+        <?php if ($pageType === 'homepage' && ($homepageHero ?? null) instanceof \Copot\Core\Media): ?><div class="builtin-site-hero"><img src="<?= htmlspecialchars(is_callable($url) ? (string) $url('/media/' . $homepageHero->id()->value()) : '/media/' . $homepageHero->id()->value(), ENT_QUOTES, 'UTF-8') ?>" alt="Homepage hero image"></div><?php endif; ?>
+        <div class="builtin-site-content builtin-site-content--<?= htmlspecialchars($pageType, ENT_QUOTES, 'UTF-8') ?>">
             <?= $content ?? '' ?>
         </div>
     </main>

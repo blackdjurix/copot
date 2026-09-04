@@ -1,7 +1,7 @@
 .builtin-site-nav > ul { display: flex; flex-wrap: wrap; gap: 14px 20px; margin: 0; padding: 0; list-style: none; }
 .builtin-site-nav li { position: relative; list-style: none; }
 .builtin-site-nav a, .builtin-site-nav__trigger { font-size: .95rem; font-weight: 700; text-decoration: none; }
-.builtin-site-nav__trigger { padding: 0; border: 0; background: transparent; color: var(--builtin-accent-strong); cursor: pointer; }
+.builtin-site-nav__trigger { padding: 0; border: 0; background: transparent; color: var(--builtin-main-strong); cursor: pointer; }
 .builtin-site-nav__trigger span { margin-left: 5px; }
 .builtin-site-nav__submenu { display: none; position: absolute; z-index: 5; top: calc(100% + 8px); left: 0; min-width: 12rem; margin: 0; padding: 8px; background: #fff; border: 1px solid #d9e0e7; border-radius: 8px; box-shadow: 0 10px 24px rgba(23, 32, 42, .12); }
 .builtin-site-nav__submenu li + li { margin-top: 7px; }

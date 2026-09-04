@@ -14,6 +14,7 @@ use Copot\Core\MediaUsageRepository;
 require_once $app->path('app/Core/HomepageHeroImageService.php');
 
 $contentDelivery = new ContentDeliveryService(new ContentRepository($app->database()));
+$mediaRepository = new MediaRepository($app->database());
 $mediaDelivery = new MediaDeliveryService(new MediaRepository($app->database()), new MediaFileInspector(), new MediaFilesystemStorage($app->path('storage/media')));
 
 $homepageHero = new HomepageHeroImageService($app->settings(), $app->database(), new MediaRepository($app->database()), new MediaUsageRepository($app->database()), new MediaLifecycleService($app->database(), new MediaRepository($app->database()), null, new MediaUsageRepository($app->database())));
@@ -21,7 +22,7 @@ $homepageHero = new HomepageHeroImageService($app->settings(), $app->database(),
 $app->router()->get('/', function () use ($app, $homepageHero): Response {
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('core::home'),
-        ['homepageHero' => $homepageHero->selected()],
+        ['pageType' => 'homepage', 'homepageHero' => $homepageHero->selected()],
         null,
         $app->branding()->name()
     ));
@@ -35,9 +36,23 @@ $app->router()->get('/content/{slug}', function ($request, array $params) use ($
         return $app->adminErrors()->response($request, 404);
     }
 
+    $featuredMedia = null;
+    $featuredId = $renderData['featured_media_id'] ?? null;
+    if (is_int($featuredId) && $featuredId > 0) {
+        $media = $mediaRepository->findById($featuredId);
+        if ($media instanceof \Copot\Core\Media && $media->kind() === 'image') {
+            $featuredMedia = [
+                'url' => $app->url('/media/' . $media->id()->value()),
+                'width' => $media->width(),
+                'height' => $media->height(),
+                'alt' => $media->title() !== '' ? $media->title() : $media->originalFilename(),
+            ];
+        }
+    }
+
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('content::show'),
-        ['content' => $renderData],
+        ['pageType' => 'general', 'content' => $renderData, 'featuredMedia' => $featuredMedia, 'breadcrumbs' => [['label' => 'Home', 'url' => $app->url('/')], ['label' => (string) ($renderData['title'] ?? '')]]],
         null,
         (string) ($renderData['title'] ?? $app->branding()->name())
     ));
