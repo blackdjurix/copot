@@ -26,6 +26,7 @@
         const renderSelected = (item) => {
             selected.replaceChildren();
             selected.hidden = false;
+            if (openButton) openButton.hidden = !!item;
             if (clearButton) clearButton.hidden = !item;
             if (!item) {
                 const empty = document.createElement('span');

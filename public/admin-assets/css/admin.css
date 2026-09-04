@@ -3687,13 +3687,18 @@ html.admin-nav-open body {
 .site-settings-identity__appearance { grid-column: auto; grid-row: auto; }
 .site-settings-asset-stack { display: grid; gap: var(--admin-space-6); }
 .site-settings-asset-block { display: grid; }
-.site-settings-asset-preview-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--admin-space-4); align-items: stretch; }
+.site-settings-asset-preview-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(10rem, 14rem); gap: var(--admin-space-4); align-items: stretch; }
 .site-settings-asset-preview { min-height: 120px; height: 100%; }
 .site-settings-asset-preview--favicon { min-height: 120px; }
 .site-settings-asset-preview__empty { color: var(--admin-color-text-muted); font-size: .9rem; text-align: center; }
 .site-settings-asset-actions { display: grid; gap: var(--admin-space-3); align-content: center; min-width: 0; }
 .site-settings-asset-actions .admin-field__label { margin: 0; }
 .site-settings-asset-actions .admin-field { display: grid; gap: var(--admin-space-3); }
+.site-settings-asset-actions .admin-button,
+.site-settings-hero-actions .admin-button { width: 7rem; }
+.site-settings-identity__media .site-settings-asset-actions .admin-button,
+.site-settings-identity__hero .site-settings-hero-actions .admin-button { width: 7rem; }
+.site-settings-hero-actions { min-height: var(--admin-control-height); }
 .site-settings-hero-preview { min-height: 12rem; max-width: none; margin: 0; }
 .site-settings-identity__hero .site-settings-hero-preview img { width: 100%; height: 12rem; object-fit: cover; }
 .site-settings-hero-preview__empty { display: grid; place-items: center; min-height: 12rem; color: var(--admin-color-text-muted); }
