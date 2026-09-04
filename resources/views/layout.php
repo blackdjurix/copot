@@ -53,11 +53,11 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-identity__name { font-size: 1.15rem; font-weight: 700; }
         .builtin-site-nav { width: auto; }
         .builtin-site-main { min-height: calc(100vh - 170px); padding: 0 0 56px; }
-        .builtin-site-content { width: min(720px, 100%); max-width: 720px; margin: 56px auto 0; padding: clamp(24px, 5vw, 48px); background: #fff; border: 1px solid #d9e0e7; border-radius: 12px; box-shadow: 0 12px 32px rgba(23, 32, 42, .06); }
+        .builtin-site-content { width: min(900px, 100%); max-width: 900px; margin: 56px auto 0; padding: clamp(24px, 5vw, 48px); background: #fff; border: 1px solid #d9e0e7; border-radius: 12px; box-shadow: 0 12px 32px rgba(23, 32, 42, .06); }
         .builtin-site-page-strip { width: 100vw; height: 4px; margin-left: 50%; transform: translateX(-50%); background: var(--builtin-main); }
         .builtin-site-main--general .builtin-site-content { margin-top: 40px; }
         .builtin-site-main--system .builtin-site-content { margin-top: 56px; }
-         .builtin-site-hero { max-width: 900px; margin: 0 auto 28px; overflow: hidden; border-radius: 12px; }
+         .builtin-site-hero { width: 100%; max-width: 900px; margin: 0 auto 28px; overflow: hidden; border-radius: 0 0 12px 12px; }
          .builtin-site-hero img { display: block; width: 100%; aspect-ratio: 16 / 7; object-fit: cover; }
         .builtin-site-content h1 { margin: 0 0 18px; color: #17202a; font-size: clamp(2rem, 5vw, 3.25rem); line-height: 1.08; }
         .builtin-site-breadcrumb { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; color: #596674; font-size: .9rem; line-height: 1.4; }
@@ -76,7 +76,7 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
             .builtin-site-header__inner { align-items: flex-start; flex-direction: column; padding: 16px 0; }
             .builtin-site-nav { width: 100%; }
             .builtin-site-main { min-height: calc(100vh - 220px); padding: 0 0 28px; }
-            .builtin-site-content { padding: 24px 20px; border-radius: 8px; }
+            .builtin-site-content { width: 100%; padding: 24px 20px; border-radius: 8px; }
             .builtin-site-hero { width: 100vw; margin-left: 50%; transform: translateX(-50%); border-radius: 0; }
             .builtin-site-hero img { aspect-ratio: 3 / 4; }
             .builtin-site-featured-image { aspect-ratio: 16 / 9; border-radius: 6px; }

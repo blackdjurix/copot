@@ -28,7 +28,7 @@ $app->router()->get('/', function () use ($app, $homepageHero): Response {
     ));
 });
 
-$app->router()->get('/content/{slug}', function ($request, array $params) use ($app, $contentDelivery): Response {
+$app->router()->get('/content/{slug}', function ($request, array $params) use ($app, $contentDelivery, $mediaRepository): Response {
     $slug = trim((string) ($params['slug'] ?? ''));
     $renderData = $slug === '' ? null : $contentDelivery->findPublishedBySlug($slug);
 
