@@ -22,7 +22,7 @@ $homepageHero = new HomepageHeroImageService($app->settings(), $app->database(),
 $app->router()->get('/', function () use ($app, $homepageHero): Response {
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('core::home'),
-        ['pageType' => 'homepage', 'homepageHero' => $homepageHero->selected()],
+        ['pageType' => 'homepage', 'currentPath' => '/', 'homepageHero' => $homepageHero->selected()],
         null,
         $app->branding()->name()
     ));
@@ -52,7 +52,7 @@ $app->router()->get('/content/{slug}', function ($request, array $params) use ($
 
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('content::show'),
-        ['pageType' => 'general', 'content' => $renderData, 'featuredMedia' => $featuredMedia, 'breadcrumbs' => [['label' => 'Home', 'url' => $app->url('/')], ['label' => (string) ($renderData['title'] ?? '')]]],
+        ['pageType' => 'general', 'currentPath' => '/content/' . $slug, 'content' => $renderData, 'featuredMedia' => $featuredMedia, 'breadcrumbs' => [['label' => 'Home', 'url' => $app->url('/')], ['label' => (string) ($renderData['title'] ?? '')]]],
         null,
         (string) ($renderData['title'] ?? $app->branding()->name())
     ));

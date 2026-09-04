@@ -13,18 +13,24 @@ $faviconUrl = $branding?->faviconUrl();
 $navigation = is_array($context['navigation']['locations']['primary'] ?? null)
     ? $context['navigation']['locations']['primary']
     : [];
-$renderNavigation = function (array $items, string $prefix = 'primary') use (&$renderNavigation): void {
+$currentPath = is_string($context['currentPath'] ?? null) ? (string) $context['currentPath'] : '';
+$renderNavigation = function (array $items, string $prefix = 'primary') use (&$renderNavigation, $currentPath): void {
     foreach ($items as $index => $item) {
         $label = htmlspecialchars((string) ($item['label'] ?? ''), ENT_QUOTES, 'UTF-8');
-        $url = htmlspecialchars((string) ($item['url'] ?? ''), ENT_QUOTES, 'UTF-8');
+        $rawUrl = (string) ($item['url'] ?? '');
+        $url = htmlspecialchars($rawUrl, ENT_QUOTES, 'UTF-8');
         $children = is_array($item['children'] ?? null) ? $item['children'] : [];
         $id = htmlspecialchars($prefix . '-' . $index, ENT_QUOTES, 'UTF-8');
         $kind = (string) ($item['kind'] ?? 'link');
-        echo '<li class="builtin-site-nav__item' . ($children !== [] ? ' has-children' : '') . '">';
+        $itemPath = parse_url($rawUrl, PHP_URL_PATH);
+        $isActive = $kind !== 'navigation_group' && is_string($itemPath) && $currentPath !== '' && rtrim($itemPath, '/') === rtrim($currentPath, '/');
+        $activeClass = $isActive ? ' is-active' : '';
+        $activeAttribute = $isActive ? ' aria-current="page"' : '';
+        echo '<li class="builtin-site-nav__item' . ($children !== [] ? ' has-children' : '') . $activeClass . '">';
         if ($kind === 'navigation_group') {
             echo '<button class="builtin-site-nav__trigger" type="button" aria-expanded="false" aria-controls="' . $id . '">' . $label . '<span aria-hidden="true">⌄</span></button>';
         } else {
-            echo '<a href="' . $url . '">' . $label . '</a>';
+            echo '<a class="builtin-site-nav__link' . $activeClass . '" href="' . $url . '"' . $activeAttribute . '>' . $label . '</a>';
         }
         if ($children !== []) { echo '<ul id="' . $id . '" class="builtin-site-nav__submenu">'; $renderNavigation($children, $prefix . '-' . $index); echo '</ul>'; }
         echo '</li>';
@@ -52,6 +58,8 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-identity img { display: block; width: auto; max-width: 180px; height: 48px; object-fit: contain; }
         .builtin-site-identity__name { font-size: 1.15rem; font-weight: 700; }
         .builtin-site-nav { width: auto; }
+        .builtin-site-nav__link { position: relative; }
+        .builtin-site-nav__link.is-active::after { position: absolute; right: 0; bottom: -8px; left: 0; height: 2px; background: var(--builtin-main); content: ''; }
         .builtin-site-main { min-height: calc(100vh - 170px); padding: 0 0 56px; }
         .builtin-site-content { width: min(900px, 100%); max-width: 900px; margin: 56px auto 0; padding: clamp(24px, 5vw, 48px); background: #fff; border: 1px solid #d9e0e7; border-radius: 12px; box-shadow: 0 12px 32px rgba(23, 32, 42, .06); }
         .builtin-site-page-strip { width: 100vw; height: 4px; margin-left: 50%; transform: translateX(-50%); background: var(--builtin-main); }
