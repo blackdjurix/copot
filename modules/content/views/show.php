@@ -13,7 +13,7 @@ $featuredMedia = $context['featuredMedia'] ?? null;
                 <?php endforeach; ?>
             </nav>
         <?php endif; ?>
-        <h1 class="builtin-site-page__title<?= ($entry['type'] ?? null) === 'article' ? ' builtin-site-page__title--article' : '' ?>"><?= htmlspecialchars((string) ($entry['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h1>
+        <h1><?= htmlspecialchars((string) ($entry['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h1>
 
         <?php if (($entry['excerpt'] ?? null) !== null): ?>
             <p class="builtin-site-page__intro"><?= nl2br(htmlspecialchars((string) $entry['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
