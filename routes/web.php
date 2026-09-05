@@ -14,15 +14,39 @@ use Copot\Core\MediaUsageRepository;
 require_once $app->path('app/Core/HomepageHeroImageService.php');
 
 $contentDelivery = new ContentDeliveryService(new ContentRepository($app->database()));
+$contentRepository = new ContentRepository($app->database());
 $mediaRepository = new MediaRepository($app->database());
 $mediaDelivery = new MediaDeliveryService(new MediaRepository($app->database()), new MediaFileInspector(), new MediaFilesystemStorage($app->path('storage/media')));
 
 $homepageHero = new HomepageHeroImageService($app->settings(), $app->database(), new MediaRepository($app->database()), new MediaUsageRepository($app->database()), new MediaLifecycleService($app->database(), new MediaRepository($app->database()), null, new MediaUsageRepository($app->database())));
 
-$app->router()->get('/', function () use ($app, $homepageHero): Response {
+$renderFragment = static function (string $path, array $variables): string {
+    extract($variables, EXTR_SKIP);
+    ob_start();
+    try { require $path; return (string) ob_get_clean(); }
+    catch (Throwable $exception) { ob_end_clean(); throw $exception; }
+};
+
+$app->router()->get('/', function () use ($app, $homepageHero, $contentRepository, $contentDelivery, $mediaRepository, $renderFragment): Response {
+    $homepageContent = null;
+    $assignment = $app->settings()->get('site', 'homepage_content', null);
+    if (is_array($assignment) && ($assignment['type'] ?? null) === 'page' && is_int($assignment['id'] ?? null)) {
+        $page = $contentRepository->findById($assignment['id']);
+        if ($page?->isPublished() && $page->type() === 'page') {
+            $renderData = $page->toRenderData();
+            $featuredMedia = null;
+            if (($featuredId = $renderData['featured_media_id'] ?? null) !== null) {
+                $media = $mediaRepository->findById((int) $featuredId);
+                if ($media instanceof \Copot\Core\Media && $media->kind() === 'image') $featuredMedia = ['url' => $app->url('/media/' . $media->id()->value()), 'width' => $media->width(), 'height' => $media->height(), 'alt' => $media->title() !== '' ? $media->title() : $media->originalFilename()];
+            }
+            $homepageContent = $renderFragment($app->viewResolver()->resolve('content::show'), ['context' => ['content' => $renderData, 'featuredMedia' => $featuredMedia], 'content' => $renderData, 'featuredMedia' => $featuredMedia, 'breadcrumbs' => [['label' => $app->branding()->name(), 'url' => $app->url('/')], ['label' => $page->title()]]]);
+        }
+    } elseif (is_array($assignment) && ($assignment['type'] ?? null) === 'article_collection' && ($assignment['reference'] ?? null) === 'articles') {
+        $homepageContent = $renderFragment($app->viewResolver()->resolve('core::articles'), ['articles' => $contentDelivery->publishedArticles()]);
+    }
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('core::home'),
-        ['pageType' => 'homepage', 'currentPath' => '/', 'homepageHero' => $homepageHero->selected()],
+        ['pageType' => 'homepage', 'currentPath' => '/', 'homepageHero' => $homepageHero->selected(), 'homepageContent' => $homepageContent],
         null,
         $app->branding()->name()
     ));

@@ -88,6 +88,15 @@ class SettingsRegistry
                 static fn (mixed $value): bool => $value === null || (is_int($value) && $value > 0)
             ),
             new SettingDefinition(
+                'site',
+                'homepage_content',
+                'json',
+                null,
+                static fn (mixed $value): bool => $value === null
+                    || (is_array($value) && ($value['type'] ?? null) === 'page' && is_int($value['id'] ?? null) && $value['id'] > 0)
+                    || (is_array($value) && ($value['type'] ?? null) === 'article_collection' && ($value['reference'] ?? null) === 'articles')
+            ),
+            new SettingDefinition(
                 'appearance',
                 'main_color',
                 'string',

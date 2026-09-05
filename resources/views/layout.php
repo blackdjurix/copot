@@ -114,9 +114,11 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
     </header>
     <main class="builtin-site-main builtin-site-main--<?= htmlspecialchars($pageType, ENT_QUOTES, 'UTF-8') ?>">
         <?php if ($pageType === 'homepage' && ($homepageHero ?? null) instanceof \Copot\Core\Media): ?><div class="builtin-site-hero"><img src="<?= htmlspecialchars(is_callable($url) ? (string) $url('/media/' . $homepageHero->id()->value()) : '/media/' . $homepageHero->id()->value(), ENT_QUOTES, 'UTF-8') ?>" alt="Homepage hero image"></div><?php endif; ?>
-        <div class="builtin-site-content builtin-site-content--<?= htmlspecialchars($pageType, ENT_QUOTES, 'UTF-8') ?>">
-            <?= $content ?? '' ?>
-        </div>
+        <?php if ($pageType !== 'homepage' || trim((string) ($content ?? '')) !== ''): ?>
+            <div class="builtin-site-content builtin-site-content--<?= htmlspecialchars($pageType, ENT_QUOTES, 'UTF-8') ?>">
+                <?= $content ?? '' ?>
+            </div>
+        <?php endif; ?>
     </main>
     <footer class="builtin-site-footer">© <?= date('Y') ?> <?= htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') ?></footer>
 </body>

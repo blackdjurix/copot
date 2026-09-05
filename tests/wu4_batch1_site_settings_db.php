@@ -65,6 +65,10 @@ try {
     $assert($settings->get('site', 'name') === 'Runtime site' && $settings->get('site', 'tagline') === 'Runtime tagline', 'Site identity did not read back.');
     $assert($settings->get('localization', 'locale') === 'en_US' && $settings->get('localization', 'timezone') === 'Europe/London', 'Localization did not read back.');
     $assert($settings->get('appearance', 'main_color') === '#336699', 'Main Color did not read back.');
+    $settings->set('site', 'homepage_content', ['type' => 'article_collection', 'reference' => 'articles'], 'json');
+    $assert($settings->get('site', 'homepage_content') === ['type' => 'article_collection', 'reference' => 'articles'], 'Article Collection Homepage assignment did not read back.');
+    $settings->set('site', 'homepage_content', null, 'json');
+    $assert($settings->get('site', 'homepage_content') === null, 'None Homepage assignment did not clear cleanly.');
 
     $assetSource = $assetRoot . DIRECTORY_SEPARATOR . 'asset.png';
     file_put_contents($assetSource, base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=', true));
