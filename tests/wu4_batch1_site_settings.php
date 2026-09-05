@@ -74,6 +74,9 @@ $assert(str_contains($css, 'site-settings-page [data-homepage-content-page-field
 $assert(str_contains($articles, 'builtin-site-article-item__excerpt') && str_contains($layout, '.builtin-site-article-item__excerpt { margin: 0; font-style: italic; }'), 'Article Collection excerpts are not using the shared scoped presentation.');
 $assert(str_contains($layout, '.builtin-site-article-item.has-image { grid-template-columns: minmax(0, 2.5fr) minmax(0, 6fr); align-items: end; }'), 'Article Collection image/text alignment is not using the accepted ratio.');
 $assert(str_contains($contentView, 'builtin-site-page__intro--article'), 'Single Article excerpts are not italicized without affecting Page excerpts.');
+$pageIntro = strpos($contentView, 'builtin-site-page__intro">');
+$assert(strpos($contentView, 'builtin-site-featured-image') < $pageIntro && $pageIntro < strpos($contentView, '<div>'), 'Page detail blocks are not ordered Title, featured image, excerpt, body.');
+$assert(str_contains($navigationCss, '.builtin-site-nav.is-open > ul { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }'), 'Mobile primary navigation item spacing is not using the accepted gap.');
 $assert(str_contains($layout, 'builtin-site-nav__toggle') && str_contains($layout, 'aria-expanded="false"') && str_contains($layout, 'aria-controls="builtin-site-primary-nav"'), 'Built-in Public View mobile navigation toggle is missing accessible state wiring.');
 $assert(str_contains($navigationCss, '.builtin-site-nav:not(.is-open) { display: none; }') && str_contains($navigationCss, '.builtin-site-nav.is-open { display: block;'), 'Mobile navigation open/closed presentation is missing.');
 $assert(str_contains($navigationJs, 'builtin-site-nav__toggle') && str_contains($navigationJs, 'setAttribute(\'aria-expanded\''), 'Mobile navigation toggle behavior is missing.');

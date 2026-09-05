@@ -18,12 +18,12 @@ $hideTitle = !empty($context['hideTitle']);
 
         <?php if (($entry['type'] ?? null) === 'article' && ($entry['published_at'] ?? null) !== null): ?><p class="builtin-site-page__meta">Published <?= htmlspecialchars((string) $entry['published_at'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
 
-        <?php if (($entry['type'] ?? null) !== 'article' && ($entry['excerpt'] ?? null) !== null): ?>
-            <p class="builtin-site-page__intro"><?= nl2br(htmlspecialchars((string) $entry['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
-        <?php endif; ?>
-
         <?php if (is_array($featuredMedia ?? null)): ?>
             <img class="builtin-site-featured-image" src="<?= htmlspecialchars((string) $featuredMedia['url'], ENT_QUOTES, 'UTF-8') ?>"<?= !empty($featuredMedia['srcset']) ? ' srcset="' . htmlspecialchars((string) $featuredMedia['srcset'], ENT_QUOTES, 'UTF-8') . '" sizes="(max-width: 720px) 100vw, 720px"' : '' ?> width="<?= (int) ($featuredMedia['width'] ?? 0) ?>" height="<?= (int) ($featuredMedia['height'] ?? 0) ?>" alt="<?= htmlspecialchars((string) ($featuredMedia['alt'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" loading="eager">
+        <?php endif; ?>
+
+        <?php if (($entry['type'] ?? null) !== 'article' && ($entry['excerpt'] ?? null) !== null): ?>
+            <p class="builtin-site-page__intro"><?= nl2br(htmlspecialchars((string) $entry['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
         <?php endif; ?>
 
         <?php if (($entry['type'] ?? null) === 'article' && ($entry['excerpt'] ?? null) !== null): ?>
