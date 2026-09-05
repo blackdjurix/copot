@@ -653,7 +653,7 @@ MR.2 WU3 — System Manager Lifecycle & Modules UX Refinement: COMPLETE AND CLOS
 Module Permission Dependency / Base Access: separate planning concern; not a System Health dependency.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
-Current active implementation branch: `main`
+Current active implementation branch: `feature/wu4-batch1-site-settings`
 Database Ownership & Lifecycle Management Foundation: WU1–WU6 COMPLETE AND CLOSED for the accepted scope
 WU4 Database Lifecycle Classification: COMPLETE AND CLOSED; accepted implementation and focused validation are integrated into `main` at `70782fdc9dddeb353cf27cf78f6f20e294e6fa30`
 WU5 Installer Intent Reconciliation: COMPLETE AND CLOSED; Installer intents are Fresh / Coexist / Adopt, with normal existing-install Update / Upgrade / Repair outside Installer under System Manager / Webcore Lifecycle
@@ -820,7 +820,13 @@ human/product acceptance, and closure-documentation reconciliation are complete.
 WU3 was fast-forward integrated into `main` at
 `2ade6d22c8ef0c78e0371960617c70bf865854b0`; feature containment was verified,
 the local and remote feature branches were deleted, and the branch lifecycle is
-closed. WU4-WU6 remain separately controlled / not started.
+closed. WU4 Batch 1 — Site Settings, Site Identity, Homepage assignment, and
+directly affected Built-in Public View behavior — is implemented and accepted
+on `feature/wu4-batch1-site-settings` under
+`docs/54_webcore_site_settings_appearance_consolidation_contract.md`. WU4
+Batch 2 is the next implementation target and is not started; WU4 Batches 3–4
+remain not started. The feature branch remains intentionally unmerged pending
+separately controlled integration.
 v0.13.0 Release Readiness,
 tag/publication, and Gate 9 verification are complete. Post-release
 documentation reconciliation is complete; Multi-Installation Isolation

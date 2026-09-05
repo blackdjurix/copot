@@ -6,16 +6,19 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU4 — Webcore Site Settings & Appearance Consolidation
 Contract status: PROMOTED / CONTRACT LOCKED
-WU4 implementation: NOT STARTED
-Technical implementation authorization: NONE
+WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCHES 2–4 NOT STARTED
+Technical implementation authorization: BATCH 1 EXECUTED UNDER SEPARATE AUTHORIZATION
 Release / tag / publication authorization: NONE
 ```
 
 This is the dedicated authoritative WU4 implementation contract. It
 materializes the accepted product decisions against the existing Webcore
 authority and projection lineage. It authorizes documentation and contract
-materialization only; it does not authorize WU4 runtime implementation,
-schema/settings migration, runtime mutation, or release activity.
+materialization only; Batch 1 implementation and acceptance were subsequently
+authorized and are recorded by current-state documentation. This contract
+does not authorize Batches 2–4, schema/settings migration beyond the accepted
+Batch 1 scope, runtime mutation outside controlled acceptance, or release
+activity.
 
 The parent workstream contract remains
 `docs/49_webcore_product_completeness_stabilization_contract.md`. Historical
@@ -512,9 +515,9 @@ WU4 implementation acceptance must include, as applicable:
 - human/product review of information architecture, visual behavior,
   accessibility, responsive behavior, and cross-surface comprehension.
 
-Runtime, unit, regression, and browser validation belong to separately
-authorized implementation and acceptance work. This contract itself records
-no implementation result and no release readiness.
+Runtime, unit, regression, and browser validation for later batches belong to
+separately authorized implementation and acceptance work. Batch 1 acceptance
+is complete; this contract records no release readiness.
 
 ## Authorization
 
@@ -533,4 +536,4 @@ Not authorized by this contract:
   Branding condition defined above;
 - release, version bump, tag, package creation, publication, or distribution;
 - adoption of unrelated Deferred Items; or
-- WU4 Batch 1 implementation.
+- WU4 Batches 2–4 implementation.
