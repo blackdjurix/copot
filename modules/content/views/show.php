@@ -23,11 +23,11 @@ $hideTitle = !empty($context['hideTitle']);
         <?php endif; ?>
 
         <?php if (($entry['type'] ?? null) !== 'article' && ($entry['excerpt'] ?? null) !== null): ?>
-            <p class="builtin-site-page__intro"><?= nl2br(htmlspecialchars((string) $entry['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
+            <p class="builtin-site-page__intro builtin-site-page__intro--detail"><?= nl2br(htmlspecialchars((string) $entry['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
         <?php endif; ?>
 
         <?php if (($entry['type'] ?? null) === 'article' && ($entry['excerpt'] ?? null) !== null): ?>
-            <p class="builtin-site-page__intro builtin-site-page__intro--article"><?= nl2br(htmlspecialchars((string) $entry['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
+            <p class="builtin-site-page__intro builtin-site-page__intro--detail"><?= nl2br(htmlspecialchars((string) $entry['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p>
         <?php endif; ?>
 
         <div>

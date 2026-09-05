@@ -12,8 +12,10 @@
 @media (max-width: 640px) {
     .builtin-site-nav__toggle { position: absolute; right: 0; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 1px solid #d9e0e7; border-radius: 6px; background: #fff; color: var(--builtin-main-strong); font-size: 1.25rem; cursor: pointer; }
     .builtin-site-nav:not(.is-open) { display: none; }
-    .builtin-site-nav.is-open { display: block; margin-top: 12px; }
+    .builtin-site-nav.is-open { position: absolute; top: 64px; right: 0; left: 0; z-index: 20; display: block; margin-top: 0; padding: 12px; background: rgba(255, 255, 255, .98); border: 1px solid #d9e0e7; border-radius: 8px; box-shadow: 0 12px 28px rgba(23, 32, 42, .14); }
     .builtin-site-nav > ul { gap: 10px 16px; }
     .builtin-site-nav.is-open > ul { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+    .builtin-site-nav.is-open > ul > li > a,
+    .builtin-site-nav.is-open > ul > li > .builtin-site-nav__trigger { display: block; padding: 6px 8px; }
     .builtin-site-nav__submenu { position: static; min-width: 0; margin-top: 8px; box-shadow: none; }
 }

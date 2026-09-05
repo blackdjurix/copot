@@ -92,9 +92,10 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-article-item__meta { margin: 0 0 8px; color: #596674 !important; font-size: .9rem !important; }
         .builtin-site-article-item__body p { margin-top: 0; }
         .builtin-site-article-item__excerpt { margin: 0; font-style: italic; }
-        .builtin-site-page__intro--article { font-style: italic; }
+        .builtin-site-page__intro--detail { font-style: italic; }
+        .builtin-site-content h1.builtin-site-content__title--detail + .builtin-site-featured-image { margin-top: 16px; }
         @media (max-width: 640px) {
-            .builtin-site-header__inner { display: block; padding: 16px 0; }
+            .builtin-site-header__inner { position: relative; display: block; padding: 16px 0; }
             .builtin-site-header__identity-row { position: relative; display: flex; align-items: center; justify-content: center; min-height: 48px; }
             .builtin-site-nav { width: 100%; }
             .builtin-site-main { min-height: calc(100vh - 220px); padding: 0 0 28px; }
