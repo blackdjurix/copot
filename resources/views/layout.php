@@ -71,7 +71,7 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-breadcrumb { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; color: #596674; font-size: .9rem; line-height: 1.4; }
         .builtin-site-breadcrumb a { color: var(--builtin-main-strong); }
         .builtin-site-page__intro { font-size: 1.2rem !important; }
-        .builtin-site-page__meta { margin: 0 0 28px; color: #596674 !important; font-size: .9rem !important; }
+        .builtin-site-page__meta { margin: 0 0 0; color: #596674 !important; font-size: .9rem !important; }
         .builtin-site-featured-image { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; margin: 0 0 32px; border-radius: 8px; }
         .builtin-site-content p, .builtin-site-content div { color: #3e4b59; font-size: 1.08rem; line-height: 1.7; }
         .builtin-site-content p + p { margin-top: 12px; }
