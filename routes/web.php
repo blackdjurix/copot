@@ -17,6 +17,12 @@ $contentDelivery = new ContentDeliveryService(new ContentRepository($app->databa
 $contentRepository = new ContentRepository($app->database());
 $mediaRepository = new MediaRepository($app->database());
 $mediaDelivery = new MediaDeliveryService(new MediaRepository($app->database()), new MediaFileInspector(), new MediaFilesystemStorage($app->path('storage/media')));
+$articleCollectionMediaUrl = static function (int $mediaId) use ($app, $mediaRepository): ?string {
+    $media = $mediaRepository->findById($mediaId);
+    return $media instanceof \Copot\Core\Media && $media->kind() === 'image'
+        ? $app->url('/media/' . $media->id()->value())
+        : null;
+};
 
 $homepageHero = new HomepageHeroImageService($app->settings(), $app->database(), new MediaRepository($app->database()), new MediaUsageRepository($app->database()), new MediaLifecycleService($app->database(), new MediaRepository($app->database()), null, new MediaUsageRepository($app->database())));
 
@@ -39,10 +45,10 @@ $app->router()->get('/', function () use ($app, $homepageHero, $contentRepositor
                 $media = $mediaRepository->findById((int) $featuredId);
                 if ($media instanceof \Copot\Core\Media && $media->kind() === 'image') $featuredMedia = ['url' => $app->url('/media/' . $media->id()->value()), 'width' => $media->width(), 'height' => $media->height(), 'alt' => $media->title() !== '' ? $media->title() : $media->originalFilename()];
             }
-            $homepageContent = $renderFragment($app->viewResolver()->resolve('content::show'), ['context' => ['content' => $renderData, 'featuredMedia' => $featuredMedia], 'content' => $renderData, 'featuredMedia' => $featuredMedia, 'breadcrumbs' => [['label' => $app->branding()->name(), 'url' => $app->url('/')], ['label' => $page->title()]]]);
+            $homepageContent = $renderFragment($app->viewResolver()->resolve('content::show'), ['context' => ['content' => $renderData, 'featuredMedia' => $featuredMedia], 'content' => $renderData, 'featuredMedia' => $featuredMedia, 'breadcrumbs' => []]);
         }
     } elseif (is_array($assignment) && ($assignment['type'] ?? null) === 'article_collection' && ($assignment['reference'] ?? null) === 'articles') {
-        $homepageContent = $renderFragment($app->viewResolver()->resolve('core::articles'), ['articles' => $contentDelivery->publishedArticles()]);
+        $homepageContent = $renderFragment($app->viewResolver()->resolve('core::articles'), ['articles' => $contentDelivery->publishedArticles(), 'mediaUrl' => $articleCollectionMediaUrl]);
     }
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('core::home'),
@@ -86,7 +92,7 @@ $app->router()->get('/articles', function () use ($app, $contentDelivery): Respo
     $articles = $contentDelivery->publishedArticles();
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('core::articles'),
-        ['articles' => $articles],
+        ['articles' => $articles, 'mediaUrl' => $articleCollectionMediaUrl],
         null,
         'Articles'
     ));

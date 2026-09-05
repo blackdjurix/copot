@@ -20,6 +20,7 @@ $heroService = $read('app/Core/HomepageHeroImageService.php');
 $web = $read('routes/web.php');
 $layout = $read('resources/views/layout.php');
 $contentView = $read('modules/content/views/show.php');
+$articles = $read('resources/views/articles.php');
 $homeView = $read('resources/views/home.php');
 $systemView = $read('resources/views/system.php');
 $view = $read('resources/views/admin/site-settings.php');
@@ -62,6 +63,9 @@ $assert(strpos($contentView, 'builtin-site-breadcrumb') < strpos($contentView, '
 $assert(str_contains($layout, '.builtin-site-page__meta { margin: 0 0 0; color: #596674 !important; font-size: .9rem !important; }') && str_contains($layout, '.builtin-site-page__intro { font-size: 1.2rem !important; }') && !str_contains($layout, '.builtin-site-page__intro { margin:'), 'Public metadata or intro spacing does not match the accepted rules.');
 $assert(str_contains($systemView, 'builtin-site-system') && str_contains($layout, "['homepage', 'general', 'system']") && str_contains($layout, "pageType === 'homepage' &&"), 'System Page restrained presentation boundary is missing.');
 $assert(str_contains($view, 'Main Color') && !str_contains($view, 'Branding Accent'), 'Legacy four-color branding remains user-facing.');
+$assert(str_contains($view, 'data-homepage-content-page-field') && str_contains($view, 'pageField.hidden = !isPage'), 'Homepage Page Selection is not conditionally hidden outside Page mode.');
+$assert(str_contains($view, 'site-settings-homepage-content.js') && str_contains($css, 'site-settings-homepage-content-grid'), 'Homepage Content assignment layout reconciliation is missing.');
+$assert(str_contains($web, "'breadcrumbs' => []") && str_contains($articles, 'builtin-site-article-item') && str_contains($articles, 'featured_media_id'), 'Homepage Page breadcrumb suppression or shared Article Collection presentation is missing.');
 $assert(str_contains($view, 'data-site-settings-hero-picker') && str_contains($view, 'data-site-settings-hero-open') && str_contains($view, '>Choose</button>') && str_contains($view, 'data-site-settings-hero-clear') && !str_contains($view, '<select id="hero_media"'), 'Homepage Hero does not use the bounded Core Media picker.');
 $assert(str_contains($siteSettings, "childUrl('media/select')") && str_contains($picker, 'aria-pressed') && str_contains($picker, 'FormData'), 'Homepage Hero picker does not preserve bounded selection and upload behavior.');
 $assert(str_contains($view, 'data-site-settings-hero-upload-button>Upload</button>') && str_contains($view, 'class="admin-field" method="post"'), 'Site Settings upload actions do not use shared field/action composition.');

@@ -70,3 +70,4 @@ document.addEventListener('DOMContentLoaded', function () {
     sync();
 });
 </script>
+<script src="<?= $escape(is_callable($url ?? null) ? $url('/admin-assets/js/site-settings-homepage-content.js?v=wu4-b1-3') : '/admin-assets/js/site-settings-homepage-content.js?v=wu4-b1-3') ?>" defer></script>

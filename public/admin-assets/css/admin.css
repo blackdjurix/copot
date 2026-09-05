@@ -3704,6 +3704,11 @@ html.admin-nav-open body {
 .site-settings-identity__hero .site-settings-hero-preview img { width: 100%; height: 12rem; object-fit: cover; }
 .site-settings-hero-preview__empty { display: grid; place-items: center; min-height: 12rem; color: var(--admin-color-text-muted); }
 .site-settings-hero-preview__empty[hidden] { display: none; }
+.site-settings-homepage-content-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--admin-space-4); }
+.site-settings-homepage-content-grid > .admin-field { min-width: 0; }
+.site-settings-homepage-content-grid__help,
+.site-settings-homepage-content-grid__error { grid-column: 1 / -1; }
+.site-settings-homepage-content-grid__error { margin-top: calc(var(--admin-space-4) * -1); }
 .admin-settings-color-control { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--admin-space-3); }
 .admin-settings-color-control .admin-settings-color-hex { width: 11ch; max-width: 100%; }
 
@@ -3755,6 +3760,9 @@ html.admin-nav-open body {
     .site-settings-identity__localization { order: 4; }
     .site-settings-identity__appearance { order: 5; }
     .site-settings-asset-preview-row { grid-template-columns: 1fr; }
+    .site-settings-homepage-content-grid { grid-template-columns: 1fr; }
+    .site-settings-homepage-content-grid__help,
+    .site-settings-homepage-content-grid__error { grid-column: auto; }
 }
 
 /* M3.4 Batch 6: Content workspace presentation */
