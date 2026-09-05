@@ -12,7 +12,7 @@
             <div class="builtin-site-article-item__body">
                 <h2><a href="<?= htmlspecialchars('/content/' . (string) $article['slug'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars((string) $article['title'], ENT_QUOTES, 'UTF-8') ?></a></h2>
                 <?php if (($article['published_at'] ?? null) !== null): ?><p class="builtin-site-article-item__meta">Published <?= htmlspecialchars((string) $article['published_at'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
-                <?php if (trim((string) ($article['excerpt'] ?? '')) !== ''): ?><p><?= nl2br(htmlspecialchars((string) $article['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p><?php endif; ?>
+                <?php if (trim((string) ($article['excerpt'] ?? '')) !== ''): ?><p class="builtin-site-article-item__excerpt"><?= nl2br(htmlspecialchars((string) $article['excerpt'], ENT_QUOTES, 'UTF-8')) ?></p><?php endif; ?>
             </div>
         </article>
     <?php endforeach; ?>

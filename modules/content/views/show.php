@@ -14,7 +14,7 @@ $hideTitle = !empty($context['hideTitle']);
                 <?php endforeach; ?>
             </nav>
         <?php endif; ?>
-        <?php if (!$hideTitle): ?><h1><?= htmlspecialchars((string) ($entry['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h1><?php endif; ?>
+        <?php if (!$hideTitle): ?><h1 class="builtin-site-content__title builtin-site-content__title--detail"><?= htmlspecialchars((string) ($entry['title'] ?? ''), ENT_QUOTES, 'UTF-8') ?></h1><?php endif; ?>
 
         <?php if (($entry['type'] ?? null) === 'article' && ($entry['published_at'] ?? null) !== null): ?><p class="builtin-site-page__meta">Published <?= htmlspecialchars((string) $entry['published_at'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
 
