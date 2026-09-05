@@ -6,7 +6,7 @@
 <?php else: ?>
     <div class="builtin-site-article-collection__items">
     <?php foreach ($articles as $article): ?>
-        <?php $imageUrl = is_callable($mediaUrl) && !empty($article['featured_media_id']) ? $mediaUrl((int) $article['featured_media_id']) : null; ?>
+                <?php $imageUrl = is_callable($mediaUrl) && !empty($article['featured_media_id']) ? $mediaUrl((int) $article['featured_media_id']) : null; ?>
         <article class="builtin-site-article-item<?= $imageUrl !== null ? ' has-image' : '' ?>">
             <?php if ($imageUrl !== null): ?><a class="builtin-site-article-item__image" href="<?= htmlspecialchars('/content/' . (string) $article['slug'], ENT_QUOTES, 'UTF-8') ?>"><img src="<?= htmlspecialchars($imageUrl, ENT_QUOTES, 'UTF-8') ?>" alt="" loading="lazy"></a><?php endif; ?>
             <div class="builtin-site-article-item__body">

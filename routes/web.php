@@ -33,7 +33,7 @@ $renderFragment = static function (string $path, array $variables): string {
     catch (Throwable $exception) { ob_end_clean(); throw $exception; }
 };
 
-$app->router()->get('/', function () use ($app, $homepageHero, $contentRepository, $contentDelivery, $mediaRepository, $renderFragment): Response {
+$app->router()->get('/', function () use ($app, $homepageHero, $contentRepository, $contentDelivery, $mediaRepository, $renderFragment, $articleCollectionMediaUrl): Response {
     $homepageContent = null;
     $assignment = $app->settings()->get('site', 'homepage_content', null);
     if (is_array($assignment) && ($assignment['type'] ?? null) === 'page' && is_int($assignment['id'] ?? null)) {
@@ -45,7 +45,7 @@ $app->router()->get('/', function () use ($app, $homepageHero, $contentRepositor
                 $media = $mediaRepository->findById((int) $featuredId);
                 if ($media instanceof \Copot\Core\Media && $media->kind() === 'image') $featuredMedia = ['url' => $app->url('/media/' . $media->id()->value()), 'width' => $media->width(), 'height' => $media->height(), 'alt' => $media->title() !== '' ? $media->title() : $media->originalFilename()];
             }
-            $homepageContent = $renderFragment($app->viewResolver()->resolve('content::show'), ['context' => ['content' => $renderData, 'featuredMedia' => $featuredMedia], 'content' => $renderData, 'featuredMedia' => $featuredMedia, 'breadcrumbs' => []]);
+            $homepageContent = $renderFragment($app->viewResolver()->resolve('content::show'), ['context' => ['content' => $renderData, 'featuredMedia' => $featuredMedia, 'hideTitle' => true], 'content' => $renderData, 'featuredMedia' => $featuredMedia, 'breadcrumbs' => []]);
         }
     } elseif (is_array($assignment) && ($assignment['type'] ?? null) === 'article_collection' && ($assignment['reference'] ?? null) === 'articles') {
         $homepageContent = $renderFragment($app->viewResolver()->resolve('core::articles'), ['articles' => $contentDelivery->publishedArticles(), 'mediaUrl' => $articleCollectionMediaUrl]);
@@ -88,11 +88,11 @@ $app->router()->get('/content/{slug}', function ($request, array $params) use ($
     ));
 });
 
-$app->router()->get('/articles', function () use ($app, $contentDelivery): Response {
+$app->router()->get('/articles', function () use ($app, $contentDelivery, $articleCollectionMediaUrl): Response {
     $articles = $contentDelivery->publishedArticles();
     return Response::html($app->viewRenderer()->renderFile(
         $app->viewResolver()->resolve('core::articles'),
-        ['articles' => $articles, 'mediaUrl' => $articleCollectionMediaUrl],
+        ['pageType' => 'general', 'currentPath' => '/articles', 'breadcrumbs' => [['label' => 'Home', 'url' => $app->url('/')], ['label' => 'Articles']], 'articles' => $articles, 'mediaUrl' => $articleCollectionMediaUrl],
         null,
         'Articles'
     ));

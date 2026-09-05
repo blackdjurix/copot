@@ -85,9 +85,12 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-article-item.has-image { grid-template-columns: minmax(0, 4fr) minmax(0, 6fr); align-items: start; }
         .builtin-site-article-item__image { display: block; aspect-ratio: 4 / 3; overflow: hidden; }
         .builtin-site-article-item__image img { width: 100%; height: 100%; object-fit: cover; }
-        .builtin-site-article-item__body h2 { margin: 0 0 8px; }
+        .builtin-site-article-item__body h2 { margin: 0; }
         .builtin-site-article-item__meta { margin: 0 0 8px; color: #596674 !important; font-size: .9rem !important; }
         .builtin-site-article-item__body p { margin-top: 0; }
+        .builtin-site-article-item__body h2 { margin-bottom: 0; }
+        .builtin-site-article-item__body p:not(.builtin-site-article-item__meta) { font-style: italic; }
+        .builtin-site-page__intro--article { font-style: italic; }
         @media (max-width: 640px) {
             .builtin-site-header__inner { align-items: flex-start; flex-direction: column; padding: 16px 0; }
             .builtin-site-nav { width: 100%; }

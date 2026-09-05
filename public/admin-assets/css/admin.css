@@ -3706,6 +3706,7 @@ html.admin-nav-open body {
 .site-settings-hero-preview__empty[hidden] { display: none; }
 .site-settings-homepage-content-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--admin-space-4); }
 .site-settings-homepage-content-grid > .admin-field { min-width: 0; }
+.site-settings-page [data-homepage-content-page-field][hidden] { display: none; }
 .site-settings-homepage-content-grid__help,
 .site-settings-homepage-content-grid__error { grid-column: 1 / -1; }
 .site-settings-homepage-content-grid__error { margin-top: calc(var(--admin-space-4) * -1); }
