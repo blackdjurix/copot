@@ -85,7 +85,11 @@ Site Identity
 │  ├─ Logo
 │  └─ Favicon
 ├─ Homepage
-│  └─ Hero Image
+│  ├─ Hero Image
+│  └─ Homepage Content
+│     ├─ None
+│     ├─ Page
+│     └─ Article Collection
 ├─ Localization
 │  ├─ Locale
 │  ├─ Timezone
@@ -107,6 +111,7 @@ The following authorities remain singular and unchanged:
 | Definitions, defaults, validation, typed persistence, effective values | Settings Platform (`SettingsRegistry` / `SettingsService`) | Product projection only |
 | Logo and Favicon validation, storage, activation, cleanup, serving | Site Asset authority (`SiteAssetStorage`) | Existing workflow consumer |
 | Homepage Hero Image selection, reference, usage, and delivery | Core Media authority | Site Settings selection/reference projection only |
+| Homepage Content source identity and supplied output | Existing authoritative Page content and canonical Article Collection identities | Site Settings single-assignment projection; Built-in Public View render consumer |
 | System lifecycle, adoption, recovery, and lifecycle semantics | Existing Webcore lifecycle authority | Existing operational projection |
 | Module discovery, permissions, lifecycle, and package behavior | Existing Module lifecycle authority | Existing operational projection |
 | Health production, provider, aggregation, authorization, and sanitization | Existing System Health authority | Existing read-only projection |
@@ -131,9 +136,21 @@ General Page, Navigation Item, Article Collection, and provider-specific
 content identity.
 
 Homepage may load content into its body/container and has a site-level
-adjustable Hero Image through Site Settings. Shared frame elements such as
+adjustable Hero Image and one bounded Homepage Content assignment through Site
+Settings. The Homepage Content assignment has exactly one source at a time:
+`None`, `Page`, or `Article Collection`. It selects an existing authoritative
+content object or canonical Article Collection identity; Site Settings does not
+own or author that content. Shared frame elements such as
 navigation, logo/site identity, and footer belong to the Built-in Public View
 shell, not Homepage-specific settings.
+
+The Homepage Built-in Public View is a consumer only: it may resolve the
+selected Homepage Content source and render its supplied output inside the
+Homepage `builtin-site-content` container, but it must not own content
+selection, assignment persistence, content authoring, or provider arbitration.
+Homepage identity, General Page identity, Navigation identity, and the
+assigned Page or Article Collection identity remain distinct. Homepage Hero
+Image remains a separate Homepage setting.
 
 Homepage identity is independent of Navigation. Navigation may reference the
 Homepage, but Navigation item deletion or reordering must not redefine
@@ -163,22 +180,32 @@ not automatic Built-in Public View page types.
 
 ## Homepage configuration boundary
 
-WU4 owns only the product projection for Homepage configuration initially
-required by the baseline: Hero Image.
+WU4 owns the product projection for Homepage configuration. It includes the
+separate Hero Image setting and one bounded Homepage Content assignment with
+exactly these choices: `None`, `Page`, or `Article Collection`.
+
+Site Settings is the only Homepage Content assignment/configuration surface.
+It owns only the selected-source projection, not Page or Article Collection
+content, authoring, or persistence. The assignment must select an existing
+authoritative Page content object or canonical Article Collection identity, and
+exactly one source may be assigned at a time. The Homepage rendering layer
+only resolves and renders the supplied result.
 
 Site Settings owns only the Homepage Hero Image selection/projection. Settings
-Platform owns its typed persistence. Core Media owns Media identity, storage,
-selection/reference, usage, delivery, and deletion safety. Site Settings must
-not take ownership of Media.
+Platform owns typed persistence for Site Settings values. Core Media owns
+Media identity, storage, selection/reference, usage, delivery, and deletion
+safety. Site Settings must not take ownership of Media.
 
 Exact setting key, reference representation, usage-registration mechanics,
 transaction/removal behavior, fallback mechanics, and other low-level details
 remain implementation-time technical dispositions to be resolved from current
 Core Media source.
 
-WU4 is not a page builder, Homepage content builder, content-assignment
-engine, or arbitrary layout editor. Navigation mechanics beyond the Homepage
-identity separation remain outside WU4.
+WU4 is not a page builder, Homepage content builder, or arbitrary layout
+editor. Generic or arbitrary content-assignment infrastructure, including
+provider arbitration, remains outside WU4; the bounded single Homepage Content
+assignment defined above is the specific exception. Navigation mechanics
+beyond the Homepage identity separation remain outside WU4.
 
 ## Built-in Public View visual direction
 
@@ -304,6 +331,8 @@ Materialize:
 - canonical Site Settings parent at `/admin/settings`;
 - Site Identity / General;
 - Homepage Hero Image projection using the Core Media boundary;
+- bounded Homepage Content single-assignment projection with `None`, `Page`,
+  or `Article Collection` choices, using existing content identities only;
 - Localization consolidation;
 - Webcore Color Scheme;
 - directly impacted Built-in Public View integration; and
@@ -439,8 +468,12 @@ WU4 does not include:
 - Theme Module implementation or lifecycle work;
 - Brand Colors implementation or final future owner selection;
 - Brand Kit, multi-brand, or white-label capability;
-- page builder, arbitrary layout editor, Homepage content builder, or content
-  assignment engine;
+- page builder, arbitrary layout editor, Homepage content builder, or generic/
+  arbitrary content-assignment/provider-arbitration infrastructure;
+- multiple independently configurable Homepage sections, arbitrary section
+  composition, drag-and-drop ordering, or custom Homepage block authoring;
+- Form/Product/provider-specific Homepage sources or new content-authoring
+  capability;
 - General Page content-management implementation;
 - Collection Page as a separate Built-in page type;
 - automatic Article, Form, Product, or similar Built-in page types;
