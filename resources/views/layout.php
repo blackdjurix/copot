@@ -51,7 +51,7 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         * { box-sizing: border-box; }
         body { margin: 0; min-height: 100vh; color: #17202a; background: #f4f6f8; font-family: Arial, sans-serif; }
          a { color: var(--builtin-main-strong); }
-        .builtin-site-header { border-bottom: 1px solid #d9e0e7; background: #fff; }
+        .builtin-site-header { background: #fff; }
         .builtin-site-header__inner, .builtin-site-main, .builtin-site-footer { width: min(900px, calc(100% - 32px)); margin: 0 auto; }
         .builtin-site-header__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 0; }
         .builtin-site-identity { display: inline-flex; align-items: center; gap: 14px; color: #17202a; text-decoration: none; }
@@ -68,6 +68,7 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
          .builtin-site-hero { width: 100%; max-width: 900px; margin: 0 auto 28px; overflow: hidden; border-radius: 0 0 12px 12px; }
          .builtin-site-hero img { display: block; width: 100%; aspect-ratio: 16 / 7; object-fit: cover; }
         .builtin-site-content h1 { margin: 0 0 18px; color: #17202a; font-size: clamp(1.75rem, 4vw, 2.5rem); line-height: 1.08; }
+        .builtin-site-content h1.builtin-site-page__title--article { font-size: 2rem; }
         .builtin-site-breadcrumb { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; color: #596674; font-size: .9rem; line-height: 1.4; }
         .builtin-site-breadcrumb a { color: var(--builtin-main-strong); }
         .builtin-site-page__intro { margin: -4px 0 18px; font-size: 1.2rem !important; }
