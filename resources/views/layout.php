@@ -54,6 +54,7 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-header { background: #fff; }
         .builtin-site-header__inner, .builtin-site-main, .builtin-site-footer { width: min(900px, calc(100% - 32px)); margin: 0 auto; }
         .builtin-site-header__inner { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 0; }
+        .builtin-site-header__identity-row { display: contents; }
         .builtin-site-identity { display: inline-flex; align-items: center; gap: 14px; color: #17202a; text-decoration: none; }
         .builtin-site-identity img { display: block; width: auto; max-width: 180px; height: 48px; object-fit: contain; }
         .builtin-site-identity__name { font-size: 1.15rem; font-weight: 700; }
@@ -73,6 +74,7 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-breadcrumb a { color: var(--builtin-main-strong); }
         .builtin-site-page__intro { font-size: 1.2rem !important; }
         .builtin-site-page__meta { margin: 0 0 0; color: #596674 !important; font-size: .9rem !important; }
+        .builtin-site-page__meta + .builtin-site-featured-image { margin-top: 16px; }
         .builtin-site-featured-image { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; margin: 0 0 32px; border-radius: 8px; }
         .builtin-site-content p, .builtin-site-content div { color: #3e4b59; font-size: 1.08rem; line-height: 1.7; }
         .builtin-site-content p + p { margin-top: 12px; }
@@ -92,7 +94,8 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
         .builtin-site-article-item__excerpt { margin: 0; font-style: italic; }
         .builtin-site-page__intro--article { font-style: italic; }
         @media (max-width: 640px) {
-            .builtin-site-header__inner { align-items: flex-start; flex-direction: column; padding: 16px 0; }
+            .builtin-site-header__inner { display: block; padding: 16px 0; }
+            .builtin-site-header__identity-row { position: relative; display: flex; align-items: center; justify-content: center; min-height: 48px; }
             .builtin-site-nav { width: 100%; }
             .builtin-site-main { min-height: calc(100vh - 220px); padding: 0 0 28px; }
             .builtin-site-content { width: 100%; padding: 24px 20px; border-radius: 8px; }
@@ -107,6 +110,7 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
 <body>
     <header class="builtin-site-header">
         <div class="builtin-site-header__inner">
+            <div class="builtin-site-header__identity-row">
             <a class="builtin-site-identity" href="<?= htmlspecialchars(is_callable($url) ? (string) $url('/') : '/', ENT_QUOTES, 'UTF-8') ?>">
                 <?php if (is_string($logoUrl) && $logoUrl !== ''): ?>
                     <img src="<?= htmlspecialchars($logoUrl, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') ?>">
@@ -114,8 +118,10 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
                     <span class="builtin-site-identity__name"><?= htmlspecialchars($siteName, ENT_QUOTES, 'UTF-8') ?></span>
                 <?php endif; ?>
             </a>
+            <?php if ($navigation !== []): ?><button class="builtin-site-nav__toggle" type="button" aria-expanded="false" aria-controls="builtin-site-primary-nav" aria-label="Open menu"><span aria-hidden="true">☰</span></button><?php endif; ?>
+            </div>
             <?php if ($navigation !== []): ?>
-                <nav class="builtin-site-nav" aria-label="Primary navigation">
+                <nav id="builtin-site-primary-nav" class="builtin-site-nav" aria-label="Primary navigation">
                     <ul><?php $renderNavigation($navigation); ?></ul>
                 </nav>
                 <link rel="stylesheet" href="/assets/navigation.css?v=wu3">
