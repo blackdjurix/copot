@@ -63,7 +63,7 @@ $assert(str_contains($healthProducer, 'implements SystemHealthProducer') && str_
 $assert(str_contains($healthProducer, 'return true;') && substr_count($healthProducer, 'SystemHealthProducerAvailability::UNAVAILABLE,') === 1, 'Module Health evidence is incorrectly optional or does not preserve unavailable evidence.' );
 $assert(str_contains($healthProducer, 'SystemHealthFindingSeverity::CRITICAL') && str_contains($healthProducer, 'dedupeKey'), 'Module Health does not preserve severity or bound duplicate findings.');
 $assert(str_contains($healthProducer, "can('modules.manage')") && !str_contains($healthProducer, 'file_get_contents'), 'Module Health visibility/state handling is outside the Module permission boundary.');
-$assert(str_contains($bootstrap, 'SystemHealthAggregator') && str_contains($bootstrap, 'new SiteSettingsModuleHealthProducer($app)') && str_contains($bootstrap, "can('modules.manage')") && str_contains($bootstrap, '?SystemHealthReport'), 'Module Health production composition does not gate visibility or preserve unavailable evidence safely.');
+$assert(str_contains($bootstrap, 'SystemHealthAggregator') && str_contains($bootstrap, 'new SiteSettingsModuleHealthProducer($app)') && str_contains($bootstrap, "can('modules.manage')") && str_contains($bootstrap, 'findings() === []') && str_contains($bootstrap, '?SystemHealthReport'), 'Module Health production composition does not gate visibility or preserve unavailable/empty evidence safely.');
 $assert(str_contains($settingsView, "array_key_exists('system', \$areas)") && str_contains($routes, "system.webcore.manage"), 'System capability remains independently composed from Modules.');
 
 $producer = new SiteSettingsModuleHealthProducer(new stdClass(), static fn (): array => [
@@ -104,6 +104,24 @@ $hiddenHealth = $healthProvider->report(new \Copot\Core\SystemHealthContext(new 
 $assert($hiddenHealth === null, 'A viewer without Modules authority received an authoritative Module-only health report.');
 $unavailableHealth = $healthProvider->report(new \Copot\Core\SystemHealthContext(new \Copot\Core\InstallationIdentity('inst_' . str_repeat('d', 32)), $moduleViewer));
 $assert($unavailableHealth?->status() === \Copot\Core\SystemHealthOverallStatus::ATTENTION_REQUIRED, 'Unavailable authorized Module evidence was presented as Operational.');
+$emptyProducer = new SiteSettingsModuleHealthProducer(new stdClass(), static fn (): array => []);
+$emptyHealthProvider = new \Copot\Core\SystemHealthReportProvider(static function (\Copot\Core\SystemHealthContext $context) use ($emptyProducer): ?\Copot\Core\SystemHealthReport {
+    if (!$context->viewer() instanceof \Copot\Core\User || !$context->viewer()->can('modules.manage')) return null;
+    $result = $emptyProducer->report($context);
+    if ($result->findings() === [] && \Copot\Core\SystemHealthProducerAvailability::isEvidenceSufficient($result->availability())) return null;
+    return (new \Copot\Core\SystemHealthAggregator())->aggregate($context, [$emptyProducer]);
+});
+$emptyHealth = $emptyHealthProvider->report(new \Copot\Core\SystemHealthContext(new \Copot\Core\InstallationIdentity('inst_' . str_repeat('e', 32)), $moduleViewer));
+$assert($emptyHealth === null, 'An authorized zero-finding Module-only producer manufactured an Operational report.');
+$findingProducer = new SiteSettingsModuleHealthProducer(new stdClass(), static fn (): array => [['name' => 'alpha', 'diagnostics' => [['code' => 'dependency_missing', 'severity' => 'error']]]]);
+$findingHealthProvider = new \Copot\Core\SystemHealthReportProvider(static function (\Copot\Core\SystemHealthContext $context) use ($findingProducer): ?\Copot\Core\SystemHealthReport {
+    if (!$context->viewer() instanceof \Copot\Core\User || !$context->viewer()->can('modules.manage')) return null;
+    $result = $findingProducer->report($context);
+    if ($result->findings() === [] && \Copot\Core\SystemHealthProducerAvailability::isEvidenceSufficient($result->availability())) return null;
+    return (new \Copot\Core\SystemHealthAggregator())->aggregate($context, [$findingProducer]);
+});
+$findingHealth = $findingHealthProvider->report(new \Copot\Core\SystemHealthContext(new \Copot\Core\InstallationIdentity('inst_' . str_repeat('f', 32)), $moduleViewer));
+$assert($findingHealth?->status() === \Copot\Core\SystemHealthOverallStatus::DEGRADED && count($findingHealth?->findings() ?? []) === 1, 'Meaningful Module findings did not reach the existing System Health aggregator.');
 $assert(str_contains($authority, 'public function projectionInventory') && str_contains($authority, 'public function projectionDetail'), 'Shared normalized Module projection access is missing.');
 $assert(str_contains($settingsView, '$canUpdateSettings') && str_contains($settingsView, '$canManageModules') && str_contains($settingsView, 'moduleItems'), 'Site Settings read-versus-action composition is missing.');
 $assert(str_contains($css, '.site-settings-modules-table th:nth-child(1)') && str_contains($css, 'table-layout: fixed'), 'Unequal available-width inventory layout is missing.');
