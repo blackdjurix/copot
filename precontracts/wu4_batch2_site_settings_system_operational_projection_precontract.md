@@ -1,8 +1,9 @@
 # WU4 Batch 2 — Site Settings System Operational Projection Pre-contract
 
-Pre-contract lifecycle: MATERIALIZED / PROMOTION READY / NOT PROMOTED
+Pre-contract lifecycle: PROMOTED / HISTORICAL PROVENANCE
 Placement: Post-M3 — Webcore Product Completeness & Stabilization / WU4 Batch 2
 Parent authority: `docs/54_webcore_site_settings_appearance_consolidation_contract.md`
+Promotion status: PROMOTED into `docs/55_webcore_site_settings_system_operational_projection_contract.md`
 Implementation authorization: NONE
 Release / tag / publication authorization: NONE
 
@@ -318,9 +319,9 @@ Before promotion into an authoritative System-specific Batch 2 contract, review 
 10. historical **What's New** capability is preserved only as a consumer of authoritative release/package metadata;
 11. acceptance criteria are sufficient to prevent UI-owned lifecycle or release-metadata semantics.
 
-## 19. Current verdict
+## 19. Historical promotion disposition
 
-Pre-contract status: **MATERIALIZED / PROMOTION READY / NOT PROMOTED**.
+Pre-contract status: **PROMOTED / HISTORICAL PROVENANCE**.
 
 Runtime Handoff authority prerequisite: **PROMOTED / COMPLETE as contract authority; implementation NOT STARTED**.
 
@@ -330,4 +331,5 @@ Historical capability preservation: **What's New retained under Update & Upgrade
 
 Batch 2 System implementation status: **NOT STARTED / NOT AUTHORIZED**.
 
-Final promotion-readiness review: **PASS**. Promotion and implementation remain separate decisions.
+Final promotion-readiness review: **PASS**. Promotion is complete; implementation
+remains a separate decision and is **NOT STARTED / NOT AUTHORIZED**.
