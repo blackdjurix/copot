@@ -13,6 +13,7 @@ $routes = (string) file_get_contents($basePath . '/routes/content_admin.php');
 $bootstrap = (string) file_get_contents($basePath . '/bootstrap/app.php');
 $assert(str_contains($bootstrap, "routes/content_admin.php"), 'Core Content Admin route is not loaded by bootstrap.');
 $assert(str_contains($routes, "routeChildUrl('content')"), 'Core Content Admin list route is missing.');
+$assert(str_contains($routes, "adminNavigation()->add('Content', \$contentRoute(), 'content.read'"), 'Core Content navigation does not resolve to /admin/content.');
 $assert(str_contains($routes, "routeChildUrl('content/create')"), 'Core Content Admin create route is missing.');
 $assert(str_contains($routes, "routeChildUrl('content/{id}/edit')"), 'Core Content Admin edit route is missing.');
 $assert(str_contains($routes, "['publish' => 'content.publish', 'archive' => 'content.delete']"), 'Core Content publish/archive route permissions are missing.');

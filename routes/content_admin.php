@@ -94,7 +94,7 @@ $renderForm = static function (string $title, string $action, array $data, array
     return Response::html($app->adminPageRenderer()->render($title, $html, $user, $app->session()->csrfToken(), $path, null, [['label' => 'Content', 'url' => $contentRoute()], ['label' => $title]]), $errors === [] ? 200 : 422);
 };
 
-$app->adminNavigation()->add('Content', $contentBase, 'content.read', 'content', 20);
+$app->adminNavigation()->add('Content', $contentRoute(), 'content.read', 'content', 20);
 
 $app->router()->get($app->adminUrl()->routeChildUrl('content'), function ($request) use ($app, $contentRepository, $requireContent, $contentRoute): Response {
     $user = $requireContent($request, 'content.read');
