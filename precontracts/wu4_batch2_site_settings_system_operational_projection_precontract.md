@@ -1,6 +1,6 @@
 # WU4 Batch 2 — Site Settings System Operational Projection Pre-contract
 
-Pre-contract lifecycle: MATERIALIZED / REVIEW REQUIRED / NOT PROMOTED
+Pre-contract lifecycle: MATERIALIZED / REVIEW REFINED / NOT PROMOTED
 Placement: Post-M3 — Webcore Product Completeness & Stabilization / WU4 Batch 2
 Parent authority: `docs/54_webcore_site_settings_appearance_consolidation_contract.md`
 Implementation authorization: NONE
@@ -53,17 +53,20 @@ The System area must not recreate a standalone System Manager product identity b
 
 ## 5. Locked System information architecture
 
-The System area contains exactly these seven operator groups:
+The System area contains exactly these six top-level operator groups:
 
 1. **Current System State**
 2. **Update & Upgrade**
 3. **Repair, Retry & Reconciliation**
 4. **Runtime Participation & Runtime Handoff**
 5. **Compatibility**
-6. **Operation Evidence**
-7. **Permissions**
+6. **Permissions**
 
-These are product-facing groups. They do not create seven new authorities or persistence domains.
+**Operation Evidence is not a top-level System group or destination.** It is a reporting feature/capability that System may consume contextually for version-transition and lifecycle reporting. Diagnostic, historical, and audit-oriented operation reporting belongs with System Health reporting or a dedicated historical-report capability where such a capability is separately authoritative and delivered.
+
+This pre-contract does not create a new historical-report subsystem. Until such a subsystem exists, System may surface only the bounded operation evidence required to explain the current or latest materially relevant transition.
+
+These six groups are product-facing organization only. They do not create new authorities or persistence domains.
 
 ## 6. Current System State
 
@@ -75,10 +78,11 @@ The landing group must present the smallest trustworthy current-state summary ne
 - current compatibility summary;
 - current recovery-required, blocked, maintenance, or indeterminate state where applicable;
 - current `installation_id`;
-- current runtime `runtime_id` and RuntimeParticipant state;
+- current/local runtime `runtime_id` and RuntimeParticipant state;
+- bounded participant summary for other runtime participants only where materially relevant to compatibility or Runtime Handoff comprehension;
 - concise runtime compatibility/last-seen evidence where safe and useful.
 
-The group must privilege current truth over action controls. It must not expose raw migration ledgers, recovery identities, filesystem paths, SQL, package internals, or raw exceptions.
+The group must privilege current truth over action controls. It must not expose raw migration ledgers, recovery identities, filesystem paths, SQL, package internals, raw registry tables, or raw exceptions.
 
 ## 7. Update & Upgrade
 
@@ -97,7 +101,7 @@ The projection preserves the accepted Webcore package lifecycle operator model:
 - `DATABASE_UPDATE` may be shown as **Database-only Update** only when the existing classifier/planner makes it eligible;
 - there is no generic globally available **Update Database** operation;
 - target version/package identity and compatibility must be shown before mutation when available;
-- result state and next valid action must be presented after operation completion or failure.
+- bounded version-transition reporting may consume Operation Evidence to present result state, sanitized reason, and next valid action after operation completion or failure.
 
 Online discovery/download of updates is not introduced by this contract. Package-source expansion would require separate authority.
 
@@ -113,6 +117,8 @@ The System projection must preserve existing lifecycle distinctions:
 - controlled reason and next valid action must be shown for blocked or failed states;
 - downgrade and reverse migration remain unsupported.
 
+Operation Evidence may be consumed here only to explain the current/latest materially relevant repair, retry, or reconciliation transition and its next valid action. It must not turn this group into an operation-history destination.
+
 The projection must not collapse Repair, Retry, Reconciliation, Existing-Runtime adoption, Installer Adopt, and Runtime Handoff into one generic recovery action.
 
 ## 9. Runtime Participation & Runtime Handoff
@@ -120,8 +126,9 @@ The projection must not collapse Repair, Retry, Reconciliation, Existing-Runtime
 The System projection may expose existing runtime-participation evidence including:
 
 - `installation_id`;
-- current runtime `runtime_id`;
+- current/local runtime `runtime_id`;
 - RuntimeParticipant state;
+- bounded summary of other participants where required for handoff or compatibility comprehension;
 - safe compatibility and last-seen evidence;
 - Runtime Handoff operation status/classification when authoritative evidence exists;
 - target attachment/readiness evidence where safely derivable;
@@ -146,6 +153,8 @@ The projection must preserve all authoritative handoff boundaries:
 - detached source authority must not silently resume;
 - unrelated compatible runtime participants remain unaffected.
 
+Operation Evidence may be consumed contextually to explain the current/latest Runtime Handoff transition, interruption, result, and next valid action. It is not a handoff ledger UI and does not become a separate System destination.
+
 Site Settings must never write Runtime Registry or Runtime Handoff evidence directly.
 
 ## 10. Compatibility
@@ -162,20 +171,24 @@ Compatibility presentation must distinguish current state from target eligibilit
 
 Compatibility is not a user preference. The UI may explain authoritative outcomes but must not override them.
 
-## 11. Operation Evidence
+## 11. Operation Evidence feature boundary
 
-System must provide a bounded human-readable operation-evidence projection for the latest materially relevant Webcore lifecycle or Runtime Handoff operation where such evidence exists.
+Operation Evidence is a **reporting feature/capability**, not a top-level Site Settings → System menu, tab, group, persistence authority, or lifecycle engine.
 
-The projection may include:
+Its diagnostic, audit-oriented, and historical presentation belongs to **System Health reporting** or to a separately authorized and delivered **historical-report** capability. This pre-contract does not claim that a separate historical-report subsystem already exists and does not authorize creating one.
+
+Site Settings → System may consume a bounded subset of Operation Evidence only when directly relevant to **version transition or lifecycle-operation reporting**, including Update, Upgrade, Database-only Update, Repair, Retry, Reconciliation, or Runtime Handoff.
+
+That contextual projection may include:
 
 - operation type/classification;
-- current and target state;
+- source/current and target version or state where relevant;
 - completed, blocked, failed, interrupted, indeterminate, cleanup-pending, recovery-required, or equivalent authoritative status;
 - sanitized reason;
 - next valid operator action;
-- whether confirmation/recovery/compatibility prerequisites remain outstanding.
+- whether confirmation, recovery, or compatibility prerequisites remain outstanding.
 
-It must not expose:
+System must not expose Operation Evidence as a general historical browser or raw diagnostic surface. It must not expose:
 
 - raw operation ledger records;
 - raw exceptions;
@@ -221,7 +234,8 @@ System is a peer of **Modules** and **System Health** under Site Settings.
 
 - Module lifecycle capability is not nested inside System for Batch 2 product IA.
 - `modules.manage` and Module lifecycle semantics remain owned by the Module authority and the Batch 2 Modules projection.
-- System Health remains a separate Batch 3 read-only projection and must not be absorbed into System.
+- System Health remains a separate Batch 3 read-only reporting projection and is the product home for diagnostic/reporting views of Operation Evidence when such evidence is within its authoritative reporting inputs.
+- A dedicated historical-report destination, if introduced later, requires its own authoritative scope; this pre-contract merely reserves it as a valid future home for historical Operation Evidence rather than assigning that role to System.
 - Localization, Site Identity, Appearance, Security, and Email retain their parent-contract ownership boundaries.
 
 Cross-links may be used for comprehension, but ownership must remain singular.
@@ -241,6 +255,7 @@ This pre-contract does not authorize or introduce:
 - DNS or load-balancer mutation;
 - generic cluster/consensus behavior;
 - raw lifecycle/debug dashboards;
+- new operation-history persistence or a historical-report subsystem;
 - new recovery infrastructure;
 - new Module lifecycle semantics;
 - System Health implementation;
@@ -258,7 +273,8 @@ The following remain implementation-time/source-evidence details bounded by this
 4. exact grouping/layout component reuse from the existing Admin Page Frame;
 5. exact labels for sanitized blocked/indeterminate/recovery states where existing product terminology does not already lock wording;
 6. exact permission-to-visibility mapping for read-only evidence versus executable lifecycle actions, provided the authority distinctions above remain intact;
-7. exact read-only Runtime Participation fields that are safe and useful on the current source baseline.
+7. exact read-only Runtime Participation fields that are safe and useful on the current source baseline;
+8. exact contextual placement of version-transition Operation Evidence inside the relevant operational group, provided it does not become a seventh top-level group or historical browser.
 
 These dispositions do not authorize new architecture or product capability.
 
@@ -268,17 +284,19 @@ A separately authorized implementation may be accepted only when objective evide
 
 - `/admin/settings` is the canonical parent and System is reachable as its System area;
 - no competing standalone System Manager product destination is restored;
+- System exposes exactly six top-level operator groups and does not expose Operation Evidence as a seventh group/destination;
 - current system state is understandable before lifecycle actions are presented;
 - Update remains the operator umbrella and classification remains planner-derived;
 - Database-only Update appears only when eligible and no generic Update Database action exists;
 - Repair, Retry, Reconciliation, Existing-Runtime adoption, Installer Adopt, and Runtime Handoff remain semantically distinct;
 - compatibility and blocker reasons are sanitized and understandable;
-- Runtime Participation is understandable without exposing registry internals;
+- Runtime Participation distinguishes current/local runtime identity from bounded multi-participant context without exposing registry internals;
 - executable Runtime Handoff controls are absent until the underlying capability is implemented and accepted;
 - when later enabled, handoff control visibility exactly follows authoritative eligibility and preserves whole-participant granularity;
+- contextual Operation Evidence is limited to the current/latest materially relevant version/lifecycle transition and does not become general historical reporting inside System;
 - `system.webcore.manage`, `admin.access`, Site Settings write authority, and `modules.manage` remain distinct;
 - raw internal lifecycle/recovery/package evidence is not exposed;
-- no second lifecycle, Runtime Registry, recovery, schema, migration, or package authority is created;
+- no second lifecycle, Runtime Registry, recovery, schema, migration, package, or operation-history authority is created;
 - desktop/mobile responsive behavior, accessibility, action hierarchy, and operator comprehension pass human/product review.
 
 ## 18. Promotion readiness checklist
@@ -292,14 +310,18 @@ Before promotion into an authoritative System-specific Batch 2 contract, review 
 5. no implied Batch 2 implementation-start claim;
 6. no new product/architecture decision hidden inside an implementation-time detail;
 7. exact authority ownership remains singular;
-8. acceptance criteria are sufficient to prevent UI-owned lifecycle semantics.
+8. Operation Evidence remains a reporting feature/capability rather than System navigation/ownership;
+9. System Health/historical-report placement does not silently create a new reporting subsystem;
+10. acceptance criteria are sufficient to prevent UI-owned lifecycle semantics.
 
 ## 19. Current verdict
 
-Pre-contract status: **MATERIALIZED / REVIEW REQUIRED / NOT PROMOTED**.
+Pre-contract status: **MATERIALIZED / REVIEW REFINED / NOT PROMOTED**.
 
 Runtime Handoff authority prerequisite: **PROMOTED / COMPLETE as contract authority; implementation NOT STARTED**.
 
+Locked product-IA disposition: **six System groups; Operation Evidence is a reporting feature/capability, with System limited to contextual version/lifecycle transition reporting**.
+
 Batch 2 System implementation status: **NOT STARTED / NOT AUTHORIZED**.
 
-The next gate is contract review and refinement. Promotion and implementation remain separate decisions.
+The next gate is final promotion-readiness review against the authoritative parent and historical contracts. Promotion and implementation remain separate decisions.
