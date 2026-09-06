@@ -119,7 +119,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
     } catch (Throwable) { return $app->adminErrors()->response($request, 503); }
 };
 
-$app->adminNavigation()->add('Site Settings', $path, $permission, 'settings', 70);
+$app->adminNavigation()->add('Site Settings', $path, [$permission, 'modules.manage', 'system.webcore.manage'], 'settings', 70);
 
 $app->router()->get($path, function ($request) use ($requireSurfaceUser, $render): Response {
     $user = $requireSurfaceUser($request); if ($user instanceof Response) return $user;

@@ -31,7 +31,7 @@ final class SiteSettingsModuleHealthProducer implements SystemHealthProducer
 
     public function required(): bool
     {
-        return false;
+        return true;
     }
 
     public function report(SystemHealthContext $context): SystemHealthProducerResult
@@ -54,7 +54,7 @@ final class SiteSettingsModuleHealthProducer implements SystemHealthProducer
                 self::SOURCE,
                 SystemHealthProducerAvailability::UNAVAILABLE,
                 [],
-                false,
+                true,
                 null,
                 null,
                 $visibility
@@ -112,7 +112,7 @@ final class SiteSettingsModuleHealthProducer implements SystemHealthProducer
             self::SOURCE,
             SystemHealthProducerAvailability::READY,
             $findings,
-            false,
+            true,
             null,
             null,
             $visibility

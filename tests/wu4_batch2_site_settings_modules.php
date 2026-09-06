@@ -44,15 +44,26 @@ $assert(str_contains($view, 'data-site-settings-module-search'), 'Accepted Modul
 $assert(str_contains($script, 'toLowerCase()') && str_contains($script, 'row.dataset.searchIndex'), 'Case-insensitive title/identity filtering is missing.');
 $assert(str_contains($script, 'data-site-settings-module-row') && str_contains($script, 'event.key === \'Enter\''), 'Whole-row keyboard/open behavior is missing.');
 $assert(str_contains($routes, "'modules.manage'") && str_contains($routes, '$requireSettingsUser'), 'Modules and ordinary settings permission composition is missing.');
+$assert(str_contains($routes, "adminNavigation()->add('Site Settings', \$path, [\$permission, 'modules.manage', 'system.webcore.manage']"), 'Site Settings navigation does not expose the parent for any implemented capability.' );
+$navigationPermissions = new class extends \Copot\Core\PermissionChecker {
+    public function __construct() {}
+    public function userHasRole(int $userId, string $role): bool { return false; }
+    public function userCan(int $userId, string $permission): bool { return $permission === 'admin.access' || $permission === 'modules.manage'; }
+};
+$navigationUser = new \Copot\Core\User(['id' => 1, 'name' => 'Modules operator', 'email' => 'modules@example.test', 'password_hash' => 'unused', 'status' => 'active'], $navigationPermissions);
+$navigation = new \Copot\Core\AdminNavigation();
+$navigation->add('Site Settings', '/admin/settings', ['settings.update', 'modules.manage', 'system.webcore.manage'], 'settings', 70);
+$assert(array_column($navigation->itemsFor($navigationUser), 'label') === ['Site Settings'], 'AdminNavigation any-permission behavior did not expose Site Settings to a Modules operator.');
 $assert(str_contains($routes, '$modulesProjection->detail') && str_contains($routes, 'modules/{name}'), 'Canonical subordinate Module Detail route is missing.');
 $assert(str_contains($routes, "'/modules/' . " . '$moduleAction') && !str_contains($routes, '$systemPath . ' . "'/modules"), 'Module actions are not subordinate to Site Settings Modules.');
 $assert(str_contains($adapter, 'new ModulePackageOperator($this->app)') && str_contains($adapter, '$this->app->modules()->'), 'Existing package and lifecycle authorities are not reused.');
 $assert(str_contains($adapter, 'validateOrReject') && str_contains($adapter, "available_actions'][\$action]") && str_contains($adapter, "denial_reasons'][\$action]"), 'Module action CSRF and authority-derived eligibility boundaries are missing.');
 $assert(str_contains($adapter, "settingsPath() . '/modules/'") && !str_contains($adapter, "settingsPath() . '/system/modules'"), 'Module transport is not subordinate to the canonical Modules composition.');
 $assert(str_contains($healthProducer, 'implements SystemHealthProducer') && str_contains($healthProducer, 'SystemHealthProducerResult'), 'Module diagnostics are not adapted to the existing System Health producer path.');
+$assert(str_contains($healthProducer, 'return true;') && substr_count($healthProducer, 'SystemHealthProducerAvailability::UNAVAILABLE,') === 1, 'Module Health evidence is incorrectly optional or does not preserve unavailable evidence.' );
 $assert(str_contains($healthProducer, 'SystemHealthFindingSeverity::CRITICAL') && str_contains($healthProducer, 'dedupeKey'), 'Module Health does not preserve severity or bound duplicate findings.');
 $assert(str_contains($healthProducer, "can('modules.manage')") && !str_contains($healthProducer, 'file_get_contents'), 'Module Health visibility/state handling is outside the Module permission boundary.');
-$assert(str_contains($bootstrap, 'SystemHealthAggregator') && str_contains($bootstrap, 'new SiteSettingsModuleHealthProducer($app)'), 'Module Health producer is not connected to the existing application report resolver.');
+$assert(str_contains($bootstrap, 'SystemHealthAggregator') && str_contains($bootstrap, 'new SiteSettingsModuleHealthProducer($app)') && str_contains($bootstrap, "can('modules.manage')") && str_contains($bootstrap, '?SystemHealthReport'), 'Module Health production composition does not gate visibility or preserve unavailable evidence safely.');
 $assert(str_contains($settingsView, "array_key_exists('system', \$areas)") && str_contains($routes, "system.webcore.manage"), 'System capability remains independently composed from Modules.');
 
 $producer = new SiteSettingsModuleHealthProducer(new stdClass(), static fn (): array => [
@@ -66,9 +77,33 @@ $producerResult = $producer->report(new \Copot\Core\SystemHealthContext(
     new \Copot\Core\InstallationIdentity('inst_' . str_repeat('a', 32)),
     new stdClass()
 ));
+$assert($producer->required() === true, 'Module Health producer must treat its authorized evidence as required for aggregation.');
 $assert($producerResult->source() === 'webcore.modules' && count($producerResult->findings()) === 2, 'Module Health did not deduplicate and preserve authoritative diagnostics.');
 $assert($producerResult->findings()[0]->severity() === 'error' && $producerResult->findings()[0]->summary() === 'A Module dependency condition requires review.', 'Module Health severity or sanitized category presentation changed.');
 $assert(!str_contains(json_encode($producerResult->toArray()), 'dependency_missing'), 'Module Health exposed an internal diagnostic code.');
+$unavailableProducer = new SiteSettingsModuleHealthProducer(new stdClass(), static function (): array { throw new RuntimeException('diagnostic evidence unavailable'); });
+$unavailableResult = $unavailableProducer->report(new \Copot\Core\SystemHealthContext(
+    new \Copot\Core\InstallationIdentity('inst_' . str_repeat('b', 32)),
+    new stdClass()
+));
+$assert($unavailableResult->availability() === \Copot\Core\SystemHealthProducerAvailability::UNAVAILABLE && $unavailableResult->required() === true, 'Unavailable Module evidence was not preserved as required evidence.');
+$moduleViewer = new class extends \Copot\Core\User {
+    public function __construct() {}
+    public function can(string $permission): bool { return $permission === 'modules.manage'; }
+};
+$ordinaryAdminViewer = new class extends \Copot\Core\User {
+    public function __construct() {}
+    public function can(string $permission): bool { return $permission === 'admin.access'; }
+};
+$healthResolver = static function (\Copot\Core\SystemHealthContext $context) use ($unavailableProducer): ?\Copot\Core\SystemHealthReport {
+    if (!$context->viewer() instanceof \Copot\Core\User || !$context->viewer()->can('modules.manage')) return null;
+    return (new \Copot\Core\SystemHealthAggregator())->aggregate($context, [$unavailableProducer]);
+};
+$healthProvider = new \Copot\Core\SystemHealthReportProvider($healthResolver);
+$hiddenHealth = $healthProvider->report(new \Copot\Core\SystemHealthContext(new \Copot\Core\InstallationIdentity('inst_' . str_repeat('c', 32)), $ordinaryAdminViewer));
+$assert($hiddenHealth === null, 'A viewer without Modules authority received an authoritative Module-only health report.');
+$unavailableHealth = $healthProvider->report(new \Copot\Core\SystemHealthContext(new \Copot\Core\InstallationIdentity('inst_' . str_repeat('d', 32)), $moduleViewer));
+$assert($unavailableHealth?->status() === \Copot\Core\SystemHealthOverallStatus::ATTENTION_REQUIRED, 'Unavailable authorized Module evidence was presented as Operational.');
 $assert(str_contains($authority, 'public function projectionInventory') && str_contains($authority, 'public function projectionDetail'), 'Shared normalized Module projection access is missing.');
 $assert(str_contains($settingsView, '$canUpdateSettings') && str_contains($settingsView, '$canManageModules') && str_contains($settingsView, 'moduleItems'), 'Site Settings read-versus-action composition is missing.');
 $assert(str_contains($css, '.site-settings-modules-table th:nth-child(1)') && str_contains($css, 'table-layout: fixed'), 'Unequal available-width inventory layout is missing.');

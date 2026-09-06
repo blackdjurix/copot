@@ -25,7 +25,12 @@ require_once $basePath . '/modules/module-manager/Services/SiteSettingsModuleHea
 
 Env::load($basePath . '/.env');
 
-$app = new Application($deploymentContext, static function (SystemHealthContext $context) use (&$app): SystemHealthReport {
+$app = new Application($deploymentContext, static function (SystemHealthContext $context) use (&$app): ?SystemHealthReport {
+    $viewer = $context->viewer();
+    if (!$viewer instanceof \Copot\Core\User || !$viewer->can('modules.manage')) {
+        return null;
+    }
+
     return (new SystemHealthAggregator())->aggregate($context, [new SiteSettingsModuleHealthProducer($app)]);
 });
 $app->session()->start();
