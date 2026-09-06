@@ -56,6 +56,8 @@ $storedPermissions = is_array($item['permission_metadata_summary'] ?? null)
 $discoveredPermissions = is_array($item['discovered_permission_metadata_summary'] ?? null)
     ? $item['discovered_permission_metadata_summary'] : [];
 $diagnostics = is_array($item['diagnostics'] ?? null) ? $item['diagnostics'] : [];
+$whatsNew = is_array($item['release_whats_new'] ?? null)
+    ? array_values(array_filter($item['release_whats_new'], 'is_string')) : [];
 $siteSettingsModulesProjection = !empty($siteSettingsModulesProjection);
 $dependencyNames = array_values(array_filter(array_map(
     static fn (mixed $dependency): string => is_array($dependency) ? (string) ($dependency['name'] ?? '') : '',
@@ -97,6 +99,16 @@ $diagnosticSeverityClass = static function (string $severity): string {
             <dt>Technical name</dt><dd><code><?= $escape($itemName) ?></code></dd>
             <dt>Dependencies</dt><dd><?= $dependencyNames === [] ? 'None declared' : $escape(implode(', ', $dependencyNames)) ?></dd>
         </dl></div>
+    </section>
+    <section class="admin-panel admin-module-detail-panel" aria-labelledby="module-whats-new-title">
+        <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="module-whats-new-title">What's New</h2></div></header>
+        <div class="admin-panel__body">
+            <?php if ($whatsNew === []): ?>
+                <p>What's New information is unavailable.</p>
+            <?php else: ?>
+                <ul class="admin-module-detail-list"><?php foreach ($whatsNew as $entry): ?><li><?= $escape($entry) ?></li><?php endforeach; ?></ul>
+            <?php endif; ?>
+        </div>
     </section>
 <?php endif; ?>
 

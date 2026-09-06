@@ -2,6 +2,7 @@
 
 use Copot\Core\ModuleDiscovery;
 use Copot\Core\ModuleRepository;
+use Copot\Core\ReleaseMetadataValidator;
 use Copot\Core\Request;
 use Copot\Core\Response;
 use Copot\Core\User;
@@ -43,7 +44,15 @@ final class ModuleManagerAdmin
             return null;
         }
 
-        return $this->findItem($this->projectionInventory(), $name);
+        $item = $this->findItem($this->projectionInventory(), $name);
+
+        if ($item === null) {
+            return null;
+        }
+
+        $item['release_whats_new'] = $this->releaseWhatsNew($name);
+
+        return $item;
     }
 
     public function detailResponse(Request $request, string $name): Response
@@ -273,6 +282,30 @@ final class ModuleManagerAdmin
         }
 
         return 'This module action is not currently allowed.';
+    }
+
+    /** @return list<string>|null */
+    private function releaseWhatsNew(string $name): ?array
+    {
+        try {
+            $path = $this->app->path('modules/' . $name . '/release.json');
+
+            if (!is_file($path)) {
+                return null;
+            }
+
+            $metadata = json_decode((string) file_get_contents($path), true, 16, JSON_THROW_ON_ERROR);
+
+            if (!is_array($metadata)) {
+                return null;
+            }
+
+            ReleaseMetadataValidator::validate($metadata);
+
+            return $metadata['whats_new'];
+        } catch (Throwable) {
+            return null;
+        }
     }
 
     private function inventory(): array
