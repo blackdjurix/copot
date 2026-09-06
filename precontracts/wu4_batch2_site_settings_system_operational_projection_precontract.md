@@ -1,6 +1,6 @@
 # WU4 Batch 2 — Site Settings System Operational Projection Pre-contract
 
-Pre-contract lifecycle: MATERIALIZED / REVIEW REFINED / NOT PROMOTED
+Pre-contract lifecycle: MATERIALIZED / PROMOTION READY / NOT PROMOTED
 Placement: Post-M3 — Webcore Product Completeness & Stabilization / WU4 Batch 2
 Parent authority: `docs/54_webcore_site_settings_appearance_consolidation_contract.md`
 Implementation authorization: NONE
@@ -101,6 +101,7 @@ The projection preserves the accepted Webcore package lifecycle operator model:
 - `DATABASE_UPDATE` may be shown as **Database-only Update** only when the existing classifier/planner makes it eligible;
 - there is no generic globally available **Update Database** operation;
 - target version/package identity and compatibility must be shown before mutation when available;
+- **What's New** may be presented from existing authoritative release/package metadata for the current or target version transition; it is not release authority, must not invent release notes, and does not introduce online update discovery or download infrastructure;
 - bounded version-transition reporting may consume Operation Evidence to present result state, sanitized reason, and next valid action after operation completion or failure.
 
 Online discovery/download of updates is not introduced by this contract. Package-source expansion would require separate authority.
@@ -274,7 +275,8 @@ The following remain implementation-time/source-evidence details bounded by this
 5. exact labels for sanitized blocked/indeterminate/recovery states where existing product terminology does not already lock wording;
 6. exact permission-to-visibility mapping for read-only evidence versus executable lifecycle actions, provided the authority distinctions above remain intact;
 7. exact read-only Runtime Participation fields that are safe and useful on the current source baseline;
-8. exact contextual placement of version-transition Operation Evidence inside the relevant operational group, provided it does not become a seventh top-level group or historical browser.
+8. exact contextual placement of version-transition Operation Evidence inside the relevant operational group, provided it does not become a seventh top-level group or historical browser;
+9. exact contextual placement and display treatment of authoritative **What's New** metadata inside Update & Upgrade, provided it remains a consumer of existing release/package metadata rather than release authority.
 
 These dispositions do not authorize new architecture or product capability.
 
@@ -288,6 +290,7 @@ A separately authorized implementation may be accepted only when objective evide
 - current system state is understandable before lifecycle actions are presented;
 - Update remains the operator umbrella and classification remains planner-derived;
 - Database-only Update appears only when eligible and no generic Update Database action exists;
+- **What's New** is preserved from authoritative release/package metadata where available, without invented release notes or online update-discovery semantics;
 - Repair, Retry, Reconciliation, Existing-Runtime adoption, Installer Adopt, and Runtime Handoff remain semantically distinct;
 - compatibility and blocker reasons are sanitized and understandable;
 - Runtime Participation distinguishes current/local runtime identity from bounded multi-participant context without exposing registry internals;
@@ -296,7 +299,7 @@ A separately authorized implementation may be accepted only when objective evide
 - contextual Operation Evidence is limited to the current/latest materially relevant version/lifecycle transition and does not become general historical reporting inside System;
 - `system.webcore.manage`, `admin.access`, Site Settings write authority, and `modules.manage` remain distinct;
 - raw internal lifecycle/recovery/package evidence is not exposed;
-- no second lifecycle, Runtime Registry, recovery, schema, migration, package, or operation-history authority is created;
+- no second lifecycle, Runtime Registry, recovery, schema, migration, package, release-metadata, or operation-history authority is created;
 - desktop/mobile responsive behavior, accessibility, action hierarchy, and operator comprehension pass human/product review.
 
 ## 18. Promotion readiness checklist
@@ -312,16 +315,19 @@ Before promotion into an authoritative System-specific Batch 2 contract, review 
 7. exact authority ownership remains singular;
 8. Operation Evidence remains a reporting feature/capability rather than System navigation/ownership;
 9. System Health/historical-report placement does not silently create a new reporting subsystem;
-10. acceptance criteria are sufficient to prevent UI-owned lifecycle semantics.
+10. historical **What's New** capability is preserved only as a consumer of authoritative release/package metadata;
+11. acceptance criteria are sufficient to prevent UI-owned lifecycle or release-metadata semantics.
 
 ## 19. Current verdict
 
-Pre-contract status: **MATERIALIZED / REVIEW REFINED / NOT PROMOTED**.
+Pre-contract status: **MATERIALIZED / PROMOTION READY / NOT PROMOTED**.
 
 Runtime Handoff authority prerequisite: **PROMOTED / COMPLETE as contract authority; implementation NOT STARTED**.
 
 Locked product-IA disposition: **six System groups; Operation Evidence is a reporting feature/capability, with System limited to contextual version/lifecycle transition reporting**.
 
+Historical capability preservation: **What's New retained under Update & Upgrade as a consumer of existing authoritative release/package metadata**.
+
 Batch 2 System implementation status: **NOT STARTED / NOT AUTHORIZED**.
 
-The next gate is final promotion-readiness review against the authoritative parent and historical contracts. Promotion and implementation remain separate decisions.
+Final promotion-readiness review: **PASS**. Promotion and implementation remain separate decisions.
