@@ -1,8 +1,11 @@
 # Runtime Handoff & Reversible Detachment
 
-Status: PLANNING LOCKED / AUTHORITATIVE CONTRACT AMENDMENT CANDIDATE
+Status: PLANNING LINEAGE / HISTORICAL PROVENANCE
 
-This Concept materializes the accepted product/architecture direction for Runtime Handoff under Site Settings → System, without claiming delivered capability and without authorizing implementation.
+This Concept preserves the accepted product/architecture planning lineage for
+Runtime Handoff under Site Settings → System. The reviewed amendment is now
+promoted into the authoritative contracts, while this Concept continues to
+make no claim of delivered capability and authorizes no implementation.
 
 The target is to amend the existing Runtime Registry / Multi-Installation authority so Batch 2 can project runtime participation and handoff truthfully instead of inventing lifecycle semantics in the UI layer.
 
@@ -146,7 +149,12 @@ Existing Runtime Registry evidence permits more than one participant for one ins
 
 Therefore Runtime Handoff does not mean "detach every participant" and does not impose a one-runtime-per-installation architecture.
 
-The handoff must bind the source participant and the serving role/capability set being transferred. Unrelated compatible participants remain registered and are not detached merely because a Web-serving handoff occurs. They continue to participate in normal compatibility/shared-state transition gates.
+The handoff must bind the complete source participant identified by `runtime_id`
+and the serving responsibility being transferred. Role/capability data remain
+validation evidence rather than independently detachable state. Unrelated
+compatible participants remain registered and are not detached merely because
+a Web-serving handoff occurs. They continue to participate in normal
+compatibility/shared-state transition gates.
 
 For an exclusive-serving transfer, source and target serving authority for the transferred role must be unambiguous at commit. Multiple unrelated compatible roles do not violate the no-dual-active invariant.
 
@@ -299,4 +307,7 @@ Before Batch 2 implements executable Runtime Handoff controls, authoritative con
 13. focused regression/compatibility acceptance criteria; and
 14. the exact Site Settings projection boundary.
 
-Until that amendment is promoted, Batch 2 may project existing runtime participation evidence only and must not claim reversible detachment or Runtime Handoff execution as delivered capability.
+The amendment is now promoted into the authoritative contracts. Until the
+underlying capability is implemented and accepted, Batch 2 may project existing
+runtime participation evidence only and must not claim reversible detachment or
+Runtime Handoff execution as delivered capability.

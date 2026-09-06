@@ -360,6 +360,34 @@ It is not the migration engine, schema owner, or release-metadata authority.
 Normal Webcore update remains a bounded in-place operation against the existing
 installation root while preserving operator/runtime-owned state.
 
+### Runtime participation transfer boundary
+
+Runtime Handoff is a Webcore system-lifecycle capability operating over
+existing installation/runtime authority. It does not transfer database-table
+ownership, migration authority, schema ownership, or namespace ownership.
+
+All database ownership, schema compatibility, migration authorization, and
+owner-bounded transition rules in this contract remain unchanged during Runtime
+Handoff. Runtime Handoff transfers one complete runtime participant identity,
+identified by `runtime_id`, to a distinct target participant for the same
+installation. It does not introduce partial role/capability detach semantics;
+source role/capability metadata remains compatibility and eligibility evidence.
+
+Runtime Handoff must not mutate database schema merely to perform the transfer.
+A schema change is outside the handoff path unless separately justified by an
+independently authorized lifecycle requirement. Before commit, target
+compatibility must be evaluated against the same installation, package/Webcore
+state, database/namespace identity, and relevant capability requirements.
+Unsafe or unprovable compatibility fails closed.
+
+Package/Webcore lifecycle mutation and Runtime Handoff must not overlap
+unsafely. Non-terminal Runtime Handoff evidence conflicts with shared-state
+mutation, and handoff creation must reject incompatible non-terminal
+package/Webcore lifecycle activity. The existing `system.webcore.manage`
+authority remains the expected operator permission lineage; `admin.access`,
+`modules.manage`, and ordinary Site Settings write permissions do not
+implicitly grant Runtime Handoff authority.
+
 ## Database lifecycle classification
 
 ### Case A

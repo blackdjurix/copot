@@ -115,7 +115,7 @@ The following authorities remain singular and unchanged:
 | Logo and Favicon validation, storage, activation, cleanup, serving | Site Asset authority (`SiteAssetStorage`) | Existing workflow consumer |
 | Homepage Hero Image selection, reference, usage, and delivery | Core Media authority | Site Settings selection/reference projection only |
 | Homepage Content source identity and supplied output | Existing authoritative Page content and canonical Article Collection identities | Site Settings single-assignment projection; Built-in Public View render consumer |
-| System lifecycle, adoption, recovery, and lifecycle semantics | Existing Webcore lifecycle authority | Existing operational projection |
+| System lifecycle, adoption, recovery, Runtime Handoff, and lifecycle semantics | Existing Webcore lifecycle authority | Existing operational projection |
 | Module discovery, permissions, lifecycle, and package behavior | Existing Module lifecycle authority | Existing operational projection |
 | Health production, provider, aggregation, authorization, and sanitization | Existing System Health authority | Existing read-only projection |
 
@@ -313,6 +313,32 @@ commit semantics. Modules retain existing discovery, dependency, permission,
 package, and lifecycle semantics. System Health remains a sanitized,
 viewer-scoped, derived/read-only report projection.
 
+For Site Settings → System, Runtime Handoff may be exposed only after the
+underlying Runtime Handoff authority is promoted and implemented/accepted. The
+System projection may expose, where authoritative evidence supports it:
+
+- current `installation_id` and runtime `runtime_id`;
+- runtime participant state and safe compatibility/last-seen evidence;
+- Runtime Handoff operation status/classification;
+- `Request Detachment` and `Cancel Detachment` when eligible;
+- target-attachment readiness where safely derivable;
+- finalization/reconciliation state;
+- sanitized blocking/failure reason; and
+- the next valid operator action.
+
+Site Settings must derive every executable handoff action from underlying
+lifecycle authority. It must not write Runtime Registry files directly,
+manufacture eligibility, own handoff persistence, invent a second state machine,
+reinterpret `STALE` as automatic takeover permission, or imply partial
+role-level detachment unsupported by Runtime Registry. Runtime Handoff
+presentation remains distinct from Installer Adopt and Existing-Runtime
+Webcore adoption/reconciliation terminology.
+
+Batch 2 System may independently project read-only/current Runtime Participation
+evidence already authoritative before Runtime Handoff implementation.
+Executable Runtime Handoff actions remain unavailable until the underlying
+capability implementation and acceptance are complete.
+
 WU4 must not create a second Webcore lifecycle engine, Module lifecycle
 authority, health diagnosis engine, report store, severity model, or executable
 remediation path.
@@ -374,6 +400,14 @@ existing permissions.
 Batch 2 is independently implementable after the parent boundary exists.
 Human/product acceptance is required for operational comprehension,
 permission visibility, and lifecycle/module projection usability.
+
+Batch 2 acceptance must also confirm that runtime identity and participation
+status are understandable without exposing internal registry mechanics;
+detachment/cancellation visibility matches authoritative eligibility;
+interrupted/reconciliation-required handoff state is fail-closed and
+comprehensible; participant-level handoff is not presented as partial
+role/capability detachment; and no UI path equates Installer Adopt,
+legacy Webcore adoption, and Runtime Handoff.
 
 ### Batch 3 — Security, Email & System Health Projection Reconciliation
 

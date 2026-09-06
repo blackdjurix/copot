@@ -206,6 +206,66 @@ decisions. Retired runtimes should normally be explicitly detached rather than
 hard-deleted. Runtime operational metadata requires an explicit authorization
 boundary.
 
+#### Runtime Handoff and reversible detachment
+
+Runtime Registry additionally supports a bounded **Runtime Handoff** operation
+for intentionally transferring one complete runtime participant of an existing
+installation from a source runtime deployment to a target runtime deployment.
+
+Runtime Handoff does not create a new installation, transfer database ownership,
+or reuse the source runtime identity. The installation retains the same stable
+`installation_id`; source and target remain distinct participants with distinct
+stable `runtime_id` values.
+
+The existing RuntimeParticipant vocabulary remains unchanged:
+`REGISTERED`, `ACTIVE`, `STALE`, `DETACHED`, and `INCOMPATIBLE`. Pending handoff
+is not a RuntimeParticipant state. Runtime Handoff uses separate durable
+installation-scoped operation evidence with at least `PENDING → COMMITTING →
+COMMITTED` or `PENDING → CANCELLED`. A non-terminal handoff whose executor no
+longer owns valid coordination is classified fail-closed as interrupted until
+deterministic reconciliation proves the next safe action.
+
+`Request Detachment` creates one durable pending handoff without immediately
+detaching the source. `Cancel Detachment` is permitted only while the same
+handoff remains `PENDING` and authoritative evidence proves takeover has not
+entered commit. Successful cancellation closes the handoff as `CANCELLED` and
+preserves valid source participation.
+
+The source handoff unit is one complete Runtime Registry participant record
+identified by `runtime_id`. Role and capability data are bound as
+compatibility/eligibility evidence, but this authority does not create partial
+role-level or capability-level detach semantics within one participant.
+
+Takeover commit executes under the existing installation-wide coordination
+lineage. One coordinator owns the `InstallationMutex` acquisition; nested
+reacquisition of the same non-blocking installation mutex inside that critical
+section is prohibited. Finalization revalidates handoff, installation, source
+and target runtime identities, source role/capability evidence, target
+compatibility and required role/capability evidence, database/namespace
+identity, and conflicting lifecycle state while exclusion is held. It then
+durably moves the handoff to `COMMITTING`, atomically replaces Runtime Registry
+participant evidence so the complete source participant becomes `DETACHED`,
+establishes the target as the valid participant for the intended responsibility,
+leaves unrelated compatible participants unchanged, and finally records
+`COMMITTED`. Once `COMMITTING` is durable, cancellation is no longer valid.
+
+A Runtime Handoff must never create ambiguous dual-active authority between the
+source and target participants for the responsibility bound to that handoff.
+Existing multi-runtime topology remains valid; unrelated compatible
+participants remain registered and unaffected. A target must use its own stable
+`runtime_id` and prove the existing installation identity before
+registration/activation. If target-local installation identity storage is
+empty, establishing the existing `installation_id` is permitted only through a
+guarded set-if-empty path bound to authoritative pending-handoff evidence; a
+conflicting local identity fails closed.
+
+Runtime Handoff evidence remains installation-scoped under the existing
+`.copot-lifecycle` lineage. The package-specific `LifecycleOperationRecord` is
+not Runtime Handoff authority and must not be reused unchanged. No database
+schema change is required by this amendment. A detached source runtime must not
+silently resume authority through heartbeat or re-registration; re-entry
+requires an explicit supported lifecycle path.
+
 ### Database occupancy and namespace classification
 
 Database occupancy/ownership evidence and requested namespace availability are

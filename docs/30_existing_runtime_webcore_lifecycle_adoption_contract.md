@@ -43,6 +43,26 @@ operator actions, have durable operation identity, are idempotent after
 success, and commit lifecycle state last. Failure before commit leaves the
 runtime legacy or otherwise explicitly non-committed.
 
+## Relationship to Runtime Handoff
+
+**Runtime Handoff** is a separate Webcore runtime-participation lifecycle
+capability and is not part of this contract's `Adopt Existing Installation` or
+`Reconcile Legacy Installation` actions.
+
+This contract's adoption/reconciliation semantics establish or reconcile
+committed Webcore lifecycle state for an existing runtime. Runtime Handoff
+instead transfers runtime participation for the same already-identified
+installation between distinct runtime participants while preserving the
+installation identity and existing database state.
+
+Runtime Handoff must not bypass the proof, recovery, package identity,
+schema/migration, or committed-state requirements of this contract. Likewise,
+exact-match adoption or legacy reconciliation does not by itself detach a
+runtime participant or authorize transfer of participation to another runtime.
+Where both capabilities are relevant, each must satisfy its own authoritative
+gates. `Adopt Existing Installation`, `Reconcile Legacy Installation`, and
+`Runtime Handoff` remain distinct operator/lifecycle actions.
+
 ## Trusted target and exact-match adoption
 
 IU2 reconciles toward an explicit trusted Webcore package. The intended current

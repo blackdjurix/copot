@@ -1,6 +1,6 @@
 # Runtime Handoff — Authoritative Amendment Promotion Proposal
 
-Proposal lifecycle: MATERIALIZED / PROMOTION REVIEW PASS / NOT PROMOTED
+Proposal lifecycle: PROMOTED / HISTORICAL PROVENANCE
 Placement: Post-M3 — Webcore Product Completeness & Stabilization / WU4 Batch 2 prerequisite authority amendment
 Source pre-contract: `precontracts/runtime_handoff_reversible_detachment_precontract.md`
 Implementation authorization: NONE
@@ -8,9 +8,14 @@ Release / tag / publication authorization: NONE
 
 ## 1. Purpose
 
-Prepare the exact bounded authoritative-document delta required to promote the reviewed Runtime Handoff & Reversible Detachment model without mutating authoritative contracts yet.
+Record the exact bounded authoritative-document delta used to promote the
+reviewed Runtime Handoff & Reversible Detachment model into the four
+authoritative contracts.
 
-This proposal is a promotion-review artifact only. It does not itself change authority, implementation state, runtime behavior, schema, branch lifecycle, release state, or Site Settings delivery status.
+This proposal was the reviewed promotion artifact. Its bounded wording has
+been promoted into the four destination contracts; it remains historical
+provenance and does not authorize implementation, runtime behavior, schema
+mutation, branch lifecycle changes, release, or publication.
 
 The target authoritative amendment destinations are:
 
@@ -240,7 +245,7 @@ When promotion is explicitly authorized:
 
 ## 10. Final promotion review verdict
 
-Promotion wording status: **PASS / READY FOR EXPLICIT PROMOTION AUTHORIZATION**
+Promotion wording status: **PROMOTED / HISTORICAL PROVENANCE**
 
 Source-backed review finding: **participant granularity corrected to whole `RuntimeParticipant` / `runtime_id`; no partial role-level detach authority introduced**
 
@@ -248,4 +253,4 @@ Known higher-level conflict: **NONE FOUND after correction against the reviewed 
 
 Implementation status: **NOT STARTED / NOT AUTHORIZED**
 
-Promotion status: **NOT PROMOTED**
+Promotion status: **PROMOTED / HISTORICAL PROVENANCE**

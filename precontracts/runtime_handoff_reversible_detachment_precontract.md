@@ -1,8 +1,8 @@
 # Runtime Handoff & Reversible Detachment — Pre-contract
 
-Pre-contract lifecycle: MATERIALIZED / PRE-PROMOTION PLANNING
+Pre-contract lifecycle: PROMOTED / HISTORICAL PROVENANCE
 Placement: Post-M3 — Webcore Product Completeness & Stabilization / WU4 Batch 2 prerequisite authority amendment
-Promotion status: NOT PROMOTED
+Promotion status: PROMOTED into `docs/34`, `docs/30`, `docs/37`, and `docs/54`
 Implementation authorization: NONE
 Release / tag / publication authorization: NONE
 
@@ -157,7 +157,10 @@ This guarded identity-adoption path is distinct from Installer Adopt and legacy 
 
 Existing Runtime Registry behavior permits more than one participant per installation and distinct roles such as `web` and `worker`.
 
-Runtime Handoff therefore transfers only the explicitly bound source participant and serving role/capability set. It does not imply detaching all participants or enforcing one runtime per installation.
+Runtime Handoff therefore transfers only the explicitly bound complete source
+participant identified by `runtime_id`. Its role/capability data are validation
+evidence, not independently detachable state. It does not imply detaching all
+participants or enforcing one runtime per installation.
 
 Unrelated compatible participants remain registered and continue participating in normal compatibility/shared-state transition gates.
 
@@ -328,16 +331,23 @@ The previous promotion blockers are now resolved at pre-contract level as follow
 3. **Interrupted reconciliation/retry** — derived `INTERRUPTED` classification over non-terminal evidence; deterministic PENDING/COMMITTING recovery matrix; same handoff identity retained.
 4. **Finalization ordering** — `PENDING → COMMITTING`, one atomic Runtime Registry replacement, then `COMMITTED`.
 5. **Cancel-vs-commit race** — serialized by the same installation mutex; commit closes cancellation once `COMMITTING` is durable.
-6. **Multi-runtime relationship** — transfer is scoped to the bound serving participant/role; unrelated compatible participants remain intact.
+6. **Multi-runtime relationship** — transfer is scoped to the bound complete
+   serving participant; role/capability data are validation evidence and
+   unrelated compatible participants remain intact.
 7. **Acceptance criteria** — focused deterministic criteria are defined in Section 19.
 
 No currently known unresolved item requires ownership transfer, destructive behavior, schema migration, or ambiguous authority.
 
 ## 22. Promotion readiness boundary
 
-This Pre-contract is now **PROMOTION-READY CANDIDATE**, subject to final cross-check against the authoritative amendment destinations (`docs/34`, `docs/30`, `docs/37`, `docs/54`) and confirmation that no higher-level contract conflict appears when the exact amendment wording is prepared.
+This Pre-contract was the **PROMOTION-READY CANDIDATE** and is retained as
+historical provenance for the promoted amendment. The participant-granularity
+correction is authoritative in the destination contracts: the complete
+`RuntimeParticipant` / `runtime_id` is the handoff unit, while role and
+capability data remain validation evidence.
 
-Promotion itself is not performed by this Pre-contract and remains a separate repository-authority mutation.
+Promotion is complete in the destination contracts. This record authorizes no
+implementation and does not reopen any completed workstream.
 
 ## 23. Implementation authorization boundary
 
