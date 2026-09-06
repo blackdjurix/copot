@@ -59,11 +59,12 @@ such as `site-settings-modules`, may remain where useful for ARIA, JavaScript,
 or implementation structure; they are not the canonical browser URL format.
 
 The superseded System Manager product route and standalone Module Manager
-product surface must not be restored as competing ownership. Backend action
-endpoints may remain under an implementation-appropriate
-`/admin/settings/system/*` or Module-authority route when required by existing
-transport and authorization boundaries. Their existence does not change the
-canonical product destination.
+product surface must not be restored as competing ownership. Module Detail,
+lifecycle actions, package intake, and operation-result transport remain
+subordinate to the canonical Site Settings → Modules composition and must not
+route through a System-owned product namespace. Exact internal transport and
+path mechanics remain an implementation-time disposition; this pre-contract
+does not invent an endpoint or authorize a second canonical Module surface.
 
 ## 4. Inventory information hierarchy
 
@@ -131,8 +132,10 @@ On mobile, do not force the desktop four-column table into a compressed
 horizontal presentation. Use the accepted shared responsive table/row
 primitive where available, with stacked presentation preserving Module
 identity, version, issue signal/type, lifecycle status, and whole-row tap-to-open
-behavior. Search and filtering may be provided where required for usable
-inventory navigation and must remain bounded to authoritative inventory data.
+behavior. Scalable client-side search and filtering are a preserved accepted
+capability for usable inventory navigation. Exact control placement, responsive
+presentation, and implementation mechanics remain implementation-time details;
+the capability remains bounded to authoritative inventory data.
 
 ## 6. Module Detail
 
@@ -178,9 +181,9 @@ state for architecture or planning disposition.
 
 ## 8. System Health relationship
 
-Modules may report Module-originated issues through the existing Webcore
-System Health provider and aggregation path when the Module authority exposes
-meaningful diagnosable conditions:
+When meaningful authoritative Module-originated diagnosable conditions exist,
+the Modules projection must contribute them through the existing Webcore
+System Health provider and aggregation path:
 
 > Module authoritative evidence/diagnostics → existing Webcore System Health
 > provider and aggregation path → sanitized System Health projection
