@@ -80,7 +80,7 @@ foreach (['ArrowRight', 'ArrowLeft', 'Home', 'End', 'Enter'] as $key) {
     $assert(str_contains($js, "event.key === '{$key}'"), "Keyboard support missing for {$key}.");
 }
 $assert(str_contains($js, "event.key === ' '"), 'Keyboard support missing for Space.');
-$assert(str_contains($js, "activate(tabs[next].dataset.settingsTab, { focus: true })"), 'Arrow/Home/End navigation must automatically activate the destination tab.');
+$assert(str_contains($js, "activate(tabKey(tabs[next]), { focus: true })"), 'Arrow/Home/End navigation must automatically activate the destination tab.');
 $assert(str_contains($js, 'next = (index + 1) % tabs.length'), 'ArrowRight wraparound navigation is missing.');
 $assert(str_contains($js, 'next = (index - 1 + tabs.length) % tabs.length'), 'ArrowLeft wraparound navigation is missing.');
 $assert(str_contains($js, 'next = tabs.length - 1'), 'End navigation is missing.');
@@ -91,6 +91,7 @@ $assert(str_contains($js, "button.disabled = true"), 'Double-submit prevention i
 $assert(str_contains($css, 'Settings Category 1 remediation'), 'Settings remediation CSS marker is missing.');
 $assert(str_contains($css, '.admin-settings-tabs-wrap'), 'Responsive tab wrapper is missing.');
 $assert(str_contains($css, 'overflow-x: auto'), 'Horizontal tab scrolling is missing.');
+$assert(str_contains($css, 'scrollbar-width: none') && str_contains($css, '.admin-settings-tabs-wrap::-webkit-scrollbar { display: none; }'), 'Mobile tab scrolling does not preserve the active indicator clear of the visual scrollbar.');
 $assert(str_contains($css, '.admin-settings-field-grid'), 'Settings field grid is missing.');
 $assert(str_contains($css, '.admin-settings-brand-assets'), 'Vertical Branding styling is missing.');
 $assert(!str_contains($source, '_settings_section'), 'Category 2 partial-save contract entered Category 1 scope.');

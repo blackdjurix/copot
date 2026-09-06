@@ -3739,6 +3739,11 @@ html.admin-nav-open body {
 }
 
 @media (max-width: 760px) {
+    .admin-settings-tabs-wrap {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .admin-settings-tabs-wrap::-webkit-scrollbar { display: none; }
     .admin-settings-tabs { padding-inline: var(--admin-space-4); }
     .admin-settings-tab { padding-inline: .85rem; }
     .admin-settings-feedback,
