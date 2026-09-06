@@ -34,14 +34,16 @@ $healthProducer = $read('modules/module-manager/Services/SiteSettingsModuleHealt
 $bootstrap = $read('bootstrap/app.php');
 $css = $read('public/admin-assets/css/admin.css');
 $settingsView = $read('resources/views/admin/site-settings.php');
+$layout = $read('resources/views/admin/layout.php');
 
 $assert(str_contains($view, 'site-settings-modules-table'), 'Canonical Modules inventory view is missing.');
 $assert(str_contains($view, '<th scope="col">Module</th><th scope="col">Version</th><th scope="col">Issue</th><th scope="col">Status</th>'), 'Inventory columns are not exactly Module, Version, Issue, Status.');
 $tableHead = preg_match('/<thead>.*?<\/thead>/s', $view, $headMatch) === 1 ? strip_tags($headMatch[0]) : '';
 $assert(!str_contains($tableHead, 'Actions') && !str_contains($tableHead, 'Discovery') && !str_contains($tableHead, 'Notes'), 'Inventory contains a forbidden primary column.');
 $assert(str_contains($view, 'Scalable client-side search') === false, 'Implementation detail leaked into the rendered inventory view.');
-$assert(str_contains($view, 'data-site-settings-module-search'), 'Accepted Module search control is missing.');
-$assert(str_contains($script, 'toLowerCase()') && str_contains($script, 'row.dataset.searchIndex'), 'Case-insensitive title/identity filtering is missing.');
+$assert(substr_count($view, 'data-site-settings-module-filter=') === 4 && str_contains($view, 'data-site-settings-module-filter="name"') && str_contains($view, 'data-site-settings-module-filter="version"') && str_contains($view, 'data-site-settings-module-filter="issue"') && str_contains($view, 'data-site-settings-module-filter="status"'), 'The coordinated Name, Version, Issue, and Status filters are incomplete.');
+$assert(!str_contains($view, 'data-site-settings-module-search') && str_contains($script, 'toLowerCase()') && str_contains($script, 'row.dataset.filterName'), 'Generic search was not replaced by case-insensitive title/identity filtering.');
+$assert(str_contains($script, 'Object.entries(values).every') && str_contains($script, 'noMatch.hidden = !active || visible !== 0') && str_contains($script, 'filter();'), 'Combined filter semantics or idle/no-match state synchronization is missing.');
 $assert(str_contains($script, 'data-site-settings-module-row') && str_contains($script, 'event.key === \'Enter\''), 'Whole-row keyboard/open behavior is missing.');
 $assert(str_contains($routes, "'modules.manage'") && str_contains($routes, '$requireSettingsUser'), 'Modules and ordinary settings permission composition is missing.');
 $assert(str_contains($routes, "adminNavigation()->add('Site Settings', \$path, [\$permission, 'modules.manage', 'system.webcore.manage']"), 'Site Settings navigation does not expose the parent for any implemented capability.' );
@@ -65,6 +67,9 @@ $assert(str_contains($healthProducer, 'SystemHealthFindingSeverity::CRITICAL') &
 $assert(str_contains($healthProducer, "can('modules.manage')") && !str_contains($healthProducer, 'file_get_contents'), 'Module Health visibility/state handling is outside the Module permission boundary.');
 $assert(str_contains($bootstrap, 'SystemHealthAggregator') && str_contains($bootstrap, 'new SiteSettingsModuleHealthProducer($app)') && str_contains($bootstrap, "can('modules.manage')") && str_contains($bootstrap, 'findings() === []') && str_contains($bootstrap, '?SystemHealthReport'), 'Module Health production composition does not gate visibility or preserve unavailable/empty evidence safely.');
 $assert(str_contains($settingsView, "array_key_exists('system', \$areas)") && str_contains($routes, "system.webcore.manage"), 'System capability remains independently composed from Modules.');
+$headerOrder = [strpos($view, '<h3>Modules</h3>'), strpos($view, 'Review discovered Modules and open a Module for lifecycle actions and operational evidence.'), strpos($view, 'Add Module package (ZIP)'), strpos($view, 'site-settings-module-package-controls')];
+$assert($headerOrder[0] !== false && $headerOrder[0] < $headerOrder[1] && $headerOrder[1] < $headerOrder[2] && $headerOrder[2] < $headerOrder[3], 'Modules header and package intake hierarchy is not vertical.');
+$assert(str_contains($view, 'site-settings-module-package-controls') && str_contains($css, '.site-settings-module-package-controls input[type="file"]') && str_contains($css, '.site-settings-module-package-controls .admin-button'), 'Package chooser and Add Module action do not share the bounded desktop control row.');
 
 $producer = new SiteSettingsModuleHealthProducer(new stdClass(), static fn (): array => [
     ['name' => 'alpha', 'diagnostics' => [
@@ -126,6 +131,7 @@ $assert(str_contains($authority, 'public function projectionInventory') && str_c
 $assert(str_contains($settingsView, '$canUpdateSettings') && str_contains($settingsView, '$canManageModules') && str_contains($settingsView, 'moduleItems'), 'Site Settings read-versus-action composition is missing.');
 $assert(str_contains($css, '.site-settings-modules-table th:nth-child(1)') && str_contains($css, 'table-layout: fixed'), 'Unequal available-width inventory layout is missing.');
 $assert(str_contains($css, '.site-settings-modules-table thead') && str_contains($css, 'grid-template-columns: minmax(5.5rem, .35fr)'), 'Responsive stacked Module presentation is missing.');
+$assert(str_contains($layout, 'admin.css?v=m311-wu3-acceptance-modules-2'), 'Modules presentation stylesheet cache-bust is missing.');
 
 $html = $render([
     'items' => [
@@ -165,5 +171,17 @@ $assert(!str_contains($html, 'Actions</th>') && !str_contains($html, 'Discovery<
 $assert(!str_contains($html, 'dependency_missing') && !str_contains($html, 'metadata_drift'), 'Raw diagnostic codes leaked into inventory.');
 $assert(!str_contains($html, '<form method="post" action="/admin/settings/modules/disable"'), 'Lifecycle actions were placed in the inventory.');
 $assert(str_contains($html, 'data-site-settings-module-row') && str_contains($html, 'tabindex="0"'), 'Whole-row open target is not keyboard reachable.');
+$assert(str_contains($html, 'data-filter-name="&lt;alpha&gt; alpha"') && str_contains($html, 'data-filter-version="1.2.0"') && str_contains($html, 'data-filter-issue="dependency error"') && str_contains($html, 'data-filter-status="enabled"'), 'Rendered authoritative filter values are missing from Module rows.');
+$emptyHtml = $render([
+    'items' => [],
+    'csrfToken' => 'token',
+    'detailPath' => static fn (string $name): string => '/admin/settings/modules/' . rawurlencode($name),
+    'packagePath' => '/admin/settings/modules/package',
+    'lifecyclePath' => '/admin/settings/modules/package/lifecycle',
+    'moduleError' => null,
+    'moduleNotice' => null,
+    'url' => static fn (string $path): string => $path,
+]);
+$assert(str_contains($emptyHtml, 'No Modules found') && !str_contains($emptyHtml, 'No matching Modules'), 'True-empty inventory state is not distinct from the filtered no-match state.');
 
 echo "WU4 Batch 2 Site Settings Modules tests passed ({$assertions} assertions)." . PHP_EOL;

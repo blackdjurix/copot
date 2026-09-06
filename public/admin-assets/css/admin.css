@@ -3711,14 +3711,16 @@ html.admin-nav-open body {
 .site-settings-homepage-content-grid__error { grid-column: 1 / -1; }
 .site-settings-homepage-content-grid__error { margin-top: calc(var(--admin-space-4) * -1); }
 .site-settings-modules { min-width: 0; }
-.site-settings-modules__header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--admin-space-6); }
-.site-settings-modules__header > div:first-child { min-width: 0; }
-.site-settings-module-package-form { display: grid; gap: var(--admin-space-2); min-width: min(100%, 24rem); }
-.site-settings-module-package-form .admin-actions { align-items: center; }
-.site-settings-module-package-form input[type="file"] { min-width: 0; max-width: 100%; }
-.site-settings-modules__tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--admin-space-2) var(--admin-space-4); margin: 0 0 var(--admin-space-5); }
-.site-settings-modules__tools .admin-field__label { grid-column: 1 / -1; }
-.site-settings-module-search { width: 100%; min-width: 0; }
+.site-settings-modules__header { display: grid; gap: var(--admin-space-4); }
+.site-settings-modules__intro { min-width: 0; }
+.site-settings-module-package-form { display: grid; gap: var(--admin-space-2); min-width: 0; }
+.site-settings-module-package-controls { align-items: center; flex-wrap: nowrap; }
+.site-settings-module-package-controls input[type="file"] { flex: 1 1 auto; min-width: 0; max-width: none; }
+.site-settings-module-package-controls .admin-button { flex: 0 0 auto; }
+.site-settings-modules__tools { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(8rem, 1fr)) auto; align-items: end; gap: var(--admin-space-3) var(--admin-space-4); margin: 0 0 var(--admin-space-5); }
+.site-settings-module-filter { min-width: 0; }
+.site-settings-module-filter input,
+.site-settings-module-filter select { width: 100%; min-width: 0; }
 .site-settings-modules__tools .admin-field__help { margin: 0; white-space: nowrap; }
 .site-settings-modules-table { table-layout: fixed; }
 .site-settings-modules-table th:nth-child(1) { width: 48%; }
@@ -3734,6 +3736,7 @@ html.admin-nav-open body {
 .site-settings-module-issue { font-weight: 700; }
 .admin-module-issue--warning { color: var(--admin-color-warning); }
 .site-settings-modules__no-match { margin-top: var(--admin-space-5); }
+.site-settings-modules__no-match[hidden] { display: none; }
 .admin-settings-color-control { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--admin-space-3); }
 .admin-settings-color-control .admin-settings-color-hex { width: 11ch; max-width: 100%; }
 
@@ -3778,8 +3781,9 @@ html.admin-nav-open body {
     .admin-settings-panel .admin-form__actions .admin-button { width: 100%; }
     .site-settings-modules__header { display: grid; gap: var(--admin-space-5); }
     .site-settings-module-package-form { min-width: 0; }
-    .site-settings-module-package-form .admin-actions { align-items: stretch; flex-direction: column; }
-    .site-settings-module-package-form .admin-actions .admin-button { width: 100%; }
+    .site-settings-module-package-controls { width: 100%; min-width: 0; align-items: stretch; flex-direction: column; }
+    .site-settings-module-package-controls input[type="file"] { width: 100%; max-width: 100%; }
+    .site-settings-module-package-controls .admin-button { width: 100%; }
     .site-settings-modules__tools { grid-template-columns: 1fr; }
     .site-settings-modules__tools .admin-field__help { white-space: normal; }
     .site-settings-modules-table { display: block; min-width: 0; }
