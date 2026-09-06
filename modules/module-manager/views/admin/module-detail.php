@@ -61,14 +61,7 @@ $dependencyNames = array_values(array_filter(array_map(
     static fn (mixed $dependency): string => is_array($dependency) ? (string) ($dependency['name'] ?? '') : '',
     $dependencies
 )));
-$denialReasonsByAction = [];
-foreach ($actionLabels as $action => $label) {
-    $reasons = is_array($item['denial_reasons'][$action] ?? null) ? $item['denial_reasons'][$action] : [];
-    if ($reasons !== []) {
-        $denialReasonsByAction[$action] = $reasons;
-    }
-}
-$hasIssues = $diagnostics !== [] || $denialReasonsByAction !== [];
+$hasIssues = $diagnostics !== [];
 $diagnosticSeverityClass = static function (string $severity): string {
     return match (strtolower($severity)) {
         'critical', 'error' => 'admin-badge--danger',
@@ -116,8 +109,7 @@ $diagnosticSeverityClass = static function (string $severity): string {
                     <?php if (!$hasIssues): ?>
                         <p>No issues detected.</p>
                     <?php else: ?>
-                        <?php if ($diagnostics !== []): ?><ul class="admin-module-detail-list"><?php foreach ($diagnostics as $diagnostic): ?><?php $code = (string) ($diagnostic['code'] ?? 'unknown'); $severity = (string) ($diagnostic['severity'] ?? 'notice'); $blockedActions = array_values(array_filter(array_map('strval', is_array($diagnostic['blocked_actions'] ?? null) ? $diagnostic['blocked_actions'] : []), static fn (string $action): bool => isset($actionLabels[$action]))); ?><li><strong><?= $escape($diagnosticLabels[$code] ?? 'Module issue') ?></strong> <span class="admin-badge <?= $escape($diagnosticSeverityClass($severity)) ?>"><?= $escape(ucfirst($severity)) ?></span><?php if ($blockedActions !== []): ?><span class="admin-text-muted"> Blocks: <?= $escape(implode(', ', array_map(static fn (string $action): string => $actionLabels[$action], $blockedActions))) ?>.</span><?php endif; ?></li><?php endforeach; ?></ul><?php endif; ?>
-                        <?php if ($denialReasonsByAction !== []): ?><dl class="admin-module-detail-meta admin-module-detail-denials"><?php foreach ($denialReasonsByAction as $action => $reasons): ?><dt><?= $escape($actionLabels[$action]) ?> unavailable</dt><dd><?= $escape(implode('; ', array_map('strval', $reasons))) ?></dd><?php endforeach; ?></dl><?php endif; ?>
+                        <?php if ($diagnostics !== []): ?><ul class="admin-module-detail-list"><?php foreach ($diagnostics as $diagnostic): ?><?php $code = (string) ($diagnostic['code'] ?? 'unknown'); $severity = (string) ($diagnostic['severity'] ?? 'notice'); $blockedActions = array_values(array_filter(array_map('strval', is_array($diagnostic['blocked_actions'] ?? null) ? $diagnostic['blocked_actions'] : []), function (string $action) use ($actionLabels, $item, $lifecycleState, $visibleActions): bool { $eligibility = is_array($item['available_actions'][$action] ?? null) ? $item['available_actions'][$action] : []; return isset($actionLabels[$action]) && $visibleActions($lifecycleState, $action) && (($eligibility['visible'] ?? false) === true); })); ?><li><strong><?= $escape($diagnosticLabels[$code] ?? 'Module issue') ?></strong> <span class="admin-badge <?= $escape($diagnosticSeverityClass($severity)) ?>"><?= $escape(ucfirst($severity)) ?></span><?php if ($blockedActions !== []): ?><span class="admin-text-muted"> Blocks: <?= $escape(implode(', ', array_map(static fn (string $action): string => $actionLabels[$action], $blockedActions))) ?>.</span><?php endif; ?></li><?php endforeach; ?></ul><?php endif; ?>
                     <?php endif; ?>
                 </div>
             </section>
@@ -261,7 +253,7 @@ $diagnosticSeverityClass = static function (string $severity): string {
                                 <input type="hidden" name="module" value="<?= $escape($itemName) ?>">
                                 <input type="hidden" name="return_context" value="detail">
                                 <button class="admin-button<?= $enabled ? ($action === 'uninstall' ? ' admin-button--danger' : ' admin-button--primary') : '' ?>" type="submit"<?= $enabled ? '' : ' disabled' ?>><?= $escape($label) ?></button>
-                                <?php if (!$enabled && $reasons !== []): ?><ul class="admin-module-detail-action__reasons"><?php foreach ($reasons as $reason): ?><li><?= $escape($reason) ?></li><?php endforeach; ?></ul><?php endif; ?>
+                                <?php if (!$siteSettingsModulesProjection && !$enabled && $reasons !== []): ?><ul class="admin-module-detail-action__reasons"><?php foreach ($reasons as $reason): ?><li><?= $escape($reason) ?></li><?php endforeach; ?></ul><?php endif; ?>
                             </form>
                         <?php endif; ?>
                     <?php endforeach; ?>

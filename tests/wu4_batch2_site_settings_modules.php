@@ -222,7 +222,7 @@ $detailHtml = $renderDetail([
         'discovered_permission_metadata_summary' => [],
         'contribution_files' => [],
         'diagnostics' => [['code' => 'dependency_missing', 'severity' => 'error', 'blocked_actions' => ['enable']]],
-        'denial_reasons' => ['enable' => ['A required dependency is not available.']],
+        'denial_reasons' => ['enable' => ['dependency_missing']],
         'available_actions' => ['enable' => ['visible' => true, 'enabled' => false]],
     ],
     'inventoryPath' => '/admin/settings#modules',
@@ -235,14 +235,14 @@ $detailHtml = $renderDetail([
 $detailHeaderEnd = strpos($detailHtml, 'admin-module-detail-overview');
 $detailHeader = $detailHeaderEnd === false ? '' : substr($detailHtml, 0, $detailHeaderEnd);
 $assert($detailHeaderEnd !== false && str_contains($detailHeader, 'Form Manager') && !str_contains($detailHeader, 'form-manager') && strpos($detailHtml, 'Module Overview') < strpos($detailHtml, 'Issues &amp; Guidance'), 'Site Settings Module Detail does not show the human name first with Module Overview before Issues & Guidance.');
-$assert(str_contains($detailHtml, 'Technical name</dt><dd><code>form-manager</code>') && str_contains($detailHtml, 'Required dependency is missing') && str_contains($detailHtml, 'Error') && str_contains($detailHtml, 'Blocks: Enable.') && str_contains($detailHtml, 'Enable unavailable') && !str_contains($detailHtml, 'dependency_missing'), 'Issues & Guidance does not preserve sanitized authoritative diagnostic severity and impact.');
+$assert(str_contains($detailHtml, 'Technical name</dt><dd><code>form-manager</code>') && str_contains($detailHtml, 'Required dependency is missing') && str_contains($detailHtml, 'Error') && str_contains($detailHtml, 'Blocks: Enable.') && !str_contains($detailHtml, 'dependency_missing'), 'Issues & Guidance does not preserve sanitized authoritative diagnostic severity and impact.');
 $assert(str_contains($detailHtml, '<details class="admin-panel admin-module-detail-panel admin-module-detail-disclosure">') && str_contains($detailHtml, 'Stored path available') && str_contains($detailHtml, 'Contribution files'), 'Technical evidence is not preserved behind progressive disclosure.');
 $assert(str_contains($detailHtml, 'action="/admin/settings/modules/enable"') && str_contains($detailHtml, 'name="_token" value="token"') && str_contains($detailHtml, 'disabled'), 'Module Detail lifecycle action or CSRF presentation regressed.');
 $normalDetailHtml = $renderDetail([
     'siteSettingsModulesProjection' => true,
-    'item' => ['name' => 'plain', 'title' => 'Plain Module', 'version' => '1.0.0', 'lifecycle_state' => 'installed_enabled', 'discovery_state' => 'valid', 'dependencies' => [], 'diagnostics' => [], 'denial_reasons' => [], 'available_actions' => []],
+    'item' => ['name' => 'plain', 'title' => 'Plain Module', 'version' => '1.0.0', 'lifecycle_state' => 'installed_enabled', 'discovery_state' => 'valid', 'dependencies' => [], 'diagnostics' => [], 'denial_reasons' => ['install' => ['already_installed'], 'enable' => ['already_enabled'], 'uninstall' => ['enabled_module']], 'available_actions' => ['disable' => ['visible' => true, 'enabled' => true]]],
     'inventoryPath' => '/admin/settings#modules', 'actionPaths' => [], 'lifecyclePath' => '', 'csrfToken' => 'token', 'notice' => null, 'error' => null,
 ]);
-$assert(str_contains($normalDetailHtml, 'No issues detected.') && !str_contains($normalDetailHtml, 'Stored path available</dt><dd>Yes'), 'Normal Module Detail state does not remain compact or leaked primary path evidence.');
+$assert(str_contains($normalDetailHtml, 'No issues detected.') && str_contains($normalDetailHtml, '>Disable</button>') && !str_contains($normalDetailHtml, 'already_installed') && !str_contains($normalDetailHtml, 'already_enabled') && !str_contains($normalDetailHtml, 'enabled_module') && !str_contains($normalDetailHtml, 'Stored path available</dt><dd>Yes'), 'Normal lifecycle inapplicability was presented as an issue or changed action visibility.');
 
 echo "WU4 Batch 2 Site Settings Modules tests passed ({$assertions} assertions)." . PHP_EOL;
