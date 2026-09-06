@@ -1,15 +1,16 @@
 # WU4 Batch 2 — Site Settings Modules Operational Projection Contract
 
-**Contract status:** AUTHORITATIVE CONTRACT / IMPLEMENTATION NOT STARTED
+**Contract status:** AUTHORITATIVE CONTRACT / IMPLEMENTATION COMPLETE / CLOSED
 **Parent authority:** `docs/54_webcore_site_settings_appearance_consolidation_contract.md`
 **Promotion lineage:** `precontracts/wu4_batch2_site_settings_modules_operational_projection_precontract.md`
-**Implementation authorization:** NONE
+**Implementation authorization:** SEPARATELY AUTHORIZED / EXECUTED
 
 This authoritative child contract defines the bounded product and authority
 target for the Webcore-owned Modules operational projection under Site
-Settings. It records the approved promotion of the Modules pre-contract. The
-contract itself does not authorize source, runtime, test, schema, database, or
-lifecycle implementation.
+Settings. It records the approved promotion of the Modules pre-contract and
+the later separately authorized, accepted delivery. The contract itself did
+not grant blanket source, runtime, test, schema, database, or lifecycle
+implementation authority.
 
 ## 1. Purpose and governing boundary
 
@@ -43,9 +44,9 @@ semantics.
 The historical System Manager and standalone Module Manager surfaces are
 bounded source and presentation evidence only. They do not establish current
 product ownership, routing, permission, lifecycle, package, persistence, or
-architecture. Useful presentation patterns may be reconciled during a later
-authorized implementation without restoring either product owner or cloning
-either surface wholesale.
+architecture. Useful presentation patterns were reconciled in the accepted
+projection without restoring either product owner or cloning either surface
+wholesale.
 
 ## 3. Canonical product surface and composition
 
@@ -113,10 +114,10 @@ state must not be merged into lifecycle Status.
 
 ## 5. Search, interaction, and responsive behavior
 
-Scalable client-side search and filtering are preserved accepted capability of
-the Modules projection. Exact control placement, responsive presentation, and
-implementation mechanics remain implementation-time details, bounded to
-authoritative inventory data.
+Scalable client-side Name, Version, Issue, and Status filtering is preserved
+accepted capability of the Modules projection. It combines authoritative
+rendered inventory values without introducing a second taxonomy. Exact control
+placement and responsive presentation remain bounded implementation details.
 
 Use existing shared Admin row interaction primitives where applicable,
 including the existing shared hover behavior. The whole inventory row is the
@@ -138,7 +139,7 @@ behavior.
 
 ## 6. Module Detail
 
-Module Detail is the operational surface for:
+Module Detail is the accepted operational surface for:
 
 - complete lifecycle evidence;
 - dependency and conflict context;
@@ -150,9 +151,13 @@ Module Detail is the operational surface for:
 - lifecycle actions;
 - operation results and next-action guidance.
 
-Technical evidence should use progressive disclosure where appropriate. The
-projection must not fabricate diagnostics, remediation recommendations,
-eligibility, lifecycle state, operation results, or next actions.
+The accepted hierarchy places Module Overview, authoritative Module-owned
+What's New information where valid release metadata exists, and Issues &
+Guidance before lifecycle/package/action content. Technical evidence uses
+progressive disclosure. The projection does not fabricate diagnostics,
+remediation recommendations, eligibility, lifecycle state, operation results,
+next actions, or release claims. Missing or invalid release metadata is a
+neutral unavailable state, not a Module issue.
 
 ## 7. Lifecycle and package boundary
 
@@ -204,15 +209,14 @@ mutation authority, and Site Settings access must not implicitly grant Module
 lifecycle authority.
 
 Existing Module authority remains the enforcement point for Module-specific
-authorization and permission metadata. Metadata must not be converted into
-automatic grants. Later implementation must resolve read-versus-action route
-composition while preserving this boundary and without inventing a second
-permission model.
+authorization and permission metadata. Metadata is not converted into
+automatic grants. The delivered read-versus-action composition preserves this
+boundary without inventing a second permission model.
 
-## 10. Implementation-time dispositions
+## 10. Delivered composition boundaries
 
-Implementation, if separately authorized, must resolve only the mechanics
-needed to realize this contract:
+The separately authorized delivery resolved only the mechanics needed to
+realize this contract:
 
 - exact `/admin/settings#modules` route and tab composition;
 - independent read-versus-action enforcement for `modules.manage`;
@@ -224,13 +228,14 @@ needed to realize this contract:
 - search/filter control placement and shared responsive reuse;
 - isolation or removal of obsolete System Manager-specific coupling.
 
-These dispositions do not authorize redesign of Module authority, package
+The delivered projection does not redesign Module authority, package
 semantics, lifecycle semantics, System Health, persistence, or routing outside
 the canonical Site Settings projection.
 
-## 11. Acceptance direction
+## 11. Acceptance record
 
-Objective acceptance must confirm that:
+Technical validation and human/product acceptance are **PASS**. The accepted
+delivery confirms that:
 
 - `/admin/settings#modules` is the canonical active Webcore Module projection;
 - no competing System Manager or standalone Module Manager product ownership
@@ -255,7 +260,7 @@ Objective acceptance must confirm that:
   health infrastructure, persistence, marketplace, or destructive retirement
   behavior is added.
 
-Human/product acceptance is required for operational comprehension, inventory
+Human/product acceptance passed for operational comprehension, inventory
 usability, issue/status clarity, Module Detail usability, row interaction,
 responsive/mobile behavior, accessibility, and result/recovery guidance.
 
@@ -281,11 +286,11 @@ consumers, lifecycle subjects, dependency/conflict or package fixtures, source
 evidence, or validation subjects. Their distribution and product disposition
 remain outside this slice.
 
-## 13. Contract status and next authorization gate
+## 13. Contract status
 
 This document is the authoritative child contract for the WU4 Batch 2 Site
 Settings → Modules projection and is subordinate to the parent WU4 contract.
-Promotion does not start implementation. The Modules slice remains
-**IMPLEMENTATION NOT STARTED** until a separate implementation authorization is
-granted. Release, publication, merge, and branch lifecycle actions remain
-separate gates.
+The Modules slice is **COMPLETE / CLOSED** after separately authorized
+implementation, focused technical validation, controlled runtime validation,
+and human/product acceptance. Release, publication, merge, and branch
+lifecycle actions remain separate gates.
