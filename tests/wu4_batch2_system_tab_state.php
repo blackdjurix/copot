@@ -34,6 +34,6 @@ $assert(str_contains($systemView, 'Current System State') && str_contains($syste
 $assert(!str_contains($systemView, 'Runtime Participation') && !str_contains($systemView, 'Runtime Handoff') && !str_contains($systemView, 'Permissions'), 'System still exposes removed runtime or permissions panels.');
 $assert(!str_contains($systemView, 'Compatibility</h3>') && !str_contains($systemView, 'Repair, Retry &amp; Reconciliation'), 'System still exposes permanent contextual lifecycle panels.');
 $assert(str_contains($systemView, 'if ($hasRecoveryEvidence)') && str_contains($systemView, '$retryEligible'), 'Recovery actions are not context-gated by lifecycle evidence.');
-$assert(str_contains($systemJs, 'Technical classification:') && str_contains($systemJs, "apply.textContent = 'Apply Update'"), 'Update preflight does not preserve the umbrella label with contextual technical classification.');
+$assert(str_contains($systemJs, 'Compatibility: authoritative preflight accepted') && str_contains($systemJs, 'Technical classification:') && str_contains($systemJs, "apply.textContent = 'Apply Update'"), 'Update preflight does not expose contextual compatibility while preserving the Update umbrella.');
 
 echo "WU4 Batch 2 System canonical tab URL regression passed ({$assertions} assertions)." . PHP_EOL;

@@ -98,7 +98,8 @@
         heading.textContent = payload.accepted ? 'Update preflight ready' : 'Update unavailable';
         const detail = document.createElement('p');
         const technical = payload.classification ? 'Technical classification: ' + payload.classification : '';
-        detail.textContent = [payload.status, payload.target_webcore_version, technical, payload.reason].filter(Boolean).join(' · ');
+        const compatibility = payload.accepted ? 'Compatibility: authoritative preflight accepted' : '';
+        detail.textContent = [payload.status, payload.target_webcore_version, compatibility, technical, payload.reason].filter(Boolean).join(' · ');
         result.append(heading, detail);
         if (payload.guidance) {
             const guidance = document.createElement('p');
