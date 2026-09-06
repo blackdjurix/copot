@@ -14,6 +14,11 @@ use Copot\Core\SystemManagerPackageUpload;
 use Copot\Core\UnavailableSystemManagerRecoveryGate;
 
 require_once $app->path('app/Core/SystemManagerRecoveryGate.php');
+require_once $app->path('modules/module-manager/Services/ModuleActionPolicy.php');
+require_once $app->path('modules/module-manager/Services/ModuleInventoryBuilder.php');
+require_once $app->path('modules/module-manager/Services/ModulePackageOperator.php');
+require_once $app->path('modules/module-manager/Services/ModuleManagerAdmin.php');
+require_once $app->path('modules/module-manager/Services/SiteSettingsModulesAdmin.php');
 
 require_once $app->path('app/Core/WebcoreColorScheme.php');
 require_once $app->path('app/Core/HomepageHeroImageService.php');
@@ -22,6 +27,7 @@ $adminUrl = $app->adminUrl();
 $path = $adminUrl->childUrl('settings');
 $permission = 'settings.update';
 $systemPath = $path . '/system';
+$modulesProjection = new SiteSettingsModulesAdmin($app, new ModuleManagerAdmin($app));
 $hero = static fn (): HomepageHeroImageService => new HomepageHeroImageService(
     $app->settings(),
     $app->database(),
@@ -30,7 +36,17 @@ $hero = static fn (): HomepageHeroImageService => new HomepageHeroImageService(
     new MediaLifecycleService($app->database(), new MediaRepository($app->database()), null, new MediaUsageRepository($app->database()))
 );
 
-$requireUser = static function ($request) use ($app, $permission) {
+$requireSurfaceUser = static function ($request) use ($app, $permission) {
+    if (!$app->auth()->check()) return Response::redirect($app->adminUrl()->baseUrl());
+    $user = $app->auth()->user();
+    $adminPermission = $app->config()->get('admin.permission', 'admin.access');
+    if (!$user || !$user->can((string) $adminPermission)
+        || (!$user->can($permission) && !$user->can('modules.manage') && !$user->can('system.webcore.manage'))) {
+        return $app->adminErrors()->response($request, 403);
+    }
+    return $user;
+};
+$requireSettingsUser = static function ($request) use ($app, $permission) {
     if (!$app->auth()->check()) return Response::redirect($app->adminUrl()->baseUrl());
     $user = $app->auth()->user();
     $adminPermission = $app->config()->get('admin.permission', 'admin.access');
@@ -39,13 +55,16 @@ $requireUser = static function ($request) use ($app, $permission) {
 };
 
 $value = static fn (string $namespace, string $key, mixed $default = null): mixed => $app->settings()->get($namespace, $key, $default);
-$render = static function ($request, $user, array $errors = [], ?string $notice = null, int $status = 200) use ($app, $adminUrl, $path, $systemPath, $value, $hero): Response {
+$render = static function ($request, $user, array $errors = [], ?string $notice = null, int $status = 200, ?array $moduleDetail = null) use ($app, $adminUrl, $path, $systemPath, $value, $hero, $modulesProjection, $permission): Response {
     try {
-        $selected = $hero()->selected();
-        $media = $user->can('media.use') ? (new MediaRepository($app->database()))->paginate('image', 100, 0) : [];
-        $pageOptions = (new ContentRepository($app->database()))->workspace(['type' => 'page', 'status' => 'published'], 100, 0)['items'];
+        $canUpdateSettings = $user->can($permission);
+        $canManageModules = $user->can('modules.manage');
+        $canManageSystem = $user->can('system.webcore.manage');
+        $selected = $canUpdateSettings ? $hero()->selected() : null;
+        $media = $canUpdateSettings && $user->can('media.use') ? (new MediaRepository($app->database()))->paginate('image', 100, 0) : [];
+        $pageOptions = $canUpdateSettings ? (new ContentRepository($app->database()))->workspace(['type' => 'page', 'status' => 'published'], 100, 0)['items'] : [];
         $systemStatus = null;
-        $systemStatus = (new SystemManagerLifecycleService($app->packageLifecycle(), new UnavailableSystemManagerRecoveryGate(), new SystemManagerPackageUpload($app->path('storage/.system-manager-packages'))))->status();
+        if ($canManageSystem) $systemStatus = (new SystemManagerLifecycleService($app->packageLifecycle(), new UnavailableSystemManagerRecoveryGate(), new SystemManagerPackageUpload($app->path('storage/.system-manager-packages'))))->status();
         $retryEligible = false;
         $operationId = $systemStatus['operation']['operation_id'] ?? null;
         if (is_string($operationId) && $operationId !== '') {
@@ -80,11 +99,21 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'systemApplyPath' => $systemPath . '/apply',
             'systemRetryPath' => $systemPath . '/retry',
             'systemReconcilePath' => $systemPath . '/reconcile',
-            'installationId' => $app->installationIdentity()->value(),
+            'installationId' => $canManageSystem ? $app->installationIdentity()->value() : null,
             'releasePath' => $app->path('release.json'),
             'csrfToken' => $app->csrf()->token(),
-            'initialArea' => 'identity',
-            'canManageSystem' => $user->can('system.webcore.manage'),
+            'initialArea' => $moduleDetail !== null ? 'modules' : ($canUpdateSettings ? 'identity' : ($canManageSystem ? 'system' : 'modules')),
+            'canManageSystem' => $canManageSystem,
+            'canUpdateSettings' => $canUpdateSettings,
+            'canManageModules' => $canManageModules,
+            'moduleItems' => $canManageModules ? $modulesProjection->inventory() : [],
+            'moduleDetail' => $moduleDetail,
+            'moduleDetailPath' => static fn (string $name): string => $modulesProjection->detailPath($name),
+            'moduleActionPaths' => $modulesProjection->actionPaths(),
+            'modulePackagePath' => $modulesProjection->packagePath(),
+            'moduleLifecyclePath' => $modulesProjection->lifecyclePath(),
+            'moduleError' => $request->input('module_error'),
+            'moduleNotice' => $request->input('module_notice'),
         ]);
         return Response::html($app->adminPageRenderer()->render('Site Settings', $view, $user, $app->csrf()->token(), $request->path(), ['description' => 'Configure the site identity and baseline appearance.', 'surface' => 'transparent', 'spacing' => 'default']), $status);
     } catch (Throwable) { return $app->adminErrors()->response($request, 503); }
@@ -92,10 +121,29 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
 
 $app->adminNavigation()->add('Site Settings', $path, $permission, 'settings', 70);
 
-$app->router()->get($path, function ($request) use ($requireUser, $render): Response {
-    $user = $requireUser($request); if ($user instanceof Response) return $user;
+$app->router()->get($path, function ($request) use ($requireSurfaceUser, $render): Response {
+    $user = $requireSurfaceUser($request); if ($user instanceof Response) return $user;
     return $render($request, $user, [], $request->input('saved') === '1' ? 'Site Settings saved successfully.' : null);
 });
+
+$modulesDetailPath = $path . '/modules/{name}';
+$app->router()->get($modulesDetailPath, function ($request, array $params) use ($app, $modulesProjection, $requireSurfaceUser, $render): Response {
+    $user = $requireSurfaceUser($request); if ($user instanceof Response) return $user;
+    $name = (string) ($params['name'] ?? '');
+    $detail = $user->can('modules.manage') ? $modulesProjection->detail($name) : null;
+    if ($detail === null) return $app->adminErrors()->response($request, 404);
+    return $render($request, $user, [], null, 200, $detail);
+});
+
+foreach (['install', 'enable', 'disable', 'uninstall'] as $moduleAction) {
+    $moduleActionPath = $path . '/modules/' . $moduleAction;
+    $app->router()->post($moduleActionPath, static function ($request) use ($modulesProjection, $moduleAction): Response {
+        return $modulesProjection->mutationResponse($request, $moduleAction);
+    });
+}
+
+$app->router()->post($path . '/modules/package', static fn ($request): Response => $modulesProjection->packageResponse($request));
+$app->router()->post($path . '/modules/package/lifecycle', static fn ($request): Response => $modulesProjection->lifecycleResponse($request));
 
 $requireSystemUser = static function ($request) use ($app): mixed {
     if (!$app->auth()->check()) return Response::redirect($app->adminUrl()->baseUrl());
@@ -139,8 +187,8 @@ $app->router()->post($systemPath . '/reconcile', function ($request) use ($app, 
     catch (Throwable) { return $json(['accepted' => false, 'status' => 'unavailable', 'reason' => 'Reconciliation is unavailable.'], 503); }
 });
 
-$app->router()->post($path, function ($request) use ($app, $requireUser, $render, $hero, $path): Response {
-    $user = $requireUser($request); if ($user instanceof Response) return $user;
+$app->router()->post($path, function ($request) use ($app, $requireSettingsUser, $render, $hero, $path): Response {
+    $user = $requireSettingsUser($request); if ($user instanceof Response) return $user;
     if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
     $submitted = [
         'site.name' => (string) $request->post('site_name', ''), 'site.tagline' => (string) $request->post('site_tagline', ''),
@@ -177,10 +225,10 @@ $app->router()->post($path, function ($request) use ($app, $requireUser, $render
     return Response::redirect($path . '?saved=1');
 });
 
-$assetRoute = static function (string $slot, string $action) use ($app, $adminUrl, $requireUser, $render, $path): void {
+$assetRoute = static function (string $slot, string $action) use ($app, $adminUrl, $requireSettingsUser, $render, $path): void {
     $route = $adminUrl->childUrl('settings/site-assets/' . $slot . ($action === 'remove' ? '/remove' : ''));
-    $app->router()->post($route, function ($request) use ($app, $requireUser, $render, $path, $slot, $action): Response {
-        $user = $requireUser($request); if ($user instanceof Response) return $user;
+    $app->router()->post($route, function ($request) use ($app, $requireSettingsUser, $render, $path, $slot, $action): Response {
+        $user = $requireSettingsUser($request); if ($user instanceof Response) return $user;
         if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
         try {
             if ($action === 'remove') $app->siteAssets()->remove($slot);

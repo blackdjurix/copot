@@ -3,8 +3,20 @@ $escape = static fn (mixed $value): string => htmlspecialchars((string) $value, 
 $values = is_array($values ?? null) ? $values : [];
 $errors = is_array($errors ?? null) ? $errors : [];
 $media = is_array($media ?? null) ? $media : [];
-$areas = ['identity' => 'Site Identity', 'system' => 'System', 'security' => 'Security', 'email' => 'Email', 'modules' => 'Modules', 'health' => 'System Health'];
-$initialArea = in_array((string) ($initialArea ?? 'identity'), array_keys($areas), true) ? (string) $initialArea : 'identity';
+$allAreas = ['identity' => 'Site Identity', 'system' => 'System', 'security' => 'Security', 'email' => 'Email', 'modules' => 'Modules', 'health' => 'System Health'];
+$canUpdateSettings = !empty($canUpdateSettings);
+$canManageModules = !empty($canManageModules);
+$canManageSystem = !empty($canManageSystem);
+$areas = $canUpdateSettings ? $allAreas : [];
+if (!$canUpdateSettings) {
+    if ($canManageSystem) $areas['system'] = $allAreas['system'];
+    if ($canManageModules) $areas['modules'] = $allAreas['modules'];
+} elseif (!$canManageModules) {
+    unset($areas['modules']);
+}
+$initialArea = in_array((string) ($initialArea ?? 'identity'), array_keys($areas), true) ? (string) $initialArea : (string) (array_key_first($areas) ?? 'identity');
+$requestedInitialArea = $initialArea;
+$initialArea = array_key_exists($requestedInitialArea, $areas) ? $requestedInitialArea : (string) (array_key_first($areas) ?? 'identity');
 $siteAssets = $siteAssets ?? null;
 $settingsFormId = 'site-settings-identity-form';
 $homepageContent = is_array($values['homepage_content'] ?? null) ? $values['homepage_content'] : null;
@@ -20,7 +32,7 @@ $homepageContentPageId = $homepageContentType === 'page' ? (int) ($homepageConte
     <div class="admin-panel__body">
         <?php if (($notice ?? null) !== null): ?><div class="admin-alert admin-alert--success" role="status"><?= $escape($notice) ?></div><?php endif; ?>
         <?php if ($errors !== []): ?><div class="admin-alert admin-alert--danger" role="alert">Some Site Settings could not be saved.</div><?php endif; ?>
-        <section class="admin-settings-panel" id="site-settings-identity" role="tabpanel" aria-labelledby="site-settings-identity-tab" data-settings-panel="site-settings-identity"<?= $initialArea === 'identity' ? '' : ' hidden' ?>>
+        <?php if ($canUpdateSettings): ?><section class="admin-settings-panel" id="site-settings-identity" role="tabpanel" aria-labelledby="site-settings-identity-tab" data-settings-panel="site-settings-identity"<?= $initialArea === 'identity' ? '' : ' hidden' ?>>
             <div class="site-settings-identity-layout" data-settings-dirty-form>
                 <form method="post" action="<?= $escape($path) ?>" class="admin-form site-settings-identity-form" id="<?= $settingsFormId ?>">
                     <input type="hidden" name="_token" value="<?= $escape($csrfToken) ?>">
@@ -53,9 +65,10 @@ $homepageContentPageId = $homepageContentType === 'page' ? (int) ($homepageConte
                 </div>
             </div>
             <div class="admin-actions admin-form__actions"><button class="admin-button admin-button--primary" type="submit" form="<?= $settingsFormId ?>">Save Site Settings</button></div>
-        </section>
-        <section class="admin-settings-panel" id="site-settings-system" role="tabpanel" aria-labelledby="site-settings-system-tab" data-settings-panel="site-settings-system"<?= $initialArea === 'system' ? '' : ' hidden' ?>><header class="admin-settings-panel__header"><h3>System</h3></header><?php require __DIR__ . '/site-settings-system.php'; ?></section>
-        <?php foreach (['security' => 'Security settings are not configurable in this build.', 'email' => 'Email settings are not configurable in this build.', 'modules' => 'Module operations are available in a later WU4 batch.', 'health' => 'System Health presentation is available in a later WU4 batch.'] as $id => $message): ?><section class="admin-settings-panel" id="site-settings-<?= $id ?>" role="tabpanel" aria-labelledby="site-settings-<?= $id ?>-tab" data-settings-panel="site-settings-<?= $id ?>"<?= $initialArea === $id ? '' : ' hidden' ?>><header class="admin-settings-panel__header"><h3><?= $escape($areas[$id]) ?></h3></header><div class="admin-empty-state"><h4>Not configurable in Batch 1</h4><p><?= $escape($message) ?></p></div></section><?php endforeach; ?>
+        </section><?php endif; ?>
+        <?php if (array_key_exists('system', $areas)): ?><section class="admin-settings-panel" id="site-settings-system" role="tabpanel" aria-labelledby="site-settings-system-tab" data-settings-panel="site-settings-system"<?= $initialArea === 'system' ? '' : ' hidden' ?>><header class="admin-settings-panel__header"><h3>System</h3></header><?php require __DIR__ . '/site-settings-system.php'; ?></section><?php endif; ?>
+        <?php if ($canUpdateSettings): foreach (['security' => 'Security settings are not configurable in this build.', 'email' => 'Email settings are not configurable in this build.', 'health' => 'System Health presentation is available in a later WU4 batch.'] as $id => $message): ?><section class="admin-settings-panel" id="site-settings-<?= $id ?>" role="tabpanel" aria-labelledby="site-settings-<?= $id ?>-tab" data-settings-panel="site-settings-<?= $id ?>"<?= $initialArea === $id ? '' : ' hidden' ?>><header class="admin-settings-panel__header"><h3><?= $escape($allAreas[$id]) ?></h3></header><div class="admin-empty-state"><h4>Not configurable in Batch 1</h4><p><?= $escape($message) ?></p></div></section><?php endforeach; endif; ?>
+        <?php if ($canManageModules): ?><section class="admin-settings-panel" id="site-settings-modules" role="tabpanel" aria-labelledby="site-settings-modules-tab" data-settings-panel="site-settings-modules"<?= $initialArea === 'modules' ? '' : ' hidden' ?>><?php if (is_array($moduleDetail ?? null)): ?><?php $item = $moduleDetail; $inventoryPath = $path . '#modules'; $actionPaths = $moduleActionPaths ?? []; $lifecyclePath = $moduleLifecyclePath ?? ''; $error = $moduleError ?? null; $notice = $moduleNotice ?? null; require __DIR__ . '/../../../modules/module-manager/views/admin/module-detail.php'; ?><?php else: ?><?php $items = is_array($moduleItems ?? null) ? $moduleItems : []; $detailPath = $moduleDetailPath ?? static fn (string $name): string => $path . '/modules/' . rawurlencode($name); $packagePath = $modulePackagePath ?? ''; $lifecyclePath = $moduleLifecyclePath ?? ''; $error = $moduleError ?? null; $notice = $moduleNotice ?? null; require __DIR__ . '/site-settings-modules.php'; ?><?php endif; ?></section><?php endif; ?>
     </div>
 </section>
 <script src="<?= $escape(is_callable($url ?? null) ? $url('/admin-assets/js/admin-settings.js') : '/admin-assets/js/admin-settings.js') ?>" defer></script>

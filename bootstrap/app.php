@@ -3,6 +3,9 @@
 use Copot\Core\Application;
 use Copot\Core\DeploymentContext;
 use Copot\Core\Env;
+use Copot\Core\SystemHealthAggregator;
+use Copot\Core\SystemHealthContext;
+use Copot\Core\SystemHealthReport;
 
 $basePath = dirname(__DIR__);
 
@@ -16,10 +19,15 @@ require_once $basePath . '/app/Core/ContentRepository.php';
 require_once $basePath . '/app/Core/ContentDeliveryService.php';
 require_once $basePath . '/app/Core/ContentService.php';
 require_once $basePath . '/app/Core/Slugger.php';
+require_once $basePath . '/modules/module-manager/Services/ModuleActionPolicy.php';
+require_once $basePath . '/modules/module-manager/Services/ModuleInventoryBuilder.php';
+require_once $basePath . '/modules/module-manager/Services/SiteSettingsModuleHealthProducer.php';
 
 Env::load($basePath . '/.env');
 
-$app = new Application($deploymentContext);
+$app = new Application($deploymentContext, static function (SystemHealthContext $context) use (&$app): SystemHealthReport {
+    return (new SystemHealthAggregator())->aggregate($context, [new SiteSettingsModuleHealthProducer($app)]);
+});
 $app->session()->start();
 
 $app->frontendThemeContext()->register(new \Copot\Core\NavigationFrontendContextContributor($app->database()));

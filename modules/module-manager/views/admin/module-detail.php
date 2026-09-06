@@ -124,6 +124,22 @@ $diagnostics = is_array($item['diagnostics'] ?? null) ? $item['diagnostics'] : [
                 </dl>
             </div>
         </section>
+
+        <?php if (!empty($item['available_package_version']) || !empty($item['available_package_dependencies']) || !empty($item['available_package_conflicts']) || !empty($item['lifecycle_evidence']) || !empty($item['operation'])): ?>
+            <section class="admin-panel admin-module-detail-panel" aria-labelledby="module-package-title">
+                <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="module-package-title">Package and lifecycle evidence</h2><p class="admin-panel__description">Package eligibility and operation state are derived from the existing Module lifecycle authority.</p></div></header>
+                <div class="admin-panel__body">
+                    <?php if (!empty($item['available_package_version'])): ?><dl class="admin-module-detail-meta"><dt>Available package</dt><dd><?= $escape($item['available_package_version']) ?></dd><dt>Package release</dt><dd><?= $escape($item['available_package_release'] ?? '—') ?></dd></dl><?php endif; ?>
+                    <?php if (!empty($item['available_package_dependencies'])): ?><h3>Package dependencies</h3><ul class="admin-module-detail-list"><?php foreach ($item['available_package_dependencies'] as $dependency): ?><li><code><?= $escape($dependency) ?></code></li><?php endforeach; ?></ul><?php endif; ?>
+                    <?php if (!empty($item['available_package_conflicts'])): ?><h3>Package conflicts</h3><ul class="admin-module-detail-list"><?php foreach ($item['available_package_conflicts'] as $conflict): ?><li><code><?= $escape($conflict) ?></code></li><?php endforeach; ?></ul><?php endif; ?>
+                    <?php if (is_array($item['lifecycle_evidence'] ?? null)): ?><h3>Committed lifecycle state</h3><p><?= $escape($item['lifecycle_evidence']['status'] ?? 'Available') ?></p><?php endif; ?>
+                    <?php if (is_array($item['operation'] ?? null)): ?><h3>Current operation</h3><p><?= $escape($item['operation']['state'] ?? 'Recovery state requires review.') ?></p><?php endif; ?>
+                    <?php if (!empty($item['available_package_candidate']) && empty($item['lifecycle_blocker']) && !empty($lifecyclePath)): ?>
+                        <form method="post" action="<?= $escape($lifecyclePath) ?>" class="admin-form admin-module-detail-action"><input type="hidden" name="_token" value="<?= $escape($csrfToken ?? '') ?>"><input type="hidden" name="candidate" value="<?= $escape($item['available_package_candidate']) ?>"><button class="admin-button admin-button--primary" type="submit"><?= $escape(ucfirst((string) ($item['lifecycle_action'] ?? 'Apply package'))) ?></button></form>
+                    <?php elseif (!empty($item['lifecycle_blocker'])): ?><p class="admin-text-muted"><?= $escape($item['lifecycle_blocker']) ?></p><?php endif; ?>
+                </div>
+            </section>
+        <?php endif; ?>
     </div>
 
     <div class="admin-module-detail-column admin-module-detail-column--secondary">

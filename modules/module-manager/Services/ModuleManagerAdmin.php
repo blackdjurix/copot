@@ -26,6 +26,26 @@ final class ModuleManagerAdmin
         return $this->renderInventory($request, $user);
     }
 
+    /**
+     * Return the normalized Module authority projection for another bounded
+     * Admin consumer. The consumer owns presentation and routing; this class
+     * remains the source of inventory enrichment and safe denial messages.
+     */
+    public function projectionInventory(): array
+    {
+        return $this->presentDenialReasons($this->inventory());
+    }
+
+    public function projectionDetail(string $name): ?array
+    {
+        if (preg_match('/^[a-z0-9_-]+$/', $name) !== 1
+            || in_array($name, self::RESERVED_DETAIL_NAMES, true)) {
+            return null;
+        }
+
+        return $this->findItem($this->projectionInventory(), $name);
+    }
+
     public function detailResponse(Request $request, string $name): Response
     {
         $user = $this->authorize($request);
