@@ -1,9 +1,11 @@
 # WU4 Batch 2 — Site Settings Modules Operational Projection
 
-**Pre-contract status:** CANDIDATE / REVIEW REQUIRED
-**Promotion status:** NOT PROMOTED
-**Implementation authorization:** NONE
-**Promotion, release, tag, and publication authorization:** NONE
+**Pre-contract status:** PROMOTED / HISTORICAL PROVENANCE
+**Promotion target:** `docs/56_webcore_site_settings_modules_operational_projection_contract.md`
+**Promotion status:** COMPLETED
+**Implementation status:** NOT STARTED
+**Implementation authorization by this pre-contract:** NONE
+**Release, tag, and publication authorization:** NONE
 
 ## 1. Purpose
 
@@ -296,13 +298,15 @@ consumers, lifecycle subjects, dependency/conflict or package fixtures, source
 evidence, or validation subjects. Their distribution and product disposition
 remain outside this slice.
 
-## 13. Pre-contract lifecycle and next gate
+## 13. Historical promotion provenance
 
-This document is a candidate pre-contract for GPT/user review. It is not an
-authoritative child contract, does not promote WU4 Batch 2 Modules, and does
-not change current WU4 wording that the Modules slice is not started / on hold.
+This document is retained as the historical promotion lineage for the
+authoritative child contract at
+`docs/56_webcore_site_settings_modules_operational_projection_contract.md`.
+Its substantive decisions were promoted without creating a second competing
+normative contract. The pre-contract did not authorize implementation, and the
+Modules slice remains implementation not started.
 
-The next gate is review of this bounded pre-contract. Only a separate later
-decision may promote it and authorize implementation. Until then, no source,
-runtime, test, schema, database, or lifecycle changes are authorized by this
-document.
+Only a separate implementation authorization may begin source/runtime/test,
+schema, database, or lifecycle work. Release, publication, and branch actions
+remain separately controlled.

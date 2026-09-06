@@ -6,7 +6,7 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU4 — Webcore Site Settings & Appearance Consolidation
 Contract status: PROMOTED / CONTRACT LOCKED
-WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE NOT STARTED / HOLD; BATCH 3 NOT STARTED; BATCH 4 NOT STARTED
+WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE CONTRACT PROMOTED / IMPLEMENTATION NOT STARTED; BATCH 3 NOT STARTED; BATCH 4 NOT STARTED
 Technical implementation authorization: BATCH 1 EXECUTED UNDER SEPARATE AUTHORIZATION
 Release / tag / publication authorization: NONE
 ```
@@ -16,9 +16,10 @@ materializes the accepted product decisions against the existing Webcore
 authority and projection lineage. Its original authorization covered
 documentation and contract materialization only; Batch 1 implementation and
 acceptance, and the later separately authorized Site Settings → System slice,
-are recorded by current-state documentation. The Batch 2 Modules slice
-remains NOT STARTED / HOLD, Batch 2 is not complete, and Batches 3–4 remain
-NOT STARTED. This contract does not itself grant blanket implementation
+are recorded by current-state documentation. The Batch 2 Modules slice has its
+authoritative child contract promoted and remains IMPLEMENTATION NOT STARTED;
+Batch 2 is not complete, and Batches 3–4 remain NOT STARTED. This contract does
+not itself grant blanket implementation
 authority for those later slices, schema/settings migration beyond accepted
 scope, runtime mutation outside controlled acceptance, or release activity.
 
@@ -401,8 +402,8 @@ existing permissions.
 
 Current state: the Site Settings → System slice is **CLOSED** after separate
 authorization, implementation, focused/runtime validation, and human/product
-acceptance. The peer Site Settings → Modules slice is **NOT STARTED / HOLD**;
-therefore full Batch 2 is **NOT COMPLETE**.
+acceptance. The peer Site Settings → Modules slice is **CONTRACT PROMOTED /
+IMPLEMENTATION NOT STARTED**; therefore full Batch 2 is **NOT COMPLETE**.
 
 Batch 2 is independently implementable after the parent boundary exists.
 Human/product acceptance is required for operational comprehension,
