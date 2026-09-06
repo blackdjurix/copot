@@ -47,7 +47,7 @@ $assert(str_contains($routes, "'modules.manage'") && str_contains($routes, '$req
 $assert(str_contains($routes, '$modulesProjection->detail') && str_contains($routes, 'modules/{name}'), 'Canonical subordinate Module Detail route is missing.');
 $assert(str_contains($routes, "'/modules/' . " . '$moduleAction') && !str_contains($routes, '$systemPath . ' . "'/modules"), 'Module actions are not subordinate to Site Settings Modules.');
 $assert(str_contains($adapter, 'new ModulePackageOperator($this->app)') && str_contains($adapter, '$this->app->modules()->'), 'Existing package and lifecycle authorities are not reused.');
-$assert(str_contains($adapter, 'validateOrReject') && str_contains($adapter, "available_actions'][$action]") && str_contains($adapter, "denial_reasons'][$action]"), 'Module action CSRF and authority-derived eligibility boundaries are missing.');
+$assert(str_contains($adapter, 'validateOrReject') && str_contains($adapter, "available_actions'][\$action]") && str_contains($adapter, "denial_reasons'][\$action]"), 'Module action CSRF and authority-derived eligibility boundaries are missing.');
 $assert(str_contains($adapter, "settingsPath() . '/modules/'") && !str_contains($adapter, "settingsPath() . '/system/modules'"), 'Module transport is not subordinate to the canonical Modules composition.');
 $assert(str_contains($healthProducer, 'implements SystemHealthProducer') && str_contains($healthProducer, 'SystemHealthProducerResult'), 'Module diagnostics are not adapted to the existing System Health producer path.');
 $assert(str_contains($healthProducer, 'SystemHealthFindingSeverity::CRITICAL') && str_contains($healthProducer, 'dedupeKey'), 'Module Health does not preserve severity or bound duplicate findings.');
