@@ -45,9 +45,12 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
         $media = $user->can('media.use') ? (new MediaRepository($app->database()))->paginate('image', 100, 0) : [];
         $pageOptions = (new ContentRepository($app->database()))->workspace(['type' => 'page', 'status' => 'published'], 100, 0)['items'];
         $systemStatus = null;
-        $runtimeParticipants = [];
         $systemStatus = (new SystemManagerLifecycleService($app->packageLifecycle(), new UnavailableSystemManagerRecoveryGate(), new SystemManagerPackageUpload($app->path('storage/.system-manager-packages'))))->status();
-        $runtimeParticipants = array_map(static fn ($participant): array => $participant->toArray(), $app->runtimeRegistry()->all());
+        $retryEligible = false;
+        $operationId = $systemStatus['operation']['operation_id'] ?? null;
+        if (is_string($operationId) && $operationId !== '') {
+            try { $retryEligible = $app->packageLifecycle()->retryEvidence($operationId); } catch (Throwable) { $retryEligible = false; }
+        }
         $view = $app->view()->render('admin/site-settings', [
             'path' => $path,
             'csrfToken' => $app->csrf()->token(),
@@ -71,7 +74,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'faviconRemoveAction' => $adminUrl->childUrl('settings/site-assets/favicon/remove'),
             'colorScheme' => WebcoreColorScheme::resolve($value('appearance', 'main_color', '#1769e0')),
             'systemStatus' => $systemStatus,
-            'runtimeParticipants' => $runtimeParticipants,
+            'retryEligible' => $retryEligible,
             'systemPath' => $systemPath,
             'systemPreflightPath' => $systemPath . '/preflight',
             'systemApplyPath' => $systemPath . '/apply',

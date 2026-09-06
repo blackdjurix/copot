@@ -95,15 +95,11 @@
         result.hidden = false;
         result.textContent = '';
         const heading = document.createElement('strong');
-        heading.textContent = payload.accepted ? 'Preflight accepted' : 'Lifecycle request blocked';
+        heading.textContent = payload.accepted ? 'Update preflight ready' : 'Update unavailable';
         const detail = document.createElement('p');
-        detail.textContent = [payload.status, payload.action, payload.module, payload.title, payload.classification, payload.reason].filter(Boolean).join(' · ');
+        const technical = payload.classification ? 'Technical classification: ' + payload.classification : '';
+        detail.textContent = [payload.status, payload.target_webcore_version, technical, payload.reason].filter(Boolean).join(' · ');
         result.append(heading, detail);
-        if (payload.next_action) {
-            const next = document.createElement('p');
-            next.textContent = 'Next action: ' + payload.next_action;
-            result.appendChild(next);
-        }
         if (payload.guidance) {
             const guidance = document.createElement('p');
             guidance.textContent = payload.guidance;
@@ -123,7 +119,7 @@
             const apply = document.createElement('button');
             apply.type = 'button';
             apply.className = 'admin-button admin-button--primary';
-            apply.textContent = 'Apply ' + payload.action;
+            apply.textContent = 'Apply Update';
             apply.addEventListener('click', async () => {
                 data.set('action', payload.action);
                 const applyResponse = await fetch(form.dataset.applyAction, { method: 'POST', body: data, credentials: 'same-origin' });

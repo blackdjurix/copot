@@ -1,6 +1,6 @@
 # WU4 Batch 2 — Site Settings System Operational Projection Contract
 
-Status: **AUTHORITATIVE CONTRACT / IMPLEMENTATION NOT STARTED**
+Status: **AUTHORITATIVE CONTRACT / RECONCILED FOR IMPLEMENTATION**
 
 Placement: Post-M3 — Webcore Product Completeness & Stabilization / WU4 Batch 2
 Parent authority: `docs/54_webcore_site_settings_appearance_consolidation_contract.md`
@@ -43,24 +43,23 @@ form `?section=*` is not a Site Settings tab-selection mechanism, and
 action endpoints under `/admin/settings/system/*` remain implementation
 endpoints and are not tab URLs.
 
-The System area contains exactly these six top-level operator groups:
+The normal idle System area contains these three top-level operator groups,
+in this order:
 
 1. **Current System State**
-2. **Update & Upgrade**
-3. **Repair, Retry & Reconciliation**
-4. **Runtime Participation & Runtime Handoff**
-5. **Compatibility**
-6. **Permissions**
+2. **What's New**, when authoritative release/package metadata is available;
+3. **Update**.
 
-**Operation Evidence is not a seventh System group, menu item, tab, or
-destination.** It is a reporting feature/capability that System may consume
-contextually for the current or latest materially relevant version transition
-or lifecycle operation. Diagnostic, audit-oriented, and historical Operation
-Evidence belongs with System Health reporting or a separately authorized and
-delivered historical-report capability. This contract does not create a
-historical-report subsystem.
+Operation Evidence, Compatibility, Repair, Retry, and Reconciliation are
+contextual projections only. They appear after a concrete target/update
+operation or authoritative recovery state makes them relevant. They are not
+permanent idle groups, menu items, tabs, or destinations.
 
-These six groups are product-facing organization only; they create no new
+Runtime Participation, Runtime Handoff, and Permissions are not user-facing
+System information groups in this slice. Their underlying authority and
+enforcement boundaries remain unchanged.
+
+These groups are product-facing organization only; they create no new
 persistence domain or authority.
 
 ## 3. Current System State
@@ -74,15 +73,14 @@ for operator comprehension, including where authoritative evidence exists:
 - compatibility, maintenance, blocked, recovery-required, or indeterminate
   state;
 - current `installation_id`;
-- local runtime `runtime_id` and RuntimeParticipant state;
-- bounded context for other runtime participants when material; and
-- safe compatibility and last-seen evidence.
+- safe compatibility and last-seen evidence when a concrete target or
+  operation makes it materially relevant.
 
 It must privilege current truth over controls and must not expose raw migration
 ledgers, recovery identities, filesystem paths, SQL, package internals, raw
 registry tables, or raw exceptions.
 
-## 4. Update & Upgrade
+## 4. Update
 
 The projection preserves the accepted Webcore package lifecycle model from
 `docs/39` and `docs/41`:
@@ -90,10 +88,9 @@ The projection preserves the accepted Webcore package lifecycle model from
 - released Webcore ZIP intake uses the existing private upload/staging boundary;
 - preflight occurs before mutation;
 - **Update** remains the operator-facing umbrella;
-- Patch, Update, Upgrade, Database-only Update, and Repair classifications are
-  planner-derived, never manually selected by the operator;
-- **Database-only Update** appears only when the existing classifier/planner
-  makes it eligible;
+- Patch, Update, Upgrade, Database-only Update, and Repair classifications
+  remain planner-derived technical outcomes, never manually selected by the
+  operator;
 - no generic **Update Database** operation exists;
 - target package/version identity and compatibility are shown before mutation
   where available; and
@@ -105,7 +102,7 @@ not introduce online update discovery or download infrastructure. Operation
 Evidence may be consumed only to report the current/latest materially relevant
 transition, its sanitized result or reason, and the next valid action.
 
-## 5. Repair, Retry & Reconciliation
+## 5. Contextual lifecycle outcomes
 
 The projection preserves these distinct lifecycle meanings:
 
@@ -119,10 +116,12 @@ The projection preserves these distinct lifecycle meanings:
   blockers; UI choice cannot bypass them.
 - downgrade and reverse migration remain unsupported.
 
-Operation Evidence may explain only the current/latest materially relevant
-repair, retry, or reconciliation transition. This group is not an operation
-history destination and must not collapse the distinct actions into a generic
-recovery control.
+The user enters the normal lifecycle flow through **Update**. A technical
+classification such as Repair may be shown only after the planner derives it.
+Retry appears only when existing operation evidence makes retry eligible.
+Reconciliation guidance/action appears only when authoritative lifecycle state
+requires it. These contextual outcomes must not become manual classification
+selection.
 
 ## 6. Runtime Participation & Runtime Handoff
 
@@ -152,14 +151,15 @@ authorize automatic takeover, and cancellation closes once durable
 Executable controls such as **Request Detachment**, **Cancel Detachment**,
 takeover/finalization, and interrupted-operation reconciliation remain absent
 until the underlying Runtime Handoff capability is implemented and accepted.
-Until then, Batch 2 may project read-only Runtime Participation evidence only.
-Site Settings must never write Runtime Registry or Runtime Handoff evidence
-directly. `docs/34`, `docs/30`, and `docs/37` remain the underlying authorities.
+This slice does not expose Runtime Participation, Runtime Handoff, detach, or
+adoption UI. Site Settings must never write Runtime Registry or Runtime
+Handoff evidence directly. `docs/34`, `docs/30`, and `docs/37` remain the
+underlying authorities.
 
 Installer Adopt, Existing-Runtime Webcore adoption/reconciliation, and Runtime
 Handoff remain distinct operator/lifecycle actions.
 
-## 7. Compatibility
+## 7. Contextual compatibility
 
 Compatibility presentation distinguishes current state from target eligibility
 and provides readable evidence for:
@@ -171,7 +171,9 @@ and provides readable evidence for:
 - namespace and installation-identity constraints; and
 - unsupported, blocked, or forward-only transition reasons.
 
-The UI explains authoritative outcomes but cannot override them.
+Compatibility is shown only with a concrete target/update operation or another
+authoritative state where it materially affects the next action. The UI
+explains authoritative outcomes but cannot override them.
 
 ## 8. Operation Evidence reporting boundary
 
@@ -193,7 +195,8 @@ capability; no such subsystem is created here.
 
 ## 9. Permissions
 
-Permission boundaries remain separate:
+Permission boundaries remain separate and are enforced even though they are not
+rendered as a permanent System information panel:
 
 - `admin.access` is the Admin-surface access prerequisite;
 - `system.webcore.manage` is the expected operator permission lineage for
@@ -214,9 +217,11 @@ remains the separate read-only reporting projection and product home for
 diagnostic/reporting views of Operation Evidence within its inputs.
 
 System presents state before action, uses evidence-backed next-action guidance,
-and does not introduce generic maintenance controls. Presentation may improve
-comprehension, responsive behavior, accessibility, and action hierarchy, but
-must not change lifecycle meaning or authority ownership.
+and does not introduce generic maintenance controls. Idle presentation is
+intentionally minimal: Current System State, What's New when available, and
+Update. Presentation may improve comprehension, responsive behavior,
+accessibility, and action hierarchy, but must not change lifecycle meaning or
+authority ownership.
 
 ## 11. Explicit exclusions and implementation gate
 
@@ -246,17 +251,19 @@ A separately authorized implementation may be accepted only when evidence and
 human/product review confirm:
 
 - `/admin/settings` is canonical and System is reachable there;
-- exactly six top-level System groups are exposed;
-- Operation Evidence is not a seventh group or destination;
-- Update remains the umbrella and classifications remain planner-derived;
+- idle System exposes Current System State, What's New when available, and
+  Update in that order;
+- contextual Operation Evidence and Compatibility are not permanent idle
+  groups or destinations;
+- Update is the only user-facing lifecycle umbrella and classifications remain
+  planner-derived;
 - Database-only Update is eligibility-bound and no generic Update Database
   action exists;
 - What's New uses only existing authoritative release/package metadata;
 - Repair, Retry, Reconciliation, Installer Adopt, Existing-Runtime adoption,
   and Runtime Handoff remain distinct;
-- Runtime Participation is understandable without raw registry mechanics;
-- executable Runtime Handoff controls are absent until implementation and
-  acceptance, and later preserve whole-participant granularity;
+- Runtime Participation, Runtime Handoff, detach, and adoption UI are absent
+  until separately authorized capability implementation and acceptance;
 - handoff cancellation closes at durable `COMMITTING` and `STALE` does not
   authorize automatic takeover;
 - Operation Evidence remains contextual rather than historical System
@@ -266,6 +273,6 @@ human/product review confirm:
 - no second lifecycle, registry, recovery, schema, migration, package,
   release-metadata, or operation-history authority is created.
 
-Batch 2 implementation remains **NOT STARTED / NOT AUTHORIZED**. Promotion of
-this contract does not claim or imply implementation, runtime mutation, or
-acceptance of any new System or Runtime Handoff behavior.
+This reconciliation authorizes no Runtime Handoff, detach, adoption, registry,
+schema, or lifecycle-semantics implementation. It records the accepted
+contextual System presentation target only.
