@@ -92,6 +92,11 @@ $app->router()->get($path, function ($request) use ($requireUser, $render): Resp
     return $render($request, $user, [], $request->input('saved') === '1' ? 'Site Settings saved successfully.' : null);
 });
 
+$app->router()->get($systemPath, function ($request) use ($requireUser, $path): Response {
+    $user = $requireUser($request); if ($user instanceof Response) return $user;
+    return Response::redirect($path . '?section=system');
+});
+
 $requireSystemUser = static function ($request) use ($app): mixed {
     if (!$app->auth()->check()) return Response::redirect($app->adminUrl()->baseUrl());
     $user = $app->auth()->user();
