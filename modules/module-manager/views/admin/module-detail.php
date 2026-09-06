@@ -56,6 +56,7 @@ $storedPermissions = is_array($item['permission_metadata_summary'] ?? null)
 $discoveredPermissions = is_array($item['discovered_permission_metadata_summary'] ?? null)
     ? $item['discovered_permission_metadata_summary'] : [];
 $diagnostics = is_array($item['diagnostics'] ?? null) ? $item['diagnostics'] : [];
+$siteSettingsModulesProjection = !empty($siteSettingsModulesProjection);
 ?>
 <?php if (!empty($notice)): ?>
     <div class="admin-alert admin-alert--success" role="status"><?= $escape($notice) ?></div>
@@ -66,6 +67,16 @@ $diagnostics = is_array($item['diagnostics'] ?? null) ? $item['diagnostics'] : [
         <strong class="admin-alert__title">Module action could not be completed.</strong>
         <p><?= $escape($error) ?></p>
     </div>
+<?php endif; ?>
+
+<?php if ($siteSettingsModulesProjection): ?>
+    <header class="admin-module-detail-header" aria-labelledby="module-identity-title">
+        <div class="admin-module-detail-header__identity">
+            <h2 id="module-identity-title"><?= $escape($item['title'] ?? $itemName) ?></h2>
+            <p><code><?= $escape($itemName) ?></code></p>
+        </div>
+        <div class="admin-actions"><a class="admin-button admin-button--secondary" href="<?= $escape($inventoryPath) ?>">Back to Modules</a></div>
+    </header>
 <?php endif; ?>
 
 <div class="admin-module-detail-layout">
@@ -143,7 +154,8 @@ $diagnostics = is_array($item['diagnostics'] ?? null) ? $item['diagnostics'] : [
     </div>
 
     <div class="admin-module-detail-column admin-module-detail-column--secondary">
-        <section class="admin-panel admin-module-detail-panel" aria-labelledby="module-identity-title">
+        <section class="admin-panel admin-module-detail-panel"<?= $siteSettingsModulesProjection ? ' aria-label="Module state"' : ' aria-labelledby="module-identity-title"' ?>>
+            <?php if (!$siteSettingsModulesProjection): ?>
             <header class="admin-panel__header">
                 <div class="admin-panel__heading">
                     <h2 class="admin-panel__title" id="module-identity-title"><?= $escape($item['title'] ?? $itemName) ?></h2>
@@ -151,6 +163,7 @@ $diagnostics = is_array($item['diagnostics'] ?? null) ? $item['diagnostics'] : [
                 </div>
                 <div class="admin-actions"><a class="admin-button admin-button--link" href="<?= $escape($inventoryPath) ?>">Back to Modules</a></div>
             </header>
+            <?php endif; ?>
             <div class="admin-panel__body">
                 <dl class="admin-module-detail-meta">
                     <dt>Lifecycle</dt>

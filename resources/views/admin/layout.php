@@ -37,7 +37,7 @@ $adminBrandingStyle = is_string($adminBrandingTextColor) && preg_match('/^#[0-9a
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?> | <?= htmlspecialchars($siteName ?? 'copot', ENT_QUOTES, 'UTF-8') ?></title>
-    <link rel="stylesheet" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin-assets/css/admin.css?v=m311-wu3-acceptance-modules-3') : '/admin-assets/css/admin.css?v=m311-wu3-acceptance-modules-3', ENT_QUOTES, 'UTF-8') ?>">
+    <link rel="stylesheet" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin-assets/css/admin.css?v=m311-wu3-acceptance-modules-4') : '/admin-assets/css/admin.css?v=m311-wu3-acceptance-modules-4', ENT_QUOTES, 'UTF-8') ?>">
     <script defer src="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/admin-assets/js/admin-shell.js') : '/admin-assets/js/admin-shell.js', ENT_QUOTES, 'UTF-8') ?>"></script>
 </head>
 <body class="admin-shell-page">

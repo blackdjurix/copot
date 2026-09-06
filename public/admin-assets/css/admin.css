@@ -2662,6 +2662,29 @@ html.admin-media-preview-open body {
     gap: var(--admin-space-6);
 }
 
+.admin-module-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--admin-space-4);
+    margin-bottom: var(--admin-space-6);
+}
+
+.admin-module-detail-header__identity {
+    min-width: 0;
+}
+
+.admin-module-detail-header h2,
+.admin-module-detail-header p {
+    margin: 0;
+}
+
+.admin-module-detail-header p {
+    margin-top: var(--admin-space-1);
+    color: var(--admin-color-muted);
+    overflow-wrap: anywhere;
+}
+
 .admin-module-detail-column {
     display: grid;
     align-content: start;
@@ -2740,6 +2763,10 @@ html.admin-media-preview-open body {
 @media (max-width: 900px) {
     .admin-module-detail-layout {
         grid-template-columns: 1fr;
+    }
+
+    .admin-module-detail-header {
+        flex-direction: column;
     }
 
     .admin-role-edit-layout {

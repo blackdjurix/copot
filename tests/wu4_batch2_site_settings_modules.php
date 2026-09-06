@@ -34,6 +34,7 @@ $healthProducer = $read('modules/module-manager/Services/SiteSettingsModuleHealt
 $bootstrap = $read('bootstrap/app.php');
 $css = $read('public/admin-assets/css/admin.css');
 $settingsView = $read('resources/views/admin/site-settings.php');
+$detailView = $read('modules/module-manager/views/admin/module-detail.php');
 $layout = $read('resources/views/admin/layout.php');
 
 $assert(str_contains($view, 'site-settings-modules-table'), 'Canonical Modules inventory view is missing.');
@@ -68,6 +69,9 @@ $assert(str_contains($healthProducer, 'SystemHealthFindingSeverity::CRITICAL') &
 $assert(str_contains($healthProducer, "can('modules.manage')") && !str_contains($healthProducer, 'file_get_contents'), 'Module Health visibility/state handling is outside the Module permission boundary.');
 $assert(str_contains($bootstrap, 'SystemHealthAggregator') && str_contains($bootstrap, 'new SiteSettingsModuleHealthProducer($app)') && str_contains($bootstrap, "can('modules.manage')") && str_contains($bootstrap, 'findings() === []') && str_contains($bootstrap, '?SystemHealthReport'), 'Module Health production composition does not gate visibility or preserve unavailable/empty evidence safely.');
 $assert(str_contains($settingsView, "array_key_exists('system', \$areas)") && str_contains($routes, "system.webcore.manage"), 'System capability remains independently composed from Modules.');
+$assert(str_contains($settingsView, '$siteSettingsModulesProjection = true') && str_contains($detailView, 'admin-module-detail-header') && strpos($detailView, 'admin-module-detail-header') < strpos($detailView, 'admin-module-detail-layout'), 'Site Settings Module Detail identity is not rendered before operational detail content.');
+$assert(str_contains($detailView, 'admin-button admin-button--secondary') && str_contains($detailView, 'href="<?= $escape($inventoryPath) ?>"') && str_contains($detailView, "' aria-label=\"Module state\"'"), 'Site Settings Module Detail Back navigation does not preserve secondary-anchor semantics or canonical composition.');
+$assert(str_contains($css, '.admin-module-detail-header') && str_contains($css, '.admin-module-detail-header {') && str_contains($css, 'flex-direction: column;'), 'Responsive Module Detail identity header layout is missing.');
 $headerOrder = [strpos($view, '<h3>Modules</h3>'), strpos($view, 'Review discovered Modules and open a Module for lifecycle actions and operational evidence.'), strpos($view, 'Add Module package (ZIP)'), strpos($view, 'site-settings-module-package-controls')];
 $assert($headerOrder[0] !== false && $headerOrder[0] < $headerOrder[1] && $headerOrder[1] < $headerOrder[2] && $headerOrder[2] < $headerOrder[3], 'Modules header and package intake hierarchy is not vertical.');
 $assert(str_contains($view, 'site-settings-module-package-controls') && str_contains($css, '.site-settings-module-package-controls input[type="file"]') && str_contains($css, '.site-settings-module-package-controls .admin-button'), 'Package chooser and Add Module action do not share the bounded desktop control row.');
@@ -134,7 +138,7 @@ $assert(str_contains($css, '.site-settings-modules-table th:nth-child(1)') && st
 $assert(str_contains($css, '.site-settings-modules-table thead') && str_contains($css, 'grid-template-columns: minmax(5.5rem, .35fr)'), 'Responsive stacked Module presentation is missing.');
 $assert(str_contains($view, 'site-settings-module-identity') && str_contains($css, '.site-settings-module-identity { min-width: 0; overflow-wrap: anywhere; }'), 'Module title and technical identity are not grouped into one mobile value area.');
 $assert(str_contains($css, '.site-settings-modules-table th:first-child { margin: calc(-1 * var(--admin-space-4)) calc(-1 * var(--admin-space-4)) 0; padding: var(--admin-space-4) var(--admin-space-4) var(--admin-space-2); }'), 'Mobile Module identity section does not extend across the full card width.');
-$assert(str_contains($layout, 'admin.css?v=m311-wu3-acceptance-modules-3'), 'Modules presentation stylesheet cache-bust is missing.');
+$assert(str_contains($layout, 'admin.css?v=m311-wu3-acceptance-modules-4'), 'Modules presentation stylesheet cache-bust is missing.');
 $assert(str_contains($view, 'site-settings-modules.js?v=wu4-modules-4'), 'Modules filter count script cache-bust is missing.');
 
 $html = $render([
