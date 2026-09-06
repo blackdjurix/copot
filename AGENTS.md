@@ -10,12 +10,13 @@ Admin Baseline is implementation-complete, technically validated, AI-accepted,
 and human/product-accepted. WU3 was fast-forward integrated into `main` at
 `2ade6d22c8ef0c78e0371960617c70bf865854b0`; feature containment was verified,
 the local and remote feature branches were deleted, and the branch lifecycle is
-closed. WU4 Batch 1 — Site Settings, Site Identity, Homepage assignment, and
-directly affected Built-in Public View behavior — is implemented and accepted
-on `feature/wu4-batch1-site-settings`; its authority is
-`docs/54_webcore_site_settings_appearance_consolidation_contract.md`. WU4
-Batch 2 is the next implementation target and remains not started; WU4
-Batches 3–4 remain not started. The feature branch remains intentionally
+closed. WU4 — Webcore Site Settings & Appearance Consolidation — is ACTIVE /
+PARTIAL on `feature/wu4-batch1-site-settings`; its authority is
+`docs/54_webcore_site_settings_appearance_consolidation_contract.md`. Batch 1
+is IMPLEMENTED / ACCEPTED. The Batch 2 System slice is CLOSED, while the
+Batch 2 Modules slice is NOT STARTED and is the next eligible slice after
+System closure; full Batch 2 is NOT COMPLETE. Batches 3–4 are NOT STARTED.
+WU5 and WU6 are NOT STARTED. The feature branch remains intentionally
 unmerged pending separately controlled integration. Release, tag, and
 publication remain separately controlled.
 

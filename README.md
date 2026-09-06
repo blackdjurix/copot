@@ -15,10 +15,13 @@ the local and remote feature branches were deleted, and the branch lifecycle is
 closed. WU4 Batch 1 — Site Settings, Site Identity, Homepage assignment, and
 directly affected Built-in Public View behavior — is implemented and accepted
 on `feature/wu4-batch1-site-settings`, under
-`docs/54_webcore_site_settings_appearance_consolidation_contract.md`. WU4
-Batch 2 is next and not started; Batches 3–4 remain not started. The feature
-branch is intentionally unmerged pending separately controlled integration.
-Release, tag, and publication remain separately controlled.
+`docs/54_webcore_site_settings_appearance_consolidation_contract.md`. WU4 is
+ACTIVE / PARTIAL: Batch 1 is IMPLEMENTED / ACCEPTED; the Batch 2 System slice
+is CLOSED; the Batch 2 Modules slice is NOT STARTED and is the next eligible
+slice after System closure; full Batch 2 is NOT COMPLETE; and Batches 3–4 are
+NOT STARTED. WU5 and WU6 are NOT STARTED. The feature branch is intentionally
+unmerged pending separately controlled integration. Release, tag, and
+publication remain separately controlled.
 
 MR.2 WU1 — Webcore Admin View Foundation is COMPLETE on the integrated
 `main` baseline. The reusable Admin Page Frame remains inside `admin-main`,

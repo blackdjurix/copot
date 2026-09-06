@@ -6,9 +6,10 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Classification: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
 Contract status: PROMOTED / CONTRACT LOCKED
-Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED
-WU1-WU6 implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4-WU6 NOT STARTED
-Technical implementation authorization: WU2 and WU3 separately authorized and complete; future units remain separately gated
+Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL
+WU1-WU6 implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL / WU5 NOT STARTED / WU6 NOT STARTED
+WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice CLOSED / Batch 2 Modules slice NOT STARTED / next eligible slice after System closure / full Batch 2 NOT COMPLETE / Batches 3–4 NOT STARTED
+Technical implementation authorization: WU2 and WU3 separately authorized and complete; WU4 Batch 1 and Batch 2 System separately authorized and accepted; remaining slices remain separately gated
 Release / tag / publication authorization: NONE
 ```
 
@@ -280,8 +281,11 @@ locked:
 ## Work Unit topology
 
 The workstream remains locked to six Work Units. WU1, WU2, and WU3 are
-complete for their accepted scopes; WU4-WU6 remain separately gated and
-require separate execution authorization.
+complete for their accepted scopes. WU4 is ACTIVE / PARTIAL: Batch 1 is
+implemented and accepted, and the Batch 2 System slice is closed while the
+peer Modules slice remains not started and is the next eligible slice after
+System closure. Full Batch 2 is not complete. WU5 and WU6 remain not started
+and separately gated, requiring separate execution authorization.
 
 ### WU1 — Webcore Completeness Contract & Scope Reconciliation
 
@@ -381,6 +385,12 @@ remain specific to this WU3 baseline.
 
 Purpose: provide one coherent Webcore Site Settings operator projection while
 preserving existing Settings, Site Asset, and Branding authority.
+
+Current state: WU4 is ACTIVE / PARTIAL. Batch 1 is IMPLEMENTED / ACCEPTED.
+The Batch 2 Site Settings → System slice is CLOSED under
+`docs/55_webcore_site_settings_system_operational_projection_contract.md`.
+The Batch 2 Modules slice is NOT STARTED and is the next eligible slice after
+System closure; full Batch 2 is NOT COMPLETE. Batches 3–4 are NOT STARTED.
 
 Internal scope classification:
 
