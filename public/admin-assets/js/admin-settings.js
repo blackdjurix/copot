@@ -28,7 +28,7 @@
     };
 
     tabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => activate(tab.dataset.settingsTab));
+        tab.addEventListener('click', () => activate(tabKey(tab)));
         tab.addEventListener('keydown', (event) => {
             let next = null;
             if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
@@ -37,12 +37,12 @@
             if (event.key === 'End') next = tabs.length - 1;
             if (next !== null) {
                 event.preventDefault();
-                activate(tabs[next].dataset.settingsTab, { focus: true });
+                activate(tabKey(tabs[next]), { focus: true });
                 return;
             }
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                activate(tab.dataset.settingsTab, { focus: true });
+                activate(tabKey(tab), { focus: true });
             }
         });
     });

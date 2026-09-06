@@ -23,6 +23,8 @@ $assert(str_contains($view, 'data-settings-panel="site-settings-system"<?= $init
 $js = (string) file_get_contents($base . '/public/admin-assets/js/admin-settings.js');
 $assert(str_contains($js, 'data-settings-tab-key') || str_contains($view, 'data-settings-tab-key'), 'Fragment keys are not explicitly mapped separately from DOM identifiers.');
 $assert(str_contains($js, 'window.location.hash !== `#${key}`'), 'Tab changes do not produce canonical fragment URLs.');
+$assert(str_contains($js, "tab.addEventListener('click', () => activate(tabKey(tab)))"), 'Tab clicks do not activate using the canonical tab key.');
+$assert(str_contains($js, 'activate(tabKey(tabs[next]), { focus: true })'), 'Keyboard tab navigation does not activate using the canonical tab key.');
 $assert(str_contains($js, "replace(/^#/, '')"), 'Canonical fragment reading is missing.');
 $assert(!str_contains($js, "#site-settings-"), 'Internal DOM identifiers remain exposed as canonical fragment URLs.');
 $assert(!str_contains($js, 'section='), 'JavaScript retains the competing query-string tab model.');
