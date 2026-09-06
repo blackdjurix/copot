@@ -124,7 +124,7 @@ natcasesort($statusOptions);
                     $statusFilter = strtolower($lifecycle[0]);
                     ?>
                     <tr class="site-settings-module-row" data-site-settings-module-row data-detail-url="<?= $escape($detailPath($name)) ?>" data-filter-name="<?= $escape($searchIndex) ?>" data-filter-version="<?= $escape($versionFilter) ?>" data-filter-issue="<?= $escape($issueFilter) ?>" data-filter-status="<?= $escape($statusFilter) ?>" tabindex="0" aria-label="Open <?= $escape($title) ?> Module details">
-                        <th scope="row" data-label="Module"><span class="admin-module-identity__title"><?= $escape($title) ?></span><span class="admin-module-identity__name"><code><?= $escape($name) ?></code></span></th>
+                        <th scope="row" data-label="Module"><span class="site-settings-module-identity"><span class="admin-module-identity__title"><?= $escape($title) ?></span><span class="admin-module-identity__name"><code><?= $escape($name) ?></code></span></span></th>
                         <td data-label="Version"><span class="admin-module-version__primary"><?= $escape($item['version'] ?? '—') ?></span><?php if (!empty($item['available_package_version'])): ?><span class="admin-text-muted">Available: <?= $escape($item['available_package_version']) ?></span><?php endif; ?></td>
                         <td data-label="Issue"><span class="site-settings-module-issue <?= $escape($issueClass) ?>"><?= $escape($issueLabel) ?></span><?php if ($additionalIssues > 0): ?><span class="admin-text-muted"> +<?= $additionalIssues ?> more</span><?php endif; ?></td>
                         <td data-label="Status"><span class="admin-badge <?= $escape($lifecycle[1]) ?>"><?= $escape($lifecycle[0]) ?></span></td>

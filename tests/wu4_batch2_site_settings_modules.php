@@ -132,7 +132,9 @@ $assert(str_contains($authority, 'public function projectionInventory') && str_c
 $assert(str_contains($settingsView, '$canUpdateSettings') && str_contains($settingsView, '$canManageModules') && str_contains($settingsView, 'moduleItems'), 'Site Settings read-versus-action composition is missing.');
 $assert(str_contains($css, '.site-settings-modules-table th:nth-child(1)') && str_contains($css, 'table-layout: fixed'), 'Unequal available-width inventory layout is missing.');
 $assert(str_contains($css, '.site-settings-modules-table thead') && str_contains($css, 'grid-template-columns: minmax(5.5rem, .35fr)'), 'Responsive stacked Module presentation is missing.');
-$assert(str_contains($layout, 'admin.css?v=m311-wu3-acceptance-modules-2'), 'Modules presentation stylesheet cache-bust is missing.');
+$assert(str_contains($view, 'site-settings-module-identity') && str_contains($css, '.site-settings-module-identity { min-width: 0; overflow-wrap: anywhere; }'), 'Module title and technical identity are not grouped into one mobile value area.');
+$assert(str_contains($css, '.site-settings-modules-table th:first-child { margin: calc(-1 * var(--admin-space-4)) calc(-1 * var(--admin-space-4)) 0; padding: var(--admin-space-4) var(--admin-space-4) var(--admin-space-2); }'), 'Mobile Module identity section does not extend across the full card width.');
+$assert(str_contains($layout, 'admin.css?v=m311-wu3-acceptance-modules-3'), 'Modules presentation stylesheet cache-bust is missing.');
 $assert(str_contains($view, 'site-settings-modules.js?v=wu4-modules-4'), 'Modules filter count script cache-bust is missing.');
 
 $html = $render([

@@ -3797,7 +3797,8 @@ html.admin-nav-open body {
     .site-settings-modules-table th::before,
     .site-settings-modules-table td::before { color: var(--admin-color-muted); content: attr(data-label); font-size: 12px; font-weight: 800; }
     .site-settings-modules-table th { font-size: inherit; }
-    .site-settings-modules-table th:first-child { padding-top: 0; }
+    .site-settings-modules-table th:first-child { margin: calc(-1 * var(--admin-space-4)) calc(-1 * var(--admin-space-4)) 0; padding: var(--admin-space-4) var(--admin-space-4) var(--admin-space-2); }
+    .site-settings-module-identity { min-width: 0; overflow-wrap: anywhere; }
     .site-settings-modules-table td:last-child { padding-bottom: 0; }
     .site-settings-identity-layout { grid-template-columns: 1fr; }
     .site-settings-identity__settings,
