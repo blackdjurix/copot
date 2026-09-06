@@ -2,7 +2,7 @@
 
 Status: PLANNING LOCKED / AUTHORITATIVE CONTRACT AMENDMENT CANDIDATE
 
-This Concept materializes the currently accepted product/architecture direction for runtime handoff under Site Settings → System, without claiming delivered capability and without authorizing implementation.
+This Concept materializes the accepted product/architecture direction for Runtime Handoff under Site Settings → System, without claiming delivered capability and without authorizing implementation.
 
 The target is to amend the existing Runtime Registry / Multi-Installation authority so Batch 2 can project runtime participation and handoff truthfully instead of inventing lifecycle semantics in the UI layer.
 
@@ -20,7 +20,7 @@ Existing locked facts remain intact:
 - each installation has a stable `installation_id`;
 - each runtime participant has a stable `runtime_id` distinct from PID/process identity;
 - Runtime Registry remains the singular runtime-participation authority;
-- existing runtime states include `REGISTERED`, `ACTIVE`, `STALE`, `DETACHED`, and `INCOMPATIBLE`;
+- runtime participant states remain `REGISTERED`, `ACTIVE`, `STALE`, `DETACHED`, and `INCOMPATIBLE`;
 - retired runtimes are detached rather than hard-deleted by default;
 - shared-state transitions remain fail-closed when runtime compatibility or participation state is unsafe;
 - Site Settings is a projection and must not become a second runtime/lifecycle engine.
@@ -29,9 +29,9 @@ Existing locked facts remain intact:
 
 Current Runtime Registry semantics support direct detachment, but current implementation transitions a runtime directly to `DETACHED` and does not provide a reversible handoff window.
 
-That is insufficient for the accepted product flow where an existing installation is intentionally transferred from one serving runtime to another while preserving the installation/database state and allowing the source runtime to cancel before takeover commits.
+That is insufficient for the accepted product flow where one existing installation is intentionally transferred from one serving runtime to another while preserving the installation/database state and allowing the source runtime to cancel before takeover commits.
 
-The required amendment must therefore define runtime handoff as a lifecycle operation rather than as a presentation-only action.
+The required amendment must therefore define Runtime Handoff as a durable lifecycle operation rather than as a presentation-only action or a new participant-state shortcut.
 
 ## Terminology boundary
 
@@ -44,87 +44,147 @@ It must remain distinct from:
 
 Do not use one generic `Adopt` label for all three operations.
 
-## Target lifecycle model
+## Refined lifecycle model
 
-Runtime handoff is a reversible operation until takeover is committed.
+Source-backed review supersedes the earlier candidate model that placed `DETACH_PENDING` inside `RuntimeParticipant` state.
 
-The target source-runtime flow is:
+Runtime participant state remains governed by the existing vocabulary:
 
-`ACTIVE → DETACH_PENDING → DETACHED`
+`REGISTERED / ACTIVE / STALE / DETACHED / INCOMPATIBLE`
 
-From `DETACH_PENDING`:
+Runtime Handoff has its own durable operation state:
 
-- `Cancel Detachment` returns the source runtime to `ACTIVE` when cancellation is still eligible;
-- successful target-runtime takeover/finalization commits the source runtime to `DETACHED`;
-- failure before committed takeover must leave an explicit recoverable/pending or cancelled state and must not silently create dual authority.
+`PENDING → COMMITTED / CANCELLED / INTERRUPTED`
 
-`DETACHED` is final for that handoff operation. A detached runtime identity must not silently resume authority through heartbeat or re-registration.
+The source runtime may remain an `ACTIVE` participant while the handoff operation is `PENDING`. A pending handoff is represented by authoritative handoff-operation evidence, not by replacing the participant state with `DETACH_PENDING`.
+
+This separation is required because current heartbeat and staleness behavior own participant-state transitions. A handoff-pending semantic must not be silently overwritten by heartbeat or stale classification.
 
 ## Detachment request
 
-`Request Detachment` starts a durable handoff operation. It must not immediately destroy source-runtime participation evidence.
+`Request Detachment` starts a durable Runtime Handoff operation and moves that operation to `PENDING`.
+
+It must not immediately set the source runtime to `DETACHED` and must not destroy source-runtime participation evidence.
 
 Minimum durable handoff evidence should bind:
 
 - `installation_id`;
 - source `runtime_id`;
-- durable handoff/detachment operation identity;
+- durable handoff operation identity;
 - requested timestamp;
-- source runtime state and compatibility evidence at request time;
-- target runtime identity when already known, otherwise explicit unbound-target state;
-- current cancellation eligibility;
-- finalization/commit state.
+- source participant state and compatibility evidence at request time;
+- target `runtime_id` when already known, otherwise explicit unbound-target state;
+- current operation state;
+- current cancellation eligibility or evidence sufficient to derive it;
+- finalization/commit result.
 
-Exact persistence shape and enum names remain contract/implementation-time decisions, but the semantic distinctions above must survive.
+Exact persistence shape remains contract/implementation-time detail, but this evidence must not be stored as a competing runtime registry.
 
 ## Cancellation
 
-`Cancel Detachment` is a first-class operation, not a UI convenience.
+`Cancel Detachment` is a first-class lifecycle operation, not a UI convenience.
 
-Cancellation is eligible only while takeover has not been committed and no conflicting lifecycle state makes restoration unsafe.
+Cancellation is eligible only while the handoff operation remains `PENDING`, takeover has not committed, and authoritative evidence proves the source can safely continue serving.
 
 At minimum, cancellation must fail closed when:
 
-- a target runtime has already successfully attached/adopted and takeover is committed;
-- the source runtime can no longer safely resume authority;
+- takeover may already have committed;
+- the source runtime can no longer safely continue participation;
 - a conflicting lifecycle operation is active or unresolved;
-- installation/runtime identity evidence no longer matches the handoff plan; or
+- installation/runtime/handoff identity evidence no longer matches; or
 - authoritative state is indeterminate.
 
-Successful cancellation restores the source runtime to `ACTIVE` under the same installation identity and closes the pending handoff operation without creating a second active owner.
+Successful cancellation transitions the handoff operation to `CANCELLED`. The source runtime keeps or resumes its valid participant state without creating a new installation or runtime identity.
+
+Cancellation must not mutate a participant state merely to simulate handoff reversal.
 
 ## Target-runtime takeover
 
-A new runtime may take over one existing installation only through an explicit handoff/attachment path that proves:
+A target runtime may take over one existing installation only through an explicit handoff/attachment path that proves:
 
 - the target references the same `installation_id` and intended database/namespace state;
+- the target has its own stable `runtime_id` and never reuses the source `runtime_id`;
 - compatibility requirements pass;
-- the source runtime is in an eligible handoff state;
-- no conflicting active runtime authority exists;
-- the same handoff operation identity is used through finalization; and
-- takeover is committed atomically enough to prevent split-brain or ambiguous dual-active authority.
+- the same handoff operation identity is used through finalization;
+- no conflicting lifecycle operation invalidates the evidence; and
+- takeover commit cannot produce ambiguous serving authority.
 
-The target may have its own stable `runtime_id`; takeover must not reuse the old source `runtime_id` as a shortcut.
+The exact target registration/attachment mechanics remain contract work unless source evidence already determines them.
+
+## Single exclusion boundary
+
+All handoff mutation that can decide serving authority must execute under one installation-wide exclusion boundary.
+
+Current source already provides `InstallationMutex` and `RuntimeTransitionCoordinator`. The amendment should reuse that authority rather than create a new distributed lock.
+
+The implementation design must avoid nested acquisition of the same non-blocking installation mutex. A handoff coordinator that owns the exclusion boundary must use mutation primitives that do not reacquire the same lock internally.
+
+Request, cancellation, retry/reconciliation, and final commit must re-read and revalidate authoritative handoff and runtime evidence inside the exclusion boundary before mutation.
+
+## Commit boundary
+
+Takeover has one logical commit boundary.
+
+Inside one installation-wide critical section, finalization must revalidate at least:
+
+- handoff operation identity and current `PENDING` state;
+- source `runtime_id` and source eligibility;
+- target `runtime_id` and target compatibility/eligibility;
+- same `installation_id` and installation/database identity;
+- absence of conflicting lifecycle state.
+
+A successful commit must produce an unambiguous durable result:
+
+- source runtime becomes `DETACHED`;
+- target runtime becomes or remains the valid serving participant according to authoritative Runtime Registry semantics;
+- handoff operation becomes `COMMITTED`;
+- cancellation eligibility ends permanently for that operation.
+
+Do not split source detachment and target authority activation across an unguarded interval.
+
+## Interruption and retry
+
+Runtime Handoff must be interruption-safe.
+
+If final outcome cannot be proven after interruption, the operation becomes or is classified as `INTERRUPTED` and the system fails closed until deterministic reconciliation proves the safe next action.
+
+Rules:
+
+- interruption never silently becomes success;
+- retry/reconciliation remains bound to the same handoff identity where the same operation is being recovered;
+- cancellation is not offered when commit may already have occurred;
+- finalization must be idempotent or deterministically guarded against duplicate commit;
+- ambiguous source/target authority requires explicit reconciliation.
+
+## Durable operation storage direction
+
+Current repository source already has a durable file-backed lifecycle-operation pattern under `storage/.copot-lifecycle` with operation identity, atomic replacement, interruption classification, and terminal cleanup semantics.
+
+That pattern is suitable architectural evidence for Runtime Handoff, but the current `LifecycleOperationRecord` is package-lifecycle-specific and must not be reused unchanged.
+
+The amendment should prefer a handoff-specific durable operation record or a narrowly generalized operation abstraction that preserves singular lifecycle-operation/exclusion semantics without importing package-only fields into Runtime Handoff.
+
+No database schema change is currently required by evidence. A schema change must not be introduced unless later source review proves file-backed installation-scoped persistence insufficient.
 
 ## No-dual-active invariant
 
 The core invariant is:
 
-**one installation must never reach a committed state where two independent runtime participants both believe they hold active serving authority through the same handoff.**
+**one Runtime Handoff must never reach a committed or uncertain state where two independent runtime participants can both legitimately act as the exclusive serving authority for the same installation.**
 
-Temporary coordination evidence may involve more than one registered participant, but committed serving authority must remain unambiguous.
+Multiple compatible runtime participants remain possible where existing contracts permit them, but an exclusive-serving transfer must have an unambiguous source, target, and committed result.
 
-If state cannot be proven safe, handoff and cancellation must fail closed.
+If state cannot be proven safe, handoff and cancellation fail closed.
 
 ## Source-runtime behavior after finalization
 
 After successful takeover commit:
 
-- source runtime becomes `DETACHED`;
+- source runtime is `DETACHED`;
 - source heartbeat/automatic reactivation remains blocked;
 - source runtime must not continue normal lifecycle mutation against the installation;
-- stale local files or process survival do not restore authority;
-- re-entry requires an explicit future supported operation, not silent registration.
+- stale local files or a surviving process do not restore authority;
+- re-entry requires an explicit future supported lifecycle path, not silent registration.
 
 ## Site Settings → System projection
 
@@ -134,19 +194,19 @@ The product projection may expose:
 
 - current `installation_id`;
 - current `runtime_id`;
-- runtime participation state;
-- compatibility and last-seen evidence where safe;
-- handoff pending state;
+- runtime participant state;
+- compatibility and safe last-seen evidence;
+- handoff operation state;
 - `Request Detachment` when eligible;
 - `Cancel Detachment` when eligible;
 - takeover/finalization status and next valid action;
 - concise fail-closed blocking reasons.
 
-Site Settings must consume authoritative runtime evidence and must not infer or manufacture handoff eligibility.
+Site Settings must consume authoritative runtime and handoff evidence and must not infer or manufacture eligibility.
 
 ## Authority and permission boundary
 
-Runtime Handoff belongs to Webcore runtime/lifecycle authority, not to Site Settings persistence.
+Runtime Handoff belongs to Webcore runtime/lifecycle authority, not Site Settings persistence.
 
 The existing `system.webcore.manage` operator boundary is the expected product-facing permission lineage unless source evidence during amendment work requires a narrower dedicated capability.
 
@@ -176,17 +236,20 @@ This Concept does not authorize:
 
 ## Required authoritative amendment outcome
 
-Before Batch 2 implements Runtime Handoff controls, authoritative contract work must explicitly lock:
+Before Batch 2 implements executable Runtime Handoff controls, authoritative contract work must explicitly lock:
 
-1. runtime-handoff terminology and ownership;
-2. `DETACH_PENDING` or equivalent pending semantic state;
-3. request/cancel/finalize transition rules;
-4. cancellation eligibility and fail-closed conditions;
-5. takeover commit boundary;
-6. no-dual-active invariant;
-7. source-runtime behavior after finalization;
-8. target-runtime attachment/adoption requirements;
-9. required durable operation evidence; and
-10. the exact Site Settings projection boundary.
+1. Runtime Handoff terminology and ownership;
+2. participant-state versus handoff-operation-state separation;
+3. `PENDING / COMMITTED / CANCELLED / INTERRUPTED` handoff semantics or contract-equivalent states;
+4. Request / Cancel / Finalize transition rules;
+5. cancellation eligibility and fail-closed conditions;
+6. single installation-wide exclusion and no-nested-lock rule;
+7. atomic logical commit ordering;
+8. no-dual-active invariant;
+9. source-runtime behavior after finalization;
+10. target-runtime attachment requirements;
+11. durable handoff-operation evidence and persistence owner;
+12. interruption/retry/reconciliation semantics; and
+13. the exact Site Settings projection boundary.
 
-Until that amendment is promoted, Batch 2 may project existing runtime participation evidence only and must not claim reversible detachment or runtime handoff execution as delivered capability.
+Until that amendment is promoted, Batch 2 may project existing runtime participation evidence only and must not claim reversible detachment or Runtime Handoff execution as delivered capability.
