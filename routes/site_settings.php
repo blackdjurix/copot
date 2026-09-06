@@ -78,7 +78,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'installationId' => $app->installationIdentity()->value(),
             'releasePath' => $app->path('release.json'),
             'csrfToken' => $app->csrf()->token(),
-            'initialArea' => (string) $request->input('section', 'identity'),
+            'initialArea' => 'identity',
             'canManageSystem' => $user->can('system.webcore.manage'),
         ]);
         return Response::html($app->adminPageRenderer()->render('Site Settings', $view, $user, $app->csrf()->token(), $request->path(), ['description' => 'Configure the site identity and baseline appearance.', 'surface' => 'transparent', 'spacing' => 'default']), $status);
@@ -90,11 +90,6 @@ $app->adminNavigation()->add('Site Settings', $path, $permission, 'settings', 70
 $app->router()->get($path, function ($request) use ($requireUser, $render): Response {
     $user = $requireUser($request); if ($user instanceof Response) return $user;
     return $render($request, $user, [], $request->input('saved') === '1' ? 'Site Settings saved successfully.' : null);
-});
-
-$app->router()->get($systemPath, function ($request) use ($requireUser, $path): Response {
-    $user = $requireUser($request); if ($user instanceof Response) return $user;
-    return Response::redirect($path . '?section=system');
 });
 
 $requireSystemUser = static function ($request) use ($app): mixed {

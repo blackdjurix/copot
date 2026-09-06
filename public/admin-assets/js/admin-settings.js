@@ -6,24 +6,25 @@
 
     const tabs = Array.from(page.querySelectorAll('[data-settings-tab]'));
     const panels = new Map(Array.from(page.querySelectorAll('[data-settings-panel]')).map((panel) => [panel.dataset.settingsPanel, panel]));
-    const validIds = tabs.map((tab) => tab.dataset.settingsTab);
+    const tabKey = (tab) => tab.dataset.settingsTabKey || (tab.dataset.settingsTab || '').replace(/^site-settings-/, '');
+    const validKeys = tabs.map(tabKey);
     const dirtyTabs = new Set();
     let isSubmitting = false;
 
-    const hashId = () => window.location.hash.replace(/^#/, '').trim().toLowerCase();
-    const initialId = validIds.includes(hashId()) ? hashId() : (page.dataset.initialTab || 'general');
+    const hashKey = () => window.location.hash.replace(/^#/, '').trim().toLowerCase();
+    const initialKey = validKeys.includes(hashKey()) ? hashKey() : (validKeys.includes(page.dataset.initialTab) ? page.dataset.initialTab : 'identity');
 
-    const activate = (id, { focus = false, updateHash = true } = {}) => {
-        if (!validIds.includes(id)) id = 'general';
+    const activate = (key, { focus = false, updateHash = true } = {}) => {
+        if (!validKeys.includes(key)) key = 'identity';
         tabs.forEach((tab) => {
-            const active = tab.dataset.settingsTab === id;
+            const active = tabKey(tab) === key;
             tab.classList.toggle('is-active', active);
             tab.setAttribute('aria-selected', active ? 'true' : 'false');
             tab.tabIndex = active ? 0 : -1;
             if (active && focus) tab.focus();
         });
-        panels.forEach((panel, panelId) => { panel.hidden = panelId !== id; });
-        if (updateHash && window.location.hash !== `#${id}`) history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${id}`);
+        panels.forEach((panel, panelId) => { panel.hidden = panelId !== `site-settings-${key}`; });
+        if (updateHash && window.location.hash !== `#${key}`) history.replaceState(null, '', `${window.location.pathname}${window.location.search}#${key}`);
     };
 
     tabs.forEach((tab, index) => {
@@ -95,7 +96,7 @@
         });
     });
 
-    window.addEventListener('hashchange', () => activate(validIds.includes(hashId()) ? hashId() : 'general', { updateHash: false }));
+    window.addEventListener('hashchange', () => activate(validKeys.includes(hashKey()) ? hashKey() : 'identity', { updateHash: false }));
     window.addEventListener('beforeunload', (event) => {
         if (!isSubmitting && dirtyTabs.size > 0) {
             event.preventDefault();
@@ -103,5 +104,5 @@
         }
     });
 
-    activate(validIds.includes(initialId) ? initialId : 'general', { updateHash: !window.location.hash });
+    activate(initialKey, { updateHash: !window.location.hash });
 })();

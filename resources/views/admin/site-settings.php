@@ -11,10 +11,10 @@ $homepageContent = is_array($values['homepage_content'] ?? null) ? $values['home
 $homepageContentType = (string) ($homepageContent['type'] ?? 'none');
 $homepageContentPageId = $homepageContentType === 'page' ? (int) ($homepageContent['id'] ?? 0) : 0;
 ?>
-<section class="admin-panel admin-settings-page site-settings-page" data-site-settings data-settings-page data-initial-tab="site-settings-<?= $escape($initialArea) ?>">
+<section class="admin-panel admin-settings-page site-settings-page" data-site-settings data-settings-page data-initial-tab="<?= $escape($initialArea) ?>">
     <div class="admin-settings-tabs-wrap">
         <div class="admin-settings-tabs" role="tablist" aria-label="Site Settings areas">
-            <?php foreach ($areas as $id => $label): $tabId = 'site-settings-' . $id; $active = $id === $initialArea; ?><button class="admin-settings-tab<?= $active ? ' is-active' : '' ?>" id="<?= $escape($tabId . '-tab') ?>" type="button" role="tab" aria-selected="<?= $active ? 'true' : 'false' ?>" aria-controls="<?= $escape($tabId) ?>" tabindex="<?= $active ? '0' : '-1' ?>" data-settings-tab="<?= $escape($tabId) ?>"><span><?= $escape($label) ?></span><span class="admin-settings-tab__dirty" aria-hidden="true" hidden>•</span></button><?php endforeach; ?>
+            <?php foreach ($areas as $id => $label): $tabId = 'site-settings-' . $id; $active = $id === $initialArea; ?><button class="admin-settings-tab<?= $active ? ' is-active' : '' ?>" id="<?= $escape($tabId . '-tab') ?>" type="button" role="tab" aria-selected="<?= $active ? 'true' : 'false' ?>" aria-controls="<?= $escape($tabId) ?>" tabindex="<?= $active ? '0' : '-1' ?>" data-settings-tab="<?= $escape($tabId) ?>" data-settings-tab-key="<?= $escape($id) ?>"><span><?= $escape($label) ?></span><span class="admin-settings-tab__dirty" aria-hidden="true" hidden>•</span></button><?php endforeach; ?>
         </div>
     </div>
     <div class="admin-panel__body">

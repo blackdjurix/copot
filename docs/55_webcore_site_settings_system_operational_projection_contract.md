@@ -32,6 +32,17 @@ that Site Settings was always their delivery surface.
 
 ## 2. Locked System information architecture
 
+### Canonical tab URL
+
+Site Settings tabs use the canonical fragment URLs under the single
+`/admin/settings` product surface: `#identity`, `#system`, `#security`,
+`#email`, `#modules`, and `#health`. Fragment keys are deliberately separate
+from internal DOM identifiers such as `site-settings-system`. The query-string
+form `?section=*` is not a Site Settings tab-selection mechanism, and
+`/admin/settings/system` is not a competing product destination. Lifecycle
+action endpoints under `/admin/settings/system/*` remain implementation
+endpoints and are not tab URLs.
+
 The System area contains exactly these six top-level operator groups:
 
 1. **Current System State**
