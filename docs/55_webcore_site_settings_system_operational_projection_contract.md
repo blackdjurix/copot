@@ -1,11 +1,11 @@
 # WU4 Batch 2 — Site Settings System Operational Projection Contract
 
-Status: **AUTHORITATIVE CONTRACT / RECONCILED FOR IMPLEMENTATION**
+Status: **AUTHORITATIVE CONTRACT / SYSTEM SLICE CLOSED**
 
 Placement: Post-M3 — Webcore Product Completeness & Stabilization / WU4 Batch 2
 Parent authority: `docs/54_webcore_site_settings_appearance_consolidation_contract.md`
 Source promotion record: `precontracts/wu4_batch2_site_settings_system_operational_projection_precontract.md`
-Implementation authorization: **NONE**
+Implementation authorization: **This contract did not grant blanket implementation authority; the System slice was later separately authorized, implemented, validated, and accepted.**
 Release / tag / publication authorization: **NONE**
 
 ## 1. Purpose and governing boundary
@@ -29,6 +29,26 @@ reconciliation remains bounded by this contract and the parent contract.
 Historical System Manager delivery and closure records in `docs/39` and
 `docs/41` remain truthful historical lineage. They are not rewritten to imply
 that Site Settings was always their delivery surface.
+
+## Current System slice state
+
+**Site Settings → System: CLOSED**
+
+- Implementation: complete.
+- Focused and runtime validation: PASS.
+- Human/product acceptance: PASS.
+- Final tab-divider presentation acceptance: PASS / LEAVE AS-IS.
+- Canonical idle hierarchy: Current System State → What's New (when
+  authoritative metadata is available) → Update.
+- Update is the single user-facing lifecycle umbrella. Patch, Update,
+  Upgrade, Database-only Update, and Repair remain technically distinct,
+  planner-derived classifications.
+- Compatibility, Repair, Retry, and Reconciliation remain contextual to
+  authoritative lifecycle evidence.
+- Runtime Participation, Runtime Handoff, detach, and adoption remain absent
+  from the current user-facing System UI.
+- Permissions remain an enforcement boundary and are not a permanent System
+  panel.
 
 ## 2. Locked System information architecture
 
@@ -225,9 +245,9 @@ authority ownership.
 
 ## 11. Explicit exclusions and implementation gate
 
-This contract does not authorize:
+The original contract did not grant blanket implementation authorization. The
+following remain outside the separately authorized, accepted System slice:
 
-- Batch 2 source/runtime implementation;
 - Runtime Handoff implementation or new Runtime Registry persistence;
 - schema/database changes or generic database-update controls;
 - online update discovery/download infrastructure;
@@ -273,6 +293,7 @@ human/product review confirm:
 - no second lifecycle, registry, recovery, schema, migration, package,
   release-metadata, or operation-history authority is created.
 
-This reconciliation authorizes no Runtime Handoff, detach, adoption, registry,
-schema, or lifecycle-semantics implementation. It records the accepted
-contextual System presentation target only.
+This reconciliation does not authorize Runtime Handoff, detach, adoption,
+registry, schema, or lifecycle-semantics implementation. The System slice was
+later separately authorized and is now closed with the accepted contextual
+presentation and existing lifecycle authorities preserved.
