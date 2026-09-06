@@ -57,6 +57,25 @@ $discoveredPermissions = is_array($item['discovered_permission_metadata_summary'
     ? $item['discovered_permission_metadata_summary'] : [];
 $diagnostics = is_array($item['diagnostics'] ?? null) ? $item['diagnostics'] : [];
 $siteSettingsModulesProjection = !empty($siteSettingsModulesProjection);
+$dependencyNames = array_values(array_filter(array_map(
+    static fn (mixed $dependency): string => is_array($dependency) ? (string) ($dependency['name'] ?? '') : '',
+    $dependencies
+)));
+$denialReasonsByAction = [];
+foreach ($actionLabels as $action => $label) {
+    $reasons = is_array($item['denial_reasons'][$action] ?? null) ? $item['denial_reasons'][$action] : [];
+    if ($reasons !== []) {
+        $denialReasonsByAction[$action] = $reasons;
+    }
+}
+$hasIssues = $diagnostics !== [] || $denialReasonsByAction !== [];
+$diagnosticSeverityClass = static function (string $severity): string {
+    return match (strtolower($severity)) {
+        'critical', 'error' => 'admin-badge--danger',
+        'warning' => 'admin-badge--warning',
+        default => 'admin-badge--info',
+    };
+};
 ?>
 <?php if (!empty($notice)): ?>
     <div class="admin-alert admin-alert--success" role="status"><?= $escape($notice) ?></div>
@@ -73,14 +92,55 @@ $siteSettingsModulesProjection = !empty($siteSettingsModulesProjection);
     <header class="admin-module-detail-header" aria-labelledby="module-identity-title">
         <div class="admin-module-detail-header__identity">
             <h2 id="module-identity-title"><?= $escape($item['title'] ?? $itemName) ?></h2>
-            <p><code><?= $escape($itemName) ?></code></p>
         </div>
         <div class="admin-actions"><a class="admin-button admin-button--secondary" href="<?= $escape($inventoryPath) ?>">Back to Modules</a></div>
     </header>
+    <section class="admin-panel admin-module-detail-panel admin-module-detail-overview" aria-labelledby="module-overview-title">
+        <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="module-overview-title">Module Overview</h2><p class="admin-panel__description">Current Module properties and lifecycle state.</p></div></header>
+        <div class="admin-panel__body"><dl class="admin-module-detail-meta">
+            <dt>Lifecycle / Status</dt><dd><span class="admin-badge<?= $lifecycle[1] !== '' ? ' ' . $lifecycle[1] : '' ?>"><?= $escape($lifecycle[0]) ?></span></dd>
+            <dt>Effective version</dt><dd><?= $escape($item['version'] ?? '—') ?></dd>
+            <dt>Discovery state</dt><dd><span class="admin-badge<?= $discovery[1] !== '' ? ' ' . $discovery[1] : '' ?>"><?= $escape($discovery[0]) ?></span></dd>
+            <dt>Technical name</dt><dd><code><?= $escape($itemName) ?></code></dd>
+            <dt>Dependencies</dt><dd><?= $dependencyNames === [] ? 'None declared' : $escape(implode(', ', $dependencyNames)) ?></dd>
+        </dl></div>
+    </section>
 <?php endif; ?>
 
 <div class="admin-module-detail-layout">
     <div class="admin-module-detail-column admin-module-detail-column--primary">
+        <?php if ($siteSettingsModulesProjection): ?>
+            <section class="admin-panel admin-module-detail-panel admin-module-detail-issues" aria-labelledby="module-issues-title">
+                <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="module-issues-title">Issues &amp; Guidance</h2><p class="admin-panel__description">Current diagnosable conditions and lifecycle impact.</p></div></header>
+                <div class="admin-panel__body">
+                    <?php if (!$hasIssues): ?>
+                        <p>No issues detected.</p>
+                    <?php else: ?>
+                        <?php if ($diagnostics !== []): ?><ul class="admin-module-detail-list"><?php foreach ($diagnostics as $diagnostic): ?><?php $code = (string) ($diagnostic['code'] ?? 'unknown'); $severity = (string) ($diagnostic['severity'] ?? 'notice'); $blockedActions = array_values(array_filter(array_map('strval', is_array($diagnostic['blocked_actions'] ?? null) ? $diagnostic['blocked_actions'] : []), static fn (string $action): bool => isset($actionLabels[$action]))); ?><li><strong><?= $escape($diagnosticLabels[$code] ?? 'Module issue') ?></strong> <span class="admin-badge <?= $escape($diagnosticSeverityClass($severity)) ?>"><?= $escape(ucfirst($severity)) ?></span><?php if ($blockedActions !== []): ?><span class="admin-text-muted"> Blocks: <?= $escape(implode(', ', array_map(static fn (string $action): string => $actionLabels[$action], $blockedActions))) ?>.</span><?php endif; ?></li><?php endforeach; ?></ul><?php endif; ?>
+                        <?php if ($denialReasonsByAction !== []): ?><dl class="admin-module-detail-meta admin-module-detail-denials"><?php foreach ($denialReasonsByAction as $action => $reasons): ?><dt><?= $escape($actionLabels[$action]) ?> unavailable</dt><dd><?= $escape(implode('; ', array_map('strval', $reasons))) ?></dd><?php endforeach; ?></dl><?php endif; ?>
+                    <?php endif; ?>
+                </div>
+            </section>
+
+            <details class="admin-panel admin-module-detail-panel admin-module-detail-disclosure">
+                <summary>Technical evidence</summary>
+                <div class="admin-panel__body">
+                    <dl class="admin-module-detail-meta">
+                        <dt>Stored path available</dt><dd><?= !empty($item['stored_path_available']) ? 'Yes' : 'No' ?></dd>
+                        <dt>Discovered path available</dt><dd><?= !empty($item['discovered_path_available']) ? 'Yes' : 'No' ?></dd>
+                        <dt>Stored version</dt><dd><?= $escape($item['stored_version'] ?? '—') ?></dd>
+                        <dt>Discovered version</dt><dd><?= $escape($item['discovered_version'] ?? '—') ?></dd>
+                        <dt>Stored title</dt><dd><?= $escape($item['stored_title'] ?? '—') ?></dd>
+                        <dt>Discovered title</dt><dd><?= $escape($item['discovered_title'] ?? '—') ?></dd>
+                    </dl>
+                    <div class="admin-module-detail-evidence">
+                        <section aria-labelledby="module-stored-permissions-title"><h3 id="module-stored-permissions-title">Stored permissions</h3><?php if ($storedPermissions === []): ?><p>None</p><?php else: ?><ul class="admin-module-detail-list"><?php foreach ($storedPermissions as $permission): ?><li><code><?= $escape($permission['slug'] ?? '') ?></code> — <?= $escape($permission['name'] ?? '') ?></li><?php endforeach; ?></ul><?php endif; ?></section>
+                        <section aria-labelledby="module-discovered-permissions-title"><h3 id="module-discovered-permissions-title">Discovered permissions</h3><?php if ($discoveredPermissions === []): ?><p>None</p><?php else: ?><ul class="admin-module-detail-list"><?php foreach ($discoveredPermissions as $permission): ?><li><code><?= $escape($permission['slug'] ?? '') ?></code> — <?= $escape($permission['name'] ?? '') ?></li><?php endforeach; ?></ul><?php endif; ?></section>
+                        <section aria-labelledby="module-contributions-title"><h3 id="module-contributions-title">Contribution files</h3><?php if ($contributions === []): ?><p>None declared</p><?php else: ?><ul class="admin-module-detail-list"><?php foreach ($contributions as $type => $contribution): ?><li><?= $escape((string) $type) ?>: <?= !empty($contribution['declared']) ? 'declared' : 'not declared' ?>; <?= !empty($contribution['available']) ? 'available' : 'missing' ?></li><?php endforeach; ?></ul><?php endif; ?></section>
+                    </div>
+                </div>
+            </details>
+        <?php else: ?>
         <section class="admin-panel admin-module-detail-panel" aria-labelledby="module-evidence-title">
             <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="module-evidence-title">Operational evidence</h2><p class="admin-panel__description">Stored database state and discovered filesystem evidence are shown separately.</p></div></header>
             <div class="admin-panel__body">
@@ -135,6 +195,7 @@ $siteSettingsModulesProjection = !empty($siteSettingsModulesProjection);
                 </dl>
             </div>
         </section>
+        <?php endif; ?>
 
         <?php if (!empty($item['available_package_version']) || !empty($item['available_package_dependencies']) || !empty($item['available_package_conflicts']) || !empty($item['lifecycle_evidence']) || !empty($item['operation'])): ?>
             <section class="admin-panel admin-module-detail-panel" aria-labelledby="module-package-title">
@@ -154,8 +215,8 @@ $siteSettingsModulesProjection = !empty($siteSettingsModulesProjection);
     </div>
 
     <div class="admin-module-detail-column admin-module-detail-column--secondary">
+        <?php if (!$siteSettingsModulesProjection): ?>
         <section class="admin-panel admin-module-detail-panel"<?= $siteSettingsModulesProjection ? ' aria-label="Module state"' : ' aria-labelledby="module-identity-title"' ?>>
-            <?php if (!$siteSettingsModulesProjection): ?>
             <header class="admin-panel__header">
                 <div class="admin-panel__heading">
                     <h2 class="admin-panel__title" id="module-identity-title"><?= $escape($item['title'] ?? $itemName) ?></h2>
@@ -163,7 +224,6 @@ $siteSettingsModulesProjection = !empty($siteSettingsModulesProjection);
                 </div>
                 <div class="admin-actions"><a class="admin-button admin-button--link" href="<?= $escape($inventoryPath) ?>">Back to Modules</a></div>
             </header>
-            <?php endif; ?>
             <div class="admin-panel__body">
                 <dl class="admin-module-detail-meta">
                     <dt>Lifecycle</dt>
@@ -178,6 +238,7 @@ $siteSettingsModulesProjection = !empty($siteSettingsModulesProjection);
                 </dl>
             </div>
         </section>
+        <?php endif; ?>
 
         <section class="admin-panel admin-module-detail-panel" aria-labelledby="module-actions-title">
             <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="module-actions-title">Lifecycle actions</h2><p class="admin-panel__description">Actions follow the existing Module Manager policy.</p></div></header>

@@ -2685,6 +2685,25 @@ html.admin-media-preview-open body {
     overflow-wrap: anywhere;
 }
 
+.admin-module-detail-overview {
+    margin-bottom: var(--admin-space-6);
+}
+
+.admin-module-detail-disclosure {
+    margin: 0;
+}
+
+.admin-module-detail-disclosure > summary {
+    cursor: pointer;
+    padding: var(--admin-space-6);
+    color: var(--admin-color-text);
+    font-weight: 800;
+}
+
+.admin-module-detail-disclosure[open] > summary {
+    border-bottom: 1px solid var(--admin-color-border);
+}
+
 .admin-module-detail-column {
     display: grid;
     align-content: start;
