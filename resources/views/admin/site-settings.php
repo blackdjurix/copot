@@ -10,7 +10,7 @@ $homepageContent = is_array($values['homepage_content'] ?? null) ? $values['home
 $homepageContentType = (string) ($homepageContent['type'] ?? 'none');
 $homepageContentPageId = $homepageContentType === 'page' ? (int) ($homepageContent['id'] ?? 0) : 0;
 ?>
-<section class="admin-panel admin-settings-page site-settings-page" data-site-settings data-settings-page data-initial-tab="site-settings-identity">
+<section class="admin-panel admin-settings-page site-settings-page" data-site-settings data-settings-page data-initial-tab="site-settings-<?= $escape(in_array($initialArea ?? 'identity', array_keys($areas), true) ? ($initialArea ?? 'identity') : 'identity') ?>">
     <div class="admin-settings-tabs-wrap">
         <div class="admin-settings-tabs" role="tablist" aria-label="Site Settings areas">
             <?php foreach ($areas as $id => $label): $tabId = 'site-settings-' . $id; ?><button class="admin-settings-tab<?= $id === 'identity' ? ' is-active' : '' ?>" id="<?= $escape($tabId . '-tab') ?>" type="button" role="tab" aria-selected="<?= $id === 'identity' ? 'true' : 'false' ?>" aria-controls="<?= $escape($tabId) ?>" tabindex="<?= $id === 'identity' ? '0' : '-1' ?>" data-settings-tab="<?= $escape($tabId) ?>"><span><?= $escape($label) ?></span><span class="admin-settings-tab__dirty" aria-hidden="true" hidden>•</span></button><?php endforeach; ?>
@@ -53,7 +53,8 @@ $homepageContentPageId = $homepageContentType === 'page' ? (int) ($homepageConte
             </div>
             <div class="admin-actions admin-form__actions"><button class="admin-button admin-button--primary" type="submit" form="<?= $settingsFormId ?>">Save Site Settings</button></div>
         </section>
-        <?php foreach (['system' => 'System settings are available in a later WU4 batch.', 'security' => 'Security settings are not configurable in this build.', 'email' => 'Email settings are not configurable in this build.', 'modules' => 'Module operations are available in a later WU4 batch.', 'health' => 'System Health presentation is available in a later WU4 batch.'] as $id => $message): ?><section class="admin-settings-panel" id="site-settings-<?= $id ?>" role="tabpanel" aria-labelledby="site-settings-<?= $id ?>-tab" data-settings-panel="site-settings-<?= $id ?>" hidden><header class="admin-settings-panel__header"><h3><?= $escape($areas[$id]) ?></h3></header><div class="admin-empty-state"><h4>Not configurable in Batch 1</h4><p><?= $escape($message) ?></p></div></section><?php endforeach; ?>
+        <section class="admin-settings-panel" id="site-settings-system" role="tabpanel" aria-labelledby="site-settings-system-tab" data-settings-panel="site-settings-system" hidden><header class="admin-settings-panel__header"><h3>System</h3></header><?php require __DIR__ . '/site-settings-system.php'; ?></section>
+        <?php foreach (['security' => 'Security settings are not configurable in this build.', 'email' => 'Email settings are not configurable in this build.', 'modules' => 'Module operations are available in a later WU4 batch.', 'health' => 'System Health presentation is available in a later WU4 batch.'] as $id => $message): ?><section class="admin-settings-panel" id="site-settings-<?= $id ?>" role="tabpanel" aria-labelledby="site-settings-<?= $id ?>-tab" data-settings-panel="site-settings-<?= $id ?>" hidden><header class="admin-settings-panel__header"><h3><?= $escape($areas[$id]) ?></h3></header><div class="admin-empty-state"><h4>Not configurable in Batch 1</h4><p><?= $escape($message) ?></p></div></section><?php endforeach; ?>
     </div>
 </section>
 <script src="<?= $escape(is_callable($url ?? null) ? $url('/admin-assets/js/admin-settings.js') : '/admin-assets/js/admin-settings.js') ?>" defer></script>

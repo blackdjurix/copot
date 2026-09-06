@@ -9,6 +9,9 @@ use Copot\Core\SettingsException;
 use Copot\Core\SiteAssetException;
 use Copot\Core\WebcoreColorScheme;
 use Copot\Core\ContentRepository;
+use Copot\Core\SystemManagerLifecycleService;
+use Copot\Core\SystemManagerPackageUpload;
+use Copot\Core\UnavailableSystemManagerRecoveryGate;
 
 require_once $app->path('app/Core/WebcoreColorScheme.php');
 require_once $app->path('app/Core/HomepageHeroImageService.php');
@@ -16,6 +19,7 @@ require_once $app->path('app/Core/HomepageHeroImageService.php');
 $adminUrl = $app->adminUrl();
 $path = $adminUrl->childUrl('settings');
 $permission = 'settings.update';
+$systemPath = $path . '/system';
 $hero = static fn (): HomepageHeroImageService => new HomepageHeroImageService(
     $app->settings(),
     $app->database(),
@@ -33,11 +37,15 @@ $requireUser = static function ($request) use ($app, $permission) {
 };
 
 $value = static fn (string $namespace, string $key, mixed $default = null): mixed => $app->settings()->get($namespace, $key, $default);
-$render = static function ($request, $user, array $errors = [], ?string $notice = null, int $status = 200) use ($app, $adminUrl, $path, $value, $hero): Response {
+$render = static function ($request, $user, array $errors = [], ?string $notice = null, int $status = 200) use ($app, $adminUrl, $path, $systemPath, $value, $hero): Response {
     try {
         $selected = $hero()->selected();
         $media = $user->can('media.use') ? (new MediaRepository($app->database()))->paginate('image', 100, 0) : [];
         $pageOptions = (new ContentRepository($app->database()))->workspace(['type' => 'page', 'status' => 'published'], 100, 0)['items'];
+        $systemStatus = null;
+        $runtimeParticipants = [];
+        $systemStatus = (new SystemManagerLifecycleService($app->packageLifecycle(), new UnavailableSystemManagerRecoveryGate(), new SystemManagerPackageUpload($app->path('storage/.system-manager-packages'))))->status();
+        $runtimeParticipants = array_map(static fn ($participant): array => $participant->toArray(), $app->runtimeRegistry()->all());
         $view = $app->view()->render('admin/site-settings', [
             'path' => $path,
             'csrfToken' => $app->csrf()->token(),
@@ -60,6 +68,18 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'faviconUploadAction' => $adminUrl->childUrl('settings/site-assets/favicon'),
             'faviconRemoveAction' => $adminUrl->childUrl('settings/site-assets/favicon/remove'),
             'colorScheme' => WebcoreColorScheme::resolve($value('appearance', 'main_color', '#1769e0')),
+            'systemStatus' => $systemStatus,
+            'runtimeParticipants' => $runtimeParticipants,
+            'systemPath' => $systemPath,
+            'systemPreflightPath' => $systemPath . '/preflight',
+            'systemApplyPath' => $systemPath . '/apply',
+            'systemRetryPath' => $systemPath . '/retry',
+            'systemReconcilePath' => $systemPath . '/reconcile',
+            'installationId' => $app->installationIdentity()->value(),
+            'releasePath' => $app->path('release.json'),
+            'csrfToken' => $app->csrf()->token(),
+            'initialArea' => (string) $request->input('section', 'identity'),
+            'canManageSystem' => $user->can('system.webcore.manage'),
         ]);
         return Response::html($app->adminPageRenderer()->render('Site Settings', $view, $user, $app->csrf()->token(), $request->path(), ['description' => 'Configure the site identity and baseline appearance.', 'surface' => 'transparent', 'spacing' => 'default']), $status);
     } catch (Throwable) { return $app->adminErrors()->response($request, 503); }
@@ -70,6 +90,48 @@ $app->adminNavigation()->add('Site Settings', $path, $permission, 'settings', 70
 $app->router()->get($path, function ($request) use ($requireUser, $render): Response {
     $user = $requireUser($request); if ($user instanceof Response) return $user;
     return $render($request, $user, [], $request->input('saved') === '1' ? 'Site Settings saved successfully.' : null);
+});
+
+$requireSystemUser = static function ($request) use ($app): mixed {
+    if (!$app->auth()->check()) return Response::redirect($app->adminUrl()->baseUrl());
+    $user = $app->auth()->user();
+    $adminPermission = $app->config()->get('admin.permission', 'admin.access');
+    if (!$user || !$user->can((string) $adminPermission) || !$user->can('system.webcore.manage')) return $app->adminErrors()->response($request, 403);
+    return $user;
+};
+
+$systemManager = static fn (): SystemManagerLifecycleService => new SystemManagerLifecycleService(
+    $app->packageLifecycle(), new UnavailableSystemManagerRecoveryGate(),
+    new SystemManagerPackageUpload($app->path('storage/.system-manager-packages'))
+);
+
+$json = static fn (array $payload, int $status = 200): Response => Response::content(json_encode($payload, JSON_UNESCAPED_SLASHES), $status, ['Content-Type' => 'application/json']);
+
+$app->router()->post($systemPath . '/preflight', function ($request) use ($app, $requireSystemUser, $systemManager, $json): Response {
+    $user = $requireSystemUser($request); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    try { return $json($systemManager()->preflightUpload($request->file('package'))); }
+    catch (Throwable) { return $json(['accepted' => false, 'status' => 'invalid_package', 'reason' => 'Package intake failed.'], 422); }
+});
+
+$app->router()->post($systemPath . '/apply', function ($request) use ($app, $requireSystemUser, $systemManager, $json): Response {
+    $user = $requireSystemUser($request); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    try { return $json($systemManager()->executeUpload($request->file('package'), (string) $request->post('action', ''))); }
+    catch (Throwable) { return $json(['accepted' => false, 'status' => 'invalid_package', 'reason' => 'Package intake failed.'], 422); }
+});
+
+$app->router()->post($systemPath . '/retry', function ($request) use ($app, $requireSystemUser, $systemManager, $json): Response {
+    $user = $requireSystemUser($request); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    return $json($systemManager()->retry((string) $request->post('operation_id', '')));
+});
+
+$app->router()->post($systemPath . '/reconcile', function ($request) use ($app, $requireSystemUser, $systemManager, $json): Response {
+    $user = $requireSystemUser($request); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    try { return $json($systemManager()->reconcile((string) $request->post('package_path', ''), $request->post('confirmed') === '1')); }
+    catch (Throwable) { return $json(['accepted' => false, 'status' => 'unavailable', 'reason' => 'Reconciliation is unavailable.'], 503); }
 });
 
 $app->router()->post($path, function ($request) use ($app, $requireUser, $render, $hero, $path): Response {
