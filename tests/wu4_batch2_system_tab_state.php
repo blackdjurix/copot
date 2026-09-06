@@ -12,6 +12,7 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 };
 
 $assert(str_contains($routes, '$systemPath = $path . \'/system\';'), 'System action endpoint base is missing.');
+$assert(str_contains($routes, "require_once \$app->path('app/Core/SystemManagerRecoveryGate.php');"), 'Site Settings does not load the existing recovery-gate dependency required for safe System projection rendering.');
 $assert(!str_contains($routes, "'?section=system'"), 'Competing query-string System redirect remains.');
 $assert(str_contains($view, '$initialArea = in_array'), 'The initial Site Settings area is not normalized once.');
 $assert(str_contains($view, 'data-initial-tab="<?= $escape($initialArea) ?>"'), 'data-initial-tab does not use the resolved fragment key.');

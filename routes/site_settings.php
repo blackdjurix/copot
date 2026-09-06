@@ -13,6 +13,8 @@ use Copot\Core\SystemManagerLifecycleService;
 use Copot\Core\SystemManagerPackageUpload;
 use Copot\Core\UnavailableSystemManagerRecoveryGate;
 
+require_once $app->path('app/Core/SystemManagerRecoveryGate.php');
+
 require_once $app->path('app/Core/WebcoreColorScheme.php');
 require_once $app->path('app/Core/HomepageHeroImageService.php');
 
