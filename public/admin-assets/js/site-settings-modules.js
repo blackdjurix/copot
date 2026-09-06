@@ -7,7 +7,6 @@
     const rows = Array.from(root.querySelectorAll('[data-site-settings-module-row]'));
     const filters = Object.fromEntries(Array.from(root.querySelectorAll('[data-site-settings-module-filter]')).map((control) => [control.dataset.siteSettingsModuleFilter, control]));
     const count = root.querySelector('[data-site-settings-module-count]');
-    const noMatch = root.querySelector('[data-site-settings-module-no-match]');
 
     const open = (row) => {
         const target = row.dataset.detailUrl;
@@ -34,7 +33,6 @@
             if (matches) visible += 1;
         });
         if (count) count.textContent = active ? `${visible} matching Module${visible === 1 ? '' : 's'}` : `${rows.length} Modules`;
-        if (noMatch) noMatch.hidden = !active || visible !== 0;
     };
 
     Object.values(filters).forEach((control) => control.addEventListener('input', filter));

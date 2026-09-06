@@ -43,7 +43,8 @@ $assert(!str_contains($tableHead, 'Actions') && !str_contains($tableHead, 'Disco
 $assert(str_contains($view, 'Scalable client-side search') === false, 'Implementation detail leaked into the rendered inventory view.');
 $assert(substr_count($view, 'data-site-settings-module-filter=') === 4 && str_contains($view, 'data-site-settings-module-filter="name"') && str_contains($view, 'data-site-settings-module-filter="version"') && str_contains($view, 'data-site-settings-module-filter="issue"') && str_contains($view, 'data-site-settings-module-filter="status"'), 'The coordinated Name, Version, Issue, and Status filters are incomplete.');
 $assert(!str_contains($view, 'data-site-settings-module-search') && str_contains($script, 'toLowerCase()') && str_contains($script, 'row.dataset.filterName'), 'Generic search was not replaced by case-insensitive title/identity filtering.');
-$assert(str_contains($script, 'Object.entries(values).every') && str_contains($script, 'noMatch.hidden = !active || visible !== 0') && str_contains($script, 'filter();'), 'Combined filter semantics or idle/no-match state synchronization is missing.');
+$assert(str_contains($script, 'Object.entries(values).every') && str_contains($script, 'filter();') && !str_contains($script, 'site-settings-module-no-match'), 'Combined filter semantics or filtered-empty composition is incorrect.');
+$assert(str_contains($script, "matching Module\${visible === 1 ? '' : 's'}") && str_contains($view, 'site-settings-modules__result-count') && !str_contains($view, 'No matching Modules'), 'Module result count does not use the accepted below-filter placement and wording.');
 $assert(str_contains($script, 'data-site-settings-module-row') && str_contains($script, 'event.key === \'Enter\''), 'Whole-row keyboard/open behavior is missing.');
 $assert(str_contains($routes, "'modules.manage'") && str_contains($routes, '$requireSettingsUser'), 'Modules and ordinary settings permission composition is missing.');
 $assert(str_contains($routes, "adminNavigation()->add('Site Settings', \$path, [\$permission, 'modules.manage', 'system.webcore.manage']"), 'Site Settings navigation does not expose the parent for any implemented capability.' );
@@ -132,6 +133,7 @@ $assert(str_contains($settingsView, '$canUpdateSettings') && str_contains($setti
 $assert(str_contains($css, '.site-settings-modules-table th:nth-child(1)') && str_contains($css, 'table-layout: fixed'), 'Unequal available-width inventory layout is missing.');
 $assert(str_contains($css, '.site-settings-modules-table thead') && str_contains($css, 'grid-template-columns: minmax(5.5rem, .35fr)'), 'Responsive stacked Module presentation is missing.');
 $assert(str_contains($layout, 'admin.css?v=m311-wu3-acceptance-modules-2'), 'Modules presentation stylesheet cache-bust is missing.');
+$assert(str_contains($view, 'site-settings-modules.js?v=wu4-modules-4'), 'Modules filter count script cache-bust is missing.');
 
 $html = $render([
     'items' => [

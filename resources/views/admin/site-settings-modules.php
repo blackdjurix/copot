@@ -102,8 +102,8 @@ natcasesort($statusOptions);
                 <?php foreach ($statusOptions as $value => $label): ?><option value="<?= $escape($value) ?>"><?= $escape($label) ?></option><?php endforeach; ?>
             </select>
         </div>
-        <p class="admin-field__help" data-site-settings-module-count aria-live="polite"><?= count($items) ?> Modules</p>
     </div>
+    <p class="admin-field__help site-settings-modules__result-count" data-site-settings-module-count aria-live="polite"><?= count($items) ?> Modules</p>
     <?php if ($items === []): ?>
         <div class="admin-empty-state"><h4 class="admin-empty-state__title">No Modules found</h4><p class="admin-empty-state__description">No Modules were discovered or installed.</p></div>
     <?php else: ?>
@@ -133,7 +133,6 @@ natcasesort($statusOptions);
                 </tbody>
             </table>
         </div>
-        <div class="admin-empty-state site-settings-modules__no-match" data-site-settings-module-no-match hidden><h4 class="admin-empty-state__title">No matching Modules</h4><p class="admin-empty-state__description">Try a different title or technical Module identity.</p></div>
     <?php endif; ?>
 </div>
-<script src="<?= $escape(is_callable($url ?? null) ? $url('/admin-assets/js/site-settings-modules.js?v=wu4-modules-2') : '/admin-assets/js/site-settings-modules.js?v=wu4-modules-2') ?>" defer></script>
+<script src="<?= $escape(is_callable($url ?? null) ? $url('/admin-assets/js/site-settings-modules.js?v=wu4-modules-4') : '/admin-assets/js/site-settings-modules.js?v=wu4-modules-4') ?>" defer></script>

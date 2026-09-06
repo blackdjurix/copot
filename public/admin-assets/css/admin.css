@@ -3717,11 +3717,11 @@ html.admin-nav-open body {
 .site-settings-module-package-controls { align-items: center; flex-wrap: nowrap; }
 .site-settings-module-package-controls input[type="file"] { flex: 1 1 auto; min-width: 0; max-width: none; }
 .site-settings-module-package-controls .admin-button { flex: 0 0 auto; }
-.site-settings-modules__tools { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(8rem, 1fr)) auto; align-items: end; gap: var(--admin-space-3) var(--admin-space-4); margin: 0 0 var(--admin-space-5); }
+.site-settings-modules__tools { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(8rem, 1fr)); align-items: end; gap: var(--admin-space-3) var(--admin-space-4); margin: 0; }
 .site-settings-module-filter { min-width: 0; }
 .site-settings-module-filter input,
 .site-settings-module-filter select { width: 100%; min-width: 0; }
-.site-settings-modules__tools .admin-field__help { margin: 0; white-space: nowrap; }
+.site-settings-modules__result-count { margin: var(--admin-space-2) 0 var(--admin-space-5); }
 .site-settings-modules-table { table-layout: fixed; }
 .site-settings-modules-table th:nth-child(1) { width: 48%; }
 .site-settings-modules-table th:nth-child(2) { width: 16%; }
@@ -3735,8 +3735,6 @@ html.admin-nav-open body {
 .site-settings-module-row:focus-visible { outline: 2px solid var(--admin-color-primary); outline-offset: -2px; }
 .site-settings-module-issue { font-weight: 700; }
 .admin-module-issue--warning { color: var(--admin-color-warning); }
-.site-settings-modules__no-match { margin-top: var(--admin-space-5); }
-.site-settings-modules__no-match[hidden] { display: none; }
 .admin-settings-color-control { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: var(--admin-space-3); }
 .admin-settings-color-control .admin-settings-color-hex { width: 11ch; max-width: 100%; }
 
@@ -3785,7 +3783,7 @@ html.admin-nav-open body {
     .site-settings-module-package-controls input[type="file"] { width: 100%; max-width: 100%; }
     .site-settings-module-package-controls .admin-button { width: 100%; }
     .site-settings-modules__tools { grid-template-columns: 1fr; }
-    .site-settings-modules__tools .admin-field__help { white-space: normal; }
+    .site-settings-modules__result-count { white-space: normal; }
     .site-settings-modules-table { display: block; min-width: 0; }
     .site-settings-modules-table thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
     .site-settings-modules-table tbody,
