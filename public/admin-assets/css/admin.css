@@ -2689,6 +2689,10 @@ html.admin-media-preview-open body {
     margin-bottom: var(--admin-space-6);
 }
 
+.admin-module-detail-whats-new {
+    margin-bottom: var(--admin-space-6);
+}
+
 .admin-module-detail-disclosure {
     margin: 0;
 }

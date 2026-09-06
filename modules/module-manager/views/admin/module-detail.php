@@ -100,7 +100,7 @@ $diagnosticSeverityClass = static function (string $severity): string {
             <dt>Dependencies</dt><dd><?= $dependencyNames === [] ? 'None declared' : $escape(implode(', ', $dependencyNames)) ?></dd>
         </dl></div>
     </section>
-    <section class="admin-panel admin-module-detail-panel" aria-labelledby="module-whats-new-title">
+    <section class="admin-panel admin-module-detail-panel admin-module-detail-whats-new" aria-labelledby="module-whats-new-title">
         <header class="admin-panel__header"><div class="admin-panel__heading"><h2 class="admin-panel__title" id="module-whats-new-title">What's New</h2></div></header>
         <div class="admin-panel__body">
             <?php if ($whatsNew === []): ?>
