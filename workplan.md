@@ -55,8 +55,8 @@ Current durable planning state:
 - Webcore Product Completeness & Stabilization: WU1 COMPLETE / CONTRACT
   LOCKED; WU2 COMPLETE / ACCEPTED / INTEGRATED; WU3 COMPLETE / ACCEPTED /
   INTEGRATED / CLOSED; WU4 ACTIVE / PARTIAL under its locked contract
-  (Batches 1–2 complete/closed; Batch 3 accepted/complete/closed; Batch 4 not
-  started); WU5-WU6 NOT STARTED;
+  (Batches 1–2 complete/closed; Batch 3 accepted/complete/closed; Batch 4
+  paused pending WU5); WU5-WU7 NOT STARTED;
 - MR.2: COMPLETE / CLOSED;
 - MR.2 WU1–WU8: COMPLETE AND CLOSED;
 - Webcore Content Admin Baseline: COMPLETE / CLOSED; corrective prerequisite
@@ -378,6 +378,7 @@ Pre-contract status: PROMOTED / HISTORICAL PROVENANCE
 Authority:
 - `docs/49_webcore_product_completeness_stabilization_contract.md` [PRIMARY WORKSTREAM AUTHORITY]
 - `docs/54_webcore_site_settings_appearance_consolidation_contract.md` [WU4 AUTHORITY]
+- `docs/57_webcore_content_product_completeness_contract.md` [WU5 AUTHORITY]
 - `docs/40_post_m3_webcore_extension_architecture_reconciliation_contract.md` for accepted Webcore ownership and boundary evidence only
 - `docs/39_mr_2_wu2_webcore_system_manager_baseline_contract.md` for accepted System Manager and Branding baseline evidence only
 
@@ -391,6 +392,7 @@ Confirmed audit-derived planning scope:
 - Core Media Admin baseline is missing;
 - Core primary Navigation management projection is missing;
 - dedicated Webcore Site Settings projection is missing;
+- Webcore Content Admin requires bounded product-completeness correction;
 - localization has duplicated product-facing projections;
 - Site Name, Tagline, Logo, and Favicon operator management is split across
   historical/current projections and requires WU4 reconciliation;
@@ -402,7 +404,8 @@ Preserved negative findings:
 - no schema/settings migration is currently required;
 - existing Core settings and storage authorities should be preserved;
 - Redirect Core Admin CRUD is not currently required;
-- Content baseline and Built-in Public View are already delivered;
+- Webcore Content authority and Built-in Public View are already delivered;
+- the existing Core Content Admin fallback is not yet product-complete;
 - System Manager is not to be wholesale reopened.
 
 Promoted WU topology and current disposition:
@@ -413,15 +416,16 @@ Promoted WU topology and current disposition:
    INTEGRATED / CLOSED
 4. WU4 — Webcore Site Settings & Appearance Consolidation — ACTIVE / PARTIAL /
    CONTRACT PROMOTED / CONTRACT LOCKED; Batches 1–2 COMPLETE / CLOSED; Batch 3
-   ACCEPTED / COMPLETE / CLOSED; Batch 4 NOT STARTED
-5. WU5 — Zero-Optional Product Acceptance — NOT STARTED
-6. WU6 — Stabilization & v0.14.0 Readiness Closure — NOT STARTED
+   ACCEPTED / COMPLETE / CLOSED; Batch 4 PAUSED pending WU5
+5. WU5 — Webcore Content Product Completeness — NOT STARTED
+6. WU6 — Zero-Optional Product Acceptance — NOT STARTED
+7. WU7 — Stabilization & v0.14.0 Readiness Closure — NOT STARTED
 
 WU4 implementation authority:
 - `docs/54_webcore_site_settings_appearance_consolidation_contract.md` is the
   dedicated WU4 implementation authority;
-- WU4 Batch 4 — Cross-Surface Acceptance & WU4 Closure — is the next in-scope
-  planning target; it remains not started and requires separate authorization;
+- WU4 Batch 4 — Cross-Surface Acceptance & WU4 Closure — is paused pending WU5
+  and requires separate authorization after that dependency is accepted;
 - this Workplan entry does not authorize WU4 implementation.
 
 Readiness boundary:
@@ -436,8 +440,8 @@ Human/product readiness gate:
 - Site Settings human/product review occurs inside this Webcore workstream
   before relevant scope acceptance.
 
-Planning action: KEEP / WU1-WU3 COMPLETE / WU4 CONTRACT LOCKED / WU4 BATCH 1
-NEXT IMPLEMENTATION TARGET / NOT IMPLEMENTATION-AUTHORIZED
+Planning action: KEEP / WU1-WU3 COMPLETE / WU4 BATCH 4 PAUSED / WU5 CONTRACT
+LOCKED / WU5 NEXT TECHNICAL TARGET / NOT IMPLEMENTATION-AUTHORIZED
 
 ### Production Webcore Reconciliation
 Class: OPERATIONAL GATE
@@ -1213,8 +1217,8 @@ Navigation Admin Baseline are complete in their authoritative states. WU4 is
 contract promoted and locked under
 `docs/54_webcore_site_settings_appearance_consolidation_contract.md`; WU4 is
 ACTIVE / PARTIAL with Batches 1–2 complete/closed, Batch 3 accepted/complete/
-closed, and Batch 4 not started. Batch 4 is the next in-scope planning target;
-no WU4 technical implementation is authorized by this Workplan entry alone.
+closed, and Batch 4 paused pending WU5. WU5 is the next technical planning
+target; no WU5 implementation is authorized by this Workplan entry alone.
 
 ## 10. Retention and Planning Freshness
 

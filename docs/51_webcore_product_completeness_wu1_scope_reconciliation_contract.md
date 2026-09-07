@@ -8,7 +8,7 @@ WU1 status: COMPLETE / CONTRACT LOCKED
 Technical implementation performed by WU1: NONE
 WU2 implementation: COMPLETE / ACCEPTED on feature branch
 WU3 implementation/validation/acceptance: COMPLETE / ACCEPTED / INTEGRATED INTO MAIN;
-WU4-WU6 implementation: HISTORICAL WU1 BASELINE / LATER LIFECYCLE RECORDED IN CURRENT AUTHORITIES
+WU4-WU7 implementation: HISTORICAL WU1 BASELINE / LATER LIFECYCLE RECORDED IN CURRENT AUTHORITIES
 Release / tag / publication authorization: NONE
 
 This contract closes WU1 as the authoritative scope-reconciliation unit under
@@ -17,16 +17,16 @@ the accepted product-facing information-architecture clarification in
 `docs/50_webcore_site_settings_information_architecture_clarification.md` and
 current repository source evidence.
 
-The WU4-WU6 status above is retained as this contract's original WU1 planning
+The WU4-WU7 status above is retained as this contract's original WU1 planning
 baseline, not as current lifecycle truth. Current WU4 state is maintained by
 `docs/54_webcore_site_settings_appearance_consolidation_contract.md`: WU4 is
-ACTIVE / PARTIAL, Batch 3 is accepted/complete/closed, and Batch 4 is not
-started.
+ACTIVE / PARTIAL, Batch 3 is accepted/complete/closed, and Batch 4 is paused
+pending WU5.
 
 WU1 is a planning/scope contract. It does not implement Media, Navigation, Site
 Settings, schema, configuration, package lifecycle, or release behavior.
 
-## WU1 verdict
+## Historical WU1 verdict
 
 WU1 concludes:
 
@@ -42,6 +42,22 @@ WU1 concludes:
   Manager parent surface; and
 - technical implementation begins no earlier than a separately authorized WU2
   execution slice.
+
+## Later accepted supersession
+
+The historical verdict above remains true as the evidence-based WU1 conclusion
+at the time it was made. It is superseded for current-workstream topology by
+later accepted source, runtime, and product-acceptance evidence: the existing
+Webcore Content Admin baseline was never subjected to dedicated
+product-completeness/human acceptance and its free-text type entry and raw
+numeric Featured Media reference are not adequate to be treated as
+product-complete.
+
+This is a current-workstream Webcore product-completeness acceptance gap, not
+a regression restoration and not a reopening of MR.2. It inserts WU5 —
+Webcore Content Product Completeness, expands the workstream to seven units,
+and renumbers the historical forward WU5/WU6 units to WU6/WU7. The dedicated
+WU5 authority is `docs/57_webcore_content_product_completeness_contract.md`.
 
 ## Confirmed root gaps
 
@@ -80,7 +96,7 @@ The missing baseline is one coherent Webcore-owned Site Settings parent surface
 that evolves the current System Manager product surface while preserving all
 underlying authorities.
 
-## No fourth root gap
+## Historical no-fourth-root finding
 
 Current source evidence does not justify a separate corrective Work Unit for:
 
@@ -96,8 +112,9 @@ not presently required. Built-in Public View is already delivered. Admin Shell
 and Dashboard have no concrete root-completeness regression evidence requiring a
 new Work Unit.
 
-A later concrete regression may justify a bounded correction but does not alter
-this WU1 verdict automatically.
+The later accepted product-completeness evidence described above is not a
+regression claim. It explicitly supersedes this historical Content conclusion
+for the current workstream while preserving the original WU1 context.
 
 ## Baseline-versus-extension invariant
 
@@ -261,9 +278,23 @@ by System Manager or historical Settings surfaces:
 - retain contextual/recovery/lifecycle-specific projections only when concrete
   source evidence proves a distinct justified function.
 
-## Locked WU5 boundary — Zero-Optional Product Acceptance
+## Current WU5 boundary — Webcore Content Product Completeness
 
-WU5 is integrated acceptance, not a redesign unit.
+WU5 is the newly inserted bounded corrective unit. It must improve only the
+Webcore-owned Content operator surface required for product completeness:
+
+- bounded Page / Article selection; and
+- bounded Core Media selection/reference interaction for Featured Media.
+
+It preserves Webcore Content and Core Media authority. Content Manager remains
+a Bundled Module that extends Webcore Content. Taxonomy, rich text, revisions,
+scheduling/workflow, advanced workspace behavior, bulk actions, Media
+processing, advanced preparation, and Content Manager-specific presentation
+remain outside WU5 unless separately adopted.
+
+## Renumbered WU6 boundary — Zero-Optional Product Acceptance
+
+WU6 is integrated acceptance, not a redesign unit.
 
 With zero optional Modules and zero Themes, acceptance must prove:
 
@@ -279,14 +310,14 @@ With zero optional Modules and zero Themes, acceptance must prove:
 - retained Managers extend rather than replace or take over Webcore baseline
   authority.
 
-## Locked WU6 boundary — Stabilization and readiness closure
+## Renumbered WU7 boundary — Stabilization and readiness closure
 
-WU6 may perform only directly justified stabilization, focused regressions,
+WU7 may perform only directly justified stabilization, focused regressions,
 cross-capability acceptance reconciliation, documentation consistency,
 unresolved-finding disposition, zero-optional re-verification, and final
 v0.14.0 readiness reporting.
 
-WU6 does not authorize:
+WU7 does not authorize:
 
 - version bump;
 - package creation;
@@ -331,10 +362,10 @@ No runtime or source implementation was required for WU1 because its task was
 scope reconciliation against accepted architecture, current source evidence,
 and the locked Site Settings information architecture.
 
-The next workstream unit is WU2 — Core Media Admin Baseline.
-
-WU2 is the next technical execution candidate only. This WU1 closure does not
-by itself authorize WU2 implementation or direct transfer to an executor.
+The historical next-workstream statement was WU2 — Core Media Admin Baseline.
+Current topology is maintained by the parent contract: WU4 Batch 4 is paused
+pending WU5, which is the next technical planning target. Neither statement
+authorizes implementation.
 
 ## Authority and provenance
 

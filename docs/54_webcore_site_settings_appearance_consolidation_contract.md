@@ -6,7 +6,7 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU4 — Webcore Site Settings & Appearance Consolidation
 Contract status: PROMOTED / CONTRACT LOCKED
-WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 ACCEPTED / COMPLETE / CLOSED (HUMAN/PRODUCT ACCEPTANCE PASS; TECHNICAL VALIDATION COMPLETE); BATCH 4 NOT STARTED
+WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 ACCEPTED / COMPLETE / CLOSED (HUMAN/PRODUCT ACCEPTANCE PASS; TECHNICAL VALIDATION COMPLETE); BATCH 4 PAUSED pending WU5 Webcore Content Product Completeness
 Technical implementation authorization: BATCH 1, BATCH 2 SYSTEM/MODULES, AND BATCH 3 EXECUTED UNDER SEPARATE AUTHORIZATION
 Release / tag / publication authorization: NONE
 ```
@@ -19,7 +19,8 @@ acceptance, and the later separately authorized Site Settings → System and
 Site Settings → Modules slices, are recorded by current-state documentation.
 Batch 2 is COMPLETE / CLOSED. Batch 3 implementation and technical validation
 are complete, and human/product acceptance is PASS. Batch 3 is accepted,
-complete, and closed. Batch 4 remains NOT STARTED. This contract
+complete, and closed. Batch 4 closure is PAUSED pending the separately scoped
+WU5 Webcore Content Product Completeness unit. This contract
 does not itself grant blanket implementation
 authority for those later slices, schema/settings migration beyond accepted
 scope, runtime mutation outside controlled acceptance, or release activity.
@@ -461,8 +462,16 @@ Validate:
 Batch 4 is acceptance and closure only. It is not a license to add adjacent
 features.
 
-Hard dependencies: Batches 1–3 and all recorded implementation-time
-dispositions that materially affect acceptance.
+Current dependency disposition: Batch 4 is **PAUSED**. Accepted
+current-workstream evidence established a bounded Webcore Content
+product-completeness gap outside WU4: the Core fallback requires a bounded
+Page/Article selector and bounded Featured Media interaction before
+zero-optional cross-surface closure can be claimed. WU5 owns that correction;
+Batch 4 must not implement it, reopen MR.2, or absorb Content Manager
+refinement.
+
+Hard dependencies: Batches 1–3, WU5 acceptance, and all recorded
+implementation-time dispositions that materially affect acceptance.
 
 Batch 4 is not independently implementable before the preceding batches.
 Human/product acceptance is mandatory.

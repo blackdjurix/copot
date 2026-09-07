@@ -6,10 +6,9 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Classification: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
 Contract status: PROMOTED / CONTRACT LOCKED
-Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL
-WU1-WU6 implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL / WU5 NOT STARTED / WU6 NOT STARTED
-WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice COMPLETE / CLOSED / Batch 2 Modules slice COMPLETE / CLOSED / full Batch 2 COMPLETE / CLOSED / Batch 3 ACCEPTED / COMPLETE / CLOSED / Batch 4 NOT STARTED
-Technical implementation authorization: WU2 and WU3 separately authorized and complete; WU4 Batch 1 and Batch 2 System/Modules separately authorized and accepted; remaining slices remain separately gated
+Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL / WU5 NOT STARTED / WU6 NOT STARTED / WU7 NOT STARTED
+WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice COMPLETE / CLOSED / Batch 2 Modules slice COMPLETE / CLOSED / full Batch 2 COMPLETE / CLOSED / Batch 3 ACCEPTED / COMPLETE / CLOSED / Batch 4 PAUSED pending WU5
+Technical implementation authorization: WU2 and WU3 separately authorized and complete; WU4 Batches 1–3 separately authorized and accepted; WU5–WU7 remain separately gated
 Release / tag / publication authorization: NONE
 ```
 
@@ -41,11 +40,12 @@ product-facing operator projections over already-authoritative Webcore
 capabilities. It does not reopen the accepted Webcore architecture without
 concrete regression evidence.
 
-The three root product-completeness gaps are:
+The four root product-completeness gaps are:
 
 1. Core Media Admin baseline is missing.
 2. Core primary Navigation management projection is missing.
 3. A dedicated Webcore Site Settings projection is missing.
+4. Webcore Content Admin requires bounded product-completeness correction.
 
 The Site Settings gap also includes duplicated or overlapping Localization
 projections, split Site Name/Tagline and Logo/Favicon operator management, and
@@ -60,8 +60,7 @@ become prerequisites for baseline operation.
 Already-delivered capabilities are not reopened by this workstream unless a
 concrete regression requires a bounded correction:
 
-- Webcore Content capability;
-- Webcore Content Admin baseline;
+- Webcore Content capability and authority;
 - Webcore Media capability and persistence/service authority;
 - Webcore primary Navigation capability and persistence/service authority;
 - Webcore Redirects capability;
@@ -91,7 +90,7 @@ may be created merely to support a new product-facing projection.
 
 | Area | Capability / authority state | Product-facing projection state | Corrective need |
 | --- | --- | --- | --- |
-| Content | Delivered / authoritative | Delivered / accepted | None without regression evidence |
+| Content | Delivered / authoritative | Core Admin baseline is usable but not product-complete | WU5 bounded corrective projection work |
 | Media | Delivered / authoritative | Missing Core Admin baseline | Materialize baseline Admin projection |
 | Primary Navigation | Delivered / authoritative | Missing Core Admin management projection | Materialize baseline Admin projection |
 | Redirects | Delivered / authoritative | No Core CRUD currently required | None |
@@ -115,6 +114,20 @@ Media authority.
 The baseline must remain limited to minimum product operability without Media
 Manager. Media Manager remains a retained Bundled Module that **EXTENDS**
 baseline Media and must not become a dependency of the Core projection.
+
+### Webcore Content product completeness
+
+Webcore already owns baseline Content types, persistence, lifecycle, public
+delivery, and a usable Core Admin fallback. Later accepted runtime/product
+evidence establishes that the fallback has not received dedicated
+product-completeness and human/operator acceptance and is insufficient to be
+treated as product-complete.
+
+WU5 therefore corrects only the bounded Core operator interactions needed for
+Page/Article type selection and Featured Media reference selection. It must
+preserve Webcore Content authority and Core Media authority. Content Manager
+remains a retained Bundled Module that **EXTENDS** Webcore Content; WU5 must
+not import that Module wholesale.
 
 ### Core primary Navigation Admin
 
@@ -280,11 +293,12 @@ locked:
 
 ## Work Unit topology
 
-The workstream remains locked to six Work Units. WU1, WU2, and WU3 are
+The workstream is locked to seven Work Units. WU1, WU2, and WU3 are
 complete for their accepted scopes. WU4 is ACTIVE / PARTIAL: Batch 1 is
 implemented and accepted, and the Batch 2 System and Modules slices are
-COMPLETE / CLOSED. Full Batch 2 is COMPLETE / CLOSED. WU5 and WU6 remain not
-started and separately gated, requiring separate execution authorization.
+COMPLETE / CLOSED. Full Batch 2 is COMPLETE / CLOSED, Batch 3 is accepted and
+closed, and Batch 4 is PAUSED pending WU5. WU5, WU6, and WU7 remain not started
+and separately gated, requiring separate execution authorization.
 
 ### WU1 — Webcore Completeness Contract & Scope Reconciliation
 
@@ -294,12 +308,13 @@ delivered repository state.
 WU1 must:
 
 - preserve existing ownership;
-- confirm the three root completeness gaps;
+- record the historical three-root conclusion and its later supersession by
+  accepted Content product-completeness evidence;
 - classify delivered baseline versus missing product projection;
 - define baseline-versus-extension boundaries;
 - define zero-optional product acceptance;
 - confirm exclusions; and
-- establish WU2-WU6 execution boundaries.
+- establish WU2-WU7 execution boundaries.
 
 WU1 must not become a second Webcore architecture reconciliation.
 
@@ -392,7 +407,8 @@ The Batch 2 Modules slice is COMPLETE / CLOSED after separately authorized
 implementation, technical validation, controlled runtime validation, and
 human/product acceptance; full Batch 2 is COMPLETE / CLOSED. Batch 3 is
 ACCEPTED / COMPLETE / CLOSED after separately authorized implementation,
-technical validation, and human/product acceptance. Batch 4 is NOT STARTED.
+technical validation, and human/product acceptance. Batch 4 closure is PAUSED
+pending the new WU5 Webcore Content Product Completeness corrective unit.
 
 Internal scope classification:
 
@@ -435,7 +451,31 @@ accepted Branding lineage.
 Subjective information architecture, grouping, Appearance behavior, and
 usability require human/product review before relevant acceptance.
 
-### WU5 — Zero-Optional Product Acceptance
+### WU5 — Webcore Content Product Completeness
+
+Purpose: make the existing Webcore-owned Content Admin fallback adequate for
+bounded product/operator use without importing Content Manager wholesale.
+
+WU5 must provide:
+
+- a bounded Page / Article selection control rather than arbitrary free-text
+  type entry; and
+- a proper bounded Webcore/Core Media selection and reference interaction
+  rather than a raw numeric Media ID field.
+
+WU5 must preserve Webcore Content authority, Core Media authority, existing
+authorization and lifecycle behavior, and the Content Manager extension seam.
+Human/product acceptance is mandatory because this gap concerns operator
+adequacy not previously accepted for the Core surface.
+
+WU5 does not automatically include Taxonomy, rich-text/editor capability,
+revisions/history, scheduling/workflow, advanced workspace/search/filter
+conveniences, bulk actions, Media processing, crop/resize/rotate, derivative
+or variant management, advanced Media preparation, or Content Manager-specific
+workflow or presentation. Exact implementation mechanics require the dedicated
+WU5 contract and source audit.
+
+### WU6 — Zero-Optional Product Acceptance
 
 Purpose: prove the minimum-viability promise as integrated product behavior.
 
@@ -455,20 +495,20 @@ With zero optional Modules and zero Themes, acceptance must demonstrate that:
 Where retained Bundled Managers are enabled, acceptance must confirm that they
 extend rather than replace, fork, or take over Webcore baseline authority.
 
-WU5 is an integrated acceptance unit, not authorization to redesign every
+WU6 is an integrated acceptance unit, not authorization to redesign every
 surface being tested.
 
-### WU6 — Stabilization & v0.14.0 Readiness Closure
+### WU7 — Stabilization & v0.14.0 Readiness Closure
 
 Purpose: stabilize the completed corrective workstream and determine whether the
 resulting Webcore state is suitable as a future v0.14.0 readiness baseline.
 
-WU6 may include focused directly impacted regressions, cross-capability
+WU7 may include focused directly impacted regressions, cross-capability
 stabilization, zero-optional dependency re-verification, documentation
 consistency, unresolved-finding disposition, final product-completeness
 acceptance evidence, and readiness reporting.
 
-WU6 does not authorize a version bump, release package creation, release tag,
+WU7 does not authorize a version bump, release package creation, release tag,
 GitHub Release, publication, or external distribution.
 
 ## Dependency and downstream topology
@@ -520,12 +560,13 @@ necessary. Expected gates include:
 - Core Media Admin usability when materially new presentation is introduced;
 - Core primary Navigation management usability when materially new
   presentation is introduced;
+- WU5 Core Content operator adequacy;
 - Site Settings information architecture;
 - Site Settings grouping and comprehension;
 - bounded Appearance behavior and visual result.
 
-Accepted Content baseline must not be reopened for subjective redesign without
-concrete regression evidence.
+WU5 bounded Content product-completeness acceptance is mandatory. It does not
+authorize subjective redesign beyond its dedicated corrective boundary.
 
 ## Runtime and verification requirements
 
@@ -609,7 +650,7 @@ and distribution remain separate explicit gates.
 
 This promotion establishes the authoritative workstream scope only.
 
-Technical execution of WU1-WU6 is not authorized by this document alone.
+Technical execution of WU1-WU7 is not authorized by this document alone.
 Executor-facing authorization must identify the exact execution slice and obey
 current repository, validation, stop-condition, destructive-action, and release
 boundaries.
