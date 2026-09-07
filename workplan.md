@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-09-07 00:00:00 WIB
+Date version: 2026-09-07 16:56:05 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
