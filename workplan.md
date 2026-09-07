@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-08-30 14:40:00 WIB
+Date version: 2026-09-07 00:00:00 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -830,6 +830,61 @@ The canonical Git Concept is materialized at
 
 Planning action: KEEP FUTURE / SEPARATE FROM FUTURE WIDGET LAYOUT
 
+### User Settings / Current User Settings
+Class: CONCEPT / FUTURE WEBCORE CURRENT-USER CAPABILITY
+Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concepts/copot_user_settings_security_email_surface_ownership_concept.md`
+  [PRIMARY GIT CONCEPT — User Settings / Current User Settings]
+
+Relations:
+- current-user self-service only, distinct from `Users & Access Refinement`
+  and administrative management of other/all users;
+- relates to `concepts/copot_per_user_admin_appearance_concept.md` without
+  absorbing appearance ownership; and
+- candidate future own identity, email, password, and security controls remain
+  dependent on delivered capability.
+
+Planning action: KEEP FUTURE / NO IMPLEMENTATION AUTHORIZATION
+
+### Security Capability & Surface Ownership
+Class: CONCEPT / FUTURE CAPABILITY OWNERSHIP
+Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concepts/copot_user_settings_security_email_surface_ownership_concept.md`
+  [PRIMARY GIT CONCEPT — Security Capability & Surface Ownership]
+
+Relations:
+- capability-gated product surfaces;
+- current-user security belongs conceptually with User Settings when
+  delivered; administrative security management remains with `Users & Access`;
+- site/system-wide Security may enter Site Settings only with a delivered or
+  explicitly adopted site/system security-policy capability; and
+- Security remains absent from the current visible WU4 Site Settings areas.
+
+Planning action: KEEP FUTURE / CAPABILITY-GATED / NO IMPLEMENTATION AUTHORIZATION
+
+### System Email Capability & Surface Ownership
+Class: CONCEPT / FUTURE CAPABILITY OWNERSHIP
+Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concepts/copot_user_settings_security_email_surface_ownership_concept.md`
+  [PRIMARY GIT CONCEPT — System Email Capability & Surface Ownership]
+
+Relations:
+- `users.email` is account identity data, not system email delivery evidence;
+- current-user email editing belongs with User Settings when delivered, while
+  administrator editing of another user's email remains a `Users & Access`
+  concern;
+- Site Settings → Email is capability-gated on delivered system-level sender,
+  transport, delivery state/policy, or equivalent capability; and
+- Email remains absent from the current visible WU4 Site Settings areas.
+
+Planning action: KEEP FUTURE / CAPABILITY-GATED / NO IMPLEMENTATION AUTHORIZATION
+
 ### Shared File Intake Interaction Pattern
 Class: CONCEPT / FUTURE CROSS-SURFACE
 Status: ADOPTED / FUTURE / OUTSIDE MR.2 / NOT IMPLEMENTATION-AUTHORIZED
@@ -1136,6 +1191,17 @@ Resolved at GPT/user planning layer:
 
 The Git Concept records the current semantic source; no GPT/File Library
 Concept file was modified.
+
+The following thread-level planning concepts are durably materialized into
+their canonical Git Concept source and registered separately in this Workplan;
+they no longer depend on thread-only continuity:
+
+- User Settings / Current User Settings;
+- Security Capability & Surface Ownership; and
+- System Email Capability & Surface Ownership.
+
+Their shared Concept file preserves the three distinct identities and remains
+future/planning-only without implementation authorization.
 
 ## 9. Immediate Next Planning Target
 
