@@ -8,7 +8,7 @@ Classification: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTRE
 Contract status: PROMOTED / CONTRACT LOCKED
 Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL
 WU1-WU6 implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL / WU5 NOT STARTED / WU6 NOT STARTED
-WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice COMPLETE / CLOSED / Batch 2 Modules slice COMPLETE / CLOSED / full Batch 2 COMPLETE / CLOSED / Batches 3–4 NOT STARTED
+WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice COMPLETE / CLOSED / Batch 2 Modules slice COMPLETE / CLOSED / full Batch 2 COMPLETE / CLOSED / Batch 3 ACCEPTED / COMPLETE / CLOSED / Batch 4 NOT STARTED
 Technical implementation authorization: WU2 and WU3 separately authorized and complete; WU4 Batch 1 and Batch 2 System/Modules separately authorized and accepted; remaining slices remain separately gated
 Release / tag / publication authorization: NONE
 ```
@@ -390,8 +390,9 @@ The Batch 2 Site Settings → System slice is CLOSED under
 `docs/55_webcore_site_settings_system_operational_projection_contract.md`.
 The Batch 2 Modules slice is COMPLETE / CLOSED after separately authorized
 implementation, technical validation, controlled runtime validation, and
-human/product acceptance; full Batch 2 is COMPLETE / CLOSED. Batches 3–4 are
-NOT STARTED.
+human/product acceptance; full Batch 2 is COMPLETE / CLOSED. Batch 3 is
+ACCEPTED / COMPLETE / CLOSED after separately authorized implementation,
+technical validation, and human/product acceptance. Batch 4 is NOT STARTED.
 
 Internal scope classification:
 

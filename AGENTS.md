@@ -14,7 +14,8 @@ closed. WU4 — Webcore Site Settings & Appearance Consolidation — is ACTIVE /
 PARTIAL on `feature/wu4-batch1-site-settings`; its authority is
 `docs/54_webcore_site_settings_appearance_consolidation_contract.md`. Batch 1
 is IMPLEMENTED / ACCEPTED. The Batch 2 System slice and Modules slice are
-COMPLETE / CLOSED; full Batch 2 is COMPLETE / CLOSED. Batches 3–4 are NOT STARTED.
+COMPLETE / CLOSED; full Batch 2 is COMPLETE / CLOSED. Batch 3 is ACCEPTED /
+COMPLETE / CLOSED; Batch 4 is NOT STARTED.
 WU5 and WU6 are NOT STARTED. The feature branch remains intentionally
 unmerged pending separately controlled integration. Release, tag, and
 publication remain separately controlled.

@@ -636,7 +636,7 @@ Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU3 COMPLETE AND CLOSED
 Current Post-M3 workstream: Webcore Product Completeness & Stabilization — WU4 ACTIVE / PARTIAL
-WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED; Batch 2 System slice COMPLETE / CLOSED; Batch 2 Modules slice COMPLETE / CLOSED; full Batch 2 COMPLETE / CLOSED; Batches 3–4 NOT STARTED. WU5 and WU6 NOT STARTED.
+WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED; Batch 2 System slice COMPLETE / CLOSED; Batch 2 Modules slice COMPLETE / CLOSED; full Batch 2 COMPLETE / CLOSED; Batch 3 ACCEPTED / COMPLETE / CLOSED; Batch 4 NOT STARTED. WU5 and WU6 NOT STARTED.
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
@@ -826,8 +826,8 @@ closed. WU4 Batch 1 — Site Settings, Site Identity, Homepage assignment, and
 directly affected Built-in Public View behavior — is implemented and accepted
 on `feature/wu4-batch1-site-settings` under
 `docs/54_webcore_site_settings_appearance_consolidation_contract.md`. WU4
-Batch 2 System and Modules slices are COMPLETE / CLOSED; WU4 Batches 3–4
-remain not started. The feature branch remains intentionally unmerged pending
+Batch 2 System and Modules slices are COMPLETE / CLOSED; WU4 Batch 3 is
+ACCEPTED / COMPLETE / CLOSED; Batch 4 remains not started. The feature branch remains intentionally unmerged pending
 separately controlled integration.
 v0.13.0 Release Readiness,
 tag/publication, and Gate 9 verification are complete. Post-release

@@ -4,16 +4,16 @@
 
 ```text
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
-Classification: AUTHORITATIVE PRODUCT-PROJECTION / INFORMATION-ARCHITECTURE CLARIFICATION
-Status: PROMOTED / LOCKED CLARIFICATION
+Classification: HISTORICAL PRODUCT-PROJECTION / INFORMATION-ARCHITECTURE CLARIFICATION
+Status: PROMOTED / LOCKED HISTORICAL CLARIFICATION / SUPERSEDED FOR CURRENT WU4 PRODUCT STATE
 Parent authority: docs/49_webcore_product_completeness_stabilization_contract.md
 Technical implementation authorization: NONE
 Release / tag / publication authorization: NONE
 ```
 
-This clarification records the accepted product-facing information-architecture
-decision for the Webcore Site Settings target inside the promoted Webcore Product
-Completeness & Stabilization workstream.
+This clarification records the historical accepted product-facing
+information-architecture decision for the Webcore Site Settings target inside
+the promoted Webcore Product Completeness & Stabilization workstream.
 
 It supersedes only conflicting product-projection and information-architecture
 wording in `docs/49_webcore_product_completeness_stabilization_contract.md` and
@@ -25,17 +25,25 @@ architecture history in
 It does not transfer Settings, Site Asset, Branding, Module lifecycle, System
 Health, or other underlying state/lifecycle authority.
 
+This six-area target is preserved as planning lineage only. The later WU4
+contract and accepted Batch 3 disposition are authoritative for current
+product state and supersede the Security and Email target areas: current Site
+Settings has four top-level areas—Site Identity, System, Modules, and System
+Health.
+
 ## Locked product direction
 
-The current Webcore **System Manager** product-facing surface is to evolve into
-**Site Settings** as its successor parent administrative surface.
+The historical target was for the Webcore **System Manager** product-facing
+surface to evolve into **Site Settings** as its successor parent administrative
+surface.
 
-Site Settings is therefore not a separate sibling surface beside a retained
-System Manager, and `Site` is not retained as a peer tab under System Manager.
-The parent product identity changes from `System Manager` to `Site Settings`
-while accepted underlying Webcore capabilities are preserved and reorganized.
+Under that historical target, Site Settings was therefore not a separate
+sibling surface beside a retained System Manager, and `Site` was not retained
+as a peer tab under System Manager. The parent product identity was to change
+from `System Manager` to `Site Settings` while accepted underlying Webcore
+capabilities were preserved and reorganized.
 
-The target top-level hierarchy is:
+The historical target top-level hierarchy was:
 
 ```text
 Site Settings
@@ -78,12 +86,12 @@ Where `docs/49_webcore_product_completeness_stabilization_contract.md` describes
 `Site Identity`, `Localization`, and `Appearance` as intended peer product
 groups, this clarification supersedes that hierarchy.
 
-The authoritative interpretation is now:
+The historical interpretation recorded by this clarification was:
 
-- `Site Settings` is the evolved parent surface and successor product identity
+- `Site Settings` was the evolved parent surface and successor product identity
   to the current System Manager projection;
 - `Site Identity`, `System`, `Security`, `Email`, `Modules`, and `System Health`
-  are the intended top-level areas;
+  were the intended top-level areas;
 - `Localization` and `Appearance` belong within `Site Identity` rather than as
   peer top-level Site Settings areas;
 - the historical candidate `Site` tab is redundant under the evolved parent
@@ -103,11 +111,11 @@ underlying services, permissions, lifecycle responsibilities, recovery
 semantics, and singular authorities unless exact source evidence justifies a
 bounded correction.
 
-`Security` and `Email` remain target top-level areas from the accepted planning
-lineage, but this clarification does not invent or authorize unsupported runtime
-capability. Their exact delivered baseline, empty-state behavior, or later
-implementation requirement must be resolved against current source and the WU4
-contract before implementation.
+`Security` and `Email` were target top-level areas in this historical planning
+lineage. This clarification did not invent or authorize unsupported runtime
+capability. The later WU4 contract and accepted Batch 3 disposition supersede
+those targets for current product state; Security and Email are not current
+visible Site Settings top-level areas.
 
 ## Authority preservation
 

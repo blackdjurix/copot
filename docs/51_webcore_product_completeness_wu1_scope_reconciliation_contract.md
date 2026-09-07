@@ -8,7 +8,7 @@ WU1 status: COMPLETE / CONTRACT LOCKED
 Technical implementation performed by WU1: NONE
 WU2 implementation: COMPLETE / ACCEPTED on feature branch
 WU3 implementation/validation/acceptance: COMPLETE / ACCEPTED / INTEGRATED INTO MAIN;
-WU4-WU6 implementation: NOT STARTED
+WU4-WU6 implementation: HISTORICAL WU1 BASELINE / LATER LIFECYCLE RECORDED IN CURRENT AUTHORITIES
 Release / tag / publication authorization: NONE
 
 This contract closes WU1 as the authoritative scope-reconciliation unit under
@@ -16,6 +16,12 @@ This contract closes WU1 as the authoritative scope-reconciliation unit under
 the accepted product-facing information-architecture clarification in
 `docs/50_webcore_site_settings_information_architecture_clarification.md` and
 current repository source evidence.
+
+The WU4-WU6 status above is retained as this contract's original WU1 planning
+baseline, not as current lifecycle truth. Current WU4 state is maintained by
+`docs/54_webcore_site_settings_appearance_consolidation_contract.md`: WU4 is
+ACTIVE / PARTIAL, Batch 3 is accepted/complete/closed, and Batch 4 is not
+started.
 
 WU1 is a planning/scope contract. It does not implement Media, Navigation, Site
 Settings, schema, configuration, package lifecycle, or release behavior.
@@ -190,7 +196,7 @@ This is product-facing identity and information-architecture succession. It is
 not a transfer of underlying Settings, Site Asset, Branding, System lifecycle,
 Module lifecycle, System Health, security, or persistence authority.
 
-The locked top-level Site Settings areas are:
+The historical WU1 target top-level Site Settings areas were:
 
 1. Site Identity
 2. System
@@ -233,11 +239,15 @@ The evolution from System Manager to Site Settings must preserve accepted
 Webcore operational capability. System, Modules, and System Health must not be
 removed merely because the parent surface is renamed/evolved.
 
-Security and Email are locked as target top-level areas, but WU1 does not claim
+Security and Email were locked as target top-level areas in this historical WU1
+baseline, but WU1 did not claim
 that their complete operator implementations already exist. WU4 must inspect
 current source and contract evidence and implement only the accepted baseline
 required for the Site Settings product surface. It must not invent unrelated
 security/email subsystems or cross an unlocked architecture/product boundary.
+The later WU4 contract and accepted Batch 3 disposition supersede that target
+for current product state: Security and Email are not current visible Site
+Settings top-level areas.
 
 ### Projection supersession
 

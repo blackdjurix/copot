@@ -54,8 +54,9 @@ Current durable planning state:
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
 - Webcore Product Completeness & Stabilization: WU1 COMPLETE / CONTRACT
   LOCKED; WU2 COMPLETE / ACCEPTED / INTEGRATED; WU3 COMPLETE / ACCEPTED /
-  INTEGRATED / CLOSED; WU4 CONTRACT PROMOTED / CONTRACT LOCKED /
-  IMPLEMENTATION NOT STARTED; WU5-WU6 NOT STARTED;
+  INTEGRATED / CLOSED; WU4 ACTIVE / PARTIAL under its locked contract
+  (Batches 1–2 complete/closed; Batch 3 accepted/complete/closed; Batch 4 not
+  started); WU5-WU6 NOT STARTED;
 - MR.2: COMPLETE / CLOSED;
 - MR.2 WU1–WU8: COMPLETE AND CLOSED;
 - Webcore Content Admin Baseline: COMPLETE / CLOSED; corrective prerequisite
@@ -410,16 +411,17 @@ Promoted WU topology and current disposition:
 2. WU2 — Core Media Admin Baseline — COMPLETE / ACCEPTED / INTEGRATED
 3. WU3 — Core Primary Navigation Admin Baseline — COMPLETE / ACCEPTED /
    INTEGRATED / CLOSED
-4. WU4 — Webcore Site Settings & Appearance Consolidation — CONTRACT
-   PROMOTED / CONTRACT LOCKED / IMPLEMENTATION NOT STARTED
+4. WU4 — Webcore Site Settings & Appearance Consolidation — ACTIVE / PARTIAL /
+   CONTRACT PROMOTED / CONTRACT LOCKED; Batches 1–2 COMPLETE / CLOSED; Batch 3
+   ACCEPTED / COMPLETE / CLOSED; Batch 4 NOT STARTED
 5. WU5 — Zero-Optional Product Acceptance — NOT STARTED
 6. WU6 — Stabilization & v0.14.0 Readiness Closure — NOT STARTED
 
 WU4 implementation authority:
 - `docs/54_webcore_site_settings_appearance_consolidation_contract.md` is the
   dedicated WU4 implementation authority;
-- WU4 Batch 1 — Site Settings Parent, Site Identity, Homepage & Appearance —
-  is the next implementation target;
+- WU4 Batch 4 — Cross-Surface Acceptance & WU4 Closure — is the next in-scope
+  planning target; it remains not started and requires separate authorization;
 - this Workplan entry does not authorize WU4 implementation.
 
 Readiness boundary:
@@ -1209,10 +1211,10 @@ MR.2 is complete and closed. WU1 — Webcore Completeness Contract & Scope
 Reconciliation, WU2 — Core Media Admin Baseline, and WU3 — Core Primary
 Navigation Admin Baseline are complete in their authoritative states. WU4 is
 contract promoted and locked under
-`docs/54_webcore_site_settings_appearance_consolidation_contract.md`; WU4
-Batch 1 — Site Settings Parent, Site Identity, Homepage & Appearance — is the
-next implementation target. No WU4 technical implementation is authorized by
-this Workplan entry alone.
+`docs/54_webcore_site_settings_appearance_consolidation_contract.md`; WU4 is
+ACTIVE / PARTIAL with Batches 1–2 complete/closed, Batch 3 accepted/complete/
+closed, and Batch 4 not started. Batch 4 is the next in-scope planning target;
+no WU4 technical implementation is authorized by this Workplan entry alone.
 
 ## 10. Retention and Planning Freshness
 

@@ -495,9 +495,10 @@ This contract records projection/target-level supersession without falsifying
 history:
 
 - `docs/50_webcore_site_settings_information_architecture_clarification.md`
-  remains authoritative for the six-area parent IA. This contract adds
-  Homepage inside Site Identity and supersedes its conflicting target-level
-  Appearance/Branding wording.
+  remains preserved historical planning lineage for the six-area parent IA.
+  This contract is authoritative for current WU4 product state, adds Homepage
+  inside Site Identity, and supersedes its conflicting target-level
+  Security/Email and Appearance/Branding wording.
 - `docs/49_webcore_product_completeness_stabilization_contract.md` remains the
   parent workstream contract. Its four-color Webcore Branding to Site Color
   Scheme target relationship is superseded for WU4 by the one-Main-Color
