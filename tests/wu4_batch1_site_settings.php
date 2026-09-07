@@ -33,7 +33,7 @@ $css = $read('public/admin-assets/css/admin.css');
 $assert(str_contains($bootstrap, "routes/site_settings.php"), 'Bootstrap does not load canonical Site Settings routes.');
 $assert(!str_contains($bootstrap, "routes/system_manager.php"), 'Bootstrap still loads the retired System Manager route.');
 $assert(str_contains($siteSettings, "childUrl('settings')"), 'Canonical Site Settings path is missing.');
-foreach (['Site Identity', 'System', 'Security', 'Email', 'Modules', 'System Health'] as $area) {
+foreach (['Site Identity', 'System', 'Modules', 'System Health'] as $area) {
     $assert(str_contains($view, $area), "Site Settings area is missing: {$area}.");
 }
 $assert(str_contains($siteSettings, "settings.update"), 'Site Settings write permission is missing.');

@@ -73,14 +73,12 @@ or Module lifecycle work.
 
 ## Locked information architecture
 
-Site Settings has exactly these six top-level areas:
+Site Settings has exactly these four current top-level areas:
 
 1. Site Identity
 2. System
-3. Security
-4. Email
-5. Modules
-6. System Health
+3. Modules
+4. System Health
 
 Site Identity contains exactly these bounded groups:
 
@@ -106,8 +104,9 @@ Site Identity
    └─ Webcore Color Scheme
 ```
 
-Security and Email remain top-level areas even where the current source only
-supports a truthful unsupported or non-configurable state.
+Security and Email are future capability concepts, not current Site Settings
+top-level areas. They must not be represented as operator surfaces until a
+separate delivered capability justifies them.
 
 ## Authority preservation
 
@@ -288,14 +287,15 @@ is not Webcore ownership and is outside WU4 implementation scope. Its future
 owner may be a Theme Module or separate optional Branding capability; WU4 does
 not choose that owner.
 
-## Security and Email boundary
+## Security and Email future-capability boundary
 
-Security and Email remain top-level Site Settings areas. WU4 must expose a
-truthful delivered-capability state based on current source.
+Security and Email are not current Site Settings areas. The underlying
+authentication, session, CSRF, and user-email identity capabilities remain
+owned by their existing authorities and are not removed by this disposition.
+No Site Settings projection is justified until a separate system-level
+capability is delivered and authorized.
 
-If no configurable capability exists, the baseline is an explicit
-unsupported/non-configurable state. WU4 must not invent or imply delivery of
-new infrastructure.
+WU4 must not invent or imply delivery of new Security or Email infrastructure.
 
 The following are outside WU4:
 
@@ -420,24 +420,25 @@ comprehensible; participant-level handoff is not presented as partial
 role/capability detachment; and no UI path equates Installer Adopt,
 legacy Webcore adoption, and Runtime Handoff.
 
-### Batch 3 — Security, Email & System Health Projection Reconciliation
+### Batch 3 — System Health Projection Reconciliation
 
 Current state: **IMPLEMENTATION COMPLETE / TECHNICAL VALIDATION COMPLETE /
 HUMAN ACCEPTANCE PENDING**. This does not mark Batch 3 accepted, complete, or
 closed.
 
-Materialize truthful Security and Email projections based on delivered
-capability and reconcile System Health presentation while preserving existing
-health authority.
+Reconcile the System Health presentation while preserving the existing health
+authority. Security and Email projections are withdrawn from the current Site
+Settings surface because no delivered system-level capability justifies them.
 
-No new Security or Email infrastructure is authorized by this batch.
+No new Security, Email, or System Health infrastructure is authorized by this
+batch.
 
 Hard dependencies: Batch 1 parent, existing authentication/session/CSRF
 boundaries, existing System Health provider/producer/aggregation model, and
 the final permission visibility rules.
 
 Batch 3 is independently implementable as projection reconciliation after the
-parent exists. Human/product acceptance is required for truthful unsupported
+parent exists. Human/product acceptance is required for truthful System Health
 states, visibility, sanitization, and comprehension. New capability delivery
 would require a separate authorization.
 
@@ -451,7 +452,7 @@ Validate:
 - permission boundaries;
 - absence of competing canonical editors;
 - Homepage/Navigation identity separation;
-- truthful Security and Email states; and
+- absence of unsupported Security and Email surfaces; and
 - coherent Site Settings UX.
 
 Batch 4 is acceptance and closure only. It is not a license to add adjacent
@@ -559,7 +560,7 @@ WU4 implementation acceptance must include, as applicable:
 - Homepage Hero Image reference safety and Core Media ownership;
 - one-Main-Color Webcore Color Scheme behavior and semantic-color separation;
 - zero-Theme Built-in Public View behavior;
-- truthful Security and Email states;
+- absence of withdrawn Security and Email projections;
 - preservation of System, Module, and System Health authorities; and
 - human/product review of information architecture, visual behavior,
   accessibility, responsive behavior, and cross-surface comprehension.

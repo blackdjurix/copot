@@ -5,7 +5,6 @@ use Copot\Core\DeploymentContext;
 use Copot\Core\Env;
 use Copot\Core\SystemHealthAggregator;
 use Copot\Core\SystemHealthContext;
-use Copot\Core\SystemHealthProducerAvailability;
 use Copot\Core\SystemHealthReport;
 
 $basePath = dirname(__DIR__);
@@ -35,9 +34,6 @@ $app = new Application($deploymentContext, static function (SystemHealthContext 
     $producer = new SiteSettingsModuleHealthProducer($app);
     $result = $producer->report($context);
     if (!$result->visibleTo($viewer)) {
-        return null;
-    }
-    if ($result->findings() === [] && SystemHealthProducerAvailability::isEvidenceSufficient($result->availability())) {
         return null;
     }
 
