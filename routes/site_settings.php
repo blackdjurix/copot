@@ -11,6 +11,7 @@ use Copot\Core\WebcoreColorScheme;
 use Copot\Core\ContentRepository;
 use Copot\Core\SystemManagerLifecycleService;
 use Copot\Core\SystemManagerPackageUpload;
+use Copot\Core\SystemHealthDashboardConsumer;
 use Copot\Core\UnavailableSystemManagerRecoveryGate;
 
 require_once $app->path('app/Core/SystemManagerRecoveryGate.php');
@@ -26,6 +27,11 @@ require_once $app->path('app/Core/HomepageHeroImageService.php');
 $adminUrl = $app->adminUrl();
 $path = $adminUrl->childUrl('settings');
 $permission = 'settings.update';
+$adminPermission = $app->config()->get('admin.permission', 'admin.access');
+if (!is_string($adminPermission) || trim($adminPermission) === '') {
+    throw new RuntimeException('Invalid admin permission configuration.');
+}
+$adminPermission = trim($adminPermission);
 $systemPath = $path . '/system';
 $modulesProjection = new SiteSettingsModulesAdmin($app, new ModuleManagerAdmin($app));
 $hero = static fn (): HomepageHeroImageService => new HomepageHeroImageService(
@@ -36,12 +42,10 @@ $hero = static fn (): HomepageHeroImageService => new HomepageHeroImageService(
     new MediaLifecycleService($app->database(), new MediaRepository($app->database()), null, new MediaUsageRepository($app->database()))
 );
 
-$requireSurfaceUser = static function ($request) use ($app, $permission) {
+$requireSurfaceUser = static function ($request) use ($app, $adminPermission) {
     if (!$app->auth()->check()) return Response::redirect($app->adminUrl()->baseUrl());
     $user = $app->auth()->user();
-    $adminPermission = $app->config()->get('admin.permission', 'admin.access');
-    if (!$user || !$user->can((string) $adminPermission)
-        || (!$user->can($permission) && !$user->can('modules.manage') && !$user->can('system.webcore.manage'))) {
+    if (!$user || !$user->can($adminPermission)) {
         return $app->adminErrors()->response($request, 403);
     }
     return $user;
@@ -60,6 +64,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
         $canUpdateSettings = $user->can($permission);
         $canManageModules = $user->can('modules.manage');
         $canManageSystem = $user->can('system.webcore.manage');
+        $health = (new SystemHealthDashboardConsumer())->content($app->systemHealthReport($user));
         $selected = $canUpdateSettings ? $hero()->selected() : null;
         $media = $canUpdateSettings && $user->can('media.use') ? (new MediaRepository($app->database()))->paginate('image', 100, 0) : [];
         $pageOptions = $canUpdateSettings ? (new ContentRepository($app->database()))->workspace(['type' => 'page', 'status' => 'published'], 100, 0)['items'] : [];
@@ -102,10 +107,11 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'installationId' => $canManageSystem ? $app->installationIdentity()->value() : null,
             'releasePath' => $app->path('release.json'),
             'csrfToken' => $app->csrf()->token(),
-            'initialArea' => $moduleDetail !== null ? 'modules' : ($canUpdateSettings ? 'identity' : ($canManageSystem ? 'system' : 'modules')),
+            'initialArea' => $moduleDetail !== null ? 'modules' : ($canUpdateSettings ? 'identity' : ($canManageSystem ? 'system' : ($canManageModules ? 'modules' : 'security'))),
             'canManageSystem' => $canManageSystem,
             'canUpdateSettings' => $canUpdateSettings,
             'canManageModules' => $canManageModules,
+            'health' => $health,
             'moduleItems' => $canManageModules ? $modulesProjection->inventory() : [],
             'moduleDetail' => $moduleDetail,
             'moduleDetailPath' => static fn (string $name): string => $modulesProjection->detailPath($name),
@@ -119,7 +125,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
     } catch (Throwable) { return $app->adminErrors()->response($request, 503); }
 };
 
-$app->adminNavigation()->add('Site Settings', $path, [$permission, 'modules.manage', 'system.webcore.manage'], 'settings', 70);
+$app->adminNavigation()->add('Site Settings', $path, [$adminPermission, $permission, 'modules.manage', 'system.webcore.manage'], 'settings', 70);
 
 $app->router()->get($path, function ($request) use ($requireSurfaceUser, $render): Response {
     $user = $requireSurfaceUser($request); if ($user instanceof Response) return $user;

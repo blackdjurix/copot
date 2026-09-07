@@ -59,7 +59,7 @@ $assert(str_contains($script, 'Object.entries(values).every') && str_contains($s
 $assert(str_contains($script, "matching Module\${visible === 1 ? '' : 's'}") && str_contains($view, 'site-settings-modules__result-count') && !str_contains($view, 'No matching Modules'), 'Module result count does not use the accepted below-filter placement and wording.');
 $assert(str_contains($script, 'data-site-settings-module-row') && str_contains($script, 'event.key === \'Enter\''), 'Whole-row keyboard/open behavior is missing.');
 $assert(str_contains($routes, "'modules.manage'") && str_contains($routes, '$requireSettingsUser'), 'Modules and ordinary settings permission composition is missing.');
-$assert(str_contains($routes, "adminNavigation()->add('Site Settings', \$path, [\$permission, 'modules.manage', 'system.webcore.manage']"), 'Site Settings navigation does not expose the parent for any implemented capability.' );
+$assert(str_contains($routes, "adminNavigation()->add('Site Settings', \$path, [\$adminPermission, \$permission, 'modules.manage', 'system.webcore.manage']"), 'Site Settings navigation does not expose the parent for any implemented capability.' );
 $navigationPermissions = new class extends \Copot\Core\PermissionChecker {
     public function __construct() {}
     public function userHasRole(int $userId, string $role): bool { return false; }
@@ -67,7 +67,7 @@ $navigationPermissions = new class extends \Copot\Core\PermissionChecker {
 };
 $navigationUser = new \Copot\Core\User(['id' => 1, 'name' => 'Modules operator', 'email' => 'modules@example.test', 'password_hash' => 'unused', 'status' => 'active'], $navigationPermissions);
 $navigation = new \Copot\Core\AdminNavigation();
-$navigation->add('Site Settings', '/admin/settings', ['settings.update', 'modules.manage', 'system.webcore.manage'], 'settings', 70);
+$navigation->add('Site Settings', '/admin/settings', ['admin.access', 'settings.update', 'modules.manage', 'system.webcore.manage'], 'settings', 70);
 $assert(array_column($navigation->itemsFor($navigationUser), 'label') === ['Site Settings'], 'AdminNavigation any-permission behavior did not expose Site Settings to a Modules operator.');
 $assert(str_contains($routes, '$modulesProjection->detail') && str_contains($routes, 'modules/{name}'), 'Canonical subordinate Module Detail route is missing.');
 $assert(str_contains($routes, "'/modules/' . " . '$moduleAction') && !str_contains($routes, '$systemPath . ' . "'/modules"), 'Module actions are not subordinate to Site Settings Modules.');

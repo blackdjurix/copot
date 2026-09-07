@@ -7,13 +7,15 @@ $allAreas = ['identity' => 'Site Identity', 'system' => 'System', 'security' => 
 $canUpdateSettings = !empty($canUpdateSettings);
 $canManageModules = !empty($canManageModules);
 $canManageSystem = !empty($canManageSystem);
-$areas = $canUpdateSettings ? $allAreas : [];
-if (!$canUpdateSettings) {
-    if ($canManageSystem) $areas['system'] = $allAreas['system'];
-    if ($canManageModules) $areas['modules'] = $allAreas['modules'];
-} elseif (!$canManageModules) {
-    unset($areas['modules']);
-}
+$health = is_array($health ?? null) ? $health : [];
+$areas = array_filter($allAreas, static function (string $id) use ($canUpdateSettings, $canManageModules, $canManageSystem): bool {
+    return match ($id) {
+        'identity' => $canUpdateSettings,
+        'system' => $canManageSystem,
+        'modules' => $canManageModules,
+        'security', 'email', 'health' => true,
+    };
+}, ARRAY_FILTER_USE_KEY);
 $initialArea = in_array((string) ($initialArea ?? 'identity'), array_keys($areas), true) ? (string) $initialArea : (string) (array_key_first($areas) ?? 'identity');
 $requestedInitialArea = $initialArea;
 $initialArea = array_key_exists($requestedInitialArea, $areas) ? $requestedInitialArea : (string) (array_key_first($areas) ?? 'identity');
@@ -67,7 +69,9 @@ $homepageContentPageId = $homepageContentType === 'page' ? (int) ($homepageConte
             <div class="admin-actions admin-form__actions"><button class="admin-button admin-button--primary" type="submit" form="<?= $settingsFormId ?>">Save Site Settings</button></div>
         </section><?php endif; ?>
         <?php if (array_key_exists('system', $areas)): ?><section class="admin-settings-panel" id="site-settings-system" role="tabpanel" aria-labelledby="site-settings-system-tab" data-settings-panel="site-settings-system"<?= $initialArea === 'system' ? '' : ' hidden' ?>><header class="admin-settings-panel__header"><h3>System</h3></header><?php require __DIR__ . '/site-settings-system.php'; ?></section><?php endif; ?>
-        <?php if ($canUpdateSettings): foreach (['security' => 'Security settings are not configurable in this build.', 'email' => 'Email settings are not configurable in this build.', 'health' => 'System Health presentation is available in a later WU4 batch.'] as $id => $message): ?><section class="admin-settings-panel" id="site-settings-<?= $id ?>" role="tabpanel" aria-labelledby="site-settings-<?= $id ?>-tab" data-settings-panel="site-settings-<?= $id ?>"<?= $initialArea === $id ? '' : ' hidden' ?>><header class="admin-settings-panel__header"><h3><?= $escape($allAreas[$id]) ?></h3></header><div class="admin-empty-state"><h4>Not configurable in Batch 1</h4><p><?= $escape($message) ?></p></div></section><?php endforeach; endif; ?>
+        <?php if (array_key_exists('security', $areas)): ?><section class="admin-settings-panel" id="site-settings-security" role="tabpanel" aria-labelledby="site-settings-security-tab" data-settings-panel="site-settings-security"<?= $initialArea === 'security' ? '' : ' hidden' ?>><header class="admin-settings-panel__header"><h3>Security</h3></header><div class="admin-empty-state"><h4>Delivered authentication safeguards</h4><p>Authentication, session handling, and CSRF request validation are delivered Webcore capabilities.</p><p>Security settings are read-only on this surface. It does not configure authentication, session, or CSRF behavior.</p></div></section><?php endif; ?>
+        <?php if (array_key_exists('email', $areas)): ?><section class="admin-settings-panel" id="site-settings-email" role="tabpanel" aria-labelledby="site-settings-email-tab" data-settings-panel="site-settings-email"<?= $initialArea === 'email' ? '' : ' hidden' ?>><header class="admin-settings-panel__header"><h3>Email</h3></header><div class="admin-empty-state"><h4>System email delivery is not supported</h4><p>Copot has no configured system email delivery capability in this build.</p><p>User email addresses identify user accounts; they do not configure email delivery.</p></div></section><?php endif; ?>
+        <?php if (array_key_exists('health', $areas)): ?><section class="admin-settings-panel" id="site-settings-health" role="tabpanel" aria-labelledby="site-settings-health-tab" data-settings-panel="site-settings-health"<?= $initialArea === 'health' ? '' : ' hidden' ?>><header class="admin-settings-panel__header"><h3>System Health</h3></header><div class="admin-empty-state" data-site-settings-health data-health-status="<?= $escape($health['status'] ?? 'unavailable') ?>"><h4><?= $escape($health['status_label'] ?? 'Health data unavailable') ?></h4><p><?= $escape($health['message'] ?? 'System Health data is not available for this view.') ?></p><?php if (!empty($health['findings']) && is_array($health['findings'])): ?><ul class="admin-dashboard-health-findings"><?php foreach ($health['findings'] as $finding): ?><li><strong><?= $escape($finding['severity'] ?? 'Finding') ?></strong> <?= $escape($finding['summary'] ?? '') ?><?php if (!empty($finding['target'])): ?><span>(<?= $escape($finding['target']) ?>)</span><?php endif; ?></li><?php endforeach; ?></ul><?php endif; ?><p>System Health is a viewer-scoped, read-only report.</p></div></section><?php endif; ?>
         <?php if ($canManageModules): ?><section class="admin-settings-panel" id="site-settings-modules" role="tabpanel" aria-labelledby="site-settings-modules-tab" data-settings-panel="site-settings-modules"<?= $initialArea === 'modules' ? '' : ' hidden' ?>><?php if (is_array($moduleDetail ?? null)): ?><?php $item = $moduleDetail; $inventoryPath = $path . '#modules'; $actionPaths = $moduleActionPaths ?? []; $lifecyclePath = $moduleLifecyclePath ?? ''; $error = $moduleError ?? null; $notice = $moduleNotice ?? null; $siteSettingsModulesProjection = true; require __DIR__ . '/../../../modules/module-manager/views/admin/module-detail.php'; ?><?php else: ?><?php $items = is_array($moduleItems ?? null) ? $moduleItems : []; $detailPath = $moduleDetailPath ?? static fn (string $name): string => $path . '/modules/' . rawurlencode($name); $packagePath = $modulePackagePath ?? ''; $lifecyclePath = $moduleLifecyclePath ?? ''; $error = $moduleError ?? null; $notice = $moduleNotice ?? null; require __DIR__ . '/site-settings-modules.php'; ?><?php endif; ?></section><?php endif; ?>
     </div>
 </section>
