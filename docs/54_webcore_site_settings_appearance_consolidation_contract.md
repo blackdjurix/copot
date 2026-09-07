@@ -6,7 +6,7 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU4 — Webcore Site Settings & Appearance Consolidation
 Contract status: PROMOTED / CONTRACT LOCKED
-WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 IMPLEMENTATION COMPLETE / TECHNICAL VALIDATION COMPLETE / HUMAN ACCEPTANCE PENDING; BATCH 4 NOT STARTED
+WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 ACCEPTED / COMPLETE / CLOSED (HUMAN/PRODUCT ACCEPTANCE PASS; TECHNICAL VALIDATION COMPLETE); BATCH 4 NOT STARTED
 Technical implementation authorization: BATCH 1, BATCH 2 SYSTEM/MODULES, AND BATCH 3 EXECUTED UNDER SEPARATE AUTHORIZATION
 Release / tag / publication authorization: NONE
 ```
@@ -18,8 +18,8 @@ documentation and contract materialization only; Batch 1 implementation and
 acceptance, and the later separately authorized Site Settings → System and
 Site Settings → Modules slices, are recorded by current-state documentation.
 Batch 2 is COMPLETE / CLOSED. Batch 3 implementation and technical validation
-are complete, with human/product acceptance pending; Batch 3 is not accepted,
-complete, or closed. Batch 4 remains NOT STARTED. This contract
+are complete, and human/product acceptance is PASS. Batch 3 is accepted,
+complete, and closed. Batch 4 remains NOT STARTED. This contract
 does not itself grant blanket implementation
 authority for those later slices, schema/settings migration beyond accepted
 scope, runtime mutation outside controlled acceptance, or release activity.
@@ -422,9 +422,8 @@ legacy Webcore adoption, and Runtime Handoff.
 
 ### Batch 3 — System Health Projection Reconciliation
 
-Current state: **IMPLEMENTATION COMPLETE / TECHNICAL VALIDATION COMPLETE /
-HUMAN ACCEPTANCE PENDING**. This does not mark Batch 3 accepted, complete, or
-closed.
+Current state: **ACCEPTED / COMPLETE / CLOSED**. Human/product acceptance:
+**PASS**. Technical validation: **COMPLETE**.
 
 Reconcile the System Health presentation while preserving the existing health
 authority. Security and Email projections are withdrawn from the current Site
@@ -438,9 +437,13 @@ boundaries, existing System Health provider/producer/aggregation model, and
 the final permission visibility rules.
 
 Batch 3 is independently implementable as projection reconciliation after the
-parent exists. Human/product acceptance is required for truthful System Health
-states, visibility, sanitization, and comprehension. New capability delivery
-would require a separate authorization.
+parent exists. Accepted behavior includes sufficient authorized evidence with
+zero material findings rendering **Operational / No material health findings
+were reported**, while unavailable, insufficient-evidence, unauthorized,
+viewer-scoped, and sanitized states remain distinct. Human/product acceptance
+for truthful System Health states, visibility, sanitization, and comprehension
+is recorded as **PASS** for this bounded scope. New capability delivery would
+require a separate authorization.
 
 ### Batch 4 — Cross-Surface Acceptance & WU4 Closure
 
