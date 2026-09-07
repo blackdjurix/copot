@@ -6,8 +6,8 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU4 — Webcore Site Settings & Appearance Consolidation
 Contract status: PROMOTED / CONTRACT LOCKED
-WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 NOT STARTED; BATCH 4 NOT STARTED
-Technical implementation authorization: BATCH 1 AND BATCH 2 SYSTEM/MODULES EXECUTED UNDER SEPARATE AUTHORIZATION
+WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 IMPLEMENTATION COMPLETE / TECHNICAL VALIDATION COMPLETE / HUMAN ACCEPTANCE PENDING; BATCH 4 NOT STARTED
+Technical implementation authorization: BATCH 1, BATCH 2 SYSTEM/MODULES, AND BATCH 3 EXECUTED UNDER SEPARATE AUTHORIZATION
 Release / tag / publication authorization: NONE
 ```
 
@@ -17,7 +17,9 @@ authority and projection lineage. Its original authorization covered
 documentation and contract materialization only; Batch 1 implementation and
 acceptance, and the later separately authorized Site Settings → System and
 Site Settings → Modules slices, are recorded by current-state documentation.
-Batch 2 is COMPLETE / CLOSED; Batches 3–4 remain NOT STARTED. This contract
+Batch 2 is COMPLETE / CLOSED. Batch 3 implementation and technical validation
+are complete, with human/product acceptance pending; Batch 3 is not accepted,
+complete, or closed. Batch 4 remains NOT STARTED. This contract
 does not itself grant blanket implementation
 authority for those later slices, schema/settings migration beyond accepted
 scope, runtime mutation outside controlled acceptance, or release activity.
@@ -419,6 +421,10 @@ role/capability detachment; and no UI path equates Installer Adopt,
 legacy Webcore adoption, and Runtime Handoff.
 
 ### Batch 3 — Security, Email & System Health Projection Reconciliation
+
+Current state: **IMPLEMENTATION COMPLETE / TECHNICAL VALIDATION COMPLETE /
+HUMAN ACCEPTANCE PENDING**. This does not mark Batch 3 accepted, complete, or
+closed.
 
 Materialize truthful Security and Email projections based on delivered
 capability and reconcile System Health presentation while preserving existing
