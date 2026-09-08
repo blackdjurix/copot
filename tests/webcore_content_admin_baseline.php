@@ -18,7 +18,8 @@ $assert(str_contains($routes, "routeChildUrl('content/create')"), 'Core Content 
 $assert(str_contains($routes, "routeChildUrl('content/{id}/edit')"), 'Core Content Admin edit route is missing.');
 $assert(str_contains($routes, "['publish' => 'content.publish', 'archive' => 'content.delete']"), 'Core Content publish/archive route permissions are missing.');
 $assert(str_contains($routes, "'content/{id}/' . \$action"), 'Core Content publish/archive route registration is missing.');
-$assert(str_contains($routes, 'new ContentService($app->database(), $contentRepository)'), 'Core route does not use Core ContentService.');
+$assert(str_contains($routes, 'new ContentService($app->database(), $contentRepository, null, $contentMediaReferences)'), 'Core route does not use Core ContentService with Core Media reference synchronization.');
+$assert(str_contains($routes, 'ContentFeaturedMediaReferenceService') && str_contains($routes, 'MediaUsageRepository'), 'Core route does not use authoritative Core Media usage services.');
 $assert(!str_contains($routes, "modules/content/routes.php"), 'Core route imports Content Manager routes.');
 $assert(!str_contains($routes, 'contentTaxonomy'), 'Core baseline imports taxonomy behavior.');
 $assert(str_contains($routes, 'validateOrReject'), 'Core route does not enforce CSRF validation.');

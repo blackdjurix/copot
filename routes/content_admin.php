@@ -4,9 +4,11 @@ use Copot\Core\Content;
 use Copot\Core\ContentDuplicateSlugException;
 use Copot\Core\ContentRepository;
 use Copot\Core\ContentService;
+use Copot\Core\ContentFeaturedMediaReferenceService;
 use Copot\Core\ContentStaleWriteException;
 use Copot\Core\ContentWriteException;
 use Copot\Core\MediaRepository;
+use Copot\Core\MediaUsageRepository;
 use Copot\Core\Response;
 
 // The retained Content Manager owns the richer extension projection when it
@@ -27,7 +29,8 @@ $contentBase = $app->adminUrl()->baseUrl();
 $contentRoute = fn (string $path = ''): string => $app->adminUrl()->routeChildUrl($path === '' ? 'content' : 'content/' . trim($path, '/'));
 $contentRepository = new ContentRepository($app->database());
 $mediaRepository = new MediaRepository($app->database());
-$contentService = new ContentService($app->database(), $contentRepository);
+$contentMediaReferences = new ContentFeaturedMediaReferenceService($mediaRepository, new MediaUsageRepository($app->database()));
+$contentService = new ContentService($app->database(), $contentRepository, null, $contentMediaReferences);
 $contentSlugger = new \Copot\Core\Slugger();
 
 $requireContent = static function ($request, string $permission) use ($app): mixed {
@@ -70,7 +73,7 @@ $formData = static function (?Content $content, ?string $status = null): array {
     ];
 };
 
-$renderForm = static function (string $title, string $action, array $data, array $errors, $user, string $path, string $mode) use ($app, $contentBase, $contentRoute, $formData): Response {
+$renderForm = static function (string $title, string $action, array $data, array $errors, $user, string $path, string $mode) use ($app, $contentRoute, $mediaRepository): Response {
     $html = '<section class="admin-content-form-page admin-stack" aria-labelledby="webcore-content-form-title">'
         . '<header class="admin-page-heading"><div class="admin-page-heading__copy"><h2 class="admin-page-heading__title" id="webcore-content-form-title">'
         . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</h2><p class="admin-page-heading__description">Create or update a Page or Article using Webcore Content.</p></div>'
@@ -83,13 +86,30 @@ $renderForm = static function (string $title, string $action, array $data, array
         foreach ($errors as $error) $html .= '<li>' . htmlspecialchars((string) $error, ENT_QUOTES, 'UTF-8') . '</li>';
         $html .= '</ul></div>';
     }
-    $field = static fn (string $id, string $label, string $value, string $type = 'text'): string => '<div class="admin-field"><label class="admin-field__label" for="' . $id . '">' . $label . '</label><input id="' . $id . '" name="' . $id . '" type="' . $type . '" value="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '"></div>';
-    $html .= $field('type', 'Type', (string) $data['type']);
+    $field = static fn (string $id, string $label, string $value): string => '<div class="admin-field"><label class="admin-field__label" for="' . $id . '">' . $label . '</label><input id="' . $id . '" name="' . $id . '" type="text" value="' . htmlspecialchars($value, ENT_QUOTES, 'UTF-8') . '"></div>';
+    $type = (string) ($data['type'] ?? 'page');
+    $typeOptions = '';
+    foreach (['page' => 'Page', 'article' => 'Article'] as $value => $label) {
+        $typeOptions .= '<option value="' . $value . '"' . ($type === $value ? ' selected' : '') . '>' . $label . '</option>';
+    }
+    $featuredId = $data['featured_media_id'] === null ? null : (int) $data['featured_media_id'];
+    $featured = $featuredId === null ? null : $mediaRepository->findById($featuredId);
+    $featuredDescriptor = $featured !== null && $featured->kind() === 'image' ? [
+        'id' => $featured->id()->value(),
+        'title' => $featured->title(),
+        'original_filename' => $featured->originalFilename(),
+        'url' => $app->url('/media/' . $featured->id()->value()),
+    ] : null;
+    $canUseMedia = $user->can('media.use');
+    $featuredJson = htmlspecialchars(json_encode($featuredDescriptor, JSON_THROW_ON_ERROR), ENT_QUOTES, 'UTF-8');
+    $html .= '<div class="admin-content-form-layout"><fieldset class="admin-content-form-section admin-fieldset"><legend>Content details</legend>';
+    $html .= '<div class="admin-field"><label class="admin-field__label" for="type">Type</label><select id="type" name="type">' . $typeOptions . '</select></div>';
     $html .= $field('title', 'Title', (string) $data['title']);
     $html .= $field('slug', 'Slug', (string) $data['slug']);
     $html .= '<div class="admin-field"><label class="admin-field__label" for="excerpt">Excerpt</label><textarea id="excerpt" name="excerpt" rows="3">' . htmlspecialchars((string) $data['excerpt'], ENT_QUOTES, 'UTF-8') . '</textarea></div>';
-    $html .= '<div class="admin-field"><label class="admin-field__label" for="body">Body</label><textarea id="body" name="body" rows="12" required>' . htmlspecialchars((string) $data['body'], ENT_QUOTES, 'UTF-8') . '</textarea><p class="admin-field__help">Use plain text content.</p></div>';
-    $html .= $field('featured_media_id', 'Featured Media ID (optional)', $data['featured_media_id'] === null ? '' : (string) $data['featured_media_id'], 'number');
+    $html .= '<div class="admin-field"><label class="admin-field__label" for="body">Body</label><textarea id="body" name="body" rows="12" required>' . htmlspecialchars((string) $data['body'], ENT_QUOTES, 'UTF-8') . '</textarea><p class="admin-field__help">Use plain text content.</p></div></fieldset>';
+    $html .= '<aside class="admin-content-form-sidebar"><fieldset class="admin-content-form-section" data-core-content-media-picker data-picker-url="' . htmlspecialchars($app->adminUrl()->childUrl('media/select'), ENT_QUOTES, 'UTF-8') . '" data-selected-media="' . $featuredJson . '"><legend>Featured Media</legend><input id="featured_media_id" name="featured_media_id" type="hidden" value="' . htmlspecialchars($featuredId === null ? '' : (string) $featuredId, ENT_QUOTES, 'UTF-8') . '" data-core-content-media-input><p class="admin-field__help" data-core-content-media-status aria-live="polite">' . ($featuredDescriptor === null ? 'Select an image from Core Media.' : 'A featured image is selected.') . '</p><div class="admin-media-picker__selected" data-core-content-media-selected' . ($featuredDescriptor === null ? ' hidden' : '') . '></div><div class="admin-actions"><button class="admin-button admin-button--secondary" type="button" data-core-content-media-open' . (!$canUseMedia ? ' disabled' : '') . '>' . ($featuredDescriptor === null ? 'Select media' : 'Change') . '</button><button class="admin-button admin-button--link" type="button" data-core-content-media-clear' . ($featuredDescriptor === null || !$canUseMedia ? ' hidden' : '') . '>Clear</button></div>' . (!$canUseMedia ? '<p class="admin-field__help">Media selection requires the Media use permission.</p>' : '') . '<dialog class="admin-media-picker" data-core-content-media-dialog aria-labelledby="core-content-media-picker-title"><div class="admin-media-picker__panel"><h3 id="core-content-media-picker-title">Select featured Media</h3><p class="admin-field__help">Choose an image from Core Media.</p><div class="admin-media-picker__results" data-core-content-media-results aria-live="polite"></div><div class="admin-actions"><button class="admin-button admin-button--secondary" type="button" data-core-content-media-close>Cancel</button></div></div></dialog></fieldset></aside></div>';
+    $html .= '<script src="' . htmlspecialchars($app->url('/admin-assets/js/core-content-featured-media.js?v=wu5-1'), ENT_QUOTES, 'UTF-8') . '" defer></script>';
     $html .= '<div class="admin-actions admin-form__actions"><a class="admin-button admin-button--secondary" href="' . htmlspecialchars($contentRoute(), ENT_QUOTES, 'UTF-8') . '">Cancel</a><button class="admin-button admin-button--primary" type="submit">' . ($mode === 'create' ? 'Create content' : 'Save changes') . '</button></div></form></div></section>';
     return Response::html($app->adminPageRenderer()->render($title, $html, $user, $app->session()->csrfToken(), $path, null, [['label' => 'Content', 'url' => $contentRoute()], ['label' => $title]]), $errors === [] ? 200 : 422);
 };
@@ -136,7 +156,7 @@ $app->router()->get($app->adminUrl()->routeChildUrl('content/{id}/edit'), functi
     ], [], $user, $request->path(), 'edit');
 });
 
-$save = static function ($request, ?array $params = null) use ($app, $requireContent, $contentRepository, $contentService, $contentSlugger, $mediaRepository, $routeId, $renderForm, $contentRoute): Response {
+$save = static function ($request, ?array $params = null) use ($app, $requireContent, $contentRepository, $contentService, $contentMediaReferences, $contentSlugger, $routeId, $renderForm, $contentRoute): Response {
     $id = $params === null ? null : $routeId($params['id'] ?? null);
     $user = $requireContent($request, $id === null ? 'content.create' : 'content.update');
     if ($user instanceof Response) return $user;
@@ -151,12 +171,14 @@ $save = static function ($request, ?array $params = null) use ($app, $requireCon
     if ($title === '') $errors[] = 'Title is required.';
     if ($body === '') $errors[] = 'Body is required.';
     try { if ($slug === '') $slug = $contentSlugger->generate($title); } catch (InvalidArgumentException) { $errors[] = 'Submitted content data is invalid.'; }
+    $existing = $id === null ? null : $contentRepository->findById($id);
+    if ($id !== null && !$existing) return $app->adminErrors()->response($request, 404);
     $featured = trim((string) $request->post('featured_media_id', ''));
     $featuredId = $featured === '' ? null : (filter_var($featured, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) ?: null);
     if ($featured !== '' && $featuredId === null) $errors[] = 'Featured Media reference is invalid.';
-    if ($featuredId !== null && !$mediaRepository->findById($featuredId)) $errors[] = 'Featured Media reference is invalid.';
-    $existing = $id === null ? null : $contentRepository->findById($id);
-    if ($id !== null && !$existing) return $app->adminErrors()->response($request, 404);
+    $previousFeaturedId = $existing?->featuredMediaId();
+    if ($featuredId !== $previousFeaturedId && !$user->can('media.use')) $errors[] = 'Featured Media selection is not authorized.';
+    try { $contentMediaReferences->validate($featuredId); } catch (InvalidArgumentException) { $errors[] = 'Selected Media is unavailable for featured use.'; }
     $data = ['type' => $type, 'title' => $title, 'slug' => $slug, 'excerpt' => trim((string) $request->post('excerpt', '')), 'body' => $body, 'status' => $existing?->status() ?? 'draft', 'author_id' => $existing?->authorId() ?? $user->id(), 'featured_media_id' => $featuredId];
     if ($errors !== []) return $renderForm($id === null ? 'Create Content' : 'Edit Content', $id === null ? $contentRoute() : $contentRoute((string) $id), array_merge($data, ['updated_at' => $existing?->updatedAt()]), $errors, $user, $request->path(), $id === null ? 'create' : 'edit');
     try { if ($id === null) $contentService->create($data, [], $user->id()); else $contentService->update($id, $data, [], trim((string) $request->post('expected_updated_at', '')), $user->id()); }
