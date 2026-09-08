@@ -4399,9 +4399,11 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
 .admin-media-picker { border: 0; border-radius: 12px; padding: 0; max-width: 720px; width: calc(100% - 2rem); }
 .admin-media-picker::backdrop { background: rgba(0,0,0,.55); }
 .admin-media-picker__panel { padding: 1.25rem; }
-.admin-media-picker__results { display: grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); gap: .75rem; margin: 1rem 0; max-height: 55vh; overflow: auto; }
+.admin-media-picker__results { display: grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); gap: .75rem; min-width: 0; margin: 1rem 0; max-height: 55vh; overflow: auto; }
 .admin-media-picker__results[hidden], .admin-media-picker [data-media-picker-search][hidden] { display: none !important; }
 .admin-media-picker__item { width: 100%; min-width: 0; padding: 0; color: var(--admin-color-text); text-align: left; }
+.admin-media-picker__item .admin-media-card__identity h3,
+.admin-media-picker__item .admin-media-card__meta { overflow-wrap: break-word; word-break: normal; }
 .admin-media-picker__item[aria-pressed="true"] { border-color: #2457d6; }
 .admin-media-picker__selected { display: grid; gap: .5rem; margin: .75rem 0; max-width: 28rem; }
 .admin-media-picker__selected img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
@@ -4417,6 +4419,10 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
 .admin-media-picker__crop-handle--ne { right: -9px; top: -9px; cursor: nesw-resize; }
 .admin-media-picker__crop-handle--sw { left: -9px; bottom: -9px; cursor: nesw-resize; }
 .admin-media-picker__crop-handle--se { right: -9px; bottom: -9px; cursor: nwse-resize; }
+@media (max-width: 560px) {
+    .admin-media-picker { max-width: calc(100vw - 2rem); }
+    .admin-media-picker__results { grid-template-columns: 1fr; overflow-x: hidden; }
+}
 
 .admin-navigation-workspace { display: grid; grid-template-columns: minmax(18rem, .9fr) minmax(22rem, 1.1fr); gap: var(--admin-space-6); align-items: start; }
 .admin-navigation-workspace__backdrop { display: none; }
