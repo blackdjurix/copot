@@ -9,10 +9,12 @@
         const clearButton = root.querySelector('[data-core-content-media-clear]');
         const dialog = root.querySelector('[data-core-content-media-dialog]');
         const results = root.querySelector('[data-core-content-media-results]');
+        const search = root.querySelector('[data-core-content-media-search]');
         const closeButton = root.querySelector('[data-core-content-media-close]');
         let restoreFocus = null;
+        let availableItems = [];
 
-        if (!input || !selected || !status || !openButton || !clearButton || !dialog || !results || !closeButton) return;
+        if (!input || !selected || !status || !openButton || !clearButton || !dialog || !results || !search || !closeButton) return;
 
         const announce = (message) => { status.textContent = message; };
         const setValue = (value) => {
@@ -41,7 +43,7 @@
         const renderItems = (items) => {
             results.replaceChildren();
             if (!items.length) {
-                results.textContent = 'No supported images are available.';
+                results.textContent = search.value.trim() ? 'No images match your search.' : 'No supported images are available.';
                 return;
             }
             items.forEach((item) => {
@@ -86,15 +88,24 @@
             results.textContent = 'Loading images…';
             fetch(`${root.dataset.pickerUrl}?kind=image`, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
                 .then((response) => response.ok ? response.json() : Promise.reject(new Error()))
-                .then((data) => renderItems(Array.isArray(data.items) ? data.items : []))
+                .then((data) => {
+                    availableItems = Array.isArray(data.items) ? data.items : [];
+                    const query = search.value.trim().toLocaleLowerCase();
+                    renderItems(query ? availableItems.filter((item) => `${item.title || ''} ${item.original_filename || ''}`.toLocaleLowerCase().includes(query)) : availableItems);
+                })
                 .catch(() => { results.textContent = 'Media is unavailable. Try again later.'; });
         };
 
         let initial = null;
         try { initial = JSON.parse(root.dataset.selectedMedia || 'null'); } catch (_) { initial = null; }
         renderSelected(initial);
-        openButton.addEventListener('click', () => { restoreFocus = document.activeElement; dialog.showModal(); load(); closeButton.focus(); });
+        openButton.addEventListener('click', () => { restoreFocus = document.activeElement; dialog.showModal(); load(); search.focus(); });
         closeButton.addEventListener('click', () => { dialog.close(); restoreFocus?.focus(); });
+        search.addEventListener('input', () => {
+            const query = search.value.trim().toLocaleLowerCase();
+            const filtered = query ? availableItems.filter((item) => `${item.title || ''} ${item.original_filename || ''}`.toLocaleLowerCase().includes(query)) : availableItems;
+            renderItems(filtered);
+        });
         clearButton.addEventListener('click', () => {
             setValue('');
             renderSelected(null);
