@@ -120,7 +120,9 @@ $app->router()->get($app->adminUrl()->routeChildUrl('content'), function ($reque
     $user = $requireContent($request, 'content.read');
     if ($user instanceof Response) return $user;
     $workspace = $contentRepository->paginate(25, 0);
-    $html = '<section class="admin-content-page admin-stack" aria-labelledby="webcore-content-title"><div class="admin-panel"><div class="admin-panel__header"><h2 class="admin-panel__title" id="webcore-content-title">Content</h2><p class="admin-panel__description">Webcore Pages and Articles.</p></div>';
+    $html = '<section class="admin-content-page admin-stack" aria-labelledby="webcore-content-title"><header class="admin-page-heading"><div class="admin-page-heading__copy"><h2 class="admin-page-heading__title" id="webcore-content-title">Content</h2><p class="admin-page-heading__description">Webcore Pages and Articles.</p></div>';
+    if ($user->can('content.create')) $html .= '<a class="admin-button admin-button--primary" href="' . htmlspecialchars($contentRoute('create'), ENT_QUOTES, 'UTF-8') . '">Create content</a>';
+    $html .= '</header><div class="admin-panel"><div class="admin-panel__body">';
     if ($workspace === []) {
         $html .= '<div class="admin-empty-state"><h3>No Content yet</h3><p>Create a Page or Article to begin.</p></div>';
     } else {
@@ -134,8 +136,7 @@ $app->router()->get($app->adminUrl()->routeChildUrl('content'), function ($reque
         }
         $html .= '</tbody></table></div>';
     }
-    if ($user->can('content.create')) $html .= '<div class="admin-actions"><a class="admin-button admin-button--primary" href="' . htmlspecialchars($contentRoute('create'), ENT_QUOTES, 'UTF-8') . '">Create content</a></div>';
-    $html .= '</div></section>';
+    $html .= '</div></div></section>';
     return Response::html($app->adminPageRenderer()->render('Content', $html, $user, $app->session()->csrfToken(), $request->path(), null, []));
 });
 
