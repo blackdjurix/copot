@@ -231,7 +231,7 @@ foreach (['publish' => 'content.publish', 'archive' => 'content.delete'] as $act
         try { $action === 'publish' ? $contentService->publish($id) : $contentService->archive($id); }
         catch (InvalidArgumentException) { return $app->adminErrors()->response($request, 422); }
         catch (ContentWriteException) { return $app->adminErrors()->response($request, 503); }
-        return Response::redirect($contentRoute());
+        return Response::redirect($contentRoute((string) $id . '/edit'));
     });
 }
 
@@ -246,7 +246,7 @@ foreach (['draft' => 'content.publish', 'restore' => 'content.delete'] as $actio
         try { $action === 'draft' ? $contentService->draft($id) : $contentService->restore($id); }
         catch (InvalidArgumentException) { return $app->adminErrors()->response($request, 422); }
         catch (ContentWriteException) { return $app->adminErrors()->response($request, 503); }
-        return Response::redirect($contentRoute());
+        return Response::redirect($contentRoute((string) $id . '/edit'));
     });
 }
 
