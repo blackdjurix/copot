@@ -32,6 +32,19 @@ $mediaRepository = new MediaRepository($app->database());
 $contentMediaReferences = new ContentFeaturedMediaReferenceService($mediaRepository, new MediaUsageRepository($app->database()));
 $contentService = new ContentService($app->database(), $contentRepository, null, $contentMediaReferences);
 $contentSlugger = new \Copot\Core\Slugger();
+$authorLabels = [];
+try {
+    $authorStatement = $app->database()->connection()->query('SELECT id, name, email FROM ' . $app->database()->table('users') . ' ORDER BY name ASC, email ASC');
+    foreach ($authorStatement->fetchAll() as $authorRow) {
+        $authorId = (int) ($authorRow['id'] ?? 0);
+        if ($authorId < 1) continue;
+        $name = trim((string) ($authorRow['name'] ?? ''));
+        $email = trim((string) ($authorRow['email'] ?? ''));
+        $authorLabels[$authorId] = $name !== '' ? $name : ($email !== '' ? $email : 'Unknown author');
+    }
+} catch (Throwable) {
+    $authorLabels = [];
+}
 
 $requireContent = static function ($request, string $permission) use ($app): mixed {
     if (!$app->auth()->check()) {
@@ -127,13 +140,15 @@ $renderForm = static function (string $title, string $action, array $data, array
 
 $app->adminNavigation()->add('Content', $contentRoute(), 'content.read', 'content', 20);
 
-$app->router()->get($app->adminUrl()->routeChildUrl('content'), function ($request) use ($app, $contentRepository, $requireContent, $contentRoute): Response {
+$app->router()->get($app->adminUrl()->routeChildUrl('content'), function ($request) use ($app, $contentRepository, $requireContent, $contentRoute, $authorLabels): Response {
     $user = $requireContent($request, 'content.read');
     if ($user instanceof Response) return $user;
     $workspace = $contentRepository->paginate(25, 0);
     $html = '<section class="admin-content-page admin-stack" aria-labelledby="webcore-content-title"><header class="admin-page-heading"><div class="admin-page-heading__copy"><h2 class="admin-page-heading__title" id="webcore-content-title">Content</h2><p class="admin-page-heading__description">Webcore Pages and Articles.</p></div>';
     if ($user->can('content.create')) $html .= '<a class="admin-button admin-button--primary" href="' . htmlspecialchars($contentRoute('create'), ENT_QUOTES, 'UTF-8') . '">Create content</a>';
-    $html .= '</header><div class="admin-field admin-content-list-search"><label class="admin-field__label" for="core-content-list-search">Search content</label><input id="core-content-list-search" type="search" data-core-content-list-search aria-controls="core-content-list-table" placeholder="Search title or slug" autocomplete="off"></div><div class="admin-panel"><div class="admin-panel__body">';
+    $html .= '</header><div class="admin-panel admin-content-filters admin-filter-toolbar" data-core-content-list-filters aria-label="Content filters"><div class="admin-content-filter-field admin-content-search"><label for="core-content-list-search">Search</label><input id="core-content-list-search" type="search" data-core-content-list-search aria-controls="core-content-list-table" placeholder="Title or slug" autocomplete="off"></div><div class="admin-content-filter-field"><label for="core-content-list-type">Type</label><select id="core-content-list-type" data-core-content-list-type><option value="">All</option><option value="page">Page</option><option value="article">Article</option></select></div><div class="admin-content-filter-field"><label for="core-content-list-status">Status</label><select id="core-content-list-status" data-core-content-list-status><option value="">All</option><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div><div class="admin-content-filter-field"><label for="core-content-list-author">Author</label><select id="core-content-list-author" data-core-content-list-author><option value="">All</option>';
+    foreach ($authorLabels as $authorId => $authorLabel) $html .= '<option value="' . (int) $authorId . '">' . htmlspecialchars($authorLabel, ENT_QUOTES, 'UTF-8') . '</option>';
+    $html .= '</select></div><div class="admin-content-filter-actions"><button class="admin-button admin-button--secondary" type="button" data-core-content-list-clear>Clear filters</button></div><p class="admin-content-filter-summary" data-core-content-list-summary aria-live="polite"></p></div><div class="admin-panel"><div class="admin-panel__body">';
     if ($workspace === []) {
         $html .= '<div class="admin-empty-state"><h3>No Content yet</h3><p>Create a Page or Article to begin.</p></div>';
     } else {
@@ -141,7 +156,9 @@ $app->router()->get($app->adminUrl()->routeChildUrl('content'), function ($reque
         foreach ($workspace as $item) {
             $edit = $contentRoute((string) $item->id() . '/edit');
             $rowAttributes = $user->can('content.update') ? ' data-content-edit-url="' . htmlspecialchars($edit, ENT_QUOTES, 'UTF-8') . '" tabindex="0" role="link" aria-label="Edit ' . htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') . '"' : '';
-            $html .= '<tr data-core-content-row data-content-title="' . htmlspecialchars(strtolower($item->title()), ENT_QUOTES, 'UTF-8') . '" data-content-slug="' . htmlspecialchars(strtolower($item->slug()), ENT_QUOTES, 'UTF-8') . '"' . $rowAttributes . '><td data-label="Title"><strong>' . htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') . '</strong><br><small>' . htmlspecialchars($item->slug(), ENT_QUOTES, 'UTF-8') . '</small></td><td data-label="Type">' . htmlspecialchars(ucfirst($item->type()), ENT_QUOTES, 'UTF-8') . '</td><td data-label="Status">' . htmlspecialchars(ucfirst($item->status()), ENT_QUOTES, 'UTF-8') . '</td><td data-label="Author">' . htmlspecialchars($item->authorId() === null ? '—' : (string) $item->authorId(), ENT_QUOTES, 'UTF-8') . '</td></tr>';
+            $authorId = $item->authorId();
+            $authorLabel = $authorId === null ? '—' : ($authorLabels[$authorId] ?? 'Unknown author');
+            $html .= '<tr data-core-content-row data-content-title="' . htmlspecialchars(strtolower($item->title()), ENT_QUOTES, 'UTF-8') . '" data-content-slug="' . htmlspecialchars(strtolower($item->slug()), ENT_QUOTES, 'UTF-8') . '" data-content-type="' . htmlspecialchars($item->type(), ENT_QUOTES, 'UTF-8') . '" data-content-status="' . htmlspecialchars($item->status(), ENT_QUOTES, 'UTF-8') . '" data-content-author="' . htmlspecialchars($authorId === null ? '' : (string) $authorId, ENT_QUOTES, 'UTF-8') . '"' . $rowAttributes . '><td data-label="Title"><strong>' . htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') . '</strong><br><small>' . htmlspecialchars($item->slug(), ENT_QUOTES, 'UTF-8') . '</small></td><td data-label="Type">' . htmlspecialchars(ucfirst($item->type()), ENT_QUOTES, 'UTF-8') . '</td><td data-label="Status">' . htmlspecialchars(ucfirst($item->status()), ENT_QUOTES, 'UTF-8') . '</td><td data-label="Author">' . htmlspecialchars($authorLabel, ENT_QUOTES, 'UTF-8') . '</td></tr>';
         }
         $html .= '</tbody></table></div><p class="admin-empty-state admin-content-list-no-results" data-core-content-list-empty hidden role="status">No Content matches your search.</p>';
     }
