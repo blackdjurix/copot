@@ -126,11 +126,18 @@ $renderForm = static function (string $title, string $action, array $data, array
     $html .= '<div class="admin-actions admin-form__actions"><a class="admin-button admin-button--secondary" href="' . htmlspecialchars($contentRoute(), ENT_QUOTES, 'UTF-8') . '">Cancel</a><button class="admin-button admin-button--primary" type="submit">' . ($mode === 'create' ? 'Create content' : 'Save changes') . '</button></div></form>';
     if (($data['id'] ?? null) !== null) {
         $html .= '<div class="admin-actions admin-content-form-lifecycle" aria-label="Content lifecycle actions">';
-        if (($data['status'] ?? 'draft') === 'draft' && $user->can('content.publish')) {
+        $status = (string) ($data['status'] ?? 'draft');
+        if ($status === 'draft' && $user->can('content.publish')) {
             $html .= '<form method="post" action="' . htmlspecialchars($contentRoute((string) $data['id'] . '/publish'), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="_token" value="' . htmlspecialchars($app->session()->csrfToken(), ENT_QUOTES, 'UTF-8') . '"><button class="admin-button admin-button--primary" type="submit">Publish</button></form>';
         }
-        if (($data['status'] ?? 'draft') !== 'archived' && $user->can('content.delete')) {
+        if ($status === 'published' && $user->can('content.publish')) {
+            $html .= '<form method="post" action="' . htmlspecialchars($contentRoute((string) $data['id'] . '/draft'), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="_token" value="' . htmlspecialchars($app->session()->csrfToken(), ENT_QUOTES, 'UTF-8') . '"><button class="admin-button admin-button--secondary" type="submit">Draft</button></form>';
+        }
+        if (in_array($status, ['draft', 'published'], true) && $user->can('content.delete')) {
             $html .= '<form method="post" action="' . htmlspecialchars($contentRoute((string) $data['id'] . '/archive'), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="_token" value="' . htmlspecialchars($app->session()->csrfToken(), ENT_QUOTES, 'UTF-8') . '"><button class="admin-button admin-button--danger" type="submit">Archive</button></form>';
+        }
+        if ($status === 'archived' && $user->can('content.delete')) {
+            $html .= '<form method="post" action="' . htmlspecialchars($contentRoute((string) $data['id'] . '/restore'), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="_token" value="' . htmlspecialchars($app->session()->csrfToken(), ENT_QUOTES, 'UTF-8') . '"><button class="admin-button admin-button--secondary" type="submit">Restore to Draft</button></form>';
         }
         $html .= '</div>';
     }
@@ -222,6 +229,21 @@ foreach (['publish' => 'content.publish', 'archive' => 'content.delete'] as $act
         $id = $routeId($params['id'] ?? null);
         if ($id === null || !$contentRepository->findById($id)) return $app->adminErrors()->response($request, 404);
         try { $action === 'publish' ? $contentService->publish($id) : $contentService->archive($id); }
+        catch (InvalidArgumentException) { return $app->adminErrors()->response($request, 422); }
+        catch (ContentWriteException) { return $app->adminErrors()->response($request, 503); }
+        return Response::redirect($contentRoute());
+    });
+}
+
+foreach (['draft' => 'content.publish', 'restore' => 'content.delete'] as $action => $permission) {
+    $app->router()->post($app->adminUrl()->routeChildUrl('content/{id}/' . $action), function ($request, array $params) use ($app, $requireContent, $contentRepository, $contentService, $routeId, $contentRoute, $permission, $action): Response {
+        $user = $requireContent($request, $permission);
+        if ($user instanceof Response) return $user;
+        $csrf = $app->csrf()->validateOrReject($request);
+        if ($csrf instanceof Response) return $app->adminErrors()->response($request, 419);
+        $id = $routeId($params['id'] ?? null);
+        if ($id === null || !$contentRepository->findById($id)) return $app->adminErrors()->response($request, 404);
+        try { $action === 'draft' ? $contentService->draft($id) : $contentService->restore($id); }
         catch (InvalidArgumentException) { return $app->adminErrors()->response($request, 422); }
         catch (ContentWriteException) { return $app->adminErrors()->response($request, 503); }
         return Response::redirect($contentRoute());
