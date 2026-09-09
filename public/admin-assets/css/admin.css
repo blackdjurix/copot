@@ -3875,6 +3875,27 @@ html.admin-nav-open body {
     min-width: 0;
 }
 
+.admin-content-list-search {
+    max-width: 32rem;
+}
+
+.admin-content-page tr[data-content-edit-url] {
+    cursor: pointer;
+}
+
+.admin-content-page tr[data-content-edit-url]:hover td {
+    background: var(--admin-color-bg);
+}
+
+.admin-content-page tr[data-content-edit-url]:focus-visible {
+    outline: 2px solid var(--admin-color-primary);
+    outline-offset: -2px;
+}
+
+.admin-content-form-lifecycle {
+    margin-top: var(--admin-space-4);
+}
+
 .admin-content-layout {
     display: grid;
     gap: var(--admin-space-5);

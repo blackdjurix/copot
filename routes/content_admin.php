@@ -110,7 +110,18 @@ $renderForm = static function (string $title, string $action, array $data, array
     $html .= '<div class="admin-field"><label class="admin-field__label" for="body">Body</label><textarea id="body" name="body" rows="12" required>' . htmlspecialchars((string) $data['body'], ENT_QUOTES, 'UTF-8') . '</textarea><p class="admin-field__help">Use plain text content.</p></div></fieldset>';
     $html .= '<aside class="admin-content-form-sidebar"><fieldset class="admin-fieldset" data-core-content-media-picker data-picker-url="' . htmlspecialchars($app->adminUrl()->childUrl('media/select'), ENT_QUOTES, 'UTF-8') . '" data-selected-media="' . $featuredJson . '"><legend>Featured Media</legend><input id="featured_media_id" name="featured_media_id" type="hidden" value="' . htmlspecialchars($featuredId === null ? '' : (string) $featuredId, ENT_QUOTES, 'UTF-8') . '" data-core-content-media-input><p class="admin-field__help" data-core-content-media-status aria-live="polite">' . ($featuredDescriptor === null ? 'Select an image from Core Media.' : 'A featured image is selected.') . '</p><div class="admin-media-picker__selected" data-core-content-media-selected' . ($featuredDescriptor === null ? ' hidden' : '') . '></div><div class="admin-actions"><button class="admin-button admin-button--secondary" type="button" data-core-content-media-open' . (!$canUseMedia ? ' disabled' : '') . '>' . ($featuredDescriptor === null ? 'Select media' : 'Change') . '</button><button class="admin-button admin-button--link" type="button" data-core-content-media-clear' . ($featuredDescriptor === null || !$canUseMedia ? ' hidden' : '') . '>Clear</button></div>' . (!$canUseMedia ? '<p class="admin-field__help">Media selection requires the Media use permission.</p>' : '') . '<dialog class="admin-media-picker" data-core-content-media-dialog aria-labelledby="core-content-media-picker-title"><div class="admin-media-picker__panel"><h3 id="core-content-media-picker-title">Select featured Media</h3><p class="admin-field__help">Choose an image from Core Media.</p><div class="admin-field"><label class="admin-field__label" for="core-content-media-search">Search media</label><input id="core-content-media-search" type="search" data-core-content-media-search aria-controls="core-content-media-results" placeholder="Search title or filename" autocomplete="off"></div><div class="admin-media-picker__results" data-core-content-media-results aria-live="polite"></div><div class="admin-actions"><button class="admin-button admin-button--secondary" type="button" data-core-content-media-close>Cancel</button></div></div></dialog></fieldset></aside></div>';
     $html .= '<script src="' . htmlspecialchars($app->url('/admin-assets/js/core-content-featured-media.js?v=wu5-1'), ENT_QUOTES, 'UTF-8') . '" defer></script>';
-    $html .= '<div class="admin-actions admin-form__actions"><a class="admin-button admin-button--secondary" href="' . htmlspecialchars($contentRoute(), ENT_QUOTES, 'UTF-8') . '">Cancel</a><button class="admin-button admin-button--primary" type="submit">' . ($mode === 'create' ? 'Create content' : 'Save changes') . '</button></div></form></div></div></section>';
+    $html .= '<div class="admin-actions admin-form__actions"><a class="admin-button admin-button--secondary" href="' . htmlspecialchars($contentRoute(), ENT_QUOTES, 'UTF-8') . '">Cancel</a><button class="admin-button admin-button--primary" type="submit">' . ($mode === 'create' ? 'Create content' : 'Save changes') . '</button></div></form>';
+    if (($data['id'] ?? null) !== null) {
+        $html .= '<div class="admin-actions admin-content-form-lifecycle" aria-label="Content lifecycle actions">';
+        if (($data['status'] ?? 'draft') === 'draft' && $user->can('content.publish')) {
+            $html .= '<form method="post" action="' . htmlspecialchars($contentRoute((string) $data['id'] . '/publish'), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="_token" value="' . htmlspecialchars($app->session()->csrfToken(), ENT_QUOTES, 'UTF-8') . '"><button class="admin-button admin-button--primary" type="submit">Publish</button></form>';
+        }
+        if (($data['status'] ?? 'draft') !== 'archived' && $user->can('content.delete')) {
+            $html .= '<form method="post" action="' . htmlspecialchars($contentRoute((string) $data['id'] . '/archive'), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="_token" value="' . htmlspecialchars($app->session()->csrfToken(), ENT_QUOTES, 'UTF-8') . '"><button class="admin-button admin-button--danger" type="submit">Archive</button></form>';
+        }
+        $html .= '</div>';
+    }
+    $html .= '</div></div></section>';
     return Response::html($app->adminPageRenderer()->render($title, $html, $user, $app->session()->csrfToken(), $path, null, [['label' => 'Content', 'url' => $contentRoute()], ['label' => $title]]), $errors === [] ? 200 : 422);
 };
 
@@ -122,21 +133,19 @@ $app->router()->get($app->adminUrl()->routeChildUrl('content'), function ($reque
     $workspace = $contentRepository->paginate(25, 0);
     $html = '<section class="admin-content-page admin-stack" aria-labelledby="webcore-content-title"><header class="admin-page-heading"><div class="admin-page-heading__copy"><h2 class="admin-page-heading__title" id="webcore-content-title">Content</h2><p class="admin-page-heading__description">Webcore Pages and Articles.</p></div>';
     if ($user->can('content.create')) $html .= '<a class="admin-button admin-button--primary" href="' . htmlspecialchars($contentRoute('create'), ENT_QUOTES, 'UTF-8') . '">Create content</a>';
-    $html .= '</header><div class="admin-panel"><div class="admin-panel__body">';
+    $html .= '</header><div class="admin-field admin-content-list-search"><label class="admin-field__label" for="core-content-list-search">Search content</label><input id="core-content-list-search" type="search" data-core-content-list-search aria-controls="core-content-list-table" placeholder="Search title or slug" autocomplete="off"></div><div class="admin-panel"><div class="admin-panel__body">';
     if ($workspace === []) {
         $html .= '<div class="admin-empty-state"><h3>No Content yet</h3><p>Create a Page or Article to begin.</p></div>';
     } else {
-        $html .= '<div class="admin-table-wrapper"><table class="admin-table"><thead><tr><th>Title</th><th>Type</th><th>Status</th><th>Author</th><th>Actions</th></tr></thead><tbody>';
+        $html .= '<div class="admin-table-wrap"><table class="admin-table" id="core-content-list-table"><thead><tr><th scope="col">Title</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Author</th></tr></thead><tbody>';
         foreach ($workspace as $item) {
             $edit = $contentRoute((string) $item->id() . '/edit');
-            $html .= '<tr><td><strong>' . htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') . '</strong><br><small>' . htmlspecialchars($item->slug(), ENT_QUOTES, 'UTF-8') . '</small></td><td>' . htmlspecialchars(ucfirst($item->type()), ENT_QUOTES, 'UTF-8') . '</td><td>' . htmlspecialchars(ucfirst($item->status()), ENT_QUOTES, 'UTF-8') . '</td><td>' . htmlspecialchars($item->authorId() === null ? '—' : (string) $item->authorId(), ENT_QUOTES, 'UTF-8') . '</td><td class="admin-row-actions"><a class="admin-button admin-button--secondary" href="' . htmlspecialchars($edit, ENT_QUOTES, 'UTF-8') . '">Edit</a>';
-            if ($item->status() === 'draft' && $user->can('content.publish')) $html .= '<form method="post" action="' . htmlspecialchars($contentRoute((string) $item->id() . '/publish'), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="_token" value="' . htmlspecialchars($app->session()->csrfToken(), ENT_QUOTES, 'UTF-8') . '"><button class="admin-button admin-button--primary" type="submit">Publish</button></form>';
-            if ($item->status() !== 'archived' && $user->can('content.delete')) $html .= '<form method="post" action="' . htmlspecialchars($contentRoute((string) $item->id() . '/archive'), ENT_QUOTES, 'UTF-8') . '"><input type="hidden" name="_token" value="' . htmlspecialchars($app->session()->csrfToken(), ENT_QUOTES, 'UTF-8') . '"><button class="admin-button admin-button--danger" type="submit">Archive</button></form>';
-            $html .= '</td></tr>';
+            $rowAttributes = $user->can('content.update') ? ' data-content-edit-url="' . htmlspecialchars($edit, ENT_QUOTES, 'UTF-8') . '" tabindex="0" role="link" aria-label="Edit ' . htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') . '"' : '';
+            $html .= '<tr data-core-content-row data-content-title="' . htmlspecialchars(strtolower($item->title()), ENT_QUOTES, 'UTF-8') . '" data-content-slug="' . htmlspecialchars(strtolower($item->slug()), ENT_QUOTES, 'UTF-8') . '"' . $rowAttributes . '><td data-label="Title"><strong>' . htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') . '</strong><br><small>' . htmlspecialchars($item->slug(), ENT_QUOTES, 'UTF-8') . '</small></td><td data-label="Type">' . htmlspecialchars(ucfirst($item->type()), ENT_QUOTES, 'UTF-8') . '</td><td data-label="Status">' . htmlspecialchars(ucfirst($item->status()), ENT_QUOTES, 'UTF-8') . '</td><td data-label="Author">' . htmlspecialchars($item->authorId() === null ? '—' : (string) $item->authorId(), ENT_QUOTES, 'UTF-8') . '</td></tr>';
         }
-        $html .= '</tbody></table></div>';
+        $html .= '</tbody></table></div><p class="admin-empty-state admin-content-list-no-results" data-core-content-list-empty hidden role="status">No Content matches your search.</p>';
     }
-    $html .= '</div></div></section>';
+    $html .= '</div></div><script src="' . htmlspecialchars($app->url('/admin-assets/js/core-content-list.js?v=wu5-2'), ENT_QUOTES, 'UTF-8') . '" defer></script></section>';
     return Response::html($app->adminPageRenderer()->render('Content', $html, $user, $app->session()->csrfToken(), $request->path(), null, []));
 });
 
@@ -153,7 +162,7 @@ $app->router()->get($app->adminUrl()->routeChildUrl('content/{id}/edit'), functi
     $entry = $id === null ? null : $contentRepository->findById($id);
     if (!$entry) return $app->adminErrors()->response($request, 404);
     return $renderForm('Edit Content', $contentRoute((string) $entry->id()), [
-        'id' => $entry->id(), 'type' => $entry->type(), 'title' => $entry->title(), 'slug' => $entry->slug(), 'excerpt' => $entry->excerpt() ?? '', 'body' => $entry->body(), 'featured_media_id' => $entry->featuredMediaId(), 'updated_at' => $entry->updatedAt(),
+        'id' => $entry->id(), 'type' => $entry->type(), 'title' => $entry->title(), 'slug' => $entry->slug(), 'excerpt' => $entry->excerpt() ?? '', 'body' => $entry->body(), 'status' => $entry->status(), 'featured_media_id' => $entry->featuredMediaId(), 'updated_at' => $entry->updatedAt(),
     ], [], $user, $request->path(), 'edit');
 });
 
