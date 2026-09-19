@@ -231,6 +231,23 @@ table {
     font-size: 13px;
 }
 
+@media (min-width: 760px) {
+    .admin-media-filters {
+        grid-template-columns: minmax(16rem, 2fr) repeat(3, minmax(9rem, 1fr)) auto;
+        align-items: end;
+    }
+
+    .admin-media-filters .admin-content-filter-field {
+        display: grid;
+        gap: var(--admin-space-2);
+        min-width: 0;
+    }
+
+    .admin-media-filters .admin-content-filter-actions {
+        align-self: end;
+    }
+}
+
 .admin-media-table-panel .admin-panel__footer {
     display: flex;
     justify-content: flex-end;
