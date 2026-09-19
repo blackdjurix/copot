@@ -244,8 +244,8 @@ table {
 }
 
 .admin-table th {
-    border-top: 1px solid var(--admin-color-primary);
-    border-bottom: 1px solid var(--admin-color-primary);
+    border-top: 2px solid var(--admin-color-primary);
+    border-bottom: 2px solid var(--admin-color-primary);
     color: var(--admin-color-text);
     background: transparent;
     font-size: 14px;
