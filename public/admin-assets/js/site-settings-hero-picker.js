@@ -58,11 +58,9 @@
                 image.src = item.url;
                 image.alt = '';
                 image.loading = 'lazy';
-                const caption = document.createElement('span');
-                caption.textContent = item.title || item.original_filename || 'Image';
                 const filename = document.createElement('small');
                 filename.textContent = item.original_filename || '';
-                button.append(image, caption, filename);
+                button.append(image, filename);
                 button.addEventListener('click', () => {
                     dialog.close();
                     setInputValue(itemId(item));
