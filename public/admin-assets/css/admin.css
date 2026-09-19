@@ -3980,6 +3980,12 @@ html.admin-nav-open body {
     border-bottom: 0;
 }
 
+/* Content rows own the separator at row level; suppress the generic table
+ * last-row cell rule so it cannot create an inset/internal line. */
+.admin-content-page .admin-table tbody tr[data-core-content-row] > td {
+    border-bottom: 0;
+}
+
 .admin-content-thumbnail {
     display: block;
     width: 116px;
