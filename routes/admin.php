@@ -84,7 +84,12 @@ $renderAdminDashboard = function (string $currentPath, $user) use ($app, $adminB
         $content,
         $user,
         $app->session()->csrfToken(),
-        $currentPath
+        $currentPath,
+        [
+            'description' => 'Overview of your Copot Admin workspace.',
+            'surface' => 'transparent',
+            'spacing' => 'default',
+        ]
     );
 };
 
