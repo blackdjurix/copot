@@ -3885,6 +3885,24 @@ html.admin-nav-open body {
     outline-offset: -2px;
 }
 
+.admin-content-page tr[data-content-edit-url] td {
+    border-bottom-color: var(--admin-color-primary-soft);
+}
+
+.admin-content-thumbnail {
+    display: block;
+    width: 64px;
+    height: 48px;
+    border-radius: var(--admin-radius-sm);
+    object-fit: cover;
+    background: var(--admin-color-bg);
+}
+
+.admin-content-thumbnail--empty {
+    border: 1px solid var(--admin-color-border);
+    background: linear-gradient(135deg, var(--admin-color-bg), var(--admin-color-surface));
+}
+
 .admin-content-form-lifecycle {
     margin-top: var(--admin-space-4);
 }
@@ -4038,6 +4056,14 @@ html.admin-nav-open body {
     font-size: 14px;
 }
 
+.admin-content-table-panel__footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--admin-space-5) var(--admin-space-6);
+    border-top: 1px solid var(--admin-color-border);
+    background: var(--admin-color-surface);
+}
+
 .admin-content-table-panel .admin-table-wrap {
     border: 0;
     border-radius: 0;
@@ -4078,6 +4104,7 @@ html.admin-nav-open body {
     gap: 6px;
     color: var(--admin-color-muted);
     font-size: 11px;
+    overflow-wrap: anywhere;
 }
 
 .admin-content-title-cell small::before {
@@ -4361,9 +4388,14 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
     }
 
     .admin-content-table-panel__header,
-    .admin-content-pagination {
+    .admin-content-pagination,
+    .admin-content-table-panel__footer {
         align-items: flex-start;
         flex-direction: column;
+    }
+
+    .admin-content-table-panel__footer .admin-button {
+        width: 100%;
     }
 
     .admin-content-table-panel .admin-table {

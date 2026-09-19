@@ -1,57 +1,57 @@
-(function () {
+(() => {
     const filters = document.querySelector('[data-core-content-list-filters]');
-    const root = document.querySelector('[data-core-content-list-search]');
+    const search = document.querySelector('[data-core-content-list-search]');
     const type = document.querySelector('[data-core-content-list-type]');
     const status = document.querySelector('[data-core-content-list-status]');
-    const author = document.querySelector('[data-core-content-list-author]');
-    const clear = document.querySelector('[data-core-content-list-clear]');
+    const pageSize = document.querySelector('[data-core-content-list-page-size]');
+    const apply = document.querySelector('[data-core-content-list-apply]');
     const summary = document.querySelector('[data-core-content-list-summary]');
     const table = document.querySelector('#core-content-list-table');
-    if (!filters || !root || !type || !status || !author || !clear || !table) return;
+    if (!filters || !search || !type || !status || !pageSize || !apply || !summary || !table) return;
+
     const rows = Array.from(table.querySelectorAll('[data-core-content-row]'));
     const empty = document.querySelector('[data-core-content-list-empty]');
-
     const filter = () => {
-        const query = root.value.trim().toLocaleLowerCase();
+        const query = search.value.trim().toLowerCase();
         const selectedType = type.value;
         const selectedStatus = status.value;
-        const selectedAuthor = author.value;
-        let visible = 0;
-        rows.forEach((row) => {
-            const haystack = `${row.dataset.contentTitle || ''} ${row.dataset.contentSlug || ''}`;
-            const match = (!query || haystack.includes(query))
+        const limit = Math.max(1, Number.parseInt(pageSize.value, 10) || rows.length);
+        const matches = rows.filter((row) => {
+            const textMatches = !query || `${row.dataset.contentTitle || ''} ${row.dataset.contentSlug || ''}`.includes(query);
+            return textMatches
                 && (!selectedType || row.dataset.contentType === selectedType)
-                && (!selectedStatus || row.dataset.contentStatus === selectedStatus)
-                && (!selectedAuthor || row.dataset.contentAuthor === selectedAuthor);
-            row.hidden = !match;
-            if (match) visible += 1;
+                && (!selectedStatus || row.dataset.contentStatus === selectedStatus);
         });
-        if (empty) empty.hidden = visible !== 0;
-        if (summary) summary.textContent = `${visible} ${visible === 1 ? 'Content item' : 'Content items'} shown.`;
+        rows.forEach((row) => { row.hidden = matches.indexOf(row) === -1 || matches.indexOf(row) >= limit; });
+        const shown = Math.min(limit, matches.length);
+        summary.textContent = matches.length === 0
+            ? 'Showing 0 results.'
+            : `Showing 1–${shown} of ${matches.length} result${matches.length === 1 ? '' : 's'}.`;
+        if (empty) empty.hidden = matches.length !== 0;
     };
 
-    root.addEventListener('input', filter);
-    [type, status, author].forEach((control) => control.addEventListener('change', filter));
-    clear.addEventListener('click', () => {
-        root.value = '';
-        type.value = '';
-        status.value = '';
-        author.value = '';
-        filter();
-        root.focus();
-    });
+    search.addEventListener('input', filter);
+    type.addEventListener('change', filter);
+    status.addEventListener('change', filter);
+    pageSize.addEventListener('change', filter);
+    apply.addEventListener('click', filter);
+    filters.addEventListener('submit', (event) => { event.preventDefault(); filter(); });
+
     rows.forEach((row) => {
-        const destination = row.dataset.contentEditUrl;
-        if (!destination) return;
-        const open = () => { window.location.href = destination; };
+        const target = () => {
+            if (row.dataset.contentEditUrl) window.location.href = row.dataset.contentEditUrl;
+        };
         row.addEventListener('click', (event) => {
-            if (!event.target.closest('a, button, input, select, textarea, form')) open();
+            if (event.target.closest('a,button,input,select,textarea,form')) return;
+            target();
         });
         row.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
+            if ((event.key === 'Enter' || event.key === ' ') && !event.target.closest('a,button,input,select,textarea,form')) {
                 event.preventDefault();
-                open();
+                target();
             }
         });
     });
-}());
+
+    filter();
+})();
