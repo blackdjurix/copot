@@ -180,8 +180,8 @@ table {
 .admin-table-wrap {
     width: 100%;
     max-width: 100%;
-    border: 1px solid var(--admin-color-border);
-    border-radius: var(--admin-radius-md);
+    border: 0;
+    border-radius: 0;
     overflow-x: auto;
     overscroll-behavior-inline: contain;
 }
@@ -244,8 +244,17 @@ table {
 }
 
 .admin-table th {
-    background: var(--admin-color-bg);
+    border-top: 1px solid var(--admin-color-primary);
+    border-bottom: 1px solid var(--admin-color-primary);
+    color: var(--admin-color-text);
+    background: transparent;
+    font-size: 14px;
+    letter-spacing: normal;
+    text-transform: none;
 }
+
+.admin-table td { border-bottom-color: var(--admin-color-primary); }
+.admin-table tbody tr:last-child td { border-bottom: 1px solid var(--admin-color-primary); }
 
 .admin-table__empty {
     padding: var(--admin-space-8);
@@ -3839,13 +3848,18 @@ html.admin-nav-open body {
 .site-settings-module-filter select { width: 100%; min-width: 0; }
 .site-settings-modules__result-count { margin: var(--admin-space-2) 0 var(--admin-space-5); }
 .site-settings-modules-table { table-layout: fixed; }
-.site-settings-modules-table th:nth-child(1) { width: 48%; }
-.site-settings-modules-table th:nth-child(2) { width: 16%; }
-.site-settings-modules-table th:nth-child(3) { width: 22%; }
-.site-settings-modules-table th:nth-child(4) { width: 14%; }
+.site-settings-modules-table th:nth-child(1) { width: 32%; }
+.site-settings-modules-table th:nth-child(2) { width: 18%; }
+.site-settings-modules-table th:nth-child(3) { width: 25%; }
+.site-settings-modules-table th:nth-child(4) { width: 25%; }
 .site-settings-modules-table th,
 .site-settings-modules-table td { min-width: 0; overflow-wrap: anywhere; vertical-align: middle; }
 .site-settings-modules-table th:first-child { color: var(--admin-color-text); font-size: inherit; letter-spacing: normal; text-transform: none; }
+.site-settings-modules-table td,
+.site-settings-modules-table th { padding-top: var(--admin-space-5); padding-bottom: var(--admin-space-5); }
+.site-settings-modules-table .admin-badge { min-height: 0; padding: 0; border-radius: 0; color: var(--admin-color-text); background: transparent; font-weight: 400; }
+.site-settings-modules-table .admin-module-identity__title,
+.site-settings-modules-table .admin-module-version__primary { font-weight: 400; }
 .site-settings-module-row { cursor: pointer; }
 .site-settings-module-row:hover { background: color-mix(in srgb, var(--admin-color-primary) 6%, var(--admin-color-surface)); }
 .site-settings-module-row:focus-visible { outline: 2px solid var(--admin-color-primary); outline-offset: -2px; }
