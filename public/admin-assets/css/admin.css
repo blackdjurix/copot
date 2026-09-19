@@ -3734,7 +3734,7 @@ html.admin-nav-open body {
 .site-settings-asset-preview { min-height: 120px; height: 100%; }
 .site-settings-asset-preview--favicon { min-height: 120px; }
 .site-settings-asset-preview__empty { color: var(--admin-color-text-muted); font-size: .9rem; text-align: center; }
-.site-settings-asset-actions { display: grid; gap: var(--admin-space-3); align-content: center; min-width: 0; }
+.site-settings-asset-actions { display: grid; gap: var(--admin-space-3); align-content: end; min-width: 0; }
 .site-settings-asset-actions .admin-field__label { margin: 0; }
 .site-settings-asset-actions .admin-field { display: grid; gap: var(--admin-space-3); }
 .site-settings-asset-actions .admin-button,
