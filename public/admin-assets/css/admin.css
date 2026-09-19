@@ -202,9 +202,9 @@ table {
 .admin-media-baseline-thumbnail {
     display: grid;
     place-items: center;
-    flex: 0 0 2.5rem;
-    width: 2.5rem;
-    height: 2.5rem;
+    flex: 0 0 118px;
+    width: 118px;
+    height: 83px;
     overflow: hidden;
     border: 1px solid var(--admin-color-border);
     border-radius: var(--admin-radius-sm);
