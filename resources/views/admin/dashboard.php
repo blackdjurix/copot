@@ -20,8 +20,6 @@ $healthStatus = (string) ($healthContent['status'] ?? 'unavailable');
 $healthHeadingId = 'system-health-title';
 ?>
 <div class="admin-dashboard">
-    <p class="admin-dashboard__description">Overview of your Copot Admin workspace.</p>
-
     <section class="admin-panel admin-dashboard-widget admin-dashboard-widget--wide" data-widget-id="core.system-health" data-health-status="<?= htmlspecialchars($healthStatus, ENT_QUOTES, 'UTF-8') ?>" aria-labelledby="<?= $healthHeadingId ?>">
         <header class="admin-panel__header">
             <div class="admin-panel__heading">
