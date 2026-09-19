@@ -3687,6 +3687,7 @@ html.admin-nav-open body {
 .admin-settings-feedback:empty { display: none; }
 .admin-settings-panel[hidden] { display: none !important; }
 .site-settings-page #site-settings-identity { width: 100%; }
+.site-settings-page > .admin-panel__body > .admin-settings-panel { width: 100%; }
 .site-settings-page > .admin-panel__body > .admin-alert { margin-inline: var(--admin-space-6); }
 
 .admin-settings-panel__header {
@@ -4664,7 +4665,7 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
 .site-settings-health h3 { margin: 0 0 var(--admin-space-2); padding-bottom: var(--admin-space-3); border-bottom: 1px solid var(--admin-color-primary); color: var(--admin-color-text); font-size: 1rem; }
 .admin-settings-system-group p { margin: 0; color: var(--admin-color-muted); }
 .site-settings-system-details { display: grid; gap: var(--admin-space-3); margin: 0; }
-.site-settings-system-details > div { display: grid; grid-template-columns: minmax(9rem, 10rem) minmax(0, 1fr); gap: var(--admin-space-4); align-items: baseline; min-width: 0; }
+.site-settings-system-details > div { display: grid; grid-template-columns: minmax(0, 1fr); gap: .25rem; min-width: 0; }
 .site-settings-system-details dt { color: var(--admin-color-text); font-size: .82rem; font-weight: 800; }
 .site-settings-system-details dd { margin: 0; color: var(--admin-color-muted); overflow-wrap: anywhere; }
 .site-settings-system-runtime-list { display: grid; gap: var(--admin-space-3); }
@@ -4672,7 +4673,6 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
 .site-settings-system-runtime-list h4 { margin: 0 0 var(--admin-space-3); }
 .site-settings-system-upload, .admin-settings-system-group form { display: grid; gap: var(--admin-space-3); align-items: end; }
 @media (min-width: 640px) { .site-settings-system-upload { grid-template-columns: minmax(0, 1fr) auto; } .site-settings-system-upload .admin-button { width: auto; } }
-@media (max-width: 639px) { .site-settings-system-details > div { grid-template-columns: 1fr; gap: .25rem; } }
 .site-settings-health { display: grid; gap: var(--admin-space-3); }
 .site-settings-health__status { margin: 0; color: var(--admin-color-text); }
 .site-settings-health__message { margin: 0; color: var(--admin-color-muted); font-style: italic; }
