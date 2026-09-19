@@ -4286,6 +4286,10 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
     display: none;
 }
 
+.admin-content-form-page [data-core-content-media-clear][hidden] {
+    display: none;
+}
+
 .admin-content-taxonomy-group {
     display: grid;
     gap: var(--admin-space-3);
