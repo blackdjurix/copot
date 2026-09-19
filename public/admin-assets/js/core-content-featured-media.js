@@ -11,6 +11,7 @@
         const results = root.querySelector('[data-core-content-media-results]');
         const search = root.querySelector('[data-core-content-media-search]');
         const closeButton = root.querySelector('[data-core-content-media-close]');
+        const placeholder = root.querySelector('[data-core-content-media-placeholder]');
         let restoreFocus = null;
         let availableItems = [];
 
@@ -26,6 +27,7 @@
         const renderSelected = (item) => {
             selected.replaceChildren();
             selected.hidden = !item;
+            if (placeholder) placeholder.hidden = Boolean(item);
             openButton.textContent = item ? 'Change' : 'Select media';
             clearButton.hidden = !item;
             if (!item) return;
