@@ -12,10 +12,10 @@ $hasRecoveryEvidence = $operation !== null;
         <h3 id="site-settings-system-state-title">Current System State</h3>
         <dl class="site-settings-system-details">
             <div><dt>Webcore version</dt><dd><?= $escape($status['installed_version'] ?? 'Not available') ?></dd></div>
-            <div><dt>Installed lifecycle state</dt><dd><?= $escape($status['installed_state'] ?? 'Unavailable') ?></dd></div>
             <div><dt>Schema and migration state</dt><dd><?= $escape($status['schema_state_identity'] ?? 'Not available') ?> · <?= $escape($status['migration_state_identity'] ?? 'Not available') ?></dd></div>
-            <div><dt>Maintenance</dt><dd><?= $escape($status['maintenance'] ?? 'Unavailable') ?></dd></div>
             <div><dt>Installation ID</dt><dd><code><?= $escape($installationId ?? 'Not available') ?></code></dd></div>
+            <div><dt>Installed lifecycle state</dt><dd><?= $escape($status['installed_state'] ?? 'Unavailable') ?></dd></div>
+            <div><dt>Maintenance</dt><dd><?= $escape($status['maintenance'] ?? 'Unavailable') ?></dd></div>
         </dl>
         <?php if ($operation !== null): ?><div class="admin-alert admin-alert--info" role="status"><strong>Current lifecycle operation</strong>: <?= $escape($operation['phase'] ?? 'Unknown phase') ?>. <?= $escape($operation['recovery_state'] ?? '') ?></div><?php endif; ?>
         <?php if (($status['reason'] ?? '') !== ''): ?><p class="admin-field__help">Status: <?= $escape($status['reason']) ?></p><?php endif; ?>
