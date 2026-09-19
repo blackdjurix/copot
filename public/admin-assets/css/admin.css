@@ -3982,8 +3982,8 @@ html.admin-nav-open body {
 
 .admin-content-thumbnail {
     display: block;
-    width: 88px;
-    height: 64px;
+    width: 116px;
+    height: 82px;
     border-radius: var(--admin-radius-sm);
     object-fit: cover;
     background: var(--admin-color-bg);
@@ -4181,8 +4181,8 @@ html.admin-nav-open body {
 }
 
 .admin-content-table-panel td {
-    padding-top: 16px;
-    padding-bottom: 16px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     vertical-align: middle;
 }
 
@@ -4195,6 +4195,7 @@ html.admin-nav-open body {
 .admin-content-title-cell strong {
     color: var(--admin-color-text);
     font-size: 14px;
+    font-weight: 400;
 }
 
 .admin-content-title-cell small {
@@ -4203,6 +4204,7 @@ html.admin-nav-open body {
     gap: 6px;
     color: var(--admin-color-muted);
     font-size: 11px;
+    font-style: italic;
     overflow-wrap: anywhere;
 }
 
