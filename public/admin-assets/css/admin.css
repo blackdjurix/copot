@@ -4602,6 +4602,7 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
 .core-content-media-picker .admin-media-picker__panel { padding: 0; }
 .core-content-media-picker .admin-media-picker__panel > h3 { margin: 0; padding: var(--admin-space-5) var(--admin-space-6); border-bottom: 1px solid var(--admin-color-border); font-size: 16px; }
 .core-content-media-picker .admin-media-picker__panel > .admin-field__help { display: none; }
+.core-content-media-picker__search { margin: var(--admin-space-4) var(--admin-space-6) 0; }
 .core-content-media-picker .admin-media-picker__results { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--admin-space-3); max-height: 55vh; margin: var(--admin-space-4) var(--admin-space-6); padding: var(--admin-space-4); border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-sm); overflow: auto; }
 .core-content-media-picker .admin-media-picker__item { display: grid; gap: var(--admin-space-2); padding: var(--admin-space-2); border: 0; background: transparent; }
 .core-content-media-picker .admin-media-card__preview { min-height: 0; aspect-ratio: 16 / 9; padding: var(--admin-space-2); border-radius: var(--admin-radius-sm); background: #d4deed; }
