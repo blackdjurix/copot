@@ -243,7 +243,7 @@ table {
     outline-offset: -2px;
 }
 
-.admin-table th {
+.admin-table thead th {
     border-top: 2px solid var(--admin-color-primary);
     border-bottom: 2px solid var(--admin-color-primary);
     color: var(--admin-color-text);
@@ -251,6 +251,11 @@ table {
     font-size: 14px;
     letter-spacing: normal;
     text-transform: none;
+}
+
+.admin-table tbody th {
+    border-top: 0;
+    border-bottom: 1px solid var(--admin-color-primary);
 }
 
 .admin-table td { border-bottom-color: var(--admin-color-primary); }
