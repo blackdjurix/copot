@@ -3714,7 +3714,7 @@ html.admin-nav-open body {
 .admin-settings-field-grid .admin-field--wide { grid-column: 1 / -1; }
 .admin-settings-form .admin-form__actions { margin-top: var(--admin-space-6); }
 .admin-settings-color-input { width: 3.25rem !important; height: 3.25rem; padding: .2rem; }
-.site-settings-identity-layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--admin-space-6); align-items: start; }
+.site-settings-identity-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--admin-space-8); align-items: start; }
 .site-settings-identity-layout > .admin-fieldset { width: 100%; margin-top: 0; }
 .site-settings-identity__settings,
 .site-settings-identity__media { min-width: 0; }
@@ -3730,7 +3730,7 @@ html.admin-nav-open body {
 .site-settings-identity__appearance { grid-column: auto; grid-row: auto; }
 .site-settings-asset-stack { display: grid; gap: var(--admin-space-6); }
 .site-settings-asset-block { display: grid; }
-.site-settings-asset-preview-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(10rem, 14rem); gap: var(--admin-space-4); align-items: stretch; }
+.site-settings-asset-preview-row { display: grid; grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr); gap: var(--admin-space-4); align-items: stretch; }
 .site-settings-asset-preview { min-height: 120px; height: 100%; }
 .site-settings-asset-preview--favicon { min-height: 120px; }
 .site-settings-asset-preview__empty { color: var(--admin-color-text-muted); font-size: .9rem; text-align: center; }
