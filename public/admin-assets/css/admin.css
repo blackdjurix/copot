@@ -53,7 +53,7 @@
     --admin-shadow-sm: 0 1px 3px rgb(15 23 42 / 0.06);
     --admin-shadow-md: 0 12px 32px rgb(15 23 42 / 0.08);
     --admin-control-height: 42px;
-    --admin-topbar-height: 70px;
+    --admin-topbar-height: 74px;
     --admin-icon-stroke-width: 1.75;
     --admin-focus-ring: 0 0 0 3px rgb(37 99 235 / 0.28);
     --admin-focus-ring-inverse: 0 0 0 3px var(--admin-color-navigation-foreground-strong), 0 0 0 6px var(--admin-color-primary);
@@ -922,11 +922,12 @@ dd {
 
 .admin-page-heading__title {
     margin: 0;
+    color: var(--admin-color-primary);
 }
 
 .admin-page-heading__description {
     margin: var(--admin-space-2) 0 0;
-    color: var(--admin-color-muted);
+    color: var(--admin-color-text);
 }
 
 .admin-filter-toolbar {
@@ -3150,13 +3151,9 @@ html.admin-nav-open body {
 
 .admin-shell-page .admin-sidebar {
     z-index: 30;
-    gap: 22px;
+    gap: 24px;
     padding: 20px 14px 16px;
-    background: linear-gradient(
-        180deg,
-        var(--admin-color-navigation) 0%,
-        var(--admin-color-navigation-end) 100%
-    );
+    background: var(--admin-color-navigation);
 }
 
 .admin-brand {
@@ -3209,7 +3206,7 @@ html.admin-nav-open body {
 }
 
 .admin-shell-page .admin-brand-title {
-    font-size: 20px;
+    font-size: 22px;
     letter-spacing: -0.02em;
     line-height: 1.2;
 }
@@ -3221,7 +3218,7 @@ html.admin-nav-open body {
 
 .admin-shell-page .admin-nav {
     align-content: start;
-    gap: 6px;
+    gap: var(--admin-space-4);
 }
 
 .admin-shell-page .admin-nav-link {
@@ -3229,7 +3226,7 @@ html.admin-nav-open body {
     min-height: 44px;
     padding: 10px 12px;
     border-radius: 9px;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .admin-nav-icon {
@@ -3252,11 +3249,7 @@ html.admin-nav-open body {
 }
 
 .admin-shell-page .admin-nav-link[aria-current="page"] {
-    background: linear-gradient(
-        90deg,
-        var(--admin-color-navigation-active) 0%,
-        var(--admin-color-navigation-active-end) 100%
-    );
+    background: var(--admin-color-navigation-active);
     box-shadow: inset 3px 0 0 var(--admin-color-navigation-accent);
 }
 
@@ -3367,10 +3360,10 @@ html.admin-nav-open body {
     min-height: 40px;
     gap: 8px;
     padding: 8px 12px;
-    border: 1px solid var(--admin-color-border);
+    border: 0;
     border-radius: var(--admin-radius-sm);
     color: var(--admin-color-text);
-    background: var(--admin-color-control-secondary);
+    background: transparent;
     cursor: pointer;
     font-size: 13px;
     font-weight: 700;
@@ -3388,7 +3381,7 @@ html.admin-nav-open body {
 
 .admin-quick-menu__trigger:hover,
 .admin-quick-menu[open] .admin-quick-menu__trigger {
-    background: var(--admin-color-bg);
+    background: var(--admin-color-control-secondary);
 }
 
 .admin-quick-menu__trigger:focus-visible {
@@ -3482,7 +3475,7 @@ html.admin-nav-open body {
 
 .admin-shell-page .admin-main {
     max-width: var(--admin-shell-content-max);
-    padding: 20px 26px 38px;
+    padding: 20px 32px 38px;
     overflow-wrap: anywhere;
 }
 
