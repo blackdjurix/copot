@@ -3885,14 +3885,18 @@ html.admin-nav-open body {
     outline-offset: -2px;
 }
 
-.admin-content-page tr[data-content-edit-url] td {
-    border-bottom-color: var(--admin-color-primary-soft);
+.admin-content-page tr[data-core-content-row] {
+    border-bottom: 2px solid var(--admin-color-primary);
+}
+
+.admin-content-page tr[data-core-content-row] td {
+    border-bottom: 0;
 }
 
 .admin-content-thumbnail {
     display: block;
-    width: 64px;
-    height: 48px;
+    width: 88px;
+    height: 64px;
     border-radius: var(--admin-radius-sm);
     object-fit: cover;
     background: var(--admin-color-bg);
@@ -4081,6 +4085,14 @@ html.admin-nav-open body {
     font-size: 12px;
 }
 
+.admin-content-table-panel thead tr {
+    border-bottom: 2px solid var(--admin-color-primary);
+}
+
+.admin-content-table-panel thead th {
+    border-bottom: 0;
+}
+
 .admin-content-table-panel td {
     padding-top: 16px;
     padding-bottom: 16px;
@@ -4108,15 +4120,11 @@ html.admin-nav-open body {
 }
 
 .admin-content-title-cell small::before {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--admin-color-muted);
-    content: "";
+    display: none;
 }
 
-.admin-content-title-cell small.is-published::before {
-    background: var(--admin-color-success);
+.admin-content-list-no-results[hidden] {
+    display: none !important;
 }
 
 .admin-content-type-badge {

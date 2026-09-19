@@ -157,7 +157,7 @@ $app->router()->get($app->adminUrl()->routeChildUrl('content'), function ($reque
     if ($workspace === []) {
         $html .= '<div class="admin-empty-state"><h3>No Content yet</h3><p>Create a Page or Article to begin.</p></div>';
     } else {
-        $html .= '<p class="admin-content-result-context" data-core-content-list-summary aria-live="polite"></p><div class="admin-table-wrap"><table class="admin-table" id="core-content-list-table"><thead><tr><th scope="col">Thumbnail</th><th scope="col">Title</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Updated</th><th scope="col">Author</th></tr></thead><tbody>';
+        $html .= '<p class="admin-content-result-context" data-core-content-list-summary aria-live="polite"></p><div class="admin-table-wrap"><table class="admin-table" id="core-content-list-table"><thead><tr><th scope="col" aria-label="Thumbnail"></th><th scope="col">Title</th><th scope="col">Type</th><th scope="col">Status</th><th scope="col">Updated</th><th scope="col">Author</th></tr></thead><tbody>';
         foreach ($workspace as $item) {
             $edit = $contentRoute((string) $item->id() . '/edit');
             $rowAttributes = $user->can('content.update') ? ' data-content-edit-url="' . htmlspecialchars($edit, ENT_QUOTES, 'UTF-8') . '" tabindex="0" role="link" aria-label="Edit ' . htmlspecialchars($item->title(), ENT_QUOTES, 'UTF-8') . '"' : '';
