@@ -11,6 +11,8 @@
         const results = root.querySelector('[data-core-content-media-results]');
         const search = root.querySelector('[data-core-content-media-search]');
         const closeButton = root.querySelector('[data-core-content-media-close]');
+        const upload = root.querySelector('[data-core-content-media-upload]');
+        const uploadButton = root.querySelector('[data-core-content-media-upload-button]');
         const placeholder = root.querySelector('[data-core-content-media-placeholder]');
         let restoreFocus = null;
         let availableItems = [];
@@ -112,6 +114,28 @@
             setValue('');
             renderSelected(null);
             announce('Featured Media selection cleared. Save Content to remove it.');
+        });
+
+        uploadButton?.addEventListener('click', () => {
+            const file = upload?.files?.[0];
+            if (!file) { announce('Choose one JPEG, PNG, or WebP image first.'); return; }
+            const form = new FormData();
+            form.append('_token', root.dataset.csrfToken || '');
+            form.append('media', file);
+            uploadButton.disabled = true;
+            announce('Uploading image…');
+            fetch(root.dataset.uploadUrl, { method: 'POST', body: form, credentials: 'same-origin', headers: { Accept: 'application/json' } })
+                .then((response) => response.ok ? response.json() : response.json().then((data) => Promise.reject(new Error(data.error || 'The image could not be uploaded.'))))
+                .then((item) => {
+                    const descriptor = { id: item.id, title: file.name, original_filename: file.name, url: `${window.location.origin}/media/${item.id}` };
+                    setValue(String(item.id));
+                    renderSelected(descriptor);
+                    dialog.close();
+                    announce('Image uploaded and selected. Save Content to keep the selection.');
+                    restoreFocus?.focus();
+                })
+                .catch((error) => announce(error.message || 'The image could not be uploaded.'))
+                .finally(() => { uploadButton.disabled = false; });
         });
     });
 })();
