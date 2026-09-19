@@ -4664,7 +4664,7 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
 .admin-settings-system-group h3,
 .site-settings-health h3 { margin: 0 0 var(--admin-space-2); padding-bottom: var(--admin-space-3); border-bottom: 1px solid var(--admin-color-primary); color: var(--admin-color-text); font-size: 1rem; }
 .admin-settings-system-group p { margin: 0; color: var(--admin-color-muted); }
-.site-settings-system-details { display: grid; gap: var(--admin-space-3); margin: 0; }
+.site-settings-system-details { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--admin-space-3); margin: 0; }
 .site-settings-system-details > div { display: grid; grid-template-columns: minmax(0, 1fr); gap: .25rem; min-width: 0; }
 .site-settings-system-details dt { color: var(--admin-color-text); font-size: .82rem; font-weight: 800; }
 .site-settings-system-details dd { margin: 0; color: var(--admin-color-muted); overflow-wrap: anywhere; }
