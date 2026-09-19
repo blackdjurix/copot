@@ -4183,7 +4183,7 @@ html.admin-nav-open body {
 }
 
 .admin-content-table-panel thead th {
-    border-bottom: 0;
+    border-bottom: 2px solid var(--admin-color-primary);
 }
 
 .admin-content-table-panel td {
