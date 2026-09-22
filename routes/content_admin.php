@@ -87,10 +87,7 @@ $formData = static function (?Content $content, ?string $status = null): array {
 };
 
 $renderForm = static function (string $title, string $action, array $data, array $errors, $user, string $path, string $mode) use ($app, $contentRoute, $mediaRepository): Response {
-    $html = '<section class="admin-content-form-page admin-stack" aria-labelledby="webcore-content-form-title">'
-        . '<header class="admin-page-heading"><div class="admin-page-heading__copy"><h2 class="admin-page-heading__title" id="webcore-content-form-title">'
-        . htmlspecialchars($title, ENT_QUOTES, 'UTF-8') . '</h2><p class="admin-page-heading__description">Create or update a Page or Article</p></div>'
-        . '</header>'
+    $html = '<section class="admin-content-form-page admin-stack">'
         . '<div class="admin-panel"><div class="admin-panel__body"><form id="core-content-form" class="admin-form" method="post" action="' . htmlspecialchars($action, ENT_QUOTES, 'UTF-8') . '">'
         . '<input type="hidden" name="_token" value="' . htmlspecialchars($app->session()->csrfToken(), ENT_QUOTES, 'UTF-8') . '">';
     if (!empty($data['updated_at'])) $html .= '<input type="hidden" name="expected_updated_at" value="' . htmlspecialchars((string) $data['updated_at'], ENT_QUOTES, 'UTF-8') . '">';
@@ -143,7 +140,7 @@ $renderForm = static function (string $title, string $action, array $data, array
         $html .= '</div>';
     }
     $html .= '</div></div></section>';
-    return Response::html($app->adminPageRenderer()->render($title, $html, $user, $app->session()->csrfToken(), $path, null, [['label' => 'Content', 'url' => $contentRoute()], ['label' => $title]]), $errors === [] ? 200 : 422);
+    return Response::html($app->adminPageRenderer()->render($title, $html, $user, $app->session()->csrfToken(), $path, ['description' => 'Create or update a Page or Article', 'surface' => 'transparent'], [['label' => 'Content', 'url' => $contentRoute()], ['label' => $title]]), $errors === [] ? 200 : 422);
 };
 
 $app->adminNavigation()->add('Content', $contentRoute(), 'content.read', 'content', 20);
