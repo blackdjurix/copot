@@ -3944,19 +3944,24 @@ html.admin-nav-open body {
     .admin-settings-field-grid .admin-field--wide { grid-column: auto; }
     .admin-settings-panel .admin-form__actions .admin-button { width: 100%; }
     .site-settings-modules__header { display: grid; gap: var(--admin-space-5); }
+    .site-settings-modules__intro h3 { margin: 0; color: var(--admin-color-navigation); font-size: clamp(2rem, 8vw, 3rem); line-height: 1.1; }
+    .site-settings-modules__intro p { margin: var(--admin-space-2) 0 0; color: var(--admin-color-muted); font-size: 1.25rem; }
+    .site-settings-module-package-form,
+    .site-settings-module-filter--name { display: none; }
     .site-settings-module-package-form { min-width: 0; }
     .site-settings-module-package-controls { width: 100%; min-width: 0; align-items: stretch; flex-direction: column; }
     .site-settings-module-package-controls input[type="file"] { width: 100%; max-width: 100%; }
     .site-settings-module-package-controls .admin-button { width: 100%; }
-    .site-settings-modules__tools { grid-template-columns: 1fr; }
-    .site-settings-modules__result-count { white-space: normal; }
+    .site-settings-modules__tools { grid-template-columns: 1fr; gap: var(--admin-space-5); margin: 0; padding: var(--admin-space-5); border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-lg); background: var(--admin-color-surface); }
+    .site-settings-modules__tools .admin-field__label { color: var(--admin-color-muted); font-size: 1.15rem; }
+    .site-settings-modules__result-count { margin: var(--admin-space-5) 0; white-space: normal; color: var(--admin-color-muted); font-size: 1.2rem; }
     .site-settings-modules-table { display: block; min-width: 0; }
     .site-settings-modules-table thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
     .site-settings-modules-table tbody,
     .site-settings-modules-table tr,
     .site-settings-modules-table th,
     .site-settings-modules-table td { display: block; width: auto !important; }
-    .site-settings-modules-table tr { position: relative; margin: 0 0 var(--admin-space-3); padding: var(--admin-space-4); border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-md); background: var(--admin-color-surface); }
+    .site-settings-modules-table tr { position: relative; margin: 0 0 var(--admin-space-4); padding: var(--admin-space-5); border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-lg); background: var(--admin-color-surface); }
     .site-settings-modules-table tr:last-child { margin-bottom: 0; }
     .site-settings-modules-table th,
     .site-settings-modules-table td { display: grid; grid-template-columns: minmax(5.5rem, .35fr) minmax(0, 1fr); gap: var(--admin-space-3); padding: var(--admin-space-2) 0; text-align: left; }
@@ -3965,11 +3970,13 @@ html.admin-nav-open body {
     .site-settings-modules-table th { font-size: inherit; }
     .site-settings-modules-table th:first-child { display: block; grid-template-columns: none; margin: 0; padding: 0 0 var(--admin-space-3); border-bottom: 1px solid var(--admin-color-border); }
     .site-settings-modules-table th:first-child::before { display: none; }
-    .site-settings-module-identity { position: relative; display: flex; min-width: 0; flex-direction: column; gap: var(--admin-space-1); padding-right: 7rem; overflow-wrap: anywhere; }
-    .site-settings-module-identity__status { position: absolute; top: 0; right: 0; display: inline-flex; }
+    .site-settings-module-identity { position: relative; display: flex; min-width: 0; flex-direction: column; gap: var(--admin-space-1); padding-right: 8rem; overflow-wrap: anywhere; }
+    .site-settings-module-identity__title { color: var(--admin-color-navigation); font-size: 1.45rem; font-weight: 800 !important; line-height: 1.2; }
+    .site-settings-module-identity__name { color: var(--admin-color-muted); font-size: 1.15rem; }
+    .site-settings-module-identity__status { position: absolute; top: 0; right: 0; display: inline-flex; min-height: 2.5rem; padding: .35rem .75rem; border-radius: var(--admin-radius-md); color: var(--admin-color-navigation); background: var(--admin-color-bg); font-size: 1rem; font-weight: 700; }
     .site-settings-module-status-cell { display: none !important; }
     .site-settings-modules-table td[data-label="Version"],
-    .site-settings-modules-table td[data-label="Issue"] { display: inline-grid; width: 50% !important; grid-template-columns: 1fr; gap: var(--admin-space-1); padding: var(--admin-space-3) 0 0; vertical-align: top; }
+    .site-settings-modules-table td[data-label="Issue"] { display: inline-grid; width: 50% !important; grid-template-columns: 1fr; gap: var(--admin-space-1); padding: var(--admin-space-4) 0 0; vertical-align: top; border-top: 1px solid var(--admin-color-border); }
     .site-settings-modules-table td[data-label="Issue"] { border-left: 1px solid var(--admin-color-border); padding-left: var(--admin-space-4); }
     .site-settings-modules-table td:last-child { padding-bottom: 0; }
     .site-settings-identity-layout { grid-template-columns: 1fr; }

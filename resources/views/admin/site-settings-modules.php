@@ -77,7 +77,7 @@ natcasesort($statusOptions);
     <?php if (!empty($notice)): ?><div class="admin-alert admin-alert--success" role="status"><?= $escape($moduleNotices[(string) $notice] ?? 'Module operation completed.') ?></div><?php endif; ?>
     <?php if (!empty($error)): ?><div class="admin-alert admin-alert--danger" role="alert"><?= $escape($moduleMessages[(string) $error] ?? 'The Module operation could not be completed.') ?></div><?php endif; ?>
     <div class="site-settings-modules__tools" role="group" aria-label="Filter Modules">
-        <div class="admin-field site-settings-module-filter">
+        <div class="admin-field site-settings-module-filter site-settings-module-filter--name">
             <label class="admin-field__label" for="site-settings-module-filter-name">Name</label>
             <input id="site-settings-module-filter-name" type="search" placeholder="Title or identity" autocomplete="off" data-site-settings-module-filter="name">
         </div>
