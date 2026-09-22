@@ -3865,6 +3865,7 @@ html.admin-nav-open body {
     .site-settings-hero-picker__upload .admin-actions .admin-button { flex: 1; }
 }
 .site-settings-homepage-content-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--admin-space-4); }
+.site-settings-homepage-content-grid:not(.is-page) { grid-template-columns: 1fr; }
 .site-settings-homepage-content-grid > .admin-field { min-width: 0; }
 .site-settings-page [data-homepage-content-page-field][hidden] { display: none; }
 .site-settings-homepage-content-grid__help,
@@ -3955,15 +3956,18 @@ html.admin-nav-open body {
     .site-settings-modules-table tr,
     .site-settings-modules-table th,
     .site-settings-modules-table td { display: block; width: auto !important; }
-    .site-settings-modules-table tr { padding: var(--admin-space-4); border-bottom: 1px solid var(--admin-color-border); }
-    .site-settings-modules-table tr:last-child { border-bottom: 0; }
+    .site-settings-modules-table tr { position: relative; margin: 0 0 var(--admin-space-3); padding: var(--admin-space-4); border: 1px solid var(--admin-color-border); border-radius: var(--admin-radius-md); background: var(--admin-color-surface); }
+    .site-settings-modules-table tr:last-child { margin-bottom: 0; }
     .site-settings-modules-table th,
     .site-settings-modules-table td { display: grid; grid-template-columns: minmax(5.5rem, .35fr) minmax(0, 1fr); gap: var(--admin-space-3); padding: var(--admin-space-2) 0; text-align: left; }
     .site-settings-modules-table th::before,
     .site-settings-modules-table td::before { color: var(--admin-color-muted); content: attr(data-label); font-size: 12px; font-weight: 800; }
     .site-settings-modules-table th { font-size: inherit; }
-    .site-settings-modules-table th:first-child { margin: calc(-1 * var(--admin-space-4)) calc(-1 * var(--admin-space-4)) 0; padding: var(--admin-space-4) var(--admin-space-4) var(--admin-space-2); }
-    .site-settings-module-identity { min-width: 0; overflow-wrap: anywhere; }
+    .site-settings-modules-table th:first-child { margin: 0; padding: 0 0 var(--admin-space-3); }
+    .site-settings-modules-table th:first-child::before { display: none; }
+    .site-settings-module-identity { position: relative; display: flex; min-width: 0; flex-direction: column; gap: var(--admin-space-1); padding-right: 7rem; overflow-wrap: anywhere; }
+    .site-settings-module-identity__status { position: absolute; top: 0; right: 0; display: inline-flex; }
+    .site-settings-module-status-cell { display: none !important; }
     .site-settings-modules-table td:last-child { padding-bottom: 0; }
     .site-settings-identity-layout { grid-template-columns: 1fr; }
     .site-settings-identity__settings,

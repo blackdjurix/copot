@@ -16,4 +16,10 @@ document.addEventListener('DOMContentLoaded', function () {
     grid.append(typeField, pageField);
     if (helper) grid.append(helper);
     if (error) grid.append(error);
+
+    const updateLayout = () => {
+        grid.classList.toggle('is-page', typeField.querySelector('select')?.value === 'page');
+    };
+    typeField.querySelector('select')?.addEventListener('change', updateLayout);
+    updateLayout();
 });
