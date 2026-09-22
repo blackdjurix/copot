@@ -16,10 +16,11 @@ closed. WU4 Batch 1 — Site Settings, Site Identity, Homepage assignment, and
 directly affected Built-in Public View behavior — is implemented and accepted
 on `feature/wu4-batch1-site-settings`, under
 `docs/54_webcore_site_settings_appearance_consolidation_contract.md`. WU4 is
-ACTIVE / PARTIAL: Batch 1 is IMPLEMENTED / ACCEPTED; the Batch 2 System and
-Modules slices are COMPLETE / CLOSED; full Batch 2 is COMPLETE / CLOSED; Batch
-3 is ACCEPTED / COMPLETE / CLOSED; and Batch 4 is NOT STARTED. WU5 and WU6 are
-NOT STARTED. The feature branch is intentionally
+COMPLETE / ACCEPTED / CLOSED: Batch 1 is IMPLEMENTED / ACCEPTED; the Batch 2
+System and Modules slices are COMPLETE / CLOSED; full Batch 2 is COMPLETE /
+CLOSED; Batch 3 is ACCEPTED / COMPLETE / CLOSED; and Batch 4 is COMPLETE /
+ACCEPTED / CLOSED after technical and human/product acceptance. WU5 is
+COMPLETE / ACCEPTED / CLOSED and WU6 is NOT STARTED. The feature branch is intentionally
 unmerged pending separately controlled integration. Release, tag, and
 publication remain separately controlled.
 
