@@ -54,9 +54,10 @@ Current durable planning state:
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
 - Webcore Product Completeness & Stabilization: WU1 COMPLETE / CONTRACT
   LOCKED; WU2 COMPLETE / ACCEPTED / INTEGRATED; WU3 COMPLETE / ACCEPTED /
-  INTEGRATED / CLOSED; WU4 ACTIVE / PARTIAL under its locked contract
-  (Batches 1–2 complete/closed; Batch 3 accepted/complete/closed; Batch 4
-  paused after WU5 dependency satisfaction); WU5 COMPLETE / ACCEPTED / CLOSED;
+  INTEGRATED / CLOSED; WU4 COMPLETE / ACCEPTED / CLOSED under its locked
+  contract (Batches 1–2 complete/closed; Batch 3 accepted/complete/closed;
+  Batch 4 technically and human/product accepted/closed); WU5 COMPLETE /
+  ACCEPTED / CLOSED;
   WU6-WU7 NOT STARTED;
 - MR.2: COMPLETE / CLOSED;
 - MR.2 WU1–WU8: COMPLETE AND CLOSED;
@@ -415,9 +416,10 @@ Promoted WU topology and current disposition:
 2. WU2 — Core Media Admin Baseline — COMPLETE / ACCEPTED / INTEGRATED
 3. WU3 — Core Primary Navigation Admin Baseline — COMPLETE / ACCEPTED /
    INTEGRATED / CLOSED
-4. WU4 — Webcore Site Settings & Appearance Consolidation — ACTIVE / PARTIAL /
-   CONTRACT PROMOTED / CONTRACT LOCKED; Batches 1–2 COMPLETE / CLOSED; Batch 3
-   ACCEPTED / COMPLETE / CLOSED; Batch 4 PAUSED after WU5 dependency satisfaction
+4. WU4 — Webcore Site Settings & Appearance Consolidation — COMPLETE / ACCEPTED /
+   CLOSED / CONTRACT PROMOTED / CONTRACT LOCKED; Batches 1–2 COMPLETE / CLOSED;
+   Batch 3 ACCEPTED / COMPLETE / CLOSED; Batch 4 COMPLETE / ACCEPTED / CLOSED
+   after technical and human/product acceptance
 5. WU5 — Webcore Content Product Completeness — COMPLETE / ACCEPTED / CLOSED
 6. WU6 — Zero-Optional Product Acceptance — NOT STARTED
 7. WU7 — Stabilization & v0.14.0 Readiness Closure — NOT STARTED
@@ -425,8 +427,8 @@ Promoted WU topology and current disposition:
 WU4 implementation authority:
 - `docs/54_webcore_site_settings_appearance_consolidation_contract.md` is the
   dedicated WU4 implementation authority;
-- WU4 Batch 4 — Cross-Surface Acceptance & WU4 Closure — remains paused after
-  WU5 acceptance and requires separate authorization for its own closure;
+- WU4 Batch 4 — Cross-Surface Acceptance & WU4 Closure — is COMPLETE / ACCEPTED /
+  CLOSED after WU5 acceptance and separate technical and human/product review;
 - this Workplan entry does not authorize WU4 implementation.
 
 Readiness boundary:
@@ -441,7 +443,7 @@ Human/product readiness gate:
 - Site Settings human/product review occurs inside this Webcore workstream
   before relevant scope acceptance.
 
-Planning action: KEEP / WU1-WU3 COMPLETE / WU4 BATCH 4 PAUSED / WU5 COMPLETE /
+Planning action: KEEP / WU1-WU5 COMPLETE / ACCEPTED / CLOSED / WU4 COMPLETE /
 ACCEPTED / CLOSED / WU6 NEXT SEPARATELY GATED TARGET
 
 ### Production Webcore Reconciliation
@@ -1217,9 +1219,9 @@ Reconciliation, WU2 — Core Media Admin Baseline, and WU3 — Core Primary
 Navigation Admin Baseline are complete in their authoritative states. WU4 is
 contract promoted and locked under
 `docs/54_webcore_site_settings_appearance_consolidation_contract.md`; WU4 is
-ACTIVE / PARTIAL with Batches 1–2 complete/closed, Batch 3 accepted/complete/
-closed, and Batch 4 remains paused after WU5 acceptance. WU5 is
-COMPLETE / ACCEPTED / CLOSED; WU6 is the next separately gated target. No WU6
+COMPLETE / ACCEPTED / CLOSED with Batches 1–2 complete/closed, Batch 3
+accepted/complete/closed, and Batch 4 complete/accepted/closed after WU5
+acceptance and human/product review. WU5 is COMPLETE / ACCEPTED / CLOSED; WU6 is the next separately gated target. No WU6
 implementation is authorized by this Workplan entry alone.
 
 ## 10. Retention and Planning Freshness

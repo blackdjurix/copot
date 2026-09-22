@@ -6,7 +6,7 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU4 — Webcore Site Settings & Appearance Consolidation
 Contract status: PROMOTED / CONTRACT LOCKED
-WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 ACCEPTED / COMPLETE / CLOSED (HUMAN/PRODUCT ACCEPTANCE PASS; TECHNICAL VALIDATION COMPLETE); BATCH 4 PAUSED after WU5 dependency satisfaction
+WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 ACCEPTED / COMPLETE / CLOSED (HUMAN/PRODUCT ACCEPTANCE PASS; TECHNICAL VALIDATION COMPLETE); BATCH 4 COMPLETE / ACCEPTED / CLOSED (TECHNICAL ACCEPTANCE PASS; HUMAN/PRODUCT ACCEPTANCE PASS)
 Technical implementation authorization: BATCH 1, BATCH 2 SYSTEM/MODULES, AND BATCH 3 EXECUTED UNDER SEPARATE AUTHORIZATION
 Release / tag / publication authorization: NONE
 ```
@@ -19,8 +19,9 @@ acceptance, and the later separately authorized Site Settings → System and
 Site Settings → Modules slices, are recorded by current-state documentation.
 Batch 2 is COMPLETE / CLOSED. Batch 3 implementation and technical validation
 are complete, and human/product acceptance is PASS. Batch 3 is accepted,
-complete, and closed. Batch 4 closure is PAUSED pending the separately scoped
-WU5 Webcore Content Product Completeness unit. This contract
+complete, and closed. Batch 4 cross-surface technical acceptance and
+human/product acceptance are PASS. Batch 4 is COMPLETE / ACCEPTED / CLOSED;
+its separately scoped WU5 dependency is COMPLETE / ACCEPTED / CLOSED. This contract
 does not itself grant blanket implementation
 authority for those later slices, schema/settings migration beyond accepted
 scope, runtime mutation outside controlled acceptance, or release activity.
@@ -462,13 +463,12 @@ Validate:
 Batch 4 is acceptance and closure only. It is not a license to add adjacent
 features.
 
-Current dependency disposition: Batch 4 remains **PAUSED** after its WU5
-dependency was satisfied. Accepted
+Current dependency disposition: the WU5 dependency is **SATISFIED**. Accepted
 current-workstream evidence established a bounded Webcore Content
-product-completeness gap outside WU4: the Core fallback requires a bounded
+product-completeness gap outside WU4: the Core fallback required a bounded
 Page/Article selector and bounded Featured Media interaction before
-zero-optional cross-surface closure can be claimed. WU5 owned that correction
-and is now COMPLETE / ACCEPTED / CLOSED;
+zero-optional cross-surface closure could be claimed. WU5 owned that correction
+and is COMPLETE / ACCEPTED / CLOSED;
 Batch 4 must not implement it, reopen MR.2, or absorb Content Manager
 refinement.
 
@@ -476,7 +476,8 @@ Hard dependencies: Batches 1–3, the now-satisfied WU5 acceptance, and all reco
 implementation-time dispositions that materially affect acceptance.
 
 Batch 4 is not independently implementable before the preceding batches.
-Human/product acceptance is mandatory.
+Technical acceptance is PASS and human/product acceptance is PASS. Batch 4 is
+COMPLETE / ACCEPTED / CLOSED.
 
 ## Explicit unresolved implementation dispositions
 

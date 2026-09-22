@@ -6,8 +6,8 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Classification: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
 Contract status: PROMOTED / CONTRACT LOCKED
-Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL / WU5 COMPLETE / ACCEPTED / CLOSED / WU6 NOT STARTED / WU7 NOT STARTED
-WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice COMPLETE / CLOSED / Batch 2 Modules slice COMPLETE / CLOSED / full Batch 2 COMPLETE / CLOSED / Batch 3 ACCEPTED / COMPLETE / CLOSED / Batch 4 PAUSED after WU5 dependency satisfaction
+Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 COMPLETE / ACCEPTED / CLOSED / WU5 COMPLETE / ACCEPTED / CLOSED / WU6 NOT STARTED / WU7 NOT STARTED
+WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice COMPLETE / CLOSED / Batch 2 Modules slice COMPLETE / CLOSED / full Batch 2 COMPLETE / CLOSED / Batch 3 ACCEPTED / COMPLETE / CLOSED / Batch 4 COMPLETE / ACCEPTED / CLOSED (TECHNICAL ACCEPTANCE PASS; HUMAN/PRODUCT ACCEPTANCE PASS)
 Technical implementation authorization: WU2 and WU3 separately authorized and complete; WU4 Batches 1–3 separately authorized and accepted; WU5 separately authorized and complete; WU6–WU7 remain separately gated
 Release / tag / publication authorization: NONE
 ```
@@ -294,12 +294,12 @@ locked:
 ## Work Unit topology
 
 The workstream is locked to seven Work Units. WU1, WU2, and WU3 are
-complete for their accepted scopes. WU4 is ACTIVE / PARTIAL: Batch 1 is
-implemented and accepted, and the Batch 2 System and Modules slices are
-COMPLETE / CLOSED. Full Batch 2 is COMPLETE / CLOSED, Batch 3 is accepted and
-closed, and Batch 4 is PAUSED after WU5 dependency satisfaction. WU5 is
-COMPLETE / ACCEPTED / CLOSED; WU6 and WU7 remain not started and separately
-gated, requiring separate execution authorization.
+complete for their accepted scopes. WU4 is COMPLETE / ACCEPTED / CLOSED: Batch
+1 is implemented and accepted, the Batch 2 System and Modules slices are
+COMPLETE / CLOSED, full Batch 2 is COMPLETE / CLOSED, Batch 3 is accepted and
+closed, and Batch 4 is complete after technical and human/product acceptance.
+WU5 is COMPLETE / ACCEPTED / CLOSED; WU6 and WU7 remain not started and
+separately gated, requiring separate execution authorization.
 
 ### WU1 — Webcore Completeness Contract & Scope Reconciliation
 
@@ -401,15 +401,17 @@ remain specific to this WU3 baseline.
 Purpose: provide one coherent Webcore Site Settings operator projection while
 preserving existing Settings, Site Asset, and Branding authority.
 
-Current state: WU4 is ACTIVE / PARTIAL. Batch 1 is IMPLEMENTED / ACCEPTED.
+Current state: WU4 is COMPLETE / ACCEPTED / CLOSED. Batch 1 is IMPLEMENTED / ACCEPTED.
 The Batch 2 Site Settings → System slice is CLOSED under
 `docs/55_webcore_site_settings_system_operational_projection_contract.md`.
 The Batch 2 Modules slice is COMPLETE / CLOSED after separately authorized
 implementation, technical validation, controlled runtime validation, and
 human/product acceptance; full Batch 2 is COMPLETE / CLOSED. Batch 3 is
 ACCEPTED / COMPLETE / CLOSED after separately authorized implementation,
-technical validation, and human/product acceptance. Batch 4 closure is PAUSED
-pending the new WU5 Webcore Content Product Completeness corrective unit.
+technical validation, and human/product acceptance. Batch 4 is COMPLETE /
+ACCEPTED / CLOSED after technical and human/product acceptance; the WU5
+Webcore Content Product Completeness corrective unit is COMPLETE / ACCEPTED /
+CLOSED.
 
 Internal scope classification:
 
