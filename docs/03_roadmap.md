@@ -636,7 +636,7 @@ Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
 Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU3 COMPLETE AND CLOSED
 Current Post-M3 workstream: Webcore Product Completeness & Stabilization — WU4 ACTIVE / PARTIAL
-WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED; Batch 2 System slice COMPLETE / CLOSED; Batch 2 Modules slice COMPLETE / CLOSED; full Batch 2 COMPLETE / CLOSED; Batch 3 ACCEPTED / COMPLETE / CLOSED; Batch 4 NOT STARTED. WU5 and WU6 NOT STARTED.
+WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED; Batch 2 System slice COMPLETE / CLOSED; Batch 2 Modules slice COMPLETE / CLOSED; full Batch 2 COMPLETE / CLOSED; Batch 3 ACCEPTED / COMPLETE / CLOSED; Batch 4 PAUSED after WU5 dependency satisfaction. WU5 COMPLETE / ACCEPTED / CLOSED. WU6 NOT STARTED.
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED

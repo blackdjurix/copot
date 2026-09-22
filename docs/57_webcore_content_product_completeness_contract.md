@@ -6,9 +6,9 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU5 — Webcore Content Product Completeness
 Contract status: PROMOTED / CONTRACT LOCKED
-Implementation status: NEW / NOT STARTED
-Human/product acceptance: MANDATORY
-Technical implementation authorization: NONE
+Implementation status: COMPLETE / ACCEPTED / CLOSED
+Human/product acceptance: PASS / ACCEPTED
+Technical implementation authorization: EXECUTED / COMPLETE
 Release / tag / publication authorization: NONE
 ```
 
@@ -33,10 +33,10 @@ WU5 must provide:
 - a proper bounded Webcore/Core Media selection and reference interaction for
   Featured Media instead of a raw numeric Media ID field.
 
-The exact route, view, client interaction, permission, availability, error,
-and reference-lifecycle mechanics remain subject to dedicated WU5 source audit
-and separately authorized implementation. This contract does not prescribe a
-Media Manager picker, processing workflow, or a particular UI mechanism.
+The delivered implementation uses the existing Core Content and Core Media
+authorities, preserves their authorization and lifecycle boundaries, and does
+not prescribe or depend on a Media Manager picker, processing workflow, or a
+generic picker architecture.
 
 ## Authority and extension boundary
 
@@ -70,18 +70,19 @@ does not reopen accepted historical work.
 
 ## Acceptance boundary
 
-Before closure, evidence must show that the zero-optional Core Content surface
-provides both bounded interactions above, preserves singular Content and Media
+Closure evidence shows that the zero-optional Core Content surface provides
+both bounded interactions above, preserves singular Content and Media
 authority, has no competing canonical editor, and remains compatible with the
-retained Content Manager extension. Focused technical validation and controlled
-runtime validation are required. Human/product acceptance is mandatory because
-the accepted gap concerns operator adequacy not previously accepted for the
-Core fallback.
+retained Content Manager extension. Focused technical validation, controlled
+runtime validation, and human/product acceptance passed for `/admin/content`,
+Content create/edit/details, and the Featured Image/Core Media picker.
 
 ## Dependency disposition
 
-WU4 Batch 4 cross-surface acceptance and closure is paused pending WU5
-acceptance. WU5 does not implement WU4 and WU4 does not absorb WU5 scope.
+WU4 Batch 4 cross-surface acceptance and closure was paused pending WU5
+acceptance; that dependency is now satisfied. WU4 Batch 4 remains separately
+gated and is not reopened or closed by this WU5 record. WU5 does not implement
+WU4 and WU4 does not absorb WU5 scope.
 After WU5, renumbered WU6 — Zero-Optional Product Acceptance and WU7 —
 Stabilization & v0.14.0 Readiness Closure remain separately gated.
 

@@ -6,9 +6,9 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Classification: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
 Contract status: PROMOTED / CONTRACT LOCKED
-Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL / WU5 NOT STARTED / WU6 NOT STARTED / WU7 NOT STARTED
-WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice COMPLETE / CLOSED / Batch 2 Modules slice COMPLETE / CLOSED / full Batch 2 COMPLETE / CLOSED / Batch 3 ACCEPTED / COMPLETE / CLOSED / Batch 4 PAUSED pending WU5
-Technical implementation authorization: WU2 and WU3 separately authorized and complete; WU4 Batches 1–3 separately authorized and accepted; WU5–WU7 remain separately gated
+Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 ACTIVE / PARTIAL / WU5 COMPLETE / ACCEPTED / CLOSED / WU6 NOT STARTED / WU7 NOT STARTED
+WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice COMPLETE / CLOSED / Batch 2 Modules slice COMPLETE / CLOSED / full Batch 2 COMPLETE / CLOSED / Batch 3 ACCEPTED / COMPLETE / CLOSED / Batch 4 PAUSED after WU5 dependency satisfaction
+Technical implementation authorization: WU2 and WU3 separately authorized and complete; WU4 Batches 1–3 separately authorized and accepted; WU5 separately authorized and complete; WU6–WU7 remain separately gated
 Release / tag / publication authorization: NONE
 ```
 
@@ -297,8 +297,9 @@ The workstream is locked to seven Work Units. WU1, WU2, and WU3 are
 complete for their accepted scopes. WU4 is ACTIVE / PARTIAL: Batch 1 is
 implemented and accepted, and the Batch 2 System and Modules slices are
 COMPLETE / CLOSED. Full Batch 2 is COMPLETE / CLOSED, Batch 3 is accepted and
-closed, and Batch 4 is PAUSED pending WU5. WU5, WU6, and WU7 remain not started
-and separately gated, requiring separate execution authorization.
+closed, and Batch 4 is PAUSED after WU5 dependency satisfaction. WU5 is
+COMPLETE / ACCEPTED / CLOSED; WU6 and WU7 remain not started and separately
+gated, requiring separate execution authorization.
 
 ### WU1 — Webcore Completeness Contract & Scope Reconciliation
 
@@ -465,15 +466,23 @@ WU5 must provide:
 
 WU5 must preserve Webcore Content authority, Core Media authority, existing
 authorization and lifecycle behavior, and the Content Manager extension seam.
-Human/product acceptance is mandatory because this gap concerns operator
-adequacy not previously accepted for the Core surface.
+The bounded implementation is complete and accepted. Human/product acceptance
+passed for the Content list, Content create/edit/details, and Featured Image
+picker surfaces.
+
+The accepted Core surface includes bounded Page/Article selection;
+human-readable author projection and combined Content filtering; full-row
+mouse/keyboard navigation to edit; Draft/Publish/Archive/Restore lifecycle
+actions with stay-on-edit success redirects; Core image-only Featured Media
+selection with search, Change, and Clear; authoritative Media usage
+synchronization; and the accepted edit action-bar composition. Content Manager
+remains an optional extension and is not imported or required.
 
 WU5 does not automatically include Taxonomy, rich-text/editor capability,
 revisions/history, scheduling/workflow, advanced workspace/search/filter
 conveniences, bulk actions, Media processing, crop/resize/rotate, derivative
 or variant management, advanced Media preparation, or Content Manager-specific
-workflow or presentation. Exact implementation mechanics require the dedicated
-WU5 contract and source audit.
+workflow or presentation.
 
 ### WU6 — Zero-Optional Product Acceptance
 

@@ -6,7 +6,7 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Work Unit: WU4 — Webcore Site Settings & Appearance Consolidation
 Contract status: PROMOTED / CONTRACT LOCKED
-WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 ACCEPTED / COMPLETE / CLOSED (HUMAN/PRODUCT ACCEPTANCE PASS; TECHNICAL VALIDATION COMPLETE); BATCH 4 PAUSED pending WU5 Webcore Content Product Completeness
+WU4 implementation: BATCH 1 IMPLEMENTED / ACCEPTED; BATCH 2 SYSTEM SLICE CLOSED; BATCH 2 MODULES SLICE COMPLETE / CLOSED; BATCH 2 COMPLETE / CLOSED; BATCH 3 ACCEPTED / COMPLETE / CLOSED (HUMAN/PRODUCT ACCEPTANCE PASS; TECHNICAL VALIDATION COMPLETE); BATCH 4 PAUSED after WU5 dependency satisfaction
 Technical implementation authorization: BATCH 1, BATCH 2 SYSTEM/MODULES, AND BATCH 3 EXECUTED UNDER SEPARATE AUTHORIZATION
 Release / tag / publication authorization: NONE
 ```
@@ -462,15 +462,17 @@ Validate:
 Batch 4 is acceptance and closure only. It is not a license to add adjacent
 features.
 
-Current dependency disposition: Batch 4 is **PAUSED**. Accepted
+Current dependency disposition: Batch 4 remains **PAUSED** after its WU5
+dependency was satisfied. Accepted
 current-workstream evidence established a bounded Webcore Content
 product-completeness gap outside WU4: the Core fallback requires a bounded
 Page/Article selector and bounded Featured Media interaction before
-zero-optional cross-surface closure can be claimed. WU5 owns that correction;
+zero-optional cross-surface closure can be claimed. WU5 owned that correction
+and is now COMPLETE / ACCEPTED / CLOSED;
 Batch 4 must not implement it, reopen MR.2, or absorb Content Manager
 refinement.
 
-Hard dependencies: Batches 1–3, WU5 acceptance, and all recorded
+Hard dependencies: Batches 1–3, the now-satisfied WU5 acceptance, and all recorded
 implementation-time dispositions that materially affect acceptance.
 
 Batch 4 is not independently implementable before the preceding batches.
