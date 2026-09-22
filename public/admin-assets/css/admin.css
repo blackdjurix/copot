@@ -4035,8 +4035,33 @@ html.admin-nav-open body {
     background: linear-gradient(135deg, var(--admin-color-bg), var(--admin-color-surface));
 }
 
+.admin-content-form-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--admin-space-5);
+    margin-top: var(--admin-space-6);
+}
+
+.admin-content-form-action-bar__group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--admin-space-3);
+}
+
+.admin-content-form-action-bar__group form {
+    display: flex;
+    margin: 0;
+}
+
+.admin-content-form-action-bar .admin-button {
+    min-height: 40px;
+}
+
 .admin-content-form-lifecycle {
-    margin-top: var(--admin-space-4);
+    margin-top: 0;
+    margin-left: auto;
 }
 
 .admin-content-layout {
@@ -4620,12 +4645,24 @@ section[aria-labelledby="form-editor-title"] .form-field-row > fieldset[data-opt
         padding: var(--admin-space-4);
     }
 
-    .admin-content-form-actions {
+    .admin-content-form-action-bar {
         align-items: stretch;
-        flex-direction: column-reverse;
+        flex-direction: column;
     }
 
-    .admin-content-form-actions .admin-button {
+    .admin-content-form-action-bar__group {
+        width: 100%;
+    }
+
+    .admin-content-form-lifecycle {
+        margin-left: 0;
+    }
+
+    .admin-content-form-action-bar__group > * {
+        flex: 1 1 auto;
+    }
+
+    .admin-content-form-action-bar .admin-button {
         width: 100%;
     }
 }
