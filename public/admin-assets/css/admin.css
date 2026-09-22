@@ -3963,11 +3963,14 @@ html.admin-nav-open body {
     .site-settings-modules-table th::before,
     .site-settings-modules-table td::before { color: var(--admin-color-muted); content: attr(data-label); font-size: 12px; font-weight: 800; }
     .site-settings-modules-table th { font-size: inherit; }
-    .site-settings-modules-table th:first-child { margin: 0; padding: 0 0 var(--admin-space-3); }
+    .site-settings-modules-table th:first-child { display: block; grid-template-columns: none; margin: 0; padding: 0 0 var(--admin-space-3); border-bottom: 1px solid var(--admin-color-border); }
     .site-settings-modules-table th:first-child::before { display: none; }
     .site-settings-module-identity { position: relative; display: flex; min-width: 0; flex-direction: column; gap: var(--admin-space-1); padding-right: 7rem; overflow-wrap: anywhere; }
     .site-settings-module-identity__status { position: absolute; top: 0; right: 0; display: inline-flex; }
     .site-settings-module-status-cell { display: none !important; }
+    .site-settings-modules-table td[data-label="Version"],
+    .site-settings-modules-table td[data-label="Issue"] { display: inline-grid; width: 50% !important; grid-template-columns: 1fr; gap: var(--admin-space-1); padding: var(--admin-space-3) 0 0; vertical-align: top; }
+    .site-settings-modules-table td[data-label="Issue"] { border-left: 1px solid var(--admin-color-border); padding-left: var(--admin-space-4); }
     .site-settings-modules-table td:last-child { padding-bottom: 0; }
     .site-settings-identity-layout { grid-template-columns: 1fr; }
     .site-settings-identity__settings,
