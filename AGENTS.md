@@ -1,6 +1,6 @@
 # AGENTS
 
-## Current authoritative WU4 feature state
+## Current authoritative Webcore Product Completeness & Stabilization closure state
 
 Post-M3 Webcore Product Completeness & Stabilization WU1 is complete and
 contract-locked. WU2 — Core Media Admin Baseline is implemented, focused-tested,
