@@ -17,10 +17,18 @@ is IMPLEMENTED / ACCEPTED. The Batch 2 System slice and Modules slice are
 COMPLETE / CLOSED; full Batch 2 is COMPLETE / CLOSED. Batch 3 is ACCEPTED /
 COMPLETE / CLOSED; Batch 4 is COMPLETE / ACCEPTED / CLOSED after technical
 and human/product acceptance. WU5 — Webcore Content Product Completeness — is
-COMPLETE / ACCEPTED / CLOSED. WU6 — Zero-Optional Product
-Acceptance and WU7 — Stabilization & v0.14.0 Readiness Closure are NOT STARTED.
-The feature branch remains intentionally unmerged pending separately controlled
-integration. Release, tag, and publication remain separately controlled.
+COMPLETE / ACCEPTED / CLOSED. WU6 — Zero-Optional Product Acceptance is
+COMPLETE / ACCEPTED / CLOSED with technical acceptance PASS and human/product
+acceptance NOT REQUIRED. The zero-optional Modules/Themes baseline, integrated
+Core Content/Media/Primary Navigation, Site Settings/Identity/Appearance/
+Homepage/Built-in Public View, and retained Content/Media/Navigation Manager
+extension coexistence were proven; no accepted-baseline regression or
+extension-boundary violation was found. The focused Core Media assertion
+correction is integrated at `b8e7b39baec3359d7f1b33704d35a22696df172c`. WU7 —
+Stabilization & v0.14.0 Readiness Closure is the next separately gated Work
+Unit and remains NOT STARTED.
+The WU4 feature branch lifecycle is closed. Release, tag, and publication remain
+separately controlled.
 
 ## Project
 
@@ -90,7 +98,7 @@ VALIDATION DEBT in the historical Media test.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU3 COMPLETE AND CLOSED
+Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU6 COMPLETE / ACCEPTED / CLOSED
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED

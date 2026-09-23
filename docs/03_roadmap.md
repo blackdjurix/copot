@@ -634,9 +634,9 @@ published. Deferred integrations remain excluded.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU4 COMPLETE AND CLOSED
-Current Post-M3 workstream: Webcore Product Completeness & Stabilization — WU4 COMPLETE / ACCEPTED / CLOSED
-WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED; Batch 2 System slice COMPLETE / CLOSED; Batch 2 Modules slice COMPLETE / CLOSED; full Batch 2 COMPLETE / CLOSED; Batch 3 ACCEPTED / COMPLETE / CLOSED; Batch 4 COMPLETE / ACCEPTED / CLOSED after technical and human/product acceptance. WU5 COMPLETE / ACCEPTED / CLOSED. WU6 NOT STARTED.
+Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU6 COMPLETE / ACCEPTED / CLOSED
+Current Post-M3 workstream: Webcore Product Completeness & Stabilization — WU6 COMPLETE / ACCEPTED / CLOSED; WU7 is the next separately gated Work Unit and remains NOT STARTED
+WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED; Batch 2 System slice COMPLETE / CLOSED; Batch 2 Modules slice COMPLETE / CLOSED; full Batch 2 COMPLETE / CLOSED; Batch 3 ACCEPTED / COMPLETE / CLOSED; Batch 4 COMPLETE / ACCEPTED / CLOSED after technical and human/product acceptance. WU5 COMPLETE / ACCEPTED / CLOSED. WU6 COMPLETE / ACCEPTED / CLOSED with technical acceptance PASS and human/product acceptance NOT REQUIRED; zero-optional baseline, integrated Core surfaces, Built-in Public View, Homepage, and retained Manager coexistence were proven, with no accepted-baseline regression or extension-boundary violation found. The focused Core Media assertion correction is integrated at `b8e7b39baec3359d7f1b33704d35a22696df172c`. WU7 — Stabilization & v0.14.0 Readiness Closure is the next separately gated Work Unit and remains NOT STARTED.
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED

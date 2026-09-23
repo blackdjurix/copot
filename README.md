@@ -6,7 +6,17 @@ COMPLETE and integrated into `main` at
 commit. Feature containment is confirmed. v0.13.0 is released, tagged, and
 published. Deferred integrations remain excluded.
 
-Current Post-M3 workstream: Webcore Product Completeness & Stabilization — WU3
+Current Post-M3 workstream: Webcore Product Completeness & Stabilization — WU6
+Zero-Optional Product Acceptance is COMPLETE / ACCEPTED / CLOSED with technical
+acceptance PASS and human/product acceptance NOT REQUIRED. The zero-optional
+Modules/Themes baseline, integrated Core Content/Media/Primary Navigation, Site
+Settings/Identity/Appearance/Homepage/Built-in Public View, and retained
+Content/Media/Navigation Manager extension coexistence were proven. No
+accepted-baseline regression or extension-boundary violation was found. The
+focused Core Media assertion correction is integrated at
+`b8e7b39baec3359d7f1b33704d35a22696df172c`.
+
+WU3 predecessor:
 Core Primary Navigation Admin Baseline is implementation-complete, technically
 validated, AI-accepted, human/product-accepted, and closure-documentation
 reconciled and fast-forward integrated into `main` at
@@ -20,9 +30,10 @@ COMPLETE / ACCEPTED / CLOSED: Batch 1 is IMPLEMENTED / ACCEPTED; the Batch 2
 System and Modules slices are COMPLETE / CLOSED; full Batch 2 is COMPLETE /
 CLOSED; Batch 3 is ACCEPTED / COMPLETE / CLOSED; and Batch 4 is COMPLETE /
 ACCEPTED / CLOSED after technical and human/product acceptance. WU5 is
-COMPLETE / ACCEPTED / CLOSED and WU6 is NOT STARTED. The feature branch is intentionally
-unmerged pending separately controlled integration. Release, tag, and
-publication remain separately controlled.
+COMPLETE / ACCEPTED / CLOSED and WU6 is COMPLETE / ACCEPTED / CLOSED. WU7 —
+Stabilization & v0.14.0 Readiness Closure is the next separately gated Work
+Unit and remains NOT STARTED. The WU4 feature branch lifecycle is closed.
+Release, tag, and publication remain separately controlled.
 
 MR.2 WU1 — Webcore Admin View Foundation is COMPLETE on the integrated
 `main` baseline. The reusable Admin Page Frame remains inside `admin-main`,
@@ -92,7 +103,7 @@ released, tagged, and published.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU3 COMPLETE AND CLOSED
+Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU6 COMPLETE / ACCEPTED / CLOSED
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
