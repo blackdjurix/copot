@@ -6,9 +6,9 @@
 Workstream: Post-M3 — Webcore Product Completeness & Stabilization
 Classification: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
 Contract status: PROMOTED / CONTRACT LOCKED
-Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 COMPLETE / ACCEPTED / CLOSED / WU5 COMPLETE / ACCEPTED / CLOSED / WU6 COMPLETE / ACCEPTED / CLOSED / WU7 NOT STARTED
+Workstream implementation: WU1 COMPLETE / WU2 COMPLETE / WU3 COMPLETE AND CLOSED / WU4 COMPLETE / ACCEPTED / CLOSED / WU5 COMPLETE / ACCEPTED / CLOSED / WU6 COMPLETE / ACCEPTED / CLOSED / WU7 COMPLETE / ACCEPTED / CLOSED
 WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED / Batch 2 System slice COMPLETE / CLOSED / Batch 2 Modules slice COMPLETE / CLOSED / full Batch 2 COMPLETE / CLOSED / Batch 3 ACCEPTED / COMPLETE / CLOSED / Batch 4 COMPLETE / ACCEPTED / CLOSED (TECHNICAL ACCEPTANCE PASS; HUMAN/PRODUCT ACCEPTANCE PASS)
-Technical implementation authorization: WU2 and WU3 separately authorized and complete; WU4 Batches 1–3 separately authorized and accepted; WU5 separately authorized and complete; WU6 technical acceptance is complete and accepted; WU7 remains separately gated
+Technical implementation authorization: WU2 and WU3 separately authorized and complete; WU4 Batches 1–3 separately authorized and accepted; WU5 separately authorized and complete; WU6 technical acceptance is complete and accepted; WU7 stabilization and readiness closure is complete and accepted
 Release / tag / publication authorization: NONE
 ```
 
@@ -300,8 +300,8 @@ COMPLETE / CLOSED, full Batch 2 is COMPLETE / CLOSED, Batch 3 is accepted and
 closed, and Batch 4 is complete after technical and human/product acceptance.
 WU5 is COMPLETE / ACCEPTED / CLOSED. WU6 is COMPLETE / ACCEPTED / CLOSED
 with technical acceptance PASS and human/product acceptance NOT REQUIRED. WU7
-remains NOT STARTED and separately gated, requiring separate execution
-authorization.
+is COMPLETE / ACCEPTED / CLOSED for its separately authorized stabilization and
+readiness-closure scope.
 
 ### WU1 — Webcore Completeness Contract & Scope Reconciliation
 
@@ -526,7 +526,7 @@ validated in `b8e7b39baec3359d7f1b33704d35a22696df172c`.
 
 ### WU7 — Stabilization & v0.14.0 Readiness Closure
 
-WU7 is the next separately gated Work Unit and remains NOT STARTED.
+WU7 is COMPLETE / ACCEPTED / CLOSED.
 
 Purpose: stabilize the completed corrective workstream and determine whether the
 resulting Webcore state is suitable as a future v0.14.0 readiness baseline.
@@ -535,6 +535,18 @@ WU7 may include focused directly impacted regressions, cross-capability
 stabilization, zero-optional dependency re-verification, documentation
 consistency, unresolved-finding disposition, final product-completeness
 acceptance evidence, and readiness reporting.
+
+#### WU7 closure record
+
+WU7 closure found no new regression signal, changed dependency,
+extension-boundary violation, or technical blocker. Accepted WU2–WU6 evidence,
+including the zero-optional baseline, remained valid; no additional runtime or
+broad historical regression rerun was required. Documentation and planning /
+provenance reconciliation is complete. Current WU7 execution is main-only /
+no-op, and human/product acceptance was NOT REQUIRED because no subjective
+product decision or new presentation was introduced. The result is suitable as
+a future v0.14.0 readiness baseline. Release, version advancement, package
+creation, tag, publication, and distribution remain separate explicit gates.
 
 WU7 does not authorize a version bump, release package creation, release tag,
 GitHub Release, publication, or external distribution.

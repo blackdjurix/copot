@@ -58,7 +58,7 @@ Current durable planning state:
   contract (Batches 1–2 complete/closed; Batch 3 accepted/complete/closed;
   Batch 4 technically and human/product accepted/closed); WU5 COMPLETE /
   ACCEPTED / CLOSED;
-  WU6-WU7 NOT STARTED;
+  WU6 COMPLETE / ACCEPTED / CLOSED; WU7 COMPLETE / ACCEPTED / CLOSED;
 - MR.2: COMPLETE / CLOSED;
 - MR.2 WU1–WU8: COMPLETE AND CLOSED;
 - Webcore Content Admin Baseline: COMPLETE / CLOSED; corrective prerequisite
@@ -366,7 +366,7 @@ Planning action: NONE / PROVENANCE
 
 ### Webcore Product Completeness & Stabilization
 Class: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
-Status: PROMOTED / CONTRACT LOCKED / PRE-IMPLEMENTATION / NOT IMPLEMENTATION-AUTHORIZED
+Status: PROMOTED / CONTRACT LOCKED / COMPLETE / ACCEPTED / CLOSED
 
 Sources:
 - `concepts/copot_site_color_scheme_concept.md` [PRIMARY GIT CONCEPT]
@@ -421,8 +421,8 @@ Promoted WU topology and current disposition:
    Batch 3 ACCEPTED / COMPLETE / CLOSED; Batch 4 COMPLETE / ACCEPTED / CLOSED
    after technical and human/product acceptance
 5. WU5 — Webcore Content Product Completeness — COMPLETE / ACCEPTED / CLOSED
-6. WU6 — Zero-Optional Product Acceptance — NOT STARTED
-7. WU7 — Stabilization & v0.14.0 Readiness Closure — NOT STARTED
+6. WU6 — Zero-Optional Product Acceptance — COMPLETE / ACCEPTED / CLOSED
+7. WU7 — Stabilization & v0.14.0 Readiness Closure — COMPLETE / ACCEPTED / CLOSED
 
 WU4 implementation authority:
 - `docs/54_webcore_site_settings_appearance_consolidation_contract.md` is the
@@ -443,8 +443,12 @@ Human/product readiness gate:
 - Site Settings human/product review occurs inside this Webcore workstream
   before relevant scope acceptance.
 
-Planning action: KEEP / WU1-WU5 COMPLETE / ACCEPTED / CLOSED / WU4 COMPLETE /
-ACCEPTED / CLOSED / WU6 NEXT SEPARATELY GATED TARGET
+Closure action: COMPLETE / ACCEPTED / CLOSED / MAIN-ONLY / NO-OP for current
+WU7 execution. Accepted WU2–WU6 evidence remains sufficient; no additional
+runtime or broad historical regression rerun was required because no concrete
+regression signal or changed dependency was found. The deterministic downstream
+planning target remains Bundled Module Refinement Preparation & Reconciliation,
+which is planning topology only and requires separate authorization.
 
 ### Production Webcore Reconciliation
 Class: OPERATIONAL GATE

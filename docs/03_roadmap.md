@@ -634,9 +634,9 @@ published. Deferred integrations remain excluded.
 M3 Core Modules: COMPLETE AND CLOSED
 Latest completed milestone: M3.11 Form Manager
 M3.11: COMPLETE AND CLOSED
-Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU6 COMPLETE / ACCEPTED / CLOSED
-Current Post-M3 workstream: Webcore Product Completeness & Stabilization — WU6 COMPLETE / ACCEPTED / CLOSED; WU7 is the next separately gated Work Unit and remains NOT STARTED
-WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED; Batch 2 System slice COMPLETE / CLOSED; Batch 2 Modules slice COMPLETE / CLOSED; full Batch 2 COMPLETE / CLOSED; Batch 3 ACCEPTED / COMPLETE / CLOSED; Batch 4 COMPLETE / ACCEPTED / CLOSED after technical and human/product acceptance. WU5 COMPLETE / ACCEPTED / CLOSED. WU6 COMPLETE / ACCEPTED / CLOSED with technical acceptance PASS and human/product acceptance NOT REQUIRED; zero-optional baseline, integrated Core surfaces, Built-in Public View, Homepage, and retained Manager coexistence were proven, with no accepted-baseline regression or extension-boundary violation found. The focused Core Media assertion correction is integrated at `b8e7b39baec3359d7f1b33704d35a22696df172c`. WU7 — Stabilization & v0.14.0 Readiness Closure is the next separately gated Work Unit and remains NOT STARTED.
+Latest completed Post-M3 workstream: Webcore Product Completeness & Stabilization — WU7 COMPLETE / ACCEPTED / CLOSED
+Current Post-M3 workstream: Webcore Product Completeness & Stabilization — WU7 COMPLETE / ACCEPTED / CLOSED; current WU7 execution is main-only / no-op
+WU4 current state: Batch 1 IMPLEMENTED / ACCEPTED; Batch 2 System slice COMPLETE / CLOSED; Batch 2 Modules slice COMPLETE / CLOSED; full Batch 2 COMPLETE / CLOSED; Batch 3 ACCEPTED / COMPLETE / CLOSED; Batch 4 COMPLETE / ACCEPTED / CLOSED after technical and human/product acceptance. WU5 COMPLETE / ACCEPTED / CLOSED. WU6 COMPLETE / ACCEPTED / CLOSED with technical acceptance PASS and human/product acceptance NOT REQUIRED; zero-optional baseline, integrated Core surfaces, Built-in Public View, Homepage, and retained Manager coexistence were proven, with no accepted-baseline regression or extension-boundary violation found. The focused Core Media assertion correction is integrated at `b8e7b39baec3359d7f1b33704d35a22696df172c`. WU7 — Stabilization & v0.14.0 Readiness Closure — is COMPLETE / ACCEPTED / CLOSED. No new regression signal, changed dependency, or technical blocker was found; no additional runtime or broad historical regression rerun was required. The result is suitable as a future v0.14.0 readiness baseline. Release, tag, and publication remain separately controlled.
 Portability preparation: COMPLETE / CONTRACT LOCKED
 Portability WU1–WU6: COMPLETE AND CLOSED
 Portability acceptance: generic Apache/XAMPP shared-host-like matrix PASSED
@@ -655,7 +655,7 @@ MR.2 WU3 — System Manager Lifecycle & Modules UX Refinement: COMPLETE AND CLOS
 Module Permission Dependency / Base Access: separate planning concern; not a System Health dependency.
 Existing-Runtime Webcore Lifecycle Adoption: technical work is closed; production reconciliation remains NOT STARTED and separately authorized.
 Module Package Lifecycle WU1–WU7 implementation and final human/E2E acceptance: COMPLETE AND CLOSED.
-Current active implementation branch: `feature/wu4-batch1-site-settings`
+Current authoritative execution branch: `main`
 Database Ownership & Lifecycle Management Foundation: WU1–WU6 COMPLETE AND CLOSED for the accepted scope
 WU4 Database Lifecycle Classification: COMPLETE AND CLOSED; accepted implementation and focused validation are integrated into `main` at `70782fdc9dddeb353cf27cf78f6f20e294e6fa30`
 WU5 Installer Intent Reconciliation: COMPLETE AND CLOSED; Installer intents are Fresh / Coexist / Adopt, with normal existing-install Update / Upgrade / Repair outside Installer under System Manager / Webcore Lifecycle
