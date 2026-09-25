@@ -15,6 +15,7 @@ auth.json
 /storage/.install.lock
 /storage/.installed-*
 /storage/*.key
+/storage/.copot-lifecycle/
 
 !/storage/cache/.gitkeep
 !/storage/logs/.gitkeep
