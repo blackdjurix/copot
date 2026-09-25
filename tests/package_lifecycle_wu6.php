@@ -180,7 +180,7 @@ try {
             'webcoreVersion' => '0.12.0',
             'releaseIdentity' => 'release-12',
             'sourceTreeIdentity' => 'tree-12',
-            'manifestContractVersion' => 1,
+            'manifestContractVersion' => $package->manifestContractVersion(),
             'schemaStateIdentity' => 'schema-final',
             'migrationStateIdentity' => CoreMigrationStateIdentity::fromRecords([]),
         ];
@@ -219,7 +219,7 @@ try {
         ['schemaStateIdentity', 'different-schema', 'schema mismatch'],
         ['migrationStateIdentity', str_repeat('c', 64), 'migration mismatch'],
         ['sourceTreeIdentity', 'different-tree', 'source-tree mismatch'],
-        ['manifestContractVersion', 2, 'manifest mismatch'],
+        ['manifestContractVersion', PackageContract::LEGACY_MANIFEST_CONTRACT_VERSION, 'manifest mismatch'],
     ] as [$field, $value, $label]) {
         [$scenario, $coordinator, $package, $applyPlan, $migrationPlan, $live, $maintenance, $connection] = $makeCleanupScenario([$field => $value]);
         $result = $coordinator->finalize('cleanup-operation', $package, $applyPlan, $migrationPlan, new LiveTreePathGuard($live), $connection);
