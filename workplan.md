@@ -509,7 +509,8 @@ Planning action: KEEP FUTURE / CAPABILITY-GATED / NO AUTOMATIC SEQUENCING
 
 ### Database Adoption Exact-Match Compatibility Reconciliation
 Class: FUTURE CONTRACT RECONCILIATION / DATABASE COMPATIBILITY
-Status: NEXT / FIRST TARGET / OPEN / BOUNDED / NOT IMPLEMENTATION-AUTHORIZED
+Status: NEXT / FIRST TARGET / OPEN / BOUNDED / MATERIALIZED / PRE-PROMOTION
+PLANNING / NOT PROMOTED / NOT IMPLEMENTATION-AUTHORIZED
 
 Sources:
 - `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
@@ -518,6 +519,11 @@ Sources:
   [CURRENT ADOPT AUTHORITY]
 - `concepts/copot_site_settings_future_capability_architecture_concept.md`
   [PLANNING MATERIALIZATION]
+
+Pre-contract:
+- `precontracts/database_lifecycle_adoption_compatibility_reconciliation_precontract.md`
+
+Pre-contract status: MATERIALIZED / PRE-PROMOTION PLANNING / NOT PROMOTED
 
 The one remaining material item is reconciling legacy exact-match/current
 Adopt semantics with target-relative requirement-driven compatibility. Preserve
