@@ -537,6 +537,11 @@ Authority:
 
 Promotion status: COMPLETE / AUTHORITATIVE TARGETS RECONCILED
 Implementation status: NOT AUTHORIZED
+Post-promotion implementation-delta audit: COMPLETE
+Work Unit topology: DERIVED / MATERIALIZED
+Work Unit count: 6
+Next target: WU1 — Target Requirement Contract & Representation
+Next gate: EXPLICIT WU1 IMPLEMENTATION AUTHORIZATION
 
 The promoted reconciliation preserves legacy exact-match/current Adopt
 semantics while establishing target-relative requirement-driven compatibility.
@@ -548,10 +553,105 @@ This item does not create a new lifecycle operation, installer intent, status
 family, engine, or generalized conflict procedure. Implementation remains
 unauthorized.
 
+Work Unit topology:
+
+#### WU1 — Target Requirement Contract & Representation
+Purpose:
+- extend existing package/release metadata so the target can authoritatively
+  declare database/schema/capability requirements required for target-relative
+  compatibility;
+- reuse current PackageContract, PackageManifest, runtime-requirement,
+  source-compatibility, and migration-declaration machinery where appropriate;
+- preserve current runtime compatibility and lifecycle authority semantics.
+
+Dependency: NONE
+
+Boundary: requirement representation only; no generalized compatibility
+evaluation or Adoption orchestration.
+
+#### WU2 — Target-Relative Compatibility Evaluation & Adoption Readiness
+Purpose:
+- evaluate Satisfied Target Requirements;
+- identify Compatible Extra State and positively classified Requirement Gaps;
+- distinguish unknown, ambiguous, contradictory, unsafe, and unsupported state;
+- support Compatibility Re-Proof;
+- produce derived Adoption Readiness and machine-readable compatibility results;
+- preserve exact-match as a valid fast path.
+
+Dependency: HARD → WU1
+
+Boundary: no mutation authority, new lifecycle operation, or durable Adoption
+lifecycle-state family.
+
+#### WU3 — Legacy Boundary & Route Classification Reconciliation
+Purpose:
+- ensure database non-exactness alone does not force Legacy Reconciliation;
+- route positively classified Requirement Gaps toward normal authorized
+  lifecycle resolution;
+- preserve Legacy Reconciliation for genuinely legacy, uncommitted,
+  unprovable, provenance, filesystem-drift, or broader convergence cases;
+- preserve historical exact-match Adoption behavior;
+- establish deterministic classification for later Route A/Route B
+  orchestration.
+
+Dependency: HARD → WU2
+
+Boundary: preserve existing Legacy Reconciliation authority and applicable
+canonical/exact-match paths.
+
+#### WU4 — Adoption Orchestration, Route B & Composite Resolution
+Purpose:
+- introduce bounded Adoption orchestration around existing lifecycle
+  operations;
+- support Route B only where target context can legitimately invoke existing
+  lifecycle authority;
+- preserve underlying lifecycle-operation identity, mutation authority,
+  migration authorization, recovery binding, mutex, and Runtime Handoff
+  exclusion;
+- support Composite Resolution as orchestration of 0..N separately
+  authorized operations;
+- suspend Adoption on underlying failure and perform fresh compatibility
+  evaluation after material resolution steps;
+- add orchestration/audit identity only where materially required, without a
+  second mutation-operation identity.
+
+Dependency: HARD → WU2 + WU3
+
+Boundary: no new lifecycle engine, migration engine, mutation operation, or
+ownership model.
+
+#### WU5 — Installer & Lifecycle Result Integration
+Purpose:
+- allow Installer/Adoption flow to consume generalized compatibility and
+  orchestration results;
+- preserve terminal Installer Adopt as non-mutating;
+- preserve installation identity, namespace, Administrator/User/Site state,
+  and current Adopt safety boundaries;
+- expose valid continuation/next action without transferring migration or
+  lifecycle authority into Installer.
+
+Dependency: HARD → WU4
+
+Boundary: no broader Installer Refinement I UX or unrelated Installer redesign.
+
+#### WU6 — Cross-Lifecycle Acceptance & Closure
+Purpose: validate and close the complete Adoption compatibility implementation
+across historical exact-match, Compatible Extra State, Requirement Gaps,
+Route A, Route B, Composite Resolution, failure/suspension/recovery/fresh
+re-proof, Legacy Reconciliation, terminal Installer Adopt, Runtime Handoff
+exclusion/conflict behavior, Case A/B/C, migration authorization,
+recovery/retry, documentation consistency, Workplan reconciliation, and NRP
+evaluation.
+
+Dependency: HARD → WU1–WU5
+
+Implementation status: NOT AUTHORIZED. WU1 is the next target but is not
+started; explicit WU1 implementation authorization is required.
+
 Dependency: NONE within the current five-step pre-v0.14.0 sequence.
 
-Planning action: PROMOTION COMPLETE / POST-PROMOTION IMPLEMENTATION-DELTA
-AUDIT REQUIRED BEFORE ANY WORK UNIT TOPOLOGY / NO IMPLEMENTATION AUTHORIZATION
+Planning action: TOPOLOGY MATERIALIZED / WU1 NEXT TARGET / EXPLICIT
+IMPLEMENTATION AUTHORIZATION REQUIRED / NO IMPLEMENTATION AUTHORIZATION
 
 ### Pre-v0.14.0 Platform and Refinement Sequence
 Class: FUTURE EXECUTION SEQUENCE / DEPENDENCY REGISTER
@@ -566,9 +666,11 @@ The current planned pre-v0.14.0 path is ordered by hard dependency:
 5. Installer Refinement II — Bundled Module Installation Integration.
 
 These are high-level planning identities and dependency relationships only.
-No detailed Work Unit count or topology is locked. Completion of all five
-steps contributes to the intended path toward final v0.14.0 readiness, while
-formal release closure remains later, separate, and unauthorized here.
+The Database Adoption reconciliation topology is materialized as six planning
+Work Units above; no Work Unit is implementation-authorized by this entry.
+Completion of all five steps contributes to the intended path toward final
+v0.14.0 readiness, while formal release closure remains later, separate, and
+unauthorized here.
 
 ### Installer Refinement I — Webcore & Adoption Integration
 Class: FUTURE INSTALLER REFINEMENT / PLATFORM INTEGRATION
