@@ -470,6 +470,152 @@ Webcore Lifecycle. Review & Install remains the first installation-owned
 mutation boundary unless later accepted evidence explicitly amends that
 contract.
 
+## Promoted generalized target-relative Adoption compatibility
+
+This section is the current generalized authority for database compatibility
+and Adoption semantics. It preserves the historical Existing-Runtime
+exact-match capability in `docs/30` while allowing future Adoption to establish
+compatibility against target-declared requirements through the existing
+Package Lifecycle & Migration Foundation.
+
+### Target Requirements and compatibility
+
+Compatibility is target-relative. The target runtime/release declares its
+requirements and the actual installation/database is evaluated against them.
+The evaluator distinguishes:
+
+- satisfied Target Requirements;
+- Compatible Extra State;
+- positively classified Requirement Gaps; and
+- unknown, ambiguous, contradictory, unsafe, or unsupported state.
+
+Exact target-schema identity is not a universal compatibility prerequisite.
+Compatible extra state may remain when ownership, identity, namespace,
+health, and lifecycle/recovery safety remain coherent. Unknown or unprovable
+state fails closed.
+
+`Fill-the-Hole` is the requirement-resolution principle: resolve only
+positively proven missing Target Requirements, preserve satisfied requirements
+and compatible extra state, use existing authorized lifecycle machinery, and
+perform Compatibility Re-Proof afterward. Fill-the-Hole is not a lifecycle
+operation, migration engine, generic reconciliation, schema-normalization
+procedure, global database upgrade, or arbitrary SQL authority.
+
+### Adoption and terminal Adopt
+
+`Adoption` is the broader compatibility-establishment workflow. It may inspect
+a candidate installation/database, evaluate target requirements, classify
+Requirement Gaps, determine eligible Resolution Routes, orchestrate separately
+authorized lifecycle operations, consume their results, and re-evaluate
+compatibility. Adoption does not own database/schema mutation.
+
+Terminal Installer `Adopt` remains non-mutating. It is permitted only after
+positively proven Adoption Readiness, preserves the proven installation
+identity and namespace and applicable existing state, and does not silently
+perform Update, Upgrade, Repair, Reconciliation, migration, schema
+provisioning, or table creation. Adoption Readiness is a derived compatibility
+condition/result, not a durable lifecycle state family.
+
+### Resolution Route selection
+
+Resolution Route selection is deterministic by default from authoritative
+eligibility evidence. Operator choice may be exposed only when multiple routes
+are independently valid, equally supported, equivalent in target outcome,
+ownership/safety semantics, and recovery guarantees. Operator preference never
+overrides lifecycle correctness or authorization.
+
+#### Route A — Pre-Adoption Lifecycle Resolution
+
+When resolution depends on existing/source runtime or package context, the
+applicable existing lifecycle operation occurs before Adoption continuation.
+This may include Update, Upgrade, Repair, Retry, Reconciliation,
+package-defined same-version schema-forward transition, or an owner-authorized
+migration path. After completion, Adoption performs fresh compatibility
+evaluation. The underlying operation retains its own classification and
+identity; it does not become an Adoption mutation merely because it prepares
+the database for Adoption.
+
+#### Route B — Adoption-Orchestrated Requirement Resolution
+
+Target-runtime-led orchestration is allowed only when the target execution
+context can legitimately invoke the existing lifecycle authority. Eligibility
+requires, as applicable, the same recognized installation identity and valid
+namespace/database target, trusted package/release evidence, a valid
+underlying lifecycle operation and migration/transition path, ownership
+authorization, recovery/quiescence/mutex safety, and no incompatible
+non-terminal lifecycle or Runtime Handoff state.
+
+If the target context cannot legitimately invoke that authority, Adoption must
+require an eligible pre-Adoption lifecycle transition or fail closed. Adoption
+must not reproduce or bypass missing lifecycle authority.
+
+#### Composite Resolution
+
+One Adoption workflow may require multiple requirement-resolution steps, but
+Composite Resolution is only orchestration of separately authorized lifecycle
+operations. Every mutating step retains its own lifecycle operation identity,
+owner, source and target state, authorized migration/change set, recovery
+semantics, and completion/failure state. Composite Resolution does not create
+a new composite mutation operation. Adoption may re-evaluate requirements
+after each material step before deciding whether another step is necessary.
+
+### Adoption Readiness, re-proof, and failure continuation
+
+Adoption Readiness exists only when all mandatory Target Requirements are
+positively proven satisfied, compatible extra state is accepted, no unresolved
+Requirement Gap or unknown/unsafe/unsupported state remains, no unresolved
+lifecycle or recovery-required state remains, and resulting compatibility
+proof passes. Successful underlying mutation alone does not produce Adoption
+Readiness.
+
+After requirement-resolution, actual state and Target Requirements must be
+evaluated again. Ownership/provenance contradictions must be absent or proven
+safe, and target compatibility must PASS before terminal Adopt.
+
+When an underlying Resolution Route operation fails, Adoption is suspended;
+no subsequent filler may execute; Adoption Readiness cannot be produced; and
+the underlying lifecycle operation's failure, recovery, Repair, Retry,
+Reconciliation, and restore semantics remain authoritative. After the
+underlying state returns to a supported safe condition, Adoption performs
+fresh compatibility evaluation. Adoption owns no independent rollback or
+recovery machinery.
+
+An Adoption orchestration or requirement-resolution plan may have a durable or
+reproducible identity when required for auditability, confirmation,
+resumability, recovery binding, or deterministic continuation. That identity
+does not grant mutation authority; authority remains attached to each actual
+underlying lifecycle operation.
+
+### Target Requirement authority and provenance
+
+Release-bound Target Requirements must trace to authoritative owning sources,
+including trusted package/release contracts, declared source-version
+compatibility, migration applicability, runtime requirements, authoritative
+capability/schema requirements, and owner-specific declarations referenced by
+the release. Derived metadata may normalize, compose, project, explain, or
+aggregate authoritative requirements but must not invent requirements absent
+from the owning authority.
+
+### Legacy Reconciliation boundary
+
+Legacy Reconciliation remains distinct and appropriate for genuinely legacy,
+uncommitted, unprovable, provenance, package-owned filesystem-drift, or broader
+runtime/package reconciliation cases. Database non-exactness alone does not
+automatically classify an installation as a Legacy Reconciliation case.
+
+A positively classified database with compatible extra state or safely
+resolvable Requirement Gaps may remain within generalized Adoption
+compatibility. Unknown or unprovable legacy state continues to fail closed.
+
+### Installer boundary
+
+Installer consumes this reconciled model. It may discover candidate
+installations, evaluate Adoption compatibility, present satisfied and missing
+requirements and valid next actions, orchestrate eligible lifecycle resolution,
+re-check compatibility, and perform terminal Adopt after Adoption Readiness.
+Installer is not a migration engine, schema owner, recovery engine, or
+lifecycle authority. Detailed Installer UX remains downstream refinement scope.
+
 ## Work Unit topology
 
 This workstream has exactly six Work Units.

@@ -43,6 +43,31 @@ operator actions, have durable operation identity, are idempotent after
 success, and commit lifecycle state last. Failure before commit leaves the
 runtime legacy or otherwise explicitly non-committed.
 
+## Generalized target-relative Adoption compatibility boundary
+
+The exact-match `Adopt Existing Installation` semantics above remain
+authoritative for the Existing-Runtime capability delivered by this contract.
+They are historical/current authority for that capability lineage and must not
+be rewritten as though exact-match was never required.
+
+Those semantics do not universally govern generalized future database
+Adoption compatibility. The current generalized target-relative compatibility
+authority is `docs/37_database_ownership_lifecycle_management_foundation_contract.md`.
+
+Under that current authority, broader `Adoption` may establish compatibility
+against target-declared requirements before a separate terminal Installer
+`Adopt`, using only existing authorized lifecycle/migration machinery. Exact
+match remains a valid fast path, while compatible extra state may remain and
+database non-exactness alone does not automatically require Legacy
+Reconciliation.
+
+Legacy Reconciliation remains separate and applicable to genuinely legacy,
+uncommitted, unprovable, provenance, filesystem-drift, or broader
+runtime/package reconciliation cases. Unknown or unprovable state continues to
+fail closed. This clarification transfers no mutation authority and does not
+alter the recovery, quiescence, immutable planning, migration, failure/retry,
+or finalization semantics established by this contract.
+
 ## Relationship to Runtime Handoff
 
 **Runtime Handoff** is a separate Webcore runtime-participation lifecycle

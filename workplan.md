@@ -509,8 +509,8 @@ Planning action: KEEP FUTURE / CAPABILITY-GATED / NO AUTOMATIC SEQUENCING
 
 ### Database Adoption Exact-Match Compatibility Reconciliation
 Class: FUTURE CONTRACT RECONCILIATION / DATABASE COMPATIBILITY
-Status: NEXT / FIRST TARGET / OPEN / BOUNDED / MATERIALIZED / PRE-PROMOTION
-PLANNING / NOT PROMOTED / NOT IMPLEMENTATION-AUTHORIZED
+Status: PROMOTED / AUTHORITATIVE RECONCILIATION COMPLETE /
+IMPLEMENTATION NOT AUTHORIZED
 
 Sources:
 - `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
@@ -523,29 +523,35 @@ Sources:
 Pre-contract:
 - `precontracts/database_lifecycle_adoption_compatibility_reconciliation_precontract.md`
 
-Pre-contract status: MATERIALIZED / PRE-PROMOTION PLANNING / NOT PROMOTED
+Pre-contract status: PROMOTED / HISTORICAL PROVENANCE
 
 Contract Proposal:
 - `precontracts/database_lifecycle_adoption_compatibility_reconciliation_contract_proposal.md`
 
-Contract Proposal status: CONTRACT PROPOSAL / PRE-PROMOTION / NOT AUTHORITATIVE /
-NOT IMPLEMENTATION-AUTHORIZED
+Contract Proposal status: CONTRACT PROPOSAL / PROMOTED / HISTORICAL PROVENANCE /
+NOT AUTHORITATIVE / NOT IMPLEMENTATION-AUTHORIZED
 
-The one remaining material item is reconciling legacy exact-match/current
-Adopt semantics with target-relative requirement-driven compatibility. Preserve
-the candidate distinction that Adoption is the broader compatibility-
-establishment workflow while Adopt is the terminal installer/finalization
-intent after compatibility is established.
+Authority:
+- `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
+- `docs/37_database_ownership_lifecycle_management_foundation_contract.md`
 
-This item does not create a new lifecycle operation, installer intent,
-status family, engine, or generalized conflict procedure. The closed
-authoritative contracts remain unchanged until a separately authorized
-reconciliation slice.
+Promotion status: COMPLETE / AUTHORITATIVE TARGETS RECONCILED
+Implementation status: NOT AUTHORIZED
+
+The promoted reconciliation preserves legacy exact-match/current Adopt
+semantics while establishing target-relative requirement-driven compatibility.
+Adoption remains the broader compatibility-establishment workflow and Adopt
+remains the terminal installer/finalization intent after compatibility is
+established.
+
+This item does not create a new lifecycle operation, installer intent, status
+family, engine, or generalized conflict procedure. Implementation remains
+unauthorized.
 
 Dependency: NONE within the current five-step pre-v0.14.0 sequence.
 
-Planning action: FIRST TARGET / RECONCILE BEFORE SEVEN-TAB SITE SETTINGS /
-NO IMPLEMENTATION AUTHORIZATION
+Planning action: PROMOTION COMPLETE / POST-PROMOTION IMPLEMENTATION-DELTA
+AUDIT REQUIRED BEFORE ANY WORK UNIT TOPOLOGY / NO IMPLEMENTATION AUTHORIZATION
 
 ### Pre-v0.14.0 Platform and Refinement Sequence
 Class: FUTURE EXECUTION SEQUENCE / DEPENDENCY REGISTER

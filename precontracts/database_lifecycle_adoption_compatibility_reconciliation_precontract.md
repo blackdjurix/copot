@@ -1,8 +1,8 @@
 # Database Lifecycle — Adoption Compatibility Reconciliation Pre-Contract
 
-Pre-contract lifecycle: MATERIALIZED / PRE-PROMOTION PLANNING
+Pre-contract lifecycle: PROMOTED / HISTORICAL PROVENANCE
 Target: Database Lifecycle — Adoption Compatibility Reconciliation
-Promotion status: NOT PROMOTED
+Promotion status: PROMOTED into `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md` and `docs/37_database_ownership_lifecycle_management_foundation_contract.md`
 Implementation authorization: NONE
 Database/schema/runtime mutation authorization: NONE
 Release / tag / publication authorization: NONE

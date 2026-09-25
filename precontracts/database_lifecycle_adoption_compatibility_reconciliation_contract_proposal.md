@@ -1,6 +1,8 @@
 # Database Lifecycle — Adoption Compatibility Reconciliation Contract Proposal
 
-Status: CONTRACT PROPOSAL / PRE-PROMOTION / NOT AUTHORITATIVE / NOT IMPLEMENTATION-AUTHORIZED
+Status: CONTRACT PROPOSAL / PROMOTED / HISTORICAL PROVENANCE / NOT AUTHORITATIVE / NOT IMPLEMENTATION-AUTHORIZED
+
+Promotion status: PROMOTED into `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md` and `docs/37_database_ownership_lifecycle_management_foundation_contract.md`
 
 Source Pre-contract:
 
