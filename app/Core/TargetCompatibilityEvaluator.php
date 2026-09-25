@@ -16,13 +16,14 @@ final class TargetCompatibilityEvaluator
         $severity = [];
 
         foreach ($target->requirements() as $requirement) {
-            $evidence = $this->evidenceFor($requirement, $candidate->requirementEvidence());
-            if ($evidence === null) {
+            $observation = $this->observationFor($requirement, $candidate->observations());
+            if ($observation === null) {
                 $blockers[] = $this->blocker('requirement', $requirement->key(), 'Requirement evidence is unavailable.');
                 $severity[] = TargetCompatibilityResult::UNKNOWN;
                 continue;
             }
 
+            $evidence = $this->evaluateRequirement($requirement, $observation);
             if ($evidence->state() === TargetRequirementEvidence::SATISFIED) {
                 $satisfied[] = $evidence;
                 continue;
@@ -73,14 +74,59 @@ final class TargetCompatibilityEvaluator
         return $this->evaluate($target, $freshCandidate);
     }
 
-    private function evidenceFor(PackageTargetRequirement $requirement, array $evidence): ?TargetRequirementEvidence
+    private function observationFor(PackageTargetRequirement $requirement, array $observations): ?TargetRequirementObservation
     {
-        foreach ($evidence as $entry) {
-            if ($entry->requirementKey() === $requirement->key()) {
-                return $entry;
+        foreach ($observations as $observation) {
+            if ($observation->requirementKey() === $requirement->key()) {
+                return $observation;
             }
         }
         return null;
+    }
+
+    private function evaluateRequirement(PackageTargetRequirement $requirement, TargetRequirementObservation $observation): TargetRequirementEvidence
+    {
+        $identity = $observation->provenanceIdentity();
+        if ($observation->requirementIdentity() !== $this->requirementIdentity($requirement)) {
+            return new TargetRequirementEvidence($requirement->key(), TargetRequirementEvidence::UNKNOWN, $identity, 'Observed evidence is bound to a different target requirement.', $requirement->mandatory());
+        }
+
+        if ($observation->state() !== TargetRequirementObservation::OBSERVED) {
+            return new TargetRequirementEvidence($requirement->key(), $observation->state(), $identity, $observation->detail(), $requirement->mandatory());
+        }
+
+        try {
+            if ($requirement->kind() === PackageTargetRequirement::DATABASE
+                && $requirement->operator() === PackageTargetRequirement::MINIMUM_VERSION
+                && $observation->observedValue() !== null) {
+                PackageVersion::assertValid($observation->observedValue());
+                $satisfied = PackageVersion::compare($observation->observedValue(), (string) $requirement->value()) >= 0;
+                return new TargetRequirementEvidence($requirement->key(), $satisfied ? TargetRequirementEvidence::SATISFIED : TargetRequirementEvidence::GAP, $identity, $satisfied ? 'Observed database version satisfies the minimum.' : 'Observed database version is below the target minimum.', $requirement->mandatory());
+            }
+
+            if ($requirement->kind() === PackageTargetRequirement::SCHEMA
+                && $requirement->operator() === PackageTargetRequirement::EXACT_IDENTITY
+                && $observation->observedValue() !== null) {
+                $satisfied = $observation->observedValue() === $requirement->value();
+                return new TargetRequirementEvidence($requirement->key(), $satisfied ? TargetRequirementEvidence::SATISFIED : TargetRequirementEvidence::GAP, $identity, $satisfied ? 'Observed schema identity satisfies the target.' : 'Observed schema identity differs from the target.', $requirement->mandatory());
+            }
+
+            if ($requirement->kind() === PackageTargetRequirement::CAPABILITY
+                && $requirement->operator() === PackageTargetRequirement::PRESENT
+                && $observation->observedPresence() !== null) {
+                $satisfied = $observation->observedPresence();
+                return new TargetRequirementEvidence($requirement->key(), $satisfied ? TargetRequirementEvidence::SATISFIED : TargetRequirementEvidence::GAP, $identity, $satisfied ? 'Observed capability is present.' : 'Observed capability is positively absent.', $requirement->mandatory());
+            }
+        } catch (\InvalidArgumentException) {
+            return new TargetRequirementEvidence($requirement->key(), TargetRequirementEvidence::UNKNOWN, $identity, 'Observed requirement value is invalid or incomparable.', $requirement->mandatory());
+        }
+
+        return new TargetRequirementEvidence($requirement->key(), TargetRequirementEvidence::UNSUPPORTED, $identity, 'Target requirement observation semantics are unsupported.', $requirement->mandatory());
+    }
+
+    private function requirementIdentity(PackageTargetRequirement $requirement): string
+    {
+        return hash('sha256', json_encode($requirement->toArray(), JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 
     private function overallState(array $severity): string

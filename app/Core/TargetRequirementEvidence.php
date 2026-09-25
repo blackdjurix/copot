@@ -21,7 +21,8 @@ final class TargetRequirementEvidence
         private string $requirementKey,
         private string $state,
         private string $evidenceIdentity,
-        private string $detail
+        private string $detail,
+        private bool $mandatory = true
     ) {
         if ($requirementKey === '' || trim($requirementKey) !== $requirementKey
             || preg_match('/[\x00-\x1F\x7F]/', $requirementKey) === 1) {
@@ -44,6 +45,7 @@ final class TargetRequirementEvidence
     public function state(): string { return $this->state; }
     public function evidenceIdentity(): string { return $this->evidenceIdentity; }
     public function detail(): string { return $this->detail; }
+    public function mandatory(): bool { return $this->mandatory; }
 
     public function toArray(): array
     {
@@ -52,6 +54,7 @@ final class TargetRequirementEvidence
             'state' => $this->state,
             'evidence_identity' => $this->evidenceIdentity,
             'detail' => $this->detail,
+            'mandatory' => $this->mandatory,
         ];
     }
 }

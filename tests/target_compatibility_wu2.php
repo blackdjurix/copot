@@ -9,6 +9,7 @@ use Copot\Core\TargetCompatibilityEvaluator;
 use Copot\Core\TargetCompatibilityResult;
 use Copot\Core\TargetCompatibleExtraState;
 use Copot\Core\TargetRequirementEvidence;
+use Copot\Core\TargetRequirementObservation;
 
 $basePath = dirname(__DIR__);
 chdir($basePath);
@@ -17,109 +18,90 @@ require $basePath . '/bootstrap/autoload.php';
 $assertions = 0;
 $assert = static function (bool $condition, string $message) use (&$assertions): void {
     $assertions++;
-    if (!$condition) {
-        throw new RuntimeException($message);
-    }
+    if (!$condition) throw new RuntimeException($message);
 };
 
-$requirements = new PackageTargetRequirements([
-    new PackageTargetRequirement(PackageTargetRequirement::DATABASE, 'mysql', 'server', PackageTargetRequirement::MINIMUM_VERSION, '8.0.0'),
-    new PackageTargetRequirement(PackageTargetRequirement::SCHEMA, 'webcore', 'core-schema', PackageTargetRequirement::EXACT_IDENTITY, 'canonical-schema:1'),
-    new PackageTargetRequirement(PackageTargetRequirement::CAPABILITY, 'webcore', 'content-api', PackageTargetRequirement::PRESENT),
+$database = new PackageTargetRequirement(PackageTargetRequirement::DATABASE, 'mysql', 'server', PackageTargetRequirement::MINIMUM_VERSION, '8.0.0');
+$schema = new PackageTargetRequirement(PackageTargetRequirement::SCHEMA, 'webcore', 'core-schema', PackageTargetRequirement::EXACT_IDENTITY, 'canonical-schema:1');
+$capability = new PackageTargetRequirement(PackageTargetRequirement::CAPABILITY, 'webcore', 'content-api', PackageTargetRequirement::PRESENT);
+$requirements = new PackageTargetRequirements([$database, $schema, $capability]);
+$observation = static fn (PackageTargetRequirement $requirement, string $value, string $provenance = 'observed'): TargetRequirementObservation => TargetRequirementObservation::value($requirement, $value, $provenance . ':' . $requirement->key());
+$presence = static fn (PackageTargetRequirement $requirement, bool $present, string $provenance = 'observed'): TargetRequirementObservation => TargetRequirementObservation::presence($requirement, $present, $provenance . ':' . $requirement->key());
+$allSatisfied = static fn (): TargetCompatibilityCandidate => new TargetCompatibilityCandidate([
+    $observation($database, '8.0.0'),
+    $observation($schema, 'canonical-schema:1'),
+    $presence($capability, true),
 ]);
-$evidence = static function (string $key, string $state, string $identity = 'proof'): TargetRequirementEvidence {
-    return new TargetRequirementEvidence($key, $state, $identity . ':' . $key, $state . ' evidence');
-};
-$allSatisfied = static fn (): TargetCompatibilityCandidate => new TargetCompatibilityCandidate(array_map(
-    static fn ($requirement): TargetRequirementEvidence => new TargetRequirementEvidence($requirement->key(), TargetRequirementEvidence::SATISFIED, 'proof:' . $requirement->key(), 'satisfied evidence'),
-    $requirements->requirements()
-));
 $evaluator = new TargetCompatibilityEvaluator();
 
-// All requirements satisfied, including the explicit exact-match fast path.
+// Operator semantics are evaluated by WU2, rather than supplied as a result.
 $ready = $evaluator->evaluate($requirements, $allSatisfied());
-$assert($ready->isAdoptionReady() && $ready->state() === TargetCompatibilityResult::READY, 'Satisfied target requirements were not Adoption Ready.');
-$assert(count($ready->satisfied()) === 3 && $ready->requirementGaps() === [], 'Satisfied requirement evidence was incomplete.');
+$assert($ready->isAdoptionReady() && count($ready->satisfied()) === 3, 'All satisfied target requirements were not Adoption Ready.');
+$aboveMinimum = $evaluator->evaluate(new PackageTargetRequirements([$database]), new TargetCompatibilityCandidate([$observation($database, '8.1.0')]));
+$assert($aboveMinimum->state() === TargetCompatibilityResult::READY, 'Database version above the minimum was not satisfied.');
+$belowMinimum = $evaluator->evaluate(new PackageTargetRequirements([$database]), new TargetCompatibilityCandidate([$observation($database, '7.4.0')]));
+$assert($belowMinimum->state() === TargetCompatibilityResult::REQUIREMENT_GAPS && !$belowMinimum->isAdoptionReady(), 'Database version below the minimum was not a mandatory gap.');
+$assert($belowMinimum->requirementGaps()[0]->mandatory(), 'Mandatory database gap was not marked blocking.');
+$assert($evaluator->evaluate(new PackageTargetRequirements([$schema]), new TargetCompatibilityCandidate([$observation($schema, 'canonical-schema:1')]))->isAdoptionReady(), 'Exact schema identity was not satisfied.');
+$schemaGap = $evaluator->evaluate(new PackageTargetRequirements([$schema]), new TargetCompatibilityCandidate([$observation($schema, 'schema-extra')]));
+$assert($schemaGap->state() === TargetCompatibilityResult::REQUIREMENT_GAPS, 'Differing authoritative schema identity was not bounded as a gap.');
+$assert($evaluator->evaluate(new PackageTargetRequirements([$capability]), new TargetCompatibilityCandidate([$presence($capability, true)]))->isAdoptionReady(), 'Present capability was not satisfied.');
+$capabilityGap = $evaluator->evaluate(new PackageTargetRequirements([$capability]), new TargetCompatibilityCandidate([$presence($capability, false)]));
+$assert($capabilityGap->state() === TargetCompatibilityResult::REQUIREMENT_GAPS, 'Positively absent capability was not classified as a gap.');
 
-// Compatible extra state is retained and does not force exact aggregate-schema equality.
-$withExtra = new TargetCompatibilityCandidate(
-    $allSatisfied()->requirementEvidence(),
-    [new TargetCompatibleExtraState('module:analytics:table:events', TargetCompatibleExtraState::COMPATIBLE, 'owned compatible extra')]
-);
-$extraResult = $evaluator->evaluate($requirements, $withExtra);
-$assert($extraResult->isAdoptionReady(), 'Compatible extra state blocked readiness.');
-$assert(count($extraResult->compatibleExtraState()) === 1, 'Compatible extra state was not represented.');
-
-// A positively proven single gap is not ready and remains distinct from unknown.
-$singleGap = new TargetCompatibilityCandidate([
-    $evidence($requirements->requirements()[0]->key(), TargetRequirementEvidence::GAP, 'missing-db'),
-    $evidence($requirements->requirements()[1]->key(), TargetRequirementEvidence::SATISFIED),
-    $evidence($requirements->requirements()[2]->key(), TargetRequirementEvidence::SATISFIED),
-]);
-$gapResult = $evaluator->evaluate($requirements, $singleGap);
-$assert($gapResult->state() === TargetCompatibilityResult::REQUIREMENT_GAPS && !$gapResult->isAdoptionReady(), 'Positive requirement gap was not classified.');
-$assert(count($gapResult->requirementGaps()) === 1 && $gapResult->requirementGaps()[0]->evidenceIdentity() === 'missing-db:' . $requirements->requirements()[0]->key(), 'Gap provenance was not retained.');
-
-// Multiple independent gaps remain separate and no route is selected.
-$multipleGaps = new TargetCompatibilityCandidate([
-    $evidence($requirements->requirements()[0]->key(), TargetRequirementEvidence::GAP, 'missing-db'),
-    $evidence($requirements->requirements()[1]->key(), TargetRequirementEvidence::GAP, 'missing-schema'),
-    $evidence($requirements->requirements()[2]->key(), TargetRequirementEvidence::SATISFIED),
-]);
-$multipleResult = $evaluator->evaluate($requirements, $multipleGaps);
-$assert($multipleResult->state() === TargetCompatibilityResult::REQUIREMENT_GAPS && count($multipleResult->requirementGaps()) === 2, 'Multiple requirement gaps were not independently classified.');
-$assert($multipleResult->blockers() === [] && count($multipleResult->requirementGaps()) === 2, 'Requirement gaps were incorrectly treated as unknown blockers.');
-
-foreach ([
-    [TargetRequirementEvidence::UNKNOWN, TargetCompatibilityResult::UNKNOWN],
-    [TargetRequirementEvidence::AMBIGUOUS, TargetCompatibilityResult::AMBIGUOUS],
-    [TargetRequirementEvidence::CONTRADICTORY, TargetCompatibilityResult::CONTRADICTORY],
-    [TargetRequirementEvidence::UNSAFE, TargetCompatibilityResult::UNSAFE],
-    [TargetRequirementEvidence::UNSUPPORTED, TargetCompatibilityResult::UNSUPPORTED],
-] as [$evidenceState, $resultState]) {
-    $candidateEvidence = $allSatisfied()->requirementEvidence();
-    $candidateEvidence[0] = $evidence($requirements->requirements()[0]->key(), $evidenceState);
-    $result = $evaluator->evaluate($requirements, new TargetCompatibilityCandidate($candidateEvidence));
-    $assert($result->state() === $resultState && !$result->isAdoptionReady(), 'Fail-closed state ' . $resultState . ' was not preserved.');
+// Non-comparable evidence fails closed and cannot be fabricated into a gap.
+$unknown = TargetRequirementObservation::classified($database, TargetRequirementObservation::UNKNOWN, 'probe-unknown', 'Version evidence unavailable.');
+$unknownResult = $evaluator->evaluate(new PackageTargetRequirements([$database]), new TargetCompatibilityCandidate([$unknown]));
+$assert($unknownResult->state() === TargetCompatibilityResult::UNKNOWN && $unknownResult->requirementGaps() === [], 'Unknown version evidence was fabricated into a gap.');
+$invalidVersion = $evaluator->evaluate(new PackageTargetRequirements([$database]), new TargetCompatibilityCandidate([$observation($database, 'not-a-version', 'invalid')]));
+$assert($invalidVersion->state() === TargetCompatibilityResult::UNKNOWN, 'Invalid database version evidence did not fail closed.');
+foreach ([TargetRequirementObservation::AMBIGUOUS, TargetRequirementObservation::CONTRADICTORY, TargetRequirementObservation::UNSAFE, TargetRequirementObservation::UNSUPPORTED] as $state) {
+    $result = $evaluator->evaluate(new PackageTargetRequirements([$database]), new TargetCompatibilityCandidate([
+        TargetRequirementObservation::classified($database, $state, 'classified-' . $state, 'Inspection is not safely comparable.'),
+    ]));
+    $assert($result->state() === $state && !$result->isAdoptionReady(), 'Classified state ' . $state . ' did not fail closed.');
 }
-
-// Missing evidence is unknown, not a positively classified gap.
 $missing = $evaluator->evaluate($requirements, new TargetCompatibilityCandidate([]));
-$assert($missing->state() === TargetCompatibilityResult::UNKNOWN && $missing->requirementGaps() === [], 'Missing evidence was incorrectly classified as a requirement gap.');
+$assert($missing->state() === TargetCompatibilityResult::UNKNOWN && $missing->requirementGaps() === [], 'Missing evidence was not unknown.');
 
-// Coherence and extra-state safety are independent readiness gates.
-$unsafeCandidate = new TargetCompatibilityCandidate($allSatisfied()->requirementEvidence(), [], TargetCompatibilityCandidate::UNSAFE);
-$assert($evaluator->evaluate($requirements, $unsafeCandidate)->state() === TargetCompatibilityResult::UNSAFE, 'Unsafe installation identity did not fail closed.');
-$ambiguousExtra = new TargetCompatibilityCandidate($allSatisfied()->requirementEvidence(), [new TargetCompatibleExtraState('extra:unknown', TargetCompatibleExtraState::UNKNOWN, 'unproven extra')]);
-$assert($evaluator->evaluate($requirements, $ambiguousExtra)->state() === TargetCompatibilityResult::UNKNOWN, 'Unknown extra state did not fail closed.');
+// Evidence is bound to the complete target declaration, not just its key.
+$changedMinimum = new PackageTargetRequirement(PackageTargetRequirement::DATABASE, 'mysql', 'server', PackageTargetRequirement::MINIMUM_VERSION, '9.0.0');
+$changedTarget = $evaluator->evaluate(new PackageTargetRequirements([$changedMinimum]), new TargetCompatibilityCandidate([$observation($database, '8.0.0')]));
+$assert($changedTarget->state() === TargetCompatibilityResult::UNKNOWN, 'Evidence bound only by key was incorrectly trusted.');
+$sameKeyNewObservation = $evaluator->evaluate(new PackageTargetRequirements([$changedMinimum]), new TargetCompatibilityCandidate([$observation($changedMinimum, '8.0.0')]));
+$assert($sameKeyNewObservation->state() === TargetCompatibilityResult::REQUIREMENT_GAPS, 'Changed target minimum did not change evaluation.');
+$preclassifiedRejected = false;
+try {
+    new TargetCompatibilityCandidate([
+        new TargetRequirementEvidence($database->key(), TargetRequirementEvidence::SATISFIED, 'spoof', 'Caller supplied status'),
+    ]);
+} catch (InvalidArgumentException) {
+    $preclassifiedRejected = true;
+}
+$assert($preclassifiedRejected, 'Caller-supplied satisfied status bypassed observation comparison.');
 
-// Mandatory absence blocks; an optional gap remains recorded but does not block readiness.
-$mandatoryAbsent = $evaluator->evaluate($requirements, $singleGap);
-$assert(!$mandatoryAbsent->isAdoptionReady(), 'Absent mandatory requirement produced readiness.');
-$optional = new PackageTargetRequirements([
-    new PackageTargetRequirement(PackageTargetRequirement::CAPABILITY, 'webcore', 'optional-api', PackageTargetRequirement::PRESENT, null, false),
-]);
-$optionalResult = $evaluator->evaluate($optional, new TargetCompatibilityCandidate([
-    $evidence('capability:webcore:optional-api', TargetRequirementEvidence::GAP, 'optional-missing'),
-]));
-$assert($optionalResult->isAdoptionReady() && count($optionalResult->requirementGaps()) === 1, 'Optional gap handling was not bounded to mandatory readiness.');
+// Optional absence is explicit and non-blocking; mandatory absence remains blocking.
+$optional = new PackageTargetRequirement(PackageTargetRequirement::CAPABILITY, 'webcore', 'optional-api', PackageTargetRequirement::PRESENT, null, false);
+$optionalResult = $evaluator->evaluate(new PackageTargetRequirements([$optional]), new TargetCompatibilityCandidate([$presence($optional, false, 'optional-absent')]));
+$assert($optionalResult->isAdoptionReady() && count($optionalResult->requirementGaps()) === 1, 'Optional absent capability blocked readiness or was not represented.');
+$assert(!$optionalResult->requirementGaps()[0]->mandatory(), 'Optional gap was not explicitly marked non-blocking.');
 
-// Re-proof is a fresh evaluation: prior gaps do not survive a changed candidate.
-$reproved = $evaluator->reprove($requirements, $allSatisfied());
-$assert($reproved->isAdoptionReady() && $reproved->identity() !== $gapResult->identity(), 'Compatibility Re-Proof did not produce fresh evidence.');
-$insufficient = $evaluator->reprove($requirements, new TargetCompatibilityCandidate([
-    $evidence($requirements->requirements()[0]->key(), TargetRequirementEvidence::SATISFIED),
-    $evidence($requirements->requirements()[1]->key(), TargetRequirementEvidence::GAP, 'still-missing-schema'),
-    $evidence($requirements->requirements()[2]->key(), TargetRequirementEvidence::SATISFIED),
-]));
-$assert(!$insufficient->isAdoptionReady() && $insufficient->state() === TargetCompatibilityResult::REQUIREMENT_GAPS, 'Insufficient external resolution incorrectly produced readiness.');
-
-// Deterministic ordering/identity and evaluation-only behavior.
-$reordered = new PackageTargetRequirements(array_reverse($requirements->requirements()));
-$reorderedResult = $evaluator->evaluate($reordered, $allSatisfied());
-$assert($reordered->identity() === $requirements->identity() && $reorderedResult->toArray() === $ready->toArray(), 'Target evaluation was not deterministic.');
-$before = $withExtra->extraState();
+// Compatible extras, coherence, re-proof, determinism, and no mutation remain enforced.
+$withExtra = new TargetCompatibilityCandidate($allSatisfied()->observations(), [new TargetCompatibleExtraState('module:analytics:events', TargetCompatibleExtraState::COMPATIBLE, 'owned compatible extra')]);
+$extraResult = $evaluator->evaluate($requirements, $withExtra);
+$assert($extraResult->isAdoptionReady() && count($extraResult->compatibleExtraState()) === 1, 'Compatible extra state was not accepted.');
+$unsafe = $evaluator->evaluate($requirements, new TargetCompatibilityCandidate($allSatisfied()->observations(), [], TargetCompatibilityCandidate::UNSAFE));
+$assert($unsafe->state() === TargetCompatibilityResult::UNSAFE, 'Unsafe coherence state did not fail closed.');
+$gap = $evaluator->evaluate(new PackageTargetRequirements([$database]), new TargetCompatibilityCandidate([$observation($database, '7.0.0', 'before-resolution')]));
+$reproved = $evaluator->reprove(new PackageTargetRequirements([$database]), new TargetCompatibilityCandidate([$observation($database, '8.0.0', 'after-resolution')]));
+$assert($gap->state() === TargetCompatibilityResult::REQUIREMENT_GAPS && $reproved->isAdoptionReady(), 'Re-Proof did not recompute from fresh observed evidence.');
+$stillGap = $evaluator->reprove(new PackageTargetRequirements([$database]), new TargetCompatibilityCandidate([$observation($database, '7.9.0', 'insufficient-resolution')]));
+$assert(!$stillGap->isAdoptionReady() && $stillGap->state() === TargetCompatibilityResult::REQUIREMENT_GAPS, 'Insufficient Re-Proof evidence incorrectly produced readiness.');
+$reordered = new PackageTargetRequirements([$capability, $database, $schema]);
+$reorderedReady = $evaluator->evaluate($reordered, $allSatisfied());
+$assert($reordered->identity() === $requirements->identity() && $reorderedReady->toArray() === $ready->toArray(), 'Requirement evaluation was not deterministic.');
+$before = $withExtra->observations();
 $evaluator->evaluate($requirements, $withExtra);
-$assert($before === $withExtra->extraState(), 'Evaluator mutated candidate evidence.');
+$assert($before === $withExtra->observations(), 'Evaluator mutated observed candidate evidence.');
 
 echo "WU2 target compatibility focused tests passed ({$assertions} assertions)." . PHP_EOL;

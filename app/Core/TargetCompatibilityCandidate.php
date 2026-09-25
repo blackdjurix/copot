@@ -17,15 +17,15 @@ final class TargetCompatibilityCandidate
     public const UNSAFE = 'unsafe';
     public const UNSUPPORTED = 'unsupported';
 
-    /** @var array<string, TargetRequirementEvidence> */
-    private array $requirementEvidence;
+    /** @var array<string, TargetRequirementObservation> */
+    private array $observations;
     /** @var array<string, TargetCompatibleExtraState> */
     private array $extraState;
 
-    /** @param list<TargetRequirementEvidence> $requirementEvidence
+    /** @param list<TargetRequirementObservation> $observations
      *  @param list<TargetCompatibleExtraState> $extraState */
     public function __construct(
-        array $requirementEvidence,
+        array $observations,
         array $extraState = [],
         private string $installationIdentity = self::COHERENT,
         private string $namespace = self::COHERENT,
@@ -40,14 +40,14 @@ final class TargetCompatibilityCandidate
             }
         }
 
-        $this->requirementEvidence = [];
-        foreach ($requirementEvidence as $evidence) {
-            if (!$evidence instanceof TargetRequirementEvidence || isset($this->requirementEvidence[$evidence->requirementKey()])) {
-                throw new \InvalidArgumentException('Candidate requirement evidence is invalid or duplicated.');
+        $this->observations = [];
+        foreach ($observations as $observation) {
+            if (!$observation instanceof TargetRequirementObservation || isset($this->observations[$observation->requirementKey()])) {
+                throw new \InvalidArgumentException('Candidate requirement observations are invalid or duplicated.');
             }
-            $this->requirementEvidence[$evidence->requirementKey()] = $evidence;
+            $this->observations[$observation->requirementKey()] = $observation;
         }
-        ksort($this->requirementEvidence, SORT_STRING);
+        ksort($this->observations, SORT_STRING);
 
         $this->extraState = [];
         foreach ($extraState as $state) {
@@ -59,8 +59,8 @@ final class TargetCompatibilityCandidate
         ksort($this->extraState, SORT_STRING);
     }
 
-    /** @return list<TargetRequirementEvidence> */
-    public function requirementEvidence(): array { return array_values($this->requirementEvidence); }
+    /** @return list<TargetRequirementObservation> */
+    public function observations(): array { return array_values($this->observations); }
     /** @return list<TargetCompatibleExtraState> */
     public function extraState(): array { return array_values($this->extraState); }
     /** @return array<string,string> */
