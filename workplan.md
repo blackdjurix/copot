@@ -525,6 +525,12 @@ Pre-contract:
 
 Pre-contract status: MATERIALIZED / PRE-PROMOTION PLANNING / NOT PROMOTED
 
+Contract Proposal:
+- `precontracts/database_lifecycle_adoption_compatibility_reconciliation_contract_proposal.md`
+
+Contract Proposal status: CONTRACT PROPOSAL / PRE-PROMOTION / NOT AUTHORITATIVE /
+NOT IMPLEMENTATION-AUTHORIZED
+
 The one remaining material item is reconciling legacy exact-match/current
 Adopt semantics with target-relative requirement-driven compatibility. Preserve
 the candidate distinction that Adoption is the broader compatibility-
