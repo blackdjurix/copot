@@ -99,7 +99,7 @@ $makeScenario = static function (string $markerVersion = '1.0.0', string $liveCo
         'source_tree_identity' => null,
         'source_compatibility' => ['minimum_source_version' => '0.0.0', 'maximum_source_version' => null],
         'runtime_compatibility' => ['minimum_php_version' => '8.0.0', 'minimum_database_versions' => ['sqlite' => '3.0.0'], 'required_extensions' => ['json', 'pdo', 'pdo_sqlite']],
-        'inventory' => $inventory, 'migration_declaration' => ['declares_core_migrations' => false, 'declaration_identity' => null],
+        'inventory' => $inventory, 'migration_declaration' => ['declares_core_migrations' => false, 'declaration_identity' => null], 'target_requirements' => [],
     ];
     $zip = new ZipArchive();
     $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);

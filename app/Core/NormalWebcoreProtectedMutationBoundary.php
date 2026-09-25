@@ -90,6 +90,7 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
             'source_tree_identity' => $package->sourceTreeIdentity(),
             'inventory_identity' => $package->integrityIdentity(),
             'migration_declaration' => $package->migrationDeclaration()->toArray(),
+            'target_requirements' => $package->targetRequirements()->toArray(),
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 

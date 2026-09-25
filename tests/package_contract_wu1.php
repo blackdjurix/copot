@@ -9,6 +9,8 @@ use Copot\Core\PackageInventoryEntry;
 use Copot\Core\PackageMigrationDeclaration;
 use Copot\Core\PackageOwnership;
 use Copot\Core\PackageRuntimeCompatibility;
+use Copot\Core\PackageTargetRequirement;
+use Copot\Core\PackageTargetRequirements;
 use Copot\Core\PackageVersion;
 use Copot\Core\Version;
 
@@ -99,6 +101,35 @@ $assert($migrationDeclared->declarationIdentity() === 'core-migrations-1', 'Migr
 $throws(static fn (): PackageMigrationDeclaration => new PackageMigrationDeclaration(true), 'Migration declaration without identity');
 $throws(static fn (): PackageMigrationDeclaration => new PackageMigrationDeclaration(false, 'unexpected'), 'Migration identity without declaration');
 
+$targetRequirements = new PackageTargetRequirements([
+    new PackageTargetRequirement(
+        PackageTargetRequirement::SCHEMA,
+        'webcore',
+        'core-schema',
+        PackageTargetRequirement::EXACT_IDENTITY,
+        'canonical-schema:target-1'
+    ),
+    new PackageTargetRequirement(
+        PackageTargetRequirement::CAPABILITY,
+        'webcore',
+        'content-api',
+        PackageTargetRequirement::PRESENT
+    ),
+    new PackageTargetRequirement(
+        PackageTargetRequirement::DATABASE,
+        'mysql',
+        'server',
+        PackageTargetRequirement::MINIMUM_VERSION,
+        '8.0.0'
+    ),
+]);
+$assert(count($targetRequirements->requirements()) === 3, 'Target requirements were not retained.');
+$assert($targetRequirements->identity() === (new PackageTargetRequirements($targetRequirements->requirements()))->identity(), 'Target requirement identity was not deterministic.');
+$throws(static fn (): PackageTargetRequirement => new PackageTargetRequirement('unsupported', 'webcore', 'x', PackageTargetRequirement::PRESENT), 'Unsupported target requirement kind');
+$throws(static fn (): PackageTargetRequirement => new PackageTargetRequirement(PackageTargetRequirement::DATABASE, 'mysql', 'server', PackageTargetRequirement::PRESENT), 'Database presence requirement');
+$throws(static fn (): PackageTargetRequirement => new PackageTargetRequirement(PackageTargetRequirement::SCHEMA, 'webcore', 'core', PackageTargetRequirement::MINIMUM_VERSION, '1.0.0'), 'Schema version requirement');
+$throws(static fn (): PackageTargetRequirements => PackageTargetRequirements::fromArray([['kind' => 'schema']],), 'Malformed target requirement entry');
+
 $contract = new PackageContract(
     PackageContract::WEBCORE_PACKAGE_TYPE,
     PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION,
@@ -111,8 +142,10 @@ $contract = new PackageContract(
         $normalized,
         new PackageInventoryEntry('storage/cache/.gitkeep', 0, str_repeat('b', 64)),
     ],
-    $migrationNone
+    $migrationNone,
+    $targetRequirements
 );
+$assert($contract->targetRequirements()->toArray() === $targetRequirements->toArray(), 'Target requirements were not integrated into PackageContract.');
 $assert($contract->releaseIdentity() !== $contract->sourceTreeIdentity(), 'Release and source-tree identities were conflated.');
 $assert($contract->versionRelation('0.12.0') === PackageContract::FORWARD, 'Forward version relation was not classified.');
 $assert($contract->versionRelation('1.0.0') === PackageContract::REPAIR, 'Equal version relation was not reserved for repair.');

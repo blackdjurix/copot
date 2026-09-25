@@ -26,6 +26,7 @@ final class TrustedWebcorePackageTarget
             'source_tree_identity' => $contract->sourceTreeIdentity(),
             'inventory_identity' => $this->inventoryIdentity,
             'migration_declaration' => $contract->migrationDeclaration()->toArray(),
+            'target_requirements' => $contract->targetRequirements()->toArray(),
         ]);
     }
 
@@ -60,6 +61,7 @@ final class TrustedWebcorePackageTarget
             'payload_identity' => $this->payloadIdentity,
             'inventory_identity' => $this->inventoryIdentity,
             'migration_declaration' => $this->contract->migrationDeclaration()->toArray(),
+            'target_requirements' => $this->contract->targetRequirements()->toArray(),
         ];
     }
 

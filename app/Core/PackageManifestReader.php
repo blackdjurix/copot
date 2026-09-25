@@ -46,6 +46,9 @@ final class PackageManifestReader
             'release_identity', 'source_tree_identity', 'source_compatibility',
             'runtime_compatibility', 'inventory', 'migration_declaration',
         ];
+        if (($data['manifest_contract_version'] ?? null) === PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION) {
+            $expected[] = 'target_requirements';
+        }
         $this->assertKeys($data, $expected, 'Package manifest');
 
         $source = $data['source_compatibility'];
@@ -79,7 +82,10 @@ final class PackageManifestReader
                 new PackageCompatibility($source['minimum_source_version'], $source['maximum_source_version']),
                 new PackageRuntimeCompatibility($runtime['minimum_php_version'], $runtime['minimum_database_versions'], $runtime['required_extensions']),
                 $inventory,
-                new PackageMigrationDeclaration($migration['declares_core_migrations'], $migration['declaration_identity'])
+                new PackageMigrationDeclaration($migration['declares_core_migrations'], $migration['declaration_identity']),
+                ($data['manifest_contract_version'] === PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION)
+                    ? PackageTargetRequirements::fromArray($data['target_requirements'])
+                    : new PackageTargetRequirements()
             );
         } catch (\Throwable $exception) {
             throw new \RuntimeException('Package manifest contract is invalid.', 0, $exception);

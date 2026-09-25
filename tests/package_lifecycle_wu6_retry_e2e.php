@@ -143,7 +143,7 @@ try {
         'target_webcore_version' => '0.13.0', 'release_identity' => 'wu6-retry-release', 'source_tree_identity' => 'wu6-retry-tree',
         'source_compatibility' => ['minimum_source_version' => '0.13.0', 'maximum_source_version' => null],
         'runtime_compatibility' => ['minimum_php_version' => '8.0.0', 'minimum_database_versions' => ['mysql' => '10.0'], 'required_extensions' => ['json', 'pdo', 'pdo_mysql', 'zip']],
-        'inventory' => $inventory, 'migration_declaration' => ['declares_core_migrations' => false, 'declaration_identity' => null],
+        'inventory' => $inventory, 'migration_declaration' => ['declares_core_migrations' => false, 'declaration_identity' => null], 'target_requirements' => [],
     ];
     $zip = new ZipArchive();
     $assert($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true, 'Disposable retained package could not be created.');

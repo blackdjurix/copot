@@ -5,12 +5,14 @@ namespace Copot\Core;
 final class PackageContract
 {
     public const WEBCORE_PACKAGE_TYPE = 'copot-webcore';
-    public const CURRENT_MANIFEST_CONTRACT_VERSION = 1;
+    public const LEGACY_MANIFEST_CONTRACT_VERSION = 1;
+    public const CURRENT_MANIFEST_CONTRACT_VERSION = 2;
     public const FORWARD = 'forward';
     public const REPAIR = 'repair';
     public const UNSUPPORTED_DOWNGRADE = 'unsupported_downgrade';
 
     private array $inventory;
+    private PackageTargetRequirements $targetRequirements;
 
     public function __construct(
         private string $packageType,
@@ -21,13 +23,14 @@ final class PackageContract
         private PackageCompatibility $sourceCompatibility,
         private PackageRuntimeCompatibility $runtimeCompatibility,
         array $inventory,
-        private PackageMigrationDeclaration $migrationDeclaration
+        private PackageMigrationDeclaration $migrationDeclaration,
+        ?PackageTargetRequirements $targetRequirements = null
     ) {
         if ($packageType !== self::WEBCORE_PACKAGE_TYPE) {
             throw new \InvalidArgumentException('Package type is unsupported.');
         }
 
-        if ($manifestContractVersion !== self::CURRENT_MANIFEST_CONTRACT_VERSION) {
+        if (!in_array($manifestContractVersion, [self::LEGACY_MANIFEST_CONTRACT_VERSION, self::CURRENT_MANIFEST_CONTRACT_VERSION], true)) {
             throw new \InvalidArgumentException('Manifest contract version is unsupported.');
         }
 
@@ -47,6 +50,7 @@ final class PackageContract
         }
 
         $this->inventory = [];
+        $this->targetRequirements = $targetRequirements ?? new PackageTargetRequirements();
 
         foreach ($inventory as $entry) {
             if (!$entry instanceof PackageInventoryEntry) {
@@ -111,6 +115,11 @@ final class PackageContract
     public function migrationDeclaration(): PackageMigrationDeclaration
     {
         return $this->migrationDeclaration;
+    }
+
+    public function targetRequirements(): PackageTargetRequirements
+    {
+        return $this->targetRequirements;
     }
 
     public function integrityIdentity(): string

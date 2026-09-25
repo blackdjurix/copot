@@ -275,6 +275,10 @@ if (!preg_match('/^\d+\.\d+\.\d+(?:[-+][A-Za-z0-9.-]+)?$/', $version)) {
 
 $sourceTreeIdentity = null;
 
+$schemaIdentity = (new Copot\Core\CanonicalSchemaBaselineVerifier())->identity(
+    $basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql'
+);
+
 $distPath = $basePath . DIRECTORY_SEPARATOR . 'dist';
 
 if (!is_dir($distPath) && !mkdir($distPath, 0775, true)) {
@@ -325,6 +329,15 @@ $manifestData = [
     ],
     'inventory' => $inventory,
     'migration_declaration' => ['declares_core_migrations' => false, 'declaration_identity' => null],
+    'target_requirements' => (new Copot\Core\PackageTargetRequirements([
+        new Copot\Core\PackageTargetRequirement(
+            Copot\Core\PackageTargetRequirement::SCHEMA,
+            'webcore',
+            'core-schema',
+            Copot\Core\PackageTargetRequirement::EXACT_IDENTITY,
+            $schemaIdentity
+        ),
+    ]))->toArray(),
 ];
 
 try {
