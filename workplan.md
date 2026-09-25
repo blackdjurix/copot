@@ -393,7 +393,8 @@ Relations:
 Confirmed audit-derived planning scope:
 - Core Media Admin baseline is missing;
 - Core primary Navigation management projection is missing;
-- dedicated Webcore Site Settings projection is missing;
+- dedicated Webcore Site Settings projection is delivered and accepted under
+  WU4; future capability-gated projection architecture remains planning-only;
 - Webcore Content Admin requires bounded product-completeness correction;
 - localization has duplicated product-facing projections;
 - Site Name, Tagline, Logo, and Favicon operator management is split across
@@ -449,6 +450,68 @@ runtime or broad historical regression rerun was required because no concrete
 regression signal or changed dependency was found. The deterministic downstream
 planning target remains Bundled Module Refinement Preparation & Reconciliation,
 which is planning topology only and requires separate authorization.
+
+### Site Settings Future Capability Architecture
+Class: CONCEPT / FUTURE CAPABILITY-GATED PRODUCT PROJECTION
+Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concepts/copot_site_settings_future_capability_architecture_concept.md`
+  [PRIMARY GIT CONCEPT]
+- `docs/54_webcore_site_settings_appearance_consolidation_contract.md`
+  [CURRENT WU4 AUTHORITY]
+- `docs/50_webcore_site_settings_information_architecture_clarification.md`
+  [HISTORICAL IA LINEAGE]
+- `docs/55_webcore_site_settings_system_operational_projection_contract.md`
+  [SYSTEM PROJECTION LINEAGE]
+- `docs/56_webcore_site_settings_modules_operational_projection_contract.md`
+  [MODULES PROJECTION LINEAGE]
+- `docs/37_database_ownership_lifecycle_management_foundation_contract.md`
+  [DATABASE AUTHORITY]
+- `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
+  [ADOPTION AUTHORITY]
+
+Current delivered truth remains exactly the four WU4 areas: Site Identity,
+System, Modules, and System Health. Future Site Settings projection is
+capability-gated and may cover Site / Site Identity, System, Modules,
+Redirects, System Health, Security, Email, and Database without asserting
+that all eight are current visible areas or must exist simultaneously.
+
+Relations:
+- preserves WU4 delivery and singular underlying authority;
+- references the canonical Security / Email ownership Concept rather than
+  duplicating those capability definitions;
+- Database remains a product projection over existing schema, lifecycle, and
+  compatibility authority; and
+- no automatic implementation sequencing or capability delivery is implied.
+
+Planning action: KEEP FUTURE / CAPABILITY-GATED / NO AUTOMATIC SEQUENCING
+
+### Database Adoption Exact-Match Compatibility Reconciliation
+Class: FUTURE CONTRACT RECONCILIATION / DATABASE COMPATIBILITY
+Status: OPEN / BOUNDED / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
+  [EXACT-MATCH / LEGACY RECONCILIATION AUTHORITY]
+- `docs/37_database_ownership_lifecycle_management_foundation_contract.md`
+  [CURRENT ADOPT AUTHORITY]
+- `concepts/copot_site_settings_future_capability_architecture_concept.md`
+  [PLANNING MATERIALIZATION]
+
+The one remaining material item is reconciling legacy exact-match/current
+Adopt semantics with target-relative requirement-driven compatibility. Preserve
+the candidate distinction that Adoption is the broader compatibility-
+establishment workflow while Adopt is the terminal installer/finalization
+intent after compatibility is established.
+
+This item does not create a new lifecycle operation, installer intent,
+status family, engine, or generalized conflict procedure. The closed
+authoritative contracts remain unchanged until a separately authorized
+reconciliation slice.
+
+Planning action: KEEP OPEN / RECONCILE IN A FUTURE CONTRACT-BOUNDED SLICE /
+NO IMPLEMENTATION AUTHORIZATION
 
 ### Production Webcore Reconciliation
 Class: OPERATIONAL GATE
@@ -708,13 +771,26 @@ Sources:
 Planning action: KEEP / NO AUTOMATIC SEQUENCING
 
 ### Database Historical Release-Support Window
-Class: FUTURE POLICY QUESTION
-Status: OPEN
+Class: RELEASE / COMPATIBILITY POLICY PROVENANCE
+Status: RETAINED / EVOLVED PLANNING DIRECTION / NOT A STANDALONE OPEN QUESTION
 
 Sources:
 - `COPOT_Webcore_Module_Database_Table_Ownership_Separation_Concept_260816_194431.md` — Compatibility Reconciliation [PRIMARY]
 
-Planning action: KEEP SEPARATE UNTIL CONCRETE PRODUCT/RELEASE POLICY REQUIRES IT
+Evolved planning direction:
+- supported historical reach is derived per target release from target
+  requirements plus available proven transition paths;
+- no universal historical database window or global minimum DB version is
+  required;
+- a bridge release/version is required only when actual release evidence
+  proves a direct transition unsafe or insufficient; and
+- unsupported source states fail closed.
+
+The historical identity and source provenance remain intact. Concrete
+release-support boundaries emerge from future release-specific
+requirement-compatibility analysis rather than this standalone entry.
+
+Planning action: KEEP PROVENANCE / NO AUTOMATIC SEQUENCING
 
 ### Installation & Runtime Identity Exposure
 Class: PRODUCT / PRESENTATION CONCERN
@@ -895,6 +971,25 @@ Relations:
 - Site Settings → Email is capability-gated on delivered system-level sender,
   transport, delivery state/policy, or equivalent capability; and
 - Email remains absent from the current visible WU4 Site Settings areas.
+
+Planning action: KEEP FUTURE / CAPABILITY-GATED / NO IMPLEMENTATION AUTHORIZATION
+
+### Site Settings Future Capability Architecture
+Class: CONCEPT / FUTURE CAPABILITY-GATED PRODUCT PROJECTION
+Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concepts/copot_site_settings_future_capability_architecture_concept.md`
+  [PRIMARY GIT CONCEPT]
+
+Relations:
+- current WU4 truth remains the four visible areas: Site Identity, System,
+  Modules, and System Health;
+- future Security and Email remain capability-gated and owned according to
+  the canonical User Settings / Security / System Email Concept;
+- future Redirects and Database projections do not absorb their existing
+  Webcore-native or database/lifecycle authorities; and
+- the Concept preserves planning provenance without sequencing implementation.
 
 Planning action: KEEP FUTURE / CAPABILITY-GATED / NO IMPLEMENTATION AUTHORIZATION
 
@@ -1211,10 +1306,14 @@ they no longer depend on thread-only continuity:
 
 - User Settings / Current User Settings;
 - Security Capability & Surface Ownership; and
-- System Email Capability & Surface Ownership.
+- System Email Capability & Surface Ownership; and
+- Site Settings Future Capability Architecture.
 
-Their shared Concept file preserves the three distinct identities and remains
-future/planning-only without implementation authorization.
+The User Settings / Security / System Email Concept preserves its three
+distinct identities and remains future/planning-only without implementation
+authorization. The Site Settings architecture Concept separately records
+capability-gated product projection and the bounded Database adoption
+reconciliation item.
 
 ## 9. Immediate Next Planning Target
 

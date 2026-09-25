@@ -52,9 +52,33 @@ other users remains with `Users & Access`. Site/system-wide Security belongs in
 Site Settings only if a real Webcore site/system security-policy capability is
 delivered or explicitly adopted later.
 
+Security owns system/site-wide policy and enforcement configuration. Identity/
+Auth remains the owner of authentication mechanics and identity truth; Security
+must not absorb Identity/Auth.
+
+Minimum future Security capability direction includes:
+
+- password policy;
+- login throttling and failed-login tracking;
+- lockout policy/state;
+- session timeout policy;
+- session revocation where supported;
+- sensitive-action re-authentication; and
+- security events / audit evidence.
+
+The future security event/audit direction is a unified, append-oriented model
+with timestamp, category, severity, actor, target, action, result, and bounded
+sanitized context. Administrators do not edit audit events, and secrets must
+not be recorded.
+
+MFA / 2FA, trusted devices, geo/IP anomaly analysis, risk scoring, SSO/OAuth,
+and hardware security keys remain outside this baseline until separately
+justified.
+
 The current WU4 disposition is preserved: Security is not a current visible
-Site Settings top-level area. This Concept does not infer MFA, recovery,
-password-reset, session management, or any other new security capability.
+Site Settings top-level area. Site Settings → Security appears only after
+sufficient system/site Security capability exists. This Concept does not infer
+current delivery or create a full Auth implementation contract.
 
 ## System Email Capability & Surface Ownership
 
@@ -64,16 +88,39 @@ System Email product surfaces must be capability-backed. `users.email` is
 account identity data, not evidence of outbound/system email delivery
 capability.
 
+System Email owns outbound transport and sender identity. Its initial future
+direction is one system sender identity, outbound transport/provider
+configuration, transport/sender health or bounded delivery state where
+technically supported, and optional test delivery only when a real transport
+implementation exists.
+
+Message and template ownership remains with the originating capability/domain:
+Auth owns authentication/recovery message templates, and another originating
+capability owns its own message content/template. System Email provides
+delivery infrastructure, not universal message-content ownership.
+
 Current-user email editing belongs with User Settings when implemented;
 administrator editing of another user's email remains a `Users & Access`
-concern. Site Settings → Email becomes justified only if an actual system-level
-email capability exists, such as sender identity, transport/provider, delivery
-state/policy, or equivalent delivered capability.
+concern. Site Settings → Email becomes justified only if sufficient outbound /
+system-email capability exists.
 
 The current WU4 disposition is preserved: Email is not a current visible Site
-Settings top-level area. This Concept does not create or imply SMTP, provider
-transport, queueing, notification delivery, test-email, recovery-email, or
-other mail infrastructure.
+Settings top-level area. Email must not be a hard dependency for installation,
+normal authentication/login, or baseline zero-optional viability. Multi-sender
+identity remains deferred. `users.email` remains user/account identity data
+and does not prove system-mail capability. This Concept does not infer current
+delivery.
+
+## Identity/Auth relation
+
+Identity/Auth owns authentication mechanics and identity truth. Verified-email
+recovery may be added as an Auth capability; its primary direction is a signed,
+expiring, one-time verified-email link, with a bounded code flow as an
+alternate mechanism. There is no universal/master recovery credential.
+
+Sensitive credential changes require fresh re-authentication and invalidate
+affected sessions where applicable. Email provides transport only; Auth owns
+Auth-specific recovery content and semantics.
 
 ## Shared authorization boundary
 
