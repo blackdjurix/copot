@@ -447,13 +447,14 @@ Human/product readiness gate:
 Closure action: COMPLETE / ACCEPTED / CLOSED / MAIN-ONLY / NO-OP for current
 WU7 execution. Accepted WU2–WU6 evidence remains sufficient; no additional
 runtime or broad historical regression rerun was required because no concrete
-regression signal or changed dependency was found. The deterministic downstream
+regression signal or changed dependency was found. The historical downstream
 planning target remains Bundled Module Refinement Preparation & Reconciliation,
-which is planning topology only and requires separate authorization.
+which is planning topology only and requires separate authorization; the
+current pre-v0.14.0 sequence and first target are registered below.
 
 ### Site Settings Future Capability Architecture
 Class: CONCEPT / FUTURE CAPABILITY-GATED PRODUCT PROJECTION
-Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+Status: FUTURE / PRE-V0.14.0 PLATFORM TARGET / NOT IMPLEMENTATION-AUTHORIZED
 
 Sources:
 - `concepts/copot_site_settings_future_capability_architecture_concept.md`
@@ -477,6 +478,20 @@ capability-gated and may cover Site / Site Identity, System, Modules,
 Redirects, System Health, Security, Email, and Database without asserting
 that all eight are current visible areas or must exist simultaneously.
 
+Pre-v0.14.0 target projection: a fully operational and hardened seven-tab
+Site Settings surface with Site Identity, System, Security, Email, Modules,
+Redirects, and System Health. This is a future target, not current delivered
+truth. Database lifecycle and compatibility remain an underlying capability
+and are not an eighth Site Settings tab.
+
+Security and Email are required platform capabilities for this target. System
+Email must provide at least the platform capability required by Auth/recovery
+and later `Users & Access` consumption. Identity/Auth retains authentication
+mechanics and recovery semantics; System Email owns outbound transport and
+sender identity; Security owns site/system policy and enforcement; Redirects
+remains Webcore-native. Existing Site Identity, System, Modules, and System
+Health are to be hardened and revalidated rather than unnecessarily rebuilt.
+
 Relations:
 - preserves WU4 delivery and singular underlying authority;
 - references the canonical Security / Email ownership Concept rather than
@@ -485,11 +500,16 @@ Relations:
   compatibility authority; and
 - no automatic implementation sequencing or capability delivery is implied.
 
+Dependency: HARD → Database Adoption Exact-Match Compatibility Reconciliation.
+
+Planning significance: completion of this seven-tab platform target is a HARD
+prerequisite before Bundled Module Refinement.
+
 Planning action: KEEP FUTURE / CAPABILITY-GATED / NO AUTOMATIC SEQUENCING
 
 ### Database Adoption Exact-Match Compatibility Reconciliation
 Class: FUTURE CONTRACT RECONCILIATION / DATABASE COMPATIBILITY
-Status: OPEN / BOUNDED / NOT IMPLEMENTATION-AUTHORIZED
+Status: NEXT / FIRST TARGET / OPEN / BOUNDED / NOT IMPLEMENTATION-AUTHORIZED
 
 Sources:
 - `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
@@ -510,7 +530,104 @@ status family, engine, or generalized conflict procedure. The closed
 authoritative contracts remain unchanged until a separately authorized
 reconciliation slice.
 
-Planning action: KEEP OPEN / RECONCILE IN A FUTURE CONTRACT-BOUNDED SLICE /
+Dependency: NONE within the current five-step pre-v0.14.0 sequence.
+
+Planning action: FIRST TARGET / RECONCILE BEFORE SEVEN-TAB SITE SETTINGS /
+NO IMPLEMENTATION AUTHORIZATION
+
+### Pre-v0.14.0 Platform and Refinement Sequence
+Class: FUTURE EXECUTION SEQUENCE / DEPENDENCY REGISTER
+Status: PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+The current planned pre-v0.14.0 path is ordered by hard dependency:
+
+1. Database Lifecycle — Adoption Compatibility Reconciliation;
+2. Seven-Tab Site Settings Completion & Hardening;
+3. Installer Refinement I — Webcore & Adoption Integration;
+4. Bundled Module Refinement; and
+5. Installer Refinement II — Bundled Module Installation Integration.
+
+These are high-level planning identities and dependency relationships only.
+No detailed Work Unit count or topology is locked. Completion of all five
+steps contributes to the intended path toward final v0.14.0 readiness, while
+formal release closure remains later, separate, and unauthorized here.
+
+### Installer Refinement I — Webcore & Adoption Integration
+Class: FUTURE INSTALLER REFINEMENT / PLATFORM INTEGRATION
+Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
+  [ADOPTION AUTHORITY]
+- `docs/37_database_ownership_lifecycle_management_foundation_contract.md`
+  [DATABASE / INSTALLER AUTHORITY]
+- `docs/54_webcore_site_settings_appearance_consolidation_contract.md`
+  [CURRENT WU4 AUTHORITY]
+- `concepts/copot_site_settings_future_capability_architecture_concept.md`
+  [PLATFORM TARGET]
+- `copot_consolidated_refinement_concepts_260810_020950.md`
+  [HISTORICAL INSTALLER REFINEMENT INPUT]
+
+This identity is distinct from the closed MR.1 Installation Refinement and
+does not reopen MR.1. Its purpose is to refine Installer behavior after
+Database Adoption semantics and the seven-tab Webcore platform capabilities
+are stable.
+
+Scope direction:
+- Fresh / Coexist / Adopt behavior against the reconciled Adoption model;
+- Adoption compatibility evaluation and operator flow;
+- requirement-resolution orchestration only through existing authorized
+  lifecycle machinery, followed by compatibility re-proof before terminal
+  Adopt/finalization;
+- administrator identity/email behavior aligned with current Auth capability;
+- optional initial System Email configuration and applicable initial
+  Security/platform settings through their owning capabilities; and
+- truthful Review & Install and Installation Result behavior.
+
+Installer remains a consumer/orchestrator and does not own Auth, Security,
+Email, Settings, database migration, or lifecycle semantics. This phase does
+not depend on final Bundled Module refinement.
+
+Dependency: HARD → Seven-Tab Site Settings Completion & Hardening.
+
+Planning significance: proves Webcore platform plus Adoption integration
+before Bundled Module Refinement begins.
+
+Planning action: KEEP FUTURE / SEPARATE FROM MR.1 / NO IMPLEMENTATION AUTHORIZATION
+
+### Installer Refinement II — Bundled Module Installation Integration
+Class: FUTURE INSTALLER REFINEMENT / BUNDLED MODULE INTEGRATION
+Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `workplan.md` — Dedicated Future Bundled Module Refinement Workstreams
+  [CURRENT PLANNING REGISTRY]
+- `docs/37_database_ownership_lifecycle_management_foundation_contract.md`
+  [INSTALLER / MODULE AUTHORITY]
+- `concepts/copot_site_settings_future_capability_architecture_concept.md`
+  [PLATFORM TARGET]
+
+This identity is distinct from Installer Refinement I and begins only after
+the retained Bundled Module contracts and behavior are stabilized.
+
+Scope direction may include, as supported by finalized Module contracts:
+- package discovery/state required during installation;
+- optional/default Module selection or installation policy;
+- dependency/conflict handling;
+- Module-owned schema materialization through owning Module lifecycle;
+- install/enable sequencing;
+- Review & Install representation of Module actions; and
+- Module lifecycle failure/retry/result behavior and valid Fresh / Coexist /
+  Adopt end states for the finalized Bundled Module ecosystem.
+
+Dependency: HARD → Bundled Module Refinement.
+
+Installer Refinement II must not automatically reopen accepted Webcore or
+Adoption behavior from Installer Refinement I. Reopening requires concrete
+Bundled Module dependency, regression, contract conflict, or other material
+evidence.
+
+Planning action: KEEP FUTURE / SEPARATE FROM INSTALLER REFINEMENT I /
 NO IMPLEMENTATION AUTHORIZATION
 
 ### Production Webcore Reconciliation
@@ -974,25 +1091,6 @@ Relations:
 
 Planning action: KEEP FUTURE / CAPABILITY-GATED / NO IMPLEMENTATION AUTHORIZATION
 
-### Site Settings Future Capability Architecture
-Class: CONCEPT / FUTURE CAPABILITY-GATED PRODUCT PROJECTION
-Status: FUTURE / PLANNING ONLY / NOT IMPLEMENTATION-AUTHORIZED
-
-Sources:
-- `concepts/copot_site_settings_future_capability_architecture_concept.md`
-  [PRIMARY GIT CONCEPT]
-
-Relations:
-- current WU4 truth remains the four visible areas: Site Identity, System,
-  Modules, and System Health;
-- future Security and Email remain capability-gated and owned according to
-  the canonical User Settings / Security / System Email Concept;
-- future Redirects and Database projections do not absorb their existing
-  Webcore-native or database/lifecycle authorities; and
-- the Concept preserves planning provenance without sequencing implementation.
-
-Planning action: KEEP FUTURE / CAPABILITY-GATED / NO IMPLEMENTATION AUTHORIZATION
-
 ### Shared File Intake Interaction Pattern
 Class: CONCEPT / FUTURE CROSS-SURFACE
 Status: ADOPTED / FUTURE / OUTSIDE MR.2 / NOT IMPLEMENTATION-AUTHORIZED
@@ -1223,6 +1321,9 @@ Relations:
 - hard predecessor to dedicated Bundled Module refinement scope lock;
 - depends on completion of the Webcore Product Completeness & Stabilization
   predecessor;
+- begins only after Database Adoption Compatibility Reconciliation,
+  Seven-Tab Site Settings Completion & Hardening, and Installer Refinement I
+  are complete and accepted;
 - Content, Media, Navigation, Theme, Users & Access, and Form Manager are
   the six dedicated refinement identities after preparation;
 - Taxonomy remains a retirement/reconciliation candidate;
@@ -1274,7 +1375,9 @@ Planning action: KEEP.
 ### Users & Access Refinement
 Class: FUTURE DEDICATED WORKSTREAM
 Status: FUTURE / PREPARATION REQUIRED
-Planning action: KEEP; Module Permission Dependency & Base Access remains separate until adopted.
+Planning action: KEEP; consumes stabilized Webcore/Auth/Security/System Email
+capabilities without owning those platform capabilities. Module Permission
+Dependency & Base Access remains separate until adopted.
 
 ### Form Manager Refinement
 Class: FUTURE DEDICATED WORKSTREAM
@@ -1324,8 +1427,10 @@ contract promoted and locked under
 `docs/54_webcore_site_settings_appearance_consolidation_contract.md`; WU4 is
 COMPLETE / ACCEPTED / CLOSED with Batches 1–2 complete/closed, Batch 3
 accepted/complete/closed, and Batch 4 complete/accepted/closed after WU5
-acceptance and human/product review. WU5 is COMPLETE / ACCEPTED / CLOSED; WU6 is the next separately gated target. No WU6
-implementation is authorized by this Workplan entry alone.
+acceptance and human/product review. WU5 is COMPLETE / ACCEPTED / CLOSED;
+the current next planning target is Database Lifecycle — Adoption Compatibility
+Reconciliation, followed by the registered five-step pre-v0.14.0 sequence.
+No implementation is authorized by this Workplan entry alone.
 
 ## 10. Retention and Planning Freshness
 
