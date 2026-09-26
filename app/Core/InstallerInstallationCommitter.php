@@ -13,11 +13,12 @@ final class InstallerInstallationCommitter
         private InstallerDatabaseProbe $probe,
         private InstallerSchemaRunner $schema,
         private InstallerEnvironmentWriter $environment,
-        private InstallationMutex $mutex
+        private InstallationMutex $mutex,
+        private ?InstallerAdoptionIntegration $adoptionIntegration = null
     ) {
     }
 
-    public function commit(array $databaseConfiguration, array $administratorInput, bool $requirementsPassed, string $intent): array
+    public function commit(array $databaseConfiguration, array $administratorInput, bool $requirementsPassed, string $intent, ?AdoptionOrchestrationResult $adoptionResult = null): array
     {
         $lock = $this->mutex->acquire();
         if (!$lock instanceof InstallationLock) {
@@ -52,10 +53,16 @@ final class InstallerInstallationCommitter
             $inspection = $this->probe->inspect($configuration);
             $routing = (new InstallerRoutingPlanner())->plan($inspection['occupancy'], $intent, $configuration['namespace']);
             if ($routing->route() === InstallerRoutingPlanner::ADOPT) {
+                if (!$adoptionResult instanceof AdoptionOrchestrationResult) {
+                    throw new InstallationException('Installer Adoption requires a fresh Adoption orchestration result.');
+                }
+                $decision = ($this->adoptionIntegration ?? new InstallerAdoptionIntegration())->decide($routing, $adoptionResult, $inspection['proofs'] ?? []);
+                if (!$decision->terminal()) {
+                    throw new InstallationException($decision->detail());
+                }
                 if ($administratorInput !== []) {
                     throw new InstallationException('Adopt does not accept Administrator & Site input.');
                 }
-                $this->environment->persist($configuration);
 
                 return [
                     'route' => $routing->route(),
@@ -64,6 +71,8 @@ final class InstallerInstallationCommitter
                     'administrator' => null,
                     'finalization' => null,
                     'adopted' => true,
+                    'installation_identity' => $decision->installationIdentity(),
+                    'existing_state_preserved' => $decision->preservesExistingState(),
                 ];
             }
             // Validate every staged input before the first environment/schema mutation.

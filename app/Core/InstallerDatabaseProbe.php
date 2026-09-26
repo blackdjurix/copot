@@ -23,7 +23,7 @@ class InstallerDatabaseProbe
         return $result['server'];
     }
 
-    /** @return array{server: array, occupancy: InstallerDatabaseOccupancyResult} */
+    /** @return array{server: array, occupancy: InstallerDatabaseOccupancyResult, proofs: list<InstallerOwnershipProof>} */
     /** @param list<InstallerOwnershipProof> $proofs */
     public function inspect(array $configuration, array $proofs = []): array
     {
@@ -70,7 +70,7 @@ class InstallerDatabaseProbe
         if ($proofs === [] && $this->proofAssembler instanceof InstallerOwnershipProofAssembler) {
             $proofs = $this->proofAssembler->assemble($connection, $objects);
         }
-        return ['server' => $server, 'occupancy' => (new InstallerDatabaseOccupancyClassifier())->classify($objects, $proofs)];
+        return ['server' => $server, 'occupancy' => (new InstallerDatabaseOccupancyClassifier())->classify($objects, $proofs), 'proofs' => $proofs];
     }
 
     public function validateServerVersion(string $serverVersion): array
