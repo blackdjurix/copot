@@ -1,5 +1,5 @@
 # COPOT AGENT INSTRUCTION
-Date version: 2026-09-26 14:00:00 WIB
+Date version: 2026-09-26 18:20:00 WIB
 
 ## Purpose
 
@@ -8,6 +8,16 @@ This is a thin, task-specific execution contract for the COPOT Technical Executo
 Canonical governance identity: `governance/agent_instruction_copot.md`.
 
 It must be generated for the exact authorized execution slice. It is not a copy of the full Rule, Handoff, Workplan, or project lifecycle governance.
+
+Apply the minimum execution delta principle: include a field only when omitting it could cause a wrong target, wrong branch or anchor, unauthorized action, missed dependency, invalid validation, unsafe side effect, or missed stop condition.
+
+Do not copy automatically:
+
+- full Handoff or lifecycle history;
+- NRP/session-transition reasoning;
+- prior troubleshooting or old Git states;
+- full Workplan, Concept library, or repository history;
+- thread-level saved-concept history unless one unresolved item changes execution.
 
 ## Delivery
 
@@ -91,6 +101,40 @@ When material sources conflict, report the conflict and stop before substantive 
 
 If documentation consistency is part of the task, inspect only the identified authoritative document and directly affected evidence. Do not perform a broad documentation rewrite for consistency alone.
 
+## Progressive source reading
+
+Read in this order, expanding only when evidence is insufficient:
+
+1. project instructions;
+2. target source;
+3. direct dependencies;
+4. relevant tests;
+5. directly relevant documentation or contracts;
+6. additional sources only when required by an observed dependency or conflict.
+
+Do not ask the Technical Executor to reconstruct GPT governance, ChatGPT session history, or implicit memory. Translate only the execution delta required by this instruction.
+
+## Workplan, Concept, and Deferred Item boundary
+
+Workplan and Concept are planning inputs, not implicit authorization.
+
+- Do not implement an item merely because Workplan marks it `NEXT`, `ACTIVE`, or `PROVISIONAL`.
+- Do not auto-promote Workplan or Concept content into repository, contract, or roadmap authority.
+- Do not adopt a Deferred Item because it is visible or referenced.
+- If planning context is material, name the exact target and reading purpose in this instruction.
+- If a Concept is material, identify its canonical title, source, relevant invariant, provenance, and unresolved technical dependency only.
+- Preserve stable Deferred Item identity when an explicitly authorized Deferred Item is in scope.
+
+Deferred Item statuses such as `Candidate`, `Unscheduled`, `future`, `KEEP DEFERRED`, `NOT APPLICABLE`, `REJECT`, or `SUPERSEDE` do not authorize execution.
+
+## Conditional documentation and acceptance boundaries
+
+Use these boundaries only when the task explicitly includes them:
+
+- Documentation consistency: correct only materially stale or contradictory current-state wording against accepted implementation evidence; preserve historical records and avoid blind search-and-replace.
+- Acceptance evidence: report technical validation, AI acceptance evidence, possible human-required criteria, merge eligibility, blockers, and final Git/environment state. Do not decide project acceptance, NRP, closure, or the next milestone.
+- Branch lifecycle: perform closure or deletion only when explicitly authorized and only after containment, zero-ahead, remote, and clean-state evidence is verified.
+
 ### Minimum technical Concept continuity input
 
 When Concept continuity is material, include only:
@@ -167,6 +211,8 @@ Apply only when Git is material and authorized:
 - do not rebase, reset, clean, stash, force-push, or rewrite accepted history unless explicitly authorized.
 - branch closure requires accepted-tip, containment/zero-ahead, remote, and workspace verification before deletion when deletion is authorized.
 
+The remote repository/branch remains durable authority. Do not treat an unpushed commit, runtime copy, or disposable workspace as an authoritative checkpoint. After an authorized push, independently verify the resulting remote tip when possible.
+
 ## Validation
 
 Run validation closest to the target first. Report exact checks and distinguish:
@@ -179,6 +225,16 @@ Run validation closest to the target first. Report exact checks and distinguish:
 - not applicable.
 
 Map acceptance evidence to the technical criteria written in this instruction. Do not claim project acceptance.
+
+Validation rules:
+
+1. start closest to the change;
+2. expand only by actual impact;
+3. never claim unexecuted tests;
+4. distinguish `PASS`, `FAILED`, `INSPECTED ONLY`, `NOT RUN`, `BLOCKED`, and `NOT APPLICABLE`;
+5. review the final diff and accidental changes;
+6. do not repeat accepted suites without a concrete regression reason;
+7. documentation-only work does not require runtime regression unless review exposes a behavior inconsistency.
 
 ## Stop conditions
 
@@ -210,6 +266,22 @@ Do not report:
 - release readiness;
 - Deferred Item adoption;
 - authorization for the next task.
+
+## Continuation
+
+For same-thread continuation, carry only the changed target, anchor, authorization, scope, validation, stop condition, and unresolved technical issue. Do not repeat unchanged governance, environment, or history.
+
+Use a concise continuation token such as:
+
+`Continue the current task.`
+
+`Changed target: [...]`
+
+`Changed authorization: [...]`
+
+`New stop condition: [...]`
+
+`All other prior boundaries remain unchanged.`
 
 The controlling GPT/user evaluates those decisions from this report.
 
