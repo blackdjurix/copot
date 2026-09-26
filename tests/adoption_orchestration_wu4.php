@@ -93,4 +93,58 @@ $unknown = $orchestrator->run(new AdoptionOrchestrationRequest($target, $unknown
 $unknownAgain = $orchestrator->run(new AdoptionOrchestrationRequest($target, $unknownSnapshot), static fn (): AdoptionEvaluationSnapshot => throw new RuntimeException('No re-proof for unknown state.'), static fn (AdoptionResolutionContext $context, LifecycleResolutionEligibility $eligibility): AdoptionResolutionOperationResult => throw new RuntimeException('No operation for unknown state.'));
 $assert($unknown->state() === AdoptionOrchestrationResult::BLOCKED && $unknown->identity() === $unknownAgain->identity(), 'Unknown state was not fail-closed and deterministic.');
 
+// Ambiguous lifecycle eligibility fails closed without invoking Route B.
+$ambiguousCalls = 0;
+$ambiguous = $orchestrator->run(new AdoptionOrchestrationRequest($target, new AdoptionEvaluationSnapshot($initial->candidate(), $initial->legacyEvidence(), [
+    $route,
+    $eligible($gap->evidenceIdentity(), LifecycleResolutionEligibility::UPDATE, 'operation-update-ambiguous'),
+], 'target-1', 'installation-1', 'namespace-1')), static fn (): AdoptionEvaluationSnapshot => throw new RuntimeException('Ambiguous eligibility must not re-proof.'), static function () use (&$ambiguousCalls): AdoptionResolutionOperationResult { $ambiguousCalls++; throw new RuntimeException('Ambiguous eligibility must not execute.'); });
+$assert($ambiguous->state() === AdoptionOrchestrationResult::BLOCKED && $ambiguousCalls === 0, 'Ambiguous lifecycle eligibility was not blocked before execution.');
+
+// A returned lifecycle-class mismatch fails closed before fresh re-proof.
+$mismatchReproofs = 0;
+$mismatch = $orchestrator->run(new AdoptionOrchestrationRequest($target, new AdoptionEvaluationSnapshot($initial->candidate(), $initial->legacyEvidence(), [$route], 'target-1', 'installation-1', 'namespace-1')), static function () use (&$mismatchReproofs): AdoptionEvaluationSnapshot { $mismatchReproofs++; throw new RuntimeException('Mismatched lifecycle class must not re-proof.'); }, static fn (AdoptionResolutionContext $context, LifecycleResolutionEligibility $eligibility): AdoptionResolutionOperationResult => new AdoptionResolutionOperationResult('operation-mismatch', LifecycleResolutionEligibility::REPAIR, AdoptionResolutionOperationResult::COMPLETED, 'result-mismatch', 'Wrong lifecycle class.'));
+$assert($mismatch->state() === AdoptionOrchestrationResult::BLOCKED && $mismatchReproofs === 0, 'Lifecycle-class mismatch was not blocked before re-proof.');
+
+// Composite Resolution rejects reuse of an underlying operation identity.
+$duplicateInitial = new AdoptionEvaluationSnapshot($multiInitial->candidate(), $multiInitial->legacyEvidence(), [$routeDb, $routeSchema], 'target-1', 'installation-1', 'namespace-1');
+$duplicateFresh = [
+    $snapshot('8.0.0', 'schema:old', 'target-1', 'installation-1', 'namespace-1', [$routeSchema]),
+    $snapshot('8.0.0', 'schema:target'),
+];
+$duplicateIndex = 0;
+$duplicateCalls = 0;
+$duplicate = $orchestrator->run(new AdoptionOrchestrationRequest($target, $duplicateInitial), static function () use (&$duplicateFresh, &$duplicateIndex): AdoptionEvaluationSnapshot { return $duplicateFresh[$duplicateIndex++]; }, static function (AdoptionResolutionContext $context, LifecycleResolutionEligibility $eligibility) use (&$duplicateCalls): AdoptionResolutionOperationResult { $duplicateCalls++; return new AdoptionResolutionOperationResult('operation-duplicate', $eligibility->lifecycleClass(), AdoptionResolutionOperationResult::COMPLETED, 'result-duplicate-' . $duplicateCalls, 'Reused underlying operation identity.'); });
+$assert($duplicate->state() === AdoptionOrchestrationResult::BLOCKED && $duplicateCalls === 2 && count($duplicate->operations()) === 1, 'Duplicate underlying operation identity was accepted as a distinct step.');
+
+// Installation identity drift makes the fresh post-operation proof stale.
+$installationReproofs = 0;
+$installationCalls = 0;
+$installationDriftSnapshot = $snapshot('8.0.0', 'schema:target', 'target-1', 'installation-2', 'namespace-1');
+$installationDrift = $orchestrator->run(new AdoptionOrchestrationRequest($target, new AdoptionEvaluationSnapshot($initial->candidate(), $initial->legacyEvidence(), [$route], 'target-1', 'installation-1', 'namespace-1')), static function () use (&$installationReproofs, $installationDriftSnapshot): AdoptionEvaluationSnapshot { $installationReproofs++; return $installationDriftSnapshot; }, static function (AdoptionResolutionContext $context, LifecycleResolutionEligibility $eligibility) use (&$installationCalls): AdoptionResolutionOperationResult { $installationCalls++; return new AdoptionResolutionOperationResult('operation-installation-drift', $eligibility->lifecycleClass(), AdoptionResolutionOperationResult::COMPLETED, 'result-installation-drift', 'Completed before installation identity drift.'); });
+$assert($installationDrift->state() === AdoptionOrchestrationResult::STALE && $installationCalls === 1 && $installationReproofs === 1, 'Installation identity drift was not classified stale.');
+
+// Namespace identity drift makes the fresh post-operation proof stale.
+$namespaceReproofs = 0;
+$namespaceCalls = 0;
+$namespaceDriftSnapshot = $snapshot('8.0.0', 'schema:target', 'target-1', 'installation-1', 'namespace-2');
+$namespaceDrift = $orchestrator->run(new AdoptionOrchestrationRequest($target, new AdoptionEvaluationSnapshot($initial->candidate(), $initial->legacyEvidence(), [$route], 'target-1', 'installation-1', 'namespace-1')), static function () use (&$namespaceReproofs, $namespaceDriftSnapshot): AdoptionEvaluationSnapshot { $namespaceReproofs++; return $namespaceDriftSnapshot; }, static function (AdoptionResolutionContext $context, LifecycleResolutionEligibility $eligibility) use (&$namespaceCalls): AdoptionResolutionOperationResult { $namespaceCalls++; return new AdoptionResolutionOperationResult('operation-namespace-drift', $eligibility->lifecycleClass(), AdoptionResolutionOperationResult::COMPLETED, 'result-namespace-drift', 'Completed before namespace identity drift.'); });
+$assert($namespaceDrift->state() === AdoptionOrchestrationResult::STALE && $namespaceCalls === 1 && $namespaceReproofs === 1, 'Namespace identity drift was not classified stale.');
+
+// Unavailable Route B authority blocks without fresh re-proof or continuation.
+$unavailableReproofs = 0;
+$unavailableCalls = 0;
+$unavailable = $orchestrator->run(new AdoptionOrchestrationRequest($target, new AdoptionEvaluationSnapshot($initial->candidate(), $initial->legacyEvidence(), [$route], 'target-1', 'installation-1', 'namespace-1')), static function () use (&$unavailableReproofs): AdoptionEvaluationSnapshot { $unavailableReproofs++; throw new RuntimeException('Unavailable authority must not re-proof.'); }, static function (AdoptionResolutionContext $context, LifecycleResolutionEligibility $eligibility) use (&$unavailableCalls): AdoptionResolutionOperationResult { $unavailableCalls++; return new AdoptionResolutionOperationResult('operation-unavailable', $eligibility->lifecycleClass(), AdoptionResolutionOperationResult::UNAVAILABLE, 'result-unavailable', 'Route B authority unavailable.'); });
+$assert($unavailable->state() === AdoptionOrchestrationResult::BLOCKED && $unavailableCalls === 1 && $unavailableReproofs === 0, 'Unavailable Route B authority did not fail closed.');
+
+// Optional absence remains WU2-ready and does not cause a filler operation.
+$optional = new PackageTargetRequirement(PackageTargetRequirement::CAPABILITY, 'webcore', 'optional-api', PackageTargetRequirement::PRESENT, null, false);
+$optionalSnapshot = new AdoptionEvaluationSnapshot(new TargetCompatibilityCandidate([
+    $value($database, '8.0.0', 'optional-check'),
+    TargetRequirementObservation::presence($optional, false, 'optional-check:' . $optional->key()),
+]), LegacyBoundaryEvidence::none(), [], 'target-optional', 'installation-1', 'namespace-1');
+$optionalCalls = 0;
+$optionalOrchestration = $orchestrator->run(new AdoptionOrchestrationRequest(new PackageTargetRequirements([$database, $optional]), $optionalSnapshot), static fn (): AdoptionEvaluationSnapshot => throw new RuntimeException('Optional non-blocking gap must not re-proof.'), static function () use (&$optionalCalls): AdoptionResolutionOperationResult { $optionalCalls++; throw new RuntimeException('Optional non-blocking gap must not execute.'); });
+$assert($optionalOrchestration->state() === AdoptionOrchestrationResult::READY && $optionalOrchestration->operations() === [] && $optionalCalls === 0, 'Optional unsatisfied requirement incorrectly required lifecycle resolution.');
+
 echo "WU4 Adoption orchestration focused tests passed ({$assertions} assertions)." . PHP_EOL;
