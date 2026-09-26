@@ -86,12 +86,12 @@ source for the current repository, but it is not sufficient as the complete
 installed lifecycle state. Exact persistence structures are implementation-
 deferred.
 
-## WU1 implementation boundary
+## WU1 implementation boundary (historical boundary)
 
-WU1 provides serialization-neutral Core primitives for package version
+At the WU1 boundary, WU1 provided serialization-neutral Core primitives for package version
 validation, package identity, source compatibility, runtime requirements,
 ownership classification, package-owned inventory entries, file size and
-SHA-256 identity, and the migration declaration boundary. The primitives do
+SHA-256 identity, and the migration declaration boundary. The primitives did
 not select a manifest filename or serialization format.
 
 `source_tree_identity` is optional opaque provenance and is never an installed
@@ -104,8 +104,8 @@ staging, transition planning, migration execution, package application, or
 operator surface. The focused WU1 test is
 `tests/package_contract_wu1.php`.
 
-The WU1 reader boundary accepts only the Webcore package type and the current
-manifest contract version. It uses strict SemVer 2.0.0 validation and
+The WU1 reader boundary accepted only the Webcore package type and the then-current
+manifest contract version. It used strict SemVer 2.0.0 validation and
 precedence, including numeric core/prerelease leading-zero rules, prerelease
 ordering, and build-metadata exclusion from precedence. The `modules/example/`
 source fixture remains governed by the build package exclusion policy; WU1 does
@@ -113,7 +113,7 @@ not assign it a separate Module lifecycle ownership rule.
 
 ## Minimum package contract
 
-The logical v1 contract requires, at minimum:
+The historical logical v1 contract required, at minimum:
 
 - package type identifying a Webcore package;
 - package/manifest contract version;
@@ -125,12 +125,34 @@ The logical v1 contract requires, at minimum:
 - per-file size and integrity identity;
 - explicit ownership/exclusion rules for operator-owned paths.
 
-Exact serialization, filenames, and schema are implementation-deferred until
-the contract Work Unit provides evidence requiring those choices. The existing
-build manifest remains a source-package allowlist; it is not by itself the
-runtime package contract.
+Those historical minimums remain the legacy v1 contract baseline. The existing
+build manifest was a source-package allowlist; it was not by itself the runtime
+package contract.
 
-## WU2 delivered implementation boundary
+### Current delivered package-contract surface
+
+The current delivered package contract uses manifest contract version **2**.
+Manifest contract version **1** remains supported as the legacy manifest
+contract; v1 manifests are read with no Target Requirements. Current manifest
+v2 packages carry `target_requirements`, represented by the immutable
+`PackageTargetRequirements` / `PackageTargetRequirement` value surface inside
+`PackageContract`. These declarations are target-owned package metadata for
+database minimum-version, schema exact-identity, and capability-presence
+requirements, including mandatory/optional semantics; they are evaluated by
+the later target-relative compatibility boundary rather than by the
+representation itself.
+
+The current package manifest is the `.copot/package.json` artifact. The
+manifest reader strictly validates its ordered JSON contract, accepts legacy
+v1 and current v2 according to their respective shapes, and rejects unsupported
+or malformed declarations. The official package builder emits the current
+manifest contract (v2), including the current Target Requirements declaration.
+`PackageTargetRequirements` participates in deterministic package identity and
+is exposed through trusted package-target metadata. Manifest contract selection
+and serialization are therefore resolved in the delivered implementation; they
+are no longer deferred decisions.
+
+## WU2 delivered implementation boundary (historical boundary)
 
 WU2 accepts a local filesystem ZIP path, copies the source archive into a
 private immutable staging namespace, inspects the staged archive before
@@ -148,9 +170,13 @@ extraction, and produces an isolated staged payload. The boundary includes:
 - comparison of a supplied WU1 inventory against staged regular files; and
 - immediate failure cleanup plus bounded stale-staging reconciliation.
 
-The package manifest filename and serialization remain unselected. The WU2
-output is the normalized staged regular-file set; directories and the deferred
-package metadata artifact are not `PackageInventoryEntry` members.
+At the WU2 boundary, the package manifest filename and serialization were still
+unselected. The WU2 output was the normalized staged regular-file set;
+directories and the then-deferred package metadata artifact were not
+`PackageInventoryEntry` members. The later delivered package-contract and WU7
+builder implementation resolved the manifest as `.copot/package.json` with the
+current v2 contract described above; this does not change the historical WU2
+staging boundary.
 
 Focused WU2 validation passed. The ext-zip-disabled capability branch requires
 a separate executor, and the filesystem symlink cleanup fixture was unavailable
