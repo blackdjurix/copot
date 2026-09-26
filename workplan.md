@@ -668,9 +668,18 @@ WU6 evidence recorded for closure review:
   generalized compatible extra state, Route B, fresh re-proof, Legacy
   Reconciliation separation, identity drift, and unknown-state fail-closed
   behavior;
-- Route A / migration, Runtime Handoff, and database-backed lifecycle checks
-  remain separately identified as environment-limited or inspected-only where
-  the executor lacks the required PDO/runtime fixture capability;
+- Route A and Case A/B/C remain owned by the unchanged Package Lifecycle
+  migration/classification boundary; prior accepted `package_lifecycle_wu4.php`
+  evidence remains valid, while the current PDO-backed rerun is environment-
+  limited;
+- Runtime Handoff exclusion is reconciled to the unchanged
+  `RuntimeRegistry`/`RuntimeTransitionCoordinator` mutex and compatibility
+  boundary; accepted `multi_installation_wu4_runtime_isolation.php` evidence
+  passed 17 assertions, including stale/incompatible shared-state blocking;
+- retry/recovery authority is reconciled to the unchanged Package Lifecycle
+  and Backup & Recovery owners; accepted retry-finalization and C2 recovery
+  evidence remains valid, while the current PDO-backed retry E2E rerun is
+  environment-limited;
 - no new mutation, migration, ownership, Installer, or lifecycle authority was
   introduced by WU6.
 
