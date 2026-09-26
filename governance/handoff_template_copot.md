@@ -1,632 +1,161 @@
-# COPOT (<Continuity Boundary>) - <Title>
-Date version: 2026-09-25 14:37:30 WIB
+# COPOT HANDOFF — <Continuity Boundary> — <Title>
+Date version: 2026-09-26 14:00:00 WIB
 
-Ini adalah artifact kontinuitas GPT/model/session untuk COPOT. Ini bukan `Agent Instruction` dan tidak boleh disalin secara utuh sebagai payload untuk `Technical Executor`.
+## Usage boundary
 
-# USAGE BOUNDARY
+Handoff adalah GPT/session continuity artifact untuk COPOT. Handoff bukan Agent Instruction, bukan executor payload, bukan authorization baru, dan bukan pengganti Rule.
 
-Handoff membawa minimum context yang diperlukan agar GPT/session baru dapat memulihkan kontinuitas `Project` secara akurat tanpa merekonstruksi obsolete history atau mengandalkan prior-session memory sebagai pengganti applicable authoritative source.
+Canonical identity: `governance/handoff_template_copot.md`.
 
-Handoff dapat membawa, ketika material:
+## Fresh-session isolation and language
 
-- objective current project state;
-- applicable authoritative anchors atau state references;
-- relevant unresolved items, Deferred Items, dan risks;
-- current target dan next target;
-- materially relevant `Workplan Set` context;
-- unresolved thread-level continuity payload yang belum durably reconciled;
-- materially relevant execution context;
-- NRP dan session-continuity state.
+Receiving GPT must not rely on implicit memory, prior-session summary, chat history, or model context as a substitute for this Handoff and current authoritative sources. Reconstruct only from current governance, this Handoff, project instructions, verified Repository state, and explicitly identified material sources.
 
-Handoff adalah continuity artifact, bukan authority baru. Handoff tidak menggantikan `Governance`, `Authoritative Documentation`, `Repository`, `Workplan Set`, atau applicable authoritative source lainnya.
+Use the primary conversation language for Handoff prose. Keep identifiers, paths, commands, filenames, and technical tokens literal when precision requires it.
 
-NRP mengikuti semantics pada latest applicable `Rule`. NRP bukan project/repository lifecycle state dan tidak otomatis menyebabkan session transition.
+## Transition
 
-Delivery rules:
+- Transition type: `NORMAL / NRP / EMERGENCY`
+- Project: `COPOT`
+- Continuity Boundary: `<milestone / Work Unit / batch / workstream / phase>`
+- Title: `<title>`
+- Prepared at: `<YYYY-MM-DD HH:mm:ss WIB>`
+- Prepared by: `<actor>`
 
-- generated Handoff menggunakan bahasa utama user;
-- canonical technical terms, defined terms, identifiers, statuses, dan domain-specific terminology mempertahankan authoritative/original form ketika translation dapat mengubah meaning, identity, atau precision;
-- deliver Handoff melalui editable writing block ketika capability tersebut tersedia;
-- jangan membungkus seluruh Handoff dalam triple-backtick code fence;
-- fenced code di dalam Handoff hanya digunakan untuk actual code, configuration, atau literal technical content yang memang memerlukan code formatting;
-- field atau conditional section yang tidak applicable dapat diomit dari generated Handoff kecuali secara eksplisit diwajibkan untuk selalu dilaporkan.
+Untuk `EMERGENCY`, continuity risk dan recovery/revalidation requirements wajib eksplisit.
 
-## HANDOFF TITLE / FIRST-LINE SEMANTICS
+## Current objective and state
 
-Judul Handoff adalah first-line header di dalam Handoff content. Jangan gunakan external writing-block title/name field sebagai pengganti continuity title.
+- Objective: `<objective>`
+- Accepted result: `<verified accepted result / None>`
+- Current state: `<what is true now>`
+- Last reliable evidence: `<commit, document, test, artifact, or observation>`
+- Unresolved/unsaved payload: `<reference to the section below or None>`
 
-Format default:
+Pisahkan accepted, provisional, rejected, superseded, dan unresolved state.
 
-`COPOT (<Continuity Boundary>) - <Title>`
+## Unresolved and unsaved payload
 
-Jika tidak ada applicable `Continuity Boundary`, gunakan:
+Treat unresolved and unsaved/unpersisted payload as the same continuity class. The output differs, but neither is authoritative until its required persistence and verification path is complete.
 
-`COPOT - <Title>`
+- Payload identity/source: `<artifact, thread state, decision, instruction, change, or runtime state>`
+- Payload kind: `<unresolved / unsaved / both>`
+- Output currently available: `<partial result, open decision, evidence, or None>`
+- Persistence state: `<not persisted / partially persisted / persisted but unverified / persisted and verified>`
+- Durable disposition: `<carry forward / persist before transition / intentionally discard with authorization / blocked / unknown>`
+- Required next action: `<exact action or None>`
+- Authority status: `<non-authoritative until persisted and verified>`
 
-Jangan prepend generic wrapper heading seperti `PROJECT SESSION HANDOFF`, `PROJECT SESSION HANDOFF TEMPLATE`, atau equivalent heading lain. First-line header harus langsung mengidentifikasi `Project`, applicable `Continuity Boundary` ketika ada, dan `Title` yang material terhadap destination session.
+Include, when applicable:
 
-## DIRECT HANDOFF BOUNDARY
+- unsaved user decisions;
+- unsaved GPT conclusions or derived decisions;
+- unsent Agent Instructions;
+- uncommitted repository changes;
+- unpersisted Workplan/Concept changes;
+- temporary runtime state;
+- generated artifacts not yet accepted or persisted.
 
-Handoff mengikuti direct-handoff dan execution-routing semantics pada latest applicable `Rule`.
+## Next target
 
-Handoff tidak boleh digunakan sebagai `Technical Executor` payload.
+- Next target: `<smallest safe next target>`
+- Dependency: `<dependency or None>`
+- Authorization status: `<authorized / approval required / blocked>`
+- Required first action: `<bootstrap/check>`
+- Stop condition: `<condition>`
 
-Direct transfer, direct invocation, atau execution routing tidak boleh diinfer hanya dari keberadaan Handoff, recommendation, next target, execution context, atau tool availability.
+Next target bukan authorization baru. Receiving GPT harus revalidate authority dan current state.
 
-Jika execution melalui `Technical Executor` diperlukan, gunakan separate `Agent Instruction` sesuai latest applicable governance.
+## Planning and Concept continuity
 
-Direct-transfer authorization hanya mengatur transport dan tidak memperluas technical scope, authorization, validation, stop conditions, atau external side-effect permissions.
+- Workplan state: `<status>`
+- Non-synchronization check: `<no repository sync implied / issue>`
+- Closure reconciliation: `<complete / required / blocked>`
+- Saved Concept payload: `<semantic identity, provenance, revision, unresolved/unsaved payload reference>`
+- Deferred Items: `<status and adoption state>`
 
-# REQUIRED CORE
+Session transition tidak menghapus unresolved planning payload.
 
-Current project state: `<objective current state>`
+### Thread-Level Saved Concept Reconciliation
 
-Current target: `<current target / None>`
+- Accumulated thread-level saved Concepts: `<identity and source>`
+- Reconciled durable disposition: `<carried forward / incorporated / deferred / superseded / rejected / unresolved>`
+- Unresolved/unsaved payload preserved: `<yes/no and summary>`
+- Reconciliation evidence: `<source, revision, or None>`
 
-Next target: `<next target / None>`
+Session change tidak boleh menghapus, silently close, mengubah klasifikasi, atau silently discard saved Concept maupun unresolved/unsaved payload.
 
-Latest accepted result: `<objective summary / None>`
+## Dependency and stacked-branch state
 
-Applicable authoritative sources: `<material source identities/references>`
+When material, record:
 
-Material unresolved items / blockers / risks: `<summary / None>`
+- cross-boundary dependency: `<dependency and satisfied/unsatisfied state>`;
+- stacked branch relation: `<base, dependent branch, containment, or None>`;
+- dependency evidence: `<exact source or None>`.
 
-## CONDITIONAL PLANNING CONTEXT
+Dependency state is context, not authorization to begin the dependent work.
 
-Isi hanya ketika `Workplan Set` context materially memengaruhi continuity, closure, atau next-target selection.
+## Repository and runtime state
 
-Resolved `Workplan` source: `<exact artifact/location / UNAVAILABLE / N/A>`
+Include only when material:
 
-`Workplan` lifecycle: `<CURRENT / SUPERSEDED / RETIRED / N/A>`
+- Repository: `https://github.com/blackdjurix/copot.git`
+- Integration target: `main`
+- Branch: `<branch>`
+- HEAD/revision: `<revision>`
+- Working tree: `<clean / listed changes / unknown>`
+- Runtime role: `<XAMPP runtime role or None>`
+- Runtime endpoint/port: `<only if material; never project identity>`
+- Divergence or lifecycle issue: `<value or None>`
 
-`Workplan` reconciliation state: `<MID-WORKSTREAM DEFERRED / CLOSURE-RECONCILED / EARLY MATERIAL UPDATE / NEEDS REVIEW / N/A>`
+Runtime copy bukan Repository authority.
 
-`Workplan` adequacy for next-target selection: `<ADEQUATE / NEEDS RECONCILIATION / UNVERIFIED / N/A>`
+## Acceptance and closure
 
-Active provisional track(s): `<logical target(s) / None>`
+- Acceptance criteria: `<met / partial / not met>`
+- Validation: `<checks and outcomes>`
+- Documentation/planning reconciliation: `<status>`
+- Work-unit/workstream closure: `<closed / open / blocked>`
+- Release/publication: `<separate status>`
+- NRP: `<candidate / confirmed / not applicable / blocked>`
 
-Promotion candidate(s): `<logical target(s) / None>`
+### NRP candidate documentation consistency
 
-Promoted/closed registry entries still material to lineage: `<logical target(s) / None>`
+- Candidate project/work-unit documentation: `<source>`
+- Current implementation/repository evidence reconciled: `<yes / no / blocked>`
+- Material documentation conflict: `<None or exact conflict>`
+- Required correction before NRP confirmation: `<None or exact correction>`
 
-Relevant `Concept` identities and sources:
+Handoff tidak boleh menyatakan NRP confirmed hanya karena technical work selesai.
 
-- `<canonical title> — <exact source artifact/location + section/heading when material>`
+## Session continuity
 
-Unreconciled thread-level saved concepts/rules: `<summary / None>`
+- Continue current session/thread or new: `<decision and reason>`
+- Context requiring revalidation: `<items>`
+- Minimum bootstrap: `<first reads/checks>`
+- Material Tailscale state: `<only if remote access is relevant>`
+- Material Figma state: `<only if visual/prototype context is relevant>`
 
-Planning caveat: `<material caveat / None>`
+Bootstrap order: current governance, this Handoff, project instructions, verified project/Repository state, then only explicitly identified material Workplan, Concept, documentation, runtime, or tool sources.
 
-Rules:
+## Direct-transfer boundary
 
-- bawa hanya planning context yang material terhadap continuity atau next-target selection;
-- jangan copy full `Workplan` atau full `Concept` bodies;
-- unresolved thread-level continuity payload tetap dibawa sampai durable reconciliation atau explicit disposition.
+Jangan transfer full Handoff ke Technical Executor.
 
-## CONDITIONAL EXECUTION CONTEXT
+Jika user meminta direct transfer, turunkan Agent Instruction terpisah yang hanya membawa minimum material execution context. Handoff tidak memperluas authorization.
 
-Isi hanya ketika execution context materially memengaruhi continuation.
+## Required startup report
 
-Primary execution environment: **Local Workspace**
+Receiving GPT harus melaporkan:
 
-Alternative execution environment: **Cloud**
+- exact governance artifacts yang dibaca;
+- verified objective/current state;
+- unresolved state;
+- authorization status;
+- revalidation performed;
+- blocker atau continuity risk.
 
-Execution workspace: `<path / remote workspace / provider / N/A>`
+## Closure statement
 
-Runtime workspace: `<path / URL / provider / N/A>`
+Handoff ini mencatat continuity state. Handoff tidak dengan sendirinya menyatakan implementation complete, project closure, NRP confirmation, release readiness, atau execution authorization.
 
-Last detected user platform: `<Desktop / PC / Mobile / Android / Other / Unknown>`
-
-Active manual-operation executor: `<User / Technical Executor / Other / Unknown>`
-
-Last material execution context: `<summary / N/A>`
-
-Device/environment-transition readiness: `<READY / BLOCKED / UNKNOWN / N/A>`
-
-Direct-transfer instruction state: `<EXPLICITLY REQUESTED / NOT REQUESTED / N/A>`
-
-Rule: direct-transfer instruction state hanya merekam transport instruction yang material terhadap continuity dan tidak memperluas execution authorization.
-
-## CONDITIONAL APPLICABLE GOVERNANCE CONTEXT
-
-Isi hanya ketika satu atau lebih active segment dalam `Applicable Governance` materially memengaruhi continuity.
-
-Active segment(s): `<Runtime / Gateway / Design Tooling / other active segment / None>`
-
-Material function/value: `<function + preferred value / scalar segment value / N/A>`
-
-Actual task-level route or exception: `<actual tool/runtime/gateway route / None / N/A>`
-
-Continuity-relevant state: `<material state, caveat, accepted decision, unresolved review, or required revalidation / None>`
-
-Rules:
-
-- jangan copy seluruh `Applicable Governance` atau full segment rules ke Handoff;
-- bawa hanya project-specific value/state yang materially diperlukan receiving session;
-- task-level exception tidak mengubah canonical mapping pada `Applicable Governance`;
-- receiving session tetap me-resolve latest applicable `Rule` secara independen.
-
-# HANDOFF TRANSITION STATE
-
-Transition type: `<NRP / EMERGENCY>`
-
-Transition reason: `<material reason / N/A>`
-
-Continuity condition: `<NORMAL / ELEVATED RECOVERY REQUIRED>`
-
-Rules:
-
-- `NRP` berarti Handoff dilakukan pada confirmed project-context continuity boundary sesuai latest applicable `Rule`.
-- `EMERGENCY` berarti Handoff dilakukan di luar confirmed NRP karena session transition diperlukan atau materially preferable sebelum dependency terhadap prior context cukup diminimalkan.
-- `EMERGENCY` tidak mengubah objective project lifecycle state, tidak mengimplikasikan closure, dan tidak memberikan authorization baru.
-- Transition type menentukan continuity-recovery posture receiving session, bukan technical execution scope.
-
-# STATUS SEBELUMNYA
-
-Previous unit / continuity scope: `<...>`
-
-Previous work result: `<COMPLETE / PARTIAL / NOT STARTED / BLOCKED / other applicable state>`
-
-Material transition into current state: `<objective summary / None>`
-
-## CONDITIONAL THREAD-LEVEL RECONCILIATION STATE
-
-Gunakan ketika saved session/thread concepts, planning rules, atau unresolved semantic decisions masih material terhadap continuity.
-
-Payload scope: `<workstream / planning concern / continuity scope>`
-
-Durably reconciled items: `<summary / None>`
-
-Still-unreconciled items: `<summary / None>`
-
-Required durable disposition: `<Concept update / new Concept / Workplan / Deferred Item / supersede / reject / other / N/A>`
-
-Rule: session transition tidak menghapus continuity payload ini. Clear hanya setelah durable reconciliation atau explicit disposition.
-
-## CONDITIONAL DEFERRED ITEM REVIEW
-
-Gunakan hanya ketika Deferred Item materially relevan terhadap current atau next target.
-
-Deferred Item ID: `<ID>`
-
-Title: `<title>`
-
-Source: `<applicable authoritative source / boundary>`
-
-Current status/target: `<...>`
-
-Relevance: `<...>`
-
-Review state: `<PENDING / COMPLETE>`
-
-Disposition: `<ADOPT / KEEP DEFERRED / REJECT / SUPERSEDE / NOT APPLICABLE / N/A>`
-
-Disposition evidence: `<... / N/A>`
-
-Target update required: `<YES / NO / N/A>`
-
-## CONDITIONAL ACCEPTANCE STATE
-
-Isi hanya ketika acceptance masih material terhadap continuity, closure, atau next target.
-
-AI acceptance: `<PASS / PARTIAL / BLOCKED / NOT REQUIRED / UNKNOWN>`
-
-Human acceptance: `<PASS / PENDING / CHANGE REQUIRED / NOT REQUIRED / UNKNOWN>`
-
-Human acceptance reason: `<criterion / N/A>`
-
-Review surface: `<artifact / URL / runtime / device / environment / other / unavailable / N/A>`
-
-Additional acceptance state: `<applicable role + state / None>`
-
-# NEXT TARGET AND DEPENDENCY
-
-Target berikutnya: `<target>`
-
-Dependency classification: `<INDEPENDENT / SOFT / HARD / CLOSURE / BLOCKING / N/A / UNKNOWN>`
-
-Dependency evidence: `<material fact only / N/A>`
-
-Execution routing: `<Primary Execution Environment / Alternative Execution Environment / Technical Executor / User / other applicable route / N/A>`
-
-Recommended next gate: `<planning / preparation / research / review / implementation / validation / acceptance / approval / documentation / integration / closure / delivery / other applicable gate>`
-
-Authorization state: `<authorized boundary + remaining explicit approval requirement / N/A>`
-
-Rule: pencantuman next target, execution routing, atau recommended next gate dalam Handoff tidak dengan sendirinya memberikan execution authorization maupun direct-transfer/invocation authorization.
-
-# CONDITIONAL REPOSITORY STATE
-
-Isi hanya ketika `Repository` applicable dan repository state material terhadap continuity.
-
-`Repository`: **Remote Git Repository**
-
-`Repository Link`: **https://github.com/blackdjurix/copot.git**
-
-`Integration Target`: **main**
-
-Repository state classification: `<VERIFIED / PARTIAL / UNVERIFIED / STALE OR CONFLICTED>`
-
-Verification source/time: `<...>`
-
-Accepted integration baseline: `<authoritative baseline / N/A>`
-
-Authoritative active implementation state: `<authoritative state / N/A>`
-
-Repository synchronization state: `<VERIFIED / PARTIAL / UNKNOWN / N/A>`
-
-Branch routing: `<continue current / branch from Integration Target / stacked / preparation only / hold / other / N/A>`
-
-## CONDITIONAL GIT STATE
-
-Isi hanya ketika applicable `Repository` menggunakan Git dan Git-specific state material terhadap continuity.
-
-Accepted baseline: `<branch + commit / N/A>`
-
-Active branch: `<branch + commit / N/A>`
-
-Ahead/behind: `<value / UNKNOWN / N/A>`
-
-PR / merge / branch lifecycle: `<status / N/A>`
-
-All intended changes committed: `<YES / NO / UNKNOWN / N/A>`
-
-All intended changes pushed: `<YES / NO / UNKNOWN / N/A>`
-
-Remote commit independently verified: `<YES / NO / UNKNOWN / N/A>`
-
-Workspace cleanliness: `<CLEAN / DIRTY / UNKNOWN / N/A>`
-
-Writable workspace state: `<SYNCED / AHEAD / BEHIND / DIVERGED / DIRTY / NOT CHECKED / N/A>`
-
-Runtime workspace state: `<SYNCED / STALE / DIRTY / NOT CHECKED / N/A>`
-
-## CONDITIONAL BRANCH LIFECYCLE CLOSURE AUDIT
-
-Isi ketika current continuity boundary sedang closing, `Repository` menggunakan branch-based workflow, dan branch state material terhadap closure.
-
-Integrated target: `<Integration Target / other applicable target>`
-
-All intended commits contained in integration target: `<YES / NO / UNKNOWN / N/A>`
-
-Branch inventory: `<summary>`
-
-Obsolete branch candidates: `<branches / None>`
-
-Ancestry/containment evidence: `<PASS / FAIL / N/A>`
-
-Zero-ahead evidence: `<PASS / FAIL / N/A>`
-
-Authorized deletions performed: `<branches / None / NOT AUTHORIZED>`
-
-Tracking references pruned: `<YES / NO / NOT REQUIRED / UNKNOWN>`
-
-Post-cleanup inventory verified: `<YES / NO / NOT REQUIRED / UNKNOWN>`
-
-Final workspace clean/synced: `<YES / NO / UNKNOWN / N/A>`
-
-Single-branch / no-op explicitly recorded: `<YES / NO / N/A>`
-
-Rule: branch obsolescence tidak boleh diinfer hanya dari branch age, naming, atau appearance of merged history.
-
-# FINAL CHANGESET SUMMARY
-
-Isi hanya untuk work yang complete atau sedang closing ketika final delta materially membantu continuity.
-
-Base state: `<authoritative starting state / N/A>`
-
-Final state: `<authoritative resulting state / N/A>`
-
-Changed artifacts / surfaces: `<summary>`
-
-Change classification: `<implementation / behavior / documentation / configuration / data / schema / assets / planning / governance / mixed / other / none>`
-
-Material outcome / behavior changes: `<summary / None>`
-
-Documentation changes: `<summary / None>`
-
-Planning / governance changes: `<summary / None>`
-
-Unexpected changes: `<None / detail>`
-
-## CONDITIONAL GIT CHANGESET
-
-Isi hanya ketika applicable `Repository` menggunakan Git dan commit-level identity material terhadap continuity.
-
-Base commit: `<hash + subject / N/A>`
-
-Final commit: `<hash + subject / N/A>`
-
-Commit range: `<base>..<final> / N/A`
-
-# DOCUMENTATION CLOSURE
-
-Documentation status: `<PASS / NOT REQUIRED / DEFERRED / BLOCKED / UNKNOWN>`
-
-Documentation impact: `<behavior / capability / architecture / contract / workflow / planning / governance / lifecycle state / other / none>`
-
-Included in authoritative state: `<YES / NO / NOT REQUIRED / UNKNOWN>`
-
-Post-persistence documentation state: `<PASS / NOT REQUIRED / BLOCKED / UNKNOWN>`
-
-## CONDITIONAL NRP CANDIDATE DOCUMENTATION CONSISTENCY AUDIT
-
-Isi ketika current readiness berada pada atau mendekati `NRP CANDIDATE`.
-
-Audit status: `<NOT STARTED / IN PROGRESS / PASS / MATERIAL FINDINGS / BLOCKED / NOT REQUIRED>`
-
-Audited authoritative surfaces: `<material Authoritative Documentation / project records / contracts / lifecycle records / Deferred Item registry / other>`
-
-Material stale/inconsistent findings: `<None / summary>`
-
-Corrections durable: `<YES / NO / NOT REQUIRED / UNKNOWN>`
-
-Final authoritative verification after correction: `<YES / NO / NOT REQUIRED / UNKNOWN>`
-
-Rule: material current-state inconsistency pada applicable `Authoritative Documentation` harus dikoreksi, dibuat durable melalui applicable authoritative workflow, dan diverifikasi sebelum `NRP CONFIRMED`.
-
-## CONDITIONAL PLANNING RECONCILIATION / ADEQUACY AUDIT
-
-Gunakan ketika `Workplan Set` context material terhadap workstream closure, next-target selection, atau next-session continuity.
-
-Planning audit status: `<PASS / NEEDS RECONCILIATION / BLOCKED / NOT REQUIRED / UNKNOWN>`
-
-`Workplan` reconciliation state: `<MID-WORKSTREAM DEFERRED / CLOSURE-RECONCILED / EARLY MATERIAL UPDATE / UNKNOWN / N/A>`
-
-`Workplan` adequate for next-target selection: `<YES / NO / UNKNOWN / N/A>`
-
-Lifecycle/provenance entries requiring closure disposition reconciled: `<YES / NO / UNKNOWN / N/A>`
-
-Material `Concept` references resolvable: `<YES / NO / UNKNOWN / N/A>`
-
-Material `Concept` sources/locations traceable where needed: `<YES / NO / UNKNOWN / N/A>`
-
-Unreconciled thread-level payload materially misleading continuity: `<None / summary>`
-
-Remaining planning assumptions requiring audit before next-target selection: `<None / summary>`
-
-Reconciliation/consolidation required before Handoff: `<YES / NO>`
-
-Rule: planning audit mengikuti reconciliation cadence pada latest applicable `Rule` dan tidak gagal hanya karena `Workplan` tidak continuously mirror authoritative lifecycle state.
-
-# NRP AND SESSION-CONTINUITY READINESS
-
-NRP status: `<NRP NOT READY / NRP CANDIDATE / NRP CONFIRMED / NRP UNVERIFIABLE>`
-
-Interpretation:
-
-- `NRP NOT READY`: dependency terhadap prior project context belum cukup diminimalkan atau applicable continuity safeguards belum terpenuhi;
-- `NRP CANDIDATE`: project/context state sudah mendekati continuity boundary yang aman tetapi applicable closure, reconciliation, durability, atau verification evidence belum lengkap;
-- `NRP CONFIRMED`: applicable project/context state sudah cukup durable, reconciled, verified, dan recoverable untuk menjadi confirmed continuity boundary;
-- `NRP UNVERIFIABLE`: required governance, authoritative state, atau material evidence untuk mengevaluasi NRP tidak dapat diverifikasi.
-
-NRP evaluation mempertimbangkan, ketika material:
-
-- accepted objective project state;
-- durability dan recoverability dari applicable authoritative state;
-- documentation consistency;
-- applicable closure dan acceptance state;
-- unresolved items, Deferred Items, dan risks;
-- current dan next target;
-- `Workplan Set` reconciliation/adequacy;
-- thread-level continuity reconciliation;
-- applicable repository/integration/branch lifecycle state;
-- context-bootstrap sufficiency;
-- applicable Final Stability Gate.
-
-NRP tidak mengubah project, repository, Work Unit, workstream, milestone, atau lifecycle state lainnya.
-
-`NRP CONFIRMED` tidak otomatis menyebabkan session transition. Sebaliknya, Handoff dengan transition type `EMERGENCY` dapat dilakukan sebelum `NRP CONFIRMED` sesuai applicable continuity rules.
-
-## FINAL STABILITY GATE
-
-Isi ketika NRP evaluation atau closure state membutuhkan final stability assessment.
-
-Gate status: `<PASS / PARTIAL / BLOCKED / NOT REQUIRED / UNKNOWN>`
-
-Durable authoritative state: `<VERIFIED / PARTIAL / UNVERIFIED / N/A>`
-
-Required validation / acceptance state: `<COMPLETE / PARTIAL / BLOCKED / NOT REQUIRED / UNKNOWN>`
-
-Documentation consistency state: `<PASS / MATERIAL FINDINGS / BLOCKED / NOT REQUIRED / UNKNOWN>`
-
-Planning / continuity reconciliation state: `<COMPLETE / CARRIED FORWARD / BLOCKED / NOT REQUIRED / UNKNOWN>`
-
-Repository / integration stability state: `<PASS / PARTIAL / BLOCKED / NOT REQUIRED / UNKNOWN>`
-
-Remaining mutation or reconciliation required before `NRP CONFIRMED`: `<None / summary>`
-
-Material stability caveat: `<None / summary>`
-
-Rule: Final Stability Gate mengikuti latest applicable `Rule`; repository-specific evidence hanya diperlukan ketika `Repository` applicable dan material terhadap continuity boundary.
-
-## CONDITIONAL EMERGENCY CONTINUITY RISK
-
-Isi hanya ketika Handoff transition type adalah `EMERGENCY`.
-
-Continuity risk level: `<LOW / MEDIUM / HIGH / UNKNOWN>`
-
-At-risk context: `<material context yang belum fully durable, reconciled, verified, atau recoverable / None / Unknown>`
-
-Potential continuity degradation: `<information loss / stale state / reduced precision / unresolved assumptions / incomplete reconciliation / other / None / Unknown>`
-
-Known continuity gap: `<material known gap / None>`
-
-State likely to require revalidation: `<material state / None>`
-
-Required recovery action: `<re-read authoritative source / revalidate state / reconcile continuity payload / compare authoritative state / recover missing context / other / None>`
-
-Recovery priority: `<IMMEDIATE / BEFORE NEXT MATERIAL DECISION / BEFORE CLOSURE / OTHER / N/A>`
-
-Rule:
-
-- `EMERGENCY` transition tidak dengan sendirinya berarti continuity degradation telah terjadi;
-- catat actual known gap sebagai known fact dan catat potential loss/change/reduction sebagai risk hanya ketika terdapat material uncertainty atau evidence yang mendukung;
-- receiving session tidak boleh menganggap unresolved, unreconciled, unverified, atau non-durable state sebagai accepted authoritative truth hanya karena dibawa oleh Handoff;
-- recovery harus berfokus pada material continuity gap dan tidak merekonstruksi obsolete history yang tidak diperlukan.
-
-## CONTINUE OR NEW SESSION
-
-Setelah `NRP CONFIRMED`, lakukan session-continuity assessment sesuai latest applicable `Rule`.
-
-Session disposition: `<CONTINUE CURRENT SESSION / NEW SESSION RECOMMENDED / N/A>`
-
-Disposition basis: `<material continuity factors / N/A>`
-
-Keputusan session transition tetap berada pada user.
-
-Untuk `EMERGENCY` transition, jangan infer `NRP CONFIRMED`; receiving session mengikuti recovery behavior yang ditentukan oleh Handoff transition state, emergency continuity risk, dan context-bootstrap requirements.
-
-Session-continuity disposition bukan concern atau authority `Technical Executor`.
-
-# CROSS-BOUNDARY DEPENDENCY STATE
-
-Gunakan hanya ketika current atau next target materially bergantung pada predecessor, parallel track, provisional track, milestone, workstream, atau applicable project boundary lain.
-
-Dependency relation: `<predecessor / parallel / provisional / cross-workstream / cross-milestone / other>`
-
-Dependency classification: `<INDEPENDENT / SOFT / HARD / CLOSURE / BLOCKING>`
-
-Dependency target/source: `<material logical target or boundary>`
-
-Dependency effect: `<what may continue / what must wait / what is blocked>`
-
-Dependency evidence: `<material fact only>`
-
-Rule:
-
-- `INDEPENDENT`: applicable work dapat lanjut tanpa dependency ordering;
-- `SOFT`: independent slices dapat lanjut, tetapi dependent slices tetap menunggu applicable dependency;
-- `HARD`: ordered/stacked continuation hanya dilakukan ketika justified dan authorized;
-- `CLOSURE`: applicable work dapat lanjut, tetapi final closure/integration menunggu dependency terpenuhi;
-- `BLOCKING`: affected work ditahan; safe planning, analysis, atau audit dapat tetap dilakukan ketika applicable.
-
-## CONDITIONAL STACKED BRANCH STATE
-
-Isi hanya ketika `HARD` dependency menggunakan stacked branch pada applicable `Repository`.
-
-Predecessor branch: `<branch>`
-
-Predecessor anchor: `<commit / authoritative anchor>`
-
-Downstream branch: `<branch>`
-
-Stacked base: `<commit / authoritative anchor>`
-
-Reason: `<material HARD dependency>`
-
-Integration order: `<predecessor → downstream>`
-
-Realignment / revalidation state: `<detail / N/A>`
-
-Rule: stacked branch state tidak dengan sendirinya mengotorisasi merge, rebase, branch mutation, atau integration action.
-
-# CONTEXT BOOTSTRAP FOR NEXT SESSION
-
-Receiving GPT/session harus menganggap dirinya memasuki `Project` untuk pertama kalinya.
-
-Jangan mengandalkan prior conversation memory, model memory, project memory, personal context, prior-session summaries, atau implicit history lain sebagai pengganti applicable authoritative source.
-
-Gunakan Handoff ini hanya sebagai continuity context dan bootstrap aid. Handoff tidak menggantikan latest applicable `Governance`, `Authoritative Documentation`, `Repository`, `Workplan Set`, atau authoritative project state lain yang harus di-resolve secara independen.
-
-1. Resolve dan read latest applicable `Governance` secara independen dari `Source` pada `Source Link` sesuai latest applicable `Rule`.
-2. Jangan silently fallback ke older applicable governance ketika newer applicable version diketahui atau terindikasi tetapi unreadable atau unverifiable.
-3. Read applicable project instruction ketika tersedia dan material terhadap current atau next target.
-4. Apply latest applicable `Rule`, termasuk authorization, direct-handoff, execution-routing, planning, continuity, dan NRP semantics yang material terhadap continuation.
-5. Resolve dan read materially relevant `Authoritative Documentation` serta applicable authoritative project state untuk current atau next target.
-6. Jika `Repository` applicable dan material, verify repository continuity sesuai applicable repository/execution workflow sebelum mengandalkan repository state dari Handoff.
-7. Resolve dan read applicable `Workplan` ketika planning, sequencing, dependency, lineage, closure, atau next-target selection materially bergantung padanya.
-8. Jangan mengasumsikan `Workplan` harus continuously mirror current authoritative lifecycle state; evaluasi menurut latest applicable planning reconciliation semantics.
-9. Resolve dan read hanya `Concept` identities dan exact source locations yang material terhadap current task atau continuity recovery.
-10. Preserve unreconciled thread-level continuity payload sampai durable reconciliation atau explicit disposition; session transition tidak menghapus payload tersebut.
-11. Review hanya Deferred Items yang materially relevan; jangan auto-adopt Deferred Item sebagai current atau next scope.
-12. Jangan mengulang full accepted audit, validation, atau historical reconstruction tanpa concrete regression signal, continuity gap, conflict, atau material uncertainty.
-13. Jangan infer technical execution authorization dari Handoff, `Workplan Set`, NRP status, next target, execution routing, atau tool availability.
-14. Jangan infer direct-transfer/invocation authorization dari recommended execution routing atau availability `Technical Executor`.
-15. Jangan infer release, tag, publication, distribution, atau equivalent external-delivery authorization dari feature, Work Unit, workstream, milestone, atau closure state.
-16. Sebelum menghasilkan `Agent Instruction`, resolve dan read latest applicable artifact untuk role `Agent Instruction` sesuai latest applicable `Rule`; jangan derive executor-instruction structure hanya dari Handoff.
-17. Handoff hanya boleh membawa material continuity expectations untuk future executor instruction dan tidak boleh menduplikasi atau menggantikan applicable `Agent Instruction` governance.
-
-## TRANSITION-TYPE BOOTSTRAP BEHAVIOR
-
-Jika transition type adalah `NRP`:
-
-- gunakan normal continuity bootstrap;
-- prioritaskan verification terhadap latest applicable governance, authoritative state, next target, dan material continuity payload;
-- jangan merekonstruksi obsolete prior-session history kecuali conflict atau material gap ditemukan.
-
-Jika transition type adalah `EMERGENCY`:
-
-- gunakan elevated continuity recovery;
-- prioritaskan known continuity gaps, at-risk context, unresolved/unreconciled state, dan state yang memerlukan revalidation;
-- jangan infer closure, acceptance, reconciliation, durability, atau authoritative standing yang belum explicitly supported;
-- re-read atau revalidate material source/state berdasarkan recorded Emergency Continuity Risk;
-- recover hanya context yang materially diperlukan untuk safe continuation;
-- jangan melakukan wholesale reconstruction terhadap obsolete history.
-
-Continuity status: `<MATCH / CHANGED / CONFLICT / UNVERIFIABLE / NOT TRIGGERED>`
-
-# REQUIRED STARTUP REPORT
-
-Detected platform: `<... / Unknown>`
-
-Previous platform: `<... / Unknown / N/A>`
-
-Platform comparison: `<UNCHANGED / CHANGED / AMBIGUOUS / UNDETECTED / N/A>`
-
-Active manual-operation executor: `<User / Technical Executor / Other / Unknown>`
-
-Executor confirmation state: `<REUSED / CONFIRMED / REQUIRED / NOT REQUIRED / UNKNOWN>`
-
-Transition type: `<NRP / EMERGENCY>`
-
-Project continuity summary: `<Project + objective current state + current/next target + material scope>`
-
-Authority summary: `<material Governance / Authoritative Documentation / Repository / Workplan Set authority state>`
-
-Material risks / blockers: `<summary / None>`
-
-Deferred Review: `<relevant Deferred Item IDs + disposition/review state / None>`
-
-`Workplan Set` Planning Context: `<material logical pointers + reconciliation/adequacy state / None>`
-
-Thread-Level Continuity Payload: `<material unresolved saved concepts/rules / None>`
-
-Emergency Continuity Risk: `<material known/potential continuity risk / None / N/A>`
-
-Execution Routing: `<Primary Execution Environment / Alternative Execution Environment / Technical Executor / User / other applicable route / N/A>`
-
-Direct-Transfer Instruction State: `<EXPLICITLY REQUESTED / NOT REQUESTED / N/A>`
-
-Handoff Continuity State: `<VERIFIED / PARTIAL / UNVERIFIED / STALE OR CONFLICTED / N/A>`
-
-Readiness: `<READY / REQUIRES GOVERNANCE RECOVERY / CONTINUITY CONFLICT / EXECUTION-ENVIRONMENT CONFLICT / BLOCKED / OTHER>`
-
-# HANDOFF GENERATION RULES
-
-Ketika user memilih atau membutuhkan session transition:
-
-- gunakan latest applicable `Handoff`;
-- isi required core dan hanya sertakan conditional sections yang material terhadap continuity;
-- gunakan transition type yang sesuai (`NRP` atau `EMERGENCY`) dan jangan infer `NRP CONFIRMED` untuk emergency transition;
-- reconcile/consolidate `Workplan` pada applicable closure gate ketika diperlukan untuk menentukan atau menjelaskan next planning target;
-- jangan memaksa `Workplan` refresh hanya karena authoritative project atau `Repository` state maju selama active workstream;
-- omit obsolete history, rejected options, resolved troubleshooting, redundant logs, dan superseded planning detail yang tidak material terhadap continuity;
-- preserve applicable authoritative anchors/state references dan next target;
-- preserve material blockers, Deferred Items, risks, dan unresolved continuity payload;
-- untuk `EMERGENCY` transition, preserve known continuity gaps, at-risk context, required recovery actions, dan state yang memerlukan revalidation;
-- pertahankan unresolved thread-level continuity payload sampai durable reconciliation atau explicit disposition;
-- jangan copy full `Workplan`, full `Concept`, atau full authoritative source kecuali material continuity memang memerlukannya;
-- keep executor-instruction detail keluar dari Handoff kecuali routing atau execution context yang materially diperlukan receiving GPT/session;
-- generation Handoff tidak memberikan technical execution authorization maupun direct-transfer/invocation authorization;
-- jangan invoke atau transfer ke `Technical Executor` hanya karena Handoff merekomendasikan execution route tertentu;
-- jika user secara eksplisit meminta direct transfer, derive separate `Agent Instruction` berdasarkan latest applicable `Agent Instruction` governance dan route hanya instruction tersebut;
-- generated Handoff harus cukup untuk recovery tanpa mengharuskan receiving session merekonstruksi obsolete prior-session history.
-
-# CLOSURE STATEMENT
-
-Handoff dianggap complete ketika receiving GPT/session dapat memulihkan objective continuity `Project` secara akurat tanpa merekonstruksi obsolete history, tanpa mengandalkan Handoff sebagai pengganti applicable authoritative source, dan tanpa memperlakukan Handoff sebagai technical execution authorization atau direct-transfer/invocation authorization.
-
-Untuk transition type `NRP`, Handoff harus cukup untuk normal continuity bootstrap pada confirmed continuity boundary.
-
-Untuk transition type `EMERGENCY`, Handoff harus cukup untuk elevated continuity recovery dengan material continuity gaps, at-risk context, unresolved state, dan required recovery actions yang tetap explicit.

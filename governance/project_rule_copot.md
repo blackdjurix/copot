@@ -1,920 +1,389 @@
-# SOURCE AND PER-INTERACTION LOADING
-Date version: 2026-09-25 14:37:30 WIB
+# COPOT PROJECT RULE
+Date version: 2026-09-26 17:06:05 WIB
 
-## Variables
+## 1. Variables
 
-Variables pada section ini adalah project-specific defined terms yang digunakan oleh governance rules. Variable yang tidak applicable terhadap `Project` dapat menggunakan value **[None]**, kecuali dinyatakan wajib oleh governance rule yang berlaku.
+Variables adalah static project pointers. Nilainya ditetapkan saat project governance dibentuk dan hanya berubah melalui governance update. Variables bukan tempat menyimpan dynamic lifecycle state.
 
-- `Project`
-  Description: Project yang diatur oleh governance ini.
-  Value: **COPOT**
+- Project: **COPOT**
+- Source: **Remote Git Repository**
+- Source Link: **https://github.com/blackdjurix/copot.git**
+- Repository: **Remote Git Repository**
+- Repository Link: **https://github.com/blackdjurix/copot.git**
+- Integration Target: **main**
+- Primary Execution Environment: **Local Workspace**
+- Alternative Execution Environment: **Cloud**
+- Technical Executor: **Codex**
+- Source Write Executor: **Technical Executor** — role pointer only; this value never grants write authorization.
+- Authoritative Documentation: **docs/**
+- Workplan: **workplan.md**
+- Concept Sources: **concepts/ dan root Concept artifacts bila material**
+- Governance Rule: **governance/project_rule_copot.md**
+- Governance Handoff: **governance/handoff_template_copot.md**
+- Governance Agent Instruction: **governance/agent_instruction_copot.md**
+- Active Applicable Governance:
+  - Gateway: **Tailscale**
+  - Prototyping: **Figma**
 
-- `Source`
-  Description: Authoritative source untuk GPT-side governance dan planning artifacts.
-  Value: **Remote Git Repository**
+Dynamic state seperti current commit, active branch, current Work Unit, current target, acceptance state, NRP state, runtime port, dan unresolved state harus dicatat pada project artifacts atau Handoff yang relevan, bukan pada Variables.
 
-- `Source Link`
-  Description: Lokasi atau identifier yang digunakan untuk resolve governance dan planning artifacts pada `Source`.
-  Value: **https://github.com/blackdjurix/copot.git**
+## 2. Authority and scope
 
-- `Applicable Governance`
-  Description: Optional project-specific governance segments yang berlaku untuk `Project` selain mandatory core governance.
-  Value:
-  - `Runtime`: **XAMPP**
-  - `Gateway`: **Tailscale**
-  - `Design Tooling`:
-    - `Prototyping`: **Figma**
-    - `General`: **Canva**
+Rule ini adalah authority untuk project-level governance COPOT.
 
-- `Repository`
-  Description: Authoritative repository untuk durable implementation dan repository project state.
-  Value: **Remote Git Repository**
+Authority layers:
 
-- `Repository Link`
-  Description: Lokasi atau identifier authoritative `Repository`.
-  Value: **https://github.com/blackdjurix/copot.git**
+1. system, safety, and permission constraints;
+2. explicit user instruction;
+3. this Rule;
+4. accepted project contracts and Authoritative Documentation;
+5. verified Repository state and implementation evidence;
+6. Workplan, Concept, Handoff, and other planning/continuity context.
 
-- `Integration Target`
-  Description: Repository branch atau target yang menjadi authoritative integration destination.
-  Value: **main**
+Lower authority tidak boleh silently override higher authority.
 
-- `Primary Execution Environment`
-  Description: Execution environment yang diprioritaskan untuk technical project work ketika available dan sufficient.
-  Value: **Local Workspace**
+Project truth, Repository state, runtime state, planning state, dan continuity state adalah boundary yang berbeda:
 
-- `Alternative Execution Environment`
-  Description: Execution environment alternatif ketika `Primary Execution Environment` tidak tersedia atau tidak materially preferable.
-  Value: **Cloud**
+- Repository adalah authority untuk durable implementation state.
+- Authoritative Documentation adalah accepted/current project record.
+- Workplan dan Concept adalah planning context sampai dipromosikan.
+- Runtime copy atau disposable environment bukan durable authority.
+- Handoff adalah continuity artifact, bukan authorization.
+- Agent Instruction adalah executor boundary, bukan project governance.
 
-- `Technical Executor`
-  Description: Agent atau actor yang menangani technical source inspection, implementation, validation, dan authorized repository execution.
-  Value: **Codex**
+## 3. Governance identity and loading
 
-- `Source Write Executor`
-  Description: Agent atau actor yang melakukan authorized persistence atau update terhadap governance dan planning artifacts pada `Source`.
-  Value: **Technical Executor**
+Canonical governance identities:
 
-- `Governance`
-  Description: Governance artifacts yang membentuk governance baseline `Project`.
-  Value:
-  - `Rule`: **project_rule_copot.md**
-  - `Handoff`: **handoff_template_copot.md**
-  - `Agent Instruction`: **agent_instruction_copot.md**
+- `governance/project_rule_copot.md`
+- `governance/handoff_template_copot.md`
+- `governance/agent_instruction_copot.md`
 
-- `Workplan Set`
-  Description: Planning layer untuk rencana kerja, Concept, sequencing, provenance, dan pre-promotion planning context yang belum menjadi authoritative delivered/current project truth.
-  Value:
-  - `Workplan`: **resolve current COPOT Workplan from `Source`**
-  - `Concept`: **resolve materially relevant COPOT Concept artifacts from `Source`**
-  - `Pre-Contract`: **resolve when applicable, otherwise None**
+Resolve exact canonical paths. Jangan melakukan filename discovery, fallback ke file serupa, atau menganggap generated copy sebagai authoritative replacement.
 
-- `Authoritative Documentation`
-  Description: Durable project documentation yang membawa accepted/current project truth, termasuk history, lifecycle state, boundaries, segmentation, planning, contracts, dan project records lain yang memiliki authoritative standing.
-  Value: **docs/**
+Setiap artifact memiliki independent version lineage dan wajib memakai:
 
-- `Continuity Boundary`
-  Description: Boundary project-context yang mengidentifikasi scope atau titik kontinuitas aktif yang material, seperti milestone, Work Unit, Batch, workstream, phase, sprint, track, atau applicable project subdivision lain.
+`Date version: YYYY-MM-DD HH:mm:ss WIB`
 
----
+Per interaction:
 
-## Source Lock
+1. resolve dan baca Rule sebelum substantive COPOT feedback;
+2. baca Handoff bila interaction menyangkut handoff, session transition, continuity recovery, atau NRP-to-session handling;
+3. baca Agent Instruction bila interaction menyangkut pembuatan, review, atau delivery instruction untuk Technical Executor;
+4. load only material project sources, Workplan, Concept, Applicable Governance, dan repository evidence.
 
-Untuk `Project`, authoritative source untuk GPT-side governance dan planning artifacts adalah `Source` pada `Source Link`.
+Jangan mengklaim artifact telah dibaca jika exact content belum dibuka.
 
-Jangan fallback ke source atau context lain di luar `Source` dan `Source Link` tanpa instruksi eksplisit user, termasuk repository lain, cloud storage lain, local filesystem, execution workspace, web, memory, chat history, atau summary.
+Jika Rule tidak tersedia, project routing, authorization, governed execution, governance update, dan high-risk action diblok. Safe factual discussion dan retrieval recovery tetap boleh.
 
-Jika `Source` atau `Source Link` tidak dapat diakses, atau latest applicable artifact tidak dapat diverifikasi, gunakan blocker rules pada file ini.
+Jika Handoff tidak tersedia, handoff/session transition yang membutuhkan Handoff diblok, tetapi independently authorized lifecycle-neutral technical work dapat berlanjut bila aman.
 
-Jangan mengklaim latest governance atau planning artifact sudah dibaca apabila applicable artifact belum berhasil diverifikasi dan dibaca.
+Jika Agent Instruction tidak tersedia, generation atau delivery of governed executor instruction diblok. Jangan membuat replacement tanpa explicit user authorization.
 
+### Language routing
 
-## Governance Files
+Rule dan Handoff menggunakan bahasa utama user/conversation, yaitu Bahasa Indonesia untuk penggunaan COPOT ini. Agent Instruction menggunakan English sebagai default technical-executor language. Identifier, path, command, API name, filename, status token, dan technical vocabulary tetap literal bila terjemahan mengurangi precision.
 
-Setiap applicable artifact dalam `Governance` memiliki independent version lineage.
+### Latest-version fail-closed and retrieval retry
 
-Artifact dengan value `None` tidak termasuk active governance baseline dan tidak wajib di-resolve, dibaca, diperbarui, atau dibuat hanya untuk memenuhi template.
+Jangan melakukan silent fallback ketika canonical governance artifact atau accepted Repository state tidak dapat dibaca atau diverifikasi.
 
-Setiap applicable artifact dalam `Governance` wajib menggunakan versioning berupa timestamp dengan format: `Date version: YYYY-MM-DD HH:mm:ss` pada line kedua setiap file. Versioning dapat digunakan sebagai filename suffix dengan format: `_YYMMDD_HHMMSS`. Filename suffix bersifat opsional. Jika digunakan, timestamp pada suffix dan line kedua harus sinkron untuk artifact tersebut.
+Jangan mengganti artifact dengan older revision, obsolete timestamped copy, local generated copy, historical Library copy, memory, chat history, summary, atau filename yang mirip.
 
-Applicable artifact dalam `Governance` TIDAK wajib mempunyai timestamp yang sama. Artifact yang tidak berubah tidak perlu diperbarui atau diregenerate hanya untuk menyamakan timestamp. Shared timestamp boleh menjadi correlation/integrity hint untuk artifacts yang memang dibuat atau diperbarui dalam satu coordinated update, tetapi bukan invariant dari active governance baseline.
+Sebelum melaporkan `UNAVAILABLE`, lakukan secara berurutan:
 
-
-## Latest Governance Resolution
-
-`Latest Governance` berarti latest applicable version dari setiap applicable artifact dalam `Governance`. Setiap governance artifact di-resolve secara independen dari `Source` pada `Source Link`.
-
-Gunakan native freshness, revision, identity, dan applicability signals yang tersedia pada `Source` sebagai evidence utama. Filename timestamp, internal `Date version`, source metadata, revision history, atau signal lain dapat digunakan sesuai availability dan reliability pada `Source`.
-
-Untuk setiap applicable artifact dalam `Governance`, harus melakukan hal ini secara berurutan, namun artifact dengan value `None` dapat dilewati:
-
-1. resolve relevant candidate dari `Source`;
-2. verifikasi artifact identity;
-3. bandingkan available freshness, revision, version, dan applicability evidence;
-4. pilih latest applicable candidate;
-5. buka exact artifact;
-6. baca isi artifact;
-7. baru report `READ THIS INTERACTION`.
-
-Setelah seluruh applicable artifacts dalam `Governance` di-resolve, lakukan material cross-artifact compatibility check. Perbedaan timestamp, filename suffix, atau source revision antar-artifact bukan conflict dengan sendirinya.
-
-## Per-Interaction Loading
-
-Pada setiap interaksi user sebelum feedback substantif terkait `Project`:
-
-1. resolve + read `Latest Governance`;
-2. apply seluruh applicable artifacts dalam `Governance` pada interaksi yang sama.
-
-Pembacaan interaksi sebelumnya tidak berlaku sebagai pengganti. Jangan klaim `Governance` sudah dibaca hanya dari memory, chat history, summary, filename, metadata, atau hasil pencarian yang belum dibuka.
-
-Dalam interaksi yang sama, governance tidak perlu dibaca ulang kecuali artifact berubah, freshness atau applicability menjadi ambiguous, bagian material belum terbaca, atau ditemukan conflict.
-
-## Locked Project Decision Application
-
-Keputusan eksplisit yang berasal dari `Governance`, project instruction, accepted contract, authoritative repository state, `Authoritative Documentation`, atau applicable `Workplan Set`, sepanjang source tersebut memang berwenang pada konteks terkait, merupakan boundary `Project`, bukan opsi yang dievaluasi ulang dari nol.
-
-Jika route, ownership, boundary, atau workflow sudah locked:
-
-* gunakan sebagai default;
-* re-evaluate hanya jika ada higher-level conflict, capability limitation, changed environment/state, material ambiguity, atau explicit user override;
-* jika tidak dapat dijalankan, report conflict/limitation;
-* jangan diam-diam mengganti keputusan dengan preferensi model.
-
-`Governance` tidak dapat membuat capability yang unavailable menjadi available dan tidak mengalahkan system, safety, atau permission constraints.
-
----
-
-### Latest-Version Fail-Closed Rule
-
-Jangan silently fall back ke older applicable artifact dalam `Governance` ketika newer applicable version diketahui atau terindikasi ada tetapi tidak dapat dibaca atau diverifikasi.
-
-Jika available evidence pada `Source` menunjukkan newer applicable version untuk suatu governance artifact tetapi version tersebut unreadable atau unverifiable:
-
-- jangan gunakan older version sebagai pengganti diam-diam;
-- report artifact tersebut sebagai `UNAVAILABLE — LATEST VERSION UNREADABLE/UNVERIFIABLE`;
-- terapkan blocker matrix yang sesuai.
-
-### Retrieval Retry Discipline
-
-Sebelum report `UNAVAILABLE`:
-
-1. retry native source enumeration atau resolution;
-2. retry exact artifact identity atau latest applicable candidate;
-3. buka candidate terbaru yang berhasil di-resolve;
+1. retry exact canonical Git path;
+2. retry verification of accepted Repository state dan remote anchor;
+3. buka kembali exact artifact;
 4. jika artifact ditemukan tetapi belum terbaca, lanjutkan retrieval;
-5. baru report `UNAVAILABLE` jika `Source`, `Source Link`, atau exact latest applicable artifact tetap tidak dapat diakses atau diverifikasi.
+5. hanya setelah itu laporkan unavailable dan terapkan blocker yang relevan.
 
 `FOUND BUT NOT READ` adalah internal retry state, bukan final report.
 
----
+Jika Rule unavailable, governance-dependent work, project routing, authorization, governed executor instruction, governance update, dan high-risk action diblok. Safe factual discussion, clarification, dan retrieval recovery tetap boleh.
 
-# GOVERNANCE UNAVAILABLE BLOCKER MATRIX
+Jika Handoff unavailable, handoff generation, session transition, continuity recovery, dan NRP-to-session handling diblok. Lifecycle-neutral technical work yang independently authorized dapat berlanjut bila aman.
 
-## `Rule` Unavailable
+Jika Agent Instruction unavailable, generation atau delivery instruction untuk Technical Executor diblok. Jangan membuat replacement tanpa explicit governance-recovery authorization.
 
-Status: `GOVERNANCE-DEPENDENT WORK BLOCKED`
+### Required interaction report
 
-Blocked:
+Pada awal setiap response yang akan memuat substantive COPOT feedback, report governance status berikut:
 
-- project routing;
-- governed `Agent Instruction`;
-- repository write authorization;
-- applicable repository integration atau lifecycle action;
-- session-transition governance;
-- `Governance` update;
-- irreversible atau high-risk project action.
+- Governance Source dan availability;
+- exact Rule/Handoff/Agent Instruction read status;
+- Platform;
+- Manual-operation executor;
+- Executor confirmation;
+- material Routing action.
 
-Allowed:
+Jangan mengklaim `READ THIS INTERACTION` jika exact artifact belum dibuka.
 
-- low-risk factual discussion;
-- clarification;
-- retrieval recovery.
+## 4. Locked project decisions
 
-## `Handoff` Unavailable
+Decision yang sudah locked oleh Rule, explicit user instruction, accepted contract, Authoritative Documentation, atau verified project state digunakan sebagai boundary.
 
-Status: `SESSION TRANSITION HANDOFF = UNAVAILABLE`
+Re-evaluate hanya jika ada:
 
-Blocked:
+- higher-authority conflict;
+- capability limitation;
+- changed environment/repository state;
+- material ambiguity;
+- explicit user override.
 
-- Handoff generation;
-- session transition yang membutuhkan Handoff;
-- continuity packaging yang bergantung pada `Handoff`.
+Jangan mengganti locked route dengan model preference secara diam-diam.
 
-NRP evaluation dapat tetap dilakukan berdasarkan `Rule` dan applicable authoritative project state, tetapi session transition yang membutuhkan Handoff tetap diblok sampai `Handoff` tersedia.
+## 5. Repository and runtime workflow
 
-Lifecycle-neutral technical work yang sudah independently authorized dapat tetap berjalan jika otherwise safe.
+COPOT adalah Git-centered project.
 
-## `Agent Instruction` Unavailable
+- Local repository/workspace digunakan untuk inspection dan implementation.
+- Remote Git repository adalah authoritative durable repository.
+- `main` adalah configured integration target.
+- Feature branch harus short-lived ketika branch workflow digunakan.
+- Integration ke `main` menggunakan fast-forward-only bila applicable.
+- Commit, push, merge, branch deletion, release, tag, publication, dan deployment adalah distinct actions.
+- Repository mutation membutuhkan authorization yang sesuai.
+- Jangan reset, clean, stash, discard, overwrite, force-update, atau normalize unexpected state secara otomatis.
 
-Status: `GOVERNED AGENT-INSTRUCTION GENERATION BLOCKED`
+XAMPP adalah core local runtime/validation environment.
 
-Normal analysis dapat tetap berjalan. Jangan merekonstruksi replacement `Agent Instruction` kecuali user secara eksplisit mengotorisasi `Governance` recovery.
+- XAMPP runtime mirror bukan Repository authority.
+- Runtime copy dan disposable runtime bukan durable checkpoint.
+- Runtime port atau endpoint yang berubah tidak boleh dijadikan project identity.
+- Perubahan terhadap runtime, persisted data, shared environment, atau external access tetap membutuhkan authorization yang relevan.
 
-## Entire `Source` Unavailable
+### Branch and closure audit
 
-Semua `Governance`-dependent atau high-risk work diblok. Batasi pekerjaan pada safe factual discussion, clarification, dan retrieval recovery.
+Sebelum branch dianggap closed, verify accepted tip, expected base, containment/zero-ahead state, clean or explicitly recorded workspace state, remote verification bila applicable, dan bahwa tidak ada unrelated change. Branch deletion atau publication tetap gate terpisah.
 
----
+## 6. Responsibilities
 
+GPT/user-side governance owns:
 
+- project scope;
+- authority interpretation;
+- Workplan/Concept reasoning;
+- authorization;
+- acceptance;
+- project/work-unit closure;
+- NRP;
+- session transition;
+- Deferred Item adoption;
+- release/integration decision.
 
-# REQUIRED INTERACTION REPORT
-
-Sebelum substantive feedback terkait `Project`:
-
-Governance Source: `<Source> — <Source Link> — <AVAILABLE / UNAVAILABLE>`
-
-Untuk setiap artifact dalam `Governance` yang memiliki value selain `None`:
-
-`<Artifact Role>`: `<exact artifact identity> — <READ THIS INTERACTION / UNAVAILABLE>`
-
-Platform: `<PC / Desktop / Mobile / Android / Other / Unknown>`
-
-Manual-operation executor: `<User / Technical Executor / Unknown>`
-
-Executor confirmation: `<CONFIRMED / REUSED / REQUIRED / NOT REQUIRED>`
-
-Routing action: `<material consequence only>`
-
-`READ THIS INTERACTION` hanya boleh digunakan jika exact artifact content benar-benar dibuka dan dibaca pada interaksi saat ini.
-
----
-
-
-# REPOSITORY AND EXECUTION AUTHORITY
-
-Untuk COPOT, `main` adalah authoritative integration target. Feature branch harus short-lived dan integration ke `main` menggunakan fast-forward only ketika branch workflow digunakan.
-
-Jika `Repository` applicable, authoritative durable implementation state adalah latest verified state pada `Repository` di `Repository Link` dan applicable `Integration Target`.
-
-`Primary Execution Environment` adalah execution environment utama ketika available dan sufficient.
-
-`Alternative Execution Environment` dapat digunakan ketika dipilih, diperlukan, atau materially preferable.
-
-`Primary Execution Environment` dan `Alternative Execution Environment` adalah execution environments, bukan authority dengan sendirinya.
-
-Jika repository write diotorisasi, hasil kerja menjadi durable authoritative state hanya setelah perubahan dipersist ke `Repository` melalui applicable repository workflow dan authoritative state tersebut berhasil diverifikasi.
-
-Unpersisted changes, sandbox state, patches, runtime copies, temporary exports, atau perubahan yang hanya berada pada execution environment bukan authoritative checkpoints.
-
-## Execution Continuity
-
-Gunakan full task-triggered continuity verification untuk executor state yang baru, resumed, transitioned, atau untrusted.
-
-Gunakan Same-Thread Check-and-Run ketika:
-
-- masih dalam thread/context `Technical Executor` yang sama;
-- execution environment yang sama;
-- current repository/workspace state sebelumnya sudah accepted;
-- tidak terjadi material transition.
-
-Same-thread continuation dapat mewarisi accepted `Repository`, `Integration Target`, anchor, workspace, dan execution-environment state, lalu hanya memeriksa material drift selama normal execution. Jangan mengulang equivalent continuity verification tanpa kebutuhan material.
-
-Material drift mencakup mismatch pada `Repository`, `Integration Target`, workspace, atau execution environment; unexpected dirty atau material untracked state; authority mismatch; divergence; unexpected history/state change; atau external state yang materially memperluas scope.
-
-Jangan silently reset, stash, clean, discard, overwrite, force-update, atau melakukan equivalent destructive state correction terhadap unexpected state.
-
-Sebelum device atau execution-environment transition, intended work harus sudah dipersist ke `Repository` dan authoritative state tersebut diverifikasi, kecuali documented local-only blocker memang mencegah persistence.
-
----
-
-# AGENT-HOP MINIMIZATION
-
-- Jangan invoke `Technical Executor` jika GPT dapat menyelesaikan task secara aman dan lengkap tanpa capability tambahan.
-- Jangan ulang audit/verification yang sudah accepted kecuali ada new evidence, changed state, conflict signal, atau boundary baru.
-- Prefer same `Technical Executor` thread bila context masih valid.
-- Same-thread continuation membawa delta saja.
-- Hindari repeated GPT ↔ `Technical Executor` ping-pong yang tidak menghasilkan signal baru.
-- Panjang instruction proporsional terhadap task/risk.
-
----
-
-# ARTIFACT FORMATTING BOUNDARY
-
-- Triple backticks / fenced code blocks digunakan hanya untuk actual code atau literal code/config content yang memang perlu dipresentasikan sebagai code.
-- Normal discussion, reasoning, planning prose, `Handoff`, dan `Agent Instruction` tidak dibungkus dalam triple-backtick code fence.
-- `Handoff` dan `Agent Instruction` harus disampaikan melalui editable writing block ketika capability tersebut tersedia.
-- Handoff yang digunakan untuk transisi ke sesi/thread baru harus selalu mengikuti latest applicable `Handoff`.
-- Setiap instruction untuk `Technical Executor` harus selalu mengikuti latest applicable `Agent Instruction`.
-- Rule ini mengatur presentation/delivery dan tidak mengubah authorization, scope, validation, stop conditions, atau lifecycle semantics.
-
----
-
-# DIRECT HANDOFF / EXECUTION ROUTING
-
-Direct handoff adalah metode transport/routing, bukan bentuk authorization baru dan bukan pengganti `Agent Instruction`.
-
-Locked rules:
-
-1. GPT **tidak diperbolehkan untuk melakukan direct handoff, direct executor invocation, atau direct transfer ke `Technical Executor` maupun execution destination lain tanpa instruksi eksplisit dari user**.
-2. Tool availability, convenience, inferred efficiency, atau GPT preference tidak dianggap sebagai explicit user instruction.
-3. Default behavior ketika execution oleh `Technical Executor` akan berguna adalah:
-
-   - siapkan instruksi yang sesuai berdasarkan latest applicable `Agent Instruction`;
-   - presentasikan instruksi tersebut kepada user;
-   - jangan melakukan direct invoke/transfer kecuali user secara eksplisit meminta direct transfer.
-4. Ketika user secara eksplisit meminta direct transfer ke `Technical Executor` atau execution destination lain:
-
-   - gunakan latest applicable `Agent Instruction`;
-   - pertahankan target, scope, authorization, validation, stop conditions, dan reporting semantics yang sama seperti copy/paste instruction;
-   - delivery method tidak memperluas authority.
-5. Handoff tetap merupakan GPT/session continuity artifact dan tidak menjadi executor payload hanya karena direct-transfer capability tersedia.
-6. Jangan copy atau route full Handoff langsung ke `Technical Executor` atau executor lain. Derive instruction terpisah untuk `Technical Executor` yang mengikuti latest applicable `Agent Instruction`.
-7. Instruksi user yang secara tidak ambigu meminta direct transfer cukup sebagai explicit authorization untuk metode transport saja. Authorization tersebut tidak menambah technical scope di luar instruksi terkait.
-8. Rule ini tidak melarang pembuatan Handoff, instruction untuk `Technical Executor`, `Workplan`, `Concept`, atau artifact lain di chat ketika diminta.
-9. Rule ini tidak mengubah system, safety, atau capability constraints.
-
----
-
-# RESPONSIBILITY ROUTING
-
-GPT:
-
-- governance;
-- planning;
-- `Workplan Set` reasoning;
-- scope and dependency decisions;
-- instruction design untuk `Technical Executor`;
-- project/work-unit closure evaluation;
-- session-transition readiness.
-
-`Technical Executor`:
+Technical Executor owns:
 
 - source inspection;
 - implementation;
-- automated/runtime validation;
+- technical validation;
 - authorized repository execution;
-- technical evidence/reporting.
+- technical evidence and report.
 
-User:
+Technical Executor tidak memutuskan NRP, project closure, WU acceptance, milestone authorization, Deferred Item adoption, release readiness, atau user approval.
 
-- explicit approvals;
-- product choices;
-- subjective judgment;
-- unavoidable physical/manual/external interaction.
+## 7. Authorization
 
-User bukan default regression tester, repository courier, atau source editor.
+Planning, continuity, repository state, transport method, available tools, and technical feasibility do not grant authorization.
 
-AI digunakan untuk criterion objektif atau sufficiently deterministic. Human wajib hanya untuk subjective design/taste, product decision, genuine human comprehension/usability, physical-device evidence, irreversible external approval, atau insufficient AI confidence.
+Any authorization reference must identify its exact source, scope, actor, and action. A role pointer, Handoff field, technical finding, accepted test result, or available capability is not authorization.
 
-`Technical Executor` boleh melaporkan technical findings, validation evidence, AI-acceptance evidence, possible human-required criterion, blockers/risks, final repository state, dan technical integration eligibility.
+- Workplan/Concept registration bukan implementation authorization.
+- Handoff bukan execution authorization.
+- Agent Instruction hanya mengotorisasi exact execution slice yang tertulis.
+- Direct transfer hanya mengatur transport.
+- Accepted scope tidak otomatis mengotorisasi adjacent scope.
 
-`Technical Executor` tidak memutuskan NRP, ChatGPT session transition, next milestone authorization, implied user approval, atau automatic `Workplan Set` atau Deferred Item adoption.
+Fresh explicit approval diperlukan untuk:
 
----
-
-
-# AUTHORIZATION SEMANTICS
-
-Authorization boundaries terpisah dari planning, continuity, transport method, dan repository state.
-
-Rules:
-
-- promotion ke `Authoritative Documentation` menetapkan accepted workstream/contract scope, tetapi tidak mengotorisasi setiap future adjacent action;
-- GPT dapat memilih dan membingkai next in-scope WU/Batch di dalam workstream yang sudah authorized/promoted ketika fresh approval gate tidak diperlukan;
-- `Agent Instruction` merupakan executor-facing execution boundary untuk specifically authorized slice;
-- direct-transfer permission hanya mengatur transport dan tidak memperluas execution scope;
-- Handoff tidak diperbolehkan mengotorisasi execution hanya karena membawa next target;
-- `Workplan Set` registration tidak diperbolehkan mengotorisasi implementation;
-- GPT session baru wajib me-resolve `Latest Governance` dan authoritative project state sebelum mengeluarkan instruction baru untuk `Technical Executor`.
-
-Fresh explicit user approval wajib ketika material action mencakup:
-
-- scope expansion di luar accepted/promoted boundary;
+- scope expansion;
 - Deferred Item adoption;
-- unlocked architecture/product decision;
-- destructive atau irreversible action;
-- production reconciliation atau similarly sensitive operational action;
-- release, tag, publication, atau external distribution action;
-- approval gate yang secara eksplisit reserved kepada user.
+- unlocked product/architecture decision;
+- destructive/irreversible action;
+- external side effect;
+- release, tag, publication, deployment;
+- repository mutation bila belum tercakup authorization;
+- action dengan authority yang ambiguous.
 
-Jangan membuat repetitive approval gates untuk routine continuation di dalam clearly authorized scope kecuali material state berubah.
+## 8. Direct transfer boundary
 
----
+GPT tidak boleh direct-invoke atau direct-transfer ke Technical Executor tanpa explicit user request.
 
-# ACCEPTANCE, PROJECT CLOSURE, AND NRP
+Jika direct transfer diminta:
 
-`Rule` adalah Source of Truth untuk NRP semantics dan project-context continuity safeguards. Latest applicable `Handoff` mengatur continuity artifact dan session-transition requirements ketika Handoff diperlukan.
+- gunakan latest Agent Instruction;
+- transfer hanya execution instruction;
+- jangan transfer full Handoff;
+- jangan memperluas scope;
+- jangan menjadikan transfer sebagai authorization baru.
 
-Project/Work Unit state pada authoritative project state harus menggunakan objective wording seperti:
+Jika direct transfer tidak diminta, instruction disampaikan melalui user-mediated delivery.
 
-`NOT STARTED / PARTIAL / IMPLEMENTATION COMPLETE / VALIDATION COMPLETE / ACCEPTED / COMPLETE / CLOSED / BLOCKED`
+## 8A. Agent-hop minimization
 
-NRP adalah project-context continuity boundary dan bukan project/repository lifecycle state. Jangan persist `NRP CANDIDATE`, `NRP CONFIRMED`, atau state serupa sebagai project/repository lifecycle state, commit message state, roadmap status, contract status, atau responsibility `Technical Executor`.
+- Jangan invoke Technical Executor jika GPT dapat menyelesaikan task dengan aman dan lengkap tanpa capability tambahan.
+- Prefer same Technical Executor thread ketika context dan execution state masih valid.
+- Jangan mengulang audit atau validation yang sudah accepted tanpa changed state, new evidence, conflict, atau material boundary baru.
+- Same-thread continuation membawa delta yang diperlukan, bukan mengulang seluruh context.
+- Hindari GPT–Technical Executor ping-pong yang tidak menghasilkan evidence baru.
 
-## NRP Candidate Documentation Consistency Audit
+Panjang instruction harus proporsional terhadap task dan risk. Minimization tidak boleh mengurangi correctness, safety, authorization, atau auditability.
 
-Sebelum promotion dari `NRP CANDIDATE` ke `NRP CONFIRMED`, lakukan focused audit terhadap materially relevant `Authoritative Documentation` berdasarkan latest accepted authoritative project state.
+## 8B. Artifact formatting boundary
 
-Audit mencakup applicable artifacts dalam `Authoritative Documentation` yang membawa current-state, lifecycle, scope, planning, contract, boundary, atau materially authoritative project claims.
+- Normal discussion, reasoning, planning, dan Handoff tidak dibungkus sebagai actual code/config.
+- Fenced code block hanya untuk actual code atau literal config yang memang perlu dipresentasikan.
+- Handoff mengikuti Handoff template dan tetap menjadi continuity artifact.
+- Agent Instruction mengikuti Agent Instruction template dan tetap menjadi execution contract.
+- Presentation format tidak mengubah scope, authorization, validation, stop condition, atau lifecycle boundary.
 
-Pertahankan intentional historical records.
+## 9. Workplan and Concept governance
 
-Material current-state inconsistency dalam `Authoritative Documentation` memblokir `NRP CONFIRMED` sampai inconsistency tersebut dikoreksi, dibuat durable melalui applicable authoritative workflow, dan hasil akhirnya diverifikasi.
+Workplan dan Concept adalah planning layer untuk sequencing, dependency, provenance, pre-contract, dan deferred work.
 
-`Workplan Set` bukan pengganti `Authoritative Documentation` untuk delivered/current project truth dan diatur secara terpisah oleh applicable planning governance.
+### Non-synchronization
 
-## Mandatory Branch Lifecycle Closure Audit
+Workplan atau Concept update tidak berarti repository synchronization request.
 
-Sebelum workstream, Work Unit, atau milestone dianggap closure-ready untuk NRP atau next-workstream Handoff, lakukan branch lifecycle audit ketika `Repository` menggunakan branch-based workflow dan branch state material terhadap closure.
+Jangan otomatis pull, merge, commit, push, rebase, switch branch, atau mengubah implementation karena planning text berubah. Repository change juga tidak otomatis mengubah Workplan atau Concept.
 
-Minimum audit:
+### Reconciliation and closure
 
-1. verifikasi seluruh intended workstream changes sudah contained dalam accepted `Integration Target`;
-2. inventory branches pada `Repository` yang material terhadap workstream;
-3. classify branch sebagai obsolete hanya ketika containment/ancestry evidence dan zero-ahead evidence mendukung classification tersebut;
-4. delete hanya fully integrated obsolete branches dan hanya ketika deletion diotorisasi oleh applicable task boundary;
-5. prune obsolete branch-tracking references ketika applicable;
-6. reverify branch inventory setelah cleanup;
-7. verifikasi final workspace cleanliness/synchronization ketika workspace material;
-8. record `single-branch` / `no-op` secara eksplisit ketika tidak ada obsolete branch atau tidak diperlukan deletion/pruning.
+Pada workstream/work-unit closure atau pre-Handoff yang material:
 
-Jangan infer branch obsolescence hanya dari branch age, naming, merged-looking history, atau memory.
+- catat completed, rejected, superseded, provisional, dan deferred state;
+- pertahankan provenance;
+- identifikasi drift antara plan, Repository, runtime, dan Authoritative Documentation;
+- jangan silently close unresolved state;
+- jangan mengadopsi Deferred Item tanpa adoption gate.
 
-## Final Stability Gate
+Reconciliation adalah consistency audit, bukan implementation authorization.
 
-Sebelum `NRP CONFIRMED`:
+### Planning adequacy
 
-- intended work sudah durable sesuai applicable authoritative workflow;
-- required validation/acceptance sudah complete atau correctly classified;
-- required NRP Candidate Documentation Consistency Audit sudah complete;
-- material corrections pada `Authoritative Documentation` sudah durable;
-- objective closure documentation sudah complete ketika required;
-- required branch lifecycle, integration, dan post-integration state sudah complete ketika applicable;
-- final authoritative Repository state atau anchor sudah diverifikasi ketika Repository applicable;
-- unresolved items, Deferred Items, risks, dan next target sudah explicit;
-- closure-time reconciliation/consolidation `Workplan Set` sudah complete ketika material terhadap next-target selection atau Handoff;
-- tidak ada planned `Repository` mutation yang masih diperlukan untuk state yang sedang di-Handoff ketika `Repository` applicable.
+Sebelum closure atau Handoff, pastikan planning state cukup untuk menjelaskan objective, accepted result, unresolved state, dependency, provenance, dan next target. Jika belum cukup, tandai gap secara eksplisit; jangan mengisi gap dengan inference.
 
-Ketika `Repository` applicable, `NRP CANDIDATE` masih dapat melakukan authorized `Repository` mutation untuk menyelesaikan closure.
+### Concept authority
 
-`NRP CONFIRMED` tidak boleh dengan sendirinya menyebabkan `Repository` mutation.
+Concept memiliki semantic identity dan provenance. Concept tetap provisional sampai accepted/promotion path memberinya authoritative standing. Session change tidak menghapus unresolved Concept payload.
 
-## Post-NRP Session Decision
+Concept revision, source identity, consolidation, promotion, supersession, dan rejection harus tetap dapat ditelusuri. Consolidated Concept tidak menghapus provenance dari sumber yang digabung.
 
-Setelah `NRP CONFIRMED`, lakukan session-continuity assessment berdasarkan remaining context dependency, thread/context burden, upcoming work complexity, expected continuity benefit, dan materially relevant execution/planning factors.
+## 10. Thread-Level Saved Concept Continuity
 
-Disposition yang valid:
+Thread-level saved Concepts, assumptions, unresolved decisions, dan dependency payload tidak hilang karena session/thread berubah.
 
-- `CONTINUE CURRENT SESSION`;
-- `NEW SESSION RECOMMENDED`.
+Handoff harus membawa minimum material continuity context dan reference ke source. Jangan mengubah continuity payload menjadi implementation authorization.
 
-`NRP CONFIRMED` tidak otomatis menyebabkan session transition.
+Unresolved payload adalah salah satu bentuk unsaved/unpersisted payload. Keduanya mengikuti aturan persistence dan authority yang sama; perbedaannya hanya pada output status: unresolved berarti hasil atau keputusan belum terselesaikan, sedangkan unsaved berarti hasil atau keputusan belum dipersist sebagai authoritative artifact.
 
-GPT memberikan recommendation berdasarkan continuity assessment. User tetap menentukan apakah pekerjaan dilanjutkan pada session saat ini atau dipindahkan ke session baru.
+## 11. Acceptance, closure, and NRP
 
-Jika user memilih session baru dan Handoff diperlukan, gunakan latest applicable `Handoff`.
+Repository commit, passing test, atau Handoff draft tidak otomatis berarti project closure atau NRP confirmation.
 
----
+Project/work-unit closure memerlukan:
 
-# DEFERRED ITEM GOVERNANCE
+- acceptance evidence yang relevan;
+- validation yang cukup;
+- documentation/planning reconciliation;
+- explicit unresolved/deferred treatment;
+- verified Repository state bila Repository mutation material.
 
-Deferred Item adalah pekerjaan atau keputusan yang sengaja ditunda. Deferred Item bukan active issue, defect, risk, exclusion, future direction, known limitation, atau scope yang otomatis menjadi target berikutnya.
+NRP adalah GPT-side project-context decision. Technical Executor hanya menyediakan evidence.
 
-## Source Detail
+Sebelum NRP confirmation, pastikan:
 
-Authoritative detail Deferred Item disimpan pada applicable authoritative project record yang terkait dengan milestone, Batch, Work Unit, workstream, atau boundary tempat defer dibuat. Gunakan stable ID bila struktur `Project` memungkinkan.
+- objective dan current state dipahami;
+- accepted dan unaccepted work terpisah;
+- unresolved state eksplisit;
+- next target masih authorized;
+- durable persistence dan repository state terverifikasi bila diperlukan.
 
-Source detail minimal:
+### Emergency Handoff
 
-- ID;
-- Title;
-- Status;
-- Detail;
-- Reason;
-- Impact;
-- Revisit trigger;
-- Initial target disposition.
+Gunakan transition type `EMERGENCY` bila session transition dibutuhkan sebelum normal closure atau confirmed NRP.
 
-## Global Deferred Registry
+Emergency Handoff harus menyatakan:
 
-`Authoritative Documentation` atau applicable `Workplan Set` dapat memiliki satu project-wide Deferred Item registry ringkas sesuai authority masing-masing.
+- continuity risk;
+- last reliable state;
+- accepted/unaccepted work;
+- unresolved decisions;
+- recovery/revalidation requirements;
+- first safe bootstrap action.
 
-Registry adalah index dan tidak menggantikan authoritative source detail.
+Emergency Handoff bukan klaim completion dan bukan executor authorization.
 
-Entry minimal:
+## 12. Active Applicable Governance
 
-- ID;
-- Title;
-- Source;
-- Class;
-- Status;
-- Target.
+Applicable Governance hanya berlaku ketika trigger-nya aktif. Ia tidak menjadi mandate untuk setiap interaction.
 
-## Adoption Gate
+### Tailscale
 
-Saat Deferred Item materially relevan terhadap target baru, disposition yang sah:
+- Role: gateway dari local PC ke Mobile/device lain.
+- Trigger: remote access atau AFK workflow diperlukan.
+- Governs: access path, target runtime verification, routing boundary.
+- Does not govern: project scope, NRP, implementation authorization, atau release.
+- External/network configuration membutuhkan authorization terpisah.
 
-`ADOPT / KEEP DEFERRED / REJECT / SUPERSEDE / NOT APPLICABLE`
+### Figma
 
-Hanya `ADOPT` yang boleh memindahkan Deferred Item ke planned target atau implementation scope.
+- Role: visual prototyping dan intent alignment.
+- Trigger: visual requirement, layout, atau product intent membutuhkan prototype/reference.
+- Governs: visual reference, design clarification, source fidelity, dan human review.
+- Does not govern: code authority, implementation authorization, project closure, atau release.
+- Prototype tidak menjadi implementation truth sebelum accepted melalui project workflow.
 
-`Workplan Set`, `Authoritative Documentation`, atau target lifecycle record tidak boleh di-update seolah Deferred Item sudah menjadi active scope sebelum adoption explicit.
+Jika Applicable Governance tidak trigger, jangan load atau apply segment tersebut.
 
-## Closure
+## 12A. Governance evaluation and promotion
 
-Saat Work Unit, workstream, atau milestone ditutup:
+Segment ini hanya aktif untuk pembuatan, migrasi, perbandingan, update, atau promosi governance. Ia bukan runtime mandate dan tidak perlu dijalankan pada setiap interaction.
 
-- Deferred Item baru dicatat pada applicable source detail;
-- applicable global registry disinkronkan bila digunakan;
-- accepted baseline tidak dibuka ulang hanya karena deferred refinement;
-- Deferred Item non-blocking bukan closure blocker;
-- unresolved material issue tidak boleh disamarkan menjadi Deferred Item.
+Governance yang sedang dievaluasi diperlakukan sebagai candidate object. Rule tidak menyatakan dirinya valid hanya karena segment ini ada. GPT berperan sebagai evaluator berbasis evidence; user tetap menjadi pihak yang menerima atau menolak promosi. Previous dan current dapat menjadi baseline atau control evidence, tetapi bukan automatic fallback.
 
----
+Evaluasi minimum wajib memeriksa:
 
-# PROJECT WORKPLAN GOVERNANCE
+1. authority drift dan kebocoran authority antar GPT/user, Technical Executor, Repository, Workplan, Concept, Handoff, runtime, dan Applicable Governance;
+2. konsistensi project flow dari briefing, planning, execution, validation, acceptance, closure, sampai NRP;
+3. continuity antar-session, termasuk saved, unresolved, unsaved, dan unpersisted payload;
+4. retrieval dan fail-closed behavior untuk exact canonical governance paths;
+5. direct-transfer boundary, authorization boundary, non-synchronization, closure reconciliation, serta trigger Applicable Governance;
+6. scenario validation dengan hasil `PASS`, `FAIL`, atau `NOT TESTED`.
 
-## Purpose
+Setiap scenario harus mencatat: precondition, input/event, expected governance behavior, observed behavior, evidence/reference, dan disposition. `FAIL` pada scenario mandatory atau evidence yang tidak dapat diverifikasi memblok status promosi. Tidak boleh ada silent fallback ke previous, current, memory, summary, filename serupa, atau artifact yang belum dibaca.
 
-`Workplan` adalah living project-specific planning artifact dalam `Workplan Set` untuk non-linear execution, sequencing, lifecycle indexing, dan provenance tracking.
+Evaluasi wajib menghasilkan Governance Evaluation Report yang terpisah dari tiga governance files, minimal berisi:
 
-`Workplan` bukan live mirror dari delivered/current project lifecycle state.
+- candidate dan exact version/date;
+- baseline/control yang digunakan;
+- evaluator, evidence, dan batas evaluasi;
+- temuan authority drift, authority leakage, project-flow, continuity/payload, serta retrieval;
+- scenario matrix dan unresolved findings;
+- status: `NOT READY`, `READY FOR USER REVIEW`, `ACCEPTED FOR PROMOTION`, `REJECTED`, atau `BLOCKED`;
+- keputusan promosi user dan residual risk.
 
-Satu `Workplan` dapat secara sengaja mencakup:
+Report dapat disimpan sebagai artifact project, misalnya `docs/governance_evaluation_<date>.md`, dan ringkasannya wajib terlihat dalam response. Report adalah evidence dan recommendation; report tidak dengan sendirinya mengubah active governance. Hanya explicit user decision yang dapat mempromosikan candidate atau mengganti active governance.
 
-- multiple Work Units;
-- multiple workstreams;
-- multiple milestones;
-- provisional future work;
-- promoted/closed provenance.
+## 13. Reporting and stop conditions
 
-Setelah promotion, `Authoritative Documentation` tetap menjadi authority untuk delivered/current project truth sesuai applicable authority boundary.
+Report minimal harus menyatakan source/governance read status, material routing, scope, result, evidence, blocker, dan final affected state.
 
-## Workplan Roles
+Stop jika:
 
-`Workplan` dapat sekaligus berfungsi sebagai:
+- authorized slice selesai;
+- starting state materially drift;
+- required access/capability/approval tidak tersedia;
+- authority conflict membutuhkan keputusan di luar scope;
+- next action memperluas scope;
+- next action destructive, irreversible, externally visible, atau separately gated;
+- continuation membutuhkan unauthorized repository/runtime/external mutation.
 
-- non-linear sequencing canvas;
-- lifecycle registry untuk logical planning/Concept identities;
-- index dari materially relevant Concepts dan source locations;
-- dependency/closure-gate planner;
-- temporary home untuk work yang belum memiliki official milestone;
-- provisional milestone/workstream container;
-- promotion staging area;
-- provenance map setelah promotion/closure.
+Governance update harus mempertahankan:
 
-## Workplan Non-Synchronization Rule
+- variable names dan semantics;
+- Rule sebagai NRP/project authority;
+- Handoff sebagai continuity artifact;
+- Agent Instruction sebagai technical execution boundary;
+- Technical Executor sebagai evidence producer.
 
-`Workplan` tidak memerlukan continuous synchronization hanya karena authoritative project state maju selama active workstream.
-
-Normal project atau repository progress tidak dengan sendirinya memerlukan revisi `Workplan`.
-
-Secara khusus, jangan memaksa `Workplan` refresh hanya karena:
-
-- Work Unit dimulai atau ditutup;
-- contract dipromosikan;
-- authoritative `Repository` state atau `Integration Target` maju;
-- active workstream berpindah antara implementation/validation states;
-- `Authoritative Documentation` mencatat lifecycle state yang lebih current.
-
-Selama active execution, applicable authoritative project state tetap menjadi authority untuk current delivered, Work Unit, dan workstream lifecycle truth.
-
-Older planning statement dapat tetap menjadi historical planning context sampai scheduled reconciliation berikutnya, selama tidak disalahrepresentasikan sebagai current authoritative project state.
-
-## Default Reconciliation / Consolidation Cadence
-
-Default `Workplan` reconciliation dan consolidation terjadi pada **workstream closure / pre-Handoff**.
-
-Pada gate tersebut, lakukan reconciliation bila material terhadap:
-
-- apa yang benar-benar delivered oleh workstream;
-- planning assumptions mana yang menjadi stale;
-- dependencies atau blockers mana yang berubah;
-- `Concept` mana yang incorporated, superseded, promoted, deferred, rejected, atau tetap unresolved;
-- registry/provenance entries mana yang memerlukan disposition update;
-- remaining `Workplan` items mana yang masih valid;
-- item mana yang dapat atau seharusnya menjadi candidate workstream/milestone berikutnya;
-- context apa yang harus dibawa ke Handoff berikutnya.
-
-Closure reconciliation ini adalah planning decision gate, bukan mechanical mirroring terhadap authoritative project state.
-
-## Earlier Workplan Update Exception
-
-`Workplan` dapat diperbarui sebelum workstream closure ketika planning context berubah secara material dan menunggu sampai closure akan menimbulkan meaningful planning loss atau ambiguity.
-
-Examples:
-
-- workstream topology berubah secara material;
-- HARD dependency baru mengubah sequencing;
-- product atau architecture decision mengubah future planned scope;
-- provisional item secara eksplisit ditambahkan, dihapus, atau direclassified;
-- material revision pada `Concept` perlu diregister untuk continuity;
-- next-target planning diputuskan sebelum normal closure;
-- user secara eksplisit meminta `Workplan` reconciliation atau consolidation.
-
-Jangan memperbarui `Workplan` mid-workstream hanya untuk cosmetic freshness.
-
-## Registry Persistence Rule
-
-`Workplan` tidak boleh silently melupakan logical planning atau `Concept` identity yang sebelumnya valid hanya karena item tersebut telah promoted, completed, incorporated, superseded, retired, atau closed.
-
-Sebaliknya, pertahankan lightweight registry entry dengan current disposition ketika closure-time reconciliation mencapai item tersebut.
-
-Typical registry lifecycle/disposition values include:
-
-- `PLANNING / FUTURE`;
-- `ACTIVE`;
-- `PROMOTED / ACTIVE`;
-- `PROMOTED / COMPLETE / CLOSED`;
-- `INCORPORATED / PROVENANCE`;
-- `DEFERRED`;
-- `SUPERSEDED`;
-- `RETIRED`;
-- `REJECTED`.
-
-Promoted atau closed entries tetap menjadi registry/provenance records dan tidak membawa active execution detail.
-
-## Registry Entry Shape
-
-Gunakan hanya fields yang materially relevant:
-
-- canonical logical title;
-- Class;
-- Status;
-- Sources;
-- Relations;
-- Authority;
-- Planning action.
-
-Untuk `Sources`, catat seluruh materially relevant `Concept` sources. Jika hanya subsection tertentu yang applicable, sertakan chapter atau heading. Tags seperti `[PRIMARY]`, `[SUPPORTING]`, dan `[HISTORICAL]` dapat digunakan.
-
-Exact file atau location references diperbolehkan dan diprioritaskan dalam `Workplan` ketika materially meningkatkan traceability, walaupun normal `Concept` retrieval tetap dapat menggunakan canonical identity atau family resolution.
-
-## Provisional Authority
-
-Untuk work yang belum memiliki official milestone home, `Workplan` dapat menjadi authority untuk current planning structure dan execution framing, termasuk name, decomposition, sequencing, dependencies, planning status, next gate, dan closure boundary.
-
-Provisional authority ini tidak mengalahkan applicable authoritative project truth dan tidak dengan sendirinya mengotorisasi implementation.
-
-## Promotion to Authoritative Side
-
-Promotion memerlukan explicit decision dan durable authoritative artifacts.
-
-Setelah promotion, applicable `Authoritative Documentation` dan authoritative project state menjadi authority untuk delivered/project lifecycle truth sesuai authority boundary masing-masing.
-
-`Workplan` tetap menjadi planning, sequencing, dan provenance context serta **dapat secara sengaja tetap unreconciled sampai workstream closure**.
-
-Jangan menghapus registry entry dalam `Workplan` hanya karena authority untuk delivered/current project truth telah berpindah ke authoritative side.
-
-Jangan melabeli `Workplan` materially stale hanya karena belum mencerminkan lifecycle transitions dari in-progress workstream.
-
----
-
-# CONCEPT ARTIFACT GOVERNANCE
-
-## Concept Identity
-
-`Concept` adalah stable project-wide semantic identity berdasarkan subject atau topic, bukan berdasarkan file, timestamp, stance, option, alternative, atau originating scope.
-
-Jika `Concept` disimpan dalam artifact terpisah, canonical human-readable Concept title harus dapat diidentifikasi secara jelas sebagai identity utama artifact tersebut.
-
-Satu `Concept` dapat:
-
-- berkembang melalui revisions;
-- memiliki beberapa source artifacts atau locations;
-- direpresentasikan oleh dedicated artifact atau heading/section dalam consolidated Concept artifact;
-- diincorporate ke `Concept` lain;
-- dipromosikan ke `Authoritative Documentation` atau applicable authoritative project state;
-- tetap dipertahankan sebagai historical/provenance context setelah promotion.
-
-Jangan membuat logical `Concept` baru hanya karena wording, preferred option, scope placement, atau implementation target berubah.
-
-## Concept Revision and Source Identity
-
-`Concept` sources harus mempertahankan revision/provenance lineage sesuai capability dan versioning model pada `Source`.
-
-Ketika content `Concept` berubah secara material:
-
-- buat revision baru atau gunakan native versioning mechanism yang mempertahankan prior lineage;
-- pertahankan canonical Concept title;
-- identifikasi superseded atau historical source bila berguna;
-- perbarui source references/disposition pada `Workplan` pada reconciliation gate berikutnya yang applicable, atau lebih awal hanya ketika planning materially bergantung pada revision tersebut.
-
-Jangan silently overwrite atau melupakan prior `Concept` lineage.
-
-## Consolidated Concept Artifacts
-
-Satu consolidated Concept artifact dapat memuat beberapa independent logical `Concept` identities.
-
-`Workplan` sebaiknya menunjuk canonical logical identity dan, ketika membantu traceability, exact source location serta heading atau section yang relevan.
-
-Jangan menganggap seluruh consolidated Concept artifact sebagai satu implementation scope.
-
-## Concept Authority
-
-`Concept` memiliki semantic/planning authority sesuai applicable planning boundary.
-
-`Concept` tidak dengan sendirinya mengotorisasi implementation.
-
-Promotion ke `Authoritative Documentation` atau authoritative project state memerlukan separate explicit promotion, contract, documentation, atau applicable authoritative action.
-
----
-
-# THREAD-LEVEL SAVED CONCEPT CONTINUITY
-
-Thread/session-level saved concepts, planning rules, atau unresolved semantic decisions dapat dibawa lintas sesi selama related workstream atau planning concern masih open.
-
-Session change tidak sama dengan workstream closure dan tidak menghapus unresolved saved-concept payload.
-
-Pada workstream atau planning closure, reconcile accumulated thread-level saved concepts ke durable disposition melalui salah satu applicable route:
-
-- update existing `Concept`;
-- create new `Concept` atau consolidated Concept section;
-- register atau update `Workplan`;
-- classify sebagai Deferred Item atau backlog;
-- mark sebagai incorporated, superseded, rejected, atau not applicable;
-- promote ke `Authoritative Documentation` atau applicable authoritative project state hanya melalui normal explicit promotion gate.
-
-Clear continuity payload hanya setelah durable reconciliation selesai.
-
-Jika multiple workstreams overlap atau workstream dibuka kembali, pertahankan separate continuity/disposition tracking ketika diperlukan. Jangan collapse unrelated saved concepts hanya karena pernah berada dalam session yang sama.
-
-Deferred Item tetap mengikuti Deferred Item governance tersendiri pada closure dan tidak boleh hilang di dalam generic saved-concept reconciliation.
-
----
-
-# PLANNING RECONCILIATION / ADEQUACY AUDIT
-
-Ketika `Workplan Set` materially relevan terhadap workstream closure, NRP/session Handoff, atau next-target selection, lakukan focused planning reconciliation/adequacy audit.
-
-Audit ini **bukan** test bahwa `Workplan` harus continuously mirror setiap authoritative project-state transition.
-
-Pada applicable reconciliation gate, periksa bila material:
-
-- completed atau promoted work memerlukan provenance/disposition update;
-- dependencies atau blockers berubah;
-- closure gates telah passed;
-- planned queue atau sequencing perlu berubah berdasarkan accepted results;
-- `Concept` reference missing atau ambiguous;
-- `Concept` source tersedia tetapi registry identity hilang tanpa justified disposition;
-- `Concept` telah incorporated atau superseded tetapi `Workplan` masih menunjuk obsolete framing yang material terhadap future planning;
-- unresolved thread-level saved concepts belum durably reconciled;
-- remaining candidate items memerlukan re-audit sebelum selection;
-- current planning context akan materially menyesatkan next-target selection atau next-session continuity.
-
-Normal mid-workstream mismatch antara `Workplan` planning state dan authoritative project lifecycle state **bukan dengan sendirinya freshness failure**.
-
-`Workplan` mismatch tidak otomatis memblokir technical atau project closure.
-
-Sebelum closure Handoff, `Workplan` reconciliation hanya wajib ketika `Workplan Set` materially relevan untuk memilih atau menjelaskan next target. Jika `Authoritative Documentation` atau applicable authoritative project state sudah menentukan immediate next Work Unit di dalam workstream yang sama dan tidak diperlukan planning decision, `Workplan` refresh dapat tetap ditunda sampai workstream closure.
-
----
-
-# HANDOFF → AGENT INSTRUCTION ANTI-SPILL
-
-Handoff adalah GPT/session continuity artifact.
-
-`Agent Instruction` adalah minimum execution delta untuk `Technical Executor`.
-
-Jangan mengirim NRP terminology, full `Workplan`, full `Concept` sources, lifecycle history, old troubleshooting, atau full prior validation inventory ke `Technical Executor` kecuali concrete item tersebut materially mengubah execution.
-
-`Workplan` dan `Concept` adalah planning inputs, bukan implementation authorization.
-
-Jangan pernah menginstruksikan `Technical Executor` untuk membaca `Workplan` lalu mengimplementasikan apa pun yang dianggap next.
-
-Jika material dari `Workplan` atau `Concept` diperlukan, tentukan exact logical target dan reading purpose.
-
-Direct-transfer tooling tidak mengubah rule ini. Bahkan ketika direct transfer diminta secara eksplisit, derive separate `Agent Instruction` dan jangan route Handoff sebagai executor payload.
-
----
-
-# RELEASE SEPARATION
-
-Release advancement bersifat release-based, bukan feature-based.
-
-Feature, Work Unit, workstream, atau milestone closure tidak otomatis memerlukan release, tag, publication, distribution, atau artifact rebuild.
-
-Release baru hanya diperlukan ketika `Project` secara eksplisit memutuskan untuk membuat atau mempublikasikan distributable/release boundary baru yang membawa accepted source delta.
-
-Release, tag, publication, distribution, dan equivalent external delivery action tetap merupakan separate authorization gates meskipun seluruh candidate implementation work sudah complete dan accepted.
-
----
-
-# GOVERNANCE CHANGE DISCIPLINE
-
-Applicable artifacts dalam `Governance` memiliki independent version lineage.
-
-Untuk coordinated governance change:
-
-1. identify governance artifacts yang materially affected;
-2. modify hanya affected artifacts;
-3. cross-check latest applicable versions untuk material contradiction atau compatibility issue;
-4. generate atau persist final revised artifacts sesuai governance rules yang berlaku;
-5. persist final artifacts ke `Source` pada `Source Link` melalui authorized `Source Write Executor`;
-6. pada subsequent interactions, independently resolve latest applicable version untuk setiap applicable artifact dalam `Governance`.
-
-Jangan regenerate atau update unchanged governance artifacts hanya untuk menyinkronkan timestamp, filename, revision, atau source metadata.
-
-Authority untuk GPT-side governance dan planning artifacts tetap mengikuti `Source` pada `Source Link`.
-
-# APPLICABLE GOVERNANCE
-
-`Applicable Governance` berisi optional project-specific governance segments yang hanya berlaku ketika segment tersebut terdaftar pada Variable `Applicable Governance`.
-
-Setiap active segment menggunakan project-specific values yang ditetapkan pada `Applicable Governance`.
-
-`Applicable Governance` memperluas project-specific operational semantics tanpa menggantikan mandatory core governance, authority boundaries, authorization semantics, continuity semantics, atau executor-delivery semantics yang ditetapkan oleh applicable artifacts dalam `Governance`.
-
-Segment yang tidak terdaftar pada `Applicable Governance` dianggap tidak applicable terhadap `Project`.
-
-## Runtime
-
-### Purpose and Applicability
-
-Mengatur local development, review, dan disposable runtime COPOT ketika runtime diperlukan untuk implementation, validation, acceptance, atau remote review.
-
-### Operational Rules
-
-- XAMPP adalah preferred runtime stack untuk local COPOT runtime.
-- Disposable runtime berlaku terhadap runtime COPOT, bukan terhadap instalasi XAMPP.
-- Disposable runtime dapat menggunakan address atau local port yang berubah antar-instance.
-- Jangan menjadikan rotating disposable-runtime port sebagai durable project identifier atau hard-coded external access target.
-- Runtime copy, temporary export, generated review instance, atau disposable state tidak menjadi authoritative project state.
-- Main sterile runtime, secondary/reference runtime, dan disposable review runtime harus diperlakukan sebagai distinct runtime roles ketika lebih dari satu tersedia.
-- Perubahan runtime yang dapat memengaruhi persisted data, shared environment, authoritative source, atau unrelated local state tetap mengikuti applicable authorization dan workspace-protection rules.
-
-### Validation and Stop Conditions
-
-- Verifikasi runtime identity, intended role, dan target source/state sebelum melakukan state-changing runtime operation.
-- Untuk disposable runtime, verifikasi instance yang sedang aktif sebelum menggunakan runtime URL atau port sebagai validation evidence.
-- Stop dan report jika runtime identity ambiguous, target runtime tidak sesuai intended role, atau continuation berisiko memodifikasi unrelated/persistent state tanpa authorization.
-
-### Continuity Projection
-
-Bawa hanya runtime role, active runtime location/URL bila masih material, known runtime-state caveat, dan recovery/revalidation requirement yang diperlukan receiving session. Jangan memperlakukan disposable runtime state sebagai authoritative checkpoint.
-
-### Executor Projection
-
-Jika runtime material terhadap task, `Agent Instruction` harus menyebut intended runtime role, material workspace/runtime location bila known, required validation, dan explicit boundary terhadap persistent atau unrelated runtime state.
-
-## Gateway
-
-### Purpose and Applicability
-
-Mengatur remote-access gateway yang memungkinkan akses ke applicable COPOT runtime dari device atau network lain tanpa menjadikan rotating runtime endpoint sebagai durable user-facing access contract.
-
-### Operational Rules
-
-- Tailscale adalah preferred gateway untuk remote access COPOT ketika remote access diperlukan.
-- Gateway harus diperlakukan sebagai access/routing layer, bukan authoritative runtime atau project state.
-- Durable gateway path tidak boleh bergantung pada satu disposable-runtime port yang dapat berubah antar-instance.
-- Jika runtime endpoint berubah, routing harus diarahkan ke current intended runtime melalui applicable gateway mechanism tanpa mengubah authoritative project state.
-- Gateway configuration, network exposure, remote service state, credentials, device enrollment, atau equivalent external side effect hanya boleh diubah ketika materially required dan authorized.
-- Jangan menganggap gateway availability sebagai authorization untuk remote mutation, deployment, production access, atau external publication.
-
-### Validation and Stop Conditions
-
-- Verifikasi target device, gateway identity, intended runtime, dan applicable route sebelum mengandalkan remote access.
-- Verifikasi bahwa gateway route menunjuk current intended runtime ketika runtime address/port bersifat dynamic.
-- Stop dan report jika gateway target ambiguous, route berpotensi mengarah ke wrong runtime, atau perubahan memerlukan credential/privileged/external action yang belum authorized.
-
-### Continuity Projection
-
-Bawa hanya gateway provider, material access path, current routing caveat, dan required revalidation ketika remote access materially memengaruhi continuation.
-
-### Executor Projection
-
-Jika gateway material terhadap task, `Agent Instruction` harus membawa exact routing objective, target runtime role, applicable access boundary, dan stop condition untuk external/network side effects.
-
-## Design Tooling
-
-### Purpose and Applicability
-
-Mengatur preferred design-tool routing untuk COPOT ketika design exploration, prototyping, product UI work, visual communication, atau general design asset work materially diperlukan.
-
-### Conditional Functional Routing
-
-Gunakan functional mapping pada `Applicable Governance` sebagai preferred/default routing:
-
-- `Prototyping` → Figma.
-- `General` → Canva.
-
-Rules:
-
-- setiap function menggunakan preferred tool yang ditetapkan pada `Applicable Governance`;
-- preferred tool tidak bersifat exclusive terhadap function lain;
-- cross-functional use diperbolehkan ketika capability, speed, fidelity, editability, compatibility, execution environment, atau task-specific requirement membuat alternative materially lebih sesuai;
-- quick generation atau bounded design exploration dapat menggunakan available alternative tool tanpa mengubah canonical functional mapping;
-- cross-functional use tidak mengubah canonical functional mapping;
-- update `Applicable Governance` hanya ketika perubahan tersebut merepresentasikan durable project-level routing decision, bukan temporary task-level exception.
-
-### Operational Rules
-
-- Gunakan source-native/editable design representation ketika editability atau downstream iteration material terhadap target.
-- Jangan mengubah accepted product behavior, information architecture, brand rule, or authoritative implementation merely because a design tool suggests or makes an alternative easier.
-- Generated visual or prototype output is not authoritative implementation state unless separately accepted and persisted through applicable project workflow.
-- Tool-specific capability, plugin availability, or convenience does not expand execution authorization.
-
-### Validation and Stop Conditions
-
-- Verifikasi requested design function, intended output, required editability/fidelity, dan applicable source/reference sebelum memilih execution route.
-- Gunakan human acceptance ketika outcome materially depends on subjective design/taste.
-- Stop dan report jika required source fidelity, editable output, or material tool capability cannot be preserved by the selected route.
-
-### Continuity Projection
-
-Bawa hanya active design function, preferred/actual tool ketika materially different, accepted design decision, unresolved subjective review, dan source/output identity yang diperlukan continuation.
-
-### Executor Projection
-
-Jika design tooling material terhadap task, `Agent Instruction` harus menyebut design function, preferred tool, task-level alternative bila digunakan, required source fidelity/editability, applicable human-acceptance gate, dan delivery boundary.
