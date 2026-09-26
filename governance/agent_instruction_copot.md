@@ -271,6 +271,8 @@ Do not report:
 
 For same-thread continuation, carry only the changed target, anchor, authorization, scope, validation, stop condition, and unresolved technical issue. Do not repeat unchanged governance, environment, or history.
 
+For same-thread continuation with accepted state, use `CHECK-AND-RUN`: verify only material drift in target, authorization, repository/branch anchor, dependencies, workspace, and relevant external state. Do not repeat equivalent continuity verification. If material drift, new evidence, authority conflict, or a changed boundary exists, return to full verification and stop when the issue cannot be resolved safely.
+
 Use a concise continuation token such as:
 
 `Continue the current task.`
