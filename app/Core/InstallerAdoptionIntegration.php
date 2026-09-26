@@ -27,6 +27,14 @@ final class InstallerAdoptionIntegration
             ], true)) {
                 return $this->blocked($routing, 'Adoption readiness did not produce a terminal-compatible classification.');
             }
+            if ($orchestration->targetIdentity() === null
+                || $orchestration->installationIdentity() === null
+                || $orchestration->namespaceIdentity() === null
+                || $orchestration->installationIdentity() !== $proof->installationId()
+                || $orchestration->namespaceIdentity() !== $proof->namespace()
+                || $orchestration->namespaceIdentity() !== $routing->namespace()) {
+                return new InstallerAdoptionDecision(InstallerAdoptionDecision::STALE, 'reinspect_adoption', $routing->namespace(), $proof->installationId(), true, false, 'Adoption readiness is not bound to the current installation and namespace identity.');
+            }
 
             return new InstallerAdoptionDecision(
                 InstallerAdoptionDecision::TERMINAL_ADOPT,

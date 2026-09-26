@@ -30,21 +30,21 @@ final class AdoptionOrchestrator
 
         for ($step = 1; ; $step++) {
             if (!$this->sameBoundary($request->initial(), $snapshot)) {
-                return $this->result(AdoptionOrchestrationResult::STALE, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Target, installation, or namespace identity changed.');
+                return $this->result(AdoptionOrchestrationResult::STALE, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Target, installation, or namespace identity changed.', $snapshot);
             }
 
             if ($classification->state() === AdoptionBoundaryClassification::EXACT_MATCH_ADOPTION
                 || $classification->state() === AdoptionBoundaryClassification::GENERALIZED_ADOPTION_COMPATIBLE) {
-                return $this->result(AdoptionOrchestrationResult::READY, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Fresh compatibility proof produced Adoption Readiness.');
+                return $this->result(AdoptionOrchestrationResult::READY, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Fresh compatibility proof produced Adoption Readiness.', $snapshot);
             }
 
             if ($classification->state() !== AdoptionBoundaryClassification::GENERALIZED_ADOPTION_RESOLVABLE_GAPS) {
-                return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Compatibility or legacy evidence is not eligible for Route B resolution.');
+                return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Compatibility or legacy evidence is not eligible for Route B resolution.', $snapshot);
             }
 
             $next = $this->nextEligibility($evaluation['compatibility'], $classification, $attemptedGaps);
             if ($next === null) {
-                return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'No unambiguous authorized lifecycle operation is available for the current requirement gaps.');
+                return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'No unambiguous authorized lifecycle operation is available for the current requirement gaps.', $snapshot);
             }
 
             $attemptedGaps[$next->requirementGapIdentity()] = true;
@@ -61,17 +61,17 @@ final class AdoptionOrchestrator
             try {
                 $operation = $execute($context, $next);
             } catch (\Throwable $exception) {
-                return $this->result(AdoptionOrchestrationResult::SUSPENDED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Underlying lifecycle authority failed before returning a result: ' . $exception->getMessage());
+                return $this->result(AdoptionOrchestrationResult::SUSPENDED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Underlying lifecycle authority failed before returning a result: ' . $exception->getMessage(), $snapshot);
             }
             if (!$operation instanceof AdoptionResolutionOperationResult) {
-                return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Underlying lifecycle authority returned invalid operation evidence.');
+                return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Underlying lifecycle authority returned invalid operation evidence.', $snapshot);
             }
             if ($operation->lifecycleClass() !== $next->lifecycleClass()) {
-                return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Underlying lifecycle operation classification does not match authorized eligibility.');
+                return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Underlying lifecycle operation classification does not match authorized eligibility.', $snapshot);
             }
             foreach ($operations as $previous) {
                 if ($previous->operationId() === $operation->operationId()) {
-                    return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Composite Resolution reused an underlying operation identity.');
+                    return $this->result(AdoptionOrchestrationResult::BLOCKED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Composite Resolution reused an underlying operation identity.', $snapshot);
                 }
             }
             $operations[] = $operation;
@@ -79,17 +79,19 @@ final class AdoptionOrchestrator
                 $state = in_array($operation->status(), [AdoptionResolutionOperationResult::UNAUTHORIZED, AdoptionResolutionOperationResult::UNAVAILABLE], true)
                     ? AdoptionOrchestrationResult::BLOCKED
                     : AdoptionOrchestrationResult::SUSPENDED;
-                return $this->result($state, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, $operation->detail());
+                return $this->result($state, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, $operation->detail(), $snapshot);
             }
 
+            $previousSnapshot = $snapshot;
             try {
-                $snapshot = $freshEvaluation();
+                $freshSnapshot = $freshEvaluation();
             } catch (\Throwable $exception) {
-                return $this->result(AdoptionOrchestrationResult::SUSPENDED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Fresh compatibility re-proof was unavailable: ' . $exception->getMessage());
+                return $this->result(AdoptionOrchestrationResult::SUSPENDED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Fresh compatibility re-proof was unavailable: ' . $exception->getMessage(), $snapshot);
             }
-            if (!$snapshot instanceof AdoptionEvaluationSnapshot) {
-                return $this->result(AdoptionOrchestrationResult::SUSPENDED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Fresh compatibility re-proof returned invalid evidence.');
+            if (!$freshSnapshot instanceof AdoptionEvaluationSnapshot) {
+                return $this->result(AdoptionOrchestrationResult::SUSPENDED, $orchestrationIdentity, $evaluation['compatibility'], $classification, $operations, 'Fresh compatibility re-proof returned invalid evidence.', $previousSnapshot);
             }
+            $snapshot = $freshSnapshot;
             $evaluation = $this->evaluate($request->target(), $snapshot);
             $classification = $evaluation['classification'];
         }
@@ -132,8 +134,8 @@ final class AdoptionOrchestrator
         return isset($attemptedGaps[$entry->requirementGapIdentity()]);
     }
 
-    private function result(string $state, string $orchestrationIdentity, TargetCompatibilityResult $compatibility, AdoptionBoundaryClassification $classification, array $operations, string $detail): AdoptionOrchestrationResult
+    private function result(string $state, string $orchestrationIdentity, TargetCompatibilityResult $compatibility, AdoptionBoundaryClassification $classification, array $operations, string $detail, AdoptionEvaluationSnapshot $snapshot): AdoptionOrchestrationResult
     {
-        return new AdoptionOrchestrationResult($state, $orchestrationIdentity, $compatibility->identity(), $classification->state(), $operations, $detail);
+        return new AdoptionOrchestrationResult($state, $orchestrationIdentity, $compatibility->identity(), $classification->state(), $operations, $detail, $snapshot->targetIdentity(), $snapshot->installationIdentity(), $snapshot->namespaceIdentity());
     }
 }

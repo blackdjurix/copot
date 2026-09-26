@@ -32,13 +32,16 @@ $proof = new InstallerOwnershipProof(
 $occupancy = new InstallerDatabaseOccupancyResult(InstallerDatabaseOccupancy::COPOT, [], ['alpha'], [], true);
 $routing = (new InstallerRoutingPlanner())->plan($occupancy, InstallerIntent::ADOPT, 'alpha');
 $integration = new InstallerAdoptionIntegration();
-$ready = static fn (string $classification = AdoptionBoundaryClassification::GENERALIZED_ADOPTION_COMPATIBLE): AdoptionOrchestrationResult => new AdoptionOrchestrationResult(
+$ready = static fn (string $classification = AdoptionBoundaryClassification::GENERALIZED_ADOPTION_COMPATIBLE, ?string $installation = 'inst_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', ?string $namespace = 'alpha', ?string $target = 'target-1'): AdoptionOrchestrationResult => new AdoptionOrchestrationResult(
     AdoptionOrchestrationResult::READY,
     str_repeat('1', 64),
     str_repeat('2', 64),
     $classification,
     [],
-    'Fresh compatibility proof passed.'
+    'Fresh compatibility proof passed.',
+    $target,
+    $installation,
+    $namespace
 );
 
 // Ready generalized and zero-resolution Adoption reaches terminal Adopt without mutation authority.
@@ -46,6 +49,14 @@ $decision = $integration->decide($routing, $ready(), [$proof]);
 $assert($decision->state() === InstallerAdoptionDecision::TERMINAL_ADOPT && $decision->nextAction() === 'complete_adoption', 'Ready generalized Adoption did not reach terminal Adopt.');
 $assert($decision->namespace() === 'alpha' && $decision->installationIdentity() === $proof->installationId(), 'Installer did not preserve installation identity and namespace.');
 $assert($decision->preservesExistingState() && !$decision->administratorInputAllowed(), 'Terminal Adopt did not preserve existing Administrator/User/Site state.');
+
+// A ready result must be bound to the current installation and namespace; missing or mismatched identity fails closed.
+$differentInstallation = $integration->decide($routing, $ready(AdoptionBoundaryClassification::GENERALIZED_ADOPTION_COMPATIBLE, 'inst_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'), [$proof]);
+$differentNamespace = $integration->decide($routing, $ready(AdoptionBoundaryClassification::GENERALIZED_ADOPTION_COMPATIBLE, 'inst_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'beta'), [$proof]);
+$unverifiableBinding = $integration->decide($routing, $ready(AdoptionBoundaryClassification::GENERALIZED_ADOPTION_COMPATIBLE, null, null, null), [$proof]);
+$assert($differentInstallation->state() === InstallerAdoptionDecision::STALE && !$differentInstallation->terminal(), 'Different installation identity reached terminal Adopt.');
+$assert($differentNamespace->state() === InstallerAdoptionDecision::STALE && !$differentNamespace->terminal(), 'Different namespace identity reached terminal Adopt.');
+$assert($unverifiableBinding->state() === InstallerAdoptionDecision::STALE && !$unverifiableBinding->terminal(), 'Unverifiable orchestration identity reached terminal Adopt.');
 
 // Historical exact-match remains an allowed positive terminal path.
 $exact = $integration->decide($routing, $ready(AdoptionBoundaryClassification::EXACT_MATCH_ADOPTION), [$proof]);
