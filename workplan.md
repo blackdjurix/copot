@@ -509,8 +509,8 @@ Planning action: KEEP FUTURE / CAPABILITY-GATED / NO AUTOMATIC SEQUENCING
 
 ### Database Adoption Exact-Match Compatibility Reconciliation
 Class: FUTURE CONTRACT RECONCILIATION / DATABASE COMPATIBILITY
-Status: PROMOTED / AUTHORITATIVE RECONCILIATION COMPLETE /
-IMPLEMENTATION NOT AUTHORIZED
+Status: WU1–WU5 COMPLETE / ACCEPTED / INTEGRATED; WU6 TECHNICAL
+ACCEPTANCE EVIDENCE RECORDED; GPT/USER-SIDE CLOSURE AND NRP EVALUATION PENDING
 
 Sources:
 - `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
@@ -536,12 +536,15 @@ Authority:
 - `docs/37_database_ownership_lifecycle_management_foundation_contract.md`
 
 Promotion status: COMPLETE / AUTHORITATIVE TARGETS RECONCILED
-Implementation status: NOT AUTHORIZED
+Implementation status: WU1–WU5 COMPLETE / ACCEPTED / INTEGRATED on `main`;
+WU6 cross-lifecycle acceptance evidence is recorded on the active WU6 feature
+branch. The remaining closure decision is GPT/user-side and must account for
+the environment-limited matrix entries recorded in the WU6 execution report.
 Post-promotion implementation-delta audit: COMPLETE
 Work Unit topology: DERIVED / MATERIALIZED
 Work Unit count: 6
-Next target: WU1 — Target Requirement Contract & Representation
-Next gate: EXPLICIT WU1 IMPLEMENTATION AUTHORIZATION
+Current closure gate: WU6 — Cross-Lifecycle Acceptance & Closure
+Next target: NONE within this workstream pending closure review
 
 The promoted reconciliation preserves legacy exact-match/current Adopt
 semantics while establishing target-relative requirement-driven compatibility.
@@ -550,8 +553,8 @@ remains the terminal installer/finalization intent after compatibility is
 established.
 
 This item does not create a new lifecycle operation, installer intent, status
-family, engine, or generalized conflict procedure. Implementation remains
-unauthorized.
+family, engine, or generalized conflict procedure. WU6 records acceptance
+evidence only; it does not make the GPT/user-side closure or NRP decision.
 
 Work Unit topology:
 
@@ -645,13 +648,31 @@ evaluation.
 
 Dependency: HARD → WU1–WU5
 
-Implementation status: NOT AUTHORIZED. WU1 is the next target but is not
-started; explicit WU1 implementation authorization is required.
+Implementation status: WU1–WU5 COMPLETE / ACCEPTED / INTEGRATED. WU6
+technical acceptance evidence is recorded; environment-limited checks and
+GPT/user-side closure review remain explicit.
 
 Dependency: NONE within the current five-step pre-v0.14.0 sequence.
 
-Planning action: TOPOLOGY MATERIALIZED / WU1 NEXT TARGET / EXPLICIT
-IMPLEMENTATION AUTHORIZATION REQUIRED / NO IMPLEMENTATION AUTHORIZATION
+Planning action: TOPOLOGY MATERIALIZED / WU1–WU5 COMPLETE / WU6 EVIDENCE
+RECORDED / CLOSURE REVIEW PENDING / NO WU7 IMPLIED
+
+Historical planning checkpoint superseded by the completed WU1–WU5 delivery:
+the preceding WU1-next-target and implementation-not-authorized wording is
+retained as provenance of the original promoted topology, not as current state.
+
+WU6 evidence recorded for closure review:
+- WU1–WU5 focused contract, compatibility, classification, orchestration, and
+  Installer integration suites passed;
+- the composed WU6 acceptance test passed 10 assertions across exact-match,
+  generalized compatible extra state, Route B, fresh re-proof, Legacy
+  Reconciliation separation, identity drift, and unknown-state fail-closed
+  behavior;
+- Route A / migration, Runtime Handoff, and database-backed lifecycle checks
+  remain separately identified as environment-limited or inspected-only where
+  the executor lacks the required PDO/runtime fixture capability;
+- no new mutation, migration, ownership, Installer, or lifecycle authority was
+  introduced by WU6.
 
 ### Pre-v0.14.0 Platform and Refinement Sequence
 Class: FUTURE EXECUTION SEQUENCE / DEPENDENCY REGISTER
