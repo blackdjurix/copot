@@ -509,8 +509,8 @@ Planning action: KEEP FUTURE / CAPABILITY-GATED / NO AUTOMATIC SEQUENCING
 
 ### Database Adoption Exact-Match Compatibility Reconciliation
 Class: FUTURE CONTRACT RECONCILIATION / DATABASE COMPATIBILITY
-Status: WU1–WU5 COMPLETE / ACCEPTED / INTEGRATED; WU6 TECHNICAL
-ACCEPTANCE EVIDENCE RECORDED; GPT/USER-SIDE CLOSURE AND NRP EVALUATION PENDING
+Status: WU1–WU6 COMPLETE / ACCEPTED / INTEGRATED; DATABASE ADOPTION
+COMPATIBILITY RECONCILIATION COMPLETE AND CLOSED
 
 Sources:
 - `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
@@ -536,15 +536,17 @@ Authority:
 - `docs/37_database_ownership_lifecycle_management_foundation_contract.md`
 
 Promotion status: COMPLETE / AUTHORITATIVE TARGETS RECONCILED
-Implementation status: WU1–WU5 COMPLETE / ACCEPTED / INTEGRATED on `main`;
-WU6 cross-lifecycle acceptance evidence is recorded on the active WU6 feature
-branch. The remaining closure decision is GPT/user-side and must account for
-the environment-limited matrix entries recorded in the WU6 execution report.
+Implementation status: WU1–WU6 COMPLETE / ACCEPTED / INTEGRATED on `main` at
+`5748a9cd1cb199ea07c6c7776b774f68722ae16c`. WU6 technical acceptance evidence
+is complete; environment/toolchain limitations and unrelated historical fixture
+findings remain recorded in the evidence history. No unresolved implementation
+blocker remains within this workstream.
 Post-promotion implementation-delta audit: COMPLETE
 Work Unit topology: DERIVED / MATERIALIZED
 Work Unit count: 6
-Current closure gate: WU6 — Cross-Lifecycle Acceptance & Closure
-Next target: NONE within this workstream pending closure review
+Workstream closure: COMPLETE AND CLOSED
+Next target: NONE within this workstream. The next pre-v0.14.0 phase remains a
+separate future planning target and is not authorized by this entry.
 
 The promoted reconciliation preserves legacy exact-match/current Adopt
 semantics while establishing target-relative requirement-driven compatibility.
@@ -553,8 +555,8 @@ remains the terminal installer/finalization intent after compatibility is
 established.
 
 This item does not create a new lifecycle operation, installer intent, status
-family, engine, or generalized conflict procedure. WU6 records acceptance
-evidence only; it does not make the GPT/user-side closure or NRP decision.
+family, engine, or generalized conflict procedure. NRP evaluation remains a
+separate GPT/user-side decision and is not changed by this planning update.
 
 Work Unit topology:
 
@@ -648,20 +650,19 @@ evaluation.
 
 Dependency: HARD → WU1–WU5
 
-Implementation status: WU1–WU5 COMPLETE / ACCEPTED / INTEGRATED. WU6
-technical acceptance evidence is recorded; environment-limited checks and
-GPT/user-side closure review remain explicit.
+Implementation status: WU1–WU6 COMPLETE / ACCEPTED / INTEGRATED; technical
+acceptance evidence complete; workstream closure recorded.
 
 Dependency: NONE within the current five-step pre-v0.14.0 sequence.
 
-Planning action: TOPOLOGY MATERIALIZED / WU1–WU5 COMPLETE / WU6 EVIDENCE
-RECORDED / CLOSURE REVIEW PENDING / NO WU7 IMPLIED
+Planning action: TOPOLOGY MATERIALIZED / WU1–WU6 COMPLETE / ACCEPTED / CLOSED /
+INTEGRATED ON MAIN / NO WU7 IMPLIED
 
 Historical planning checkpoint superseded by the completed WU1–WU5 delivery:
 the preceding WU1-next-target and implementation-not-authorized wording is
 retained as provenance of the original promoted topology, not as current state.
 
-WU6 evidence recorded for closure review:
+WU6 closure evidence:
 - WU1–WU5 focused contract, compatibility, classification, orchestration, and
   Installer integration suites passed;
 - the composed WU6 acceptance test passed 10 assertions across exact-match,
