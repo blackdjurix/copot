@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-09-28 06:11:24 WIB
+Date version: 2026-09-28 11:18:51 WIB
 
 ## 1. Variabel
 
@@ -181,23 +181,35 @@ Technical Executor memiliki:
 - eksekusi Repository yang diotorisasi;
 - technical evidence dan report.
 
-Technical Executor dapat mematerialisasi payload Workplan, pre-contract, atau contract yang exact dan telah disetujui ketika mutasi Repository diotorisasi secara eksplisit. Materialization tidak memberi semantic authorship, reconciliation authority, acceptance authority, atau promotion authority.
+Technical Executor dapat mematerialisasi payload Workplan, pre-contract, atau contract yang exact dan telah disetujui ketika mutasi Repository diotorisasi secara eksplisit. Materialization tidak dengan sendirinya memberi project authority, acceptance authority, atau promotion authority.
 
 Technical Executor tidak memutuskan NRP, closure project, acceptance WU, authorization milestone, adopsi Deferred Item, release readiness, atau approval user.
 
-### Semantic authorship dan materialization
+### Semantic authorship, technical reconciliation, dan materialization
 
-GPT menyiapkan dan merekonsiliasi semantic Workplan, pre-contract, dan contract dari keputusan user yang eksplisit, boundary project yang telah diterima, dan technical evidence yang diverifikasi. User tetap menjadi pihak yang menerima, menolak, atau mempromosikan artifact tersebut.
+GPT menyiapkan dan merekonsiliasi semantic Workplan, pre-contract, dan contract dari keputusan user yang eksplisit, boundary project yang telah diterima, dan technical evidence yang diverifikasi. User tetap menjadi pihak yang menerima, menolak, atau mempromosikan artifact tersebut secara default.
 
-Technical Executor tidak boleh menginfer, merekonstruksi, atau meng-author scope semantic, ownership, architecture, keputusan produk, state deferred, acceptance semantics, atau contract boundary hanya karena diminta membuat atau mengubah file.
+Pre-contract bersifat provisional. Technical Executor dapat melakukan `TECHNICAL PRE-CONTRACT REVIEW` ketika GPT/user memberikan payload exact atau source exact yang dapat diverifikasi. Review tersebut boleh menemukan gap feasibility, dependency, interface, data flow, validation, atau acceptance detail yang bersifat teknis, lalu mengusulkan `technical delta` tanpa mengubah project flow.
+
+Technical Executor dapat menerapkan technical delta pada pre-contract atau contract draft hanya jika explicit delegation menyebut payload, scope perubahan, actor, action, dan output yang diizinkan. Technical Executor dapat membantu contract drafting atau promotion hanya melalui delegation terpisah yang eksplisit; tanpa delegation tersebut, hasilnya tetap proposal untuk review GPT/user. `READY TO PROMOTE` berarti secara teknis siap ditinjau, bukan contract authoritative.
+
+Technical Executor tidak boleh mengambil alih project scope, product decision, project-flow transition, ownership, state deferred, NRP, Workplan ownership, acceptance, closure, session transition, atau keputusan promotion yang tidak didelegasikan. Technical delta tidak boleh memperluas scope secara implisit; perubahan yang berdampak pada boundary tersebut harus dikembalikan sebagai unresolved finding untuk GPT/user.
 
 Technical Executor hanya boleh:
 
 - menyediakan technical evidence atau feasibility finding;
+- mengusulkan technical delta pada payload yang disuplai secara exact;
+- menerapkan technical delta yang didelegasikan secara eksplisit;
 - mematerialisasi exact approved payload/artifact yang source, scope, actor, dan action-nya dapat diverifikasi;
 - melakukan validasi format, diff, consistency, dan teknis yang diotorisasi.
 
-Jika exact approved payload atau semantic decision yang diperlukan belum tersedia, instruction harus fail-closed dengan blocker `SEMANTIC PAYLOAD NOT SUPPLIED`. Jangan mengisi kekosongan dengan inference Workplan/Concept, Handoff, memory, summary, atau potongan Repository.
+Jika exact payload, source exact, atau semantic decision yang diperlukan belum tersedia, instruction harus fail-closed dengan blocker `SEMANTIC PAYLOAD NOT SUPPLIED`. Jangan mengisi kekosongan dengan inference Workplan/Concept, Handoff, memory, summary, atau potongan Repository.
+
+### Semantic firewall untuk Agent Instruction
+
+Agent Instruction adalah hasil kompilasi execution delta, bukan salinan Rule, Handoff, Workplan, Concept, atau lifecycle governance. Governance-only terms menjadi filter internal GPT dan tidak boleh diteruskan ke Technical Executor kecuali istilah tersebut adalah technical input exact yang diperlukan untuk execution.
+
+Sebelum delivery, GPT wajib melakukan leakage preflight: hapus governance wording yang tidak mengubah execution, gunakan execution boundary generik sebagai pengganti daftar larangan governance, dan pertahankan hanya target, payload, authorization, dependency, validation, serta stop condition yang material.
 
 ## 7. Authorization
 
@@ -404,4 +416,3 @@ Pembaruan governance harus mempertahankan:
 - Handoff sebagai artifact continuity;
 - Agent Instruction sebagai boundary eksekusi teknis;
 - Technical Executor sebagai producer evidence.
-

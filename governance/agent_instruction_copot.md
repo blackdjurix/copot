@@ -1,5 +1,5 @@
 # COPOT AGENT INSTRUCTION
-Date version: 2026-09-26 18:20:00 WIB
+Date version: 2026-09-28 11:18:51 WIB
 
 ## Purpose
 
@@ -11,12 +11,20 @@ It must be generated for the exact authorized execution slice. It is not a copy 
 
 Apply the minimum execution delta principle: include a field only when omitting it could cause a wrong target, wrong branch or anchor, unauthorized action, missed dependency, invalid validation, unsafe side effect, or missed stop condition.
 
+### Internal generation and leakage boundary
+
+These governance-routing rules are for GPT's internal compilation process and must not be copied into a generated Agent Instruction. The generated instruction must contain only the execution delta required by the Technical Executor: target, exact payload, technical scope, authorization, dependency, validation, and stop condition.
+
+Do not reproduce governance-only vocabulary or negative governance lists in a generated instruction unless the term is an exact technical input required for execution. Prefer generic execution boundaries such as `Execute only the supplied technical slice` and `Do not infer or expand requirements beyond the supplied payload.`
+
+Before delivery, perform a leakage preflight: remove governance wording that does not change execution, remove redundant prohibition lists, and verify that every remaining field is material to the authorized technical slice.
+
 Do not copy automatically:
 
 - full Handoff or lifecycle history;
-- NRP/session-transition reasoning;
+- internal project/session decision reasoning;
 - prior troubleshooting or old Git states;
-- full Workplan, Concept library, or repository history;
+- full planning library or repository history;
 - thread-level saved-concept history unless one unresolved item changes execution.
 
 ## Delivery
@@ -52,12 +60,38 @@ Use only context needed for this execution slice.
 ## Task
 
 - Task: `<concrete technical action>`
-- Mode: `AUDIT / IMPLEMENTATION / DEBUG / VALIDATION`
+- Mode: `AUDIT / IMPLEMENTATION / DEBUG / VALIDATION / TECHNICAL PRE-CONTRACT REVIEW`
 - In scope: `<specific files, behavior, or evidence>`
 - Out of scope: `<specific exclusions>`
 - Preconditions: `<required starting state>`
 
 Do not infer adjacent work from visible defects, future Work Units, dependencies, or available time.
+
+## Technical pre-contract review
+
+Use this mode only when GPT/user explicitly requests technical analysis of a supplied pre-contract or contract draft.
+
+Required package:
+
+- exact pre-contract or contract payload, inline or through an exact verifiable source;
+- technical review scope;
+- allowed technical delta;
+- explicit authorization for proposal, application, or drafting action;
+- required output and validation.
+
+The Technical Executor may identify technical gaps, feasibility constraints, dependencies, interface/data-flow issues, validation gaps, or technical acceptance details. It may propose a technical delta and may apply that delta only when the authorization explicitly permits application. It must not infer missing semantic content or expand the supplied boundary.
+
+Required review statuses:
+
+- `TECHNICAL REVIEW COMPLETE`;
+- `CHANGES PROPOSED`;
+- `TECHNICAL DELTA APPLIED`;
+- `READY FOR GPT/USER REVIEW`;
+- `READY TO PROMOTE`;
+- `SEMANTIC PAYLOAD NOT SUPPLIED`;
+- `BLOCKED`.
+
+`READY TO PROMOTE` means technically ready for GPT/user review. It does not by itself make the draft authoritative. If the exact payload or verifiable source is missing, stop with `SEMANTIC PAYLOAD NOT SUPPLIED`.
 
 ## Authorization boundary
 
@@ -69,11 +103,9 @@ Authorized:
 
 Not authorized:
 
-- project scope expansion;
-- WU acceptance or closure;
-- NRP or session-transition decision;
-- Workplan/Concept adoption or modification unless explicitly included;
-- Deferred Item adoption;
+- scope expansion or boundary changes;
+- acceptance, closure, or lifecycle decisions outside the supplied execution slice;
+- planning, deferred-scope, or session changes unless explicitly included;
 - release, tag, publication, deployment, or integration unless explicitly included;
 - unrelated branch or runtime cleanup;
 - fixing adjacent findings merely because they are discovered.
@@ -92,10 +124,10 @@ Use sources by function:
 - project instructions and Authoritative Documentation for accepted project constraints;
 - implementation for observed behavior;
 - tests/evidence for demonstrated behavior;
-- identified Workplan/Concept section only when explicitly required by this instruction;
+- identified planning section only when explicitly required by this instruction;
 - Handoff only through the minimum context reproduced here.
 
-Do not request or reconstruct the full Handoff or Workplan Set.
+Do not request or reconstruct full continuity or planning artifacts.
 
 When material sources conflict, report the conflict and stop before substantive change.
 
@@ -112,27 +144,31 @@ Read in this order, expanding only when evidence is insufficient:
 5. directly relevant documentation or contracts;
 6. additional sources only when required by an observed dependency or conflict.
 
-Do not ask the Technical Executor to reconstruct GPT governance, ChatGPT session history, or implicit memory. Translate only the execution delta required by this instruction.
+Do not ask the Technical Executor to reconstruct unavailable context. Translate only the execution delta required by this instruction.
 
-## Workplan, Concept, and Deferred Item boundary
+## Planning-input boundary — internal GPT routing rule
 
-Workplan and Concept are planning inputs, not implicit authorization.
+This section is an internal generation filter. Do not reproduce it as a governance explanation in a generated instruction. Render only the exact technical dependency or invariant that changes execution.
 
-- Do not implement an item merely because Workplan marks it `NEXT`, `ACTIVE`, or `PROVISIONAL`.
-- Do not auto-promote Workplan or Concept content into repository, contract, or roadmap authority.
-- Do not adopt a Deferred Item because it is visible or referenced.
+Planning artifacts are inputs, not implicit authorization.
+
+- Do not implement an item merely because a planning source marks it `NEXT`, `ACTIVE`, or `PROVISIONAL`.
+- Do not auto-promote planning content into repository, contract, or roadmap authority.
+- Do not execute a deferred or future item merely because it is visible or referenced.
 - If planning context is material, name the exact target and reading purpose in this instruction.
 - If a Concept is material, identify its canonical title, source, relevant invariant, provenance, and unresolved technical dependency only.
 - Preserve stable Deferred Item identity when an explicitly authorized Deferred Item is in scope.
 
 Deferred Item statuses such as `Candidate`, `Unscheduled`, `future`, `KEEP DEFERRED`, `NOT APPLICABLE`, `REJECT`, or `SUPERSEDE` do not authorize execution.
 
-## Conditional documentation and acceptance boundaries
+## Conditional documentation and technical-evidence boundaries
+
+This section is an internal generation filter. In a generated instruction, include only the applicable technical operation and its evidence requirement.
 
 Use these boundaries only when the task explicitly includes them:
 
 - Documentation consistency: correct only materially stale or contradictory current-state wording against accepted implementation evidence; preserve historical records and avoid blind search-and-replace.
-- Acceptance evidence: report technical validation, AI acceptance evidence, possible human-required criteria, merge eligibility, blockers, and final Git/environment state. Do not decide project acceptance, NRP, closure, or the next milestone.
+- Technical evidence: report validation, possible human-required criteria, merge eligibility, blockers, and final Git/environment state. Do not make decisions outside the supplied technical slice.
 - Branch lifecycle: perform closure or deletion only when explicitly authorized and only after containment, zero-ahead, remote, and clean-state evidence is verified.
 
 ### Minimum technical Concept continuity input
@@ -164,7 +200,7 @@ If verified state materially differs from the instruction, stop. Do not reset, c
 - Dependency evidence: `<exact evidence>`
 - Dependency action authorized in this slice: `<yes/no and exact action>`
 
-Do not resolve, adopt, or implement a dependent Work Unit merely because its dependency is visible. Report unsatisfied or newly discovered dependencies.
+Do not resolve or implement a dependent task merely because its dependency is visible. Report unsatisfied or newly discovered dependencies.
 
 ## Execution gates
 
@@ -184,7 +220,7 @@ Do not cross a gate until its conditions are satisfied. Completion of one gate d
 - Do not modify production, shared state, credentials, external services, or remote/network configuration without explicit authorization.
 - Do not perform repository mutation unless written authorization includes that mutation.
 - Do not treat test failure as permission to fix neighboring code or fixtures.
-- Do not make project-level acceptance, NRP, closure, or next-target decisions.
+- Do not make decisions outside the supplied technical slice.
 
 ## Conditional tools
 
@@ -256,20 +292,14 @@ Return only execution evidence:
 2. files/artifacts changed or inspected;
 3. technical acceptance criteria and evidence;
 4. validation commands/results;
-5. blockers, risks, unresolved/unsaved payload, and out-of-scope findings;
+5. blockers, risks, unresolved/unsaved technical payload, and out-of-scope findings;
 6. final workspace/repository/runtime state when material.
 
-Do not report:
-
-- NRP confirmation;
-- project or WU closure;
-- release readiness;
-- Deferred Item adoption;
-- authorization for the next task.
+Do not add governance conclusions or authorize a next task. Report only technical evidence and the written execution result.
 
 ## Continuation
 
-For same-thread continuation, carry only the changed target, anchor, authorization, scope, validation, stop condition, and unresolved technical issue. Do not repeat unchanged governance, environment, or history.
+For same-thread continuation, carry only the changed target, anchor, authorization, scope, validation, stop condition, and unresolved technical issue. Do not repeat unchanged governance, environment, or history. This is an internal GPT routing rule; the generated continuation must contain only the material technical delta.
 
 For same-thread continuation with accepted state, use `CHECK-AND-RUN`: verify only material drift in target, authorization, repository/branch anchor, dependencies, workspace, and relevant external state. Do not repeat equivalent continuity verification. If material drift, new evidence, authority conflict, or a changed boundary exists, return to full verification and stop when the issue cannot be resolved safely.
 
@@ -288,4 +318,3 @@ Use a concise continuation token such as:
 The controlling GPT/user evaluates those decisions from this report.
 
 If execution continues in the same technical thread, return a concise continuation token containing the execution slice, final technical state, unresolved technical issue, and exact next technical check. Do not use the token to authorize a new scope or project decision.
-
