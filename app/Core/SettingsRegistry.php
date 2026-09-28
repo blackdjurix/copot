@@ -180,6 +180,22 @@ class SettingsRegistry
                 'H:i',
                 allowedValues: ['H:i', 'h:i A']
             ),
+            new SettingDefinition(
+                'security',
+                'password_min_length',
+                'integer',
+                PasswordPolicy::DEFAULT_MINIMUM_LENGTH,
+                static fn (int $value): bool => $value >= 1 && $value <= 4096,
+                metadata: ['internal' => true]
+            ),
+            new SettingDefinition(
+                'security',
+                'password_max_length',
+                'integer',
+                PasswordPolicy::DEFAULT_MAXIMUM_LENGTH,
+                static fn (int $value): bool => $value >= 1 && $value <= 4096,
+                metadata: ['internal' => true]
+            ),
         ]);
     }
 

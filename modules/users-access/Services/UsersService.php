@@ -2,6 +2,7 @@
 
 use Copot\Core\Database;
 use Copot\Core\PasswordHasher;
+use Copot\Core\PasswordPolicy;
 
 class UsersService
 {
@@ -11,7 +12,8 @@ class UsersService
         private UsersRepository $users,
         private PasswordHasher $passwords,
         private AccessInvariantGuard $invariant,
-        private Database $database
+        private Database $database,
+        private ?PasswordPolicy $passwordPolicy = null
     ) {
     }
 
@@ -175,10 +177,10 @@ class UsersService
     private function passwordErrors(string $password, string $confirmation): array
     {
         $errors = [];
-        $passwordLength = $this->stringLength($password);
+        $policyError = ($this->passwordPolicy ??= new PasswordPolicy())->validate($password);
 
-        if ($passwordLength === null || $passwordLength < 10 || strlen($password) > 4096) {
-            $errors['password'] = 'Password must contain at least 10 characters and no more than 4096 bytes.';
+        if ($policyError !== null) {
+            $errors['password'] = $policyError;
         }
 
         if ($confirmation !== $password) {

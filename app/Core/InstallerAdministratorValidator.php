@@ -4,8 +4,9 @@ namespace Copot\Core;
 
 final class InstallerAdministratorValidator
 {
-    public static function validate(array $input): array
+    public static function validate(array $input, ?PasswordPolicy $passwordPolicy = null): array
     {
+        $passwordPolicy ??= new PasswordPolicy();
         $name = self::stringValue($input, 'admin_name', true);
         $email = strtolower(self::stringValue($input, 'admin_email', true));
         $password = self::stringValue($input, 'admin_password', false);
@@ -19,7 +20,7 @@ final class InstallerAdministratorValidator
         $fieldMessages = [
             'admin_name' => 'Administrator name is required and must not exceed 120 characters.',
             'admin_email' => 'Enter a valid administrator email address.',
-            'admin_password' => 'Administrator password must contain at least 10 characters.',
+            'admin_password' => 'Administrator password must contain between ' . $passwordPolicy->minimumLength() . ' and ' . $passwordPolicy->maximumLength() . ' characters.',
             'admin_password_confirmation' => 'Password confirmation does not match.',
             'site_name' => 'Site Name is required and must not exceed 150 characters.',
             'site_tagline' => 'Site Tagline must not exceed 255 characters.',
@@ -52,9 +53,7 @@ final class InstallerAdministratorValidator
             $errors['admin_email'] = $fieldMessages['admin_email'];
         }
 
-        $passwordLength = self::stringLength($password);
-
-        if ($passwordLength === null || $passwordLength < 10) {
+        if ($passwordPolicy->validate($password, 'Administrator password') !== null) {
             $errors['admin_password'] = $fieldMessages['admin_password'];
         }
 

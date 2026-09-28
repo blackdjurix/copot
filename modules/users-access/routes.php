@@ -1,6 +1,7 @@
 <?php
 
 use Copot\Core\PasswordHasher;
+use Copot\Core\PasswordPolicy;
 use Copot\Core\Response;
 
 require_once __DIR__ . '/Services/ManagedUser.php';
@@ -23,7 +24,8 @@ $usersService = new UsersService(
     $usersRepository,
     new PasswordHasher(),
     $usersAccessInvariant,
-    $app->database()
+    $app->database(),
+    new PasswordPolicy($app->settings())
 );
 $rolesService = new RolesService(
     $rolesRepository,

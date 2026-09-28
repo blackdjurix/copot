@@ -94,7 +94,8 @@ final class InstallerInstallationCommitter
                 new PasswordHasher(),
                 $settings,
                 $schemaState,
-                $this->mutex
+                $this->mutex,
+                new PasswordPolicy($settings)
             );
             $administratorResult = $administrator->installPrepared($administratorInput, $requirementsPassed);
             $finalizer = new InstallerFinalizer(

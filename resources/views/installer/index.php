@@ -232,14 +232,14 @@ $fieldAccessibility = static function (string $fieldId, mixed $error = null, boo
                             <div class="form-inline-field">
                                 <label for="admin_password">Password</label>
                                 <div class="form-control">
-                                    <input id="admin_password" name="admin_password" type="password" minlength="10" <?= empty($administratorStaged) ? 'required' : '' ?> value=""<?= $fieldAccessibility('admin_password', $setupErrors['admin_password'] ?? null) ?>>
+                                    <input id="admin_password" name="admin_password" type="password" minlength="12" maxlength="128" <?= empty($administratorStaged) ? 'required' : '' ?> value=""<?= $fieldAccessibility('admin_password', $setupErrors['admin_password'] ?? null) ?>>
                                     <?php if (!empty($setupErrors['admin_password'])): ?><p id="admin_password_error" class="field-error"><?= htmlspecialchars($setupErrors['admin_password'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>
                             <div class="form-inline-field">
                                 <label for="admin_password_confirmation">Confirm Password</label>
                                 <div class="form-control">
-                                    <input id="admin_password_confirmation" name="admin_password_confirmation" type="password" minlength="10" <?= empty($administratorStaged) ? 'required' : '' ?> value=""<?= $fieldAccessibility('admin_password_confirmation', $setupErrors['admin_password_confirmation'] ?? null) ?>>
+                                    <input id="admin_password_confirmation" name="admin_password_confirmation" type="password" minlength="12" maxlength="128" <?= empty($administratorStaged) ? 'required' : '' ?> value=""<?= $fieldAccessibility('admin_password_confirmation', $setupErrors['admin_password_confirmation'] ?? null) ?>>
                                     <?php if (!empty($setupErrors['admin_password_confirmation'])): ?><p id="admin_password_confirmation_error" class="field-error"><?= htmlspecialchars($setupErrors['admin_password_confirmation'], ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
                                 </div>
                             </div>

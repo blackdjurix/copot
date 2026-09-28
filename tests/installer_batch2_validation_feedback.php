@@ -21,7 +21,7 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 
 $assert(str_contains($view, 'required'), 'Native required validation is not present.');
 $assert(str_contains($view, 'type="email"'), 'Native email validation is not present.');
-$assert(str_contains($view, 'minlength="10"'), 'Native password minimum validation is not present.');
+$assert(str_contains($view, 'minlength="12" maxlength="128"'), 'Native password policy boundary validation is not present.');
 $assert(str_contains($view, "empty(\$administratorStaged) ? 'required' : ''"), 'Administrator revisit password semantics are not reflected in HTML required handling.');
 $assert(str_contains($view, 'pattern="[a-z][a-z0-9_]{0,30}"'), 'Native namespace pattern validation is not present.');
 $assert(str_contains($view, 'setCustomValidity(mismatch ? \'Passwords must match.\' : \'\')'), 'Password confirmation custom validity is not present.');

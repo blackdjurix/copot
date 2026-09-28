@@ -13,7 +13,8 @@ class InstallerAdministratorSetup
         private PasswordHasher $passwords,
         private SettingsService $settings,
         private InstallerSchemaState $schema,
-        private InstallationMutex $mutex
+        private InstallationMutex $mutex,
+        private ?PasswordPolicy $passwordPolicy = null
     ) {
     }
 
@@ -101,7 +102,7 @@ class InstallerAdministratorSetup
 
     private function validateInput(array $input): array
     {
-        return InstallerAdministratorValidator::validate($input);
+        return InstallerAdministratorValidator::validate($input, $this->passwordPolicy ??= new PasswordPolicy($this->settings));
     }
 
     private function userCount(): int
