@@ -1,19 +1,19 @@
-# COPOT HANDOFF — <Continuity Boundary> — <Title>
-Date version: 2026-09-26 14:00:00 WIB
+# HANDOFF COPOT — <Batas Continuity> — <Judul>
+Date version: 2026-09-28 06:11:24 WIB
 
-## Usage boundary
+## Batas penggunaan
 
-Handoff adalah GPT/session continuity artifact untuk COPOT. Handoff bukan Agent Instruction, bukan executor payload, bukan authorization baru, dan bukan pengganti Rule.
+Handoff adalah artifact continuity GPT/session untuk COPOT. Handoff bukan Agent Instruction, bukan payload executor, bukan authorization baru, dan bukan pengganti Rule.
 
-Canonical identity: `governance/handoff_template_copot.md`.
+Identitas canonical: `governance/handoff_template_copot.md`.
 
-## Fresh-session isolation and language
+## Isolasi session baru dan bahasa
 
-Receiving GPT must not rely on implicit memory, prior-session summary, chat history, or model context as a substitute for this Handoff and current authoritative sources. Reconstruct only from current governance, this Handoff, project instructions, verified Repository state, and explicitly identified material sources.
+GPT penerima tidak boleh mengandalkan implicit memory, summary session sebelumnya, chat history, atau model context sebagai pengganti Handoff ini dan sumber authoritative saat ini. Lakukan rekonstruksi hanya dari governance saat ini, Handoff ini, project instructions, state Repository yang diverifikasi, dan source material yang diidentifikasi secara eksplisit.
 
-Use the primary conversation language for Handoff prose. Keep identifiers, paths, commands, filenames, and technical tokens literal when precision requires it.
+Gunakan bahasa utama conversation untuk prosa Handoff. Pertahankan identifier, path, command, filename, dan technical token secara literal bila precision memerlukannya.
 
-## Transition
+## Perpindahan
 
 - Transition type: `NORMAL / NRP / EMERGENCY`
 - Project: `COPOT`
@@ -22,9 +22,9 @@ Use the primary conversation language for Handoff prose. Keep identifiers, paths
 - Prepared at: `<YYYY-MM-DD HH:mm:ss WIB>`
 - Prepared by: `<actor>`
 
-Untuk `EMERGENCY`, continuity risk dan recovery/revalidation requirements wajib eksplisit.
+Untuk `EMERGENCY`, risiko continuity dan kebutuhan recovery/revalidation wajib dinyatakan secara eksplisit.
 
-## Current objective and state
+## Objective dan state saat ini
 
 - Objective: `<objective>`
 - Accepted result: `<verified accepted result / None>`
@@ -32,11 +32,11 @@ Untuk `EMERGENCY`, continuity risk dan recovery/revalidation requirements wajib 
 - Last reliable evidence: `<commit, document, test, artifact, or observation>`
 - Unresolved/unsaved payload: `<reference to the section below or None>`
 
-Pisahkan accepted, provisional, rejected, superseded, dan unresolved state.
+Pisahkan state accepted, provisional, rejected, superseded, dan unresolved.
 
-## Unresolved and unsaved payload
+## Payload unresolved dan unsaved
 
-Treat unresolved and unsaved/unpersisted payload as the same continuity class. The output differs, but neither is authoritative until its required persistence and verification path is complete.
+Perlakukan payload unresolved dan unsaved/unpersisted sebagai satu kelas continuity. Output-nya berbeda, tetapi keduanya tidak authoritative sampai jalur persistence dan verifikasi yang diperlukan selesai.
 
 - Payload identity/source: `<artifact, thread state, decision, instruction, change, or runtime state>`
 - Payload kind: `<unresolved / unsaved / both>`
@@ -46,17 +46,17 @@ Treat unresolved and unsaved/unpersisted payload as the same continuity class. T
 - Required next action: `<exact action or None>`
 - Authority status: `<non-authoritative until persisted and verified>`
 
-Include, when applicable:
+Cantumkan bila berlaku:
 
-- unsaved user decisions;
-- unsaved GPT conclusions or derived decisions;
-- unsent Agent Instructions;
-- uncommitted repository changes;
-- unpersisted Workplan/Concept changes;
-- temporary runtime state;
-- generated artifacts not yet accepted or persisted.
+- keputusan user yang belum disimpan;
+- kesimpulan atau keputusan turunan GPT yang belum disimpan;
+- Agent Instruction yang belum dikirim;
+- perubahan Repository yang belum di-commit;
+- perubahan Workplan/Concept yang belum dipersist;
+- state runtime sementara;
+- artifact yang dihasilkan tetapi belum diterima atau dipersist.
 
-## Next target
+## Target berikutnya
 
 - Next target: `<smallest safe next target>`
 - Dependency: `<dependency or None>`
@@ -64,9 +64,9 @@ Include, when applicable:
 - Required first action: `<bootstrap/check>`
 - Stop condition: `<condition>`
 
-Next target bukan authorization baru. Receiving GPT harus revalidate authority dan current state.
+Next target bukan authorization baru. GPT penerima harus memvalidasi ulang authority dan state saat ini.
 
-## Planning and Concept continuity
+## Continuity Planning dan Concept
 
 - Workplan state: `<status>`
 - Non-synchronization check: `<no repository sync implied / issue>`
@@ -74,30 +74,30 @@ Next target bukan authorization baru. Receiving GPT harus revalidate authority d
 - Saved Concept payload: `<semantic identity, provenance, revision, unresolved/unsaved payload reference>`
 - Deferred Items: `<status and adoption state>`
 
-Session transition tidak menghapus unresolved planning payload.
+Perpindahan session tidak menghapus payload planning yang unresolved.
 
-### Thread-Level Saved Concept Reconciliation
+### Reconciliation Saved Concept tingkat thread
 
 - Accumulated thread-level saved Concepts: `<identity and source>`
 - Reconciled durable disposition: `<carried forward / incorporated / deferred / superseded / rejected / unresolved>`
 - Unresolved/unsaved payload preserved: `<yes/no and summary>`
 - Reconciliation evidence: `<source, revision, or None>`
 
-Session change tidak boleh menghapus, silently close, mengubah klasifikasi, atau silently discard saved Concept maupun unresolved/unsaved payload.
+Perubahan session tidak boleh menghapus, menutup secara diam-diam, mengubah klasifikasi, atau membuang secara diam-diam Saved Concept maupun payload unresolved/unsaved.
 
-## Dependency and stacked-branch state
+## State dependency dan stacked branch
 
-When material, record:
+Jika material, catat:
 
 - cross-boundary dependency: `<dependency and satisfied/unsatisfied state>`;
 - stacked branch relation: `<base, dependent branch, containment, or None>`;
 - dependency evidence: `<exact source or None>`.
 
-Dependency state is context, not authorization to begin the dependent work.
+State dependency adalah context, bukan authorization untuk memulai pekerjaan yang bergantung padanya.
 
-## Repository and runtime state
+## State Repository dan runtime
 
-Include only when material:
+Cantumkan hanya bila material:
 
 - Repository: `https://github.com/blackdjurix/copot.git`
 - Integration target: `main`
@@ -108,18 +108,18 @@ Include only when material:
 - Runtime endpoint/port: `<only if material; never project identity>`
 - Divergence or lifecycle issue: `<value or None>`
 
-Runtime copy bukan Repository authority.
+Runtime copy bukan authority Repository.
 
-## Acceptance and closure
+## Acceptance dan closure
 
 - Acceptance criteria: `<met / partial / not met>`
 - Validation: `<checks and outcomes>`
-- Documentation/planning reconciliation: `<status>`
-- Work-unit/workstream closure: `<closed / open / blocked>`
+- Reconciliation documentation/planning: `<status>`
+- Closure work-unit/workstream: `<closed / open / blocked>`
 - Release/publication: `<separate status>`
 - NRP: `<candidate / confirmed / not applicable / blocked>`
 
-### NRP candidate documentation consistency
+### Konsistensi documentation untuk NRP candidate
 
 - Candidate project/work-unit documentation: `<source>`
 - Current implementation/repository evidence reconciled: `<yes / no / blocked>`
@@ -128,7 +128,7 @@ Runtime copy bukan Repository authority.
 
 Handoff tidak boleh menyatakan NRP confirmed hanya karena technical work selesai.
 
-## Session continuity
+## Continuity session
 
 - Continue current session/thread or new: `<decision and reason>`
 - Context requiring revalidation: `<items>`
@@ -136,26 +136,26 @@ Handoff tidak boleh menyatakan NRP confirmed hanya karena technical work selesai
 - Material Tailscale state: `<only if remote access is relevant>`
 - Material Figma state: `<only if visual/prototype context is relevant>`
 
-Bootstrap order: current governance, this Handoff, project instructions, verified project/Repository state, then only explicitly identified material Workplan, Concept, documentation, runtime, or tool sources.
+Urutan bootstrap: governance saat ini, Handoff ini, project instructions, state project/Repository yang diverifikasi, lalu hanya Workplan, Concept, documentation, runtime, atau tool sources yang material dan diidentifikasi secara eksplisit.
 
-## Direct-transfer boundary
+## Boundary direct transfer
 
-Jangan transfer full Handoff ke Technical Executor.
+Jangan mentransfer full Handoff ke Technical Executor.
 
-Jika user meminta direct transfer, turunkan Agent Instruction terpisah yang hanya membawa minimum material execution context. Handoff tidak memperluas authorization.
+Jika user meminta direct transfer, turunkan Agent Instruction terpisah yang hanya membawa minimum execution context yang material. Handoff tidak memperluas authorization.
 
-## Required startup report
+## Report startup wajib
 
-Receiving GPT harus melaporkan:
+GPT penerima harus melaporkan:
 
 - exact governance artifacts yang dibaca;
-- verified objective/current state;
-- unresolved state;
-- authorization status;
-- revalidation performed;
-- blocker atau continuity risk.
+- objective/state saat ini yang diverifikasi;
+- state unresolved;
+- status authorization;
+- revalidation yang dilakukan;
+- blocker atau risiko continuity.
 
-## Closure statement
+## Pernyataan closure
 
-Handoff ini mencatat continuity state. Handoff tidak dengan sendirinya menyatakan implementation complete, project closure, NRP confirmation, release readiness, atau execution authorization.
+Handoff ini mencatat state continuity. Handoff tidak dengan sendirinya menyatakan implementation complete, closure project, konfirmasi NRP, release readiness, atau authorization eksekusi.
 
