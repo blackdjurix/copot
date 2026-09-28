@@ -65,7 +65,9 @@ Default password policy:
 
 Policy harus configurable tanpa menciptakan parallel password authority.
 
-Perubahan policy tidak me-retrofit existing password hashes dan tidak memaksa password rotation kecuali kemudian diotorisasi sebagai capability terpisah.
+Password policy berlaku pada credential creation, reset, dan password-change mutation. Policy length tidak digunakan untuk menolak authentication terhadap existing valid password hash hanya karena password tersebut berada di luar current configured minimum/maximum.
+
+Perubahan policy tidak me-retrofit existing password hashes, tidak menginvalidasi existing credential yang sebelumnya valid, dan tidak memaksa password rotation kecuali kemudian diotorisasi sebagai capability terpisah.
 
 ## 5. Login throttling and failed-login semantics
 
@@ -105,7 +107,14 @@ Default authenticated idle timeout: 120 minutes.
 
 Runtime Site Settings value menjadi operational value utama setelah aplikasi berjalan.
 
-Environment/configuration value berfungsi sebagai bootstrap/default fallback ketika runtime setting belum tersedia atau belum dapat dibaca secara valid.
+Resolver precedence:
+
+1. valid runtime Site Settings value digunakan sebagai operational value;
+2. bila runtime Settings source readable tetapi value missing atau invalid, gunakan canonical Settings registry default;
+3. bila runtime Settings source unreadable/unavailable, gunakan valid environment/configuration bootstrap value bila tersedia;
+4. bila bootstrap value juga tidak valid/tersedia, gunakan canonical safe registry default.
+
+Runtime Settings failure tidak boleh dengan sendirinya membuat baseline login unavailable.
 
 Session timeout resolution harus terjadi melalui canonical Session/Auth authority.
 
@@ -120,6 +129,10 @@ Implementation design harus menjaga hubungan konsisten antara runtime timeout, c
 Webcore menyediakan persistent canonical registry untuk authenticated sessions milik current user.
 
 Durable session identity harus opaque dan tidak boleh menyimpan raw PHP session identifier sebagai durable identity.
+
+Authenticated PHP session harus membawa reference ke opaque durable session identity setelah successful login/session establishment. PHP session ID regeneration dalam logical authenticated session yang sama tidak boleh menciptakan second durable identity hanya karena carrier ID berubah.
+
+New authenticated login/session establishment membuat durable identity baru. Canonical logout, explicit revocation, expiry, atau idle invalidation harus mengubah server-side durable state sehingga session tidak lagi valid pada authentication evaluation berikutnya.
 
 Registry minimum menyimpan atau dapat merekonstruksi:
 
@@ -174,7 +187,14 @@ Successful re-authentication:
 
 Failed re-authentication tidak dengan sendirinya logout current authenticated session, tetapi harus menghasilkan sanitized failure evidence bila event logging applicable.
 
-Sensitive actions yang membutuhkan re-authentication harus ditentukan secara explicit pada relevant implementation slice.
+Minimum sensitive actions yang membutuhkan re-authentication:
+
+- current credential/password change;
+- replacement of Email transport credential secret;
+- sign out all other own sessions;
+- Security policy change yang materially memengaruhi authentication behavior.
+
+Additional sensitive actions dapat ditetapkan oleh relevant capability contract/implementation slice tanpa mengurangi minimum baseline ini.
 
 ## 12. Security event baseline
 
@@ -191,7 +211,22 @@ Minimum event families:
 - relevant Security policy changes;
 - sensitive-action re-authentication success/failure.
 
+Security event records harus append-oriented dan non-editable melalui normal operator mutation path.
+
+Minimum bounded evidence shape mencakup:
+
+- timestamp;
+- category;
+- severity;
+- actor identity/evidence bila applicable;
+- target identity/evidence bila applicable;
+- action;
+- result;
+- sanitized bounded context.
+
 Security event records tidak boleh menyimpan plaintext credential, secret, raw password material, atau equivalent sensitive authentication material.
+
+Security event persistence harus memiliki bounded retention supaya event store tidak tumbuh tanpa batas. Exact retention duration/pruning policy adalah repository-grounded implementation design selama deterministic, testable, dan tidak mengubah append-oriented evidence semantics.
 
 Event design bukan general analytics platform.
 
@@ -229,6 +264,8 @@ Baseline menyediakan:
 - explicit failure state;
 - optional operator-triggered controlled test delivery.
 
+Email configuration absence, unavailable credential, transport failure, atau delivery failure tidak boleh memblok installation, baseline authentication/login, atau zero-optional operation.
+
 Capability ini tidak menjadi provider marketplace atau arbitrary multi-transport routing framework.
 
 ## 15. Email configuration and secret boundary
@@ -243,9 +280,11 @@ Secret values seperti SMTP password atau equivalent credential:
 - tidak boleh dibaca kembali dalam plaintext melalui operator UI;
 - hanya boleh diproyeksikan sebagai configured/not-configured atau equivalent redacted state.
 
+WU3 harus memperkenalkan bounded credential-write mechanism yang atomic terhadap satu credential update, fail-closed terhadap partial secret write, dan hanya mengekspos redacted state. Contract ini tidak menganggap existing database-only environment writer sebagai generic credential writer yang sudah cukup.
+
 Supported transport fields minimum harus cukup untuk satu conventional SMTP-compatible transport, termasuk host, port, encryption/security mode bila applicable, username bila applicable, credential secret, sender address, dan sender name.
 
-Exact field naming dan adapter implementation boleh ditentukan pada technical design selama tidak memperluas capability menjadi multi-provider framework.
+Exact field naming, credential-provider implementation, dan adapter implementation boleh ditentukan pada technical design selama tidak memperluas capability menjadi multi-provider framework dan tetap mematuhi secret boundary di atas.
 
 ## 16. Email test delivery
 
@@ -268,7 +307,9 @@ Persistent storage of detailed delivery history bukan requirement baseline. Impl
 
 Redirects tetap Webcore-owned capability.
 
-Current module-hosted route/service location tidak mengubah ownership authority.
+Current module-hosted route/service implementation diperlakukan sebagai compatibility implementation untuk current workstream dan tidak dengan sendirinya mengubah ownership authority.
+
+WU4 tidak diwajibkan merelokasi source hanya untuk memenuhi contract ini. WU4 harus merekonsiliasi dan mendokumentasikan compatibility/access boundary serta canonical accessor sehingga current module-hosted implementation tidak menciptakan second authority.
 
 WU4 harus merekonsiliasi:
 
@@ -276,16 +317,18 @@ WU4 harus merekonsiliasi:
 - operator routes;
 - `redirects.manage` permission;
 - table accessor;
+- namespaced access path;
 - final Site Settings projection.
 
 Invariant:
 
 - satu redirect authority;
+- satu canonical resolver/repository authority;
 - satu physical persistence authority;
 - tidak ada implicit ownership transfer;
 - tidak ada duplicate resolver/repository stack.
 
-Perubahan ownership membutuhkan separate approval dan berada di luar implicit scope contract ini.
+Perubahan ownership atau relocation sebagai architecture change membutuhkan separate approval dan berada di luar implicit scope contract ini.
 
 ## 18. Permission model
 
@@ -306,6 +349,8 @@ Default operator authorization:
 - Redirects navigation/read/mutation: `admin.access + redirects.manage`;
 - Site Identity/System generic settings mutation tetap mengikuti existing `settings.update` boundary;
 - Modules dan System Health mempertahankan existing capability permissions.
+
+Parent Site Settings route, navigation visibility, read path, dan mutation routing harus direkonsiliasi supaya capability-specific Security, Email, dan Redirects access tidak diam-diam memerlukan atau memberikan `settings.update`.
 
 Sensitive Security action dapat menambahkan re-authentication requirement tanpa menambahkan unrelated permission dependency.
 
@@ -341,6 +386,8 @@ Target-relative compatibility dan adoption readiness harus memperhitungkan Secur
 
 Existing compatible database state tidak boleh dimutasi di luar requirement target yang dibutuhkan.
 
+Technical design dan validation harus memperbarui serta membuktikan seluruh hard-coded lifecycle/schema authorities yang terdampak sebagai satu coherent change, termasuk canonical schema, Core migration registry/declaration, ownership catalog, namespace/table inventory, installer readiness, health verification, canonical baseline, package target requirements, adoption/compatibility evaluation, dan committed migration-ledger verification.
+
 Exact migration identity, sequence, schema generation identity, dan target package version harus berasal dari repository-grounded technical design, bukan ditetapkan secara arbitrer dalam candidate ini.
 
 ## 21. Acceptance matrix
@@ -350,36 +397,50 @@ Relevant implementation harus menyediakan evidence untuk minimum:
 ### Security behavior
 
 - password policy enforcement di seluruh in-scope password-entry boundaries;
+- existing valid password hash tetap dapat diautentikasi setelah configured min/max berubah di luar length credential existing, sampai credential tersebut dimutasi;
 - account-enumeration resistance pada failed login/lockout;
 - failure-window behavior;
 - bounded throttling progression;
 - temporary lockout threshold/expiry;
+- valid, missing, invalid, dan unreadable runtime session-timeout resolution;
 - runtime session-timeout enforcement;
 - behavior existing sessions setelah timeout change;
+- durable session identity behavior across PHP session ID regeneration;
 - current-session identification;
 - own-session revocation effectiveness;
+- revocation terhadap session yang sedang authenticated berlaku pada authentication evaluation berikutnya;
 - sign-out-other-sessions semantics;
 - stale/concurrent session behavior;
 - re-authentication expiry dan failure behavior;
-- sanitized security events.
+- append-oriented/non-editable sanitized security events;
+- bounded security-event retention behavior.
 
 ### Email behavior
 
 - secret redaction;
-- secret replace/write semantics;
+- atomic secret replace/write semantics;
+- partial credential-write failure tidak menghasilkan silently valid partial state;
 - configured/not-configured read model;
 - outbound transport success/failure handling;
 - sanitized test-delivery result;
-- installation/login non-dependency terhadap mail configuration atau delivery failure.
+- installation/login/zero-optional non-dependency terhadap mail configuration, credential availability, atau delivery failure.
 
 ### Permission behavior
 
+- Site Settings parent-route authorization;
 - navigation visibility;
 - read access;
 - mutation access;
 - capability separation;
 - Administrator role seeding/reconciliation;
 - no unintended `settings.update` dependency for Security/Email/Redirects.
+
+### Redirects behavior
+
+- canonical Redirect accessor/resolver authority;
+- module-hosted compatibility implementation tidak membentuk second authority;
+- namespaced table access tetap menuju satu physical Redirects persistence;
+- existing `redirects.manage` behavior tetap terjaga.
 
 ### Lifecycle and compatibility
 
@@ -390,6 +451,7 @@ Relevant implementation harus menyediakan evidence untuk minimum:
 - canonical schema verification;
 - migration registry/declaration consistency;
 - ownership catalog consistency;
+- synchronized update terhadap seluruh affected schema/table inventories;
 - installer readiness;
 - database/lifecycle health;
 - committed migration-ledger verification.
@@ -424,7 +486,7 @@ Objective: implement accepted Security platform capability baseline.
 
 Dependency: HARD -> WU1
 
-Objective: implement accepted System Email platform capability baseline.
+Objective: implement accepted System Email capability baseline.
 
 ### WU4 — Webcore Redirects Operator Projection Reconciliation
 
@@ -472,6 +534,8 @@ Current contract candidate tidak mencakup:
 - parallel authentication/session authority;
 - parallel migration framework;
 - implicit adoption of unrelated Deferred Items.
+
+Future Users & Access capability boleh mengonsumsi canonical session capability untuk cross-user administration hanya melalui separate authority/scope. Pernyataan ini tidak mengotorisasi current cross-user session administration.
 
 ## 24. Authorization boundary
 
