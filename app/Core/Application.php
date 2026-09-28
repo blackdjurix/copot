@@ -83,7 +83,8 @@ class Application
             $this->config,
             $this->session,
             new UserProvider($this->database),
-            new PasswordHasher()
+            new PasswordHasher(),
+            new FailedLoginThrottle(new FailedLoginAttemptRepository($this->database))
         );
         $moduleDiscovery = new ModuleDiscovery($this->path('modules'));
         $moduleRepository = new ModuleRepository($this->database);
