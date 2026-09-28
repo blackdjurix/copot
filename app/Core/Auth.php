@@ -14,7 +14,10 @@ class Auth
         private UserProvider $users,
         private PasswordHasher $passwords,
         private ?FailedLoginThrottle $throttle = null,
-        ?callable $delay = null
+        ?callable $delay = null,
+        private ?AuthenticatedSessionRepository $authenticatedSessions = null,
+        private $deviceDescriptor = null,
+        private $clock = null
     ) {
         $this->delay = $delay;
     }
@@ -58,14 +61,38 @@ class Auth
 
     private function establish(User $user): bool
     {
-        $this->session->regenerate();
-        $this->session->set($this->sessionKey(), $user->id());
-        $this->session->beginAuthenticatedActivity();
-        $this->session->regenerateCsrfToken();
-        $this->users->updateLastLogin($user->id());
-        $this->user = $user;
+        $record = null;
 
-        return true;
+        try {
+            $now = $this->now();
+            if ($this->authenticatedSessions instanceof AuthenticatedSessionRepository) {
+                $record = $this->authenticatedSessions->create(
+                    $user->id(),
+                    $this->deviceDescriptor instanceof \Closure ? (string) ($this->deviceDescriptor)() : DeviceDescriptor::fromRuntime(),
+                    $now,
+                    $this->idleTimeoutMinutes()
+                );
+            }
+            $this->session->regenerate();
+            $this->session->set($this->sessionKey(), $user->id());
+            if ($record instanceof AuthenticatedSessionRecord) {
+                $this->session->setAuthenticatedSessionIdentity($record->identity());
+            }
+            $this->session->beginAuthenticatedActivity($now->getTimestamp());
+            $this->session->regenerateCsrfToken();
+            $this->users->updateLastLogin($user->id());
+            $this->user = $user;
+
+            return true;
+        } catch (\Throwable) {
+            if ($record instanceof AuthenticatedSessionRecord) {
+                $this->authenticatedSessions?->revoke($record->identity(), 'establishment_failed');
+            }
+            $this->session->clearAuthenticatedState();
+            $this->user = null;
+
+            return false;
+        }
     }
 
     private function delay(int $milliseconds): void
@@ -95,15 +122,33 @@ class Auth
     public function user(): ?User
     {
         $userId = $this->session->get($this->sessionKey());
+        $sessionIdentity = $this->session->authenticatedSessionIdentity();
 
         if (!$this->user instanceof User && !is_numeric($userId)) {
             return null;
         }
 
         if (!$this->session->evaluateAuthenticatedActivity()) {
+            if ($this->authenticatedSessions instanceof AuthenticatedSessionRepository && $sessionIdentity !== null) {
+                $this->authenticatedSessions->revoke($sessionIdentity, 'idle_expired');
+            }
             $this->user = null;
 
             return null;
+        }
+
+        if ($this->authenticatedSessions instanceof AuthenticatedSessionRepository) {
+            $record = $sessionIdentity === null ? null : $this->authenticatedSessions->find($sessionIdentity);
+            if (!$record instanceof AuthenticatedSessionRecord || $record->userId() !== (int) $userId || $record->isRevoked()) {
+                if ($sessionIdentity !== null) {
+                    $this->authenticatedSessions->revoke($sessionIdentity, 'invalid_registry_state');
+                }
+                $this->session->clearAuthenticatedState();
+                $this->user = null;
+
+                return null;
+            }
+            $this->authenticatedSessions->touchIfDue($sessionIdentity, $this->now(), $this->idleTimeoutMinutes());
         }
 
         if ($this->user instanceof User) {
@@ -117,7 +162,10 @@ class Auth
         $user = $this->users->findById((int) $userId);
 
         if (!$user instanceof User || !$user->isActive()) {
-            $this->session->remove($this->sessionKey());
+            if ($this->authenticatedSessions instanceof AuthenticatedSessionRepository && $sessionIdentity !== null) {
+                $this->authenticatedSessions->revoke($sessionIdentity, 'inactive_user');
+            }
+            $this->session->clearAuthenticatedState();
             $this->user = null;
 
             return null;
@@ -130,6 +178,10 @@ class Auth
 
     public function logout(): void
     {
+        $identity = $this->session->authenticatedSessionIdentity();
+        if ($this->authenticatedSessions instanceof AuthenticatedSessionRepository && $identity !== null) {
+            $this->authenticatedSessions->revoke($identity, 'logout');
+        }
         $this->session->clearAuthenticatedState();
         $this->session->regenerate();
         $this->session->regenerateCsrfToken();
@@ -139,5 +191,23 @@ class Auth
     private function sessionKey(): string
     {
         return $this->config->get('auth.session_key', '_copot_user_id');
+    }
+
+    private function now(): \DateTimeImmutable
+    {
+        $value = $this->clock instanceof \Closure ? ($this->clock)() : null;
+        if ($value instanceof \DateTimeImmutable) {
+            return $value;
+        }
+        if (is_int($value)) {
+            return (new \DateTimeImmutable('@' . $value))->setTimezone(new \DateTimeZone('UTC'));
+        }
+
+        return new \DateTimeImmutable('now', new \DateTimeZone('UTC'));
+    }
+
+    private function idleTimeoutMinutes(): int
+    {
+        return $this->session->authenticatedIdleTimeoutMinutes();
     }
 }

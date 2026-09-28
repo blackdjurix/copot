@@ -85,7 +85,10 @@ class Application
             $this->session,
             new UserProvider($this->database),
             new PasswordHasher(),
-            new FailedLoginThrottle(new FailedLoginAttemptRepository($this->database))
+            new FailedLoginThrottle(new FailedLoginAttemptRepository($this->database)),
+            null,
+            new AuthenticatedSessionRepository($this->database),
+            static fn (): string => DeviceDescriptor::fromRuntime()
         );
         $moduleDiscovery = new ModuleDiscovery($this->path('modules'));
         $moduleRepository = new ModuleRepository($this->database);

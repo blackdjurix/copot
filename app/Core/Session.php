@@ -151,7 +151,39 @@ class Session
     public function clearAuthenticatedState(): void
     {
         $this->remove($this->config->get('auth.session_key', '_copot_user_id'));
+        $this->remove(self::AUTH_DURABLE_SESSION_KEY);
         $this->remove(self::AUTH_ACTIVITY_KEY);
+    }
+
+    private const AUTH_DURABLE_SESSION_KEY = '_copot_authenticated_session_identity';
+
+    public function authenticatedSessionIdentity(): ?string
+    {
+        $identity = $this->get(self::AUTH_DURABLE_SESSION_KEY);
+
+        return is_string($identity) ? $identity : null;
+    }
+
+    public function setAuthenticatedSessionIdentity(string $identity): void
+    {
+        $this->set(self::AUTH_DURABLE_SESSION_KEY, $identity);
+    }
+
+    public function authenticatedActivityExpired(?int $now = null): bool
+    {
+        $lastActive = $this->get(self::AUTH_ACTIVITY_KEY);
+        if (!is_int($lastActive) && !(is_string($lastActive) && ctype_digit($lastActive))) {
+            return false;
+        }
+
+        $timeout = $this->idleTimeout?->resolve() ?? AuthenticatedIdleTimeoutResolver::DEFAULT_MINUTES;
+
+        return (int) $lastActive + ($timeout * 60) <= ($now ?? $this->now());
+    }
+
+    public function authenticatedIdleTimeoutMinutes(): int
+    {
+        return $this->idleTimeout?->resolve() ?? AuthenticatedIdleTimeoutResolver::DEFAULT_MINUTES;
     }
 
     private function now(): int
