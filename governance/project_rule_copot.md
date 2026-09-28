@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-09-28 11:39:33 WIB
+Date version: 2026-09-28 12:24:59 WIB
 
 ## 1. Variabel
 
@@ -181,15 +181,17 @@ Technical Executor memiliki:
 - eksekusi Repository yang diotorisasi;
 - technical evidence dan report.
 
-Technical Executor dapat mematerialisasi payload Workplan, pre-contract, atau contract yang exact dan telah disetujui ketika mutasi Repository diotorisasi secara eksplisit. Materialization tidak dengan sendirinya memberi project authority, acceptance authority, atau promotion authority.
-
 Technical Executor tidak memutuskan NRP, closure project, acceptance WU, authorization milestone, adopsi Deferred Item, release readiness, atau approval user.
 
 ### Semantic dan repository materialization
 
-GPT adalah default semantic materializer untuk thread-level saved payload, Workplan, pre-contract, dan contract. Codex adalah default Technical Executor untuk physical repository write ketika repository mutation diperlukan dan telah diotorisasi.
+Untuk pre-contract, GPT adalah default semantic author/reconciler sekaligus default physical materializer ke Repository ketika exact payload sudah tersedia dan repository mutation telah diotorisasi. Materialization di sini berarti GPT dapat langsung membuat atau memperbarui physical pre-contract file di Repository, bukan hanya menyiapkan payload di conversation.
 
-GPT tetap dapat mendelegasikan exact semantic materialization atau technical drafting kepada Codex bila payload, scope, actor, action, dan output yang diizinkan ditulis secara precise. Physical repository write tidak dengan sendirinya memberi semantic authorship, acceptance authority, atau promotion authority.
+Workplan dapat mengikuti route yang sama ketika source semantics berasal dari reasoning GPT/user dan direct GPT materialization merupakan route yang paling tepat. Ketentuan ini tidak menetapkan GPT sebagai default physical materializer untuk contract atau artifact lain.
+
+Codex tetap menjadi default Technical Executor untuk technical review, technical delta, source audit, implementation, dan technical repository mutation lainnya. Setelah GPT mematerialisasi physical pre-contract file, Codex dapat membaca exact current file tersebut sebagai basis technical review dan proposal penyesuaian menuju contract.
+
+GPT tetap dapat mendelegasikan physical materialization pre-contract atau Workplan kepada Codex bila exact payload, scope, actor, action, dan output yang diizinkan ditulis secara precise. Physical materialization tidak dengan sendirinya memberi semantic authorship, implementation authority, acceptance authority, atau promotion authority.
 
 ### Semantic authorship, technical reconciliation, dan materialization
 
