@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-09-28 11:18:51 WIB
+Date version: 2026-09-28 11:39:33 WIB
 
 ## 1. Variabel
 
@@ -185,15 +185,21 @@ Technical Executor dapat mematerialisasi payload Workplan, pre-contract, atau co
 
 Technical Executor tidak memutuskan NRP, closure project, acceptance WU, authorization milestone, adopsi Deferred Item, release readiness, atau approval user.
 
+### Semantic dan repository materialization
+
+GPT adalah default semantic materializer untuk thread-level saved payload, Workplan, pre-contract, dan contract. Codex adalah default Technical Executor untuk physical repository write ketika repository mutation diperlukan dan telah diotorisasi.
+
+GPT tetap dapat mendelegasikan exact semantic materialization atau technical drafting kepada Codex bila payload, scope, actor, action, dan output yang diizinkan ditulis secara precise. Physical repository write tidak dengan sendirinya memberi semantic authorship, acceptance authority, atau promotion authority.
+
 ### Semantic authorship, technical reconciliation, dan materialization
 
 GPT menyiapkan dan merekonsiliasi semantic Workplan, pre-contract, dan contract dari keputusan user yang eksplisit, boundary project yang telah diterima, dan technical evidence yang diverifikasi. User tetap menjadi pihak yang menerima, menolak, atau mempromosikan artifact tersebut secara default.
 
-Pre-contract bersifat provisional. Technical Executor dapat melakukan `TECHNICAL PRE-CONTRACT REVIEW` ketika GPT/user memberikan payload exact atau source exact yang dapat diverifikasi. Review tersebut boleh menemukan gap feasibility, dependency, interface, data flow, validation, atau acceptance detail yang bersifat teknis, lalu mengusulkan `technical delta` tanpa mengubah project flow.
+Pre-contract bersifat provisional dan tetap revisable oleh GPT/user sampai promotion. Perubahan semantic sebelum proposal atau promotion tidak dengan sendirinya menjadi scope drift selama tetap berada dalam accepted workstream boundary. Technical Executor harus melakukan `TECHNICAL PRE-CONTRACT REVIEW` terhadap exact current pre-contract payload atau source exact yang dapat diverifikasi. Review tersebut boleh menemukan gap feasibility, dependency, interface, data flow, validation, atau acceptance detail yang bersifat teknis, lalu mengusulkan `technical delta` tanpa mengubah project flow.
 
 Technical Executor dapat menerapkan technical delta pada pre-contract atau contract draft hanya jika explicit delegation menyebut payload, scope perubahan, actor, action, dan output yang diizinkan. Technical Executor dapat membantu contract drafting atau promotion hanya melalui delegation terpisah yang eksplisit; tanpa delegation tersebut, hasilnya tetap proposal untuk review GPT/user. `READY TO PROMOTE` berarti secara teknis siap ditinjau, bukan contract authoritative.
 
-Technical Executor tidak boleh mengambil alih project scope, product decision, project-flow transition, ownership, state deferred, NRP, Workplan ownership, acceptance, closure, session transition, atau keputusan promotion yang tidak didelegasikan. Technical delta tidak boleh memperluas scope secara implisit; perubahan yang berdampak pada boundary tersebut harus dikembalikan sebagai unresolved finding untuk GPT/user.
+Technical Executor tidak boleh mengambil alih project scope, product decision, project-flow transition, ownership, state deferred, NRP, Workplan ownership, acceptance, closure, session transition, atau keputusan promotion yang tidak didelegasikan. Technical delta tidak boleh memperluas scope secara implisit. Perubahan yang menyentuh ownership, architecture boundary, Deferred Item adoption, multi-user scope, scope expansion, atau boundary lain yang memerlukan approval harus dikembalikan sebagai unresolved finding untuk GPT/user dan diperlakukan sebagai approval gate baru bila applicable.
 
 Technical Executor hanya boleh:
 
@@ -328,6 +334,12 @@ Sebelum konfirmasi NRP, pastikan:
 - state unresolved dinyatakan secara eksplisit;
 - next target masih diotorisasi;
 - persistence durable dan state Repository terverifikasi bila diperlukan.
+
+### Stale documentation dan NRP
+
+Wording dokumentasi disebut material stale bila dapat mengubah interpretasi current authority, accepted scope, accepted state, dependency, implementation behavior, atau next authorized action. Material stale wording yang memengaruhi current project truth harus direkonsiliasi sebelum NRP confirmation.
+
+Non-material stale wording yang tidak memengaruhi current project truth dapat diperbaiki sebagai housekeeping setelah NRP. GPT dapat menyiapkan exact correction sendiri atau mendelegasikan bounded documentation cleanup kepada Technical Executor dengan target, wording, evidence, dan repository authorization yang exact. Bounded cleanup tidak mengizinkan broad rewrite atau perubahan project truth yang tidak disebutkan.
 
 ### Emergency Handoff
 
