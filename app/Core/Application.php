@@ -32,6 +32,8 @@ class Application
     private Session $session;
     private Csrf $csrf;
     private Auth $auth;
+    private ReauthenticationService $reauthentication;
+    private SelfSessionService $selfSessions;
     private ModuleManager $modules;
     private ModuleLoader $moduleLoader;
     private ThemeManager $themes;
@@ -89,6 +91,15 @@ class Application
             null,
             new AuthenticatedSessionRepository($this->database),
             static fn (): string => DeviceDescriptor::fromRuntime()
+        );
+        $this->reauthentication = new ReauthenticationService(
+            $this->auth,
+            $this->session,
+            new PasswordHasher()
+        );
+        $this->selfSessions = new SelfSessionService(
+            new AuthenticatedSessionRepository($this->database),
+            $this->reauthentication
         );
         $moduleDiscovery = new ModuleDiscovery($this->path('modules'));
         $moduleRepository = new ModuleRepository($this->database);
@@ -254,6 +265,16 @@ class Application
     public function auth(): Auth
     {
         return $this->auth;
+    }
+
+    public function reauthentication(): ReauthenticationService
+    {
+        return $this->reauthentication;
+    }
+
+    public function selfSessions(): SelfSessionService
+    {
+        return $this->selfSessions;
     }
 
     public function modules(): ModuleManager

@@ -119,6 +119,11 @@ class Auth
         return $this->user()?->id();
     }
 
+    public function durableSessionIdentity(): ?string
+    {
+        return $this->session->authenticatedSessionIdentity();
+    }
+
     public function user(): ?User
     {
         $userId = $this->session->get($this->sessionKey());

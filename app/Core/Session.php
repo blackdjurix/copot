@@ -5,6 +5,8 @@ namespace Copot\Core;
 class Session
 {
     private const AUTH_ACTIVITY_KEY = '_copot_authenticated_last_active_at';
+    private const AUTH_DURABLE_SESSION_KEY = '_copot_authenticated_session_identity';
+    private const REAUTH_PROOF_KEY = '_copot_reauthentication_proof';
 
     public function __construct(
         private Config $config,
@@ -153,9 +155,8 @@ class Session
         $this->remove($this->config->get('auth.session_key', '_copot_user_id'));
         $this->remove(self::AUTH_DURABLE_SESSION_KEY);
         $this->remove(self::AUTH_ACTIVITY_KEY);
+        $this->remove(self::REAUTH_PROOF_KEY);
     }
-
-    private const AUTH_DURABLE_SESSION_KEY = '_copot_authenticated_session_identity';
 
     public function authenticatedSessionIdentity(): ?string
     {

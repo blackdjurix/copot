@@ -4,7 +4,10 @@ namespace Copot\Core;
 
 final class SelfSessionService
 {
-    public function __construct(private AuthenticatedSessionRepository $sessions)
+    public function __construct(
+        private AuthenticatedSessionRepository $sessions,
+        private ReauthenticationService $reauthentication
+    )
     {
     }
 
@@ -22,11 +25,15 @@ final class SelfSessionService
 
     public function revokeOwn(int $userId, string $identity): bool
     {
+        $this->reauthentication->requireRecentProof();
+
         return $this->sessions->revoke($identity, 'revoked_by_user', $userId);
     }
 
     public function revokeOtherSessions(int $userId, string $currentIdentity): int
     {
+        $this->reauthentication->requireRecentProof();
+
         $current = $this->sessions->find($currentIdentity);
         if (!$current instanceof AuthenticatedSessionRecord || $current->userId() !== $userId || $current->isRevoked()) {
             return 0;

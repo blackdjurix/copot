@@ -11,6 +11,7 @@ use Copot\Core\DeviceDescriptor;
 use Copot\Core\Env;
 use Copot\Core\InstallerSchemaRunner;
 use Copot\Core\PasswordHasher;
+use Copot\Core\ReauthenticationService;
 use Copot\Core\SelfSessionService;
 use Copot\Core\Session;
 use Copot\Core\SettingsRegistry;
@@ -51,7 +52,6 @@ $connection = $database->connection();
 $settings = new SettingsService(SettingsRegistry::core(), new SettingsRepository($database));
 $resolver = new AuthenticatedIdleTimeoutResolver($settings, $config);
 $sessions = new AuthenticatedSessionRepository($database);
-$selfSessions = new SelfSessionService($sessions);
 $clockNow = 2000000;
 $session = new Session($config, null, $resolver, static function () use (&$clockNow): int { return $clockNow; });
 $session->start();
@@ -76,6 +76,8 @@ $auth = new Auth(
         return (new DateTimeImmutable('@' . $clockNow))->setTimezone(new DateTimeZone('UTC'));
     }
 );
+$reauthentication = new ReauthenticationService($auth, $session, $passwordHasher, static function () use (&$clockNow): int { return $clockNow; });
+$selfSessions = new SelfSessionService($sessions, $reauthentication);
 $now = static function () use (&$clockNow): DateTimeImmutable {
     return (new DateTimeImmutable('@' . $clockNow))->setTimezone(new DateTimeZone('UTC'));
 };
@@ -112,6 +114,7 @@ try {
     $listed = $selfSessions->listOwn($ownerId, $secondIdentity);
     $assert(count($listed) === 3 && count(array_filter($listed, static fn (array $item): bool => $item['session']->userId() !== $ownerId)) === 0, 'Own-session listing exposed another user.');
     $assert(count(array_filter($listed, static fn (array $item): bool => $item['current'])) === 1, 'Own-session listing did not identify exactly the current session.');
+    $assert($reauthentication->reauthenticate('S5 password')->succeeded(), 'Re-authentication failed before sensitive session operations.');
     $assert(!$selfSessions->revokeOwn($ownerId, $foreignRecord->identity()) && !$sessions->find($foreignRecord->identity())?->isRevoked(), 'Cross-user session revocation was effective.');
     $assert($selfSessions->revokeOwn($ownerId, $otherRecord->identity()) && $sessions->find($otherRecord->identity())?->isRevoked(), 'Own-session revocation failed.');
     $remaining = $sessions->create($ownerId, 'Laptop', $now(), 120);
