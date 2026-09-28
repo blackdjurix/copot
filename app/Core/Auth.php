@@ -60,6 +60,7 @@ class Auth
     {
         $this->session->regenerate();
         $this->session->set($this->sessionKey(), $user->id());
+        $this->session->beginAuthenticatedActivity();
         $this->session->regenerateCsrfToken();
         $this->users->updateLastLogin($user->id());
         $this->user = $user;
@@ -93,11 +94,21 @@ class Auth
 
     public function user(): ?User
     {
+        $userId = $this->session->get($this->sessionKey());
+
+        if (!$this->user instanceof User && !is_numeric($userId)) {
+            return null;
+        }
+
+        if (!$this->session->evaluateAuthenticatedActivity()) {
+            $this->user = null;
+
+            return null;
+        }
+
         if ($this->user instanceof User) {
             return $this->user;
         }
-
-        $userId = $this->session->get($this->sessionKey());
 
         if (!is_numeric($userId)) {
             return null;
@@ -119,7 +130,7 @@ class Auth
 
     public function logout(): void
     {
-        $this->session->remove($this->sessionKey());
+        $this->session->clearAuthenticatedState();
         $this->session->regenerate();
         $this->session->regenerateCsrfToken();
         $this->user = null;

@@ -18,14 +18,25 @@ class SettingsService
 
     public function get(string $namespace, string $key, mixed $default = null): mixed
     {
-        $definition = $this->registry->find($namespace, $key);
-
-        if (!$definition instanceof SettingDefinition) {
+        if (!$this->registry->has($namespace, $key)) {
             return $default;
         }
 
+        $result = $this->read($namespace, $key);
+
+        return $result->value();
+    }
+
+    public function read(string $namespace, string $key): SettingReadResult
+    {
+        $definition = $this->registry->find($namespace, $key);
+
+        if (!$definition instanceof SettingDefinition) {
+            return new SettingReadResult(null, $this->storageReadable);
+        }
+
         if (!$this->storageReadable) {
-            return $definition->defaultValue();
+            return new SettingReadResult($definition->defaultValue(), false);
         }
 
         try {
@@ -33,17 +44,20 @@ class SettingsService
         } catch (PDOException) {
             $this->storageReadable = false;
 
-            return $definition->defaultValue();
+            return new SettingReadResult($definition->defaultValue(), false);
         }
 
         if ($override === null) {
-            return $definition->defaultValue();
+            return new SettingReadResult($definition->defaultValue(), true);
         }
 
         try {
-            return $this->deserializeOverride($definition, $override);
+            return new SettingReadResult(
+                $this->deserializeOverride($definition, $override),
+                true
+            );
         } catch (SettingsException) {
-            return $definition->defaultValue();
+            return new SettingReadResult($definition->defaultValue(), true);
         }
     }
 

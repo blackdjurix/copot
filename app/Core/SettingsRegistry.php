@@ -196,6 +196,15 @@ class SettingsRegistry
                 static fn (int $value): bool => $value >= 1 && $value <= 4096,
                 metadata: ['internal' => true]
             ),
+            new SettingDefinition(
+                'security',
+                'authenticated_idle_timeout_minutes',
+                'integer',
+                AuthenticatedIdleTimeoutResolver::DEFAULT_MINUTES,
+                static fn (int $value): bool => $value >= AuthenticatedIdleTimeoutResolver::MINIMUM_MINUTES
+                    && $value <= AuthenticatedIdleTimeoutResolver::MAXIMUM_MINUTES,
+                metadata: ['internal' => true]
+            ),
         ]);
     }
 

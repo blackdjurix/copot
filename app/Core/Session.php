@@ -4,7 +4,14 @@ namespace Copot\Core;
 
 class Session
 {
-    public function __construct(private Config $config, private ?InstallationIdentity $installation = null)
+    private const AUTH_ACTIVITY_KEY = '_copot_authenticated_last_active_at';
+
+    public function __construct(
+        private Config $config,
+        private ?InstallationIdentity $installation = null,
+        private ?AuthenticatedIdleTimeoutResolver $idleTimeout = null,
+        private $clock = null
+    )
     {
     }
 
@@ -16,7 +23,13 @@ class Session
 
         session_name($this->cookieName());
 
-        $lifetimeSeconds = (int) $this->config->get('session.lifetime', 120) * 60;
+        $carrierMinutes = (int) $this->config->get('session.lifetime', 120);
+
+        if ($this->idleTimeout instanceof AuthenticatedIdleTimeoutResolver) {
+            $carrierMinutes = max($carrierMinutes, $this->idleTimeout->resolve());
+        }
+
+        $lifetimeSeconds = $carrierMinutes * 60;
         ini_set('session.gc_maxlifetime', (string) $lifetimeSeconds);
 
         session_set_cookie_params([
@@ -103,5 +116,46 @@ class Session
         return is_string($token)
             && is_string($storedToken)
             && hash_equals($storedToken, $token);
+    }
+
+    public function beginAuthenticatedActivity(?int $now = null): void
+    {
+        $this->set(self::AUTH_ACTIVITY_KEY, $now ?? $this->now());
+    }
+
+    public function evaluateAuthenticatedActivity(?int $now = null): bool
+    {
+        $current = $now ?? $this->now();
+        $lastActive = $this->get(self::AUTH_ACTIVITY_KEY);
+
+        if (!is_int($lastActive) && !(is_string($lastActive) && ctype_digit($lastActive))) {
+            $this->beginAuthenticatedActivity($current);
+
+            return true;
+        }
+
+        $lastActive = (int) $lastActive;
+        $timeout = $this->idleTimeout?->resolve() ?? AuthenticatedIdleTimeoutResolver::DEFAULT_MINUTES;
+
+        if ($lastActive + ($timeout * 60) <= $current) {
+            $this->clearAuthenticatedState();
+
+            return false;
+        }
+
+        $this->beginAuthenticatedActivity($current);
+
+        return true;
+    }
+
+    public function clearAuthenticatedState(): void
+    {
+        $this->remove($this->config->get('auth.session_key', '_copot_user_id'));
+        $this->remove(self::AUTH_ACTIVITY_KEY);
+    }
+
+    private function now(): int
+    {
+        return $this->clock instanceof \Closure ? (int) ($this->clock)() : time();
     }
 }

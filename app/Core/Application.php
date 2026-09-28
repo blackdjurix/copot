@@ -77,7 +77,8 @@ class Application
             $this->deployment
         );
         $this->initializeRuntimeSettings($settingsRegistry);
-        $this->session = new Session($this->config, $this->installationIdentity);
+        $idleTimeout = new AuthenticatedIdleTimeoutResolver($this->settings, $this->config);
+        $this->session = new Session($this->config, $this->installationIdentity, $idleTimeout);
         $this->csrf = new Csrf($this->session);
         $this->auth = new Auth(
             $this->config,
