@@ -17,7 +17,8 @@ class Auth
         ?callable $delay = null,
         private ?AuthenticatedSessionRepository $authenticatedSessions = null,
         private $deviceDescriptor = null,
-        private $clock = null
+        private $clock = null,
+        private ?SecurityEventService $securityEvents = null
     ) {
         $this->delay = $delay;
     }
@@ -25,20 +26,29 @@ class Auth
     public function attempt(string $email, string $password): bool
     {
         $user = $this->users->findByEmail($email);
+        $targetHash = FailedLoginThrottle::targetHash($email);
 
         if (!$this->throttle instanceof FailedLoginThrottle) {
             if (!$user instanceof User || !$user->isActive()) {
+                $this->securityEvents?->recordLoginFailure($targetHash, 0, false, $this->now());
+
                 return false;
             }
 
             if (!$this->passwords->verify($password, $user->passwordHash())) {
+                $this->securityEvents?->recordLoginFailure($targetHash, 0, false, $this->now());
+
                 return false;
             }
 
-            return $this->establish($user);
+            $established = $this->establish($user);
+            if ($established) {
+                $this->securityEvents?->recordLoginSuccess($user->id(), $targetHash, $this->now());
+            }
+
+            return $established;
         }
 
-        $targetHash = FailedLoginThrottle::targetHash($email);
         $verificationHash = $user instanceof User && $user->isActive()
             ? $user->passwordHash()
             : $this->dummyPasswordHash();
@@ -46,17 +56,25 @@ class Auth
         $throttleState = $this->throttle->beforeAttempt($targetHash);
 
         if ($throttleState->isLocked()) {
+            $this->securityEvents?->recordLoginFailure($targetHash, $throttleState->failureCount(), true, $this->now());
+
             return false;
         }
 
         if (!$user instanceof User || !$user->isActive() || !$validPassword) {
             $failure = $this->throttle->recordFailure($targetHash);
+            $this->securityEvents?->recordLoginFailure($targetHash, $failure->failureCount(), $failure->isLocked(), $this->now());
             $this->delay($failure->delayMilliseconds());
             return false;
         }
 
         $this->throttle->recordSuccess($targetHash);
-        return $this->establish($user);
+        $established = $this->establish($user);
+        if ($established) {
+            $this->securityEvents?->recordLoginSuccess($user->id(), $targetHash, $this->now());
+        }
+
+        return $established;
     }
 
     private function establish(User $user): bool
@@ -81,6 +99,9 @@ class Auth
             $this->session->beginAuthenticatedActivity($now->getTimestamp());
             $this->session->regenerateCsrfToken();
             $this->users->updateLastLogin($user->id());
+            if ($record instanceof AuthenticatedSessionRecord) {
+                $this->securityEvents?->recordSessionCreated($user->id(), $record->identity(), $record->deviceDescriptor(), $now);
+            }
             $this->user = $user;
 
             return true;
@@ -137,6 +158,7 @@ class Auth
             if ($this->authenticatedSessions instanceof AuthenticatedSessionRepository && $sessionIdentity !== null) {
                 $this->authenticatedSessions->revoke($sessionIdentity, 'idle_expired');
             }
+            $this->securityEvents?->recordIdleExpiry($this->user?->id(), $sessionIdentity, $this->now());
             $this->user = null;
 
             return null;
@@ -148,6 +170,7 @@ class Auth
                 if ($sessionIdentity !== null) {
                     $this->authenticatedSessions->revoke($sessionIdentity, 'invalid_registry_state');
                 }
+                $this->securityEvents?->recordInvalidSession(is_numeric($userId) ? (int) $userId : null, $sessionIdentity, 'invalid_registry_state', $this->now());
                 $this->session->clearAuthenticatedState();
                 $this->user = null;
 
@@ -184,8 +207,9 @@ class Auth
     public function logout(): void
     {
         $identity = $this->session->authenticatedSessionIdentity();
-        if ($this->authenticatedSessions instanceof AuthenticatedSessionRepository && $identity !== null) {
+            if ($this->authenticatedSessions instanceof AuthenticatedSessionRepository && $identity !== null) {
             $this->authenticatedSessions->revoke($identity, 'logout');
+            $this->securityEvents?->recordLogout($this->user?->id() ?? (int) ($this->session->get($this->sessionKey()) ?? 0), $identity, $this->now());
         }
         $this->session->clearAuthenticatedState();
         $this->session->regenerate();

@@ -34,6 +34,7 @@ class Application
     private Auth $auth;
     private ReauthenticationService $reauthentication;
     private SelfSessionService $selfSessions;
+    private SecurityEventService $securityEvents;
     private ModuleManager $modules;
     private ModuleLoader $moduleLoader;
     private ThemeManager $themes;
@@ -81,6 +82,9 @@ class Application
         $this->initializeRuntimeSettings($settingsRegistry);
         $idleTimeout = new AuthenticatedIdleTimeoutResolver($this->settings, $this->config);
         $this->session = new Session($this->config, $this->installationIdentity, $idleTimeout);
+        $this->securityEvents = new SecurityEventService(
+            new SecurityEventRepository($this->database)
+        );
         $this->csrf = new Csrf($this->session);
         $this->auth = new Auth(
             $this->config,
@@ -90,16 +94,21 @@ class Application
             new FailedLoginThrottle(new FailedLoginAttemptRepository($this->database)),
             null,
             new AuthenticatedSessionRepository($this->database),
-            static fn (): string => DeviceDescriptor::fromRuntime()
+            static fn (): string => DeviceDescriptor::fromRuntime(),
+            null,
+            $this->securityEvents
         );
         $this->reauthentication = new ReauthenticationService(
             $this->auth,
             $this->session,
-            new PasswordHasher()
+            new PasswordHasher(),
+            null,
+            $this->securityEvents
         );
         $this->selfSessions = new SelfSessionService(
             new AuthenticatedSessionRepository($this->database),
-            $this->reauthentication
+            $this->reauthentication,
+            $this->securityEvents
         );
         $moduleDiscovery = new ModuleDiscovery($this->path('modules'));
         $moduleRepository = new ModuleRepository($this->database);
@@ -275,6 +284,11 @@ class Application
     public function selfSessions(): SelfSessionService
     {
         return $this->selfSessions;
+    }
+
+    public function securityEvents(): SecurityEventService
+    {
+        return $this->securityEvents;
     }
 
     public function modules(): ModuleManager

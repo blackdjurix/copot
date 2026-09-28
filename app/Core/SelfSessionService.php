@@ -6,7 +6,8 @@ final class SelfSessionService
 {
     public function __construct(
         private AuthenticatedSessionRepository $sessions,
-        private ReauthenticationService $reauthentication
+        private ReauthenticationService $reauthentication,
+        private ?SecurityEventService $securityEvents = null
     )
     {
     }
@@ -27,7 +28,12 @@ final class SelfSessionService
     {
         $this->reauthentication->requireRecentProof();
 
-        return $this->sessions->revoke($identity, 'revoked_by_user', $userId);
+        $revoked = $this->sessions->revoke($identity, 'revoked_by_user', $userId);
+        if ($revoked) {
+            $this->securityEvents?->recordSessionRevoked($userId, $identity, 'revoked_by_user');
+        }
+
+        return $revoked;
     }
 
     public function revokeOtherSessions(int $userId, string $currentIdentity): int
@@ -39,6 +45,9 @@ final class SelfSessionService
             return 0;
         }
 
-        return $this->sessions->revokeOthers($userId, $currentIdentity);
+        $revoked = $this->sessions->revokeOthers($userId, $currentIdentity);
+        $this->securityEvents?->recordSignOutOthers($userId, $currentIdentity, $revoked);
+
+        return $revoked;
     }
 }

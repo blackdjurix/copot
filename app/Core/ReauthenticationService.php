@@ -11,13 +11,16 @@ final class ReauthenticationService
         private Auth $auth,
         private Session $session,
         private PasswordHasher $passwords,
-        private $clock = null
+        private $clock = null,
+        private ?SecurityEventService $securityEvents = null
     ) {
     }
 
     public function reauthenticate(string $password): ReauthenticationResult
     {
         if (!$this->auth->check()) {
+            $this->securityEvents?->recordReauthentication(ReauthenticationResult::unauthenticated(), null, null, $this->dateTime());
+
             return ReauthenticationResult::unauthenticated();
         }
 
@@ -25,11 +28,14 @@ final class ReauthenticationService
         $identity = $this->auth->durableSessionIdentity();
         if (!$user instanceof User || $identity === null) {
             $this->clearProof();
+            $this->securityEvents?->recordReauthentication(ReauthenticationResult::unauthenticated(), $user?->id(), $identity, $this->dateTime());
 
             return ReauthenticationResult::unauthenticated();
         }
 
         if (!$this->passwords->verify($password, $user->passwordHash())) {
+            $this->securityEvents?->recordReauthentication(ReauthenticationResult::invalidPassword(), $user->id(), $identity, $this->dateTime());
+
             return ReauthenticationResult::invalidPassword();
         }
 
@@ -38,7 +44,10 @@ final class ReauthenticationService
             'authenticated_at' => $this->now(),
         ]);
 
-        return ReauthenticationResult::success();
+        $result = ReauthenticationResult::success();
+        $this->securityEvents?->recordReauthentication($result, $user->id(), $identity, $this->dateTime());
+
+        return $result;
     }
 
     public function hasValidProof(): bool
@@ -87,5 +96,10 @@ final class ReauthenticationService
         }
 
         return time();
+    }
+
+    private function dateTime(): \DateTimeImmutable
+    {
+        return (new \DateTimeImmutable('@' . $this->now()))->setTimezone(new \DateTimeZone('UTC'));
     }
 }
