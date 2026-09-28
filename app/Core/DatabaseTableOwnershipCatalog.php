@@ -42,7 +42,7 @@ final class DatabaseTableOwnershipCatalog
     public static function current(): self
     {
         $webcore = ['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','content','core_migration_history','core_schema_generation'];
-        $webcore = array_merge($webcore, ['media', 'media_usages', 'navigation_menus', 'navigation_items', 'redirects']);
+        $webcore = array_merge($webcore, ['media', 'media_usages', 'navigation_menus', 'navigation_items', 'redirects', 'security_login_attempts', 'security_sessions', 'security_events']);
         $modules = [
             'navigation' => ['navigation_menu_assignments'],
             'taxonomy' => ['taxonomy_types','taxonomy_terms','taxonomy_assignments'],
@@ -80,7 +80,7 @@ final class DatabaseTableOwnershipCatalog
     private static function lockedOwners(): array
     {
         $catalog = [];
-        foreach (['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','media','media_usages','navigation_menus','navigation_items','redirects','core_migration_history','core_schema_generation'] as $table) $catalog[$table] = DatabaseTableOwner::webcore();
+        foreach (['users','roles','permissions','user_roles','role_permissions','settings','themes','modules','module_permissions','media','media_usages','navigation_menus','navigation_items','redirects','security_login_attempts','security_sessions','security_events','core_migration_history','core_schema_generation'] as $table) $catalog[$table] = DatabaseTableOwner::webcore();
         foreach (['navigation'=>['navigation_menu_assignments'],'taxonomy'=>['taxonomy_types','taxonomy_terms','taxonomy_assignments'],'media'=>['media_variants'],'form-manager'=>['forms','form_fields','form_field_options','form_submissions','form_submission_values','form_submission_attempts']] as $module=>$tables) foreach ($tables as $table) $catalog[$table] = DatabaseTableOwner::module($module);
         $catalog['content'] = DatabaseTableOwner::webcore();
         return $catalog;

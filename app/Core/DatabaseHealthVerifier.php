@@ -10,7 +10,8 @@ final class DatabaseHealthVerifier
         'users', 'roles', 'permissions', 'user_roles', 'role_permissions', 'settings',
         'modules', 'module_permissions', 'themes', 'content', 'media', 'media_usages',
         'navigation_menus', 'navigation_items', 'redirects', 'taxonomy_types',
-        'taxonomy_terms', 'taxonomy_assignments', 'core_migration_history',
+        'taxonomy_terms', 'taxonomy_assignments', 'security_login_attempts',
+        'security_sessions', 'security_events', 'core_migration_history',
     ];
 
     public function __construct(private ?DatabaseTableNames $tables = null)

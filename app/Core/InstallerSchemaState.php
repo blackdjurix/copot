@@ -18,6 +18,9 @@ class InstallerSchemaState
         'navigation_menus',
         'navigation_items',
         'redirects',
+        'security_login_attempts',
+        'security_sessions',
+        'security_events',
         'core_migration_history',
     ];
 

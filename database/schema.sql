@@ -310,6 +310,46 @@ CREATE TABLE redirects (
     UNIQUE KEY uq_redirects_source_path (source_path)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+CREATE TABLE security_login_attempts (
+    target_hash CHAR(64) NOT NULL PRIMARY KEY,
+    failure_count INT UNSIGNED NOT NULL DEFAULT 0,
+    window_started_at DATETIME NOT NULL,
+    locked_until DATETIME NULL,
+    last_failure_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    INDEX (locked_until, window_started_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE security_sessions (
+    session_identity CHAR(64) NOT NULL PRIMARY KEY,
+    user_id BIGINT UNSIGNED NOT NULL,
+    device_descriptor VARCHAR(255) NOT NULL,
+    created_at DATETIME NOT NULL,
+    last_active_at DATETIME NOT NULL,
+    expires_at DATETIME NOT NULL,
+    revoked_at DATETIME NULL,
+    revocation_reason VARCHAR(100) NULL,
+    INDEX (user_id, revoked_at, expires_at),
+    INDEX (expires_at, revoked_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE security_events (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    occurred_at DATETIME NOT NULL,
+    category VARCHAR(80) NOT NULL,
+    severity VARCHAR(20) NOT NULL,
+    actor_user_id BIGINT UNSIGNED NULL,
+    target_type VARCHAR(80) NULL,
+    target_identity VARCHAR(190) NULL,
+    action VARCHAR(100) NOT NULL,
+    result VARCHAR(30) NOT NULL,
+    context_json TEXT NOT NULL,
+    retention_until DATETIME NULL,
+    INDEX (occurred_at, id),
+    INDEX (retention_until, id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE core_migration_history (
     migration_id VARCHAR(191) NOT NULL PRIMARY KEY,
     sequence_number INT UNSIGNED NOT NULL UNIQUE,

@@ -33,7 +33,7 @@ final class PackageLifecycleFactory
         $installationIdentity = (new InstallationIdentityStore($storage))->getOrCreate();
         $database = new Database(new Config($basePath . DIRECTORY_SEPARATOR . 'config'));
         $baselineCatalog = CanonicalSchemaBaselineCatalog::forProject($basePath);
-        $registry = new CoreMigrationRegistry('copot-core-current', []);
+        $registry = CoreMigrationRegistry::forProject($basePath);
         $ledger = new CoreMigrationLedger($database->tables());
         $mutex = new InstallationMutex($storage);
         $operationStore = new LifecycleOperationStore($storage);

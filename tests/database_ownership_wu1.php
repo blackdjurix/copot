@@ -31,8 +31,8 @@ $throwsRuntime = static function (callable $callback, string $message) use ($ass
 };
 
 $catalog = DatabaseTableOwnershipCatalog::current();
-$assert(count($catalog->all()) === 28, 'Locked ownership catalog does not contain every table surface exactly once.');
-$assert(count(array_unique(array_map(static fn (DatabaseTableOwnership $entry): string => $entry->logicalName(), $catalog->all()))) === 28, 'Ownership catalog contains duplicate logical identities.');
+$assert(count($catalog->all()) === 31, 'Locked ownership catalog does not contain every table surface exactly once.');
+$assert(count(array_unique(array_map(static fn (DatabaseTableOwnership $entry): string => $entry->logicalName(), $catalog->all()))) === 31, 'Ownership catalog contains duplicate logical identities.');
 
 $targetOwners = [
     'content' => ['webcore', null],

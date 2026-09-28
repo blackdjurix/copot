@@ -80,7 +80,7 @@ $assert(array_intersect($ownedA, $ownedB) === [], 'Independent COPOT ownership s
 $assert((new DatabaseTableNames())->table('users') === 'users', 'Legitimate empty namespace changed.');
 $assert($tablesA->moduleTable('content') === 'wu6a_content', 'Module namespace did not follow the Core namespace boundary.');
 $catalog = DatabaseTableOwnershipCatalog::current();
-$assert(count($catalog->all()) === 28 && $catalog->ownership('content')->isHistoricallyPreProvisioned(), 'Historical aggregate ownership compatibility was not retained.');
+$assert(count($catalog->all()) === 31 && $catalog->ownership('content')->isHistoricallyPreProvisioned(), 'Historical aggregate ownership compatibility was not retained.');
 $partial = (new InstallerDatabaseOccupancyClassifier())->classify(['wu6a_users']);
 $blocked(fn () => (new InstallerRoutingPlanner())->plan($partial, InstallerIntent::COEXIST, 'wu6a'));
 $proof = new InstallerOwnershipProof($identityA, 'wu6a', 'core-schema-generation:wu6', str_repeat('a', 64));

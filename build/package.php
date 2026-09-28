@@ -328,7 +328,7 @@ $manifestData = [
         'required_extensions' => ['json', 'pdo', 'pdo_mysql', 'session', 'filter', 'zip'],
     ],
     'inventory' => $inventory,
-    'migration_declaration' => ['declares_core_migrations' => false, 'declaration_identity' => null],
+    'migration_declaration' => ['declares_core_migrations' => true, 'declaration_identity' => Copot\Core\CoreMigrationRegistry::IDENTITY],
     'target_requirements' => (new Copot\Core\PackageTargetRequirements([
         new Copot\Core\PackageTargetRequirement(
             Copot\Core\PackageTargetRequirement::SCHEMA,
