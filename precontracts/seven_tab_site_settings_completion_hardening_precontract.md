@@ -414,3 +414,114 @@ Pre-contract stage dianggap lengkap ketika:
 - repository diff hanya memuat authorized planning materialization;
 - no implementation mutation dilakukan;
 - materialized artifact dapat digunakan sebagai provenance untuk contract preparation.
+
+## 18. Technical pre-contract reconciliation
+
+Technical review terhadap current Repository mengonfirmasi bahwa workstream ini feasible, tetapi contract preparation wajib membawa technical boundary berikut tanpa mengubah accepted scope atau Work Unit topology.
+
+### 18.1 Canonical Security integration boundary
+
+Security controls harus terintegrasi melalui canonical Webcore Auth/Session authority, bukan diimplementasikan secara terpisah pada individual login routes.
+
+Semua login entry point yang applicable harus menggunakan Security-enforced authentication path yang sama.
+
+Password policy harus digunakan secara konsisten pada seluruh password-entry boundary yang berada dalam scope Webcore, termasuk administrator creation pada installer, Users & Access user creation/password change, dan password-changing flow lain yang applicable.
+
+Exact policy values dan behavior detail tetap menjadi contract-level decision.
+
+### 18.2 Runtime session-timeout resolution
+
+Runtime-editable session timeout membutuhkan contract-level resolver/data-flow yang menjelaskan:
+
+- precedence antara runtime Site Settings dan environment/default configuration;
+- request-time resolution melalui canonical Session/Auth authority;
+- hubungan terhadap cookie lifetime dan server-side expiry enforcement;
+- behavior terhadap session yang telah diterbitkan ketika timeout berubah.
+
+Exact precedence, default, bounds, dan existing-session behavior tetap menjadi contract-level decision.
+
+### 18.3 Security persistence dan lifecycle integration inventory
+
+Contract wajib merekonsiliasi setiap authority yang terdampak oleh Security persistence, minimum mencakup:
+
+- canonical schema;
+- Core migration registry dan declaration;
+- table ownership classification;
+- namespace/table-name mapping;
+- installer schema readiness;
+- database health verification;
+- canonical schema baseline identity;
+- package target requirements;
+- target-relative compatibility dan adoption planning;
+- committed lifecycle/migration-ledger verification.
+
+Pre-contract ini tidak menetapkan exact table name, migration identity, sequence, schema identity, atau target-version mapping.
+
+### 18.4 System Email technical boundary
+
+System Email adalah new Webcore platform capability, bukan settings-only projection.
+
+WU3 harus mendefinisikan minimum:
+
+- bounded secret-provider/write path yang compatible dengan environment/credential boundary;
+- redacted operator read model;
+- outbound mail transport abstraction;
+- explicit delivery/failure model;
+- optional controlled test-delivery path;
+- behavior yang memastikan mail configuration/delivery tidak menjadi dependency untuk installation atau login kecuali kemudian diotorisasi secara eksplisit sebagai scope terpisah.
+
+Exact transport fields, provider semantics, test-delivery authorization, dan persistence detail tetap menjadi contract-level decision.
+
+### 18.5 Redirects ownership dan projection reconciliation
+
+Redirects tetap Webcore-owned.
+
+Current module-hosted route/service implementation tidak dengan sendirinya mengubah ownership authority.
+
+WU4 contract preparation harus memetakan canonical Redirect repository/resolver, operator routes, permission, table accessor, dan final Site Settings projection dengan invariant:
+
+- tidak ada duplicate redirect authority;
+- tidak ada duplicate physical persistence;
+- tidak ada implicit ownership transfer.
+
+Perubahan ownership, bila pernah diperlukan, adalah separate approval boundary dan bukan bagian implisit workstream ini.
+
+### 18.6 Permission projection matrix
+
+Contract wajib mendefinisikan authorization matrix untuk Security, Email, dan Redirects yang minimum membedakan:
+
+- navigation visibility;
+- read access;
+- mutation access;
+- sensitive-action authorization;
+- Administrator role seeding/reconciliation.
+
+Contract harus menetapkan hubungan `settings.update` dengan `security.manage`, `email.manage`, dan existing `redirects.manage` tanpa melemahkan accepted permission boundaries.
+
+### 18.7 Contract-stage acceptance and compatibility matrix
+
+Contract-stage acceptance wajib mencakup minimum:
+
+- fresh install;
+- existing-install migration/upgrade;
+- adoption dan target-relative compatibility;
+- namespace isolation;
+- lifecycle/database health;
+- permission separation;
+- secret redaction;
+- mail configuration/delivery non-dependency terhadap installation/login;
+- failed-login account-enumeration resistance;
+- lockout expiry;
+- session revocation effectiveness;
+- current-session identification;
+- concurrent/stale session behavior;
+- sensitive re-authentication expiry;
+- security-event sanitization.
+
+Human/product acceptance untuk final Security dan Email operator surface tetap dilakukan bila material terhadap UI/product intent.
+
+### 18.8 Reconciliation boundary
+
+Technical reconciliation ini menambahkan implementation-grounded contract requirements tetapi tidak mengunci decision yang pada Section 15 masih dinyatakan sebagai contract-level decision.
+
+Technical finding atau feasibility evidence tidak mengotorisasi implementation, contract promotion, release, atau scope expansion.
