@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-09-28 12:24:59 WIB
+Date version: 2026-09-28 13:36:02 WIB
 
 ## 1. Variabel
 
@@ -185,13 +185,13 @@ Technical Executor tidak memutuskan NRP, closure project, acceptance WU, authori
 
 ### Semantic dan repository materialization
 
-Untuk pre-contract, GPT adalah default semantic author/reconciler sekaligus default physical materializer ke Repository ketika exact payload sudah tersedia dan repository mutation telah diotorisasi. Materialization di sini berarti GPT dapat langsung membuat atau memperbarui physical pre-contract file di Repository, bukan hanya menyiapkan payload di conversation.
+Untuk Workplan Set/Workplan, pre-contract, dan contract candidate, GPT adalah default semantic author/reconciler sekaligus default physical materializer ke Repository ketika exact payload sudah tersedia dan repository mutation telah diotorisasi. Materialization berarti GPT dapat langsung membuat atau memperbarui physical artifact di Repository, bukan hanya menyiapkan payload di conversation. Ketentuan ini tidak menetapkan GPT sebagai default physical materializer untuk authoritative contract atau artifact lain.
 
-Workplan dapat mengikuti route yang sama ketika source semantics berasal dari reasoning GPT/user dan direct GPT materialization merupakan route yang paling tepat. Ketentuan ini tidak menetapkan GPT sebagai default physical materializer untuk contract atau artifact lain.
+Codex tetap menjadi default Technical Executor untuk technical review, technical delta, source audit, implementation, dan technical repository mutation lainnya. Setelah GPT mematerialisasi physical pre-contract file, Codex dapat membaca exact current file tersebut sebagai basis technical review dan proposal penyesuaian menuju contract candidate.
 
-Codex tetap menjadi default Technical Executor untuk technical review, technical delta, source audit, implementation, dan technical repository mutation lainnya. Setelah GPT mematerialisasi physical pre-contract file, Codex dapat membaca exact current file tersebut sebagai basis technical review dan proposal penyesuaian menuju contract.
+Physical materialization oleh Codex adalah alternative route berbasis kebutuhan teknis, bukan route generik karena Codex tersedia. GPT hanya mendelegasikan materialization bila diperlukan technical synthesis yang material, repository-grounded reconciliation, cross-check implementation/source, application of technical delta, atau pencegahan mismatch teknis yang material. Delegation wajib menjelaskan mengapa default direct GPT materialization tidak cukup, serta menetapkan exact payload/source, allowed technical synthesis, bagian yang boleh/tidak boleh berubah, validation, dan stop condition.
 
-GPT tetap dapat mendelegasikan physical materialization pre-contract atau Workplan kepada Codex bila exact payload, scope, actor, action, dan output yang diizinkan ditulis secara precise. Physical materialization tidak dengan sendirinya memberi semantic authorship, implementation authority, acceptance authority, atau promotion authority.
+Physical materialization tidak dengan sendirinya memberi semantic authorship, implementation authority, acceptance authority, atau promotion authority.
 
 ### Semantic authorship, technical reconciliation, dan materialization
 
@@ -199,7 +199,7 @@ GPT menyiapkan dan merekonsiliasi semantic Workplan, pre-contract, dan contract 
 
 Pre-contract bersifat provisional dan tetap revisable oleh GPT/user sampai promotion. Perubahan semantic sebelum proposal atau promotion tidak dengan sendirinya menjadi scope drift selama tetap berada dalam accepted workstream boundary. Technical Executor harus melakukan `TECHNICAL PRE-CONTRACT REVIEW` terhadap exact current pre-contract payload atau source exact yang dapat diverifikasi. Review tersebut boleh menemukan gap feasibility, dependency, interface, data flow, validation, atau acceptance detail yang bersifat teknis, lalu mengusulkan `technical delta` tanpa mengubah project flow.
 
-Technical Executor dapat menerapkan technical delta pada pre-contract atau contract draft hanya jika explicit delegation menyebut payload, scope perubahan, actor, action, dan output yang diizinkan. Technical Executor dapat membantu contract drafting atau promotion hanya melalui delegation terpisah yang eksplisit; tanpa delegation tersebut, hasilnya tetap proposal untuk review GPT/user. `READY TO PROMOTE` berarti secara teknis siap ditinjau, bukan contract authoritative.
+Technical Executor dapat menerapkan technical delta pada pre-contract atau contract candidate hanya jika explicit delegation menyebut payload, scope perubahan, actor, action, dan output yang diizinkan. Technical Executor dapat membantu drafting atau physical materialization contract candidate hanya melalui explicit contract-materialization Agent Instruction; tanpa delegation tersebut, hasilnya tetap proposal untuk review GPT/user. Technical Executor tidak pernah memiliki promotion authority untuk contract. `READY TO PROMOTE` berarti secara teknis siap ditinjau, bukan contract authoritative.
 
 Technical Executor tidak boleh mengambil alih project scope, product decision, project-flow transition, ownership, state deferred, NRP, Workplan ownership, acceptance, closure, session transition, atau keputusan promotion yang tidak didelegasikan. Technical delta tidak boleh memperluas scope secara implisit. Perubahan yang menyentuh ownership, architecture boundary, Deferred Item adoption, multi-user scope, scope expansion, atau boundary lain yang memerlukan approval harus dikembalikan sebagai unresolved finding untuk GPT/user dan diperlakukan sebagai approval gate baru bila applicable.
 
@@ -208,7 +208,8 @@ Technical Executor hanya boleh:
 - menyediakan technical evidence atau feasibility finding;
 - mengusulkan technical delta pada payload yang disuplai secara exact;
 - menerapkan technical delta yang didelegasikan secara eksplisit;
-- mematerialisasi exact approved payload/artifact yang source, scope, actor, dan action-nya dapat diverifikasi;
+- mematerialisasi exact Workplan/pre-contract payload hanya melalui explicit delegation dan Agent Instruction yang dapat diverifikasi;
+- mematerialisasi contract candidate hanya melalui explicit contract-materialization Agent Instruction;
 - melakukan validasi format, diff, consistency, dan teknis yang diotorisasi.
 
 Jika exact payload, source exact, atau semantic decision yang diperlukan belum tersedia, instruction harus fail-closed dengan blocker `SEMANTIC PAYLOAD NOT SUPPLIED`. Jangan mengisi kekosongan dengan inference Workplan/Concept, Handoff, memory, summary, atau potongan Repository.
