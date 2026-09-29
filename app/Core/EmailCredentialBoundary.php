@@ -99,6 +99,38 @@ class EmailCredentialBoundary
         return ['configured' => false];
     }
 
+    /**
+     * Internal transport-only access. The public state() method remains redacted.
+     */
+    public function readForTransport(): ?string
+    {
+        if (!is_file($this->environmentPath) || !is_readable($this->environmentPath)) {
+            return null;
+        }
+
+        $contents = @file_get_contents($this->environmentPath);
+        if (!is_string($contents)) {
+            return null;
+        }
+
+        foreach (preg_split('/\r\n|\n|\r/', $contents) ?: [] as $line) {
+            if (!preg_match('/^\s*' . preg_quote(self::ENVIRONMENT_KEY, '/') . '\s*=\s*(.*)$/', $line, $matches)) {
+                continue;
+            }
+
+            $value = trim($matches[1]);
+            if (str_starts_with($value, '"') && str_ends_with($value, '"')) {
+                $value = str_replace(['\\"', '\\\\'], ['"', '\\'], substr($value, 1, -1));
+            } elseif (str_starts_with($value, "'") && str_ends_with($value, "'")) {
+                $value = substr($value, 1, -1);
+            }
+
+            return $value === '' ? null : $value;
+        }
+
+        return null;
+    }
+
     private function assertTarget(string $directory): void
     {
         if (
