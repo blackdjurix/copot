@@ -851,5 +851,3 @@ Rules:
 ### Executor Projection
 
 `<minimum material segment-specific rule/context yang diproyeksikan ke Agent Instruction ketika diperlukan>`
-
-

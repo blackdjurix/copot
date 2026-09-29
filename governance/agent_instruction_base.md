@@ -582,4 +582,3 @@ Reporting rules:
 - do not claim validation, verification, execution, or state that was not actually established;
 - do not hide blockers, uncertainty, skipped validation, or scope deviations behind vague wording;
 - keep the report concise enough to support downstream project decisions without discarding material evidence.
-

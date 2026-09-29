@@ -613,4 +613,3 @@ Handoff dianggap complete ketika receiving GPT/session dapat memulihkan objectiv
 Untuk transition type `NRP`, Handoff harus cukup untuk normal continuity bootstrap pada confirmed continuity boundary.
 
 Untuk transition type `EMERGENCY`, Handoff harus cukup untuk elevated continuity recovery dengan material continuity gaps, at-risk context, unresolved state, dan required recovery actions yang tetap explicit.
-
