@@ -1,11 +1,25 @@
-# COPOT AGENT INSTRUCTION
-Date version: 2026-09-28 11:18:51 WIB
+# <Batas Continuity> — <Judul Continuity>
+<Instruction Title>
+Date version: 2026-09-29 19:55:26 WIB
 
 ## Purpose
 
 This is a thin, task-specific execution contract for the COPOT Technical Executor.
 
 Canonical governance identity: `governance/agent_instruction_copot.md`.
+
+## Semantik title Agent Instruction
+
+Dua baris pertama merupakan title session dan title instruksi.
+
+Format:
+
+`<Batas Continuity> — <Judul Continuity>`
+`<Instruction Title>`
+
+Baris pertama mengidentifikasi session atau continuity boundary. Baris kedua menjelaskan pekerjaan teknis yang dilakukan oleh Technical Executor pada interaction atau bubble tersebut.
+
+`Instruction Title` harus berupa ringkasan pekerjaan teknis aktual, bukan salinan Handoff, Workplan, Concept, authorization, atau lifecycle governance. Jangan menambahkan prefix `AGENT INSTRUCTION` atau wrapper generik lain pada title yang dikirim ke Technical Executor.
 
 It must be generated for the exact authorized execution slice. It is not a copy of the full Rule, Handoff, Workplan, or project lifecycle governance.
 

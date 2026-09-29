@@ -1,11 +1,29 @@
-# HANDOFF COPOT — <Batas Continuity> — <Judul>
-Date version: 2026-09-28 06:11:24 WIB
+# copot <Batas Continuity> — <Judul>
+Date version: 2026-09-29 19:55:26 WIB
 
 ## Batas penggunaan
 
 Handoff adalah artifact continuity GPT/session untuk COPOT. Handoff bukan Agent Instruction, bukan payload executor, bukan authorization baru, dan bukan pengganti Rule.
 
 Identitas canonical: `governance/handoff_template_copot.md`.
+
+## Semantik title Handoff
+
+Baris pertama adalah canonical continuity title dan kandidat utama untuk nama session.
+
+Format:
+
+`copot <Batas Continuity> — <Judul>`
+
+Contoh:
+
+`copot WU2 — Security Platform Capability Baseline Closure`
+
+`copot WU2 Batch 1 — Security Platform Capability Baseline Closure`
+
+Gunakan `copot` dalam huruf kecil karena merupakan nama produk canonical. Jangan menambahkan prefix `HANDOFF`, `PROJECT SESSION HANDOFF`, atau wrapper generik lain.
+
+`Batas Continuity` mengidentifikasi milestone, Work Unit, batch, slice, workstream, phase, atau boundary project lain yang relevan. `Judul` menjelaskan tujuan atau state continuity yang dicatat. External title/name field tidak menggantikan canonical title pada baris pertama.
 
 ## Isolasi session baru dan bahasa
 
@@ -158,4 +176,3 @@ GPT penerima harus melaporkan:
 ## Pernyataan closure
 
 Handoff ini mencatat state continuity. Handoff tidak dengan sendirinya menyatakan implementation complete, closure project, konfirmasi NRP, release readiness, atau authorization eksekusi.
-
