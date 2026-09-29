@@ -1,6 +1,5 @@
-# <Batas Continuity> — <Judul Continuity>
-<Instruction Title>
-Date version: 2026-09-29 19:55:26 WIB
+# AGENT INSTRUCTION TEMPLATE
+Date version: 2026-09-29 20:12:00 WIB
 
 ## Purpose
 
