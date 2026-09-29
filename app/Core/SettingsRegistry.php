@@ -205,6 +205,54 @@ class SettingsRegistry
                     && $value <= AuthenticatedIdleTimeoutResolver::MAXIMUM_MINUTES,
                 metadata: ['internal' => true]
             ),
+            new SettingDefinition(
+                'email',
+                'smtp_host',
+                'string',
+                '',
+                static fn (string $value): bool => self::validEmailHost($value),
+                metadata: ['internal' => true, 'max_length' => 253]
+            ),
+            new SettingDefinition(
+                'email',
+                'smtp_port',
+                'integer',
+                587,
+                static fn (int $value): bool => $value >= 1 && $value <= 65535,
+                metadata: ['internal' => true]
+            ),
+            new SettingDefinition(
+                'email',
+                'smtp_security',
+                'string',
+                'tls',
+                allowedValues: EmailTransportConfiguration::SECURITY_MODES,
+                metadata: ['internal' => true]
+            ),
+            new SettingDefinition(
+                'email',
+                'smtp_username',
+                'string',
+                '',
+                static fn (string $value): bool => self::validEmailText($value, 320),
+                metadata: ['internal' => true, 'max_length' => 320]
+            ),
+            new SettingDefinition(
+                'email',
+                'sender_email',
+                'string',
+                '',
+                static fn (string $value): bool => $value === '' || self::validEmailAddress($value),
+                metadata: ['internal' => true, 'max_length' => 254]
+            ),
+            new SettingDefinition(
+                'email',
+                'sender_name',
+                'string',
+                'COPOT',
+                static fn (string $value): bool => self::validEmailText($value, 150),
+                metadata: ['internal' => true, 'max_length' => 150]
+            ),
         ]);
     }
 
@@ -273,6 +321,44 @@ class SettingsRegistry
         $length = preg_match_all('/./us', $value);
 
         return is_int($length) ? $length : null;
+    }
+
+    private static function validEmailHost(string $value): bool
+    {
+        if ($value === '') {
+            return true;
+        }
+
+        if (strlen($value) > 253 || preg_match('/[\x00-\x20\x7f]/', $value)) {
+            return false;
+        }
+
+        if (filter_var($value, FILTER_VALIDATE_IP) !== false) {
+            return true;
+        }
+
+        return (bool) preg_match(
+            '/^(?=.{1,253}$)(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)*[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$/D',
+            $value
+        );
+    }
+
+    private static function validEmailText(string $value, int $maximumLength): bool
+    {
+        $length = self::stringLength($value);
+
+        return $length !== null
+            && $length <= $maximumLength
+            && !preg_match('/[\x00\r\n]/', $value);
+    }
+
+    private static function validEmailAddress(string $value): bool
+    {
+        $length = self::stringLength($value);
+
+        return $length !== null
+            && $length <= 254
+            && filter_var($value, FILTER_VALIDATE_EMAIL) !== false;
     }
 
     private static function validSiteAssetDescriptor(
