@@ -1,5 +1,5 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-09-29 20:12:00 WIB
+Date version: 2026-09-29 20:20:00 WIB
 
 ## Purpose
 
@@ -13,10 +13,10 @@ Dua baris pertama merupakan title session dan title instruksi.
 
 Format:
 
-`<Batas Continuity> — <Judul Continuity>`
+`<Project> <Continuity Boundary> — <Title>`
 `<Instruction Title>`
 
-Baris pertama mengidentifikasi session atau continuity boundary. Baris kedua menjelaskan pekerjaan teknis yang dilakukan oleh Technical Executor pada interaction atau bubble tersebut.
+Baris pertama mengidentifikasi project, session atau continuity boundary, dan title continuity. Baris kedua menjelaskan pekerjaan teknis yang dilakukan oleh Technical Executor pada interaction atau bubble tersebut.
 
 `Instruction Title` harus berupa ringkasan pekerjaan teknis aktual, bukan salinan Handoff, Workplan, Concept, authorization, atau lifecycle governance. Jangan menambahkan prefix `AGENT INSTRUCTION` atau wrapper generik lain pada title yang dikirim ke Technical Executor.
 
