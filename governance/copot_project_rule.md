@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-09-30 20:50:00 WIB
+Date version: 2026-09-30 21:17:56 WIB
 
 ## 1. Variabel
 
@@ -18,9 +18,9 @@ Variabel adalah pointer project yang statis. Nilainya ditetapkan saat governance
 - Authoritative Documentation: **docs/**
 - Workplan: **workplan.md**
 - Concept Sources: **concepts/ dan root Concept artifacts bila material**
-- Governance Rule: **governance/project_rule_copot.md**
-- Governance Handoff: **governance/handoff_template_copot.md**
-- Governance Agent Instruction: **governance/agent_instruction_copot.md**
+- Governance Rule: **governance/copot_project_rule.md**
+- Governance Handoff: **governance/copot_handoff_template.md**
+- Governance Agent Instruction: **governance/copot_agent_instruction.md**
 - Active Applicable Governance:
   - Gateway: **Tailscale**
   - Prototyping: **Figma**
@@ -55,9 +55,9 @@ Project truth, state Repository, state runtime, state planning, dan state contin
 
 Identitas governance canonical:
 
-- `governance/project_rule_copot.md`
-- `governance/handoff_template_copot.md`
-- `governance/agent_instruction_copot.md`
+- `governance/copot_project_rule.md`
+- `governance/copot_handoff_template.md`
+- `governance/copot_agent_instruction.md`
 
 Resolve exact canonical paths. Jangan melakukan pencarian filename, fallback ke file serupa, atau menganggap generated copy sebagai pengganti authoritative.
 
@@ -110,27 +110,27 @@ Jika Agent Instruction unavailable, generation atau delivery instruction untuk T
 
 Pada awal setiap response yang akan memuat substantive COPOT feedback, gunakan format `GPT Interaction Format` dan report governance status berikut:
 
-```text
 Governance Report
 
 - Governance Source: `<Source> — <Source Link> — <AVAILABLE / UNAVAILABLE>`
-- Project Rule: `Rule` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
-- Handoff: `Handoff` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
-- Agent Instruction: `Agent Instruction` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Project Rule: `rule` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Handoff: `handoff` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Agent Instruction: `agent instruction` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
 - Platform: `<PC / Desktop / Mobile / Android / Other / Unknown>`
 - Manual-operation executor: `<User / Technical Executor / Unknown>`
 - Executor confirmation: `<CONFIRMED / REUSED / REQUIRED / NOT REQUIRED>`
 - Routing action: `<material consequence only>`
 - Repository status: `<verified state when material>`
 
-Pembahasan
+## Feedback GPT
 
 <substantive feedback sesuai materialitas interaction>
 
-DateTime stamp: `<YYYY-MM-DD HH:mm:ss WIB>`
-```
+`<YYYY-MM-DD HH:mm:ss WIB>`
 
-`Pembahasan` dapat memuat scope, context, analysis, recommendation, evidence, blocker, unresolved state, result/verdict, affected state, dan next action. Tidak semua elemen wajib ditampilkan apabila tidak material.
+`Feedback GPT` dapat memuat scope, context, analysis, recommendation, evidence, blocker, unresolved state, result/verdict, affected state, dan next action. Tidak semua elemen wajib ditampilkan apabila tidak material.
+
+Resolve `Manual-operation executor` dari platform saat interaction berlangsung, actual execution route, dan actor yang secara realistis melakukan operasi manual. Gunakan `Unknown` bila actor belum dapat dipastikan.
 
 Jangan mengklaim `READ THIS INTERACTION` atau `READ AND APPLIED` jika exact artifact belum dibuka, dibaca, dan diterapkan pada interaction tersebut.
 

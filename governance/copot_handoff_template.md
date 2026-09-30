@@ -1,11 +1,11 @@
 # copot <Batas Continuity> — <Judul>
-Date version: 2026-09-30 20:50:00 WIB
+Date version: 2026-09-30 21:17:56 WIB
 
 ## Batas penggunaan
 
 Handoff adalah artifact continuity GPT/session untuk COPOT. Handoff bukan Agent Instruction, bukan payload executor, bukan authorization baru, dan bukan pengganti Rule.
 
-Identitas canonical: `governance/handoff_template_copot.md`.
+Identitas canonical: `governance/copot_handoff_template.md`.
 
 ## Semantik title Handoff
 
@@ -33,7 +33,7 @@ Generated Handoff harus menggunakan struktur berikut:
 - Then: `<Batas penggunaan dan continuity isolation>`
 - Required section order: `## Perpindahan`, `## Objective dan state saat ini`, `## Target berikutnya`.
 - Then: `<handoff contents yang material>` sesuai continuity transition.
-- Terminal line: `<YYYY-MM-DD HH:mm:ss WIB>`
+- Final line must be the bare timestamp `<YYYY-MM-DD HH:mm:ss WIB>` without any prefix or label.
 
 Section conditional hanya dimasukkan bila material terhadap continuity transition.
 

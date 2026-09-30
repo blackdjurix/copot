@@ -1,11 +1,11 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-09-29 20:20:00 WIB
+Date version: 2026-09-30 21:17:56 WIB
 
 ## Purpose
 
 This is a thin, task-specific execution contract for the COPOT Technical Executor.
 
-Canonical governance identity: `governance/agent_instruction_copot.md`.
+Canonical governance identity: `governance/copot_agent_instruction.md`.
 
 ## Semantik title Agent Instruction
 
