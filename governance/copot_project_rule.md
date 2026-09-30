@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-09-30 21:32:22 WIB
+Date version: 2026-09-30 21:36:18 WIB
 
 ## 1. Variabel
 
@@ -22,6 +22,10 @@ Variabel adalah pointer project yang statis. Nilainya ditetapkan saat governance
 - Governance Rule: **governance/copot_project_rule.md**
 - Governance Handoff: **governance/copot_handoff_template.md**
 - Governance Agent Instruction: **governance/copot_agent_instruction.md**
+- Governance Report aliases:
+  - Governance Rule: `rule`
+  - Governance Handoff: `handoff`
+  - Governance Agent Instruction: `agent instruction`
 - Active Applicable Governance:
   - Gateway: **Tailscale**
   - Prototyping: **Figma**
