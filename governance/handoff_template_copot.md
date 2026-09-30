@@ -1,5 +1,5 @@
 # copot <Batas Continuity> — <Judul>
-Date version: 2026-09-29 19:55:26 WIB
+Date version: 2026-09-30 20:50:00 WIB
 
 ## Batas penggunaan
 
@@ -29,24 +29,11 @@ Gunakan `copot` dalam huruf kecil karena merupakan nama produk canonical. Jangan
 
 Generated Handoff harus menggunakan struktur berikut:
 
-```
-# <project> <Continuity Boundary> — <Judul>
-
-<Batas penggunaan dan continuity isolation>
-
-## Perpindahan
-...
-
-## Objective dan state saat ini
-...
-
-## Target berikutnya
-...
-
-<handoff contents yang material>
-
-DateTime stamp: <YYYY-MM-DD HH:mm:ss WIB>
-```
+- First line: `# <project> <Continuity Boundary> — <Judul>`
+- Then: `<Batas penggunaan dan continuity isolation>`
+- Required section order: `## Perpindahan`, `## Objective dan state saat ini`, `## Target berikutnya`.
+- Then: `<handoff contents yang material>` sesuai continuity transition.
+- Terminal line: `<YYYY-MM-DD HH:mm:ss WIB>`
 
 Section conditional hanya dimasukkan bila material terhadap continuity transition.
 
@@ -80,11 +67,15 @@ Untuk `EMERGENCY`, risiko continuity dan kebutuhan recovery/revalidation wajib d
 
 Cantumkan hanya bila contract material terhadap continuity:
 
+Section ini hanya mencatat contract authority state dan tidak memberikan authorization baru.
+
 - Authoritative contract: `<path/title / None>`
 - Contract status: `<provisional / proposed / accepted / promoted / durable / None>`
 - Authorized contract scope: `<summary / None>`
 - Contract exclusions or separate gates: `<summary / None>`
 - Contract authorization evidence: `<source / None>`
+
+Pisahkan state accepted, provisional, rejected, superseded, dan unresolved.
 
 ## Payload unresolved dan unsaved
 

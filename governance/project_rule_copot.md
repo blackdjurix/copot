@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-09-28 13:36:02 WIB
+Date version: 2026-09-30 20:50:00 WIB
 
 ## 1. Variabel
 
@@ -125,10 +125,10 @@ Governance Report
 
 Pembahasan
 
+<substantive feedback sesuai materialitas interaction>
+
 DateTime stamp: `<YYYY-MM-DD HH:mm:ss WIB>`
 ```
-
-<substantive feedback sesuai materialitas interaction>
 
 `Pembahasan` dapat memuat scope, context, analysis, recommendation, evidence, blocker, unresolved state, result/verdict, affected state, dan next action. Tidak semua elemen wajib ditampilkan apabila tidak material.
 
@@ -451,4 +451,3 @@ Pembaruan governance harus mempertahankan:
 - Handoff sebagai artifact continuity;
 - Agent Instruction sebagai boundary eksekusi teknis;
 - Technical Executor sebagai producer evidence.
-
