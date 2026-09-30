@@ -78,7 +78,8 @@ INSERT INTO permissions (name, slug, created_at, updated_at) VALUES
     ('Manage modules', 'modules.manage', NOW(), NOW()),
     ('Manage navigation', 'navigation.manage', NOW(), NOW()),
     ('Manage themes', 'themes.manage', NOW(), NOW()),
-    ('Manage redirects', 'redirects.manage', NOW(), NOW());
+    ('Manage redirects', 'redirects.manage', NOW(), NOW()),
+    ('Manage Email', 'email.manage', NOW(), NOW());
 
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
@@ -164,6 +165,12 @@ INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
 FROM roles
 INNER JOIN permissions ON permissions.slug = 'redirects.manage'
+WHERE roles.slug = 'admin';
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT roles.id, permissions.id
+FROM roles
+INNER JOIN permissions ON permissions.slug = 'email.manage'
 WHERE roles.slug = 'admin';
 
 CREATE TABLE settings (
@@ -395,5 +402,19 @@ INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
 FROM roles
 INNER JOIN permissions ON permissions.slug IN ('forms.view', 'forms.manage', 'forms.submissions.view', 'forms.submissions.delete')
+LEFT JOIN role_permissions ON role_permissions.role_id = roles.id AND role_permissions.permission_id = permissions.id
+WHERE roles.slug = 'admin' AND role_permissions.permission_id IS NULL;
+
+INSERT INTO permissions (name, slug, created_at, updated_at)
+SELECT 'Manage Email', 'email.manage', NOW(), NOW()
+FROM DUAL
+WHERE NOT EXISTS (
+    SELECT 1 FROM permissions WHERE slug = 'email.manage'
+);
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT roles.id, permissions.id
+FROM roles
+INNER JOIN permissions ON permissions.slug = 'email.manage'
 LEFT JOIN role_permissions ON role_permissions.role_id = roles.id AND role_permissions.permission_id = permissions.id
 WHERE roles.slug = 'admin' AND role_permissions.permission_id IS NULL;
