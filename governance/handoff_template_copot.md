@@ -25,6 +25,32 @@ Gunakan `copot` dalam huruf kecil karena merupakan nama produk canonical. Jangan
 
 `Batas Continuity` mengidentifikasi milestone, Work Unit, batch, slice, workstream, phase, atau boundary project lain yang relevan. `Judul` menjelaskan tujuan atau state continuity yang dicatat. External title/name field tidak menggantikan canonical title pada baris pertama.
 
+## Handoff Delivery Format
+
+Generated Handoff harus menggunakan struktur berikut:
+
+```
+# <project> <Continuity Boundary> — <Judul>
+
+<Batas penggunaan dan continuity isolation>
+
+## Perpindahan
+...
+
+## Objective dan state saat ini
+...
+
+## Target berikutnya
+...
+
+<handoff contents yang material>
+
+DateTime stamp: <YYYY-MM-DD HH:mm:ss WIB>
+```
+
+Section conditional hanya dimasukkan bila material terhadap continuity transition.
+
+
 ## Isolasi session baru dan bahasa
 
 GPT penerima tidak boleh mengandalkan implicit memory, summary session sebelumnya, chat history, atau model context sebagai pengganti Handoff ini dan sumber authoritative saat ini. Lakukan rekonstruksi hanya dari governance saat ini, Handoff ini, project instructions, state Repository yang diverifikasi, dan source material yang diidentifikasi secara eksplisit.
@@ -50,7 +76,15 @@ Untuk `EMERGENCY`, risiko continuity dan kebutuhan recovery/revalidation wajib d
 - Last reliable evidence: `<commit, document, test, artifact, or observation>`
 - Unresolved/unsaved payload: `<reference to the section below or None>`
 
-Pisahkan state accepted, provisional, rejected, superseded, dan unresolved.
+### Contract authorization
+
+Cantumkan hanya bila contract material terhadap continuity:
+
+- Authoritative contract: `<path/title / None>`
+- Contract status: `<provisional / proposed / accepted / promoted / durable / None>`
+- Authorized contract scope: `<summary / None>`
+- Contract exclusions or separate gates: `<summary / None>`
+- Contract authorization evidence: `<source / None>`
 
 ## Payload unresolved dan unsaved
 

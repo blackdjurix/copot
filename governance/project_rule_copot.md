@@ -108,16 +108,36 @@ Jika Agent Instruction unavailable, generation atau delivery instruction untuk T
 
 ### Report interaction wajib
 
-Pada awal setiap response yang akan memuat substantive COPOT feedback, report governance status berikut:
+Pada awal setiap response yang akan memuat substantive COPOT feedback, gunakan format `GPT Interaction Format` dan report governance status berikut:
 
-- Governance Source dan availability;
-- exact Rule/Handoff/Agent Instruction read status;
-- Platform;
-- Manual-operation executor;
-- Executor confirmation;
-- material Routing action.
+```text
+Governance Report
 
-Jangan mengklaim `READ THIS INTERACTION` jika exact artifact belum dibuka.
+- Governance Source: `<Source> — <Source Link> — <AVAILABLE / UNAVAILABLE>`
+- Project Rule: `Rule` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Handoff: `Handoff` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Agent Instruction: `Agent Instruction` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Platform: `<PC / Desktop / Mobile / Android / Other / Unknown>`
+- Manual-operation executor: `<User / Technical Executor / Unknown>`
+- Executor confirmation: `<CONFIRMED / REUSED / REQUIRED / NOT REQUIRED>`
+- Routing action: `<material consequence only>`
+- Repository status: `<verified state when material>`
+
+Pembahasan
+
+DateTime stamp: `<YYYY-MM-DD HH:mm:ss WIB>`
+```
+
+<substantive feedback sesuai materialitas interaction>
+
+`Pembahasan` dapat memuat scope, context, analysis, recommendation, evidence, blocker, unresolved state, result/verdict, affected state, dan next action. Tidak semua elemen wajib ditampilkan apabila tidak material.
+
+Jangan mengklaim `READ THIS INTERACTION` atau `READ AND APPLIED` jika exact artifact belum dibuka, dibaca, dan diterapkan pada interaction tersebut.
+
+Format ini adalah presentation contract. Ia tidak menambah authority, authorization, project scope, atau execution permission.
+
+Format ini tidak berlaku untuk casual conversation, clarification non-substantif, Handoff, Agent Instruction, atau technical executor report.
+
 
 ## 4. Keputusan project yang locked
 
@@ -308,9 +328,9 @@ Concept memiliki semantic identity dan provenance. Concept tetap provisional sam
 
 Revision Concept, source identity, consolidation, promotion, supersession, dan rejection harus tetap dapat ditelusuri. Consolidated Concept tidak menghapus provenance dari source yang digabung.
 
-## 10. Continuity Saved Concept tingkat thread
+## 10. Thread-Level Saved Concept Continuity
 
-Saved Concept tingkat thread, assumptions, keputusan unresolved, dan dependency payload tidak hilang karena session/thread berubah.
+Thread-Level Saved Concept, assumptions, keputusan unresolved, dan dependency payload tidak hilang karena session/thread berubah.
 
 Handoff harus membawa minimum context continuity yang material dan reference ke source. Jangan mengubah payload continuity menjadi implementation authorization.
 
@@ -431,3 +451,4 @@ Pembaruan governance harus mempertahankan:
 - Handoff sebagai artifact continuity;
 - Agent Instruction sebagai boundary eksekusi teknis;
 - Technical Executor sebagai producer evidence.
+
