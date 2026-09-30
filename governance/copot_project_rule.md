@@ -1,11 +1,11 @@
 # RULE PROJECT COPOT
-Date version: 2026-09-30 21:17:56 WIB
+Date version: 2026-09-30 21:32:22 WIB
 
 ## 1. Variabel
 
 Variabel adalah pointer project yang statis. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel bukan tempat menyimpan state lifecycle yang dinamis.
 
-- Project: **COPOT**
+- Project: **copot**
 - Source: **Remote Git Repository**
 - Source Link: **https://github.com/blackdjurix/copot.git**
 - Repository: **Remote Git Repository**
@@ -13,6 +13,7 @@ Variabel adalah pointer project yang statis. Nilainya ditetapkan saat governance
 - Integration Target: **main**
 - Primary Execution Environment: **Local Workspace**
 - Alternative Execution Environment: **Cloud**
+- Primary Runtime: **XAMPP**
 - Technical Executor: **Codex**
 - Source Write Executor: **Technical Executor** — hanya pointer peran; nilai ini tidak pernah memberi otorisasi penulisan.
 - Authoritative Documentation: **docs/**

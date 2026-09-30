@@ -1,11 +1,11 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-09-30 21:17:56 WIB
+Date version: 2026-09-30 21:32:22 WIB
 
 ## Purpose
 
-This is a thin, task-specific execution contract for the COPOT Technical Executor.
+This is a thin, task-specific execution contract for the `Project` Technical Executor.
 
-Canonical governance identity: `governance/copot_agent_instruction.md`.
+Canonical governance identity: resolve from Rule variable `Governance Agent Instruction`.
 
 ## Semantik title Agent Instruction
 
@@ -13,7 +13,7 @@ Dua baris pertama merupakan title session dan title instruksi.
 
 Format:
 
-`<Project> <Continuity Boundary> — <Title>`
+`Project` <Continuity Boundary> — <Title>
 `<Instruction Title>`
 
 Baris pertama mengidentifikasi project, session atau continuity boundary, dan title continuity. Baris kedua menjelaskan pekerjaan teknis yang dilakukan oleh Technical Executor pada interaction atau bubble tersebut.
@@ -44,7 +44,7 @@ Do not copy automatically:
 
 - Delivery: `USER-MEDIATED / DIRECT TRANSFER`
 - Explicit direct-transfer request: `<YES / NO>`
-- Technical Executor: `Codex`
+- Technical Executor: `Technical Executor`
 - Authorization source: `<exact source, scope, actor, and action; never a role pointer or generic accepted boundary>`
 
 Direct transfer is permitted only when explicitly requested by the user. Transport method does not expand authority or scope.
@@ -60,13 +60,13 @@ Use only the route required by this execution slice.
 
 ## Project context
 
-- Project: `COPOT`
+- Project: `Project`
 - Continuity Boundary: `<Work Unit / batch / workstream / phase>`
 - Objective: `<single concrete objective>`
 - Repository/workspace: `<exact identity when material>`
-- Integration target: `main`
-- Runtime: `<XAMPP only when material>`
-- Applicable tool: `<Tailscale / Figma / None when material>`
+- Integration target: `Integration Target`
+- Runtime: `Primary Runtime` only when material
+- Applicable tool: resolve `Gateway` or `Prototyping` when material; otherwise None
 
 Use only context needed for this execution slice.
 
@@ -237,15 +237,15 @@ Do not cross a gate until its conditions are satisfied. Completion of one gate d
 
 ## Conditional tools
 
-### XAMPP
+### `Primary Runtime`
 
 Use only when runtime validation is in scope. Treat runtime copy as disposable/non-authoritative. Do not turn a runtime port into a durable project identifier.
 
-### Tailscale
+### `Gateway`
 
 Use only when remote access is in scope. Verify target runtime and route. Do not expose services, change firewall/network configuration, or alter credentials without explicit authorization.
 
-### Figma
+### `Prototyping`
 
 Use only when visual/prototype work is in scope. Treat prototype output as reference until accepted. Do not infer implementation authorization from a design artifact.
 

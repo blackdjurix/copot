@@ -1,11 +1,11 @@
 # copot <Batas Continuity> — <Judul>
-Date version: 2026-09-30 21:17:56 WIB
+Date version: 2026-09-30 21:32:22 WIB
 
 ## Batas penggunaan
 
-Handoff adalah artifact continuity GPT/session untuk COPOT. Handoff bukan Agent Instruction, bukan payload executor, bukan authorization baru, dan bukan pengganti Rule.
+Handoff adalah artifact continuity GPT/session untuk `Project`. Handoff bukan Agent Instruction, bukan payload executor, bukan authorization baru, dan bukan pengganti Rule.
 
-Identitas canonical: `governance/copot_handoff_template.md`.
+Identitas canonical: resolve dari Rule variable `Governance Handoff`.
 
 ## Semantik title Handoff
 
@@ -13,15 +13,15 @@ Baris pertama adalah canonical continuity title dan kandidat utama untuk nama se
 
 Format:
 
-`copot <Batas Continuity> — <Judul>`
+`Project` <Batas Continuity> — <Judul>
 
 Contoh:
 
-`copot WU2 — Security Platform Capability Baseline Closure`
+`Project` WU2 — Security Platform Capability Baseline Closure
 
-`copot WU2 Batch 1 — Security Platform Capability Baseline Closure`
+`Project` WU2 Batch 1 — Security Platform Capability Baseline Closure
 
-Gunakan `copot` dalam huruf kecil karena merupakan nama produk canonical. Jangan menambahkan prefix `HANDOFF`, `PROJECT SESSION HANDOFF`, atau wrapper generik lain.
+Gunakan nilai dari Rule variable `Project` sebagai nama project canonical. Jangan menambahkan prefix `HANDOFF`, `PROJECT SESSION HANDOFF`, atau wrapper generik lain.
 
 `Batas Continuity` mengidentifikasi milestone, Work Unit, batch, slice, workstream, phase, atau boundary project lain yang relevan. `Judul` menjelaskan tujuan atau state continuity yang dicatat. External title/name field tidak menggantikan canonical title pada baris pertama.
 
@@ -29,7 +29,7 @@ Gunakan `copot` dalam huruf kecil karena merupakan nama produk canonical. Jangan
 
 Generated Handoff harus menggunakan struktur berikut:
 
-- First line: `# <project> <Continuity Boundary> — <Judul>`
+- First line: # `Project` <Continuity Boundary> — <Judul>
 - Then: `<Batas penggunaan dan continuity isolation>`
 - Required section order: `## Perpindahan`, `## Objective dan state saat ini`, `## Target berikutnya`.
 - Then: `<handoff contents yang material>` sesuai continuity transition.
@@ -47,7 +47,7 @@ Gunakan bahasa utama conversation untuk prosa Handoff. Pertahankan identifier, p
 ## Perpindahan
 
 - Transition type: `NORMAL / NRP / EMERGENCY`
-- Project: `COPOT`
+- Project: `Project`
 - Continuity Boundary: `<milestone / Work Unit / batch / workstream / phase>`
 - Title: `<title>`
 - Prepared at: `<YYYY-MM-DD HH:mm:ss WIB>`
@@ -142,12 +142,12 @@ State dependency adalah context, bukan authorization untuk memulai pekerjaan yan
 
 Cantumkan hanya bila material:
 
-- Repository: `https://github.com/blackdjurix/copot.git`
-- Integration target: `main`
+- Repository: `Repository Link`
+- Integration target: `Integration Target`
 - Branch: `<branch>`
 - HEAD/revision: `<revision>`
 - Working tree: `<clean / listed changes / unknown>`
-- Runtime role: `<XAMPP runtime role or None>`
+- Runtime role: `Primary Runtime` role or None
 - Runtime endpoint/port: `<only if material; never project identity>`
 - Divergence or lifecycle issue: `<value or None>`
 
@@ -176,8 +176,8 @@ Handoff tidak boleh menyatakan NRP confirmed hanya karena technical work selesai
 - Continue current session/thread or new: `<decision and reason>`
 - Context requiring revalidation: `<items>`
 - Minimum bootstrap: `<first reads/checks>`
-- Material Tailscale state: `<only if remote access is relevant>`
-- Material Figma state: `<only if visual/prototype context is relevant>`
+- Material `Gateway` state: `<only if remote access is relevant>`
+- Material `Prototyping` state: `<only if visual/prototype context is relevant>`
 
 Urutan bootstrap: governance saat ini, Handoff ini, project instructions, state project/Repository yang diverifikasi, lalu hanya Workplan, Concept, documentation, runtime, atau tool sources yang material dan diidentifikasi secara eksplisit.
 
