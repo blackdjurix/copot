@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-01 19:07:22 WIB
+Date version: 2026-10-01 19:19:38 WIB
 
 ## 1. Variabel
 
@@ -119,9 +119,9 @@ Feedback substantive bila response dapat mengubah, mengklarifikasi, mengevaluasi
 Governance Report
 
 - Governance Source: `<Source> — <Source Link> — <AVAILABLE / UNAVAILABLE>`
-- Project Rule: `rule` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
-- Handoff: `handoff` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
-- Agent Instruction: `agent instruction` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Project Rule: `<resolved Governance Report aliases → Governance Rule>` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Handoff: `<resolved Governance Report aliases → Governance Handoff>` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Agent Instruction: `<resolved Governance Report aliases → Governance Agent Instruction>` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
 - Technical Executor: `<current effective executor>`
 - Platform: `<PC / Desktop / Mobile / Android / Other / Unknown>`
 - Manual-operation executor: `<User / "Technical Executor" / Other / Unknown>`
