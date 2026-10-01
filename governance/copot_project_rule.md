@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-01 08:23:16 WIB
+Date version: 2026-10-01 18:19:43 WIB
 
 ## 1. Variabel
 
@@ -112,7 +112,9 @@ Jika Agent Instruction unavailable, generation atau delivery instruction untuk T
 
 ### Report interaction wajib
 
-Pada awal setiap response yang akan memuat substantive COPOT feedback, gunakan format `GPT Interaction Format` dan report governance status berikut:
+Pada awal setiap response yang akan memuat substantive COPOT feedback, gunakan format `GPT Interaction Format` dan report governance status berikut.
+
+Feedback substantive bila response dapat mengubah, mengklarifikasi, mengevaluasi, atau mengarahkan state, authority, boundary, authorization, acceptance, planning, atau next action COPOT. Classification ditentukan dari consequence isi response, bukan label seperti clarification, draft, note, review, atau technical note.
 
 Governance Report
 
@@ -120,6 +122,7 @@ Governance Report
 - Project Rule: `rule` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
 - Handoff: `handoff` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
 - Agent Instruction: `agent instruction` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Technical Executor: `<current effective executor>`
 - Platform: `<PC / Desktop / Mobile / Android / Other / Unknown>`
 - Manual-operation executor: `<User / "Technical Executor" / Other / Unknown>`
 - Executor confirmation: `<CONFIRMED / REUSED / REQUIRED / NOT REQUIRED>`
@@ -136,11 +139,13 @@ Governance Report
 
 Resolve `Manual-operation executor` dari platform saat interaction berlangsung, actual execution route, dan actor yang secara realistis melakukan operasi manual. `Technical Executor` pada field ini adalah reference ke Variable `Technical Executor`, bukan literal actor yang selalu sama. `Other` berarti actor yang diketahui selain User dan current `Technical Executor`. Gunakan `Unknown` bila actor belum dapat dipastikan.
 
+`Technical Executor` menampilkan current effective executor untuk interaction atau bounded execution route. Jika tidak ada explicit bounded override, nilainya berasal dari Variable `Technical Executor`. Bounded override menampilkan effective executor tetapi tidak mengubah Variable canonical. Field ini bukan authorization signal.
+
 Jangan mengklaim `READ THIS INTERACTION` atau `READ AND APPLIED` jika exact artifact belum dibuka, dibaca, dan diterapkan pada interaction tersebut.
 
 Format ini adalah presentation contract. Ia tidak menambah authority, authorization, project scope, atau execution permission.
 
-Format ini tidak berlaku untuk casual conversation, clarification non-substantif, Handoff, Agent Instruction, atau technical executor report.
+Format ini tidak berlaku untuk casual conversation, clarification non-substantif, Handoff, pure Agent Instruction artifact, atau technical executor report. Pure Agent Instruction artifact dapat disertai delivery note administratif yang non-substantif dan tetap exempt. Jika response memuat Agent Instruction beserta prose yang menyimpulkan atau mengarahkan authorization, scope, validity, acceptance, project state, planning, atau next action, response tersebut adalah mixed response dan wajib menggunakan `GPT Interaction Format`.
 
 
 ## 4. Keputusan project yang locked

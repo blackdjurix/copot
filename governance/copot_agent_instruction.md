@@ -1,5 +1,5 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-09-30 21:32:22 WIB
+Date version: 2026-10-01 18:08:35 WIB
 
 ## Purpose
 
@@ -40,7 +40,48 @@ Do not copy automatically:
 - full planning library or repository history;
 - thread-level saved-concept history unless one unresolved item changes execution.
 
-## Delivery
+## Instruction Format
+
+Generate each Agent Instruction using this delivery structure:
+
+1. `Title`
+2. `Current Project State`
+3. `Execution Instruction and Boundary`
+   - Project context;
+   - Target / Task;
+   - Scope;
+   - Authorization;
+   - Preconditions;
+   - Dependency;
+   - only the conditional modules material to the task: source reading, planning/Concept, pre-contract review, documentation, tools, or Git/repository.
+4. `Execution Controls`
+   - execution gates;
+   - validation requirements;
+   - stop conditions.
+
+`Title` uses the two-line title format defined above. `Current Project State` contains only verified state that can affect execution, such as repository/workspace identity, branch or anchor, runtime, dependency, or relevant prior result.
+
+`Execution Instruction and Boundary` is one integrated execution block. The conditional modules are context-dependent and may be placed where they make the instruction clearest; they do not need to be emitted as a separate block before or after the core fields.
+
+This format is a usage-friendly delivery skeleton, not a requirement to include every field or module. Include only the minimum execution delta required to prevent a wrong target, unauthorized action, missed dependency, invalid validation, unsafe side effect, or missed stop condition. Omit repeated governance, history, or context that does not affect the authorized slice.
+
+Do not add a generic report section to the Agent Instruction. Specify a required technical output only when the execution slice needs one; the Technical Executor returns execution evidence through the applicable delivery channel.
+
+## Current Project State
+
+- Project: `Project`
+- Continuity Boundary: `<Work Unit / batch / workstream / phase>`
+- Objective: `<single concrete objective>`
+- Repository/workspace: `<exact identity when material>`
+- Integration target: `Integration Target`
+- Runtime: `Primary Runtime` only when material
+- Applicable tool: resolve `Gateway` or `Prototyping` when material; otherwise None
+
+Use only verified state that can affect execution.
+
+## Execution Instruction and Boundary
+
+### Delivery
 
 - Delivery: `USER-MEDIATED / DIRECT TRANSFER`
 - Explicit direct-transfer request: `<YES / NO>`
@@ -58,19 +99,7 @@ Delivery context must identify the applicable route:
 
 Use only the route required by this execution slice.
 
-## Project context
-
-- Project: `Project`
-- Continuity Boundary: `<Work Unit / batch / workstream / phase>`
-- Objective: `<single concrete objective>`
-- Repository/workspace: `<exact identity when material>`
-- Integration target: `Integration Target`
-- Runtime: `Primary Runtime` only when material
-- Applicable tool: resolve `Gateway` or `Prototyping` when material; otherwise None
-
-Use only context needed for this execution slice.
-
-## Task
+### Task
 
 - Task: `<concrete technical action>`
 - Mode: `AUDIT / IMPLEMENTATION / DEBUG / VALIDATION / TECHNICAL PRE-CONTRACT REVIEW`
@@ -80,7 +109,7 @@ Use only context needed for this execution slice.
 
 Do not infer adjacent work from visible defects, future Work Units, dependencies, or available time.
 
-## Technical pre-contract review
+### Technical pre-contract review
 
 Use this mode only when GPT/user explicitly requests technical analysis of a supplied pre-contract or contract draft.
 
@@ -106,7 +135,7 @@ Required review statuses:
 
 `READY TO PROMOTE` means technically ready for GPT/user review. It does not by itself make the draft authoritative. If the exact payload or verifiable source is missing, stop with `SEMANTIC PAYLOAD NOT SUPPLIED`.
 
-## Authorization boundary
+### Authorization boundary
 
 Authorized:
 
@@ -129,7 +158,57 @@ Authorization to validate does not authorize remediation. Authorization to modif
 
 Do not treat a Handoff field, technical acceptance result, role assignment, dependency satisfaction, test pass, or available capability as authorization. The written authorization source must be exact and traceable.
 
-## Source of truth
+### Before starting
+
+1. Verify repository/workspace identity and material starting state.
+2. Verify branch, HEAD, tracking, and unexpected changes when Git is material.
+3. Inspect only target files, direct dependencies, relevant documentation, and focused tests.
+4. Confirm the written authorization and preconditions.
+5. Protect unrelated state.
+
+If verified state materially differs from the instruction, stop. Do not reset, clean, stash, overwrite, or normalize automatically.
+
+### Dependency boundary
+
+- Direct dependency: `<source, artifact, branch, runtime, or capability>`
+- Dependency status: `<satisfied / unsatisfied / unknown / blocked>`
+- Dependency evidence: `<exact evidence>`
+- Dependency action authorized in this slice: `<yes/no and exact action>`
+
+Do not resolve or implement a dependent task merely because its dependency is visible. Report unsatisfied or newly discovered dependencies.
+
+## Conditional Execution Modules
+
+Include only the modules material to the execution slice. Their internal order is contextual.
+
+### Conditional tools
+
+#### `Primary Runtime`
+
+Use only when runtime validation is in scope. Treat runtime copy as disposable/non-authoritative. Do not turn a runtime port into a durable project identifier.
+
+#### `Gateway`
+
+Use only when remote access is in scope. Verify target runtime and route. Do not expose services, change firewall/network configuration, or alter credentials without explicit authorization.
+
+#### `Prototyping`
+
+Use only when visual/prototype work is in scope. Treat prototype output as reference until accepted. Do not infer implementation authorization from a design artifact.
+
+### Git
+
+Apply only when Git is material and authorized:
+
+- verify repository, branch, HEAD, upstream, and unexpected state;
+- use short-lived feature branch when required;
+- preserve local/remote distinction;
+- commit/push/integrate/delete branches only when explicitly authorized;
+- do not rebase, reset, clean, stash, force-push, or rewrite accepted history unless explicitly authorized.
+- branch closure requires accepted-tip, containment/zero-ahead, remote, and workspace verification before deletion when deletion is authorized.
+
+The remote repository/branch remains durable authority. Do not treat an unpushed commit, runtime copy, or disposable workspace as an authoritative checkpoint. After an authorized push, independently verify the resulting remote tip when possible.
+
+### Source of truth
 
 Use sources by function:
 
@@ -146,7 +225,7 @@ When material sources conflict, report the conflict and stop before substantive 
 
 If documentation consistency is part of the task, inspect only the identified authoritative document and directly affected evidence. Do not perform a broad documentation rewrite for consistency alone.
 
-## Progressive source reading
+### Progressive source reading
 
 Read in this order, expanding only when evidence is insufficient:
 
@@ -159,7 +238,7 @@ Read in this order, expanding only when evidence is insufficient:
 
 Do not ask the Technical Executor to reconstruct unavailable context. Translate only the execution delta required by this instruction.
 
-## Planning-input boundary — internal GPT routing rule
+### Planning-input boundary — internal GPT routing rule
 
 This section is an internal generation filter. Do not reproduce it as a governance explanation in a generated instruction. Render only the exact technical dependency or invariant that changes execution.
 
@@ -174,7 +253,7 @@ Planning artifacts are inputs, not implicit authorization.
 
 Deferred Item statuses such as `Candidate`, `Unscheduled`, `future`, `KEEP DEFERRED`, `NOT APPLICABLE`, `REJECT`, or `SUPERSEDE` do not authorize execution.
 
-## Conditional documentation and technical-evidence boundaries
+### Conditional documentation and technical-evidence boundaries
 
 This section is an internal generation filter. In a generated instruction, include only the applicable technical operation and its evidence requirement.
 
@@ -196,26 +275,9 @@ When Concept continuity is material, include only:
 
 Do not request or consume the full Concept set, full Handoff, or unrelated planning history.
 
-## Before starting
+## Execution Controls
 
-1. Verify repository/workspace identity and material starting state.
-2. Verify branch, HEAD, tracking, and unexpected changes when Git is material.
-3. Inspect only target files, direct dependencies, relevant documentation, and focused tests.
-4. Confirm the written authorization and preconditions.
-5. Protect unrelated state.
-
-If verified state materially differs from the instruction, stop. Do not reset, clean, stash, overwrite, or normalize automatically.
-
-## Dependency boundary
-
-- Direct dependency: `<source, artifact, branch, runtime, or capability>`
-- Dependency status: `<satisfied / unsatisfied / unknown / blocked>`
-- Dependency evidence: `<exact evidence>`
-- Dependency action authorized in this slice: `<yes/no and exact action>`
-
-Do not resolve or implement a dependent task merely because its dependency is visible. Report unsatisfied or newly discovered dependencies.
-
-## Execution gates
+### Execution gates
 
 Use only the gates material to this task:
 
@@ -226,7 +288,7 @@ Use only the gates material to this task:
 
 Do not cross a gate until its conditions are satisfied. Completion of one gate does not authorize the next. Stop before an unapproved gate.
 
-## Execution rules
+### Execution rules
 
 - Make the minimum sufficient change.
 - Preserve unrelated behavior and state.
@@ -235,34 +297,7 @@ Do not cross a gate until its conditions are satisfied. Completion of one gate d
 - Do not treat test failure as permission to fix neighboring code or fixtures.
 - Do not make decisions outside the supplied technical slice.
 
-## Conditional tools
-
-### `Primary Runtime`
-
-Use only when runtime validation is in scope. Treat runtime copy as disposable/non-authoritative. Do not turn a runtime port into a durable project identifier.
-
-### `Gateway`
-
-Use only when remote access is in scope. Verify target runtime and route. Do not expose services, change firewall/network configuration, or alter credentials without explicit authorization.
-
-### `Prototyping`
-
-Use only when visual/prototype work is in scope. Treat prototype output as reference until accepted. Do not infer implementation authorization from a design artifact.
-
-## Git
-
-Apply only when Git is material and authorized:
-
-- verify repository, branch, HEAD, upstream, and unexpected state;
-- use short-lived feature branch when required;
-- preserve local/remote distinction;
-- commit/push/integrate/delete branches only when explicitly authorized;
-- do not rebase, reset, clean, stash, force-push, or rewrite accepted history unless explicitly authorized.
-- branch closure requires accepted-tip, containment/zero-ahead, remote, and workspace verification before deletion when deletion is authorized.
-
-The remote repository/branch remains durable authority. Do not treat an unpushed commit, runtime copy, or disposable workspace as an authoritative checkpoint. After an authorized push, independently verify the resulting remote tip when possible.
-
-## Validation
+### Validation
 
 Run validation closest to the target first. Report exact checks and distinguish:
 
@@ -285,7 +320,7 @@ Validation rules:
 6. do not repeat accepted suites without a concrete regression reason;
 7. documentation-only work does not require runtime regression unless review exposes a behavior inconsistency.
 
-## Stop conditions
+### Stop conditions
 
 Stop and report when:
 
@@ -296,19 +331,6 @@ Stop and report when:
 - a finding requires scope expansion;
 - the next action is destructive, irreversible, external, or separately gated;
 - continuing would modify an adjacent Work Unit, project boundary, or unrelated artifact.
-
-## Report
-
-Return only execution evidence:
-
-1. target and result;
-2. files/artifacts changed or inspected;
-3. technical acceptance criteria and evidence;
-4. validation commands/results;
-5. blockers, risks, unresolved/unsaved technical payload, and out-of-scope findings;
-6. final workspace/repository/runtime state when material.
-
-Do not add governance conclusions or authorize a next task. Report only technical evidence and the written execution result.
 
 ## Continuation
 
