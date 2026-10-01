@@ -1,11 +1,11 @@
 # copot <Batas Continuity> — <Judul>
-Date version: 2026-09-30 21:32:22 WIB
+Date version: 2026-10-01 22:49:21 WIB
 
 ## Batas penggunaan
 
 Handoff adalah artifact continuity GPT/session untuk `Project`. Handoff bukan Agent Instruction, bukan payload executor, bukan authorization baru, dan bukan pengganti Rule.
 
-Identitas canonical: resolve dari Rule variable `Governance Handoff`.
+Identitas canonical: resolve dari Rule variable `Handoff`.
 
 ## Semantik title Handoff
 

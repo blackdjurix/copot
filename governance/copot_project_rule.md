@@ -1,33 +1,70 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-01 19:19:38 WIB
+Date version: 2026-10-01 22:49:21 WIB
 
 ## 1. Variabel
 
-Variabel adalah pointer project yang statis. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel bukan tempat menyimpan state lifecycle yang dinamis.
+Variabel adalah pointer project yang statis. Setiap Variable, termasuk child Variable, harus memiliki nama unik governance-wide, Description, dan Value. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel bukan tempat menyimpan state lifecycle yang dinamis.
 
-- Project: **copot**
-- Source: **Remote Git Repository**
-- Source Link: **https://github.com/blackdjurix/copot.git**
-- Repository: **Remote Git Repository**
-- Repository Link: **https://github.com/blackdjurix/copot.git**
-- Integration Target: **main**
-- Primary Execution Environment: **Local Workspace**
-- Alternative Execution Environment: **Cloud**
-- Primary Runtime: **XAMPP**
-- Technical Executor: **Codex**
-- Authoritative Documentation: **docs/**
-- Workplan: **workplan.md**
-- Concept Sources: **concepts/ dan root Concept artifacts bila material**
-- Governance Rule: **governance/copot_project_rule.md**
-- Governance Handoff: **governance/copot_handoff_template.md**
-- Governance Agent Instruction: **governance/copot_agent_instruction.md**
-- Governance Report aliases:
-  - Governance Rule: `rule`
-  - Governance Handoff: `handoff`
-  - Governance Agent Instruction: `agent instruction`
-- Active Applicable Governance:
-  - Gateway: **Tailscale**
-  - Prototyping: **Figma**
+- `Project`
+  Description: Nama canonical project yang digunakan oleh governance dan artifact project.
+  Value: **copot**
+- `Source`
+  Description: Jenis sumber authoritative tempat project dan governance COPOT dipelihara.
+  Value: **Remote Git Repository**
+- `Source Link`
+  Description: Lokasi canonical sumber authoritative project COPOT.
+  Value: **https://github.com/blackdjurix/copot.git**
+- `Repository`
+  Description: Jenis Repository durable yang menjadi authority untuk state implementation COPOT.
+  Value: **Remote Git Repository**
+- `Repository Link`
+  Description: Lokasi canonical Repository durable COPOT.
+  Value: **https://github.com/blackdjurix/copot.git**
+- `Integration Target`
+  Description: Branch atau target integration utama project COPOT.
+  Value: **main**
+- `Primary Execution Environment`
+  Description: Environment utama untuk inspection dan implementation project COPOT.
+  Value: **Local Workspace**
+- `Alternative Execution Environment`
+  Description: Environment alternatif yang dapat digunakan bila route execution COPOT memerlukannya.
+  Value: **Cloud**
+- `Primary Runtime`
+  Description: Runtime lokal utama untuk menjalankan atau memvalidasi COPOT bila runtime validation material.
+  Value: **XAMPP**
+- `Technical Executor`
+  Description: Role atau identity yang menangani technical source inspection, implementation, technical validation, dan authorized repository execution. Variable ini tidak memberikan semantic, acceptance, promotion, NRP, atau publication authority.
+  Value: **Codex**
+- `Authoritative Documentation`
+  Description: Lokasi dokumentasi project COPOT yang current dan telah diterima.
+  Value: **docs/**
+- `Workplan`
+  Description: Planning dan provenance registry utama project COPOT.
+  Value: **workplan.md**
+- `Concept Sources`
+  Description: Sumber Concept project COPOT yang digunakan bila planning atau technical continuity material.
+  Value: **concepts/ dan root Concept artifacts bila material**
+- `Governance`
+  Description: Kelompok canonical governance artifacts yang digunakan oleh project COPOT.
+  Value:
+  - `Rule`
+    Description: Canonical project governance artifact yang mendefinisikan authority, scope, routing, loading, dan interaction boundaries COPOT.
+    Value: **governance/copot_project_rule.md**
+  - `Handoff`
+    Description: Canonical template untuk delivery continuity GPT/session COPOT.
+    Value: **governance/copot_handoff_template.md**
+  - `Agent Instruction`
+    Description: Canonical template untuk bounded technical execution contract COPOT.
+    Value: **governance/copot_agent_instruction.md**
+- `Active Applicable Governance`
+  Description: Governance atau tool boundary tambahan yang aktif dan material untuk project COPOT.
+  Value:
+  - `Gateway`
+    Description: Tool atau route gateway yang digunakan bila remote access terhadap environment project material.
+    Value: **Tailscale**
+  - `Prototyping`
+    Description: Tool prototyping yang digunakan bila visual atau prototype menjadi material terhadap project.
+    Value: **Figma**
 
 State dinamis seperti commit saat ini, branch aktif, Work Unit saat ini, target saat ini, state acceptance, state NRP, port runtime, dan state unresolved harus dicatat pada artifact project atau Handoff yang relevan, bukan pada Variabel.
 
@@ -59,9 +96,9 @@ Project truth, state Repository, state runtime, state planning, dan state contin
 
 Identitas governance canonical harus di-resolve dari Variables berikut:
 
-- Variable `Governance Rule`
-- Variable `Governance Handoff`
-- Variable `Governance Agent Instruction`
+- Variable `Rule`
+- Variable `Handoff`
+- Variable `Agent Instruction`
 
 Resolve exact canonical paths dari Variable tersebut. Jangan melakukan pencarian filename, fallback ke file serupa, atau menganggap generated copy sebagai pengganti authoritative.
 
@@ -118,10 +155,10 @@ Feedback substantive bila response dapat mengubah, mengklarifikasi, mengevaluasi
 
 Governance Report
 
-- Governance Source: `<Source> — <Source Link> — <AVAILABLE / UNAVAILABLE>`
-- Project Rule: `<resolved Governance Report aliases → Governance Rule>` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
-- Handoff: `<resolved Governance Report aliases → Governance Handoff>` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
-- Agent Instruction: `<resolved Governance Report aliases → Governance Agent Instruction>` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
+- Governance Source: `Source` — `Source Link` — AVAILABLE / UNAVAILABLE
+- Project Rule: `Rule` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
+- Handoff Template: `Handoff` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
+- Agent Instruction Template: `Agent Instruction` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
 - Technical Executor: `<current effective executor>`
 - Platform: `<PC / Desktop / Mobile / Android / Other / Unknown>`
 - Manual-operation executor: `<User / "Technical Executor" / Other / Unknown>`

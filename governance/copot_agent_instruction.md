@@ -1,11 +1,11 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-10-01 18:08:35 WIB
+Date version: 2026-10-01 22:49:21 WIB
 
 ## Purpose
 
 This is a thin, task-specific execution contract for the `Project` Technical Executor.
 
-Canonical governance identity: resolve from Rule variable `Governance Agent Instruction`.
+Canonical governance identity: resolve from Rule variable `Agent Instruction`.
 
 ## Semantik title Agent Instruction
 
