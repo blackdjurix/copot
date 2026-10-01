@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-01 18:19:43 WIB
+Date version: 2026-10-01 19:07:22 WIB
 
 ## 1. Variabel
 
@@ -57,13 +57,13 @@ Project truth, state Repository, state runtime, state planning, dan state contin
 
 ## 3. Identitas dan pemuatan governance
 
-Identitas governance canonical:
+Identitas governance canonical harus di-resolve dari Variables berikut:
 
-- `governance/copot_project_rule.md`
-- `governance/copot_handoff_template.md`
-- `governance/copot_agent_instruction.md`
+- Variable `Governance Rule`
+- Variable `Governance Handoff`
+- Variable `Governance Agent Instruction`
 
-Resolve exact canonical paths. Jangan melakukan pencarian filename, fallback ke file serupa, atau menganggap generated copy sebagai pengganti authoritative.
+Resolve exact canonical paths dari Variable tersebut. Jangan melakukan pencarian filename, fallback ke file serupa, atau menganggap generated copy sebagai pengganti authoritative.
 
 Setiap artifact memiliki lineage versi yang independen dan wajib memakai:
 
