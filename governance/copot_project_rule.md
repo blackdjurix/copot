@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-09-30 21:36:18 WIB
+Date version: 2026-10-01 08:23:16 WIB
 
 ## 1. Variabel
 
@@ -15,7 +15,6 @@ Variabel adalah pointer project yang statis. Nilainya ditetapkan saat governance
 - Alternative Execution Environment: **Cloud**
 - Primary Runtime: **XAMPP**
 - Technical Executor: **Codex**
-- Source Write Executor: **Technical Executor** — hanya pointer peran; nilai ini tidak pernah memberi otorisasi penulisan.
 - Authoritative Documentation: **docs/**
 - Workplan: **workplan.md**
 - Concept Sources: **concepts/ dan root Concept artifacts bila material**
@@ -122,7 +121,7 @@ Governance Report
 - Handoff: `handoff` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
 - Agent Instruction: `agent instruction` — `<READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER>`
 - Platform: `<PC / Desktop / Mobile / Android / Other / Unknown>`
-- Manual-operation executor: `<User / Technical Executor / Unknown>`
+- Manual-operation executor: `<User / "Technical Executor" / Other / Unknown>`
 - Executor confirmation: `<CONFIRMED / REUSED / REQUIRED / NOT REQUIRED>`
 - Routing action: `<material consequence only>`
 - Repository status: `<verified state when material>`
@@ -135,7 +134,7 @@ Governance Report
 
 `Feedback GPT` dapat memuat scope, context, analysis, recommendation, evidence, blocker, unresolved state, result/verdict, affected state, dan next action. Tidak semua elemen wajib ditampilkan apabila tidak material.
 
-Resolve `Manual-operation executor` dari platform saat interaction berlangsung, actual execution route, dan actor yang secara realistis melakukan operasi manual. Gunakan `Unknown` bila actor belum dapat dipastikan.
+Resolve `Manual-operation executor` dari platform saat interaction berlangsung, actual execution route, dan actor yang secara realistis melakukan operasi manual. `Technical Executor` pada field ini adalah reference ke Variable `Technical Executor`, bukan literal actor yang selalu sama. `Other` berarti actor yang diketahui selain User dan current `Technical Executor`. Gunakan `Unknown` bila actor belum dapat dipastikan.
 
 Jangan mengklaim `READ THIS INTERACTION` atau `READ AND APPLIED` jika exact artifact belum dibuka, dibaca, dan diterapkan pada interaction tersebut.
 
@@ -207,6 +206,14 @@ Technical Executor memiliki:
 - technical evidence dan report.
 
 Technical Executor tidak memutuskan NRP, closure project, acceptance WU, authorization milestone, adopsi Deferred Item, release readiness, atau approval user.
+
+### Executor routing, switching, dan confirmation
+
+`Codex` tetap menjadi current/default Technical Executor melalui Variable `Technical Executor`. Switching ke executor atau route lain diperbolehkan sebagai explicit bounded override sesuai scope dan capability yang berlaku. Jangan meminta pemilihan executor pada setiap interaction bila current/prior route masih valid; route tersebut dapat digunakan kembali. Platform membatasi feasible route, tetapi tidak dengan sendirinya menentukan executor.
+
+Actor yang melakukan action tertentu tidak otomatis mengambil alih role Technical Executor. Pada split execution, misalnya Codex melakukan implementation dan User melakukan commit, push, atau merge, `Technical Executor` tetap `Codex` sedangkan `Manual-operation executor` bernilai `User`. Commit, push, dan merge tetap merupakan action terpisah dengan authorization masing-masing.
+
+`Executor confirmation` adalah status routing/confirmation (`CONFIRMED`, `REUSED`, `REQUIRED`, atau `NOT REQUIRED`), bukan executor identity.
 
 ### Semantic dan repository materialization
 
