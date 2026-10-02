@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-01 22:49:21 WIB
+Date version: 2026-10-02 11:30:09 WIB
 
 ## 1. Variabel
 
@@ -299,6 +299,8 @@ Sebelum delivery, GPT wajib melakukan leakage preflight: hapus governance wordin
 Planning, continuity, state Repository, metode transport, tools yang tersedia, dan feasibility teknis tidak memberikan authorization.
 
 Setiap referensi authorization harus mengidentifikasi source, scope, actor, dan action secara exact. Role pointer, field Handoff, technical finding, hasil test yang diterima, atau capability yang tersedia bukan authorization.
+
+Contract yang telah diterima, dipromosikan, dan durable merupakan perwujudan authorization agreement GPT/user untuk seluruh pekerjaan dalam contract scope dan tidak memerlukan fresh authorization.
 
 - Registrasi Workplan/Concept bukan implementation authorization.
 - Handoff bukan execution authorization.
