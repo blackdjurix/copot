@@ -82,10 +82,9 @@ try {
     $assert($rejected, 'Internal redirect chain was accepted.');
     $app = $buildApp($fresh);
     $app->router()->get('/exact', static fn (): Response => Response::html('exact route'));
-    $app->router()->get('/content/{slug}', static fn (): Response => Response::html('owned 404', 404));
     $assert($status($app->run(new Request('GET', '/exact'))) === 200, 'Exact route did not win over redirect resolution.');
     $handler404 = $app->run(new Request('GET', '/content/missing'));
-    $assert($status($handler404) === 404 && $responseValue($handler404, 'content') === 'owned 404', 'Handler-generated 404 fell through to redirects.');
+    $assert($status($handler404) === 404 && str_contains((string) $responseValue($handler404, 'content'), '<h1>Page not found</h1>'), 'Matched Content handler 404 was not preserved as terminal routing ownership.');
     $resolved301 = $app->run(new Request('GET', '/legacy-301'));
     $assert($status($resolved301) === 301 && $location($resolved301) === '/destination', 'Persisted internal 301 did not resolve end to end.');
     $resolved302 = $app->run(new Request('GET', '/legacy-302'));

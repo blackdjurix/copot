@@ -3,16 +3,18 @@ $escape = static fn (mixed $value): string => htmlspecialchars((string) $value, 
 $values = is_array($values ?? null) ? $values : [];
 $errors = is_array($errors ?? null) ? $errors : [];
 $media = is_array($media ?? null) ? $media : [];
-$allAreas = ['identity' => 'Site Identity', 'system' => 'System', 'modules' => 'Modules', 'health' => 'System Health'];
+$allAreas = ['identity' => 'Site Identity', 'system' => 'System', 'modules' => 'Modules', 'redirects' => 'Redirects', 'health' => 'System Health'];
 $canUpdateSettings = !empty($canUpdateSettings);
 $canManageModules = !empty($canManageModules);
 $canManageSystem = !empty($canManageSystem);
+$canManageRedirects = !empty($canManageRedirects);
 $health = is_array($health ?? null) ? $health : [];
-$areas = array_filter($allAreas, static function (string $id) use ($canUpdateSettings, $canManageModules, $canManageSystem): bool {
+$areas = array_filter($allAreas, static function (string $id) use ($canUpdateSettings, $canManageModules, $canManageSystem, $canManageRedirects): bool {
     return match ($id) {
         'identity' => $canUpdateSettings,
         'system' => $canManageSystem,
         'modules' => $canManageModules,
+        'redirects' => $canManageRedirects,
         'health' => true,
     };
 }, ARRAY_FILTER_USE_KEY);
@@ -32,6 +34,7 @@ $homepageContentPageId = $homepageContentType === 'page' ? (int) ($homepageConte
         </div>
     </div>
     <div class="admin-panel__body">
+        <?php if (array_key_exists('redirects', $areas)): ?><section class="admin-settings-panel" id="site-settings-redirects" role="tabpanel" aria-labelledby="site-settings-redirects-tab" data-settings-panel="site-settings-redirects"<?= $initialArea === 'redirects' ? '' : ' hidden' ?>><div class="site-settings-capability-projection"><h3>Redirects</h3><p>Manage Webcore Redirects using the canonical Redirect capability. Redirects access requires <code>redirects.manage</code> and does not grant generic Site Settings mutation.</p><p><a class="admin-button admin-button--primary" href="<?= $escape($redirectsProjectionPath ?? '') ?>">Open Redirect Manager</a></p></div></section><?php endif; ?>
         <?php if (($notice ?? null) !== null): ?><div class="admin-alert admin-alert--success" role="status"><?= $escape($notice) ?></div><?php endif; ?>
         <?php if ($errors !== []): ?><div class="admin-alert admin-alert--danger" role="alert">Some Site Settings could not be saved.</div><?php endif; ?>
         <?php if ($canUpdateSettings): ?><section class="admin-settings-panel" id="site-settings-identity" role="tabpanel" aria-labelledby="site-settings-identity-tab" data-settings-panel="site-settings-identity"<?= $initialArea === 'identity' ? '' : ' hidden' ?>>

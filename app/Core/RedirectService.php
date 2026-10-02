@@ -25,12 +25,12 @@ final class RedirectService
                 $id = $this->repository->create($source, $target, $status);
             } catch (\PDOException $failure) {
                 if ($failure->getCode() === '23000') {
-                    throw new InvalidArgumentException('Redirect source is already in use.', 0, $failure);
+                    throw new \InvalidArgumentException('Redirect source is already in use.', 0, $failure);
                 }
                 throw $failure;
             }
 
-            return $this->repository->findById($id) ?? throw new RuntimeException('Created redirect could not be reloaded.');
+            return $this->repository->findById($id) ?? throw new \RuntimeException('Created redirect could not be reloaded.');
         });
     }
 
@@ -43,7 +43,7 @@ final class RedirectService
     {
         try {
             $source = RedirectContract::source($source, $this->adminBase);
-        } catch (InvalidArgumentException) {
+        } catch (\InvalidArgumentException) {
             return null;
         }
 
@@ -62,7 +62,7 @@ final class RedirectService
             $this->assertAvailable($source, $target, $id);
             $this->repository->update($id, $source, $target, $status, $expectedUpdatedAt);
 
-            return $this->repository->findById($id) ?? throw new RuntimeException('Updated redirect could not be reloaded.');
+            return $this->repository->findById($id) ?? throw new \RuntimeException('Updated redirect could not be reloaded.');
         });
     }
 
@@ -91,7 +91,7 @@ final class RedirectService
     private function assertAvailable(string $source, string $target, ?int $ignoreId = null): void
     {
         if ($this->repository->sourceExists($source, $ignoreId)) {
-            throw new InvalidArgumentException('Redirect source is already in use.');
+            throw new \InvalidArgumentException('Redirect source is already in use.');
         }
 
         if (!str_starts_with($target, '/')) {
@@ -110,11 +110,11 @@ final class RedirectService
                 : null;
 
             if ($redirect->sourcePath() === $targetPath) {
-                throw new InvalidArgumentException('Redirect target must not be another managed source.');
+                throw new \InvalidArgumentException('Redirect target must not be another managed source.');
             }
 
             if ($existingTargetPath === $source) {
-                throw new InvalidArgumentException('Redirect source is already targeted by another managed redirect.');
+                throw new \InvalidArgumentException('Redirect source is already targeted by another managed redirect.');
             }
         }
     }
@@ -122,7 +122,7 @@ final class RedirectService
     private function positiveId(int $id): int
     {
         if ($id < 1) {
-            throw new InvalidArgumentException('Redirect ID must be positive.');
+            throw new \InvalidArgumentException('Redirect ID must be positive.');
         }
 
         return $id;
@@ -149,7 +149,7 @@ final class RedirectService
                 $connection->exec('RELEASE SAVEPOINT ' . $savepoint);
             }
             return $result;
-        } catch (Throwable $failure) {
+        } catch (\Throwable $failure) {
             if ($ownsTransaction) {
                 if ($connection->inTransaction()) {
                     $connection->rollBack();

@@ -22,7 +22,7 @@ final class RedirectResolver implements UnresolvedRouteResolver
 
         try {
             $source = RedirectContract::source($request->path(), $this->adminBase);
-        } catch (InvalidArgumentException) {
+        } catch (\InvalidArgumentException) {
             return null;
         }
 

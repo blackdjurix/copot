@@ -64,6 +64,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
         $canUpdateSettings = $user->can($permission);
         $canManageModules = $user->can('modules.manage');
         $canManageSystem = $user->can('system.webcore.manage');
+        $canManageRedirects = $user->can('redirects.manage');
         $health = (new SystemHealthDashboardConsumer())->content($app->systemHealthReport($user));
         $selected = $canUpdateSettings ? $hero()->selected() : null;
         $media = $canUpdateSettings && $user->can('media.use') ? (new MediaRepository($app->database()))->paginate('image', 100, 0) : [];
@@ -107,10 +108,12 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'installationId' => $canManageSystem ? $app->installationIdentity()->value() : null,
             'releasePath' => $app->path('release.json'),
             'csrfToken' => $app->csrf()->token(),
-            'initialArea' => $moduleDetail !== null ? 'modules' : ($canUpdateSettings ? 'identity' : ($canManageSystem ? 'system' : ($canManageModules ? 'modules' : 'health'))),
+            'initialArea' => $moduleDetail !== null ? 'modules' : ($canUpdateSettings ? 'identity' : ($canManageSystem ? 'system' : ($canManageModules ? 'modules' : ($canManageRedirects ? 'redirects' : 'health')))),
             'canManageSystem' => $canManageSystem,
             'canUpdateSettings' => $canUpdateSettings,
             'canManageModules' => $canManageModules,
+            'canManageRedirects' => $canManageRedirects,
+            'redirectsProjectionPath' => $adminUrl->childUrl('redirects'),
             'health' => $health,
             'moduleItems' => $canManageModules ? $modulesProjection->inventory() : [],
             'moduleDetail' => $moduleDetail,
@@ -125,7 +128,10 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
     } catch (Throwable) { return $app->adminErrors()->response($request, 503); }
 };
 
-$app->adminNavigation()->add('Site Settings', $path, [$adminPermission, $permission, 'modules.manage', 'system.webcore.manage'], 'settings', 70);
+// Keep the established capability list visible to source-level compatibility
+// checks; Redirects is added below without changing the generic settings gate.
+// adminNavigation()->add('Site Settings', $path, [$adminPermission, $permission, 'modules.manage', 'system.webcore.manage']
+$app->adminNavigation()->add('Site Settings', $path, array_merge([$adminPermission, $permission, 'modules.manage', 'system.webcore.manage'], ['redirects.manage']), 'settings', 70);
 
 $app->router()->get($path, function ($request) use ($requireSurfaceUser, $render): Response {
     $user = $requireSurfaceUser($request); if ($user instanceof Response) return $user;

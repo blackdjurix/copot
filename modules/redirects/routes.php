@@ -1,7 +1,13 @@
 <?php
 
+use Copot\Core\RedirectNotFoundException;
+use Copot\Core\RedirectRepository;
+use Copot\Core\RedirectService;
+use Copot\Core\RedirectStaleWriteException;
+use Copot\Core\Redirect;
 use Copot\Core\Response;
 
+require_once $app->path('app/Core/RedirectExceptions.php');
 require_once __DIR__ . '/Services/RedirectExceptions.php';
 require_once __DIR__ . '/Services/Redirect.php';
 require_once __DIR__ . '/Services/RedirectRepository.php';

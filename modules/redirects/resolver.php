@@ -1,11 +1,8 @@
 <?php
 
-require_once __DIR__ . '/Services/RedirectExceptions.php';
-require_once __DIR__ . '/Services/Redirect.php';
-require_once __DIR__ . '/Services/RedirectRepository.php';
-require_once __DIR__ . '/Services/RedirectResolver.php';
-
-return new RedirectResolver(
-    new RedirectRepository($app->database()),
+// The module keeps this contribution for compatibility, but registers the
+// canonical Core resolver and repository only.
+return new \Copot\Core\RedirectResolver(
+    new \Copot\Core\RedirectRepository($app->database()),
     $app->adminUrl()->baseUrl()
 );
