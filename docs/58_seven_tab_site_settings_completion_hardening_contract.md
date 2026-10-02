@@ -14,6 +14,23 @@ Source pre-contract:
 
 `precontracts/seven_tab_site_settings_completion_hardening_precontract.md`
 
+## Current implementation state
+
+The contract remains the authoritative semantic and scope boundary for the
+workstream. Its accepted WU4 implementation state is now materialized on
+`main` at `0f4164aa45682aa887605f2bd27fe0aa7b885ac8`:
+
+- WU4 — Webcore Redirects Operator Projection Reconciliation: COMPLETE /
+  ACCEPTED;
+- focused WU4 closure validation: PASS, 29 assertions;
+- focused WU3 Redirect Admin workspace validation: PASS, 24 assertions; and
+- focused WU1 Redirect routing-contract validation: PASS, 67 assertions.
+
+The WU4 dependency for downstream WU5 is satisfied. WU5 remains the next
+downstream Work Unit only after its other hard dependencies (WU2 and WU3) are
+satisfied and its implementation is separately authorized. This state record
+does not authorize WU5 implementation or change the locked contract scope.
+
 ## 1. Contract objective
 
 Contract ini mengunci accepted pre-contract, accepted technical reconciliation, accepted contract-level policy decisions, dan final technical verification menjadi authority workstream untuk penyelesaian Site Settings menjadi tujuh area operasional:

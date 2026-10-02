@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-09-07 16:56:05 WIB
+Date version: 2026-10-02 17:49:23 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -472,11 +472,18 @@ Sources:
 - `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
   [ADOPTION AUTHORITY]
 
-Current delivered truth remains exactly the four WU4 areas: Site Identity,
-System, Modules, and System Health. Future Site Settings projection is
-capability-gated and may cover Site / Site Identity, System, Modules,
-Redirects, System Health, Security, Email, and Database without asserting
-that all eight are current visible areas or must exist simultaneously.
+Current delivered truth for the established Site Settings baseline remains
+the four areas Site Identity, System, Modules, and System Health. The
+Redirects projection defined by the Seven-Tab Site Settings Completion &
+Hardening workstream is additionally implemented and accepted under its WU4
+contract at `0f4164aa45682aa887605f2bd27fe0aa7b885ac8`; its focused closure,
+Redirect Admin workspace, and routing-contract validation passed with 29, 24,
+and 67 assertions respectively. Security and Email remain capability-gated
+future work, and the downstream WU5 integration remains future and separately
+authorized. Future Site Settings projection may cover Site / Site Identity,
+System, Modules, Redirects, System Health, Security, Email, and Database
+without asserting that all eight are current visible areas or must exist
+simultaneously.
 
 Pre-v0.14.0 target projection: a fully operational and hardened seven-tab
 Site Settings surface with Site Identity, System, Security, Email, Modules,
