@@ -33,6 +33,13 @@ if (!is_string($adminPermission) || trim($adminPermission) === '') {
 }
 $adminPermission = trim($adminPermission);
 $systemPath = $path . '/system';
+$securityPath = $path . '/security';
+$securityPolicy = new \Copot\Core\SecurityPolicyService(
+    $app->settings(),
+    $app->reauthentication(),
+    $app->securityEvents(),
+    $app->database()
+);
 $modulesProjection = new SiteSettingsModulesAdmin($app, new ModuleManagerAdmin($app));
 $hero = static fn (): HomepageHeroImageService => new HomepageHeroImageService(
     $app->settings(),
@@ -59,12 +66,13 @@ $requireSettingsUser = static function ($request) use ($app, $permission) {
 };
 
 $value = static fn (string $namespace, string $key, mixed $default = null): mixed => $app->settings()->get($namespace, $key, $default);
-$render = static function ($request, $user, array $errors = [], ?string $notice = null, int $status = 200, ?array $moduleDetail = null) use ($app, $adminUrl, $path, $systemPath, $value, $hero, $modulesProjection, $permission): Response {
+$render = static function ($request, $user, array $errors = [], ?string $notice = null, int $status = 200, ?array $moduleDetail = null, ?array $securityValues = null) use ($app, $adminUrl, $path, $systemPath, $securityPath, $value, $hero, $modulesProjection, $permission, $securityPolicy): Response {
     try {
         $canUpdateSettings = $user->can($permission);
         $canManageModules = $user->can('modules.manage');
         $canManageSystem = $user->can('system.webcore.manage');
         $canManageRedirects = $user->can('redirects.manage');
+        $canManageSecurity = $user->can('security.manage');
         $health = (new SystemHealthDashboardConsumer())->content($app->systemHealthReport($user));
         $selected = $canUpdateSettings ? $hero()->selected() : null;
         $media = $canUpdateSettings && $user->can('media.use') ? (new MediaRepository($app->database()))->paginate('image', 100, 0) : [];
@@ -75,6 +83,13 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
         $operationId = $systemStatus['operation']['operation_id'] ?? null;
         if (is_string($operationId) && $operationId !== '') {
             try { $retryEligible = $app->packageLifecycle()->retryEvidence($operationId); } catch (Throwable) { $retryEligible = false; }
+        }
+        if ($securityValues === null && $canManageSecurity) $securityValues = $securityPolicy->values();
+        $securitySessions = [];
+        if ($canManageSecurity && $app->auth()->durableSessionIdentity() !== null) {
+            foreach ($app->selfSessions()->listOwn($user->id(), (string) $app->auth()->durableSessionIdentity()) as $entry) {
+                $securitySessions[] = $entry;
+            }
         }
         $view = $app->view()->render('admin/site-settings', [
             'path' => $path,
@@ -101,6 +116,9 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'systemStatus' => $systemStatus,
             'retryEligible' => $retryEligible,
             'systemPath' => $systemPath,
+            'securityPath' => $securityPath,
+            'securityValues' => $securityValues ?? [],
+            'securitySessions' => $securitySessions,
             'systemPreflightPath' => $systemPath . '/preflight',
             'systemApplyPath' => $systemPath . '/apply',
             'systemRetryPath' => $systemPath . '/retry',
@@ -108,11 +126,12 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'installationId' => $canManageSystem ? $app->installationIdentity()->value() : null,
             'releasePath' => $app->path('release.json'),
             'csrfToken' => $app->csrf()->token(),
-            'initialArea' => $moduleDetail !== null ? 'modules' : ($canUpdateSettings ? 'identity' : ($canManageSystem ? 'system' : ($canManageModules ? 'modules' : ($canManageRedirects ? 'redirects' : 'health')))),
+            'initialArea' => $moduleDetail !== null ? 'modules' : ($canUpdateSettings ? 'identity' : ($canManageSystem ? 'system' : ($canManageSecurity ? 'security' : ($canManageModules ? 'modules' : ($canManageRedirects ? 'redirects' : 'health'))))),
             'canManageSystem' => $canManageSystem,
             'canUpdateSettings' => $canUpdateSettings,
             'canManageModules' => $canManageModules,
             'canManageRedirects' => $canManageRedirects,
+            'canManageSecurity' => $canManageSecurity,
             'redirectsProjectionPath' => $adminUrl->childUrl('redirects'),
             'health' => $health,
             'moduleItems' => $canManageModules ? $modulesProjection->inventory() : [],
@@ -131,11 +150,64 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
 // Keep the established capability list visible to source-level compatibility
 // checks; Redirects is added below without changing the generic settings gate.
 // adminNavigation()->add('Site Settings', $path, [$adminPermission, $permission, 'modules.manage', 'system.webcore.manage']
-$app->adminNavigation()->add('Site Settings', $path, array_merge([$adminPermission, $permission, 'modules.manage', 'system.webcore.manage'], ['redirects.manage']), 'settings', 70);
+$app->adminNavigation()->add('Site Settings', $path, array_merge([$adminPermission, $permission, 'modules.manage', 'system.webcore.manage'], ['redirects.manage', 'security.manage']), 'settings', 70);
 
 $app->router()->get($path, function ($request) use ($requireSurfaceUser, $render): Response {
     $user = $requireSurfaceUser($request); if ($user instanceof Response) return $user;
     return $render($request, $user, [], $request->input('saved') === '1' ? 'Site Settings saved successfully.' : null);
+});
+
+$requireSecurityUser = static function ($request) use ($app, $adminPermission): mixed {
+    if (!$app->auth()->check()) return Response::redirect($app->adminUrl()->baseUrl());
+    $user = $app->auth()->user();
+    if (!$user || !$user->can($adminPermission) || !$user->can('security.manage')) return $app->adminErrors()->response($request, 403);
+    return $user;
+};
+
+$app->router()->post($securityPath, function ($request) use ($app, $path, $render, $requireSecurityUser, $securityPolicy): Response {
+    $user = $requireSecurityUser($request); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+
+    $current = $securityPolicy->values();
+    $values = $current;
+    $errors = [];
+    foreach ([
+        'password_min_length' => 'security_password_min_length',
+        'password_max_length' => 'security_password_max_length',
+        'authenticated_idle_timeout_minutes' => 'security_authenticated_idle_timeout_minutes',
+    ] as $key => $field) {
+        $raw = $request->post($field, (string) $current[$key]);
+        if (!is_scalar($raw) || preg_match('/^[0-9]+$/', (string) $raw) !== 1 || filter_var((string) $raw, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE) === null) {
+            $errors[$key] = 'Enter a valid integer value.';
+            continue;
+        }
+        $values[$key] = (int) $raw;
+    }
+
+    if ($errors === []) {
+        $reauthPassword = $request->post('security_reauth_password', '');
+        if (is_string($reauthPassword) && $reauthPassword !== '') {
+            $reauthentication = $app->reauthentication()->reauthenticate($reauthPassword);
+            if (!$reauthentication->succeeded()) {
+                $errors['reauthentication'] = 'Recent password verification failed.';
+            }
+        }
+    }
+
+    if ($errors === []) {
+        try {
+            $changed = $securityPolicy->update($user->id(), $values);
+            return Response::redirect($path . '#security');
+        } catch (\Copot\Core\ReauthenticationRequiredException) {
+            $errors['reauthentication'] = 'Recent password verification is required before changing Security policy.';
+        } catch (\Copot\Core\SettingsException $failure) {
+            $errors['security'] = $failure->getMessage();
+        } catch (Throwable) {
+            $errors['security'] = 'Security policy could not be saved.';
+        }
+    }
+
+    return $render($request, $user, $errors, null, 422, null, $values);
 });
 
 $modulesDetailPath = $path . '/modules/{name}';
