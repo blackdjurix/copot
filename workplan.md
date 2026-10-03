@@ -51,6 +51,13 @@ Authoritative repository: `https://github.com/blackdjurix/copot.git`
 Authoritative branch: `main`
 
 Current durable planning state:
+- Seven-Tab Site Settings Completion & Hardening: Security WU2 COMPLETE /
+  TECHNICALLY COMPLETE / SLICES 1–7 COMPLETE / MATERIALIZED ON `main` at
+  `ab2ef3ab254c04513128d9385fb2c57662e52ad9`; focused Security acceptance
+  PASS (267 assertions); lifecycle/compatibility reconciliation PASS (191
+  assertions) with no reconciliation delta required; WU4 Redirects remains
+  COMPLETE / ACCEPTED; WU3 Email remains open/future and is the unsatisfied
+  hard dependency for WU5; WU3 and WU5 remain separately unauthorized;
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
 - Webcore Product Completeness & Stabilization: WU1 COMPLETE / CONTRACT
   LOCKED; WU2 COMPLETE / ACCEPTED / INTEGRATED; WU3 COMPLETE / ACCEPTED /
@@ -472,18 +479,19 @@ Sources:
 - `docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md`
   [ADOPTION AUTHORITY]
 
-Current delivered truth for the established Site Settings baseline remains
-the four areas Site Identity, System, Modules, and System Health. The
-Redirects projection defined by the Seven-Tab Site Settings Completion &
-Hardening workstream is additionally implemented and accepted under its WU4
-contract at `0f4164aa45682aa887605f2bd27fe0aa7b885ac8`; its focused closure,
-Redirect Admin workspace, and routing-contract validation passed with 29, 24,
-and 67 assertions respectively. Security and Email remain capability-gated
-future work, and the downstream WU5 integration remains future and separately
-authorized. Future Site Settings projection may cover Site / Site Identity,
-System, Modules, Redirects, System Health, Security, Email, and Database
-without asserting that all eight are current visible areas or must exist
-simultaneously.
+Current delivered truth for the established Site Settings baseline includes
+Site Identity, System, Security, Modules, Redirects, and System Health. The
+Security projection is delivered through WU2 Slices 1–7 on `main` at
+`ab2ef3ab254c04513128d9385fb2c57662e52ad9`, with focused Security acceptance
+passing 267 assertions and lifecycle/compatibility reconciliation passing 191
+assertions with no reconciliation delta required. The Redirects projection
+defined by the Seven-Tab Site Settings Completion & Hardening workstream is
+implemented and accepted under its WU4 contract. Email remains the
+capability-gated future work, and the downstream WU5 integration remains
+future, blocked by WU3, and separately unauthorized. Future Site Settings
+projection may cover Site / Site Identity, System, Modules, Redirects, System
+Health, Security, Email, and Database without asserting that all eight are
+current visible areas or must exist simultaneously.
 
 Pre-v0.14.0 target projection: a fully operational and hardened seven-tab
 Site Settings surface with Site Identity, System, Security, Email, Modules,

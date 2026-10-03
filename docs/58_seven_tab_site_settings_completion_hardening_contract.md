@@ -1,6 +1,6 @@
 # Seven-Tab Site Settings Completion & Hardening Contract
 
-Status: PROMOTED / CONTRACT LOCKED / AUTHORITATIVE / NOT IMPLEMENTATION-AUTHORIZED
+Status: PROMOTED / CONTRACT LOCKED / AUTHORITATIVE
 
 Project: COPOT
 
@@ -17,19 +17,27 @@ Source pre-contract:
 ## Current implementation state
 
 The contract remains the authoritative semantic and scope boundary for the
-workstream. Its accepted WU4 implementation state is now materialized on
-`main` at `0f4164aa45682aa887605f2bd27fe0aa7b885ac8`:
+workstream. Current implementation state is:
 
+- WU2 — Security Platform Capability Baseline: TECHNICALLY COMPLETE;
+- all seven WU2 implementation slices are complete;
+- the Security implementation is materialized on `main` at the accepted
+  anchor `ab2ef3ab254c04513128d9385fb2c57662e52ad9`;
+- focused WU2 Security acceptance: PASS, 267 assertions;
+- lifecycle/compatibility reconciliation: PASS, 191 assertions, with no
+  reconciliation delta required;
 - WU4 — Webcore Redirects Operator Projection Reconciliation: COMPLETE /
   ACCEPTED;
 - focused WU4 closure validation: PASS, 29 assertions;
 - focused WU3 Redirect Admin workspace validation: PASS, 24 assertions; and
-- focused WU1 Redirect routing-contract validation: PASS, 67 assertions.
+- focused WU1 Redirect routing-contract validation: PASS, 67 assertions;
+- the WU2 dependency for downstream WU5 is satisfied; and
+- WU3 — System Email Platform Capability Baseline remains the unsatisfied hard
+  dependency for WU5.
 
-The WU4 dependency for downstream WU5 is satisfied. WU5 remains the next
-downstream Work Unit only after its other hard dependencies (WU2 and WU3) are
-satisfied and its implementation is separately authorized. This state record
-does not authorize WU5 implementation or change the locked contract scope.
+This state update records current implementation evidence under the promoted
+and locked contract. It does not authorize WU3 or WU5 implementation and does
+not change the locked contract scope.
 
 ## 1. Contract objective
 
@@ -43,7 +51,7 @@ Contract ini mengunci accepted pre-contract, accepted technical reconciliation, 
 6. Redirects
 7. System Health
 
-Contract ini authoritative untuk semantic scope dan acceptance boundary workstream. Promotion contract ini tidak dengan sendirinya mengotorisasi implementation.
+Contract ini authoritative untuk semantic scope dan acceptance boundary workstream. Promotion contract ini menetapkan scope dan semantics; implementation authorization tetap diberikan secara terpisah untuk setiap bounded slice di bawah current project Rule. WU2 implementation yang telah diotorisasi kini tercermin pada current implementation state di atas.
 
 ## 2. Governing capability model
 
