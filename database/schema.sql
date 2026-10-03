@@ -79,7 +79,8 @@ INSERT INTO permissions (name, slug, created_at, updated_at) VALUES
     ('Manage navigation', 'navigation.manage', NOW(), NOW()),
     ('Manage themes', 'themes.manage', NOW(), NOW()),
     ('Manage redirects', 'redirects.manage', NOW(), NOW()),
-    ('Manage Email', 'email.manage', NOW(), NOW());
+    ('Manage Email', 'email.manage', NOW(), NOW()),
+    ('Manage Security', 'security.manage', NOW(), NOW());
 
 INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
@@ -171,6 +172,12 @@ INSERT INTO role_permissions (role_id, permission_id)
 SELECT roles.id, permissions.id
 FROM roles
 INNER JOIN permissions ON permissions.slug = 'email.manage'
+WHERE roles.slug = 'admin';
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT roles.id, permissions.id
+FROM roles
+INNER JOIN permissions ON permissions.slug = 'security.manage'
 WHERE roles.slug = 'admin';
 
 CREATE TABLE settings (
