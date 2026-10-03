@@ -123,7 +123,7 @@ Jika Agent Instruction tidak tersedia, pembuatan atau delivery instruction execu
 
 ### Routing bahasa
 
-Rule dan Handoff menggunakan bahasa utama user/conversation, yaitu Bahasa Indonesia untuk penggunaan COPOT ini. Agent Instruction menggunakan English sebagai bahasa default technical-executor. Identifier, path, command, API name, filename, status token, dan technical vocabulary tetap literal bila terjemahan mengurangi precision.
+Rule dan Handoff menggunakan bahasa utama user/conversation, yaitu Bahasa Indonesia santai untuk penggunaan COPOT ini. Agent Instruction menggunakan English sebagai bahasa default technical-executor. Identifier, path, command, API name, filename, status token, dan technical vocabulary tetap literal bila terjemahan mengurangi precision.
 
 ### Fail-closed versi terbaru dan retry retrieval
 
@@ -201,7 +201,7 @@ Jangan mengganti route yang locked dengan preferensi model secara diam-diam.
 
 ## 5. Workflow Repository dan runtime
 
-COPOT adalah project yang berpusat pada Git.
+`Project` adalah project yang berpusat pada Git.
 
 - Local repository/workspace digunakan untuk inspection dan implementation.
 - Remote Git repository adalah Repository durable yang authoritative.
