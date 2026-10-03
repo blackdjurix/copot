@@ -33,6 +33,7 @@ class Application
     private Csrf $csrf;
     private Auth $auth;
     private ReauthenticationService $reauthentication;
+    private CurrentUserPasswordService $currentUserPassword;
     private SelfSessionService $selfSessions;
     private SecurityEventService $securityEvents;
     private ModuleManager $modules;
@@ -103,6 +104,14 @@ class Application
             $this->session,
             new PasswordHasher(),
             null,
+            $this->securityEvents
+        );
+        $this->currentUserPassword = new CurrentUserPasswordService(
+            $this->auth,
+            new UserProvider($this->database),
+            new PasswordHasher(),
+            new PasswordPolicy($this->settings),
+            $this->reauthentication,
             $this->securityEvents
         );
         $this->selfSessions = new SelfSessionService(
@@ -279,6 +288,11 @@ class Application
     public function reauthentication(): ReauthenticationService
     {
         return $this->reauthentication;
+    }
+
+    public function currentUserPassword(): CurrentUserPasswordService
+    {
+        return $this->currentUserPassword;
     }
 
     public function selfSessions(): SelfSessionService

@@ -116,6 +116,11 @@ final class SecurityEventService
         return $this->record('reauthentication', $result->succeeded() ? 'info' : 'warning', $userId, 'session', $sessionIdentity === null ? null : self::identityEvidence($sessionIdentity), 'reauthenticate', $result->outcome(), [], $now);
     }
 
+    public function recordCredentialChange(int $userId, string $sessionIdentity, string $result, ?DateTimeImmutable $now = null): bool
+    {
+        return $this->record('authentication', $result === 'success' ? 'info' : 'warning', $userId, 'session', self::identityEvidence($sessionIdentity), 'password_change', $result, [], $now);
+    }
+
     public function recordSecurityPolicyChange(int $actorUserId, string $policyKey, ?DateTimeImmutable $now = null): bool
     {
         return $this->record('security_policy', 'info', $actorUserId, 'policy', $policyKey, 'policy_change', 'success', [], $now);

@@ -50,6 +50,28 @@ $app->router()->post('/logout', function ($request) use ($app): Response {
     return Response::redirect($app->url((string) $app->config()->get('auth.after_logout', '/')));
 });
 
+$app->router()->post('/account/password', function ($request) use ($app): Response {
+    if (!$app->auth()->check()) {
+        return Response::redirect($app->url((string) $app->config()->get('auth.login_path', '/login')));
+    }
+
+    $token = $request->input('_token');
+    if (!$app->session()->validateCsrf(is_string($token) ? $token : null)) {
+        return Response::html('Invalid CSRF token.', 419);
+    }
+
+    $result = $app->currentUserPassword()->change(
+        (string) $request->post('password', ''),
+        (string) $request->post('password_confirmation', '')
+    );
+
+    if ($result->succeeded()) {
+        return Response::html('Password updated.');
+    }
+
+    return Response::html($result->code(), $result->code() === 'reauthentication_required' ? 403 : 422);
+});
+
 $app->router()->get('/protected', function () use ($app): Response|string {
     if (!$app->auth()->check()) {
         return Response::redirect($app->url((string) $app->config()->get('auth.login_path', '/login')));

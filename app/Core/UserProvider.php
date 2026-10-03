@@ -43,4 +43,13 @@ class UserProvider
 
         $statement->execute(['id' => $id]);
     }
+
+    public function updatePasswordHash(int $id, string $passwordHash): void
+    {
+        $statement = $this->database->connection()->prepare(
+            'UPDATE ' . $this->database->table('users') . ' SET password_hash = :password_hash, updated_at = NOW() WHERE id = :id'
+        );
+
+        $statement->execute(['id' => $id, 'password_hash' => $passwordHash]);
+    }
 }
