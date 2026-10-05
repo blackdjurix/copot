@@ -59,7 +59,12 @@ class EmailCredentialBoundary
 
             $temporaryPath = null;
             if (@file_get_contents($this->environmentPath) !== $contents) {
-                $this->restore($backupPath, $existing);
+                $restored = $this->restore($backupPath, $existing);
+                if (!$restored) {
+                    $this->failClosed();
+                    throw new EmailCredentialException('Email credential could not be safely restored.');
+                }
+
                 $backupPath = null;
                 throw new EmailCredentialException('Email credential could not be verified.');
             }
@@ -219,14 +224,53 @@ class EmailCredentialBoundary
             : @rename($temporaryPath, $targetPath);
     }
 
-    private function restore(?string $backupPath, string $existing): void
+    private function restore(?string $backupPath, string $existing): bool
     {
-        if ($backupPath !== null && is_file($backupPath) && @rename($backupPath, $this->environmentPath)) {
+        if ($backupPath !== null && is_file($backupPath) && $this->rename($backupPath, $this->environmentPath)) {
+            return true;
+        }
+
+        if ($existing === '') {
+            return !file_exists($this->environmentPath) || @unlink($this->environmentPath);
+        }
+
+        return false;
+    }
+
+    private function failClosed(): void
+    {
+        $contents = @file_get_contents($this->environmentPath);
+        if (!is_string($contents)) {
+            @unlink($this->environmentPath);
+
             return;
         }
-        if ($existing === '') {
-            @unlink($this->environmentPath);
+
+        $safeContents = $this->removeCredential($contents);
+        $written = @file_put_contents($this->environmentPath, $safeContents, LOCK_EX);
+        if ($written === strlen($safeContents) && @file_get_contents($this->environmentPath) === $safeContents) {
+            return;
         }
+
+        @unlink($this->environmentPath);
+    }
+
+    private function removeCredential(string $contents): string
+    {
+        $newLine = str_contains($contents, "\r\n") ? "\r\n" : "\n";
+        $hasTrailingNewLine = preg_match('/(?:\r\n|\n|\r)$/', $contents) === 1;
+        $lines = preg_split('/\r\n|\n|\r/', $contents);
+        $lines = is_array($lines) ? $lines : [];
+        if ($hasTrailingNewLine && $lines !== [] && end($lines) === '') {
+            array_pop($lines);
+        }
+
+        $lines = array_values(array_filter(
+            $lines,
+            static fn (string $line): bool => preg_match('/^\s*' . preg_quote(self::ENVIRONMENT_KEY, '/') . '\s*=/', $line) !== 1
+        ));
+
+        return implode($newLine, $lines) . ($hasTrailingNewLine ? $newLine : '');
     }
 
     private function removeTemporaryFile(?string $path): void

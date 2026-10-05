@@ -4,11 +4,14 @@ namespace Copot\Core;
 
 final class EmailTransport
 {
+    private SmtpTransportDriver $driver;
+
     public function __construct(
         private EmailConfigurationResolver $configuration,
         private EmailCredentialBoundary $credentials,
-        private SmtpTransportDriver $driver = new NativeSmtpTransportDriver(),
+        ?SmtpTransportDriver $driver = null,
     ) {
+        $this->driver = $driver ?? new NativeSmtpTransportDriver();
     }
 
     public function deliver(EmailMessage $message): EmailDeliveryResult

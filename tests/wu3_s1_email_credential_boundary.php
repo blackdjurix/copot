@@ -56,6 +56,62 @@ try {
     $assert(!str_contains((string) file_get_contents($path), $failedSecret), 'Failed secret must not become active state.');
     $assert(count(glob($storage . DIRECTORY_SEPARATOR . '.copot-email-credential-*') ?: []) === 0, 'Temporary credential artifacts must be cleaned up.');
 
+    $verificationFailureSecret = 'verification-failure-' . bin2hex(random_bytes(8));
+    $verificationCalls = 0;
+    $verificationFailure = new EmailCredentialBoundary($path, static function (string $temporary, string $target) use (&$verificationCalls): bool {
+        $verificationCalls++;
+        if (!@rename($temporary, $target)) {
+            return false;
+        }
+
+        if ($verificationCalls === 1) {
+            @file_put_contents($target, "APP_ENV=testing\r\nCUSTOM_KEY=preserve-me\r\nCOPOT_EMAIL_CREDENTIAL=\"tampered\"\r\n");
+        }
+
+        return true;
+    });
+    try {
+        $verificationFailure->replace($verificationFailureSecret);
+        throw new RuntimeException('Post-replacement verification failure unexpectedly succeeded.');
+    } catch (EmailCredentialException $exception) {
+        $assert($exception->getMessage() === 'Email credential could not be verified.', 'Verification failure must use a sanitized error.');
+        $assert(!str_contains($exception->getMessage(), $verificationFailureSecret), 'Verification failure must not expose secret material.');
+    }
+    $assert((string) file_get_contents($path) === $beforeFailure, 'Successful rollback must restore the exact prior environment.');
+    $assert($verificationFailure->state() === ['configured' => true], 'Successful rollback must preserve configured state.');
+    $assert(!str_contains((string) file_get_contents($path), $verificationFailureSecret), 'Rolled-back secret must not remain active.');
+    $assert(count(glob($storage . DIRECTORY_SEPARATOR . '.copot-email-credential-*') ?: []) === 0, 'Rollback artifacts must be cleaned up.');
+
+    $rollbackFailureSecret = 'rollback-failure-' . bin2hex(random_bytes(8));
+    $rollbackCalls = 0;
+    $rollbackFailure = new EmailCredentialBoundary($path, static function (string $temporary, string $target) use (&$rollbackCalls): bool {
+        $rollbackCalls++;
+        if ($rollbackCalls === 2) {
+            return false;
+        }
+
+        if (!@rename($temporary, $target)) {
+            return false;
+        }
+
+        @file_put_contents($target, "APP_ENV=testing\r\nCUSTOM_KEY=preserve-me\r\nCOPOT_EMAIL_CREDENTIAL=\"tampered\"\r\n");
+
+        return true;
+    });
+    try {
+        $rollbackFailure->replace($rollbackFailureSecret);
+        throw new RuntimeException('Rollback failure unexpectedly succeeded.');
+    } catch (EmailCredentialException $exception) {
+        $assert($exception->getMessage() === 'Email credential could not be safely restored.', 'Rollback failure must use a sanitized error.');
+        $assert(!str_contains($exception->getMessage(), $rollbackFailureSecret), 'Rollback failure must not expose secret material.');
+    }
+    $rollbackState = (string) file_get_contents($path);
+    $assert($rollbackFailure->state() === ['configured' => false], 'Rollback failure must fail closed to not-configured state.');
+    $assert(str_contains($rollbackState, "APP_ENV=testing\r\nCUSTOM_KEY=preserve-me\r\n"), 'Fail-closed state must preserve unrelated environment keys.');
+    $assert(!str_contains($rollbackState, 'COPOT_EMAIL_CREDENTIAL='), 'Fail-closed state must remove the active credential entry.');
+    $assert(!str_contains($rollbackState, $rollbackFailureSecret), 'Failed replacement secret must not remain active.');
+    $assert(count(glob($storage . DIRECTORY_SEPARATOR . '.copot-email-credential-*') ?: []) === 0, 'Failed rollback artifacts must be cleaned up.');
+
     $invalid = new EmailCredentialBoundary($storage . DIRECTORY_SEPARATOR . 'missing.env');
     try {
         $invalidSecret = 'invalid-' . bin2hex(random_bytes(8));
