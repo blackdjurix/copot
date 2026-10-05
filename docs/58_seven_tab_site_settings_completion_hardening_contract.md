@@ -31,13 +31,23 @@ workstream. Current implementation state is:
 - focused WU4 closure validation: PASS, 29 assertions;
 - focused WU3 Redirect Admin workspace validation: PASS, 24 assertions; and
 - focused WU1 Redirect routing-contract validation: PASS, 67 assertions;
-- the WU2 dependency for downstream WU5 is satisfied; and
-- WU3 — System Email Platform Capability Baseline remains the unsatisfied hard
-  dependency for WU5.
+- WU3 — System Email Platform Capability Baseline: COMPLETE / ACCEPTED;
+- accepted durable WU3 implementation is materialized on `main` at
+  `fc4bf7754005b85ad890be32749f9c17f218c4e9`;
+- focused WU3 acceptance: S1 credential boundary PASS, 28 assertions; S2
+  configuration PASS, 32 assertions; S3 transport PASS, 23 assertions; S4
+  operator PASS, 24 assertions; S4 existing-install permission reconciliation
+  PASS, 28 assertions; and S5 Email isolation PASS, 15 assertions;
+- no unresolved WU3 implementation gap remains; and
+- the WU2, WU3, and WU4 dependencies for downstream WU5 are satisfied.
 
 This state update records current implementation evidence under the promoted
-and locked contract. It does not authorize WU3 or WU5 implementation and does
-not change the locked contract scope.
+and locked contract. The accepted, promoted, durable contract embodies the
+GPT/user authorization agreement for work within its contract scope under the
+current Rule, with execution instructions remaining bounded technical
+execution contracts. It does not imply WU5 implementation or acceptance, or
+authorize adjacent scope, release, tag, publication, deployment, or
+destructive action.
 
 ## 1. Contract objective
 
@@ -51,7 +61,7 @@ Contract ini mengunci accepted pre-contract, accepted technical reconciliation, 
 6. Redirects
 7. System Health
 
-Contract ini authoritative untuk semantic scope dan acceptance boundary workstream. Promotion contract ini menetapkan scope dan semantics; implementation authorization tetap diberikan secara terpisah untuk setiap bounded slice di bawah current project Rule. WU2 implementation yang telah diotorisasi kini tercermin pada current implementation state di atas.
+Contract ini authoritative untuk semantic scope dan acceptance boundary workstream. Promotion contract ini menetapkan scope dan semantics; accepted, promoted, durable contract authority bersama execution instruction yang bounded berlaku untuk work di dalam contract scope di bawah current project Rule. WU2, WU3, dan WU4 implementation yang telah diterima kini tercermin pada current implementation state di atas; WU5 tetap merupakan downstream work yang belum dimulai.
 
 ## 2. Governing capability model
 
@@ -572,13 +582,18 @@ Contract status:
 
 - authoritative contract: YES;
 - semantic scope locked: YES;
-- implementation authorization: NONE;
-- repository implementation mutation authorization: NONE;
+- implementation authorization: SATISFIED for bounded work within this
+  contract scope under the current Rule and applicable execution instructions;
+- repository implementation mutation authorization: bounded to that accepted
+  contract scope and applicable execution instructions;
 - release/tag/publication/deployment authorization: NONE.
 
 Contract ini menjadi authority workstream setelah user promotion authorization terhadap exact reviewed candidate.
 
-Technical design dan implementation tetap membutuhkan relevant downstream authorization per Work Unit. Promotion contract tidak mengotorisasi implementation, repository implementation mutation, release, tag, publication, atau deployment.
+Technical design dan implementation tetap bounded by the relevant Work Unit
+and execution instruction. Contract authority does not imply WU5 completion or
+acceptance, adjacent scope, release, tag, publication, deployment, or
+destructive action.
 
 ## 25. Promotion provenance
 

@@ -56,8 +56,11 @@ Current durable planning state:
   `ab2ef3ab254c04513128d9385fb2c57662e52ad9`; focused Security acceptance
   PASS (267 assertions); lifecycle/compatibility reconciliation PASS (191
   assertions) with no reconciliation delta required; WU4 Redirects remains
-  COMPLETE / ACCEPTED; WU3 Email remains open/future and is the unsatisfied
-  hard dependency for WU5; WU3 and WU5 remain separately unauthorized;
+  COMPLETE / ACCEPTED; WU3 System Email capability baseline is COMPLETE /
+  ACCEPTED and durable at `fc4bf7754005b85ad890be32749f9c17f218c4e9`; the WU3
+  hard dependency for WU5 is satisfied; WU5 remains the next downstream
+  integration work under the accepted contract boundary and has not yet
+  started in this interaction;
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
 - Webcore Product Completeness & Stabilization: WU1 COMPLETE / CONTRACT
   LOCKED; WU2 COMPLETE / ACCEPTED / INTEGRATED; WU3 COMPLETE / ACCEPTED /
@@ -486,9 +489,12 @@ Security projection is delivered through WU2 Slices 1–7 on `main` at
 passing 267 assertions and lifecycle/compatibility reconciliation passing 191
 assertions with no reconciliation delta required. The Redirects projection
 defined by the Seven-Tab Site Settings Completion & Hardening workstream is
-implemented and accepted under its WU4 contract. Email remains the
-capability-gated future work, and the downstream WU5 integration remains
-future, blocked by WU3, and separately unauthorized. Future Site Settings
+implemented and accepted under its WU4 contract. The WU3 System Email
+capability baseline is implemented, accepted, and durable at
+`fc4bf7754005b85ad890be32749f9c17f218c4e9`; its Site Settings projection is
+downstream WU5 work. WU5 remains future work under the accepted contract
+boundary, is no longer blocked by WU3, and has not started in this interaction.
+Future Site Settings
 projection may cover Site / Site Identity, System, Modules, Redirects, System
 Health, Security, Email, and Database without asserting that all eight are
 current visible areas or must exist simultaneously.
