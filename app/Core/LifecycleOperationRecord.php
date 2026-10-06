@@ -14,6 +14,7 @@ final class LifecycleOperationRecord
     public const INDETERMINATE = 'indeterminate';
     public const CLEANUP_PENDING = 'cleanup_pending';
     public const COMPLETED = 'completed';
+    public const RETIRED_NET_ZERO = 'retired_net_zero';
 
     private const ACTIVE_STATUSES = [
         self::PREPARING, self::APPLYING, self::MIGRATING,
@@ -49,7 +50,7 @@ final class LifecycleOperationRecord
         self::assertOpaque($stagingPath, 'Staging path');
         self::assertHash($payloadIdentity, 'Payload identity');
         self::assertHash($applyPlanIdentity, 'Apply plan identity');
-        if (!in_array($phase, self::ACTIVE_STATUSES, true) && $phase !== self::COMPLETED) {
+        if (!in_array($phase, self::ACTIVE_STATUSES, true) && !in_array($phase, [self::COMPLETED, self::RETIRED_NET_ZERO], true)) {
             throw new \InvalidArgumentException('Lifecycle operation phase is invalid.');
         }
         if ($fileCursor < 0 || ($lastVerifiedPath !== null && $lastVerifiedPath === '')) {
@@ -116,7 +117,7 @@ final class LifecycleOperationRecord
     public function lastVerifiedPath(): ?string { return $this->lastVerifiedPath; }
     public function migrationPlanIdentity(): ?string { return $this->migrationPlanIdentity; }
     public function migrationOutcome(): ?string { return $this->migrationOutcome; }
-    public function isTerminal(): bool { return $this->phase === self::COMPLETED; }
+    public function isTerminal(): bool { return in_array($this->phase, [self::COMPLETED, self::RETIRED_NET_ZERO], true); }
     public function recoveryIdentity(): ?string { return $this->recoveryIdentity; }
     public function recoveryManifestIdentity(): ?string { return $this->recoveryManifestIdentity; }
     public function recoveryState(): ?string { return $this->recoveryState; }

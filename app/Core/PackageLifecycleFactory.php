@@ -169,7 +169,8 @@ final class PackageLifecycleFactory
                         && !$record->mutationStarted()
                         && $record->confirmationMatches($record->recoveryIdentity(), $record->manifestIdentity(), $record->manifestIdentity());
                 } catch (\Throwable) { return false; }
-            }
+            },
+            new NetZeroRetirementService($maintenance, $mutex, new NetZeroRetirementVerifier(), new NetZeroRetirementEvidenceStore($storage))
         );
     }
 

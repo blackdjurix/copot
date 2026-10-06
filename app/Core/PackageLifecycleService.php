@@ -41,7 +41,8 @@ final class PackageLifecycleService
         private ?LegacyReconciliationOperator $reconciliationOperator = null,
         private ?string $reconciliationUnavailableReason = null,
         ?CanonicalSchemaBaselineCatalog $baselineCatalog = null,
-        private $recoveryEvidenceValidator = null
+        private $recoveryEvidenceValidator = null,
+        private ?NetZeroRetirementService $netZeroRetirement = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -55,6 +56,14 @@ final class PackageLifecycleService
     private LegacyRuntimeClassifier $legacyClassifier;
     private LegacyReconciliationPlanner $reconciliationPlanner;
     private DatabaseLifecycleClassifier $databaseLifecycleClassifier;
+
+    public function retireNetZero(string $operationId, WebcoreApplyPlan $plan, NetZeroRetirementContext $context): PackageLifecycleResult
+    {
+        if (!$this->netZeroRetirement instanceof NetZeroRetirementService) {
+            return new PackageLifecycleResult(false, 'unavailable', 'Net-zero retirement is unavailable.');
+        }
+        return $this->netZeroRetirement->retire($operationId, $plan, $context);
+    }
 
     public function plan(string $zip): PackageLifecycleResult
     {
