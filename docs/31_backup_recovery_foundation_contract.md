@@ -39,10 +39,16 @@ Backup & Recovery owns durable recovery identity and manifests, private
 recovery storage, recovery-domain orchestration, capture, restore,
 verification, interruption/retry, and controlled cleanup.
 
-Package Lifecycle owns lifecycle planning and invokes the foundation for a
-reconciliation operation. IU2 owns explicit target selection, confirmation,
-and legacy convergence policy. IU2 must not create an IU2-owned backup
-subsystem.
+Package Lifecycle owns lifecycle planning, net-zero retirement eligibility,
+forensic proof of effective net-zero state, durable retirement evidence, and
+disposition of the active Package Lifecycle operation. Backup & Recovery
+continues to own recovery capture, recovery identity and manifests, restore,
+recovery lifecycle, recovery verification, and recovery cleanup. Net-zero
+retirement does not transfer restore authority to Package Lifecycle, create
+synthetic recovery state, or represent a restore operation.
+
+IU2 owns explicit target selection, confirmation, and legacy convergence
+policy. IU2 must not create an IU2-owned backup subsystem.
 
 The first delivery slice is narrowly scoped to the recovery domains required by
 IU2 while preserving a reusable foundation boundary for later approved
@@ -328,6 +334,28 @@ Capture interruption before mutation results in `FAILED_BEFORE_MUTATION` and
 must block IU2. Interruption after mutation results in `RESTORE_REQUIRED` or
 `RESTORE_INDETERMINATE` until the immutable recovery set is successfully
 restored and verified.
+
+The only narrow exception is an independently and deterministically proven
+Package Lifecycle **net-zero effective mutation** disposition. Package
+Lifecycle must prove that the observed package-file application prefix is
+byte-identical to the retained trusted package target and accepted live target,
+that no database or persistent application-state mutation occurred, that
+committed installed state did not advance, that no migration executed, and
+that no recovery evidence is being synthesized retrospectively. In that case
+Backup & Recovery performs no restore, and Package Lifecycle may retire the
+failed operation under its own audited terminal non-success disposition.
+
+This exception does not permit recovery recapture over uncertain mutated state,
+creation of a retrospective recovery snapshot treated as pre-operation
+evidence, weakening normal post-mutation recovery requirements, conversion of
+the operation into `COMPLETED`, or retry of the same interrupted operation
+without valid original recovery evidence. Any subsequent new lifecycle
+operation must still establish valid recovery protection before mutation.
+
+Net-zero retirement is a Package Lifecycle disposition and is not added to the
+Backup & Recovery recovery-state machine. It does not alter the semantics of
+`READY`, `RESTORE_REQUIRED`, `RESTORE_INDETERMINATE`, `RESTORED`,
+`CLEANUP_PENDING`, or `CLEANED`.
 
 Retry may resume capture only before mutation and may resume restoration only
 against the same recovery identity and manifest. It must not create a new

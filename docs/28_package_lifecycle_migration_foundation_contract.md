@@ -267,6 +267,43 @@ migration, reconciliation, health, or integrity gate leaves the prior committed
 state unadvanced and leaves enough durable operation information for bounded
 repair or operator recovery.
 
+### Net-zero retirement
+
+A lifecycle operation that has crossed the package-owned application boundary
+may be retired through a distinct terminal non-success disposition when its
+applied result is deterministically proven to have produced no effective state
+change. This is **net-zero retirement**. It is not `COMPLETED`, rollback,
+restore, retry, successful package application, migration success, or installed
+state advancement.
+
+Eligibility is fail-closed and requires exact verification of the operation,
+archive, staging, payload, apply-plan, and migration-plan identities; coherent
+persisted progress and authoritative apply ordering; exact reconstruction of
+the applied package-owned prefix; and byte identity between every applied path,
+the retained trusted package target, and the authoritative accepted live
+target. No applied path may be missing, unresolved, or divergent. Core
+migration must not have started or completed, `core_migration_history` must not
+have advanced, target schema or capability provisioning must not have occurred,
+committed installed state must not have advanced, and persistent application,
+operator-owned, and runtime-owned state must remain unchanged.
+
+Net-zero retirement preserves the original operation identity and forensic
+provenance. It must not fabricate recovery identity, manifest, or recovery
+state evidence, and it must not claim successful migration, provisioning,
+reconciliation, or package completion. Durable retirement evidence must be
+persisted before the active lifecycle-operation record is removed from
+maintenance. At minimum, that evidence binds the original operation, package /
+archive, payload, apply-plan, migration-plan, persisted cursor/progress,
+forensic verification identity (or equivalent deterministic evidence identity),
+retirement reason, and retirement timestamp. Clearing the active operation
+before that evidence is durable is not permitted.
+
+After valid net-zero retirement and canonical maintenance clearance, any later
+lifecycle attempt is a new lifecycle operation and must satisfy ordinary
+pre-mutation recovery requirements before its first mutation. This amendment is
+prospective and does not rewrite historical WU1–WU7 completion wording or
+imply that the original implementation already provided this disposition.
+
 ## Backup & Recovery dependency
 
 Backup & Recovery is a separate platform capability consumed by Package
