@@ -182,7 +182,7 @@ Jangan mengklaim `READ THIS INTERACTION` atau `READ AND APPLIED` jika exact arti
 
 Format ini adalah presentation contract. Ia tidak menambah authority, authorization, project scope, atau execution permission.
 
-Format ini tidak berlaku untuk casual conversation, clarification non-substantif, Handoff, pure Agent Instruction artifact, atau technical executor report. Pure Agent Instruction artifact dapat disertai delivery note administratif yang non-substantif dan tetap exempt. Jika response memuat Agent Instruction beserta prose yang menyimpulkan atau mengarahkan authorization, scope, validity, acceptance, project state, planning, atau next action, response tersebut adalah mixed response dan wajib menggunakan `GPT Interaction Format`.
+Format ini tidak berlaku untuk casual conversation, clarification non-substantif, Handoff, atau `Technical Executor` report. Jika response memuat artifact yang dikecualikan beserta prose yang menyimpulkan atau mengarahkan authorization, scope, validity, acceptance, project state, planning, atau next action, response tersebut adalah mixed response dan wajib menggunakan `GPT Interaction Format`.
 
 
 ## 4. Keputusan project yang locked
