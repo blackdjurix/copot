@@ -223,6 +223,29 @@ final class PackageLifecycleService
         try { return (bool) ($this->recoveryEvidenceValidator)($record); } catch (\Throwable) { return false; }
     }
 
+    /**
+     * A blocked operation may bootstrap recovery only while its mutation
+     * boundary is provably untouched. Once progress, migration, or recovery
+     * state exists, the ordinary recovery-backed retry rules remain required.
+     */
+    private function preMutationRetryEligible(string $operationId): bool
+    {
+        $record = $this->maintenance->record();
+        return $record instanceof LifecycleOperationRecord
+            && $record->operationId() === $operationId
+            && $record->phase() === LifecycleOperationRecord::BLOCKED
+            && $record->fileCursor() === 0
+            && $record->lastVerifiedPath() === null
+            && $record->migrationOutcome() === null
+            && $record->migrationPlanIdentity() !== null
+            && $record->recoveryIdentity() === null
+            && $record->recoveryManifestIdentity() === null
+            && $record->recoveryState() === null
+            && is_dir($record->stagingPath())
+            && is_file($record->stagingPath() . DIRECTORY_SEPARATOR . 'source.zip')
+            && is_readable($record->stagingPath() . DIRECTORY_SEPARATOR . 'source.zip');
+    }
+
     public function retrySource(string $operationId): ?string
     {
         $record = $this->maintenance->record();
@@ -234,15 +257,35 @@ final class PackageLifecycleService
     public function retry(string $operationId): PackageLifecycleResult
     {
         $record = $this->maintenance->record();
-        if (!$record instanceof LifecycleOperationRecord || !$this->retryEvidence($operationId)) return new PackageLifecycleResult(false, 'rejected', 'Retry evidence is unavailable or stale.');
+        $recoveryBacked = $record instanceof LifecycleOperationRecord && $this->retryEvidence($operationId);
+        $preMutation = !$recoveryBacked && $this->preMutationRetryEligible($operationId);
+        if (!$recoveryBacked && !$preMutation) return new PackageLifecycleResult(false, 'rejected', 'Retry evidence is unavailable or stale.');
         $retainedStagingPath = $record->stagingPath();
-        $source = $this->retrySource($operationId);
+        $source = $preMutation
+            ? $retainedStagingPath . DIRECTORY_SEPARATOR . 'source.zip'
+            : $this->retrySource($operationId);
         if ($source === null) return new PackageLifecycleResult(false, 'rejected', 'Retained staged package evidence is unavailable.');
         $payload = null;
         try {
             [$payload, $manifest, $transition, $migration] = $this->prepare($source);
             $applyPlan = WebcoreApplyPlan::fromPayload($manifest->payload());
-            if ($applyPlan->identity() !== $record->applyPlanIdentity() || $transition->classification() !== $record->classification() || $manifest->contract()->targetWebcoreVersion() !== $record->targetWebcoreVersion()) throw new \RuntimeException('Retry target evidence does not match the persisted operation.');
+            $payloadIdentity = hash('sha256', implode(':', array_map(
+                static fn (StagedFile $file): string => $file->path() . ':' . $file->sha256(),
+                $manifest->payload()->files()
+            )));
+            $migrationIdentity = hash('sha256', implode("\n", array_map(
+                static fn (CoreMigrationDescriptor $migration): string => $migration->id() . ':' . $migration->checksum(),
+                array_filter($migration->migrations(), static fn ($migration): bool => $migration instanceof CoreMigrationDescriptor)
+            )));
+            if ($payload->archiveSha256() !== $record->archiveSha256()
+                || $payloadIdentity !== $record->payloadIdentity()
+                || $applyPlan->identity() !== $record->applyPlanIdentity()
+                || $migrationIdentity !== $record->migrationPlanIdentity()
+                || $manifest->contract()->releaseIdentity() !== $record->releaseIdentity()
+                || $transition->classification() !== $record->classification()
+                || $manifest->contract()->targetWebcoreVersion() !== $record->targetWebcoreVersion()) {
+                throw new \RuntimeException('Retry target evidence does not match the persisted operation.');
+            }
             if ($record->stagingPath() !== $payload->stagingPath()) {
                 $record = $record->withStagingPath($payload->stagingPath());
                 $this->maintenance->update($record);

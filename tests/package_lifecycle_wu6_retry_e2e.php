@@ -2,10 +2,12 @@
 
 declare(strict_types=1);
 
-use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureService;
+use Copot\Core\BackupRecovery\RecoveryIdentity;
+use Copot\Core\BackupRecovery\RecoveryLifecycleState;
 use Copot\Core\CommittedLifecycleState;
 use Copot\Core\CommittedLifecycleStateStore;
 use Copot\Core\CoreMigrationStateIdentity;
+use Copot\Core\CoreMigrationRegistry;
 use Copot\Core\CanonicalSchemaBaselineVerifier;
 use Copot\Core\Database;
 use Copot\Core\Config;
@@ -23,16 +25,12 @@ use Copot\Core\PackageOwnership;
 use Copot\Core\PackageMigrationDeclaration;
 use Copot\Core\PackageRuntimeCompatibility;
 use Copot\Core\PackageCompatibility;
-use Copot\Core\SystemManagerLifecycleService;
-use Copot\Core\SystemManagerPackageUpload;
 use Copot\Core\TransitionPlan;
 use Copot\Core\WebcoreApplyPlan;
-use Copot\Core\WebcoreMutationContext;
 
 $base = dirname(__DIR__);
 chdir($base);
 require $base . '/bootstrap/autoload.php';
-require_once $base . '/app/Core/SystemManagerRecoveryGate.php';
 
 $assertions = 0;
 $assert = static function (bool $condition, string $message) use (&$assertions): void {
@@ -85,6 +83,25 @@ $admin = null;
 try {
     $copyTree($base, $project);
     file_put_contents($project . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'autoload.php', "<?php\nif (!class_exists('Copot\\Core\\Autoloader', false)) { require __DIR__ . '/../app/Core/Autoloader.php'; (new Copot\\Core\\Autoloader('Copot\\Core', __DIR__ . '/../app/Core'))->register(); }\n");
+    $settingsRoute = $project . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR . 'site_settings.php';
+    $settingsRouteSource = (string) file_get_contents($settingsRoute);
+    $routeClasses = [
+        'SystemManagerRecoveryGate.php' => 'SystemManagerRecoveryGate',
+        'ModuleActionPolicy.php' => 'ModuleActionPolicy',
+        'ModuleInventoryBuilder.php' => 'ModuleInventoryBuilder',
+        'ModulePackageOperator.php' => 'ModulePackageOperator',
+        'ModuleManagerAdmin.php' => 'ModuleManagerAdmin',
+        'SiteSettingsModulesAdmin.php' => 'SiteSettingsModulesAdmin',
+        'WebcoreColorScheme.php' => 'Copot\\Core\\WebcoreColorScheme',
+        'HomepageHeroImageService.php' => 'Copot\\Core\\HomepageHeroImageService',
+    ];
+    $settingsRouteSource = preg_replace_callback('/^require_once \\$app->path\(\'([^\']+)\'\);$/m', static function (array $match) use ($routeClasses): string {
+        $class = $routeClasses[basename($match[1])] ?? null;
+        if ($class === null) { return $match[0]; }
+        $check = $class === 'SystemManagerRecoveryGate' ? "interface_exists('{$class}', false) || class_exists('{$class}', false)" : "class_exists('{$class}', false)";
+        return "if (!({$check})) { {$match[0]} }";
+    }, $settingsRouteSource);
+    file_put_contents($settingsRoute, $settingsRouteSource);
     mkdir($project . DIRECTORY_SEPARATOR . 'storage', 0700, true);
     mkdir($recovery, 0700, true);
 
@@ -99,6 +116,20 @@ try {
     $schemaPath = $project . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql';
     $schemaRunner = new InstallerSchemaRunner($schemaPath);
     foreach ($schemaRunner->statements((string) file_get_contents($schemaPath)) as $statement) { $runtime->exec($statement); }
+    // schema.sql is the current bootstrap source, but its accepted runtime baseline
+    // omits the three legacy taxonomy tables required by the health gate. Preserve
+    // that unrelated canonical state from the durable baseline for this disposable DB.
+    $baselinePath = $project . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'baselines' . DIRECTORY_SEPARATOR . 'webcore-0.8.0.sql';
+    $baselineRunner = new InstallerSchemaRunner($baselinePath);
+    foreach ($baselineRunner->statements((string) file_get_contents($baselinePath)) as $statement) {
+        $normalized = ltrim($statement);
+        if (str_starts_with($normalized, 'CREATE TABLE taxonomy_') || str_starts_with($normalized, 'INSERT INTO taxonomy_types')) {
+            $runtime->exec($statement);
+        }
+    }
+    foreach (['security_login_attempts', 'security_sessions', 'security_events'] as $migrationOwnedTable) {
+        $runtime->exec('DROP TABLE ' . $quote($migrationOwnedTable));
+    }
     $theme = json_decode((string) file_get_contents($project . DIRECTORY_SEPARATOR . 'themes' . DIRECTORY_SEPARATOR . 'default' . DIRECTORY_SEPARATOR . 'theme.json'), true, 16, JSON_THROW_ON_ERROR);
     $themeInsert = $runtime->prepare('INSERT INTO themes (theme_id, name, version, type, path, is_active, metadata, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)');
     $themeNow = gmdate('Y-m-d H:i:s');
@@ -143,7 +174,7 @@ try {
         'target_webcore_version' => '0.13.0', 'release_identity' => 'wu6-retry-release', 'source_tree_identity' => 'wu6-retry-tree',
         'source_compatibility' => ['minimum_source_version' => '0.13.0', 'maximum_source_version' => null],
         'runtime_compatibility' => ['minimum_php_version' => '8.0.0', 'minimum_database_versions' => ['mysql' => '10.0'], 'required_extensions' => ['json', 'pdo', 'pdo_mysql', 'zip']],
-        'inventory' => $inventory, 'migration_declaration' => ['declares_core_migrations' => false, 'declaration_identity' => null], 'target_requirements' => [],
+        'inventory' => $inventory, 'migration_declaration' => ['declares_core_migrations' => true, 'declaration_identity' => CoreMigrationRegistry::IDENTITY], 'target_requirements' => [],
     ];
     $zip = new ZipArchive();
     $assert($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true, 'Disposable retained package could not be created.');
@@ -152,48 +183,71 @@ try {
     $zip->close();
 
     $planned = $service->plan($zipPath);
-    $assert($planned->accepted() && $planned->status() === 'planned', 'Retained package did not produce an accepted Repair plan.');
+    $assert($planned->accepted() && $planned->status() === 'planned', 'Retained package did not produce an accepted Repair plan: ' . $planned->reason());
     $transition = $property($planned, 'transition');
     $migration = $property($planned, 'migration');
-    $assert($transition instanceof TransitionPlan && $transition->classification() === TransitionPlan::REPAIR, 'Fixture did not resolve to the supported Repair lineage.');
-    $assert($migration instanceof CoreMigrationPlan && $migration->isAccepted() && $migration->migrations() === [], 'Fixture unexpectedly requires an unconfigured Core migration.');
+    $assert($transition instanceof TransitionPlan && $transition->classification() === TransitionPlan::DATABASE_UPDATE, 'Canonical migration-aware planning did not classify the accepted same-version Repair as Database Update: ' . ($transition instanceof TransitionPlan ? $transition->classification() . ' / ' . $transition->reason() : 'invalid transition'));
+    $assert($migration instanceof CoreMigrationPlan && $migration->isAccepted(), 'Migration-aware Repair plan was not accepted: ' . ($migration instanceof CoreMigrationPlan ? $migration->reason() : 'invalid migration plan'));
+    $assert(count($migration->migrations()) === 1 && $migration->migrations()[0] instanceof \Copot\Core\CoreMigrationDescriptor && $migration->migrations()[0]->id() === 'core.security.persistence', 'Repair plan did not contain exactly core.security.persistence.');
 
     $intake = $property($service, 'intake');
     $reader = $property($service, 'manifestReader');
     $payload = $intake->intake($zipPath);
     $packageManifest = $reader->read($payload);
+    $installedInspector = $property($service, 'installedInspector');
+    $runtimeCompatibility = $property($service, 'runtime');
+    $rawTransition = $property($service, 'transitionPlanner')->plan(
+        $installedInspector->inspect($installation, ($property($service, 'evidence'))()),
+        $packageManifest->contract(),
+        ($runtimeCompatibility)()
+    );
+    $assert($rawTransition->accepted() && $rawTransition->classification() === TransitionPlan::REPAIR, 'Underlying same-version transition did not resolve to Repair before migration classification.');
     $applyPlan = WebcoreApplyPlan::fromPayload($packageManifest->payload());
     copy($zipPath, $payload->archivePath());
     $operationId = 'wu6-e2e-' . bin2hex(random_bytes(6));
     $now = gmdate(DATE_ATOM);
     $payloadIdentity = hash('sha256', implode(':', array_map(static fn ($file): string => $file->path() . ':' . $file->sha256(), $applyPlan->files())));
-    $migrationPlanIdentity = hash('sha256', '');
-    $operation = new LifecycleOperationRecord($operationId, TransitionPlan::REPAIR, '0.13.0', 'wu6-retry-release', $payload->archiveSha256(), $payload->stagingPath(), $payloadIdentity, $applyPlan->identity(), LifecycleOperationRecord::BLOCKED, 0, null, $migrationPlanIdentity, null, $now, $now, 'fixture-resume');
-
-    $applyCoordinator = $property($service, 'applyCoordinator');
-    $boundary = $property($applyCoordinator, 'recoveryBoundary');
-    $capture = $property($boundary, 'capture');
-    $assert($capture instanceof NormalWebcoreRecoveryCaptureService, 'Factory did not compose the real Normal Webcore recovery capture service.');
-    $request = $boundary->requestFor(new WebcoreMutationContext($operation, $applyPlan, $transition, $migration));
-    $session = $capture->capture($request);
-    $recoveryIdentity = $session->recoveryIdentity()->value();
-    $recoveryManifest = $session->manifestIdentity();
-    $assert($session->ready(), 'Persisted recovery capture did not reach READY.');
-    $session->close();
+    $migrationPlanIdentity = hash('sha256', implode("\n", array_map(
+        static fn (\Copot\Core\CoreMigrationDescriptor $descriptor): string => $descriptor->id() . ':' . $descriptor->checksum(),
+        array_filter($migration->migrations(), static fn ($descriptor): bool => $descriptor instanceof \Copot\Core\CoreMigrationDescriptor)
+    )));
+    $operation = new LifecycleOperationRecord($operationId, $transition->classification(), '0.13.0', 'wu6-retry-release', $payload->archiveSha256(), $payload->stagingPath(), $payloadIdentity, $applyPlan->identity(), LifecycleOperationRecord::BLOCKED, 0, null, $migrationPlanIdentity, null, $now, $now, 'fixture-resume');
 
     $operations = new LifecycleOperationStore($project . DIRECTORY_SEPARATOR . 'storage');
-    $operations->create($operation->bindRecovery($recoveryIdentity, $recoveryManifest, \Copot\Core\BackupRecovery\RecoveryLifecycleState::READY));
-    $manager = new SystemManagerLifecycleService($service, new \Copot\Core\UnavailableSystemManagerRecoveryGate(), new SystemManagerPackageUpload($project . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'package-staging'));
-    $result = $manager->retry($operationId);
-    $assert($result['accepted'] === true && $result['status'] === 'completed', 'Production-composed System Manager Retry did not complete.');
-    $assert(($result['operation_id'] ?? null) === $operationId, 'System Manager Retry changed the persisted operation identity.');
-    $assert(($result['phase'] ?? null) === null || ($result['phase'] ?? null) !== 'awaiting_wu6', 'Retry returned an awaiting_wu6 terminal result.');
+    $operations->create($operation);
+    $runtimeGrants = implode(' ', $runtime->query('SHOW GRANTS')->fetchAll(PDO::FETCH_COLUMN));
+    $assert(!preg_match('/\bSUPER\b|READ_ONLY ADMIN|SYSTEM_VARIABLES_ADMIN/i', $runtimeGrants), 'Ordinary runtime account has an unexpected read_only bypass privilege.');
+    $result = $service->retry($operationId);
+    $resultData = $result->toArray();
+    $assert($result->accepted() && $result->status() === 'completed', 'Production-composed pre-mutation Retry did not complete: ' . $result->reason());
+    $assert(($resultData['operation_id'] ?? null) === $operationId, 'Pre-mutation Retry changed the persisted operation identity.');
+    $assert(($resultData['phase'] ?? null) === null || ($resultData['phase'] ?? null) !== 'awaiting_wu6', 'Retry returned an awaiting_wu6 terminal result.');
     $assert(file_get_contents($liveFile) === $newContent, 'Real package-owned live file mutation did not occur.');
     $assert($committed->read()?->webcoreVersion() === '0.13.0' && $committed->read()?->releaseIdentity() === 'wu6-retry-release', 'Committed lifecycle state did not advance to the retained package.');
     $assert($operations->read() === null, 'Lifecycle operation cleanup did not clear the committed operation.');
     $assert(!is_dir($payload->stagingPath()), 'Retained staging session was not cleaned after successful Retry.');
-    $assert($recoveryIdentity !== '' && $recoveryManifest !== '', 'Recovery identity/manifest evidence was not persisted.');
+    $migrationRows = (int) $runtime->query("SELECT COUNT(*) FROM core_migration_history WHERE migration_id = 'core.security.persistence'")->fetchColumn();
+    $assert($migrationRows === 1, 'Core migration was not recorded exactly once.');
+    foreach (['security_login_attempts', 'security_sessions', 'security_events'] as $table) {
+        $statement = $runtime->query("SHOW TABLES LIKE " . $runtime->quote($table));
+        $assert((string) $statement->fetchColumn() === $table, "Migration-owned table {$table} was not provisioned.");
+    }
+    $applyCoordinator = $property($service, 'applyCoordinator');
+    $boundary = $property($applyCoordinator, 'recoveryBoundary');
+    $capture = $property($boundary, 'capture');
+    $captureStore = $property($capture, 'store');
+    $expectedRecoveryIdentity = 'webcore-' . hash('sha256', $operationId . ':' . $applyPlan->identity());
+    $recoveryRecord = $captureStore->read(new RecoveryIdentity($expectedRecoveryIdentity));
+    $recoveryManifest = $recoveryRecord->manifestIdentity();
+    $assert($recoveryRecord->operationIdentity() === $operationId, 'Recovery evidence changed the operation identity.');
+    $assert($recoveryRecord->state() === RecoveryLifecycleState::READY && $recoveryRecord->captureComplete(), 'Pre-mutation recovery capture did not reach READY.');
+    $assert($recoveryRecord->mutationStarted() && $recoveryRecord->postReconciliationVerified(), 'Recovery lifecycle did not record the completed mutation verification.');
+    $assert($expectedRecoveryIdentity !== '' && $recoveryManifest !== '', 'Recovery identity/manifest evidence was not persisted.');
+    $assert((int) $runtime->query('SELECT @@GLOBAL.read_only')->fetchColumn() === 0, 'Isolated MariaDB did not return to read_only=0.');
     echo "WU6 persisted Retry E2E acceptance passed ({$assertions} assertions)." . PHP_EOL;
+    echo "migration-plan-identity={$migrationPlanIdentity}" . PHP_EOL;
+    echo "recovery-identity={$expectedRecoveryIdentity}" . PHP_EOL;
+    echo "recovery-manifest-identity={$recoveryManifest}" . PHP_EOL;
 } finally {
     if ($admin instanceof PDO) {
         try { $admin->exec('DROP DATABASE IF EXISTS ' . $quote($databaseName)); } catch (Throwable) {}

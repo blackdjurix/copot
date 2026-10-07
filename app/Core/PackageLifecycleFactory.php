@@ -51,6 +51,7 @@ final class PackageLifecycleFactory
             $committedStore,
             $liveGuard
         );
+        $designatedMigrationConnection = $recoveryComposition?->databaseConnection();
         $normalRecoveryCapture = $recoveryComposition?->normalCaptureService();
         $normalRecoveryBoundary = $recoveryComposition?->normalProtectedMutationBoundary(
             $installationIdentity->value(),
@@ -60,11 +61,20 @@ final class PackageLifecycleFactory
 
         $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath, $installationIdentity->value());
         $applier = new PackageOwnedFileApplier($liveGuard, LiveFileActivationCapability::current(), $applyTemporaryRoot);
-        $applyCoordinator = new WebcoreApplyCoordinator($mutex, $maintenance, $applier, static function (CoreMigrationPlan $plan, string $operationId, string $classification) use ($database, $migrationRunner, $installationIdentity): MigrationRunResult {
+        $applyCoordinator = new WebcoreApplyCoordinator($mutex, $maintenance, $applier, static function (CoreMigrationPlan $plan, string $operationId, string $classification) use ($database, $migrationRunner, $installationIdentity, $designatedMigrationConnection): MigrationRunResult {
+            if ($plan->migrations() !== [] && !is_callable($designatedMigrationConnection)) {
+                return new MigrationRunResult(MigrationRunResult::FAILED, [], 'Designated migration connection is unavailable; migration execution is blocked.');
+            }
+            $connection = $plan->migrations() === []
+                ? $database->connection()
+                : $designatedMigrationConnection();
+            if (!$connection instanceof PDO) {
+                return new MigrationRunResult(MigrationRunResult::FAILED, [], 'Designated migration connection is invalid; migration execution is blocked.');
+            }
             $catalog = DatabaseTableOwnershipCatalog::current();
-            return $migrationRunner->run($database->connection(), $plan, null, static function (CoreMigrationDescriptor $migration) use ($database, $catalog, $installationIdentity, $operationId, $classification, $plan): AuthorizedMigrationContext {
+            return $migrationRunner->run($connection, $plan, null, static function (CoreMigrationDescriptor $migration) use ($database, $connection, $catalog, $installationIdentity, $operationId, $classification, $plan): AuthorizedMigrationContext {
                 $authorization = new MigrationAuthorizationContext($installationIdentity, $database->tables(), $operationId, $classification, DatabaseTableOwner::webcore(), $migration->id(), $migration->checksum(), $plan->initialWebcoreVersion(), $plan->virtualFinalWebcoreVersion(), true, $migration->schemaSurface());
-                return new AuthorizedMigrationContext($database->connection(), $authorization, $catalog);
+                return new AuthorizedMigrationContext($connection, $authorization, $catalog);
             });
         }, new RuntimeRegistry($storage, $installationIdentity, $mutex), $normalRecoveryBoundary);
         $healthCoordinator = new HealthIntegrityCommitCoordinator(
