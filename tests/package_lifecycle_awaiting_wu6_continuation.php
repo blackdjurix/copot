@@ -24,6 +24,9 @@ $continuation = substr($service, strpos($service, 'public function continueAwait
 $assert(!str_contains($continuation, '$this->applyCoordinator->execute'), 'Continuation can re-enter package application.');
 $assert(!str_contains($continuation, '$this->migrationRunner'), 'Continuation can re-enter migration execution.');
 $assert(str_contains($continuation, '$this->healthCoordinator->finalize('), 'Continuation does not use canonical WU6 finalization.');
+$assert(str_contains($continuation, 'reconstructCompletedMigrationPlan'), 'Continuation does not reconstruct the persisted completed migration plan.');
+$assert(str_contains($service, 'Completed migration ledger does not match the persisted plan.'), 'Continuation lacks completed-ledger reconciliation.');
+$assert(!str_contains($continuation, '$this->applyCoordinator->execute'), 'Continuation can re-enter package application.');
 $assert(str_contains($factory, 'postReconciliationVerified()') && str_contains($factory, 'mutationStarted()'), 'Production continuation evidence validator is not post-mutation fail-closed.');
 $assert(str_contains($health, 'if ($record->phase() !== LifecycleOperationRecord::AWAITING_WU6)'), 'Finalization does not retain its awaiting-WU6 phase gate.');
 

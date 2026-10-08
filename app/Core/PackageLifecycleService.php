@@ -339,8 +339,12 @@ final class PackageLifecycleService
         $payload = null;
         $stagingPersisted = false;
         try {
-            [$payload, $manifest, $transition, $migration] = $this->prepare($source);
+            [$payload, $manifest, $transition] = $this->prepare($source);
             $applyPlan = WebcoreApplyPlan::fromPayload($manifest->payload());
+            if (!$transition->accepted()) {
+                throw new \RuntimeException('Continuation transition is no longer accepted.');
+            }
+            $migration = $this->reconstructCompletedMigrationPlan($record, $manifest);
             $payloadIdentity = hash('sha256', implode(':', array_map(
                 static fn (StagedFile $file): string => $file->path() . ':' . $file->sha256(),
                 $manifest->payload()->files()
@@ -354,7 +358,6 @@ final class PackageLifecycleService
                 || $applyPlan->identity() !== $record->applyPlanIdentity()
                 || $migrationIdentity !== $record->migrationPlanIdentity()
                 || $manifest->contract()->releaseIdentity() !== $record->releaseIdentity()
-                || $transition->classification() !== $record->classification()
                 || $manifest->contract()->targetWebcoreVersion() !== $record->targetWebcoreVersion()) {
                 throw new \RuntimeException('Continuation target evidence does not match the persisted operation.');
             }
@@ -390,6 +393,56 @@ final class PackageLifecycleService
                 try { $payload->cleanup(); } catch (\Throwable) {}
             }
         }
+    }
+
+    private function reconstructCompletedMigrationPlan(LifecycleOperationRecord $record, PackageManifest $manifest): CoreMigrationPlan
+    {
+        $descriptors = array_values(array_filter(
+            $this->migrationRegistry->migrations(),
+            static fn ($migration): bool => $migration instanceof CoreMigrationDescriptor
+        ));
+        $planned = [];
+        $matched = false;
+        foreach ($descriptors as $descriptor) {
+            $planned[] = $descriptor;
+            $identity = hash('sha256', implode("\n", array_map(
+                static fn (CoreMigrationDescriptor $migration): string => $migration->id() . ':' . $migration->checksum(),
+                $planned
+            )));
+            if ($identity === $record->migrationPlanIdentity()) {
+                $matched = true;
+                break;
+            }
+        }
+        if (!$matched) {
+            throw new \RuntimeException('Completed migration-plan identity cannot be reconstructed.');
+        }
+
+        $records = $this->ledger->records(($this->connection)());
+        if (count($records) !== count($planned)) {
+            throw new \RuntimeException('Completed migration ledger length does not match the persisted plan.');
+        }
+        foreach ($records as $index => $recorded) {
+            $descriptor = $planned[$index];
+            if ($recorded->migrationId() !== $descriptor->id()
+                || $recorded->sequence() !== $descriptor->sequence()
+                || $recorded->targetWebcoreVersion() !== $descriptor->targetWebcoreVersion()
+                || $recorded->targetSchemaIdentity() !== $descriptor->targetSchemaIdentity()
+                || $recorded->checksum() !== $descriptor->checksum()) {
+                throw new \RuntimeException('Completed migration ledger does not match the persisted plan.');
+            }
+        }
+
+        $finalSchema = $planned === []
+            ? 'canonical-current'
+            : $planned[count($planned) - 1]->targetSchemaIdentity();
+        return CoreMigrationPlan::allow(
+            $record->targetWebcoreVersion(),
+            $manifest->contract()->targetWebcoreVersion(),
+            null,
+            $finalSchema,
+            $planned
+        );
     }
 
     public function status(): array
