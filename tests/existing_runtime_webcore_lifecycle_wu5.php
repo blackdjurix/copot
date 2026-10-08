@@ -73,7 +73,7 @@ $makeScenario = static function (string $prefix): array {
     $eligibility = new ReconciliationMutationEligibility($identity, $plan->operationIdentity(), $plan->identity(), $manifest->identity(), $target->packageIdentity(), $confirmation->bindingIdentity(), new IU2WU5Lease(), static function (): void {});
     $installation = new InstallationState($live . DIRECTORY_SEPARATOR . 'storage'); $installation->createMarker('0.8.0');
     $db = new PDO('sqlite::memory:', options: [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
-    foreach (['users','roles','permissions','user_roles','role_permissions','settings','modules','module_permissions','themes','content','taxonomy_types','taxonomy_terms','taxonomy_assignments'] as $table) $db->exec('CREATE TABLE ' . $table . ' (id INTEGER)');
+    foreach (['users','roles','permissions','user_roles','role_permissions','settings','modules','module_permissions','themes','content','media','media_usages','navigation_menus','navigation_items','redirects','security_login_attempts','security_sessions','security_events'] as $table) $db->exec('CREATE TABLE ' . $table . ' (id INTEGER)');
     $db->exec('CREATE TABLE core_migration_history (migration_id TEXT, sequence_number INTEGER, target_webcore_version TEXT, target_schema_identity TEXT, migration_checksum TEXT, applied_at TEXT)');
     $committedStore = new \Copot\Core\CommittedLifecycleStateStore($live . DIRECTORY_SEPARATOR . 'storage');
     $databaseResult = new LegacyReconciliationDatabaseResult(LegacyReconciliationDatabaseResult::COMPLETED, 'schema-final', CoreMigrationStateIdentity::fromRecords([]));
