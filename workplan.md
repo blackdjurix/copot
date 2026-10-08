@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-10-02 17:49:23 WIB
+Date version: 2026-10-08 10:25:24 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -51,16 +51,25 @@ Authoritative repository: `https://github.com/blackdjurix/copot.git`
 Authoritative branch: `main`
 
 Current durable planning state:
-- Seven-Tab Site Settings Completion & Hardening: Security WU2 COMPLETE /
-  TECHNICALLY COMPLETE / SLICES 1–7 COMPLETE / MATERIALIZED ON `main` at
-  `ab2ef3ab254c04513128d9385fb2c57662e52ad9`; focused Security acceptance
-  PASS (267 assertions); lifecycle/compatibility reconciliation PASS (191
-  assertions) with no reconciliation delta required; WU4 Redirects remains
-  COMPLETE / ACCEPTED; WU3 System Email capability baseline is COMPLETE /
-  ACCEPTED and durable at `fc4bf7754005b85ad890be32749f9c17f218c4e9`; the WU3
-  hard dependency for WU5 is satisfied; WU5 remains the next downstream
-  integration work under the accepted contract boundary and has not yet
-  started in this interaction;
+- Seven-Tab Site Settings Completion & Hardening: WU2 Security TECHNICALLY
+  COMPLETE / durable at `ab2ef3ab254c04513128d9385fb2c57662e52ad9`;
+  WU3 System Email COMPLETE / ACCEPTED / durable at
+  `fc4bf7754005b85ad890be32749f9c17f218c4e9`; WU4 Redirects COMPLETE /
+  ACCEPTED. WU5 Seven-Tab Integration & Hardening is OPEN / HOLD / BLOCKED
+  pending corrective Package Lifecycle forward-update bootstrap authority
+  reconciliation. WU5 is not failed, accepted, or closed.
+- Package Lifecycle Forward-Update Bootstrap Authority Reconciliation:
+  corrective next-session target / GAP CONFIRMED by technical audit;
+  existing-install forward transition is blocked when the target full COPOT
+  package introduces manifest v2 and Core migration authority unknown to the
+  installed runtime. This is separate from server-empty package bootstrap;
+  the gap and proposed resolution remain next-session Handoff material,
+  not a newly promoted contract or a Thread-Level Saved Concept.
+- Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation:
+  previously saved thread-level Concept materialized in
+  `concepts/copot_lifecycle_net_zero_retirement_safe_retry_capability_concept.md`;
+  backend implementation-state inventory only; no new implementation
+  authorization, pre-contract, or dedicated contract.
 - Post-M3 — Webcore & Extension Architecture Reconciliation: COMPLETE / CLOSED;
 - Webcore Product Completeness & Stabilization: WU1 COMPLETE / CONTRACT
   LOCKED; WU2 COMPLETE / ACCEPTED / INTEGRATED; WU3 COMPLETE / ACCEPTED /
@@ -373,6 +382,36 @@ Relations:
 Planning action: NONE / PROVENANCE
 
 ## 5. Active / Future / Deferred / Operational Registry
+
+### Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation
+Class: DURABLE CONCEPT / IMPLEMENTATION-STATE INVENTORY
+Status: MATERIALIZED / BACKEND CAPABILITIES IMPLEMENTED IN PART /
+PRODUCTIZATION NOT ACCEPTED
+
+Sources:
+- `concepts/copot_lifecycle_net_zero_retirement_safe_retry_capability_concept.md` [PRIMARY]
+
+Relations:
+- net-zero retirement amendment authority remains
+  `docs/28_package_lifecycle_migration_foundation_contract.md`;
+- Backup & Recovery/quiescence retains existing separate authority under
+  `docs/31_backup_recovery_foundation_contract.md`;
+- net-zero retirement, protected pre-mutation retry, and designated migration
+  connection are durable backend capabilities; general recovery UX and
+  automated disposition routing are not established as accepted product
+  capabilities;
+- corrective forward-update bootstrap authority is separate next-session
+  Handoff material, not part of this saved Concept.
+
+Authority:
+- `docs/28_package_lifecycle_migration_foundation_contract.md` (net-zero
+  amendment only);
+- `docs/31_backup_recovery_foundation_contract.md` (existing recovery
+  dependency).
+
+Planning action: RETAIN AS CONCEPT / RECORD IMPLEMENTED VS NOT DELIVERED /
+NO PRE-CONTRACT OR DEDICATED CONTRACT NOW / NO IMPLEMENTATION AUTHORIZATION
+
 
 ### Webcore Product Completeness & Stabilization
 Class: CORRECTIVE WEBCORE PRODUCT-COMPLETENESS / STABILIZATION WORKSTREAM
@@ -1558,6 +1597,16 @@ Planning action: KEEP; functional findings must not be disguised as styling.
 
 ## 8. Thread-Level Continuity Reconciliation
 
+The previously saved Net-Zero Retirement & Safe-Retry capability-family
+Thread-Level Saved Concept is now durably materialized at
+`concepts/copot_lifecycle_net_zero_retirement_safe_retry_capability_concept.md`
+and registered in Section 5. This records delivered backend capability and
+not-yet-delivered productization; it does not create a pre-contract, dedicated
+contract, or implementation authorization. Runtime cleanup is operational
+continuity, and the confirmed forward-update bootstrap authority gap belongs
+to the corrective-workstream Handoff, not this Concept.
+
+
 Durably reconciled into MR.2 planning:
 - Shared Admin Visual Primitive Single-Source Rule;
 - Shared Admin Action Placement & Button Sizing Pattern;
@@ -1592,17 +1641,18 @@ reconciliation item.
 
 ## 9. Immediate Next Planning Target
 
-MR.2 is complete and closed. WU1 — Webcore Completeness Contract & Scope
-Reconciliation, WU2 — Core Media Admin Baseline, and WU3 — Core Primary
-Navigation Admin Baseline are complete in their authoritative states. WU4 is
-contract promoted and locked under
-`docs/54_webcore_site_settings_appearance_consolidation_contract.md`; WU4 is
-COMPLETE / ACCEPTED / CLOSED with Batches 1–2 complete/closed, Batch 3
-accepted/complete/closed, and Batch 4 complete/accepted/closed after WU5
-acceptance and human/product review. WU5 is COMPLETE / ACCEPTED / CLOSED;
-the current next planning target is Database Lifecycle — Adoption Compatibility
-Reconciliation, followed by the registered five-step pre-v0.14.0 sequence.
-No implementation is authorized by this Workplan entry alone.
+Current immediate target: prepare the EMERGENCY session transition into
+`Package Lifecycle Forward-Update Bootstrap Authority Reconciliation`.
+The technical audit confirmed both manifest-contract incompatibility and
+missing target-only migration bootstrap authority in the installed runtime.
+Seven-Tab Site Settings WU5 remains OPEN / HOLD / BLOCKED until the corrective
+lifecycle dependency is resolved and accepted; historical Package Lifecycle
+WU1–WU7 closure and previously accepted Seven-Tab WU2–WU4 evidence are
+preserved. Corrective lifecycle contract/documentation amendments are reserved
+for the new session. Main runtime operational reconciliation remains a
+pre-Handoff action, not a new Concept. No implementation, destructive
+runtime/database action, contract promotion, release, or deployment is
+authorized by this Workplan update.
 
 ## 10. Retention and Planning Freshness
 
