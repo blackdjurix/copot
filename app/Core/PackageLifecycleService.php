@@ -42,7 +42,8 @@ final class PackageLifecycleService
         private ?string $reconciliationUnavailableReason = null,
         ?CanonicalSchemaBaselineCatalog $baselineCatalog = null,
         private $recoveryEvidenceValidator = null,
-        private ?NetZeroRetirementService $netZeroRetirement = null
+        private ?NetZeroRetirementService $netZeroRetirement = null,
+        private $awaitingWu6EvidenceValidator = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -302,6 +303,93 @@ final class PackageLifecycleService
             return new PackageLifecycleResult(false, $final->status(), $final->reason(), $transition, $migration, $apply->operationId());
         } catch (\Throwable $e) { return new PackageLifecycleResult(false, 'blocked', 'Retry evidence or execution was rejected.', null, null, $record->operationId()); }
         finally { if ($payload instanceof StagedPayload) { try { $payload->cleanup(); } catch (\Throwable) {} } }
+    }
+
+    /**
+     * Continue an operation whose package and migration stages completed and
+     * which is waiting only for WU6 health/commit finalization.
+     *
+     * This path deliberately reconstructs and verifies the retained target,
+     * then calls finalization directly. It never re-enters package apply or
+     * Core migration execution.
+     */
+    public function continueAwaitingWu6(string $operationId): PackageLifecycleResult
+    {
+        $record = $this->maintenance->record();
+        if (!$record instanceof LifecycleOperationRecord
+            || $record->operationId() !== $operationId
+            || $record->phase() !== LifecycleOperationRecord::AWAITING_WU6
+            || $record->fileCursor() <= 0
+            || $record->lastVerifiedPath() === null
+            || !in_array($record->migrationOutcome(), [MigrationRunResult::COMPLETED, MigrationRunResult::NOOP], true)
+            || $record->recoveryIdentity() === null
+            || $record->recoveryManifestIdentity() === null
+            || $record->recoveryState() !== \Copot\Core\BackupRecovery\RecoveryLifecycleState::READY
+            || !is_callable($this->awaitingWu6EvidenceValidator)
+            || !(($this->awaitingWu6EvidenceValidator)($record))) {
+            return new PackageLifecycleResult(false, 'rejected', 'Awaiting-WU6 continuation evidence is unavailable or stale.', null, null, $operationId);
+        }
+
+        $retainedStagingPath = $record->stagingPath();
+        $source = $retainedStagingPath . DIRECTORY_SEPARATOR . 'source.zip';
+        if (!is_dir($retainedStagingPath) || !is_file($source) || !is_readable($source)) {
+            return new PackageLifecycleResult(false, 'rejected', 'Retained staged package evidence is unavailable.', null, null, $operationId);
+        }
+
+        $payload = null;
+        $stagingPersisted = false;
+        try {
+            [$payload, $manifest, $transition, $migration] = $this->prepare($source);
+            $applyPlan = WebcoreApplyPlan::fromPayload($manifest->payload());
+            $payloadIdentity = hash('sha256', implode(':', array_map(
+                static fn (StagedFile $file): string => $file->path() . ':' . $file->sha256(),
+                $manifest->payload()->files()
+            )));
+            $migrationIdentity = hash('sha256', implode("\n", array_map(
+                static fn (CoreMigrationDescriptor $migration): string => $migration->id() . ':' . $migration->checksum(),
+                array_filter($migration->migrations(), static fn ($migration): bool => $migration instanceof CoreMigrationDescriptor)
+            )));
+            if ($payload->archiveSha256() !== $record->archiveSha256()
+                || $payloadIdentity !== $record->payloadIdentity()
+                || $applyPlan->identity() !== $record->applyPlanIdentity()
+                || $migrationIdentity !== $record->migrationPlanIdentity()
+                || $manifest->contract()->releaseIdentity() !== $record->releaseIdentity()
+                || $transition->classification() !== $record->classification()
+                || $manifest->contract()->targetWebcoreVersion() !== $record->targetWebcoreVersion()) {
+                throw new \RuntimeException('Continuation target evidence does not match the persisted operation.');
+            }
+
+            if ($record->stagingPath() !== $payload->stagingPath()) {
+                $record = $record->withStagingPath($payload->stagingPath());
+                $this->maintenance->update($record);
+                $stagingPersisted = true;
+            }
+
+            $final = $this->healthCoordinator->finalize(
+                $operationId,
+                $manifest->contract(),
+                $applyPlan,
+                $migration,
+                $this->liveGuard,
+                ($this->connection)(),
+                ($this->runtimeChecks)()
+            );
+            if ($final->status() === HealthIntegrityCommitResult::COMPLETED) {
+                if ($retainedStagingPath !== $payload->stagingPath()) {
+                    try { StagingSession::cleanupExisting($retainedStagingPath); } catch (\Throwable) {}
+                }
+                $stagingPersisted = false;
+                return new PackageLifecycleResult(true, 'completed', '', $transition, $migration, $operationId);
+            }
+
+            return new PackageLifecycleResult(false, $final->status(), $final->reason(), $transition, $migration, $operationId);
+        } catch (\Throwable) {
+            return new PackageLifecycleResult(false, 'blocked', 'Awaiting-WU6 continuation was rejected.', null, null, $operationId);
+        } finally {
+            if ($payload instanceof StagedPayload && !$stagingPersisted) {
+                try { $payload->cleanup(); } catch (\Throwable) {}
+            }
+        }
     }
 
     public function status(): array
