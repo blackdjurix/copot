@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-02 11:30:09 WIB
+Date version: 2026-10-08 12:06:26 WIB
 
 ## 1. Variabel
 
@@ -160,9 +160,9 @@ Governance Report
 - Handoff Template: `Handoff` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
 - Agent Instruction Template: `Agent Instruction` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
 - Technical Executor: `<current effective executor>`
-- Platform: `<PC / Desktop / Mobile / Android / Other / Unknown>`
-- Manual-operation executor: `<User / "Technical Executor" / Other / Unknown>`
-- Executor confirmation: `<CONFIRMED / REUSED / REQUIRED / NOT REQUIRED>`
+- Platform: PC / Desktop / Mobile / Android / Other / Unknown
+- Manual-operation executor: User / `Technical Executor` / Other / Unknown
+- Executor confirmation: CONFIRMED / REUSED / REQUIRED / NOT REQUIRED
 - Routing action: `<material consequence only>`
 - Repository status: `<verified state when material>`
 
@@ -213,6 +213,14 @@ Jangan mengganti route yang locked dengan preferensi model secara diam-diam.
 - Jangan reset, clean, stash, discard, overwrite, force-update, atau menormalkan state yang tidak terduga secara otomatis.
 
 XAMPP adalah environment runtime/validation lokal inti.
+
+`Primary Runtime` adalah default runtime environment untuk normal development, debugging, integration, dan validation bila pekerjaan dapat dilakukan dengan aman pada existing state.
+
+`Main Runtime` adalah instance runtime existing yang mencerminkan current project state. Identity, endpoint, port, dan state aktualnya bersifat dinamis dan dicatat pada Handoff atau execution context yang relevan.
+
+`Disposable Runtime` adalah isolated runtime yang dibuat on-demand bila material isolation diperlukan. Disposable Runtime bukan default, bukan checkpoint durable, dan bukan replacement otomatis untuk Main Runtime.
+
+Gunakan `Disposable Runtime` hanya bila task membutuhkan clean state, destructive isolation, failure injection, incompatible-version coexistence, unknown blast radius, atau isolated validation yang eksplisit. `Repository` tetap menjadi authority untuk durable implementation state.
 
 - Mirror runtime XAMPP bukan authority Repository.
 - Runtime copy dan disposable runtime bukan checkpoint durable.

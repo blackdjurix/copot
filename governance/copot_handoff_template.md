@@ -1,5 +1,5 @@
 # copot <Batas Continuity> — <Judul>
-Date version: 2026-10-01 22:49:21 WIB
+Date version: 2026-10-08 12:06:26 WIB
 
 ## Batas penggunaan
 
@@ -147,8 +147,10 @@ Cantumkan hanya bila material:
 - Branch: `<branch>`
 - HEAD/revision: `<revision>`
 - Working tree: `<clean / listed changes / unknown>`
-- Runtime role: `Primary Runtime` role or None
-- Runtime endpoint/port: `<only if material; never project identity>`
+- Runtime role: `MAIN / DISPOSABLE / NONE`
+- Runtime identity/endpoint/port: `<current value / None>`
+- Isolation reason: `<required when DISPOSABLE; otherwise None>`
+- Runtime state relevant to continuity: `<state / None>`
 - Divergence or lifecycle issue: `<value or None>`
 
 Runtime copy bukan authority Repository.
