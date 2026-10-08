@@ -313,6 +313,66 @@ Committed lifecycle state must not be restored or finalized as authoritative
 until underlying database/filesystem restoration and verification succeed.
 `core_migration_history` is restored once through the database domain.
 
+### Normal Package Lifecycle post-mutation restore
+
+Backup & Recovery remains the sole authority for recovery-set identity,
+immutable recovery manifests, physical restore execution, recovery
+verification, and recovery-state transitions.
+
+A normal Package Lifecycle operation that has entered a post-mutation phase
+but has not committed the target installed state may request
+operator-authorized restoration of its original pre-operation recovery set.
+
+An existing recovery set in `READY` is eligible to enter `RESTORING` only when
+all of the following are deterministically established:
+
+1. The exact active operation identity matches the immutable recovery manifest
+   and persisted recovery record.
+2. Package/archive, apply-plan, target, and pre-operation identities match the
+   original captured operation.
+3. The recovery set is complete and integrity-valid for all required physical
+   domains.
+4. The operation has crossed a mutation boundary, has not reached successful
+   installed-state commitment, and the canonical lifecycle path has returned a
+   bounded non-success finalization or integrity result, or has durably
+   recorded a restore-required reason. Restoration must not be authorized
+   solely by an external assertion that completion or retry is unsafe.
+5. Installation exclusion and database quiescence requirements can be
+   satisfied.
+6. Explicit operator authorization identifies the operation and the recovery
+   action.
+
+The `READY` state alone does not authorize restoration. No recovery state may
+be fabricated, rewritten, or retrospectively captured to satisfy eligibility.
+
+An eligible restore follows the existing canonical recovery ordering and state
+machine. Restoration must not execute package application, Core migrations, or
+lifecycle transition planning.
+
+An interrupted restore must retain durable recovery evidence and resume through
+the canonical recovery authority. Incomplete, indeterminate, or
+verification-failed restoration must not be treated as successful or permit a
+replacement Package Lifecycle operation.
+
+Successful verification establishes recovery state `RESTORED` according to the
+existing recovery lifecycle. This state confirms recovery-domain restoration
+only; it does not independently terminalize the originating Package Lifecycle
+operation.
+
+Recovery cleanup or retirement must preserve sufficient durable identity and
+provenance to establish the restored operation's historical relationship to
+the original immutable recovery set.
+
+Backup & Recovery does not own Package Lifecycle terminal disposition or
+authorization to initiate another package operation.
+
+Post-restore verification must execute through already-loaded recovery
+orchestration code or an equivalently immutable execution boundary. It must
+not re-bootstrap or dynamically reload restored package-owned application
+source before recovery-domain verification completes. This requirement
+preserves deterministic verification when restoration replaces application
+files used by the initiating runtime.
+
 ## Verification
 
 Post-restore verification must deterministically prove:

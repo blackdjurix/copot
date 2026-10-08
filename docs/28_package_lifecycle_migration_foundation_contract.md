@@ -304,6 +304,124 @@ pre-mutation recovery requirements before its first mutation. This amendment is
 prospective and does not rewrite historical WU1–WU7 completion wording or
 imply that the original implementation already provided this disposition.
 
+### Restored-operation terminal disposition
+
+A normal Package Lifecycle operation whose physical mutations have been
+canonically restored may reach a distinct terminal non-success disposition:
+`RESTORED_NOT_COMMITTED`.
+
+This disposition is separate from:
+
+- successful package completion;
+- retry or continuation;
+- net-zero retirement;
+- package repair;
+- installed-state advancement.
+
+`RESTORED_NOT_COMMITTED` records that the original operation entered mutation,
+subsequently underwent verified canonical restoration, and did not successfully
+commit its intended target package.
+
+`RESTORED_NOT_COMMITTED` is a persisted terminal non-success Package Lifecycle
+operation phase. It becomes eligible for active-operation clearance only after
+the matching terminal-disposition evidence has been durably persisted, read
+back, and verified against the original operation and recovery identities.
+
+The terminal evidence is immutable for its originating operation. It must not
+be rewritten, reassigned, or reused for a different operation, archive,
+recovery set, or disposition.
+
+Eligibility requires:
+
+1. An exact originating Package Lifecycle operation identity.
+2. A valid immutable recovery-set identity and manifest linked to that
+   operation.
+3. Backup & Recovery confirmation that all required physical domains were
+   successfully restored and verified.
+4. Deterministic evidence that the pre-operation database, Core migration
+   ledger, package-owned filesystem, committed lifecycle state, and installed
+   lock have been restored.
+5. No unresolved recovery, identity, verification, or installed-state
+   inconsistency.
+6. Durable terminal-disposition evidence persisted before clearing the active
+   operation.
+
+The terminal-disposition evidence must retain at least:
+
+- original operation identity;
+- original package/archive and relevant plan identities;
+- recovery-set identity;
+- verified recovery result;
+- pre-operation committed-state and migration-ledger identities;
+- original operation's last effective mutation/progress evidence;
+- disposition reason;
+- disposition timestamp.
+
+The durable evidence must distinguish successful restoration from successful
+package application. Historical mutation and recovery events must not be
+erased or represented as if the original operation never occurred.
+
+Maintenance may be cleared and the active operation released only after the
+terminal disposition is durable and the canonical recovery authority reports a
+valid restored state.
+
+Failure to persist terminal evidence must leave the operation blocked from
+replacement and preserve recoverable evidence. It must not silently clear
+maintenance.
+
+Terminalization must be idempotent across interruption boundaries:
+
+1. If terminal evidence persistence fails, the active operation and maintenance
+   remain in place.
+2. If terminal evidence becomes durable but active-operation clearance fails,
+   the evidence remains authoritative and a subsequent terminalization retry
+   must verify and reuse that evidence without rewriting it or repeating
+   physical restoration.
+3. If matching terminal evidence is verified and the recovery set is already
+   `RESTORED`, a terminalization retry must not repeat the physical restore.
+4. Active-operation clearance is permitted only after successful read-back
+   verification of matching durable terminal evidence.
+5. An operation with mismatched terminal evidence, incomplete restoration, or
+   unresolved recovery state must remain blocked.
+
+The persistence and clearance sequence must fail closed. A crash between
+terminal evidence persistence and active-operation clearance must not permit a
+new package mutation until safe terminalization has been completed.
+
+After terminalization and canonical maintenance clearance, a subsequent
+package attempt must:
+
+- use a new operation identity;
+- pass normal compatibility and transition planning;
+- satisfy ordinary package-integrity and pre-mutation recovery requirements;
+- capture new recovery evidence before its own mutation.
+
+The restored operation's immutable package inventory and recovery manifest must
+not be rewritten to match any subsequent corrected package.
+
+The `RESTORED_NOT_COMMITTED` disposition does not itself establish
+compatibility for a new package, authorize bootstrap of unsupported manifest
+formats, or advance the installed Webcore version.
+
+### Operator invocation boundary
+
+Normal Package Lifecycle restore must be exposed through a supported,
+explicitly invoked service/operator entry point that binds the exact
+originating operation and its recovery evidence.
+
+The entry point delegates physical restoration to Backup & Recovery and
+terminal disposition to Package Lifecycle.
+
+It must support interruption-safe recovery, deterministic verification, and
+safe continuation after package-owned application files are restored or
+replaced.
+
+Restoration and terminalization must not depend on reloading mutable
+application source in a way that invalidates an in-progress recovery operation.
+
+No generic destructive rollback, automatic recovery from arbitrary divergence,
+or package-integrity exception is authorized by this amendment.
+
 ## Backup & Recovery dependency
 
 Backup & Recovery is a separate platform capability consumed by Package
