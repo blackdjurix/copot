@@ -26,7 +26,7 @@ if ($contentModuleEnabled) {
 }
 
 $contentBase = $app->adminUrl()->baseUrl();
-$contentRoute = fn (string $path = ''): string => $app->adminUrl()->routeChildUrl($path === '' ? 'content' : 'content/' . trim($path, '/'));
+$contentRoute = fn (string $path = ''): string => $app->adminUrl()->childUrl($path === '' ? 'content' : 'content/' . trim($path, '/'));
 $contentRepository = new ContentRepository($app->database());
 $mediaRepository = new MediaRepository($app->database());
 $contentMediaReferences = new ContentFeaturedMediaReferenceService($mediaRepository, new MediaUsageRepository($app->database()));

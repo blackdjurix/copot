@@ -125,8 +125,8 @@ $renderNavigation = function (array $items, string $prefix = 'primary') use (&$r
                 <nav id="builtin-site-primary-nav" class="builtin-site-nav" aria-label="Primary navigation">
                     <ul><?php $renderNavigation($navigation); ?></ul>
                 </nav>
-                <link rel="stylesheet" href="/assets/navigation.css?v=wu3">
-                <script defer src="/assets/navigation.js?v=wu3"></script>
+                <link rel="stylesheet" href="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/assets/navigation.css?v=wu3') : '/assets/navigation.css?v=wu3', ENT_QUOTES, 'UTF-8') ?>">
+                <script defer src="<?= htmlspecialchars(is_callable($url ?? null) ? $url('/assets/navigation.js?v=wu3') : '/assets/navigation.js?v=wu3', ENT_QUOTES, 'UTF-8') ?>"></script>
             <?php endif; ?>
         </div>
         <div class="builtin-site-header__bar" aria-hidden="true"></div>

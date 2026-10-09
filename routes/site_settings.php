@@ -93,6 +93,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
         }
         $view = $app->view()->render('admin/site-settings', [
             'path' => $path,
+            'url' => static fn (string $url): string => $app->url($url),
             'csrfToken' => $app->csrf()->token(),
             'values' => [
                 'name' => $value('site', 'name', 'copot'), 'tagline' => $value('site', 'tagline', ''),

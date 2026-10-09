@@ -49,4 +49,4 @@ $noticeText = match ($notice ?? null) {
             <?php if ($canDelete): ?><div class="admin-media-preview__actions"><form method="post" data-media-preview-delete><input type="hidden" name="_token" value="<?= $esc($csrfToken) ?>"><button class="admin-button admin-button--danger" type="submit" data-media-preview-delete-button>Delete</button></form></div><?php endif; ?>
         </section>
     </div>
-    <script src="/admin-assets/js/admin-core-media.js" defer></script><script src="/admin-assets/js/admin-media-list.js?v=wu4-1" defer></script>
+    <script src="<?= $esc(is_callable($url ?? null) ? $url('/admin-assets/js/admin-core-media.js') : '/admin-assets/js/admin-core-media.js') ?>" defer></script><script src="<?= $esc(is_callable($url ?? null) ? $url('/admin-assets/js/admin-media-list.js?v=wu4-1') : '/admin-assets/js/admin-media-list.js?v=wu4-1') ?>" defer></script>

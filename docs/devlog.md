@@ -1,0 +1,10 @@
+# Devlog
+
+2026-10-09 13:59:22 WIB     [CHECKPOINT] Catatan retrospektif: checkpoint/settings-ui-accepted-baseline menunjuk ke commit 85eb6a4c dan dipertahankan sebagai checkpoint historis immutable.
+2026-10-09 13:59:22 WIB     [ACCEPTANCE] Catatan retrospektif: fresh installation dari package checkpoint historis berhasil mencapai aplikasi terinstal, tetapi functional acceptance pada deployment subdirectory /copot-dev menemukan defect.
+2026-10-09 13:59:22 WIB     [DEFECT] Catatan retrospektif: lima gejala pada Public Navigation, Site Settings, Hero Image picker, Media list, dan Content navigation ditelusuri ke URL generation yang tidak kompatibel dengan base path /copot-dev.
+2026-10-09 13:59:22 WIB     [DECISION] Historical checkpoint dan runtime copot-dev tidak dimodifikasi; corrective implementation dilakukan pada successor development state.
+2026-10-09 13:59:22 WIB     [CONCEPT] Checkpoint Workflow trial diperluas dengan fresh-install dan functional acceptance gate setelah NRP CANDIDATE, sebelum final documentation reconciliation, NRP CONFIRMED, dan closure.
+2026-10-09 13:59:51 WIB     [IMPLEMENTATION] URL generation untuk public navigation, Site Settings, Hero Image picker, Media list, dan Content navigation direkonsiliasi dengan deployment-aware base path tanpa mengubah checkpoint historis atau runtime instalasi.
+2026-10-09 13:59:51 WIB     [VALIDATION] Regression subdirectory_url_compatibility lulus dengan 11 assertions; PHP lint dan git diff --check lulus. Beberapa test WU4 terkait gagal pada perubahan worktree yang sudah ada dan tidak terkait dengan patch ini.
+2026-10-09 14:31:45 WIB     [VALIDATION] Corrective implementation kompatibilitas subdirectory menyelesaikan isolated functional validation dengan hasil PASS. Public Navigation, Site Settings tabs, Hero Image picker, Media Details, dan Content navigation berhasil diuji menggunakan base path /copot-dev. Focused regression mencatat 11 assertions PASS. Kompatibilitas root-path terbukti melalui focused regression, belum melalui browser E2E. Historical checkpoint dan runtime copot-dev tetap tidak berubah. Repository durability dan closure masih pending.
