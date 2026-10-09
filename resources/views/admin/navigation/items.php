@@ -46,4 +46,4 @@ $renderTree = function (array $nodes) use (&$renderTree, $esc, $selectedId, $nav
         </div>
     </section>
 </div>
-<script defer src="<?= $esc('/admin-assets/js/navigation-admin.js?v=wu3-dirty-transition') ?>"></script>
+<script defer src="<?= $esc(is_callable($url ?? null) ? $url('/admin-assets/js/navigation-admin.js?v=wu3-dirty-transition') : '/admin-assets/js/navigation-admin.js?v=wu3-dirty-transition') ?>"></script>
