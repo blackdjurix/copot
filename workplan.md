@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-10-08 10:25:24 WIB
+Date version: 2026-10-10 15:13:36 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -382,6 +382,63 @@ Relations:
 Planning action: NONE / PROVENANCE
 
 ## 5. Active / Future / Deferred / Operational Registry
+
+### Adaptive Package Lifecycle & Independent Domain Compatibility
+Class: ACTIVE CONCEPT / SEMANTIC RECONCILIATION
+Status: CURRENT SESSION / PROVISIONAL / NOT PROMOTED
+
+Sources:
+- `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY]
+
+Relations:
+- Package declares WHAT; Lifecycle determines WHAT CAN / MUST HAPPEN.
+- Separate Webcore/Database/Module lifecycle and capability compatibility; adaptive package representation and destination mapping; additive-first schema semantics; verified expected result and recovery.
+- Existing `docs/28_package_lifecycle_migration_foundation_contract.md` and `docs/29_module_package_lifecycle_contract.md` remain authoritative pending explicit reconciliation.
+- Package Lifecycle Forward-Update Bootstrap Authority Reconciliation is a **separate existing corrective workstream**, NOT a fifth Thread-Level Saved Concept. Its contract remains unpromoted; Seven-Tab WU5 is still on hold.
+
+Planning action: KEEP ACTIVE / TECHNICAL-SEMANTIC CONTRACT IMPACT REVIEW REQUIRED / NO IMPLEMENTATION AUTHORITY
+
+### Installer Distribution, Automatic Root Deployment & Retained Sources
+Class: DEFERRED CONCEPT
+Status: MATERIALIZED / DEFERRED / NOT PROMOTED
+
+Sources:
+- `concepts/copot_installer_automatic_root_deployment_retained_sources_concept.md` [PRIMARY]
+
+Relations:
+- Future installer auto-deploys private APP_ROOT and public document root from a distributable installer package; retained sources and later repair support are subordinate parts of this installer architecture.
+- Related to MR.1 Installation Refinement, Webcore Deployment & Portability, Backup & Recovery and System Health; distinct from Seven-Tab WU5.
+
+Planning action: KEEP DEFERRED / NO ADOPTION OR IMPLEMENTATION AUTHORITY
+
+### Versioning Management
+Class: DEFERRED CONCEPT
+Status: MATERIALIZED / DEFERRED / NOT PROMOTED
+
+Sources:
+- `concepts/copot_versioning_management_concept.md` [PRIMARY]
+
+Relations:
+- Future consistent version identity, intended release scope, and stable Git release development baseline; possible initiation around v0.14.0 or v0.15.0 is not locked.
+- Accepted checkpoints remain distinct and continue to exist.
+
+Planning action: KEEP DEFERRED / NO RELEASE, TAG OR IMPLEMENTATION AUTHORITY
+
+### Checkpoint & Devlog — Project Governance Trial
+Class: GOVERNANCE CONCEPT / ACTIVE TRIAL
+Status: MATERIALIZED / ACTIVE TRIAL / NOT PROMOTED
+
+Sources:
+- `concepts/copot_checkpoint_devlog_project_governance_trial_concept.md` [PRIMARY]
+
+Relations:
+- Proposed checkpoint acceptance and devlog semantics target project governance, NOT merely a technical workflow.
+- NRP and approval authority remain with GPT/user; fresh-install validation of checkpoint candidate and exact gate location remain trial questions.
+- Does not modify `governance/copot_project_rule.md` or assert `docs/devlog.md` is currently running.
+
+Planning action: KEEP AS GOVERNANCE TRIAL / EXPLICIT EVALUATION AND USER PROMOTION REQUIRED
+
+
 
 ### Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation
 Class: DURABLE CONCEPT / IMPLEMENTATION-STATE INVENTORY
