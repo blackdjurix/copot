@@ -1,5 +1,5 @@
 # Adaptive Package Lifecycle & Independent Domain Compatibility
-Date version: 2026-10-10 17:07:43 WIB
+Date version: 2026-10-10 17:38:17 WIB
 
 Status: ACTIVE / CURRENT-SESSION SEMANTIC RECONCILIATION / CONCEPT / NOT PROMOTED
 Project: COPOT
@@ -43,6 +43,15 @@ Package metadata describes target identity, payload, compatibility, dependencies
 - Application uses accepted mutex/maintenance, domain-owned coordination, migration ledger, health, integrity and final installed-state commit gates where appropriate.
 - Different domain backups/recovery procedures must not be misrepresented as one atomic filesystem-plus-database rollback.
 - Potential shared protected lifecycle storage (retained source archives, snapshots, operation journals, recovery evidence) is a separate deferred installer/recovery architecture; physical location and retention are not locked.
+
+## Accepted bounded semantic decision — Offline inventory fingerprint (2026-10-10)
+User explicitly accepted the proposed Adaptive Package Contract & Identity semantics and the **Canonical Target Inventory + SHA-256 Fingerprint + Source-State Validation** approach, with an **OFFLINE-ONLY** verification boundary for this stage.
+
+- A full or partial package can declare a target release identity and provide canonical target inventory evidence covering both changed and retained package-owned files. Partial packages may advance patch, minor, or major release versions when their source compatibility and resulting state are proven.
+- Lifecycle validates the actual source, payload, ownership, destination mapping, target inventory and resulting-state fingerprint locally. After application, it verifies target state and existing health/migration/finalization gates before advancing installed release identity.
+- Local manifest/inventory checksum verification proves consistency with the supplied metadata, **not** official publisher authenticity. No remote lookups, GitHub Releases dependency, update service, network validation, publisher-signature or online provenance gate belongs to this stage.
+- Canonical inventory grammar, hash serialization and trusted target-inventory provenance beyond the offline operator-provided package model remain subject to technical specification and testing. Protected paths and domain ownership remain enforced.
+- Acceptance applies to these bounded **semantics**, not blanket promotion of the broader Adaptive Package Lifecycle Concept, composite/domain implementation, or permission to modify runtimes. Authoritative contract artifact reconciliation and implementation execution remain separate gates.
 
 ## State and dependencies
 ACTIVE conceptual review in this session, NOT CONTRACT-PROMOTED or IMPLEMENTATION-AUTHORIZED by this file. Relationship: existing Package Lifecycle Forward-Update Bootstrap Authority Reconciliation is a separate corrective workstream on HOLD / contract unpromoted, **not** another saved Concept. Current Seven-Tab WU5 remains blocked until its actual upstream authority is reconciled.
