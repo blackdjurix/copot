@@ -1,5 +1,5 @@
 # COPOT — Canonical Target Inventory & Fingerprint Contract Candidate
-Date version: 2026-10-10 18:22:55 WIB
+Date version: 2026-10-10 21:47:00 WIB
 
 Status: MATERIALIZED / CONTRACT CANDIDATE / NOT PROMOTED / NOT IMPLEMENTATION AUTHORITY
 Project: copot
@@ -192,3 +192,63 @@ Internal reason classes proposed: `source_inventory_missing`, `source_inventory_
 ### 15.6 Contract promotion review checklist and remaining implementation details
 Before promotion, obtain technical confirmation against actual v2 ordered grammar, exact v3 schema including fields inherited from v2, bounded parser number handling and unknown-key rules, non-ASCII path support capability, source-inventory artifact protection/atomicity, existing recovery coordinator interception points, and CLI/System Manager classification compatibility. Execute deterministic fixed-vector tests plus positive/negative cross-platform and full/partial lifecycle tests under authorized validation.
 This detailed specification is **materialized for technical review**, not itself technical proof or promotion. No source, runtime, database, package or release mutation is authorized by it.
+
+## 16. Final-readiness correction (CANDIDATE, not promotion)
+
+This section reconciles the read-only Codex final readiness result `CANDIDATE CORRECTIONS REQUIRED`. It resolves proposed contract behavior and establishes acceptance criteria; it does not claim existing implementation supports v3 or that code-level tests have passed. Existing v1/v2 behavior remains unchanged. When an older proposal is less precise, this section is the latest candidate specification.
+
+### 16.1 Manifest v3 ordered grammar and strict interpretation
+Exact proposed **top-level order**, with no undocumented fields:
+1. `package_type`
+2. `manifest_contract_version`
+3. `target_webcore_version`
+4. `release_identity`
+5. `source_tree_identity`
+6. `source_compatibility`
+7. `runtime_compatibility`
+8. `inventory`
+9. `migration_declaration`
+10. `target_requirements`
+11. `coverage`
+12. `target_inventory`
+13. `source_state_requirements`
+14. `removals`
+15. `renames`
+
+For the first ten fields, the v3 contract **inherits their currently accepted v2 type, nested field-order and validation semantics**, except that `target_requirements` is required in v3 and must use its already-established v2 structure. No inferred relaxation of v2 fields is permitted. The parser must validate this exact order, including nested objects, and disallow duplicate/unknown keys at every depth; associative `json_decode()` without duplicate-key detection is insufficient.
+
+Added fields: `coverage` is exact lowercase string enum `full|partial`; `target_inventory` is an object ordered `serialization_version` (integer exactly 1), `fingerprint` (lowercase hex string of 64 characters), `entries` (nonempty array). Each entry is an object with ordered `root`, `ownership`, `path`, `byte_size`, `sha256`. The first three are canonical strings constrained by the root/ownership/path policy; `byte_size` is a nonnegative JSON integer whose exact value fits both the u64 inventory grammar and supported PHP integer arithmetic; `sha256` is lowercase 64-character hex.
+
+`source_state_requirements` is an object with exactly one required key, `allowed_inventory_fingerprints`, whose value is an array of unique lowercase 64-character hex strings. `partial` requires at least one source fingerprint and matching independent source compatibility. `full` may use an empty allowlist, but the accepted `source_compatibility`, `source_tree_identity`, migration and relevant installed-state gates **still apply**; empty fingerprint allowlist never means unconditional applicability.
+
+`removals` is an array of ordered objects containing `root`, `path`, `ownership`, `expected_source_byte_size`, `expected_source_sha256`, `reason` (exact enum `obsolete|replaced|renamed`). `renames` is an array of ordered objects containing `source_root`, `source_path`, `target_root`, `target_path`. Every rename must resolve to exactly one verified declared source removal and one delivered target addition; duplicated or contradictory action identities are rejected. Empty arrays mean no destructive actions are requested. Nonempty arrays trigger explicit plan-bound operator confirmation and recovery prerequisites.
+
+Every object must reject additional fields, duplicate keys, invalid string encodings, noncanonical path values and mismatched types; reject JSON floats, negative or nonintegral sizes, numeric strings, values above runtime-safe integers, and parser overflow. JSON key and array order must not silently change the meaning of the fingerprint; field-order adherence is a manifest grammar compatibility rule, while canonical fingerprint ordering is defined independently by binary serialization v1. The v3 package identity must cryptographically bind complete manifest bytes or an unambiguous canonical manifest representation, including `target_inventory` and its fingerprint, plus the existing delivered-payload integrity checks. Exact inherited nested v2 field schema must be evidenced from the reader/fixtures before promotion rather than invented here.
+
+### 16.2 Source Inventory Artifact Store and commit protocol
+Proposed bounded ownership: `CommittedLifecycleStateStore` owns a durable, authoritative **reference** to the complete inventory artifact and its associated release, manifest-contract, ownership-policy, canonical serialization, logical-root mapping and fingerprint identities. A separate protected `SourceInventoryArtifactStore` stores the complete inventory bytes. `RecoveryArtifactStore` remains reserved for operation-specific recovery evidence, not the normal committed source inventory.
+
+Artifact locations must be inside an installation-controlled, non-public, non-module-owned protected state area resolved through accepted deployment/storage configuration. Mere placement outside `PUBLIC_ROOT` does not prove protection; enforce denied public routing, path ownership, symlink containment, permissions and read-back checks. Avoid guessing a hard-coded absolute directory in this contract.
+
+Publication protocol: (1) prepare complete inventory and validate canonical digest, (2) write a unique immutable artifact via temporary file within same supported filesystem, flush as supported, atomically publish its name, re-read/rehash, (3) persist committed state atomically with the exact artifact identity/reference and all linkage fields, (4) re-read committed state and artifact and verify linkage and live-tree compatibility, (5) only then report baseline committed. If a failure occurs before the committed reference changes, retain prior authority and clean unreferenced artifact only through accepted recovery/cleanup. If failure occurs after reference commit, fail closed until reconciliation confirms authority; do not silently fall back to an unrelated scan or claim success. Atomicity applies per durability boundary only; no unproven cross-file/DB atomic guarantee.
+
+Legacy baseline: accept independently verified existing authoritative local release inventory, or establish one after successfully completed v3 full-package target proof. Both require explicit ownership/drift classification. Partial package without a valid committed source inventory must fail closed. Unknown legacy files are never automatically deletable or assumed operator-owned.
+
+### 16.3 Immutable action identity, destructive confirmation and recovery
+The prepared plan must include a deterministically bound list of all actions (kind, source and target roots/paths, expected source bytes/hash, expected target bytes/hash, ordered dependencies), target/source fingerprints, recovery-domain identity, and applicable installed-state/migration identities. A path-only cursor does not substitute for action identity. Any plan change requires re-preflight and invalidates confirmation.
+
+Destructive consent is an operator-visible explicit confirmation for the exact immutable plan and removal set, recorded separately from ordinary package apply permission. It is mandatory before any deletion or rename-as-add/remove. Confirmed plans must also satisfy existing permission/authority checks.
+
+Before a removal, reconcile source ownership with committed source inventory; rehash actual source bytes; capture immutable recovery content and verify the recovery digest. Journal action identity and progression before mutating. Rename: stage and verify new content, preserve/verify source, add and verify new destination, remove verified source, rehash final target state. Refuse unrelated destination collisions.
+
+Interrupted or post-mutation mismatched operations remain non-finalized/INDETERMINATE and require recovery coordination against actual bytes and action/recovery identity; do not assert atomic filesystem+database rollback. Removed-file recovery artifacts remain at least through both successful finalization and recovery closure. Deletion of recovery artifacts thereafter requires separately accepted cleanup policy.
+
+### 16.4 Typed lifecycle outcomes and safe projections
+Pre-mutation checks must return non-mutating typed failure with machine-readable internal reason; map to existing accepted public statuses until a public API change is separately accepted:
+- `source_inventory_missing`, `source_state_drift`, `source_ownership_unresolved`, `target_inventory_invalid`, `target_fingerprint_mismatch`: `rejected` where supported.
+- `source_inventory_integrity_failure`, `recovery_evidence_unavailable`: `blocked/unavailable` depending on existing public status grammar.
+- `removal_confirmation_required`: pre-mutation rejection plus safe confirmation-needed reason.
+Post-mutation `target_fingerprint_mismatch` or `recovery_evidence_unavailable`: `INDETERMINATE / recovery-required`, **never** ordinary `invalid_package` or clean preflight rejection. Shared lifecycle service must own typed result; CLI and System Manager must preserve equivalent outcome rather than collapsing it into catch-all exceptions. Exact public status spelling and wire-level error codes remain governed by accepted public contracts; any new externally exposed code needs separate acceptance.
+
+### 16.5 Promotion readiness evidence and non-goals
+Promotion review must verify the complete inherited v2 nested field schema and parser-order invariants; exact v3 parser rules (including duplicate-key detection), canonical fixture vectors, source inventory artifact write/read-back/link identity, safe recovery integration points, and accepted public-status mappings. Source implementation and end-to-end runtime acceptance are **subsequent implementation evidence**, not circular prerequisites for writing/promoting a coherent contract. This candidate does not grant destructive-action execution or expand existing Package Lifecycle and Backup & Recovery authority. Contract promotion remains a separate explicit decision.
