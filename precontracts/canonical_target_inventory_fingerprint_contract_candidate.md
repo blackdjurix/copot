@@ -1,5 +1,5 @@
 # COPOT — Canonical Target Inventory & Fingerprint Contract Candidate
-Date version: 2026-10-10 17:55:41 WIB
+Date version: 2026-10-10 18:12:00 WIB
 
 Status: MATERIALIZED / CONTRACT CANDIDATE / NOT PROMOTED / NOT IMPLEMENTATION AUTHORITY
 Project: copot
@@ -81,3 +81,53 @@ Missing from target inventory never implies delete. Removal must be explicitly d
 Before promotion, reconcile (a) exact manifest v3-or-later grammar and canonical digest vectors, (b) authoritative legacy source-inventory establishment, and (c) explicit removal/rename and recovery behavior. Confirm persistence location/authority and operator error mapping as part of focused technical review. No implementation or domain expansion follows merely from materializing this candidate.
 
 Next: focused GPT/user semantic review with technical feasibility evidence; then explicit acceptance/promotion of the bounded contract. Seven-Tab WU5 and historical forward-update remain blocked unless their own accepted dependencies are satisfied.
+
+## 13. Focused technical reconciliation delta (PROPOSED / NOT ACCEPTED)
+Codex reported `CHANGES PROPOSED` following read-only feasibility review. The following exact technical details are proposals pending semantic acceptance and do not amend current v1/v2 authority.
+
+### 13.1 Manifest contract v3 candidate
+Preserve manifest v1 and v2 serialization, strict-reader behavior, and legacy delivered-payload inventory unchanged. Propose a separately versioned manifest contract (`3` provisional) with:
+- `coverage`: `full` or `partial`.
+- Existing `inventory`: delivered payload files only.
+- `target_inventory`: `serialization_version`, 64-character lowercase-hex `fingerprint`, and complete `entries`, with `root`, `ownership`, `path`, `byte_size`, `sha256`.
+- `source_state_requirements.allowed_inventory_fingerprints`: accepted source fingerprint constraints for partial delivery.
+- `removals` and `renames`: explicit arrays, empty until enabled under accepted mutation policy.
+
+Field order, schema types, canonical JSON grammar, and compatibility vectors must be finalized separately. Manifest grammar version and target-inventory encoding version are independent.
+
+### 13.2 Canonical byte-level fixtures (TECHNICAL EVIDENCE)
+SHA-256 input is the byte concatenation `ASCII("COPOT-TARGET-INVENTORY") || NUL || u8(1) || u8(1) || u32_be(entry_count) || entries`. Each entry is `u32_be(root_byte_length) || UTF8_NFC(root) || u32_be(ownership_byte_length) || UTF8_NFC(ownership) || u32_be(path_byte_length) || UTF8_NFC(path) || u64_be(byte_size) || raw_SHA256_32_bytes`. Sort by bytewise (root, ownership, path); reject duplicate (root, path) and ambiguous or noncanonical encodings.
+
+Vector 1: zero entries; serialized hex:
+`434f504f542d5441524745542d494e56454e544f525900010100000000`
+SHA-256: `77171ef0d605ac0f272046e606b204d74c330842b8113b7246f46fa2de46030b`.
+The encoding accepts the empty set, but Webcore package semantics reject an empty target inventory.
+
+Vector 2: one entry `APP_ROOT / package-owned / app/a.txt / 3 / SHA256("abc")`; serialized hex:
+`434f504f542d5441524745542d494e56454e544f525900010100000001000000084150505f524f4f540000000d7061636b6167652d6f776e6564000000096170702f612e7478740000000000000003ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad`
+SHA-256: `5efefeef395b4c3eb55989b08995504edb78b7c35114d3c0cd31c43084f00aa3`.
+These are proposed reproducible fixtures, not complete implementation acceptance.
+
+### 13.3 Legacy source inventory establishment (PROPOSED)
+- Existing local release inventory is usable only when its protected complete inventory/fingerprint, ownership, committed release and manifest identities, and actual re-hashed files all reconcile.
+- A new-format **full target package** may establish a committed target inventory baseline after successful complete resulting-state verification, without requiring a second source package. It cannot silently authorize deletion of unknown legacy files or claim cleanliness while unresolved source-owned drift may remain.
+- Without authoritative baseline or a provably valid full transition, partial application must fail closed. Unknown files are unresolved ownership/drift, not automatically operator-owned and not automatically deletable.
+- Proposed evidence for subsequent partial operations: committed complete inventory, fingerprint, release identity, manifest identity, logical-root mapping, current live-file rehash, matching package source requirements and explicit drift classification.
+
+### 13.4 Removal and rename (PROPOSED)
+- Explicit removal record: `root`, `path`, `ownership`, `expected_source_byte_size`, `expected_source_sha256`, and `reason` (`obsolete|replaced|renamed`).
+- Removal requires provenance in authoritative source inventory, verified actual hash/size, ownership, containment and protected-path checks, and durable pre-mutation recovery artifact.
+- Rename is an auditable relationship resolved as verified addition then verified removal, not automatic rename inference. Preserve original file before removal; verify new destination is unoccupied by unrelated content.
+- Journal action order and cursor, recovery artifacts, source and target fingerprints. Interrupted operations remain non-finalized and require identity-checked reconciliation for safe retry. Reuse existing mutex/maintenance/recovery rather than inventing a second engine.
+
+### 13.5 Open semantic choices before promotion
+1. Confirm final manifest contract version and complete ordered JSON schema.
+2. Confirm protected auxiliary inventory artifact linked to committed installed state, including persistence location and retention policy.
+3. Confirm initial logical root registry `APP_ROOT` and `PUBLIC_ROOT` and portable Unicode/path constraints.
+4. Choose unknown-legacy-file policy for full transitions versus partial fail-closed behavior.
+5. Choose whether removal requires explicit operator confirmation beyond normal apply authorization.
+6. Confirm rename as auditable add-plus-remove.
+7. Define retention and safe retry of removed-file recovery artifacts.
+8. Define internal and operator-visible classifications for missing source inventory, drift and failed target proof.
+
+Any unresolved choice remains **PROPOSED**; no implementation, promotion, or historical runtime mutation follows from this addition.
