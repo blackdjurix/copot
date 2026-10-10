@@ -1,5 +1,5 @@
 # COPOT — Canonical Target Inventory & Fingerprint Contract Candidate
-Date version: 2026-10-10 18:12:00 WIB
+Date version: 2026-10-10 18:14:12 WIB
 
 Status: MATERIALIZED / CONTRACT CANDIDATE / NOT PROMOTED / NOT IMPLEMENTATION AUTHORITY
 Project: copot
@@ -131,3 +131,17 @@ These are proposed reproducible fixtures, not complete implementation acceptance
 8. Define internal and operator-visible classifications for missing source inventory, drift and failed target proof.
 
 Any unresolved choice remains **PROPOSED**; no implementation, promotion, or historical runtime mutation follows from this addition.
+
+## 14. User-accepted semantic decision set (2026-10-10)
+The user explicitly accepted the eight bounded recommendations after the technical delta review. This acceptance resolves their **semantic direction**; it is not contract promotion, finished executable grammar, implementation approval for expanded scope, or test acceptance.
+
+1. New manifest contract **v3**; preserve v1/v2 without modifying their grammar. Final ordered field schema and encoding fixtures must undergo implementation-ready specification validation.
+2. Committed lifecycle state references a protected auxiliary complete source inventory; its content integrity and release binding are verified. Physical storage path and protection details are technical implementation decisions subject to review.
+3. Initial logical root registry: `APP_ROOT` and `PUBLIC_ROOT`, with verified deployment mapping and portable path constraints.
+4. Unknown legacy files are never automatically deleted or accepted as clean target state. Partial transition fails closed when source/result proof is impossible; a full transition can proceed only when it independently proves the complete resulting owned-file state without unauthorized cleanup.
+5. Destructive removal requires explicit operator confirmation in addition to ordinary transition authorization.
+6. Rename is an auditable declaration executed as verified add plus verified remove, not inferred from path differences.
+7. Removed-file recovery evidence is retained at least until both finalization and recovery closure. Exact later retention/cleanup policy remains a separate technical/operational specification item; never purge implicitly.
+8. Distinct internal diagnoses and safe operator-facing classifications for missing source inventory, source drift and target-proof mismatch; preserve existing public error contracts unless an accepted amendment changes them.
+
+**Remaining promotion readiness checks:** reconcile the complete ordered v3 JSON grammar, verified canonical binary test vectors and exact linkage to package identity; demonstrate workable source inventory storage and legacy establishment; specify removal confirmation, retention, and recovery operation journal integration; reconcile the accepted Package Lifecycle contract dependencies. Technical feasibility findings are not evidence that these tests have run. This artifact stays `CONTRACT CANDIDATE / NOT PROMOTED` pending separate promotion review.
