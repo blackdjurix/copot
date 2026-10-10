@@ -1,5 +1,5 @@
 # Adaptive Package Lifecycle & Independent Domain Compatibility
-Date version: 2026-10-10 15:13:36 WIB
+Date version: 2026-10-10 17:07:43 WIB
 
 Status: ACTIVE / CURRENT-SESSION SEMANTIC RECONCILIATION / CONCEPT / NOT PROMOTED
 Project: COPOT
@@ -16,6 +16,14 @@ Package metadata describes target identity, payload, compatibility, dependencies
 - Payload layout alternatives: flat files with destination mapping; folder structure mirroring logical destinations; explicit per-file source/destination mapping including deliberate rename. All normalize to one unambiguous canonical operation plan. Duplicate names in distinct destinations must not collide.
 - Destinations are logical authorized roots (e.g. APP_ROOT and PUBLIC_ROOT), resolved for the actual deployment; no escape or unauthorized overwrite. Include per-file integrity, ownership and expected replacement evidence.
 - Trust of publisher/distribution, archive and inventory validity, runtime compatibility, and permission to execute are separate gates. A self-consistent checksum does not independently establish trust.
+
+## Serialized operation and release-target semantics
+- A single installation may not execute two package lifecycle operations concurrently. Existing lifecycle mutex/operation controls remain the baseline; queued or sequential packages must each undergo a fresh compatibility and resulting-state evaluation against the state committed by the prior completed operation.
+- Package coverage (full or partial) does not constrain target release-version progression. A partial Webcore package may validly target a patch, minor, or major Webcore release when declared source compatibility, payload coverage, resulting-state evidence and target requirements prove the transition safe.
+- A package has its own immutable identity, independent of its declared target Webcore release identity/version. The lifecycle derives PATCH/UPDATE/UPGRADE/REPAIR classification; those operation labels need not be trusted package assertions.
+- After successful application and health/integrity checks, the installed Webcore release identity may advance directly to the declared target even when the package contains only changed files. Files intentionally retained from the source must be covered by verifiable target-state evidence, not assumed compatible by omission.
+- Serial execution prevents simultaneous write collision but does not by itself prove target integrity, eliminate interrupted-state recovery, or make a partial package universally applicable. These remain technical contract questions.
+- This is a semantic Concept clarification, not an accepted contract amendment or implementation authorization.
 
 ## Independent but coupled lifecycle domains
 - Webcore, Database and Modules retain distinct identities, lifecycle state and ownership. Updating one does not inherently require updating the others.
