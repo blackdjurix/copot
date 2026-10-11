@@ -1,5 +1,5 @@
 # COPOT — Canonical Target Inventory & Fingerprint — Normative Contract Review
-Date version: 2026-10-11 11:47:58 WIB
+Date version: 2026-10-11 12:10:24 WIB
 Status: REVIEW ONLY / NOT PROMOTED / NOT IMPLEMENTATION-AUTHORIZED
 Provenance: authoritative main e7ab022b56c40a66cf6118935b576e633646a055, user-accepted coordinated promotion model, precontracts/canonical_target_inventory_fingerprint_coordinated_normative_review_draft.md.
 This draft becomes normative only if promoted together with the linked docs/28 and docs/31 deltas.
@@ -47,3 +47,26 @@ Use existing public top-level lifecycle statuses and no new public wire fields a
 
 ## Coordinated dependency
 Explicit removal and rename are available only after corresponding prospective docs/28 and docs/31 amendments are co-promoted, and operator plan-bound confirmation is obtained. No implicit stale-file deletion, no competing recovery engine and no cross-domain atomic rollback promise. Promotion is separate from implementation authorization.
+
+
+## Final corrective appendix — precise v3 grammar, integrity, durability, confirmation
+This appendix is the current **review proposal** wherever earlier review notes leave details open; no promotion or implementation is authorized.
+
+### Inherited field grammar, fully typed
+The first ten top-level keys retain exact order already enumerated above. Their nested grammar is:
+- `source_compatibility`: ordered object [`minimum_source_version`: valid version string, `maximum_source_version`: null or valid version string strictly greater than minimum, with exclusive upper bound].
+- `runtime_compatibility`: ordered object [`minimum_php_version`: nonempty PHP version string accepted by existing version rules (two-component accepted and normalized to three), `minimum_database_versions`: nonempty JSON object mapping unique nonempty vendor strings to valid database version strings, `required_extensions`: nonempty JSON array of nonempty extension-name strings]. Runtime compatibility must preserve existing case-insensitive extension identity/normalization and accepted vendor constraints. **Database vendor object member order is not semantically meaningful for compatibility**, while original manifest bytes are bound by the proposed package identity below. No anonymous list is accepted as database version map.
+- `inventory`: nonempty ordered array of entries, each ordered object [`path`: canonical payload relative path string, `byte_size`: nonnegative safe JSON integer, `sha256`: lowercase 64-char hex, `ownership`: accepted package ownership string]. Manifest path `.copot/package.json` itself is excluded from delivered inventory (existing v2 rule).
+- `migration_declaration`: ordered object [`declares_core_migrations`: boolean, `declaration_identity`: null or nonempty identity string]. When false, identity MUST be null; when true, identity MUST be nonempty.
+- `target_requirements`: ordered array of objects [`kind`: string, `owner`: string, `identity`: string, `operator`: string, `value`: string or null, `mandatory`: boolean] with existing PackageTargetRequirement domain constraints and unique requirement identity.
+- `source_tree_identity` is null or valid opaque string. `release_identity` is valid opaque string. `target_webcore_version` obeys existing version validation; `package_type` exactly `copot-webcore`; `manifest_contract_version` integer 3.
+
+Strict object key order, JSON duplicate-key detection at every depth, bounded size and safe integer parsing are mandatory for v3. This expansion does not rewrite v1/v2 parser behavior.
+
+### Exact proposed manifest-byte identity and payload binding
+The v3 manifest is located exclusively at `.copot/package.json`. Define `M =` the **exact raw UTF-8 bytes** of that manifest file obtained from verified private staging; no reserialization or whitespace/key normalization takes place for manifest artifact identity. `manifest_sha256 = SHA256(M)`. It binds all declared v3 fields, including target inventory, source allowlist, removals and renames. The manifest is expressly **excluded** from the delivered `inventory` to avoid self-reference.
+Separately, the existing delivered-payload inventory must exactly cover delivered package-owned payload files (not the manifest) and each staged file's size/hash/ownership; preserve the existing manifest/payload identity verification behavior. Proposed combined **package evidence identity**: SHA256(ASCII(`COPOT-V3-PACKAGE\0`) || raw 32 bytes manifest_sha256 || raw 32 bytes of the existing delivered-payload integrity identity). Both components are fixed-width SHA-256 digests, preventing delimiter ambiguity. It is an artifact-consistency identity only; not publisher attestation. Exact compatibility with existing operation-record package identity remains a review gate.
+
+### Durability and confirmation contract
+An inventory artifact may become authoritative only after the required write, durable flush/synchronization, atomic publication and read-back integrity steps have **positively succeeded** on the configured filesystem. If required durability or atomic publication guarantees are unavailable, fail closed and do not advance committed state. No `flush where supported` fallback grants successful publication.
+For destructive actions the shared lifecycle service consumes one typed plan-bound confirmation proof including `operation_identity`, `plan_identity`, `removal_set_digest`, `actor_authorization_evidence`, `confirmation_version`. Validate an exact immutable prepared plan and authorized actor at consumption, bind and durably record proof; do not accept a standalone boolean. CLI and System Manager are adapters only. Public top-level result statuses remain existing accepted statuses, no new output fields automatically authorized.
