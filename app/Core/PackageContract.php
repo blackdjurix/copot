@@ -7,12 +7,18 @@ final class PackageContract
     public const WEBCORE_PACKAGE_TYPE = 'copot-webcore';
     public const LEGACY_MANIFEST_CONTRACT_VERSION = 1;
     public const CURRENT_MANIFEST_CONTRACT_VERSION = 2;
+    public const V3_MANIFEST_CONTRACT_VERSION = 3;
     public const FORWARD = 'forward';
     public const REPAIR = 'repair';
     public const UNSUPPORTED_DOWNGRADE = 'unsupported_downgrade';
 
     private array $inventory;
     private PackageTargetRequirements $targetRequirements;
+    private ?CanonicalTargetInventory $targetInventory = null;
+    private ?string $coverage = null;
+    private array $allowedInventoryFingerprints = [];
+    private array $removals = [];
+    private array $renames = [];
 
     public function __construct(
         private string $packageType,
@@ -24,13 +30,18 @@ final class PackageContract
         private PackageRuntimeCompatibility $runtimeCompatibility,
         array $inventory,
         private PackageMigrationDeclaration $migrationDeclaration,
-        ?PackageTargetRequirements $targetRequirements = null
+        ?PackageTargetRequirements $targetRequirements = null,
+        ?CanonicalTargetInventory $targetInventory = null,
+        ?string $coverage = null,
+        array $allowedInventoryFingerprints = [],
+        array $removals = [],
+        array $renames = []
     ) {
         if ($packageType !== self::WEBCORE_PACKAGE_TYPE) {
             throw new \InvalidArgumentException('Package type is unsupported.');
         }
 
-        if (!in_array($manifestContractVersion, [self::LEGACY_MANIFEST_CONTRACT_VERSION, self::CURRENT_MANIFEST_CONTRACT_VERSION], true)) {
+        if (!in_array($manifestContractVersion, [self::LEGACY_MANIFEST_CONTRACT_VERSION, self::CURRENT_MANIFEST_CONTRACT_VERSION, self::V3_MANIFEST_CONTRACT_VERSION], true)) {
             throw new \InvalidArgumentException('Manifest contract version is unsupported.');
         }
 
@@ -51,6 +62,13 @@ final class PackageContract
 
         $this->inventory = [];
         $this->targetRequirements = $targetRequirements ?? new PackageTargetRequirements();
+        if ($manifestContractVersion === self::V3_MANIFEST_CONTRACT_VERSION) {
+            if (!$targetInventory instanceof CanonicalTargetInventory || !in_array($coverage, ['full', 'partial'], true)) { throw new \InvalidArgumentException('V3 target inventory declaration is invalid.'); }
+            foreach ($allowedInventoryFingerprints as $fingerprint) { if (!is_string($fingerprint) || preg_match('/^[a-f0-9]{64}$/D', $fingerprint) !== 1) { throw new \InvalidArgumentException('V3 source inventory allowlist is invalid.'); } }
+            if (count($allowedInventoryFingerprints) !== count(array_unique($allowedInventoryFingerprints))) { throw new \InvalidArgumentException('V3 source inventory allowlist contains duplicates.'); }
+            if ($coverage === 'partial' && $allowedInventoryFingerprints === []) { throw new \InvalidArgumentException('Partial V3 coverage requires an inventory allowlist.'); }
+            $this->targetInventory = $targetInventory; $this->coverage = $coverage; $this->allowedInventoryFingerprints = array_values(array_unique($allowedInventoryFingerprints)); $this->removals = $removals; $this->renames = $renames;
+        }
 
         foreach ($inventory as $entry) {
             if (!$entry instanceof PackageInventoryEntry) {
@@ -121,6 +139,12 @@ final class PackageContract
     {
         return $this->targetRequirements;
     }
+
+    public function targetInventory(): ?CanonicalTargetInventory { return $this->targetInventory; }
+    public function coverage(): ?string { return $this->coverage; }
+    public function allowedInventoryFingerprints(): array { return $this->allowedInventoryFingerprints; }
+    public function removals(): array { return $this->removals; }
+    public function renames(): array { return $this->renames; }
 
     public function integrityIdentity(): string
     {
