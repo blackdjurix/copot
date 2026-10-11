@@ -385,7 +385,7 @@ Planning action: NONE / PROVENANCE
 
 ### Adaptive Package Lifecycle & Independent Domain Compatibility
 Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
-Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU6 COMPLETE AND ACCEPTED / BOUNDED IMPLEMENTATION CLOSED
+Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU5 PRIMITIVES INTEGRATED / WU6 PUBLIC V3 OPERATIONAL ACCEPTANCE REOPENED — BLOCKED
 
 Sources:
 - `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY BROADER CONCEPT; NOT PROMOTED]
@@ -446,6 +446,13 @@ WU6 mandatory E2E resolution and bounded governance acceptance (2026-10-12):
 - Retained limitations: ZipArchive-disabled branch executor-dependent; Windows symlink fixture unavailable; official-package WU7 NOT RUN without an official artifact; Backup & Recovery WU7 previously 18 PASS, later batch rerun stalled/stopped. These are explicitly NOT counted as new PASS or comprehensive release/deployment acceptance.
 - GPT/user governance-side bounded acceptance: WU6 COMPLETE / ACCEPTED / CLOSED for accepted six-WU v3 scope, based on technical E2E result and prior integrated WU1–WU5 evidence. Cross-lifecycle acceptance does not authorize release, official package generation, deployment, or live mutations. Broader E2E/environment limitations retained separately.
 
+Post-closure read-only audit correction (2026-10-12; CURRENT STATE OVERRIDES EARLIER CLOSURE PROJECTION):
+- Codex audit at `main @ 132c8e79cf85dceae459dd39262ca69a75e6c618` identified V3 standalone parser/inventory/planner/confirmation/executor primitives but no verified dispatch from public `PackageLifecycleService::apply()` and `PackageLifecycleFactory` into that V3 path. Public CLI/System Manager V3 destructive apply and action-level Backup & Recovery binding are UNVERIFIED / IMPLEMENTATION GAP.
+- Previously accepted `package_lifecycle_wu6_retry_e2e.php` PASS (24 assertions) executes `PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION` (V2), so it establishes legacy composed retry/recovery behavior, NOT manifest-V3 public destructive E2E. Historical test results and governance acceptance records remain factually retained, but the current claim of completed public V3 operational acceptance is WITHDRAWN pending evidence.
+- The coordinated docs/28 and docs/31 V3 addenda require existing Package Lifecycle coordinated apply and action-bound recovery. Public V3 routing therefore belongs to the already accepted bounded Webcore V3 contract scope, not a newly adopted database/module/composite Concept or a seventh work unit.
+- Next gate: bounded technical implementation-gap reconciliation and safe public V3 routing through existing lifecycle/recovery authority; disposable public V3 removal/rename E2E and verified action/recovery linkage MUST PASS before WU6 operational acceptance may be restored. WU1–WU5 integrated primitives and their focused validation remain accepted as such; historical closure not erased.
+- No release, deployment, official package publication, or live-runtime mutation is authorized by this correction.
+
 Accepted and locked sequential Work Units (implementation sequencing; each limited to its accepted contract scope):
 1. WU1 — V3 Manifest & Canonical Identity: bounded duplicate-key-aware parser, exact v3 grammar, package evidence identity, target/removal digest and fixture regression; preserve v1/v2.
 2. WU2 — Committed Complete Source Inventory: protected artifact store, committed-state references, root/owner policies, full/partial proof and durability/crash handling; HARD WU1.
@@ -460,7 +467,7 @@ Topology acceptance gates:
 - Preserve Package declares WHAT / Lifecycle determines WHAT CAN/MUST HAPPEN conceptual separation; independently scoped Database/Module/composite lifecycle and forward-update bootstrap remain separate workstreams.
 - Topology acceptance is COMPLETE. In-contract implementation follows current Rule Section 7; separately gated actions retain their own authorization boundaries. Existing local dirty/stale checkout must remain untouched; new-session executor must verify a clean isolated worktree or authorized clean remote baseline.
 
-Planning action: WU1–WU6 ACCEPTED AND CLOSED FOR BOUNDED V3 SCOPE / NO RELEASE OR DEPLOYMENT AUTHORIZATION
+Planning action: PUBLIC V3 APPLY ROUTING GAP REQUIRES BOUNDED CORRECTION / WU6 OPERATIONAL ACCEPTANCE BLOCKED / NO RELEASE OR DEPLOYMENT AUTHORIZATION
 
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
