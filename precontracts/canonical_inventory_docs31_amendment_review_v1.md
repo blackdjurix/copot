@@ -1,5 +1,5 @@
 # COPOT — docs/31 Bounded Amendment Review: Removed-File Recovery
-Date version: 2026-10-11 11:47:58 WIB
+Date version: 2026-10-11 12:10:24 WIB
 Status: PROPOSED DELTA / NOT APPLIED / NOT PROMOTED
 Target: docs/31_backup_recovery_foundation_contract.md (verified base sha 85420c0393d8a2ae43b1bc196ebc0e4785849713)
 Dependency: fingerprint normative contract plus prospective docs/28 amendment co-promoted.
@@ -17,3 +17,13 @@ If recovery artifact is missing/invalid after mutation, surface indeterminate/re
 
 ## Review requirements
 Cross-check existing docs/31 recovery-domain identity and net-zero retirement rules, especially operator consent and cleanup authority; do not introduce an independent recovery engine, do not change completed historical work-unit outcomes, and do not change authoritative docs until coordinated user promotion authorization.
+
+## Final corrective proposal: interrupted-removal recovery
+
+Recovery artifact identities and published manifests are immutable once durably persisted. Cursor, action intent, and completion records are mutable only through the authorized durable lifecycle/recovery journal with verified write and readback; the cursor by itself cannot prove an action completed.
+
+If removal succeeds but final target fingerprint verification fails, the operation remains non-finalized and INDETERMINATE with recovery-required disposition. Reconciliation must inspect actual source/target file state, immutable plan and action identity, journal progression, and verified recovery artifacts before any restore or retry. Deletion must not be blindly replayed.
+
+RESTORED may only be reported following actual canonical restoration and independent verification of all applicable recovery domains. Recovery artifact availability alone never implies restoration. cleanup_pending is reserved for a verified completed operation with outstanding permitted cleanup.
+
+Recovery closure is a durable authoritative record that the exact operation's recovery obligations are discharged. Removed-file artifacts are retained until BOTH lifecycle finalization and recovery closure; further cleanup follows separately accepted retention authority. Missing publication durability or evidence fails closed. No second recovery engine or cross-domain atomicity is implied.
