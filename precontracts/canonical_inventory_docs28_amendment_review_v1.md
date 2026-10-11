@@ -1,5 +1,5 @@
 # COPOT — docs/28 Bounded Amendment Review: Manifest v3 Removal/Rename
-Date version: 2026-10-11 11:47:58 WIB
+Date version: 2026-10-11 12:10:24 WIB
 Status: PROPOSED DELTA / NOT APPLIED / NOT PROMOTED
 Target: docs/28_package_lifecycle_migration_foundation_contract.md (verified base sha 7363a871c50d7413d2e6159ddb572544aa026ed4)
 Dependency: fingerprint normative contract and docs/31 recovery delta must be accepted together.
@@ -20,3 +20,13 @@ The historical WU5 no-deletion statements remain unaltered as statements about t
 
 ## Review requirements
 Compare exact paragraphs containing 'no stale-file deletion' or 'stale package-owned deletion' and insert explicit forward-reference qualification where they could otherwise read as permanent normative exclusions. Report exact anchor locations and accepted operator permission vocabulary before promotion. No existing accepted doc is modified by this draft.
+
+## Final corrective proposal: prospective exclusion qualification
+
+At each historical no-deletion paragraph of docs/28 (the WU5 narrative near line 250, deliverables near 561, exclusions near 571, and WU6 exclusions near 605), retain the historical claim and add this forward-looking qualification:
+
+"Historical WU5/WU6 excluded stale package-owned deletion. That remains true for those work units and manifest v1/v2. A future manifest-v3 capability, only after coordinated acceptance of the fingerprint and Backup & Recovery amendments and separate implementation authorization, may perform explicitly declared, source-verified, operator-confirmed package-owned removals or auditable rename-as-add-plus-remove. No inferred stale cleanup or Package Lifecycle physical-restoration authority is granted."
+
+## Shared operator input proposal
+
+Define one typed plan-bound operator proof containing operation_identity, immutable plan_identity, removal_set_digest, actor_authorization_evidence, and confirmation_version. The shared lifecycle service verifies these against the immutable planned actions, source state, and operator permissions. Any change invalidates confirmation. CLI and System Manager submit the same semantic proof; an unbound boolean does not suffice. This proposes an operator-input contract extension, not a new public result status. No changes to authoritative docs/28 have been made.
