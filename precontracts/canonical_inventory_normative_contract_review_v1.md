@@ -1,5 +1,5 @@
 # COPOT — Canonical Target Inventory & Fingerprint — Normative Contract Review
-Date version: 2026-10-11 12:10:24 WIB
+Date version: 2026-10-11 12:28:26 WIB
 Status: REVIEW ONLY / NOT PROMOTED / NOT IMPLEMENTATION-AUTHORIZED
 Provenance: authoritative main e7ab022b56c40a66cf6118935b576e633646a055, user-accepted coordinated promotion model, precontracts/canonical_target_inventory_fingerprint_coordinated_normative_review_draft.md.
 This draft becomes normative only if promoted together with the linked docs/28 and docs/31 deltas.
@@ -70,3 +70,15 @@ Separately, the existing delivered-payload inventory must exactly cover delivere
 ### Durability and confirmation contract
 An inventory artifact may become authoritative only after the required write, durable flush/synchronization, atomic publication and read-back integrity steps have **positively succeeded** on the configured filesystem. If required durability or atomic publication guarantees are unavailable, fail closed and do not advance committed state. No `flush where supported` fallback grants successful publication.
 For destructive actions the shared lifecycle service consumes one typed plan-bound confirmation proof including `operation_identity`, `plan_identity`, `removal_set_digest`, `actor_authorization_evidence`, `confirmation_version`. Validate an exact immutable prepared plan and authorized actor at consumption, bind and durably record proof; do not accept a standalone boolean. CLI and System Manager are adapters only. Public top-level result statuses remain existing accepted statuses, no new output fields automatically authorized.
+
+## Final Reconciliation Patchset — exact target requirements, identity schemes, orphan handling
+This section supersedes conflicting/less-precise earlier review wording; all changes remain NON-AUTHORITATIVE until coordinated promotion.
+
+### Target requirements, exact v3 rules
+Each `target_requirements` array element has ordered keys `kind`, `owner`, `identity`, `operator`, `value`, `mandatory`. The kind enum is `database`|`schema`|`capability`; the operator enum is `present`|`minimum_version`|`exact_identity`. The `owner` and `identity` fields are nonempty trimmed token strings without control characters. `mandatory` is boolean. Uniqueness is by **(kind, owner, identity)** tuple, not identity alone, consistent with PackageTargetRequirement::key(). `present` requires null value. `minimum_version` and `exact_identity` require nonempty trimmed string values, and minimum_version requires accepted PackageVersion validation. Database kind requires minimum_version; schema kind prohibits minimum_version. The array is an actual contiguous JSON list; v3 strict parsing validates list shape independently of existing value-object readers. `minimum_database_versions` is a nonempty JSON object with nonempty string vendor keys and accepted valid version-string values; no unsupported vendor enum is imposed. `required_extensions` is a nonempty JSON list of nonempty strings with existing normalized case-insensitive extension semantics.
+
+### Versioned persisted package evidence identity
+For manifest v3 use `v3-sha256:<lowercase64hex>` as canonical **scheme-prefixed persisted package evidence identity**. Digest is the already proposed domain-separated combined manifest-byte SHA256 and delivered payload integrity SHA256. The scheme label is mandatory in operation records, immutable apply plans, recovery manifests, and terminal evidence. Parsed scheme and digest must match everywhere; a bare 64-hex v3 identity is invalid. Existing v1/v2 opaque package identity remains unchanged for backward compatibility; readers must interpret legacy identity only in the context of its verified manifest contract version and must never silently reinterpret an unversioned digest as v3. Distinguish package evidence identity from target inventory fingerprint, release identity, plan identity, and operation identity.
+
+### Crash orphan clarification
+A complete SourceInventoryArtifactStore file published before an authoritative committed-state reference has been durably written and independently verified is an orphaned **non-authoritative** artifact. It cannot establish source/release authority or satisfy partial-package preconditions. No automated deletion or scavenging follows merely from orphan detection; cleanup requires separately accepted retention/cleanup policy and proof of non-reference.
