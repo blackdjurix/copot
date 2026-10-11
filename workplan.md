@@ -385,7 +385,7 @@ Planning action: NONE / PROVENANCE
 
 ### Adaptive Package Lifecycle & Independent Domain Compatibility
 Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
-Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU5 ACCEPTED / WU6 BLOCKED — MANDATORY DISPOSABLE MARIADB RETRY E2E
+Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU6 COMPLETE AND ACCEPTED / BOUNDED IMPLEMENTATION CLOSED
 
 Sources:
 - `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY BROADER CONCEPT; NOT PROMOTED]
@@ -440,6 +440,12 @@ WU6 validation checkpoint — BLOCKED / NOT ACCEPTED (2026-10-11):
 - `package_lifecycle_wu7.php` NOT RUN because official package artifact absent; do not create/publish artifact without separate authorization. ZIP-disabled and Windows symlink capability branch remain environment-limited.
 - WU6 acceptance / closure BLOCKED. WU1–WU5 accepted status preserved. Next action: non-destructive disposable MariaDB environment diagnosis, retry E2E execution, evidence classification and WU6 reassessment.
 
+WU6 mandatory E2E resolution and bounded governance acceptance (2026-10-12):
+- Codex confirmed `package_lifecycle_wu6_retry_e2e.php` PASS (24 assertions), exercising composed retry, file mutation, migrations, recovery capture/reconciliation, committed-state publication, cleanup and terminal state on an independent MariaDB 10.4.32 instance with temporary datadir/logs, port 13308, and non-empty disposable credential. Root cause of prior blockade: normal XAMPP datadir was inadvertently targeted, then empty disposable credential was converted to null by `Env::get()` and quiescence became unavailable; no normal XAMPP database modification or repository code change was required.
+- Affected reported regression PASS: WU6 health 16, retry finalization 14, awaiting-WU6 12, pre-mutation retry 8, WU5 34, V3 WU5 5, recovery topology 33/9, Backup & Recovery WU6 20 assertions. Identity evidence was supplied for migration, recovery and recovery manifest.
+- Retained limitations: ZipArchive-disabled branch executor-dependent; Windows symlink fixture unavailable; official-package WU7 NOT RUN without an official artifact; Backup & Recovery WU7 previously 18 PASS, later batch rerun stalled/stopped. These are explicitly NOT counted as new PASS or comprehensive release/deployment acceptance.
+- GPT/user governance-side bounded acceptance: WU6 COMPLETE / ACCEPTED / CLOSED for accepted six-WU v3 scope, based on technical E2E result and prior integrated WU1–WU5 evidence. Cross-lifecycle acceptance does not authorize release, official package generation, deployment, or live mutations. Broader E2E/environment limitations retained separately.
+
 Accepted and locked sequential Work Units (implementation sequencing; each limited to its accepted contract scope):
 1. WU1 — V3 Manifest & Canonical Identity: bounded duplicate-key-aware parser, exact v3 grammar, package evidence identity, target/removal digest and fixture regression; preserve v1/v2.
 2. WU2 — Committed Complete Source Inventory: protected artifact store, committed-state references, root/owner policies, full/partial proof and durability/crash handling; HARD WU1.
@@ -454,7 +460,7 @@ Topology acceptance gates:
 - Preserve Package declares WHAT / Lifecycle determines WHAT CAN/MUST HAPPEN conceptual separation; independently scoped Database/Module/composite lifecycle and forward-update bootstrap remain separate workstreams.
 - Topology acceptance is COMPLETE. In-contract implementation follows current Rule Section 7; separately gated actions retain their own authorization boundaries. Existing local dirty/stale checkout must remain untouched; new-session executor must verify a clean isolated worktree or authorized clean remote baseline.
 
-Planning action: WU1–WU5 ACCEPTED AND CLOSED / WU6 BLOCKED ON MANDATORY DISPOSABLE MARIADB RETRY E2E / NO WU6 ACCEPTANCE
+Planning action: WU1–WU6 ACCEPTED AND CLOSED FOR BOUNDED V3 SCOPE / NO RELEASE OR DEPLOYMENT AUTHORIZATION
 
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
