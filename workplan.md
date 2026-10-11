@@ -385,7 +385,7 @@ Planning action: NONE / PROVENANCE
 
 ### Adaptive Package Lifecycle & Independent Domain Compatibility
 Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
-Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU5 COMPLETE AND ACCEPTED / WU6 NEXT
+Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU5 ACCEPTED / WU6 BLOCKED — MANDATORY DISPOSABLE MARIADB RETRY E2E
 
 Sources:
 - `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY BROADER CONCEPT; NOT PROMOTED]
@@ -433,6 +433,13 @@ WU5 completion and bounded governance acceptance (2026-10-11):
 - Codex reported existing WU5 34, v3 WU5 5, manifest WU1 12, contract WU1 73, Backup & Recovery WU1 25 assertions PASS, and WU4/WU3/WU2 focused suites PASS. Tests independently not rerun by governance side. Mutating scenarios exercised in disposable fixtures only; no live installation changed.
 - WU5 COMPLETE / ACCEPTED / CLOSED for bounded implementation and focused fixtures; this does not assert cross-lifecycle recovery/crash/E2E acceptance. WU6 dependency on WU1–WU5 satisfied. WU6 remains the final cross-lifecycle acceptance gate and must assess previous platform/installer fixture limitations and negative/recovery cases.
 
+WU6 validation checkpoint — BLOCKED / NOT ACCEPTED (2026-10-11):
+- WU6 code correction integrated at `3a275234384966e9ca0cd375a74c96fb5f8d5457`, changing only `app/Core/WebcoreApplyCoordinator.php` to remove a redundant V3 coordinator mutex adapter and restore the locked two-site mutex topology.
+- Codex reported extensive standalone/focused PASS across manifest v3, source-relative planner, confirmation, explicit apply, lifecycle retry/finalization, backup/recovery and negative cases. These are not a substitute for mandatory composed lifecycle/recovery E2E.
+- Mandatory `package_lifecycle_wu6_retry_e2e.php` NOT RUN TO COMPLETION: disposable MariaDB setup failed at `C:\xampp\mysql\data\aria_log.00000001` with Errcode 22 Invalid argument. Root cause has not been established; do not assume application regression or reinstall/alter MariaDB data. Resolve in isolated/disposable environment and rerun.
+- `package_lifecycle_wu7.php` NOT RUN because official package artifact absent; do not create/publish artifact without separate authorization. ZIP-disabled and Windows symlink capability branch remain environment-limited.
+- WU6 acceptance / closure BLOCKED. WU1–WU5 accepted status preserved. Next action: non-destructive disposable MariaDB environment diagnosis, retry E2E execution, evidence classification and WU6 reassessment.
+
 Accepted and locked sequential Work Units (implementation sequencing; each limited to its accepted contract scope):
 1. WU1 — V3 Manifest & Canonical Identity: bounded duplicate-key-aware parser, exact v3 grammar, package evidence identity, target/removal digest and fixture regression; preserve v1/v2.
 2. WU2 — Committed Complete Source Inventory: protected artifact store, committed-state references, root/owner policies, full/partial proof and durability/crash handling; HARD WU1.
@@ -447,7 +454,7 @@ Topology acceptance gates:
 - Preserve Package declares WHAT / Lifecycle determines WHAT CAN/MUST HAPPEN conceptual separation; independently scoped Database/Module/composite lifecycle and forward-update bootstrap remain separate workstreams.
 - Topology acceptance is COMPLETE. In-contract implementation follows current Rule Section 7; separately gated actions retain their own authorization boundaries. Existing local dirty/stale checkout must remain untouched; new-session executor must verify a clean isolated worktree or authorized clean remote baseline.
 
-Planning action: WU1–WU5 ACCEPTED AND CLOSED / WU6 DEPENDENCIES SATISFIED / PREPARE BOUNDED WU6 CROSS-LIFECYCLE ACCEPTANCE
+Planning action: WU1–WU5 ACCEPTED AND CLOSED / WU6 BLOCKED ON MANDATORY DISPOSABLE MARIADB RETRY E2E / NO WU6 ACCEPTANCE
 
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
