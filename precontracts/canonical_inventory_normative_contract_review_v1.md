@@ -1,5 +1,5 @@
 # COPOT — Canonical Target Inventory & Fingerprint — Normative Contract Review
-Date version: 2026-10-11 12:28:26 WIB
+Date version: 2026-10-11 13:29:18 WIB
 Status: REVIEW ONLY / NOT PROMOTED / NOT IMPLEMENTATION-AUTHORIZED
 Provenance: authoritative main e7ab022b56c40a66cf6118935b576e633646a055, user-accepted coordinated promotion model, precontracts/canonical_target_inventory_fingerprint_coordinated_normative_review_draft.md.
 This draft becomes normative only if promoted together with the linked docs/28 and docs/31 deltas.
@@ -82,3 +82,25 @@ For manifest v3 use `v3-sha256:<lowercase64hex>` as canonical **scheme-prefixed 
 
 ### Crash orphan clarification
 A complete SourceInventoryArtifactStore file published before an authoritative committed-state reference has been durably written and independently verified is an orphaned **non-authoritative** artifact. It cannot establish source/release authority or satisfy partial-package preconditions. No automated deletion or scavenging follows merely from orphan detection; cleanup requires separately accepted retention/cleanup policy and proof of non-reference.
+
+## Final bounded correction — canonical removal-set digest v1
+
+This section supplies the exact version-1 encoding required for the manifest-v3 explicit removal plan. It supersedes less-specific references to a "deterministic canonical representation." It is review-only, not promoted.
+
+`removal_set_digest = SHA256(ASCII("COPOT-REMOVAL-SET") || 0x00 || u8(1) || length_prefixed_plan_identity || u32_be(action_count) || encoded_actions)`.
+
+`length_prefixed_plan_identity = u32_be(UTF8_byte_length) || UTF8_NFC_bytes`, using the complete canonical scheme-prefixed immutable `plan_identity`. The plan identity is itself computed **without** this removal-set digest, preventing recursion.
+
+Encode removal actions in exact immutable plan ordinal order, not lexicographic path order. Ordinals begin at zero and must be contiguous. An action is:
+
+`u32_be(ordinal) || u8(action_kind) || u8(reason) || framed(source_root) || framed(source_path) || framed(target_root) || framed(target_path) || u64_be(expected_source_byte_size) || raw_32_byte_expected_source_SHA256`.
+
+Each `framed(s)` is `u32_be(UTF8_NFC_byte_length(s)) || UTF8_NFC_bytes(s)`. Size is unsigned 64-bit big-endian with safe-runtime and JSON integer bounds checked; digest is raw decoded SHA256, not 64 ASCII hex characters. Reject overflow, noncanonical Unicode, bad lengths, malformed hashes, invalid/unknown enum values, duplicates of logical removed file or action ordinal, and invalid logical root/path containment.
+
+Version-1 numeric enum values are fixed: `action_kind=0x01` explicit removal; `action_kind=0x02` source-removal component of a declared rename. Reasons: `0x01=obsolete`, `0x02=replaced`, `0x03=renamed`. Kind 0x02 requires reason 0x03 and nonempty target root/path representing the explicitly declared rename destination; kind 0x01 requires empty target root and target path and a reason of obsolete or replaced. Rename destination addition remains separately declared, staged, collision-checked, and verified. The action inventory is an exact 1-to-1 projection of every declared removal and rename source; no undeclared action is allowed.
+
+Deterministic fixture: `plan_identity=plan-v1:example`, one action ordinal 0, action_kind 0x01, reason 0x01, source APP_ROOT/app/old.txt, empty target root/path, source size 3, source SHA256 of UTF8 bytes `abc`:
+
+`434f504f542d52454d4f56414c2d53455400010000000f706c616e2d76313a6578616d706c6500000001000000000101000000084150505f524f4f540000000b6170702f6f6c642e74787400000000000000000000000000000003ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad`
+
+Serialized byte length: **123**; SHA256 `619db7c1495f73674fb81f4603b4e486efc2042ded6a26dfe6f3b1272003272d`. Fixture independently recomputed from stated serialized bytes. For zero actions, the count is zero and the digest remains deterministically encoded, but no destructive operator confirmation is required. The digest must be compared to the actual immutable action plan and manifest declaration before mutation.
