@@ -448,21 +448,30 @@ Relations:
 
 Planning action: KEEP DEFERRED / NO RELEASE, TAG OR IMPLEMENTATION AUTHORITY
 
-### Checkpoint & Devlog — Project Governance Trial
-Class: GOVERNANCE CONCEPT / ACTIVE TRIAL
-Status: MATERIALIZED / ACTIVE TRIAL / NOT PROMOTED
+### Project Logging — Project State Checkpoint & Activity Journal Rollover
+Class: PROJECT GOVERNANCE CAPABILITY / ACTIVE CONCEPT TRIAL
+Status: UNIFIED PLANNING MODEL / TWO INDEPENDENT OBJECT LIFECYCLES / NOT GOVERNANCE-PROMOTED / ROLLOVER UNTESTED
 
 Sources:
-- `concepts/copot_checkpoint_devlog_project_governance_trial_concept.md` [PRIMARY]
+- `concepts/copot_checkpoint_devlog_project_governance_trial_concept.md` [EXISTING PRIMARY SOURCE; AWAITING CONCEPT RECONCILIATION]
 
-Relations:
-- Proposed checkpoint acceptance and devlog semantics target project governance, NOT merely a technical workflow.
-- NRP and approval authority remain with GPT/user; fresh-install validation of checkpoint candidate and exact gate location remain trial questions.
-- Does not modify `governance/copot_project_rule.md` or assert `docs/devlog.md` is currently running.
+Conceptual scope and boundaries:
+- Project Logging is proposed as a governance-regulated project capability, a peer of Documentation in responsibility rather than a replacement for authoritative contracts or repository history.
+- Object 1 — Project State: a Checkpoint is an annotated Git tag targeting an exact accepted, sufficiently validated stable project baseline commit usable for subsequent workflow. Optional validated installation/distribution package is a separate artifact, not an automatic tag output.
+- Object 2 — Activity Journal: `docs/devlog.md` is a running event record and chronological anchor. A Rollover is a separately named annotated Git tag targeting the exact committed complete journal state before cleanup; fresh-cycle journal content is committed normally, with previous tag reference. Git history preserves the earlier journal without needing an additional exported file.
+- Both object types share the Git commit timeline but have distinct save-point names, validity checks, retention semantics, and authorization gates. Neither is a release tag by default.
+- NRP, Handoff, acceptance, and closure are separate governance/project-flow domains. Their evidence or state may inform save-point validity, but none automatically triggers, defines, authorizes, or proves either Checkpoint or Rollover.
+- Checkpoint is not automatically made at NRP, and Rollover is not necessarily coupled to Handoff. Candidate rollover timing may include NRP, post-Handoff, or the first next-cycle meaningful record; policy and exact trigger remain subject to trial/acceptance rather than locked here.
+- A Git annotated tag references a commit snapshot, not a file and not an automatic package ZIP. Tag creation, cleanup, artifact packaging, publication, and application release are distinct separately authorized actions.
+- Historical tags must be stable and verifiable; no automatic tag replacement, history rewrite, or discard of uncommitted/unverified journal content.
+- Current journal writes via GitHub connector are committed on `main`, despite the older Concept's trial-era description. This does not itself grant standing tag/cleanup authorization or promote the Concept into the Rule.
 
-Planning action: KEEP AS GOVERNANCE TRIAL / EXPLICIT EVALUATION AND USER PROMOTION REQUIRED
+Open decisions:
+- Exact checkpoint acceptance/validation gates for different project baseline types.
+- Rollover trigger policy, tag namespace/identity, historical retention verification, and operational trial.
+- Future reconciliation of the primary Concept and any governance promotion remain separate decisions.
 
-
+Planning action: REGISTER UNIFIED PROJECT LOGGING SCOPE / RETAIN INDEPENDENT OBJECT LIFECYCLES / RECONCILE CONCEPT WHEN AUTHORIZED / NO RULE AMENDMENT / NO TAG OR CLEANUP AUTHORITY
 
 ### Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation
 Class: DURABLE CONCEPT / IMPLEMENTATION-STATE INVENTORY
