@@ -384,19 +384,42 @@ Planning action: NONE / PROVENANCE
 ## 5. Active / Future / Deferred / Operational Registry
 
 ### Adaptive Package Lifecycle & Independent Domain Compatibility
-Class: ACTIVE CONCEPT / SEMANTIC RECONCILIATION
-Status: CURRENT SESSION / PROVISIONAL / NOT PROMOTED
+Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
+Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / IMPLEMENTATION-GAP AUDIT PARTIAL / WU TOPOLOGY CANDIDATE / IMPLEMENTATION NOT AUTHORIZED
 
 Sources:
-- `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY]
+- `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY BROADER CONCEPT; NOT PROMOTED]
+- `docs/canonical_target_inventory_fingerprint_contract.md` [ACCEPTED BOUNDED WEBCORE FILE-STATE AUTHORITY]
+- `docs/shared_destructive_plan_confirmation_operator_input_contract.md` [ACCEPTED SHARED CONFIRMATION INPUT]
+- `docs/28_package_lifecycle_migration_foundation_contract.md` [ACCEPTED PROSPECTIVE V3 PACKAGE APPLY AMENDMENT]
+- `docs/31_backup_recovery_foundation_contract.md` [ACCEPTED PROSPECTIVE V3 RECOVERY AMENDMENT]
 
-Relations:
-- Package declares WHAT; Lifecycle determines WHAT CAN / MUST HAPPEN.
-- Separate Webcore/Database/Module lifecycle and capability compatibility; adaptive package representation and destination mapping; additive-first schema semantics; verified expected result and recovery.
-- Existing `docs/28_package_lifecycle_migration_foundation_contract.md` and `docs/29_module_package_lifecycle_contract.md` remain authoritative pending explicit reconciliation.
-- Package Lifecycle Forward-Update Bootstrap Authority Reconciliation is a **separate existing corrective workstream**, NOT a fifth Thread-Level Saved Concept. Its contract remains unpromoted; Seven-Tab WU5 is still on hold.
+Promotion evidence:
+- Coordinated four-surface promotion accepted and materialized at `main @ f7c3987fb6bd8559b09f960bdcd1be1fd758f0ce` on 2026-10-11.
+- Manifest v1/v2 acceptance and historical WU5/WU6 no-deletion record retained; offline-only and existing public output statuses preserved.
+- These are specification authorities only; manifest-v3 package apply, explicit file removal/rename, operator confirmation, recovery mutations and deployment remain NOT IMPLEMENTED/NOT AUTHORIZED by promotion.
 
-Planning action: KEEP ACTIVE / TECHNICAL-SEMANTIC CONTRACT IMPACT REVIEW REQUIRED / NO IMPLEMENTATION AUTHORITY
+Bounded implementation-gap audit evidence (partial; source inspection only):
+- `app/Core/PackageContract.php` still declares `CURRENT_MANIFEST_CONTRACT_VERSION = 2`, with accepted versions 1/2.
+- `app/Core/PackageManifestReader.php` validates current keys via existing associative decoding and does not contain v3 scheme-bound package handling.
+- `app/Core/PackageTargetRequirements.php` and `PackageTargetRequirement.php` provide existing v2 target-requirement validation to reuse rather than duplicate.
+- Existing Package Lifecycle and Backup & Recovery foundations remain the integration targets; a complete service/CLI/System Manager/recovery implementation inventory is REQUIRED before WU boundaries become accepted.
+
+Candidate sequential Work Units (PLANNING ONLY):
+1. WU1 — V3 Manifest & Canonical Identity: bounded duplicate-key-aware parser, exact v3 grammar, package evidence identity, target/removal digest and fixture regression; preserve v1/v2.
+2. WU2 — Committed Complete Source Inventory: protected artifact store, committed-state references, root/owner policies, full/partial proof and durability/crash handling; HARD WU1.
+3. WU3 — Source-Relative Planner & Immutable Action Identity: resulting full/partial inventory, retention/removal/rename constraints, operator-facing prepared plan and collision checks; HARD WU1+WU2.
+4. WU4 — Shared Plan-Bound Destructive Confirmation: one service authority with typed CLI/System Manager adapter inputs, actor authorization, persistence and replay/stale handling; HARD WU3.
+5. WU5 — Explicit Apply & Existing Recovery Integration: verified add/rename/remove with recovery capture, action journal, interruption reconciliation, terminal-state gates; HARD WU3+WU4. Do NOT build a second recovery engine.
+6. WU6 — Cross-Lifecycle Acceptance & Closure: v1/v2 regression, full/partial equality, offline operation, crash/retry/recovery, unsafe path and negative confirmation cases, plus lifecycle/health acceptance; HARD WU1–WU5.
+
+Topology acceptance gates:
+- Read-only implementation inventory and owner mapping by Technical Executor Codex, especially existing recovery interfaces, package records, System Manager and CLI.
+- Check for duplicate capability and confirm realistic WU prerequisites before locking and implementation authorization.
+- Preserve Package declares WHAT / Lifecycle determines WHAT CAN/MUST HAPPEN conceptual separation; independently scoped Database/Module/composite lifecycle and forward-update bootstrap remain separate workstreams.
+- User acceptance of final topology and explicit authorization of each bounded implementation entry are separate future decisions.
+
+Planning action: RECORD PROMOTED CONTRACT BASELINE / PERFORM REMAINING IMPLEMENTATION-GAP AUDIT / REVIEW SIX-WU CANDIDATE / NO IMPLEMENTATION AUTHORITY
 
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
