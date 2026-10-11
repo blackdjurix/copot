@@ -385,7 +385,7 @@ Planning action: NONE / PROVENANCE
 
 ### Adaptive Package Lifecycle & Independent Domain Compatibility
 Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
-Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / IMPLEMENTATION-GAP AUDIT PARTIAL / WU TOPOLOGY CANDIDATE / IMPLEMENTATION NOT AUTHORIZED
+Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / IMPLEMENTATION-GAP AUDIT COMPLETE / WU TOPOLOGY TECHNICALLY READY, ACCEPTANCE PENDING / IMPLEMENTATION NOT AUTHORIZED
 
 Sources:
 - `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY BROADER CONCEPT; NOT PROMOTED]
@@ -399,11 +399,12 @@ Promotion evidence:
 - Manifest v1/v2 acceptance and historical WU5/WU6 no-deletion record retained; offline-only and existing public output statuses preserved.
 - These are specification authorities only; manifest-v3 package apply, explicit file removal/rename, operator confirmation, recovery mutations and deployment remain NOT IMPLEMENTED/NOT AUTHORIZED by promotion.
 
-Bounded implementation-gap audit evidence (partial; source inspection only):
+Bounded implementation-gap audit evidence (completed read-only Codex review; no mutation):
 - `app/Core/PackageContract.php` still declares `CURRENT_MANIFEST_CONTRACT_VERSION = 2`, with accepted versions 1/2.
 - `app/Core/PackageManifestReader.php` validates current keys via existing associative decoding and does not contain v3 scheme-bound package handling.
 - `app/Core/PackageTargetRequirements.php` and `PackageTargetRequirement.php` provide existing v2 target-requirement validation to reuse rather than duplicate.
-- Existing Package Lifecycle and Backup & Recovery foundations remain the integration targets; a complete service/CLI/System Manager/recovery implementation inventory is REQUIRED before WU boundaries become accepted.
+- Codex verified reuse/extension boundaries for existing Package Lifecycle, CommittedLifecycleStateStore, WebcoreApplyPlan, PackageOwnedFileApplier, Backup & Recovery domains/journals, CLI bin/copot, SystemManagerLifecycleService and routes/system_manager.php. No second recovery engine, mutex or independently authoritative confirmation surface is justified.
+- Audit verdict: DOCUMENTATION READY / TOPOLOGY READY / IMPLEMENTATION AUTHORIZATION PENDING. Six WUs retain stated order and dependencies; no added WU required.
 
 Candidate sequential Work Units (PLANNING ONLY):
 1. WU1 — V3 Manifest & Canonical Identity: bounded duplicate-key-aware parser, exact v3 grammar, package evidence identity, target/removal digest and fixture regression; preserve v1/v2.
@@ -414,12 +415,12 @@ Candidate sequential Work Units (PLANNING ONLY):
 6. WU6 — Cross-Lifecycle Acceptance & Closure: v1/v2 regression, full/partial equality, offline operation, crash/retry/recovery, unsafe path and negative confirmation cases, plus lifecycle/health acceptance; HARD WU1–WU5.
 
 Topology acceptance gates:
-- Read-only implementation inventory and owner mapping by Technical Executor Codex, especially existing recovery interfaces, package records, System Manager and CLI.
-- Check for duplicate capability and confirm realistic WU prerequisites before locking and implementation authorization.
+- Completed Codex read-only capability/ownership and dependency audit; no documented normative blocker or required additional WU.
+- Explicit GPT/user topology acceptance remains mandatory before recording topology LOCKED.
 - Preserve Package declares WHAT / Lifecycle determines WHAT CAN/MUST HAPPEN conceptual separation; independently scoped Database/Module/composite lifecycle and forward-update bootstrap remain separate workstreams.
 - User acceptance of final topology and explicit authorization of each bounded implementation entry are separate future decisions.
 
-Planning action: RECORD PROMOTED CONTRACT BASELINE / PERFORM REMAINING IMPLEMENTATION-GAP AUDIT / REVIEW SIX-WU CANDIDATE / NO IMPLEMENTATION AUTHORITY
+Planning action: RECORD GAP AUDIT COMPLETE / SEEK EXPLICIT SIX-WU TOPOLOGY ACCEPTANCE / PREPARE FRESH-SESSION HANDOFF ONLY AFTER ACCEPTANCE / NO IMPLEMENTATION AUTHORITY
 
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
