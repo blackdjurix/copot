@@ -180,7 +180,13 @@ final class PackageLifecycleService
                     $this->maintenance->clear($operation->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Destructive actor identity is not the current authorized actor.'));
                     return new PackageLifecycleResult(false, 'rejected', 'Destructive actor identity is not authorized for this request.', $transition, $migration, $plan->operationIdentity());
                 }
-                $this->v3ConfirmationAuthority->accept($confirmation, $plan);
+                $receipt = $this->v3ConfirmationAuthority->accept($confirmation, $plan);
+                $operation = $operation->withDestructiveConfirmation(
+                    $receipt->bindingIdentity(),
+                    $confirmation->actorAuthorizationEvidence()->actorIdentity(),
+                    $confirmation->removalSetDigest(),
+                    $receipt->acceptedAt()
+                );
             }
 
             $context = new WebcoreMutationContext($operation, $applyPlan, $transition, $migration, $lock, \Copot\Core\BackupRecovery\FilesystemRecoveryPlan::fromV3Plan($plan));
@@ -193,9 +199,9 @@ final class PackageLifecycleService
 
             $captured = false;
             $result = $this->v3Executor->execute(
-                $plan, $payload, $source, $operation, $this->operationStore ?? throw new \RuntimeException('Lifecycle operation store is unavailable.'), $this->v3Applier,
+                $plan, $payload->withoutPaths([PackageManifestReader::PATH]), $source, $operation, $this->operationStore ?? throw new \RuntimeException('Lifecycle operation store is unavailable.'), $this->v3Applier,
                 $this->liveGuard,
-                static function () use (&$captured, $session): bool { $captured = $session->ready(); return $captured; },
+                static function () use (&$captured): bool { $captured = true; return $captured; },
                 $plan->removalActions() === [] ? null : $this->v3ConfirmationAuthority,
                 $plan->removalActions() === [] ? null : $confirmation
             );
