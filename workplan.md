@@ -1159,6 +1159,24 @@ Relations:
 
 Planning action: KEEP REGISTERED / NO AUTOMATIC SEQUENCING
 
+### Trusted Developer & Package Publisher Trust
+Class: DEFERRED ECOSYSTEM / PACKAGE TRUST CONCEPT
+Status: DURABLE PLANNING REGISTRATION / DEFERRED / SEMANTIC PARTIAL / NOT CONTRACT-PROMOTED / TRUST ENFORCEMENT NOT IMPLEMENTED
+
+Sources:
+- `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PACKAGE TRUST AND EXECUTION-GATE SEPARATION]
+- `concepts/copot_module_package_identity_and_capability_provider_concept.md` [PUBLISHER/PROVENANCE IDENTITY AND DEVELOPER-FACING GUIDANCE]
+
+Relations:
+- Trusted Developer is distinct from package content integrity, package identity, release identity, runtime compatibility, and operator execution authorization.
+- Existing ZIP manifest/hash validation is not publisher authenticity proof, nor a Trusted Developer registry, signature trust anchor, or verified authorization of execution.
+- Future scope may address developer/publisher identity, trust establishment, package signing/authenticity, trusted-key lifecycle, revocation, and policy tying publisher trust to package consumption. These are deferred semantic directions; no particular provider, signature scheme, online service, or approval policy is locked.
+- The accepted offline-only manifest-v3 Canonical Target Inventory contract, `docs/28`, `docs/29`, and shared operator-input contract remain unchanged. A trusted developer does not automatically gain arbitrary migration, file removal, or runtime modification authority.
+- Related but separate: Official Remote Update / Distribution Ecosystem and Module Package Identity & Capability Provider. Do not subsume Trusted Developer into either without future explicit reconciliation.
+- Current source inspection has not established any implemented Trusted Developer registry, verified publisher signature enforcement, trust-anchor management, or revocation flow. Existing general package integrity is only reusable foundation, not partial trust enforcement.
+
+Planning action: RETAIN INDEPENDENT DEFERRED CONCEPT ENTRY / NO DEDICATED PRECONTRACT OR CONTRACT NOW / NO IMPLEMENTATION AUTHORIZATION
+
 ### Official Remote Update / Distribution Ecosystem
 Class: FUTURE ECOSYSTEM CONCEPT
 Status: DEFERRED / NOT ADOPTED
