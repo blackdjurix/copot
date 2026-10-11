@@ -1,5 +1,5 @@
 # COPOT — docs/28 Bounded Amendment Review: Manifest v3 Removal/Rename
-Date version: 2026-10-11 12:10:24 WIB
+Date version: 2026-10-11 12:28:26 WIB
 Status: PROPOSED DELTA / NOT APPLIED / NOT PROMOTED
 Target: docs/28_package_lifecycle_migration_foundation_contract.md (verified base sha 7363a871c50d7413d2e6159ddb572544aa026ed4)
 Dependency: fingerprint normative contract and docs/31 recovery delta must be accepted together.
@@ -30,3 +30,7 @@ At each historical no-deletion paragraph of docs/28 (the WU5 narrative near line
 ## Shared operator input proposal
 
 Define one typed plan-bound operator proof containing operation_identity, immutable plan_identity, removal_set_digest, actor_authorization_evidence, and confirmation_version. The shared lifecycle service verifies these against the immutable planned actions, source state, and operator permissions. Any change invalidates confirmation. CLI and System Manager submit the same semantic proof; an unbound boolean does not suffice. This proposes an operator-input contract extension, not a new public result status. No changes to authoritative docs/28 have been made.
+
+## Final Reconciliation Patchset — mandatory shared input authority
+
+On coordinated promotion, the plan-bound operator-input contract must be accepted as a **fourth authority surface** alongside inventory contract, docs/28, and docs/31. The shared service shall receive a typed proof containing exactly the semantic fields `operation_identity`, `plan_identity`, `removal_set_digest`, `actor_authorization_evidence`, and `confirmation_version`. These fields are validated against the immutable prepared plan, effective source state and actual authorization grants before any destructive mutation. Neither CLI nor System Manager independently grants approval, and the historical standalone boolean is expressly insufficient for manifest-v3 destructive actions. This does not modify existing v1/v2 input handling or add new public **output** statuses. The final operator-input wire representation remains a separately reviewed bounded contract delta before implementation.
