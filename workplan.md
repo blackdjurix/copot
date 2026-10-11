@@ -385,7 +385,7 @@ Planning action: NONE / PROVENANCE
 
 ### Adaptive Package Lifecycle & Independent Domain Compatibility
 Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
-Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU5 PRIMITIVES INTEGRATED / WU6 PUBLIC V3 OPERATIONAL ACCEPTANCE REOPENED — BLOCKED
+Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU6 ACCEPTED / PUBLIC V3 OPERATIONAL COVERAGE CLOSED (BOUNDED)
 
 Sources:
 - `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY BROADER CONCEPT; NOT PROMOTED]
@@ -453,6 +453,12 @@ Post-closure read-only audit correction (2026-10-12; CURRENT STATE OVERRIDES EAR
 - Next gate: bounded technical implementation-gap reconciliation and safe public V3 routing through existing lifecycle/recovery authority; disposable public V3 removal/rename E2E and verified action/recovery linkage MUST PASS before WU6 operational acceptance may be restored. WU1–WU5 integrated primitives and their focused validation remain accepted as such; historical closure not erased.
 - No release, deployment, official package publication, or live-runtime mutation is authorized by this correction.
 
+Public V3 operational WU6 acceptance restored (2026-10-12):
+- Remote main verified at `daa1426ceab8de2e5ebed18d6980aba569a99e56`. Public V3 dispatch corrections are integrated; final commit contains `app/Core/PackageLifecycleService.php` and new `tests/package_lifecycle_wu6_public_v3_e2e.php`.
+- Codex reports actual `PackageLifecycleService::apply()` manifest-V3 E2E PASS (9 assertions): typed confirmation, rename/removal, recovery-backed mutation, committed source/target linkage, replay rejection, and terminal completion. WU1–WU6 focused and affected recovery regressions reported PASS. The legacy V2 retry E2E is not substituted for this public V3 proof.
+- Disposable MariaDB 10.4.32 tests used isolated datadir/logs/port/credentials, with CREATE USER and quiescence/read_only acquisition-release/restoration PASS. Normal XAMPP MariaDB remained running and its datadir was not modified. Codex identified normal XAMPP `mysql.global_priv` Aria bitmap corruption; this is a separately unresolved LOCAL ENVIRONMENT HEALTH issue and no repair is authorized or performed.
+- Bounded public V3 operational WU6 governance acceptance is RESTORED / ACCEPTED / CLOSED based on reported mandatory direct-entrypoint E2E and verified integrated commit. Preserved limitations: ext-zip-disabled and Windows symlink capability skips; official-package WU7 NOT RUN because artifact absent; IU1 adoption fixture has reported unrelated pre-existing failure. No claim of complete release readiness, production health, or deployment permission.
+
 Accepted and locked sequential Work Units (implementation sequencing; each limited to its accepted contract scope):
 1. WU1 — V3 Manifest & Canonical Identity: bounded duplicate-key-aware parser, exact v3 grammar, package evidence identity, target/removal digest and fixture regression; preserve v1/v2.
 2. WU2 — Committed Complete Source Inventory: protected artifact store, committed-state references, root/owner policies, full/partial proof and durability/crash handling; HARD WU1.
@@ -467,7 +473,7 @@ Topology acceptance gates:
 - Preserve Package declares WHAT / Lifecycle determines WHAT CAN/MUST HAPPEN conceptual separation; independently scoped Database/Module/composite lifecycle and forward-update bootstrap remain separate workstreams.
 - Topology acceptance is COMPLETE. In-contract implementation follows current Rule Section 7; separately gated actions retain their own authorization boundaries. Existing local dirty/stale checkout must remain untouched; new-session executor must verify a clean isolated worktree or authorized clean remote baseline.
 
-Planning action: PUBLIC V3 APPLY ROUTING GAP REQUIRES BOUNDED CORRECTION / WU6 OPERATIONAL ACCEPTANCE BLOCKED / NO RELEASE OR DEPLOYMENT AUTHORIZATION
+Planning action: WU1–WU6 BOUNDED V3 SCOPE ACCEPTED AND CLOSED / NORMAL XAMPP PRIVILEGE-TABLE CORRUPTION TRACKED SEPARATELY / NO RELEASE OR DEPLOYMENT AUTHORIZATION
 
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
