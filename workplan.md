@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-10-10 15:13:36 WIB
+Date version: 2026-10-11 22:54:39 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -385,7 +385,7 @@ Planning action: NONE / PROVENANCE
 
 ### Adaptive Package Lifecycle & Independent Domain Compatibility
 Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
-Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / IMPLEMENTATION-GAP AUDIT COMPLETE / SIX-WU TOPOLOGY ACCEPTED / LOCKED (PLANNING) / IMPLEMENTATION NOT AUTHORIZED
+Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1 COMPLETE AND ACCEPTED / WU2 NEXT
 
 Sources:
 - `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY BROADER CONCEPT; NOT PROMOTED]
@@ -406,7 +406,14 @@ Bounded implementation-gap audit evidence (completed read-only Codex review; no 
 - Codex verified reuse/extension boundaries for existing Package Lifecycle, CommittedLifecycleStateStore, WebcoreApplyPlan, PackageOwnedFileApplier, Backup & Recovery domains/journals, CLI bin/copot, SystemManagerLifecycleService and routes/system_manager.php. No second recovery engine, mutex or independently authoritative confirmation surface is justified.
 - Audit verdict: DOCUMENTATION READY / TOPOLOGY READY / IMPLEMENTATION AUTHORIZATION PENDING. Six WUs retain stated order and dependencies; no added WU required.
 
-Accepted and locked sequential Work Units (PLANNING ONLY; no implementation authorization):
+WU1 completion and governance acceptance (2026-10-11):
+- WU1 V3 Manifest & Canonical Identity implementation and fast-forward integration verified at `e67ba93b02d1f481d452c671935381dc5d41a9fc` (10 scoped source/test files).
+- Codex reported 257 assertions PASS across focused/regression suites and normative digest fixtures. `package_lifecycle_wu7.php` NOT RUN: requires generated official package and exercises broader E2E, not mandatory WU1 coverage. Zip-disabled branch and Windows symlink cleanup fixture unavailable in this environment; retain these as validation limitations, not passes.
+- GPT/user governance acceptance: WU1 COMPLETE / ACCEPTED / CLOSED for bounded WU1 scope, based on verified integration, technical evidence, and non-blocking test classification. This does not assert full v3 apply/recovery completion.
+- WU2 HARD dependency on WU1 satisfied. WU2 is next implementation target under accepted contracts; preserve original dirty checkout and verify a clean isolated workspace and current remote baseline before execution.
+- Historical pre-implementation audit and former authorization-pending language below are provenance, not current state. In-contract authorization follows canonical Rule Section 7; separately gated actions remain separate.
+
+Accepted and locked sequential Work Units (implementation sequencing; each limited to its accepted contract scope):
 1. WU1 — V3 Manifest & Canonical Identity: bounded duplicate-key-aware parser, exact v3 grammar, package evidence identity, target/removal digest and fixture regression; preserve v1/v2.
 2. WU2 — Committed Complete Source Inventory: protected artifact store, committed-state references, root/owner policies, full/partial proof and durability/crash handling; HARD WU1.
 3. WU3 — Source-Relative Planner & Immutable Action Identity: resulting full/partial inventory, retention/removal/rename constraints, operator-facing prepared plan and collision checks; HARD WU1+WU2.
@@ -418,9 +425,9 @@ Topology acceptance gates:
 - Completed Codex read-only capability/ownership and dependency audit; no documented normative blocker or required additional WU.
 - Six-WU topology was explicitly accepted by user in current governance session; LOCKED as implementation planning topology only. Any change to WU decomposition/dependency requires new GPT/user acceptance.
 - Preserve Package declares WHAT / Lifecycle determines WHAT CAN/MUST HAPPEN conceptual separation; independently scoped Database/Module/composite lifecycle and forward-update bootstrap remain separate workstreams.
-- Topology acceptance is COMPLETE. Explicit authorization of each bounded WU implementation entry remains a separate future decision, in a NEW SESSION only. Existing local dirty/stale checkout must remain untouched; new-session executor must verify a clean isolated worktree or authorized clean remote baseline.
+- Topology acceptance is COMPLETE. In-contract implementation follows current Rule Section 7; separately gated actions retain their own authorization boundaries. Existing local dirty/stale checkout must remain untouched; new-session executor must verify a clean isolated worktree or authorized clean remote baseline.
 
-Planning action: SIX-WU TOPOLOGY ACCEPTED AND LOCKED / CONTRACTS PROMOTED / NRP READINESS RECONCILIATION / PREPARE NEW-SESSION HANDOFF / WU1 IMPLEMENTATION AUTHORIZATION PENDING
+Planning action: WU1 ACCEPTED AND CLOSED / WU2 DEPENDENCY SATISFIED / PREPARE BOUNDED WU2 IMPLEMENTATION / NO WU3–WU6 EXECUTION
 
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
