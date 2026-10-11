@@ -166,34 +166,4 @@ final class WebcoreApplyCoordinator
         }
     }
 
-    /**
-     * Existing lifecycle mutex adapter for an already prepared v3 plan.
-     * The executor receives the existing operation store and recovery capture
-     * callback; this method only supplies the lifecycle exclusion boundary.
-     */
-    public function executeV3(
-        V3SourceRelativePlan $plan,
-        StagedPayload $payload,
-        ?SourceInventoryArtifact $source,
-        LifecycleOperationRecord $operation,
-        LifecycleOperationStore $operations,
-        V3ExplicitApplyExecutor $executor,
-        LiveTreePathGuard $guard,
-        callable $captureBeforeMutation,
-        ?DestructivePlanConfirmationAuthority $confirmationAuthority = null,
-        ?DestructivePlanConfirmation $confirmation = null,
-        ?callable $journal = null,
-        ?callable $beforeActivation = null
-    ): WebcoreApplyResult {
-        $lock = $this->mutex->acquire();
-        if (!$lock instanceof InstallationLock) {
-            return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Another lifecycle operation is already running.', $operation->operationId());
-        }
-        try {
-            return $executor->execute($plan, $payload, $source, $operation, $operations, $this->applier, $guard, $captureBeforeMutation, $confirmationAuthority, $confirmation, $journal, $beforeActivation);
-        } finally {
-            $lock->release();
-        }
-    }
-
 }
