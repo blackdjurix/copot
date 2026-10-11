@@ -1,5 +1,5 @@
 # Project Logging — Project State Checkpoint & Activity Journal Rollover
-Date version: 2026-10-11 19:52:08 WIB
+Date version: 2026-10-11 20:32:00 WIB
 
 Status: ACTIVE TRIAL / PROJECT GOVERNANCE CANDIDATE / NOT PROMOTED
 Project: COPOT
@@ -36,6 +36,24 @@ Activity Journal is a concise historical index, not a duplicate of detailed evid
 - No additional exported file or ZIP is required for journal rollover; historical file versions are recovered from the tagged Git snapshot.
 - Candidate timing includes at NRP, after Handoff, or first meaningful record of a new cycle. These are examples and possible evidence/conditions, not mandatory triggers, policy locks, or standing cleanup authorization.
 - Rollover itself remains UNTESTED / NOT AUTHORIZED TO EXECUTE under this Concept until separately accepted operational parameters and bounded action authorization exist.
+
+## Operational capability and executor routing (trial observation)
+- GPT can evaluate meaningful activity and record authorized journal entries directly to `docs/devlog.md` on canonical `main` through the available GitHub connector. Each successful write creates a normal commit; check the current blob SHA/remote HEAD and verify persistence.
+- The currently available GPT-side GitHub connector does not expose annotated Git tag creation. Creating and verifying an annotated tag for either a Checkpoint or Activity Journal rollover therefore routes to Codex using an authenticated Git workspace, only under explicit bounded authorization. This is an observed tool limitation, not permanent architectural ownership: reevaluate routing if capabilities change.
+- GPT/user governance evaluates checkpoint eligibility, journal-cycle validity, acceptance and authorization. Codex executes only authorized Git operations and returns evidence; execution ability does not grant decision authority. Rollover reset and its first new event may be executed by Codex within the same bounded operation once tag/recall proof succeeds. No independent journal engine or second authority is introduced.
+
+## Journal format and cycle-range trial decisions
+- Retain the existing `YYYY-MM-DD HH:mm:ss WIB     [EVENT_TYPE] Description` record format during this trial. No demonstrated defect or balanced cost/benefit evaluation currently warrants a format change. Event labels remain open-ended. Contextual phase/workstream references can live naturally in the description when they help recall; do not introduce a mandatory phase field, registry, or index now.
+- **Candidate only, not accepted rollover policy:** favor fair-volume / historical usability as the primary reason to evaluate rollover, with development phase or milestone meaning as helpful human-recall context. A journal cycle may span multiple logical phases or workstreams; a phase may span multiple cycles. NRP, Handoff, and WU/milestone closure are not mandatory boundaries or automatic triggers.
+- No numerical record-count threshold, automatic rotation, phase-level trigger, or standing rollover authorization has been accepted. Use the first meaningful write of an approved new journal cycle as a candidate execution moment when practical, without requiring the rollover to coincide with session bootstrap.
+
+## First rollover operational acceptance trial
+- Trial objective: show that the committed complete prior journal can be recalled through its **annotated** rollover tag both immediately before reset and after the fresh journal commit and later subsequent `main` commits.
+- Preconditions: verify canonical governance, repository identity, exact remote HEAD, complete committed journal, unique noncolliding tag name, no concurrent/conflicting journal changes, and safe authenticated workspace. Preserve dirty/stale local worktrees; do not reset, stash, clean or overwrite.
+- Tag the exact pre-cleanup commit, verify annotated object/type, target SHA, and retrieve the old `docs/devlog.md` by tag. If creation or retrieval fails, stop without cleanup.
+- Only after successful tag proof, replace the working journal with a fresh header referencing the previous tag and commit plus the first truthful meaningful new-cycle event when available. Commit and push through the authorized route, check remote HEAD, verify old and new journal retrieval, and prove recall again from a subsequent future `main` commit.
+- Where subsequent future commit does not yet exist, report that proof as PENDING, not PASS. Preserve previous journal history and tag immutability; report failures without fabricating success, altering tags, or deleting evidence.
+- This trial authorizes no checkpoint creation, application/runtime mutation, WU1 implementation, Rule promotion, or release. Trial outcome and human-recall usability inform later fair-volume policy evaluation; do not infer a permanent policy from one successful rotation.
 
 ## Shared Git timeline, independent semantic boundaries
 - Both objects use verified commits as immutable historical state references and separate annotated-tag identities. Tags name a repository commit snapshot, not an individual file, auto-generated archive, or new commit.
