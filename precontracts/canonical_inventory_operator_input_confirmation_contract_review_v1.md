@@ -1,5 +1,5 @@
 # COPOT — Shared Destructive Plan Confirmation Operator-Input Contract Review
-Date version: 2026-10-11 12:28:26 WIB
+Date version: 2026-10-11 13:29:18 WIB
 
 Status: REVIEW ONLY / FOURTH COORDINATED AUTHORITY SURFACE / NOT PROMOTED / NO IMPLEMENTATION AUTHORITY
 
@@ -24,3 +24,17 @@ Missing, changed, stale, invalid, unauthorized or unpersisted destructive confir
 
 ## Promotion gate
 This input contract is an inseparable fourth normative authority surface, not a separate lifecycle implementation. Confirm the precise wire representation and canonical removal-set digest serialization before authoritative promotion; do not invent an accepted public API wire change through a review draft.
+
+## Final bounded correction — required operator-input transport semantics
+
+For manifest-v3 explicit destructive operations, CLI and System Manager MUST transmit the complete typed `DestructivePlanConfirmation` proof through their respective input transports to the **same shared lifecycle service**. Every representation must unambiguously carry:
+
+1. `operation_identity`: nonempty canonical identity string for the selected durable operation;
+2. `plan_identity`: nonempty canonical scheme-prefixed immutable prepared-plan identity string;
+3. `removal_set_digest`: exact lowercase 64-character SHA-256 hex string matching the normative binary removal-set encoding v1;
+4. `actor_authorization_evidence`: service-verifiable authorized actor context or opaque reference, never untrusted self-declared permission and never raw credentials persisted into confirmation evidence;
+5. `confirmation_version`: exact JSON/typed integer 1, not string/boolean.
+
+The CLI may use named flags or protected structured input; System Manager may use a versioned request object. The adapter-specific byte/HTTP encoding need not be identical, but strict required-field/type validation MUST yield the identical typed semantic proof. Reject absent, unknown, duplicated, stale, mismatched, replayed or wrong-typed fields before mutation. Authorization is checked by the shared service against trusted authenticated actor/session state and prepared plan; a client-supplied actor claim alone is never sufficient. Accepted proof must be durably bound to the same operation, immutable plan, removal digest and actor permission outcome, and must be revalidated immediately before destructive mutation. Existing bare `confirmed=1`, a boolean CLI flag alone, and an unbound checkbox are INVALID for manifest-v3 destructive removals and renames. Preserve v1/v2 inputs and all existing public output status vocabulary.
+
+This is an explicit **operator-input contract extension** on the fourth coordinated authority surface; it does not itself authorize route/CLI implementation or extend output API. Exact CLI syntax and HTTP field envelopes are adapter specifications to be reconciled during separately authorized implementation; they may not weaken or omit any semantic proof field.
