@@ -385,7 +385,7 @@ Planning action: NONE / PROVENANCE
 
 ### Adaptive Package Lifecycle & Independent Domain Compatibility
 Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
-Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU3 COMPLETE AND ACCEPTED / WU4 NEXT
+Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU4 COMPLETE AND ACCEPTED / WU5 NEXT
 
 Sources:
 - `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY BROADER CONCEPT; NOT PROMOTED]
@@ -423,6 +423,11 @@ WU3 completion and bounded governance acceptance (2026-10-11):
 - Codex reported PASS for focused WU3, manifest-v3 (12), package contract (73), WU2 inventory, existing package-lifecycle WU2 (67), and runtime lifecycle (10 and 19 assertions); focused WU3 assertion total not supplied. Existing ZipArchive/symlink environment skips remain. Installer fixture failure was outside pure WU3 planner scope and remains broader regression limitation.
 - WU3 COMPLETE / ACCEPTED / CLOSED for bounded source-relative planning only, not execution of destructive actions. WU4 HARD dependency on WU3 is satisfied; WU4 is next. WU5–WU6 have not started.
 
+WU4 completion and bounded governance acceptance (2026-10-11):
+- WU4 confirmation authority, actor evidence, typed CLI/System Manager adapters, durable receipt and optional operation-record linkage integrated at `43f2c93f3825bd491690081c0059d9467b25237f`; eight scoped source/test files verified.
+- Codex reported PASS on focused WU4, WU3, WU1 (12 and 73 assertions), WU2 inventory/lifecycle (67), and pre-mutation retry (8) regressions. Existing Windows ZipArchive-disabled and symlink-fixture skips retained. No unresolved WU4 blocker reported; independent runtime test execution not claimed.
+- WU4 COMPLETE / ACCEPTED / CLOSED for shared plan-bound confirmation only. WU5 HARD dependency on WU3+WU4 is satisfied. WU5 is next for explicit apply and existing recovery integration; WU6 has not started.
+
 Accepted and locked sequential Work Units (implementation sequencing; each limited to its accepted contract scope):
 1. WU1 — V3 Manifest & Canonical Identity: bounded duplicate-key-aware parser, exact v3 grammar, package evidence identity, target/removal digest and fixture regression; preserve v1/v2.
 2. WU2 — Committed Complete Source Inventory: protected artifact store, committed-state references, root/owner policies, full/partial proof and durability/crash handling; HARD WU1.
@@ -437,7 +442,7 @@ Topology acceptance gates:
 - Preserve Package declares WHAT / Lifecycle determines WHAT CAN/MUST HAPPEN conceptual separation; independently scoped Database/Module/composite lifecycle and forward-update bootstrap remain separate workstreams.
 - Topology acceptance is COMPLETE. In-contract implementation follows current Rule Section 7; separately gated actions retain their own authorization boundaries. Existing local dirty/stale checkout must remain untouched; new-session executor must verify a clean isolated worktree or authorized clean remote baseline.
 
-Planning action: WU1–WU3 ACCEPTED AND CLOSED / WU4 DEPENDENCY SATISFIED / PREPARE BOUNDED WU4 IMPLEMENTATION / WU5–WU6 NOT STARTED
+Planning action: WU1–WU4 ACCEPTED AND CLOSED / WU5 DEPENDENCIES SATISFIED / PREPARE BOUNDED WU5 IMPLEMENTATION / WU6 NOT STARTED
 
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
