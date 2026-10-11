@@ -55,16 +55,19 @@ Current durable planning state:
   COMPLETE / durable at `ab2ef3ab254c04513128d9385fb2c57662e52ad9`;
   WU3 System Email COMPLETE / ACCEPTED / durable at
   `fc4bf7754005b85ad890be32749f9c17f218c4e9`; WU4 Redirects COMPLETE /
-  ACCEPTED. WU5 Seven-Tab Integration & Hardening is OPEN / HOLD / BLOCKED
-  pending corrective Package Lifecycle forward-update bootstrap authority
-  reconciliation. WU5 is not failed, accepted, or closed.
+  ACCEPTED. WU5 Seven-Tab Integration & Hardening is READY FOR IN-CONTRACT
+  IMPLEMENTATION: its WU2/WU3/WU4 HARD dependencies are satisfied and the
+  separate forward-update bootstrap authority exists via guarded adoption and
+  legacy reconciliation routes. WU5 remains NOT IMPLEMENTED / NOT ACCEPTED.
+  Specific legacy runtimes still require per-instance proof and separate
+  reconciliation authorization.
 - Package Lifecycle Forward-Update Bootstrap Authority Reconciliation:
-  corrective next-session target / GAP CONFIRMED by technical audit;
-  existing-install forward transition is blocked when the target full COPOT
-  package introduces manifest v2 and Core migration authority unknown to the
-  installed runtime. This is separate from server-empty package bootstrap;
-  the gap and proposed resolution remain next-session Handoff material,
-  not a newly promoted contract or a Thread-Level Saved Concept.
+  former technical authority gap RESOLVED through existing legacy classification,
+  exact-match adoption and separately guarded reconciliation services/routes.
+  Normal package apply intentionally remains BOOTSTRAP_REQUIRED for LEGACY.
+  Unknown/unprovable migration history remains fail-closed; actual existing
+  runtime readiness is separately UNRESOLVED per instance. Server-empty
+  bootstrap remains deferred. Earlier GAP CONFIRMED findings are historical.
 - Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation:
   previously saved thread-level Concept materialized in
   `concepts/copot_lifecycle_net_zero_retirement_safe_retry_capability_concept.md`;
@@ -1802,18 +1805,16 @@ reconciliation item.
 
 ## 9. Immediate Next Planning Target
 
-Current immediate target: prepare the EMERGENCY session transition into
-`Package Lifecycle Forward-Update Bootstrap Authority Reconciliation`.
-The technical audit confirmed both manifest-contract incompatibility and
-missing target-only migration bootstrap authority in the installed runtime.
-Seven-Tab Site Settings WU5 remains OPEN / HOLD / BLOCKED until the corrective
-lifecycle dependency is resolved and accepted; historical Package Lifecycle
-WU1–WU7 closure and previously accepted Seven-Tab WU2–WU4 evidence are
-preserved. Corrective lifecycle contract/documentation amendments are reserved
-for the new session. Main runtime operational reconciliation remains a
-pre-Handoff action, not a new Concept. No implementation, destructive
-runtime/database action, contract promotion, release, or deployment is
-authorized by this Workplan update.
+Current immediate target: Seven-Tab Site Settings Completion & Hardening
+WU5 Integration & Hardening under its accepted `docs/58` contract. A read-only
+dependency audit on 2026-10-12 confirmed existing guarded legacy adoption and
+forward-reconciliation authority; the former bootstrap-authority blocker is
+superseded. HARD WU2/WU3/WU4 dependencies are satisfied. WU5 is READY for
+bounded implementation, not yet implemented or accepted; downstream Seven-Tab
+WU6 remains dependent on WU5. Production runtime reconciliation is NOT STARTED,
+requires separate authorization and objective per-instance eligibility.
+Server-empty bootstrap remains deferred. No new release, tag, publication,
+deployment or destructive live-runtime/database action is authorized here.
 
 ## 10. Retention and Planning Freshness
 
