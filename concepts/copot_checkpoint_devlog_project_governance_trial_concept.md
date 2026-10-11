@@ -1,5 +1,5 @@
 # Project Logging — Project State Checkpoint & Activity Journal Rollover
-Date version: 2026-10-11 20:32:00 WIB
+Date version: 2026-10-11 20:36:54 WIB
 
 Status: ACTIVE TRIAL / PROJECT GOVERNANCE CANDIDATE / NOT PROMOTED
 Project: COPOT
@@ -24,7 +24,7 @@ This is planning Concept authority only. It does not amend `governance/copot_pro
 - Recording: record meaningful events and significant activities using GPT contextual judgment. Meaningfulness is descriptive, not a closed event taxonomy, exact scoring formula, or mandatory state-transition test. The log is descriptive and cannot create authority, acceptance, NRP, promotion, or implementation permission. Format: `YYYY-MM-DD HH:mm:ss WIB     [EVENT_TYPE] Description`. Prefer reliable event-time; otherwise use record-time, without fabricating timestamps or silently backdating.
 
 ### Meaningful events and significant activities
-Activity Journal records project events, activities, discussions, decisions, findings, plans, intentions, and developments that have significant value for reconstructing the project's journey, context, outcomes, learning, or direction. The occurrence of a discussion or planning activity is itself an actual event, even if the proposed plan is not executed, no final decision is reached, and no project state changes. Recording must distinguish the activity that actually happened from any proposed, pending, or unapproved future action.
+Activity Journal records meaningful events and significant activities across all COPOT domains, explicitly including Project, Documentation, and Governance. This covers implementation and validation; documentation drafting, reconciliation and normative promotion; governance discussions, authority decisions and continuity evaluations; and other activities with significant value for reconstructing the project's journey, context, outcomes, learning, or direction. Every domain retains its own authority and lifecycle: a journal record never by itself approves a governance decision, promotes documentation, authorizes execution, or changes accepted project state. The occurrence of a discussion or planning activity is itself an actual event, even if the proposed plan is not executed, no final decision is reached, and no project state changes. Recording must distinguish the activity that actually happened from any proposed, pending, or unapproved future action.
 
 Value may be positive or negative: successes, failures, substantive negative findings, confirmation of an existing condition, eliminated alternatives, lessons learned, material risks, or improvements in understanding may all warrant recording. Significant work can be recorded even when it produces no mutation, no acceptance, or no new conclusion. Routine repetition without material information need not be logged.
 
