@@ -1,5 +1,5 @@
 # Project Logging — Project State Checkpoint & Activity Journal Rollover
-Date version: 2026-10-11 17:25:35 WIB
+Date version: 2026-10-11 19:52:08 WIB
 
 Status: ACTIVE TRIAL / PROJECT GOVERNANCE CANDIDATE / NOT PROMOTED
 Project: COPOT
@@ -21,7 +21,16 @@ This is planning Concept authority only. It does not amend `governance/copot_pro
 ## Object B — Activity Journal / Rollover
 - Purpose: maintain an active chronological event log in `docs/devlog.md` for recording and anchoring events during a journal cycle; use Git commit history as the durable historical recall source.
 - Existing execution: GPT-side writes via GitHub connector to canonical `main` produce commits and have been verified in this trial. This does not exempt further writes from repository authorization, current SHA checks, or conflict handling.
-- Recording: append only after meaningful events occurred. The log is descriptive and cannot create authority, acceptance, NRP, promotion, or implementation permission. Format: `YYYY-MM-DD HH:mm:ss WIB     [EVENT_TYPE] Description`. Prefer reliable event-time; otherwise use record-time, without fabricating timestamps or silently backdating.
+- Recording: record meaningful events and significant activities using GPT contextual judgment. Meaningfulness is descriptive, not a closed event taxonomy, exact scoring formula, or mandatory state-transition test. The log is descriptive and cannot create authority, acceptance, NRP, promotion, or implementation permission. Format: `YYYY-MM-DD HH:mm:ss WIB     [EVENT_TYPE] Description`. Prefer reliable event-time; otherwise use record-time, without fabricating timestamps or silently backdating.
+
+### Meaningful events and significant activities
+Activity Journal records project events, activities, discussions, decisions, findings, plans, intentions, and developments that have significant value for reconstructing the project's journey, context, outcomes, learning, or direction. The occurrence of a discussion or planning activity is itself an actual event, even if the proposed plan is not executed, no final decision is reached, and no project state changes. Recording must distinguish the activity that actually happened from any proposed, pending, or unapproved future action.
+
+Value may be positive or negative: successes, failures, substantive negative findings, confirmation of an existing condition, eliminated alternatives, lessons learned, material risks, or improvements in understanding may all warrant recording. Significant work can be recorded even when it produces no mutation, no acceptance, or no new conclusion. Routine repetition without material information need not be logged.
+
+GPT assesses whether an event or activity is worth recording in context, without rigid numerical thresholds or an exhaustive rule set. `EVENT_TYPE` is an open-ended descriptive label, not a controlled nine-type enum or a source of significance or authority. Prefer an existing clear label for comparable events, while allowing new labels when needed. Historical labels and the earlier discussion of nine types are examples, not a restriction.
+
+Activity Journal is a concise historical index, not a duplicate of detailed evidence or semantic continuity artifacts. Thread-Level Saved Concepts retain substantial ideas and planning semantics when applicable; their discussion, development, or materialization may be logged as meaningful activity without implying that the Concept has been promoted. Journal recording follows the existing applicable Git/repository authorization requirements; this paragraph grants no standing write permission.
 - Save point: at journal rollover, create an independently named annotated Git tag pointing to the exact committed snapshot containing the full previous journal. Verify the tag target and historical ability to retrieve `docs/devlog.md` before changing the working journal.
 - Cleanup: after successfully verifying the prior journal tag, replace only the working journal contents with a fresh header, reference to the previous journal tag/commit, and when available the first new event. Make the reset and first write in one ordinary commit when operationally feasible. Never rewrite Git history, force-move/delete a historical tag, or silently discard uncommitted journal content.
 - No additional exported file or ZIP is required for journal rollover; historical file versions are recovered from the tagged Git snapshot.
