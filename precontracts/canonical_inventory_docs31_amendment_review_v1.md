@@ -1,5 +1,5 @@
 # COPOT — docs/31 Bounded Amendment Review: Removed-File Recovery
-Date version: 2026-10-11 12:10:24 WIB
+Date version: 2026-10-11 12:28:26 WIB
 Status: PROPOSED DELTA / NOT APPLIED / NOT PROMOTED
 Target: docs/31_backup_recovery_foundation_contract.md (verified base sha 85420c0393d8a2ae43b1bc196ebc0e4785849713)
 Dependency: fingerprint normative contract plus prospective docs/28 amendment co-promoted.
@@ -27,3 +27,7 @@ If removal succeeds but final target fingerprint verification fails, the operati
 RESTORED may only be reported following actual canonical restoration and independent verification of all applicable recovery domains. Recovery artifact availability alone never implies restoration. cleanup_pending is reserved for a verified completed operation with outstanding permitted cleanup.
 
 Recovery closure is a durable authoritative record that the exact operation's recovery obligations are discharged. Removed-file artifacts are retained until BOTH lifecycle finalization and recovery closure; further cleanup follows separately accepted retention authority. Missing publication durability or evidence fails closed. No second recovery engine or cross-domain atomicity is implied.
+
+## Final Reconciliation Patchset — cross-record identity consistency
+
+The Package Lifecycle operation record and the Backup & Recovery action journal MUST durably cross-reference the exact same immutable `operation_identity`, `plan_identity`, action ordinal, and `recovery_identity` for each destructive file action. Both must bind the same scheme-versioned package evidence identity. The authoritative journal alone may advance mutable action intent/cursor/completion fields; neither record alone proves successful action completion when its counterpart is missing, inconsistent, ambiguous, or unreadable. Such disagreement blocks completion, prevents release identity advancement, and after mutation requires INDETERMINATE/recovery reconciliation. The immutable published recovery manifest/artifact references are never rewritten to conceal mismatch.
