@@ -14,7 +14,8 @@ final class CommittedLifecycleState
         private string $schemaStateIdentity,
         private string $migrationStateIdentity,
         private DateTimeImmutable $committedAt,
-        private ?string $packageIntegrityIdentity = null
+        private ?string $packageIntegrityIdentity = null,
+        private ?SourceInventoryReference $sourceInventoryReference = null
     ) {
         PackageVersion::assertValid($webcoreVersion);
         self::assertIdentity($releaseIdentity, 'Release identity');
@@ -35,6 +36,7 @@ final class CommittedLifecycleState
     public function migrationStateIdentity(): string { return $this->migrationStateIdentity; }
     public function committedAt(): DateTimeImmutable { return $this->committedAt; }
     public function packageIntegrityIdentity(): ?string { return $this->packageIntegrityIdentity; }
+    public function sourceInventoryReference(): ?SourceInventoryReference { return $this->sourceInventoryReference; }
 
     public function snapshot(): InstalledStateSnapshot
     {
@@ -60,6 +62,7 @@ final class CommittedLifecycleState
             'migration_state_identity' => $this->migrationStateIdentity,
             'committed_at' => $this->committedAt->format(DATE_ATOM),
             'package_integrity_identity' => $this->packageIntegrityIdentity,
+            ...($this->sourceInventoryReference === null ? [] : ['source_inventory_reference' => $this->sourceInventoryReference->toArray()]),
         ];
     }
 
@@ -67,14 +70,17 @@ final class CommittedLifecycleState
     {
         $keys = ['webcore_version', 'release_identity', 'source_tree_identity', 'manifest_contract_version', 'schema_state_identity', 'migration_state_identity', 'committed_at'];
         $extendedKeys = [...$keys, 'package_integrity_identity'];
-        if (!in_array(array_keys($data), [$keys, $extendedKeys], true)
+        $inventoryKeys = [...$extendedKeys, 'source_inventory_reference'];
+        if (!in_array(array_keys($data), [$keys, $extendedKeys, $inventoryKeys], true)
             || !is_string($data['webcore_version'])
             || !is_string($data['release_identity'])
             || ($data['source_tree_identity'] !== null && !is_string($data['source_tree_identity']))
             || !is_int($data['manifest_contract_version'])
             || !is_string($data['schema_state_identity'])
             || !is_string($data['migration_state_identity'])
-            || !is_string($data['committed_at'])) {
+            || !is_string($data['committed_at'])
+            || (array_key_exists('package_integrity_identity', $data) && $data['package_integrity_identity'] !== null && !is_string($data['package_integrity_identity']))
+            || (array_key_exists('source_inventory_reference', $data) && !is_array($data['source_inventory_reference']))) {
             throw new \InvalidArgumentException('Committed lifecycle state format is invalid.');
         }
 
@@ -92,6 +98,7 @@ final class CommittedLifecycleState
             $data['migration_state_identity'],
             $committedAt,
             $data['package_integrity_identity'] ?? null
+            , array_key_exists('source_inventory_reference', $data) ? SourceInventoryReference::fromArray($data['source_inventory_reference']) : null
         );
     }
 
