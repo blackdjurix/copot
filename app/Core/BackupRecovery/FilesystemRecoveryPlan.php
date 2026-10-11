@@ -5,6 +5,8 @@ namespace Copot\Core\BackupRecovery;
 use Copot\Core\PackageOwnership;
 use Copot\Core\StagedFile;
 use Copot\Core\WebcoreApplyPlan;
+use Copot\Core\V3SourceRelativeAction;
+use Copot\Core\V3SourceRelativePlan;
 
 final class FilesystemRecoveryPlan
 {
@@ -44,6 +46,24 @@ final class FilesystemRecoveryPlan
     public static function fromCapturedEntries(string $applyPlanIdentity, array $entries): self
     {
         return new self($applyPlanIdentity, $entries);
+    }
+
+    public static function fromV3Plan(V3SourceRelativePlan $plan): self
+    {
+        $entries = [];
+        $seen = [];
+        foreach ($plan->actions() as $action) {
+            if (!$action instanceof V3SourceRelativeAction) throw new FilesystemRecoveryException('V3 recovery action is invalid.');
+            $root = in_array($action->action(), [V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true) ? $action->sourceRoot() : $action->root();
+            $path = in_array($action->action(), [V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true) ? $action->sourcePath() : $action->path();
+            if (!is_string($root) || !is_string($path)) throw new FilesystemRecoveryException('V3 recovery action source identity is unavailable.');
+            $relative = $root === \Copot\Core\CanonicalTargetInventoryEntry::PUBLIC_ROOT ? 'public/' . $path : $path;
+            if (isset($seen[$relative])) continue;
+            $seen[$relative] = true;
+            $entries[] = new FilesystemRecoveryEntry($relative, $action->byteSize(), $action->sha256());
+        }
+        if ($entries === []) throw new FilesystemRecoveryException('V3 recovery plan contains no package-owned actions.');
+        return new self(hash('sha256', 'v3-recovery-plan:' . $plan->identity()), $entries);
     }
 
     public function applyPlanIdentity(): string { return $this->applyPlanIdentity; }

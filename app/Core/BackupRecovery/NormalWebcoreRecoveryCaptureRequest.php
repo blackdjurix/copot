@@ -16,7 +16,8 @@ final class NormalWebcoreRecoveryCaptureRequest
         private WebcoreApplyPlan $applyPlan,
         private string $preLifecycleIdentity,
         private string $migrationLedgerIdentity,
-        private string $databaseIdentity
+        private string $databaseIdentity,
+        private ?FilesystemRecoveryPlan $filesystemPlan = null
     ) {}
     public function operationId(): string { return $this->operationId; }
     public function installationIdentity(): string { return $this->installationIdentity; }
@@ -29,4 +30,5 @@ final class NormalWebcoreRecoveryCaptureRequest
     public function preLifecycleIdentity(): string { return $this->preLifecycleIdentity; }
     public function migrationLedgerIdentity(): string { return $this->migrationLedgerIdentity; }
     public function databaseIdentity(): string { return $this->databaseIdentity; }
+    public function filesystemPlan(): ?FilesystemRecoveryPlan { return $this->filesystemPlan; }
 }

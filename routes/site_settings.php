@@ -255,7 +255,12 @@ $app->router()->post($systemPath . '/preflight', function ($request) use ($app, 
 $app->router()->post($systemPath . '/apply', function ($request) use ($app, $requireSystemUser, $systemManager, $json): Response {
     $user = $requireSystemUser($request); if ($user instanceof Response) return $user;
     if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
-    try { return $json($systemManager()->executeUpload($request->file('package'), (string) $request->post('action', ''))); }
+    try {
+        $confirmation = $request->post('destructive_plan_confirmation');
+        if (is_string($confirmation) && trim($confirmation) !== '') $confirmation = json_decode($confirmation, true, 32, JSON_THROW_ON_ERROR);
+        if ($confirmation !== null && !is_array($confirmation)) throw new InvalidArgumentException('Typed destructive confirmation must be an object.');
+        return $json($systemManager()->executeUpload($request->file('package'), (string) $request->post('action', ''), $confirmation, (string) $user->id()));
+    }
     catch (Throwable) { return $json(['accepted' => false, 'status' => 'invalid_package', 'reason' => 'Package intake failed.'], 422); }
 });
 

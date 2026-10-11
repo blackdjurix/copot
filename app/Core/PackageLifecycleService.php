@@ -43,7 +43,16 @@ final class PackageLifecycleService
         ?CanonicalSchemaBaselineCatalog $baselineCatalog = null,
         private $recoveryEvidenceValidator = null,
         private ?NetZeroRetirementService $netZeroRetirement = null,
-        private $awaitingWu6EvidenceValidator = null
+        private $awaitingWu6EvidenceValidator = null,
+        private ?CommittedLifecycleStateStore $committedStore = null,
+        private ?SourceInventoryArtifactStore $sourceInventoryArtifacts = null,
+        private ?PackageV3SourceRelativePlanner $v3Planner = null,
+        private ?V3ExplicitApplyExecutor $v3Executor = null,
+        private ?PackageOwnedFileApplier $v3Applier = null,
+        private ?DestructivePlanConfirmationAuthority $v3ConfirmationAuthority = null,
+        private ?ProtectedWebcoreMutationBoundary $v3RecoveryBoundary = null,
+        private ?LifecycleOperationStore $operationStore = null,
+        private $v3MigrationRunner = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -80,10 +89,13 @@ final class PackageLifecycleService
         }
     }
 
-    public function apply(string $zip, bool $repairOnly = false): PackageLifecycleResult
+    public function apply(string $zip, bool $repairOnly = false, mixed $confirmation = null, ?string $authorizedActorIdentity = null): PackageLifecycleResult
     {
         try {
             [$payload, $manifest, $transition, $migration] = $this->prepare($zip);
+            if ($manifest->contract()->manifestContractVersion() === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
+                return $this->applyV3($payload, $manifest, $transition, $migration, $confirmation, $authorizedActorIdentity);
+            }
             if ($repairOnly && $transition->classification() !== TransitionPlan::REPAIR) {
                 $payload->cleanup();
                 return new PackageLifecycleResult(false, 'rejected', 'Repair requires a same-version target.', $transition, $migration);
@@ -111,6 +123,135 @@ final class PackageLifecycleService
             return new PackageLifecycleResult(false, $this->isCapabilityFailure($exception) ? 'unavailable' : 'invalid_package', $exception->getMessage());
         }
     }
+
+    private function applyV3(StagedPayload $payload, PackageManifest $manifest, TransitionPlan $transition, CoreMigrationPlan $migration, mixed $confirmation, ?string $authorizedActorIdentity): PackageLifecycleResult
+    {
+        if (!$this->committedStore instanceof CommittedLifecycleStateStore
+            || !$this->sourceInventoryArtifacts instanceof SourceInventoryArtifactStore
+            || !$this->v3Planner instanceof PackageV3SourceRelativePlanner
+            || !$this->v3Executor instanceof V3ExplicitApplyExecutor
+            || !$this->v3Applier instanceof PackageOwnedFileApplier
+            || !$this->v3ConfirmationAuthority instanceof DestructivePlanConfirmationAuthority
+            || !$this->v3RecoveryBoundary instanceof ProtectedWebcoreMutationBoundary) {
+            $payload->cleanup();
+            return new PackageLifecycleResult(false, 'unavailable', 'Manifest-v3 lifecycle composition is unavailable.', $transition, $migration);
+        }
+        if (!$transition->accepted() || !$migration->isAccepted()) {
+            $reason = $transition->reason() !== '' ? $transition->reason() : $migration->reason();
+            $payload->cleanup();
+            return new PackageLifecycleResult(false, 'rejected', $reason, $transition, $migration);
+        }
+        if ($migration->migrations() !== [] && !is_callable($this->v3MigrationRunner)) {
+            $payload->cleanup();
+            return new PackageLifecycleResult(false, 'unavailable', 'Manifest-v3 migration runner is unavailable.', $transition, $migration);
+        }
+
+        $committed = $this->committedStore->read();
+        $reference = $committed?->sourceInventoryReference();
+        if (!$committed instanceof CommittedLifecycleState || !$reference instanceof SourceInventoryReference) {
+            $payload->cleanup();
+            return new PackageLifecycleResult(false, 'blocked', 'Committed manifest-v3 source inventory evidence is unavailable.', $transition, $migration);
+        }
+
+        $source = $this->sourceInventoryArtifacts->read($reference);
+        $plan = $this->v3Planner->plan($manifest, $source);
+        $applyPlan = WebcoreApplyPlan::fromPayload($payload);
+        $migrationIdentity = $this->migrationPlanIdentity($migration);
+        $now = gmdate(DATE_ATOM);
+        $operation = new LifecycleOperationRecord(
+            $plan->operationIdentity(), $transition->classification(), $manifest->contract()->targetWebcoreVersion(),
+            $manifest->contract()->releaseIdentity(), $payload->archiveSha256(), $payload->stagingPath(),
+            hash('sha256', implode(':', array_map(static fn (StagedFile $file): string => $file->path() . ':' . $file->sha256(), $payload->files()))),
+            $applyPlan->identity(), LifecycleOperationRecord::PREPARING, 0, null, $migrationIdentity, null, $now, $now
+        );
+
+        $lock = $this->mutex->acquire();
+        if (!$lock instanceof InstallationLock) { $payload->cleanup(); return new PackageLifecycleResult(false, 'blocked', 'Another lifecycle operation is already running.', $transition, $migration); }
+        $session = null;
+        try {
+            $this->maintenance->enter($operation);
+            if ($plan->removalActions() !== []) {
+                if (is_array($confirmation)) $confirmation = DestructivePlanConfirmation::fromArray($confirmation);
+                if (!$confirmation instanceof DestructivePlanConfirmation) {
+                    $this->maintenance->clear($operation->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Typed destructive confirmation is required.'));
+                    return new PackageLifecycleResult(false, 'rejected', 'Typed destructive confirmation is required.', $transition, $migration, $plan->operationIdentity());
+                }
+                if ($authorizedActorIdentity !== null && $confirmation->actorAuthorizationEvidence()->actorIdentity() !== $authorizedActorIdentity) {
+                    $this->maintenance->clear($operation->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Destructive actor identity is not the current authorized actor.'));
+                    return new PackageLifecycleResult(false, 'rejected', 'Destructive actor identity is not authorized for this request.', $transition, $migration, $plan->operationIdentity());
+                }
+                $this->v3ConfirmationAuthority->accept($confirmation, $plan);
+            }
+
+            $context = new WebcoreMutationContext($operation, $applyPlan, $transition, $migration, $lock, \Copot\Core\BackupRecovery\FilesystemRecoveryPlan::fromV3Plan($plan));
+            $session = $this->v3RecoveryBoundary->enter($context);
+            $evidence = $session->evidence();
+            if (!isset($evidence['identity'], $evidence['manifest'], $evidence['state'])) throw new \RuntimeException('V3 recovery evidence is incomplete.');
+            $operation = $operation->bindRecovery((string) $evidence['identity'], (string) $evidence['manifest'], (string) $evidence['state']);
+            $this->maintenance->update($operation);
+            $session->authorize();
+
+            $captured = false;
+            $result = $this->v3Executor->execute(
+                $plan, $payload, $source, $operation, $this->operationStore ?? throw new \RuntimeException('Lifecycle operation store is unavailable.'), $this->v3Applier,
+                $this->liveGuard,
+                static function () use (&$captured, $session): bool { $captured = $session->ready(); return $captured; },
+                $plan->removalActions() === [] ? null : $this->v3ConfirmationAuthority,
+                $plan->removalActions() === [] ? null : $confirmation
+            );
+            if ($result->status() !== WebcoreApplyResult::AWAITING_WU6) {
+                $session->fail($result->reason());
+                return new PackageLifecycleResult(false, strtolower($result->status()), $result->reason(), $transition, $migration, $plan->operationIdentity());
+            }
+            $latest = $this->maintenance->record();
+            if (!$latest instanceof LifecycleOperationRecord) throw new \RuntimeException('V3 lifecycle operation disappeared before migration.');
+            $latest = $latest->advance(LifecycleOperationRecord::MIGRATING, $latest->fileCursor(), $latest->lastVerifiedPath());
+            $this->maintenance->update($latest);
+            $migrationResult = $migration->migrations() === []
+                ? new MigrationRunResult(MigrationRunResult::NOOP, [])
+                : ($this->v3MigrationRunner)($migration, $plan->operationIdentity(), $transition->classification());
+            if (!$migrationResult instanceof MigrationRunResult || $migrationResult->status() === MigrationRunResult::INDETERMINATE) {
+                $reason = $migrationResult instanceof MigrationRunResult ? $migrationResult->reason() : 'V3 migration outcome is indeterminate.';
+                $latest = $this->maintenance->record();
+                if ($latest instanceof LifecycleOperationRecord) $this->maintenance->update($latest->advance(LifecycleOperationRecord::INDETERMINATE, $latest->fileCursor(), $latest->lastVerifiedPath(), MigrationRunResult::INDETERMINATE, $reason));
+                $session->fail($reason);
+                return new PackageLifecycleResult(false, 'indeterminate', $reason, $transition, $migration, $plan->operationIdentity());
+            }
+            if (!in_array($migrationResult->status(), [MigrationRunResult::COMPLETED, MigrationRunResult::NOOP], true)) {
+                $reason = $migrationResult->reason();
+                $latest = $this->maintenance->record();
+                if ($latest instanceof LifecycleOperationRecord) $this->maintenance->update($latest->advance(LifecycleOperationRecord::BLOCKED, $latest->fileCursor(), $latest->lastVerifiedPath(), $migrationResult->status(), $reason));
+                $session->fail($reason);
+                return new PackageLifecycleResult(false, 'blocked', $reason, $transition, $migration, $plan->operationIdentity());
+            }
+            $latest = $this->maintenance->record();
+            if (!$latest instanceof LifecycleOperationRecord) throw new \RuntimeException('V3 lifecycle operation disappeared before finalization.');
+            $this->maintenance->update($latest->advance(LifecycleOperationRecord::AWAITING_WU6, $latest->fileCursor(), $latest->lastVerifiedPath(), $migrationResult->status()));
+            $session->complete();
+            $final = $this->healthCoordinator->finalizeV3($plan->operationIdentity(), $manifest->contract(), $plan, $applyPlan, $migration, $this->liveGuard, ($this->connection)(), $this->sourceInventoryArtifacts, ($this->runtimeChecks)());
+            if ($final->status() === HealthIntegrityCommitResult::COMPLETED) {
+                $payload->cleanup();
+                return new PackageLifecycleResult(true, 'completed', '', $transition, $migration, $plan->operationIdentity());
+            }
+            return new PackageLifecycleResult(false, strtolower($final->status()), $final->reason(), $transition, $migration, $plan->operationIdentity());
+        } catch (\Throwable $exception) {
+            if ($session instanceof ProtectedWebcoreMutationSession) { try { $session->fail($exception->getMessage()); } catch (\Throwable) {} }
+            try { if (($this->maintenance->record()?->phase() ?? null) !== LifecycleOperationRecord::INDETERMINATE) $this->maintenance->update(($this->maintenance->record() ?? $operation)->advance(LifecycleOperationRecord::BLOCKED, 0, null, null, $exception->getMessage())); } catch (\Throwable) {}
+            return new PackageLifecycleResult(false, 'blocked', $exception->getMessage(), $transition, $migration, $plan->operationIdentity());
+        } finally {
+            try { if ($payload instanceof StagedPayload && $this->maintenance->record() === null) $payload->cleanup(); } catch (\Throwable) {}
+            $lock->release();
+        }
+    }
+
+    private function migrationPlanIdentity(CoreMigrationPlan $migration): string
+    {
+        return hash('sha256', implode("\n", array_map(
+            static fn (CoreMigrationDescriptor $descriptor): string => $descriptor->id() . ':' . $descriptor->checksum(),
+            array_filter($migration->migrations(), static fn ($descriptor): bool => $descriptor instanceof CoreMigrationDescriptor)
+        )));
+    }
+
 
     public function adopt(string $zip): PackageLifecycleResult
     {

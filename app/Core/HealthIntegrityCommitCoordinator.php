@@ -95,6 +95,65 @@ final class HealthIntegrityCommitCoordinator
         }
     }
 
+    public function finalizeV3(
+        string $operationId,
+        PackageContract $package,
+        V3SourceRelativePlan $plan,
+        WebcoreApplyPlan $applyPlan,
+        CoreMigrationPlan $migrationPlan,
+        LiveTreePathGuard $liveGuard,
+        PDO $connection,
+        SourceInventoryArtifactStore $sourceArtifacts,
+        array $runtimeChecks = []
+    ): HealthIntegrityCommitResult {
+        $lock = $this->mutex->acquire();
+        if (!$lock instanceof InstallationLock) {
+            return new HealthIntegrityCommitResult(HealthIntegrityCommitResult::FAILED, new HealthGateMatrix([HealthGateResult::fail('mutex', 'Another lifecycle operation is already running.')]), 'Another lifecycle operation is already running.', $operationId);
+        }
+        try {
+            $record = $this->maintenance->record();
+            if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId || $record->phase() !== LifecycleOperationRecord::AWAITING_WU6) {
+                return $this->failure('operation', 'Lifecycle operation is not awaiting WU6.', $operationId);
+            }
+            $identity = $this->identityGates($record, $package, $applyPlan, $migrationPlan);
+            $target = $plan->package()->targetInventory();
+            if (!$target instanceof CanonicalTargetInventory || $target->fingerprint() !== $plan->targetFingerprint()) {
+                return $this->failure('target-inventory', 'V3 target inventory identity is unavailable.', $operationId, $identity);
+            }
+            $gates = new HealthGateMatrix(array_merge(
+                $identity->gates(),
+                $this->integrity->verify($package, $liveGuard, $target)->gates(),
+                $this->databaseHealth->verify($connection)->gates(),
+                $this->migrationHealth->verify($connection, $this->migrationRegistry, null)->gates(),
+                $this->runtimeHealth->verify($runtimeChecks)->gates()
+            ));
+            if (!$gates->passed()) return $this->failure('health', $gates->failureReason(), $operationId, $gates);
+
+            $latest = $this->maintenance->record();
+            if (!$latest instanceof LifecycleOperationRecord || $latest->operationId() !== $operationId || $latest->phase() !== LifecycleOperationRecord::AWAITING_WU6) {
+                return $this->failure('operation', 'Lifecycle operation changed before commit.', $operationId, $gates);
+            }
+            $source = $sourceArtifacts->publish($target, $package->releaseIdentity(), PackageContract::V3_MANIFEST_CONTRACT_VERSION, $package->sourceTreeIdentity());
+            $migrationIdentity = $this->migrationHealth->identity($connection);
+            $state = new CommittedLifecycleState(
+                $package->targetWebcoreVersion(), $package->releaseIdentity(), $package->sourceTreeIdentity(),
+                $package->manifestContractVersion(), $migrationPlan->virtualFinalSchemaIdentity() ?? 'canonical-current',
+                $migrationIdentity, new \DateTimeImmutable('now'), $package->integrityIdentity(), $source->reference()
+            );
+            $this->committedStore->commitWithSourceInventory($this->installationState, $state, $sourceArtifacts, $source);
+            try {
+                $this->maintenance->clear($latest->advance(LifecycleOperationRecord::COMPLETED, $latest->fileCursor(), $latest->lastVerifiedPath()));
+            } catch (\Throwable $exception) {
+                $pending = $latest->advance(LifecycleOperationRecord::CLEANUP_PENDING, $latest->fileCursor(), $latest->lastVerifiedPath(), $latest->migrationOutcome(), 'Committed state is complete; lifecycle cleanup is pending.');
+                try { $this->maintenance->update($pending); } catch (\Throwable) {}
+                return new HealthIntegrityCommitResult(HealthIntegrityCommitResult::CLEANUP_PENDING, $gates, $exception->getMessage(), $operationId);
+            }
+            return new HealthIntegrityCommitResult(HealthIntegrityCommitResult::COMPLETED, $gates, '', $operationId);
+        } catch (\Throwable $exception) {
+            return $this->failure('finalization', $exception->getMessage(), $operationId);
+        } finally { $lock->release(); }
+    }
+
     private function retryCleanup(
         LifecycleOperationRecord $record,
         PackageContract $package,
