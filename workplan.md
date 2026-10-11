@@ -450,10 +450,10 @@ Planning action: KEEP DEFERRED / NO RELEASE, TAG OR IMPLEMENTATION AUTHORITY
 
 ### Project Logging — Project State Checkpoint & Activity Journal Rollover
 Class: PROJECT GOVERNANCE CAPABILITY / ACTIVE CONCEPT TRIAL
-Status: UNIFIED PLANNING MODEL / TWO INDEPENDENT OBJECT LIFECYCLES / NOT GOVERNANCE-PROMOTED / ROLLOVER UNTESTED
+Status: UNIFIED CONCEPT RECONCILED / TWO INDEPENDENT OBJECT LIFECYCLES / ACTIVE TRIAL / NOT GOVERNANCE-PROMOTED / JOURNAL ROLLOVER UNTESTED
 
 Sources:
-- `concepts/copot_checkpoint_devlog_project_governance_trial_concept.md` [EXISTING PRIMARY SOURCE; AWAITING CONCEPT RECONCILIATION]
+- `concepts/copot_checkpoint_devlog_project_governance_trial_concept.md` [PRIMARY; UNIFIED CONCEPT RECONCILED 2026-10-11]
 
 Conceptual scope and boundaries:
 - Project Logging is proposed as a governance-regulated project capability, a peer of Documentation in responsibility rather than a replacement for authoritative contracts or repository history.
@@ -469,9 +469,9 @@ Conceptual scope and boundaries:
 Open decisions:
 - Exact checkpoint acceptance/validation gates for different project baseline types.
 - Rollover trigger policy, tag namespace/identity, historical retention verification, and operational trial.
-- Future reconciliation of the primary Concept and any governance promotion remain separate decisions.
+- Primary Concept reconciliation completed; exact rollover policy, operational trial, and any governance promotion remain separate decisions.
 
-Planning action: REGISTER UNIFIED PROJECT LOGGING SCOPE / RETAIN INDEPENDENT OBJECT LIFECYCLES / RECONCILE CONCEPT WHEN AUTHORIZED / NO RULE AMENDMENT / NO TAG OR CLEANUP AUTHORITY
+Planning action: CONCEPT RECONCILED / DEFINE BOUNDED JOURNAL ROLLOVER TRIAL AND VALIDATION / NO RULE AMENDMENT / NO TAG OR CLEANUP AUTHORITY
 
 ### Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation
 Class: DURABLE CONCEPT / IMPLEMENTATION-STATE INVENTORY
