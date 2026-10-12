@@ -55,12 +55,14 @@ Current durable planning state:
   COMPLETE / durable at `ab2ef3ab254c04513128d9385fb2c57662e52ad9`;
   WU3 System Email COMPLETE / ACCEPTED / durable at
   `fc4bf7754005b85ad890be32749f9c17f218c4e9`; WU4 Redirects COMPLETE /
-  ACCEPTED. WU5 Seven-Tab Integration & Hardening is IMPLEMENTED / INTEGRATED /
-  ACCEPTANCE REVIEW PENDING: its WU2/WU3/WU4 HARD dependencies are satisfied,
-  and technical implementation is integrated at
-  `35ff0e050ac485520878bca7832110acd844deb4`. One existing Modules
-  presentation CSS/class expectation failure requires regression classification
-  before WU5 acceptance; WU5 is not yet ACCEPTED or CLOSED.
+  ACCEPTED. WU5 Seven-Tab Integration & Hardening is COMPLETE / ACCEPTED / CLOSED
+  (BOUNDED): its WU2/WU3/WU4 HARD dependencies were satisfied; accepted
+  implementation is integrated at
+  `35ff0e050ac485520878bca7832110acd844deb4`.
+  Existing Modules test assertion/source-shape mismatch was reproduced at
+  pre-WU5 baseline `14a2ff73f7fcc8143a9feabb4a3410dd284e7cf5` and
+  current WU5 baseline, and is retained as separate pre-existing test debt.
+  Seven-Tab WU6 is now dependency-eligible but NOT STARTED / NOT ACCEPTED.
   Specific legacy runtimes still require per-instance proof and separate
   reconciliation authorization.
 - Package Lifecycle Forward-Update Bootstrap Authority Reconciliation:
@@ -1810,9 +1812,14 @@ Seven-Tab WU5 implementation checkpoint (2026-10-12):
 - Codex reported WU5 16 assertions PASS, Email suites 28/32/23/24/28/15 PASS, System Health 10 and Redirects 15 PASS; PHP lint and diff check PASS. Existing Modules presentation test failure attributed to older CSS/class expectation remains UNRESOLVED pending focused source/baseline comparison; no claim of full Modules regression PASS.
 - WU5 implementation INTEGRATED / ACCEPTANCE PENDING. Seven-Tab WU6 dependency remains unsatisfied until WU5 acceptance/closure. No live runtime, production reconciliation or release action performed.
 
+Seven-Tab WU5 governance acceptance and closure (2026-10-12):
+- Bounded WU5 integration at `35ff0e050ac485520878bca7832110acd844deb4` ACCEPTED / CLOSED based on Codex's focused evidence: WU5 16, Email 28/32/23/24/28/15, System Health 10 and Redirects 15 assertions PASS; source integration verified.
+- The sole Modules presentation source-string assertion `tests/wu4_batch2_site_settings_modules.php:150` FAIL is reproducible at pre-WU5 `14a2ff73f7fcc8143a9feabb4a3410dd284e7cf5` and current state with identical message. Modules view, CSS and JS blobs are unchanged; test debt is NOT counted as PASS, and is not a WU5-created regression. No Modules code or test correction is implicitly authorized by closure.
+- Seven-Tab WU6 dependency on WU5 is now satisfied; cross-capability acceptance, human/product gates and independent operational validation remain WU6 work. No claim of full Seven-Tab workstream closure or production eligibility.
+
 ## 9. Immediate Next Planning Target
 
-Current immediate target: validate Seven-Tab WU5 Modules presentation regression and reconcile bounded acceptance under accepted `docs/58` contract. A read-only
+Current immediate target: Seven-Tab Site Settings WU6 Cross-Capability Acceptance & Closure under accepted `docs/58` contract; WU5 accepted/closed and its dependency gate satisfied. A read-only
 dependency audit on 2026-10-12 confirmed existing guarded legacy adoption and
 forward-reconciliation authority; the former bootstrap-authority blocker is
 superseded. HARD WU2/WU3/WU4 dependencies are satisfied. WU5 is READY for
