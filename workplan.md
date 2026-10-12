@@ -55,10 +55,12 @@ Current durable planning state:
   COMPLETE / durable at `ab2ef3ab254c04513128d9385fb2c57662e52ad9`;
   WU3 System Email COMPLETE / ACCEPTED / durable at
   `fc4bf7754005b85ad890be32749f9c17f218c4e9`; WU4 Redirects COMPLETE /
-  ACCEPTED. WU5 Seven-Tab Integration & Hardening is READY FOR IN-CONTRACT
-  IMPLEMENTATION: its WU2/WU3/WU4 HARD dependencies are satisfied and the
-  separate forward-update bootstrap authority exists via guarded adoption and
-  legacy reconciliation routes. WU5 remains NOT IMPLEMENTED / NOT ACCEPTED.
+  ACCEPTED. WU5 Seven-Tab Integration & Hardening is IMPLEMENTED / INTEGRATED /
+  ACCEPTANCE REVIEW PENDING: its WU2/WU3/WU4 HARD dependencies are satisfied,
+  and technical implementation is integrated at
+  `35ff0e050ac485520878bca7832110acd844deb4`. One existing Modules
+  presentation CSS/class expectation failure requires regression classification
+  before WU5 acceptance; WU5 is not yet ACCEPTED or CLOSED.
   Specific legacy runtimes still require per-instance proof and separate
   reconciliation authorization.
 - Package Lifecycle Forward-Update Bootstrap Authority Reconciliation:
@@ -1803,10 +1805,14 @@ authorization. The Site Settings architecture Concept separately records
 capability-gated product projection and the bounded Database adoption
 reconciliation item.
 
+Seven-Tab WU5 implementation checkpoint (2026-10-12):
+- Codex integrated `35ff0e050ac485520878bca7832110acd844deb4` on `main`; five changed view/route/test files verified, implementing seven-tab integration and canonical EmailOperatorService delegation.
+- Codex reported WU5 16 assertions PASS, Email suites 28/32/23/24/28/15 PASS, System Health 10 and Redirects 15 PASS; PHP lint and diff check PASS. Existing Modules presentation test failure attributed to older CSS/class expectation remains UNRESOLVED pending focused source/baseline comparison; no claim of full Modules regression PASS.
+- WU5 implementation INTEGRATED / ACCEPTANCE PENDING. Seven-Tab WU6 dependency remains unsatisfied until WU5 acceptance/closure. No live runtime, production reconciliation or release action performed.
+
 ## 9. Immediate Next Planning Target
 
-Current immediate target: Seven-Tab Site Settings Completion & Hardening
-WU5 Integration & Hardening under its accepted `docs/58` contract. A read-only
+Current immediate target: validate Seven-Tab WU5 Modules presentation regression and reconcile bounded acceptance under accepted `docs/58` contract. A read-only
 dependency audit on 2026-10-12 confirmed existing guarded legacy adoption and
 forward-reconciliation authority; the former bootstrap-authority blocker is
 superseded. HARD WU2/WU3/WU4 dependencies are satisfied. WU5 is READY for
