@@ -29,7 +29,7 @@ $read = static fn (string $path): string => (string) file_get_contents($basePath
 $routes = $read('routes/site_settings.php');
 $view = $read('resources/views/admin/site-settings.php');
 $bootstrap = $read('bootstrap/app.php');
-$assert(!str_contains($view, "'security' => 'Security'") && !str_contains($view, "'email' => 'Email'") && !str_contains($view, 'site-settings-security') && !str_contains($view, 'site-settings-email'), 'Withdrawn Security or Email areas remain on the Site Settings product surface.');
+$assert(str_contains($view, "'security' => 'Security'") && str_contains($view, "'email' => 'Email'") && str_contains($view, 'site-settings-security') && str_contains($view, 'site-settings-email'), 'Accepted Security or Email areas are missing from the Site Settings product surface.');
 $assert(str_contains($view, "'health' => 'System Health'") && str_contains($routes, 'SystemHealthDashboardConsumer'), 'System Health is not retained as the capability-backed Site Settings area.');
 $assert(str_contains($bootstrap, 'new SiteSettingsModuleHealthProducer($app)') && str_contains($bootstrap, 'SystemHealthAggregator'), 'Existing accepted Module health composition was not retained.');
 $assert(!str_contains($bootstrap, 'findings() === []'), 'Sufficient zero-finding health evidence is still suppressed.');
