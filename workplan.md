@@ -1817,6 +1817,10 @@ Seven-Tab WU5 governance acceptance and closure (2026-10-12):
 - The sole Modules presentation source-string assertion `tests/wu4_batch2_site_settings_modules.php:150` FAIL is reproducible at pre-WU5 `14a2ff73f7fcc8143a9feabb4a3410dd284e7cf5` and current state with identical message. Modules view, CSS and JS blobs are unchanged; test debt is NOT counted as PASS, and is not a WU5-created regression. No Modules code or test correction is implicitly authorized by closure.
 - Seven-Tab WU6 dependency on WU5 is now satisfied; cross-capability acceptance, human/product gates and independent operational validation remain WU6 work. No claim of full Seven-Tab workstream closure or production eligibility.
 
+## Main Runtime Acceptance Decision — 2026-10-12
+
+User-approved operational policy: main COPOT XAMPP installation is the development mirror and target for human/operational acceptance; the former immutable restriction is revoked. Required files and database changes are delivered via Package Lifecycle development patch/update/upgrade, not manual direct mutation. Such lifecycle artifacts do not require public repository releases. Separate disposable installation is reserved for mutation testing, debugging, and risk isolation, not final human acceptance. Keep durable repository source, installed main-runtime state, and human-accepted version distinct. Each main-runtime operation still needs its own verified plan, eligibility, recovery safeguards, and applicable authorization; this policy does not grant blanket mutation permission. Seven-Tab WU6 remains ACCEPTANCE BLOCKED pending operational evidence and product review.
+
 ## 9. Immediate Next Planning Target
 
 Current immediate target: Seven-Tab Site Settings WU6 Cross-Capability Acceptance & Closure under accepted `docs/58` contract; WU5 accepted/closed and its dependency gate satisfied. A read-only
