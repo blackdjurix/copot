@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-10-11 23:16:20 WIB
+Date version: 2026-10-14 15:52:00 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -510,7 +510,7 @@ Planning action: KEEP DEFERRED / NO RELEASE, TAG OR IMPLEMENTATION AUTHORITY
 
 ### Project Logging — Project State Checkpoint & Activity Journal Rollover
 Class: PROJECT GOVERNANCE CAPABILITY / ACTIVE CONCEPT TRIAL
-Status: UNIFIED CONCEPT RECONCILED / TWO INDEPENDENT OBJECT LIFECYCLES / ACTIVE TRIAL / NOT GOVERNANCE-PROMOTED / JOURNAL ROLLOVER UNTESTED
+Status: UNIFIED CONCEPT RECONCILED / TWO INDEPENDENT OBJECT LIFECYCLES / ACTIVITY JOURNAL ROLLOVER OPERATIONALLY DEMONSTRATED / POLICY TRIAL ACCEPTED / NOT GOVERNANCE-PROMOTED
 
 Sources:
 - `concepts/copot_checkpoint_devlog_project_governance_trial_concept.md` [PRIMARY; UNIFIED CONCEPT RECONCILED 2026-10-11]
@@ -521,17 +521,19 @@ Conceptual scope and boundaries:
 - Object 2 — Activity Journal: `docs/devlog.md` is a running event record and chronological anchor. A Rollover is a separately named annotated Git tag targeting the exact committed complete journal state before cleanup; fresh-cycle journal content is committed normally, with previous tag reference. Git history preserves the earlier journal without needing an additional exported file.
 - Both object types share the Git commit timeline but have distinct save-point names, validity checks, retention semantics, and authorization gates. Neither is a release tag by default.
 - NRP, Handoff, acceptance, and closure are separate governance/project-flow domains. Their evidence or state may inform save-point validity, but none automatically triggers, defines, authorizes, or proves either Checkpoint or Rollover.
-- Checkpoint is not automatically made at NRP, and Rollover is not necessarily coupled to Handoff. Candidate rollover timing may include NRP, post-Handoff, or the first next-cycle meaningful record; policy and exact trigger remain subject to trial/acceptance rather than locked here.
+- Checkpoint is not automatically made at NRP. Activity Journal rollover is triggered for evaluation by material retrieval/usability burden or transition into an actually defined Workstream; a trigger does not authorize Git operations. Trial parameters: monitor approximately every 50 lines, provisionally evaluate around 150 lines (100–200 reference only), and consider content size/density, retrieval/append cost, and human usability. A new cycle preferably begins with its first meaningful event after authorized rollover; no automatic NRP/Handoff/WU-closure trigger or fixed-volume limit.
 - A Git annotated tag references a commit snapshot, not a file and not an automatic package ZIP. Tag creation, cleanup, artifact packaging, publication, and application release are distinct separately authorized actions.
 - Historical tags must be stable and verifiable; no automatic tag replacement, history rewrite, or discard of uncommitted/unverified journal content.
 - Current journal writes via GitHub connector are committed on `main`, despite the older Concept's trial-era description. This does not itself grant standing tag/cleanup authorization or promote the Concept into the Rule.
 
 Open decisions:
 - Exact checkpoint acceptance/validation gates for different project baseline types.
-- Rollover trigger policy, tag namespace/identity, historical retention verification, and operational trial.
-- Primary Concept reconciliation completed; exact rollover policy, operational trial, and any governance promotion remain separate decisions.
+- Empirical fair-volume optimization and semantic historical retrieval usability; independent recheck of annotated-tag object type and subsequent-commit historical recall evidence where required.
+- Activity Journal governance evaluation/promotion remains separate from the demonstrated rollover operation; Checkpoint validity policy remains independently open.
 
-Planning action: CONCEPT RECONCILED / DEFINE BOUNDED JOURNAL ROLLOVER TRIAL AND VALIDATION / NO RULE AMENDMENT / NO TAG OR CLEANUP AUTHORITY
+First rollover evidence: 2026-10-11 approved trial, tag `journal/rollover-20261011-755bfe7`, pre-cleanup commit `755bfe7edbacb948ddada6f950f544513222559e`; new cycle and pre-cleanup retrieval PASS, subsequent-commit historical recall reported PASS in 2026-10-14 evaluation. Historical initial `PENDING` event is retained as originally recorded.
+
+Planning action: ACTIVITY JOURNAL CONCEPT/WORKPLAN RECONCILED / PREPARE GOVERNANCE EVALUATION / CONTINUE CHECKPOINT VALIDITY POLICY SEPARATELY / NO RULE PROMOTION OR FUTURE TAG/CLEANUP AUTHORITY
 
 ### Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation
 Class: DURABLE CONCEPT / IMPLEMENTATION-STATE INVENTORY
