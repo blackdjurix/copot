@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-12 13:35:01 WIB
+Date version: 2026-10-14 15:32:32 WIB
 
 ## 1. Variabel
 
@@ -364,11 +364,14 @@ Panjang instruction harus proporsional terhadap task dan risk. Minimalisasi tida
 
 ## 8B. Boundary formatting artifact
 
-- Diskusi normal, reasoning, planning, dan Handoff tidak dibungkus sebagai actual code/config.
-- Fenced code block hanya untuk actual code atau literal config yang memang perlu dipresentasikan.
+- Untuk interaksi COPOT, gunakan Markdown, tabel, blockquote, fenced code block, dan editable Writing Block sebagai format penyajian.
+- Pilih format paling sederhana yang cukup untuk menyampaikan informasi secara jelas dan efektif.
+- Gunakan fenced code block bila actual code, literal config, atau content lain perlu dipertahankan dalam format exact.
+- Gunakan editable Writing Block untuk delivery artifact seperti Handoff atau Agent Instruction bila format artifact tersebut membutuhkan delivery yang dapat diedit.
 - Handoff mengikuti template Handoff dan tetap menjadi artifact continuity.
 - Agent Instruction mengikuti template Agent Instruction dan tetap menjadi execution contract.
 - Format presentasi tidak mengubah scope, authorization, validation, stop condition, atau lifecycle boundary.
+- Permintaan eksplisit user untuk output visual atau desain tetap ditangani sesuai kebutuhan output tersebut.
 
 ## 9. Governance Workplan dan Concept
 

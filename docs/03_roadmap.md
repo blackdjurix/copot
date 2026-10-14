@@ -199,6 +199,28 @@ M5 adds commerce-specific transactional capabilities.
 
 M6 supports distribution, tooling, integrations, and the broader extension ecosystem.
 
+## Adaptive Work Decomposition
+
+COPOT uses the following decomposition vocabulary when work benefits from
+structured subdivision:
+
+`Milestone → Workstream → Work Unit → Batch → Slice`
+
+These five levels are available decomposition choices, not a mandatory
+hierarchy. A level is used only when subdivision provides a concrete benefit
+for complexity, scope, risk, dependency, validation, or execution control.
+
+Work that remains manageable as one unit may proceed without creating an
+additional subdivision. Decomposition depth may be extended when required;
+the five listed levels are not a permanent maximum.
+
+The generic governance term `execution slice` is distinct from `Slice` as a
+roadmap decomposition level.
+
+Existing accepted Milestone and Work Unit structures remain historical and
+authoritative records. This definition does not reinterpret or retroactively
+restructure them.
+
 The Post-M1 Roadmap Review is complete.
 
 The older milestone-sequencing narrative below is retained as historical
