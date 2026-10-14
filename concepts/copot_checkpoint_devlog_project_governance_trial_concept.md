@@ -1,5 +1,5 @@
 # Project Logging — Project State Checkpoint & Activity Journal Rollover
-Date version: 2026-10-11 21:01:50 WIB
+Date version: 2026-10-14 15:51:52 WIB
 
 Status: ACTIVE TRIAL / PROJECT GOVERNANCE CANDIDATE / NOT PROMOTED
 Project: COPOT
@@ -34,8 +34,8 @@ Activity Journal is a concise historical index, not a duplicate of detailed evid
 - Save point: at journal rollover, create an independently named annotated Git tag pointing to the exact committed snapshot containing the full previous journal. Verify the tag target and historical ability to retrieve `docs/devlog.md` before changing the working journal.
 - Cleanup: after successfully verifying the prior journal tag, replace only the working journal contents with a fresh header, reference to the previous journal tag/commit, and when available the first new event. Make the reset and first write in one ordinary commit when operationally feasible. Never rewrite Git history, force-move/delete a historical tag, or silently discard uncommitted journal content.
 - No additional exported file or ZIP is required for journal rollover; historical file versions are recovered from the tagged Git snapshot.
-- Candidate timing includes at NRP, after Handoff, or first meaningful record of a new cycle. These are examples and possible evidence/conditions, not mandatory triggers, policy locks, or standing cleanup authorization.
-- Rollover itself remains UNTESTED / NOT AUTHORIZED TO EXECUTE under this Concept until separately accepted operational parameters and bounded action authorization exist.
+- Rollover evaluation is triggered by material retrieval/usability burden or by a transition into a new, actually defined Workstream. Workstream transitions are semantic rollover boundaries irrespective of journal size; where no Workstream exists, no artificial Workstream is created. A trigger does not grant standing Git-tag, cleanup, or write authorization; execute only after the applicable explicit authorization and safety gates. Prefer the first meaningful write of the approved new cycle where practical.
+- First operational rollover was executed on 2026-10-11 under specific user authorization: historical tag `journal/rollover-20261011-755bfe7` anchors pre-cleanup commit `755bfe7edbacb948ddada6f950f544513222559e`. The new `docs/devlog.md` cycle and pre-cleanup historical retrieval are recorded as successful. A subsequent-commit historical retrieval PASS is reported in the 2026-10-14 evaluation; independent verification of annotated object type and current retrieval evidence remains a separate validation claim, not inferred from the original journal `PENDING` record.
 
 ## Operational capability and executor routing (trial observation)
 - GPT can evaluate meaningful activity and record authorized journal entries directly to `docs/devlog.md` on canonical `main` through the available GitHub connector. Each successful write creates a normal commit; check the current blob SHA/remote HEAD and verify persistence.
@@ -44,8 +44,8 @@ Activity Journal is a concise historical index, not a duplicate of detailed evid
 
 ## Journal format and cycle-range trial decisions
 - Retain the existing `YYYY-MM-DD HH:mm:ss WIB     [EVENT_TYPE] Description` record format during this trial. No demonstrated defect or balanced cost/benefit evaluation currently warrants a format change. Event labels remain open-ended. Contextual phase/workstream references can live naturally in the description when they help recall; do not introduce a mandatory phase field, registry, or index now.
-- **Candidate only, not accepted rollover policy:** favor fair-volume / historical usability as the primary reason to evaluate rollover, with development phase or milestone meaning as helpful human-recall context. A journal cycle may span multiple logical phases or workstreams; a phase may span multiple cycles. NRP, Handoff, and WU/milestone closure are not mandatory boundaries or automatic triggers.
-- No numerical record-count threshold, automatic rotation, phase-level trigger, or standing rollover authorization has been accepted. Use the first meaningful write of an approved new journal cycle as a candidate execution moment when practical, without requiring the rollover to coincide with session bootstrap.
+- **Accepted trial parameters, not fixed volume limits:** monitor approximately every 50 lines; provisionally evaluate around 150 lines, with 100–200 lines as a reference range rather than execution threshold. Consider content bytes, record density, retrieval/append cost, and human usability. Evaluate earlier or later when actual conditions justify it; optimal volume remains empirical/open.
+- Workstream transition and material retrieval/usability burden are distinct rollover triggers. A journal may span multiple Work Units or smaller subdivisions in the same Workstream, and one long Workstream may span multiple journal cycles. NRP, Handoff, WU closure, or milestone closure alone are not automatic triggers. Rollover requires separately authorized execution and successful tag/retrieval safety checks; no automatic rotation or standing write permission is established.
 
 ## First rollover operational acceptance trial
 - Trial objective: show that the committed complete prior journal can be recalled through its **annotated** rollover tag both immediately before reset and after the fresh journal commit and later subsequent `main` commits.
@@ -63,9 +63,9 @@ Activity Journal is a concise historical index, not a duplicate of detailed evid
 
 ## Operational proof and remaining decisions
 - PROVEN: existing Git-based journal appends produce separate history commits; historical accepted-baseline checkpoint and package exist.
-- NOT PROVEN: end-to-end annotated journal tag -> verified historical recall -> working journal reset + new record -> subsequent history recall.
-- OPEN: checkpoint acceptance/validation classes, exact journal rollover trigger/default, tag naming/uniqueness and permission route, collision/concurrency handling, retention and failure reconciliation.
+- DEMONSTRATED: the 2026-10-11 first rollover established the historical tag, verified old journal retrieval before replacement, and initialized a new journal cycle; later historical retrieval after independent `main` commits is reported PASS in the 2026-10-14 evaluation. The historical `PENDING` entry remains truthful for its original moment.
+- OPEN / REFINEMENT: checkpoint acceptance/validation classes; empirical fair-volume optimization and semantic retrieval usability; independent recheck of annotated-tag object type and subsequent-commit recall evidence when required. Existing tag uniqueness, SHA/concurrency, retention, and failure safety gates remain applicable; they are not untested design proposals.
 - Review benefit, operational cost, reproducibility and authority leakage after a bounded journal rollover trial. Promotion to project Rule requires independent evaluation and explicit user acceptance.
 
 ## Next planning action
-Retain the unified Project Logging Concept and two independent objects. Reconcile Workplan source-status wording; prepare a bounded trial proposal without executing tag or cleanup. Do not amend Rule or claim governance promotion by virtue of Concept reconciliation.
+Retain the two independent Project Logging objects. Reconcile Workplan current status to the demonstrated first Activity Journal rollover and accepted trial parameters; proceed to bounded governance evaluation of Activity Journal policy. Keep Checkpoint validity policy on its independent track. No Rule promotion or future tag/cleanup authorization follows from this Concept reconciliation.
