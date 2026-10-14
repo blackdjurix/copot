@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-14 15:32:32 WIB
+Date version: 2026-10-14 17:56:56 WIB
 
 ## 1. Variabel
 
@@ -376,6 +376,25 @@ Panjang instruction harus proporsional terhadap task dan risk. Minimalisasi tida
 ## 9. Governance Workplan dan Concept
 
 Workplan dan Concept adalah planning layer untuk sequencing, dependency, provenance, pre-contract, dan pekerjaan deferred.
+
+### Activity Journal dan Rollover
+
+Activity Journal adalah historical index ringkas untuk meaningful events dan significant activities COPOT. Journal menggunakan `docs/devlog.md` sebagai working journal dan Git history sebagai historical recall. Journal tidak menggantikan Workplan, Concept, Contract, Authoritative Documentation, Repository state, atau evidence detail.
+
+Activity Journal dapat mencatat aktivitas lintas domain, termasuk Project, Workplan, Concept, Pre-contract, Contract, Implementation, Documentation, Governance, validation, acceptance, negative findings, dan perubahan pemahaman yang material. Pencatatan tidak menciptakan authority, authorization, acceptance, closure, NRP, promotion, atau implementation permission. Aktivitas yang sudah cukup tercatat pada artifact authoritative tidak perlu diduplikasi kecuali journal entry menambah nilai recall yang material.
+
+Rollover Activity Journal dievaluasi ketika retrieval atau usability burden menjadi material, atau ketika project memasuki Workstream yang memang didefinisikan. Trigger tidak menjadi authorization Git dan tidak memaksakan fixed-volume threshold. Checkpoint, NRP, Handoff, acceptance, dan closure tidak otomatis memicu atau membuktikan rollover.
+
+Rollover hanya boleh melanjutkan reset working journal setelah:
+
+1. journal lama committed dan current Repository state diverifikasi;
+2. annotated Git tag unik dibuat pada exact pre-cleanup commit;
+3. tag identity, target, dan historical retrieval `docs/devlog.md` diverifikasi;
+4. tidak ada concurrent modification atau uncommitted journal content yang hilang.
+
+Jika tag creation atau historical retrieval gagal, hentikan proses sebelum working journal di-reset. Historical tag tidak boleh dipindahkan, dihapus, atau ditimpa. Tag creation, journal cleanup, commit, push, publication, dan release tetap mengikuti authorization serta gate masing-masing.
+
+Checkpoint dan Activity Journal adalah dua object Project Logging yang independen. Keduanya dapat berbagi Git timeline, tetapi memiliki tujuan, evidence, timing, retention, dan lifecycle yang berbeda.
 
 ### Non-synchronization
 

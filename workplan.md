@@ -509,8 +509,8 @@ Relations:
 Planning action: KEEP DEFERRED / NO RELEASE, TAG OR IMPLEMENTATION AUTHORITY
 
 ### Project Logging — Project State Checkpoint & Activity Journal Rollover
-Class: PROJECT GOVERNANCE CAPABILITY / ACTIVE CONCEPT TRIAL
-Status: UNIFIED CONCEPT RECONCILED / TWO INDEPENDENT OBJECT LIFECYCLES / ACTIVITY JOURNAL ROLLOVER OPERATIONALLY DEMONSTRATED / POLICY TRIAL ACCEPTED / NOT GOVERNANCE-PROMOTED
+Class: PROJECT GOVERNANCE CAPABILITY / GOVERNANCE-PROMOTED ACTIVITY JOURNAL POLICY
+Status: UNIFIED CONCEPT RECONCILED / TWO INDEPENDENT OBJECT LIFECYCLES / ACTIVITY JOURNAL POLICY PROMOTED / ROLLOVER OPERATIONALLY DEMONSTRATED
 
 Sources:
 - `concepts/copot_checkpoint_devlog_project_governance_trial_concept.md` [PRIMARY; UNIFIED CONCEPT RECONCILED 2026-10-11]
@@ -529,11 +529,11 @@ Conceptual scope and boundaries:
 Open decisions:
 - Exact checkpoint acceptance/validation gates for different project baseline types.
 - Empirical fair-volume optimization and semantic historical retrieval usability; independent recheck of annotated-tag object type and subsequent-commit historical recall evidence where required.
-- Activity Journal governance evaluation/promotion remains separate from the demonstrated rollover operation; Checkpoint validity policy remains independently open.
+- Checkpoint validity policy remains independently open. Fair-volume optimization and historical retrieval usability remain continuous refinement topics, not automatic promotion blockers.
 
 First rollover evidence: 2026-10-11 approved trial, tag `journal/rollover-20261011-755bfe7`, pre-cleanup commit `755bfe7edbacb948ddada6f950f544513222559e`; new cycle and pre-cleanup retrieval PASS, subsequent-commit historical recall reported PASS in 2026-10-14 evaluation. Historical initial `PENDING` event is retained as originally recorded.
 
-Planning action: ACTIVITY JOURNAL CONCEPT/WORKPLAN RECONCILED / PREPARE GOVERNANCE EVALUATION / CONTINUE CHECKPOINT VALIDITY POLICY SEPARATELY / NO RULE PROMOTION OR FUTURE TAG/CLEANUP AUTHORITY
+Planning action: ACTIVITY JOURNAL GOVERNANCE PROMOTED / RETAIN CONCEPT AND ROLLOVER EVIDENCE AS PROVENANCE / CONTINUE CHECKPOINT VALIDITY POLICY SEPARATELY / NO STANDING FUTURE TAG OR CLEANUP AUTHORITY
 
 ### Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation
 Class: DURABLE CONCEPT / IMPLEMENTATION-STATE INVENTORY
