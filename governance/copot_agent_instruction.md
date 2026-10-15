@@ -1,11 +1,19 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-10-01 22:49:21 WIB
+Date version: 2026-10-12 13:48:00 WIB
 
 ## Purpose
 
-This is a thin, task-specific execution contract for the `Project` Technical Executor.
+Ini adalah kontrak eksekusi yang ringkas, fokus, dan spesifik terhadap task untuk `Project` `Technical Executor`.
 
-Canonical governance identity: resolve from Rule variable `Agent Instruction`.
+Identitas governance canonical: resolve dari Variable `Agent Instruction` pada `Rule`.
+
+### Identitas `Rule`
+
+Dalam template ini, `Rule` berarti canonical project `Rule` terbaru yang di-resolve dari Variable `Rule` pada governance `Project`. `Rule` adalah sumber untuk Variable, authority boundary, dan routing governance yang digunakan oleh template ini.
+
+### Reference Variable
+
+Setiap Variable canonical yang digunakan template ini wajib di-resolve dari Variables pada `Rule` terbaru. Jangan mendefinisikan ulang, menginfer, atau mengganti value Variable berdasarkan memory, `Handoff`, context session sebelumnya, atau isi `Agent Instruction` yang sudah digenerate.
 
 ## Semantik title Agent Instruction
 
@@ -16,68 +24,70 @@ Format:
 `Project` <Continuity Boundary> — <Title>
 `<Instruction Title>`
 
-Baris pertama mengidentifikasi project, session atau continuity boundary, dan title continuity. Baris kedua menjelaskan pekerjaan teknis yang dilakukan oleh Technical Executor pada interaction atau bubble tersebut.
+Baris pertama mengidentifikasi `Project`, session atau continuity boundary, dan title continuity. Baris kedua menjelaskan pekerjaan teknis yang dilakukan oleh `Technical Executor` pada interaction atau bubble tersebut.
 
-`Instruction Title` harus berupa ringkasan pekerjaan teknis aktual, bukan salinan Handoff, Workplan, Concept, authorization, atau lifecycle governance. Jangan menambahkan prefix `AGENT INSTRUCTION` atau wrapper generik lain pada title yang dikirim ke Technical Executor.
+`Instruction Title` harus berupa ringkasan pekerjaan teknis aktual, bukan salinan `Handoff`, `Workplan`, `Concept`, authorization, atau lifecycle governance. Jangan menambahkan prefix `AGENT INSTRUCTION` atau wrapper generik lain pada title yang dikirim ke `Technical Executor`.
 
-It must be generated for the exact authorized execution slice. It is not a copy of the full Rule, Handoff, Workplan, or project lifecycle governance.
+`Agent Instruction` harus dibuat untuk exact execution slice yang sudah diotorisasi. `Agent Instruction` bukan salinan penuh `Rule`, `Handoff`, `Workplan`, atau governance lifecycle `Project`.
 
-Apply the minimum execution delta principle: include a field only when omitting it could cause a wrong target, wrong branch or anchor, unauthorized action, missed dependency, invalid validation, unsafe side effect, or missed stop condition.
+Terapkan prinsip minimum execution delta: masukkan field hanya bila menghilangkannya dapat menyebabkan target, branch atau anchor yang salah, action tanpa authorization, dependency terlewat, validation tidak valid, side effect yang tidak aman, atau stop condition terlewat.
 
 ### Internal generation and leakage boundary
 
-These governance-routing rules are for GPT's internal compilation process and must not be copied into a generated Agent Instruction. The generated instruction must contain only the execution delta required by the Technical Executor: target, exact payload, technical scope, authorization, dependency, validation, and stop condition.
+`Rule` routing governance ini hanya untuk proses kompilasi internal GPT dan tidak boleh disalin ke `Agent Instruction` yang digenerate. Instruction hanya boleh memuat execution delta yang dibutuhkan `Technical Executor`: target, exact payload, technical scope, authorization, dependency, validation, dan stop condition.
 
-Do not reproduce governance-only vocabulary or negative governance lists in a generated instruction unless the term is an exact technical input required for execution. Prefer generic execution boundaries such as `Execute only the supplied technical slice` and `Do not infer or expand requirements beyond the supplied payload.`
+Jangan meneruskan vocabulary yang hanya milik governance atau daftar larangan governance ke instruction, kecuali istilah tersebut adalah technical input exact yang memang dibutuhkan untuk eksekusi. Utamakan boundary generik seperti `Execute only the supplied technical slice` dan `Do not infer or expand requirements beyond the supplied payload.`
 
-Before delivery, perform a leakage preflight: remove governance wording that does not change execution, remove redundant prohibition lists, and verify that every remaining field is material to the authorized technical slice.
+Sebelum delivery, lakukan leakage preflight: hapus wording governance yang tidak mengubah eksekusi, hapus daftar larangan yang redundant, dan pastikan setiap field yang tersisa material terhadap technical slice yang diotorisasi.
 
-Do not copy automatically:
+Jangan otomatis menyalin:
 
-- full Handoff or lifecycle history;
-- internal project/session decision reasoning;
-- prior troubleshooting or old Git states;
-- full planning library or repository history;
-- thread-level saved-concept history unless one unresolved item changes execution.
+- full `Handoff` atau riwayat lifecycle;
+- reasoning keputusan internal `Project`/session;
+- troubleshooting sebelumnya atau state `Git` lama;
+- planning library penuh atau riwayat `Repository`;
+- riwayat saved `Concept` tingkat thread, kecuali ada satu item unresolved yang mengubah eksekusi.
 
 ## Instruction Format
 
-Generate each Agent Instruction using this delivery structure:
+Generate setiap `Agent Instruction` dengan struktur delivery berikut:
 
 1. `Title`
 2. `Current Project State`
 3. `Execution Instruction and Boundary`
-   - Project context;
-   - Target / Task;
-   - Scope;
-   - Authorization;
-   - Preconditions;
-   - Dependency;
-   - only the conditional modules material to the task: source reading, planning/Concept, pre-contract review, documentation, tools, or Git/repository.
+   - context `Project`;
+   - target / task;
+   - scope;
+   - authorization;
+   - precondition;
+   - dependency;
+   - hanya module conditional yang material terhadap task: source reading, planning/`Concept`, pre-contract review, documentation, tools, atau Git/`Repository`.
 4. `Execution Controls`
    - execution gates;
    - validation requirements;
    - stop conditions.
 
-`Title` uses the two-line title format defined above. `Current Project State` contains only verified state that can affect execution, such as repository/workspace identity, branch or anchor, runtime, dependency, or relevant prior result.
+`Title` memakai format dua baris yang didefinisikan di atas. `Current Project State` hanya memuat state terverifikasi yang dapat memengaruhi eksekusi, seperti identity repository/workspace, branch atau anchor, runtime, dependency, atau hasil sebelumnya yang relevan.
 
-`Execution Instruction and Boundary` is one integrated execution block. The conditional modules are context-dependent and may be placed where they make the instruction clearest; they do not need to be emitted as a separate block before or after the core fields.
+`Execution Instruction and Boundary` adalah satu blok eksekusi yang terintegrasi. Conditional modules bergantung pada konteks dan dapat ditempatkan di bagian yang paling memperjelas eksekusi; module tidak harus dikeluarkan sebagai blok terpisah sebelum atau sesudah field inti.
 
-This format is a usage-friendly delivery skeleton, not a requirement to include every field or module. Include only the minimum execution delta required to prevent a wrong target, unauthorized action, missed dependency, invalid validation, unsafe side effect, or missed stop condition. Omit repeated governance, history, or context that does not affect the authorized slice.
+Format ini adalah skeleton delivery yang usage-friendly, bukan kewajiban untuk memasukkan semua field atau module. Masukkan hanya minimum execution delta yang diperlukan untuk mencegah target yang salah, action tanpa authorization, dependency terlewat, validation tidak valid, side effect yang tidak aman, atau stop condition terlewat. Hilangkan governance, history, atau context berulang yang tidak memengaruhi slice yang diotorisasi.
 
-Do not add a generic report section to the Agent Instruction. Specify a required technical output only when the execution slice needs one; the Technical Executor returns execution evidence through the applicable delivery channel.
+Jangan menambahkan section report generik ke `Agent Instruction`. Tentukan technical output hanya bila execution slice membutuhkannya; `Technical Executor` mengembalikan evidence eksekusi melalui delivery channel yang berlaku.
 
 ## Current Project State
 
-- Project: `Project`
+- `Project`: `Project`
 - Continuity Boundary: `<Work Unit / batch / workstream / phase>`
-- Objective: `<single concrete objective>`
-- Repository/workspace: `<exact identity when material>`
+- Objective: `<objective konkret tunggal>`
+- Repository/workspace: `<identity exact bila material>`
 - Integration target: `Integration Target`
-- Runtime: `Primary Runtime` only when material
-- Applicable tool: resolve `Gateway` or `Prototyping` when material; otherwise None
+- Primary Runtime: `Primary Runtime` bila material
+- Runtime target: `Main Runtime / Disposable Runtime / None` bila material
+- Runtime purpose: `<development / integration / operational validation / isolated technical validation / human acceptance support / None>`
+- Applicable tool: resolve `Gateway` atau `Prototyping` bila material; selain itu None
 
-Use only verified state that can affect execution.
+Gunakan hanya state terverifikasi yang dapat memengaruhi eksekusi.
 
 ## Execution Instruction and Boundary
 
@@ -85,45 +95,45 @@ Use only verified state that can affect execution.
 
 - Delivery: `USER-MEDIATED / DIRECT TRANSFER`
 - Explicit direct-transfer request: `<YES / NO>`
-- Technical Executor: `Technical Executor`
-- Authorization source: `<exact source, scope, actor, and action; never a role pointer or generic accepted boundary>`
+- `Technical Executor`: `Technical Executor`
+- Authorization source: `<source, scope, actor, dan action yang exact; bukan role pointer atau accepted boundary generik>`
 
-Direct transfer is permitted only when explicitly requested by the user. Transport method does not expand authority or scope.
+Direct transfer hanya boleh dilakukan bila diminta secara eksplisit oleh user. Metode transport tidak memperluas authority atau scope.
 
-Delivery context must identify the applicable route:
+Delivery context harus mengidentifikasi route yang berlaku:
 
-- local writable workspace;
-- remote/cloud execution;
-- local runtime validation;
-- user-mediated delivery.
+- workspace lokal yang writable;
+- eksekusi remote/cloud;
+- validation runtime lokal;
+- delivery yang dimediasi user.
 
-Use only the route required by this execution slice.
+Gunakan hanya route yang dibutuhkan execution slice ini.
 
 ### Task
 
-- Task: `<concrete technical action>`
+- Task: `<action teknis konkret>`
 - Mode: `AUDIT / IMPLEMENTATION / DEBUG / VALIDATION / TECHNICAL PRE-CONTRACT REVIEW`
-- In scope: `<specific files, behavior, or evidence>`
-- Out of scope: `<specific exclusions>`
-- Preconditions: `<required starting state>`
+- In scope: `<file, behavior, atau evidence yang spesifik>`
+- Out of scope: `<pengecualian spesifik>`
+- Preconditions: `<starting state yang diperlukan>`
 
-Do not infer adjacent work from visible defects, future Work Units, dependencies, or available time.
+Jangan menginfer pekerjaan berdekatan dari defect yang terlihat, Work Unit mendatang, dependency, atau waktu yang tersedia.
 
 ### Technical pre-contract review
 
-Use this mode only when GPT/user explicitly requests technical analysis of a supplied pre-contract or contract draft.
+Gunakan mode ini hanya bila GPT/user secara eksplisit meminta analisis teknis atas pre-contract atau draft contract yang disediakan.
 
-Required package:
+Package yang wajib tersedia:
 
-- exact pre-contract or contract payload, inline or through an exact verifiable source;
-- technical review scope;
-- allowed technical delta;
-- explicit authorization for proposal, application, or drafting action;
-- required output and validation.
+- payload pre-contract atau contract yang exact, secara inline atau melalui source exact yang dapat diverifikasi;
+- scope review teknis;
+- technical delta yang diizinkan;
+- authorization eksplisit untuk proposal, application, atau drafting action;
+- output dan validation yang diperlukan.
 
-The Technical Executor may identify technical gaps, feasibility constraints, dependencies, interface/data-flow issues, validation gaps, or technical acceptance details. It may propose a technical delta and may apply that delta only when the authorization explicitly permits application. It must not infer missing semantic content or expand the supplied boundary.
+`Technical Executor` boleh menemukan technical gap, constraint feasibility, dependency, masalah interface/data-flow, validation gap, atau detail technical acceptance. `Technical Executor` boleh mengusulkan technical delta dan hanya boleh menerapkannya bila authorization secara eksplisit mengizinkan penerapan. `Technical Executor` tidak boleh menginfer semantic content yang hilang atau memperluas boundary yang disediakan.
 
-Required review statuses:
+Status review yang wajib digunakan:
 
 - `TECHNICAL REVIEW COMPLETE`;
 - `CHANGES PROPOSED`;
@@ -133,173 +143,181 @@ Required review statuses:
 - `SEMANTIC PAYLOAD NOT SUPPLIED`;
 - `BLOCKED`.
 
-`READY TO PROMOTE` means technically ready for GPT/user review. It does not by itself make the draft authoritative. If the exact payload or verifiable source is missing, stop with `SEMANTIC PAYLOAD NOT SUPPLIED`.
+`READY TO PROMOTE` berarti siap secara teknis untuk direview GPT/user. Status ini tidak dengan sendirinya membuat draft menjadi authoritative. Bila payload exact atau source yang dapat diverifikasi tidak tersedia, berhenti dengan `SEMANTIC PAYLOAD NOT SUPPLIED`.
 
 ### Authorization boundary
 
 Authorized:
 
-- `<exact technical actions>`
-- `<exact repository/runtime actions, if any>`
-- `<exact validation actions>`
+- `<action teknis yang exact>`
+- `<action repository/runtime yang exact, bila ada>`
+- `<action validation yang exact>`
 
-Not authorized:
+Tidak diotorisasi:
 
-- scope expansion or boundary changes;
-- acceptance, closure, or lifecycle decisions outside the supplied execution slice;
-- planning, deferred-scope, or session changes unless explicitly included;
-- release, tag, publication, deployment, or integration unless explicitly included;
-- unrelated branch or runtime cleanup;
-- fixing adjacent findings merely because they are discovered.
+- scope expansion atau perubahan boundary;
+- keputusan acceptance, closure, atau lifecycle di luar execution slice yang disediakan;
+- perubahan planning, deferred-scope, atau session kecuali dimasukkan secara eksplisit;
+- release, tag, publication, deployment, atau integration kecuali dimasukkan secara eksplisit;
+- cleanup branch atau runtime yang tidak terkait;
+- memperbaiki finding berdekatan hanya karena finding tersebut ditemukan.
 
-A finding is not authorization. Report it and stop or continue only within the written execution boundary.
+Finding bukan authorization. Laporkan finding tersebut dan berhenti, atau lanjut hanya di dalam execution boundary tertulis.
 
-Authorization to validate does not authorize remediation. Authorization to modify implementation does not authorize documentation, integration, release, branch cleanup, or adjacent Work Unit changes unless explicitly stated.
+Authorization untuk validation bukan authorization untuk remediation. Authorization untuk mengubah implementation bukan authorization untuk documentation, integration, release, branch cleanup, atau perubahan Work Unit berdekatan kecuali dinyatakan secara eksplisit.
 
-Do not treat a Handoff field, technical acceptance result, role assignment, dependency satisfaction, test pass, or available capability as authorization. The written authorization source must be exact and traceable.
+Jangan memperlakukan field `Handoff`, hasil technical acceptance, role assignment, dependency yang satisfied, test pass, atau capability yang tersedia sebagai authorization. Sumber authorization tertulis harus exact dan traceable.
 
 ### Before starting
 
-1. Verify repository/workspace identity and material starting state.
-2. Verify branch, HEAD, tracking, and unexpected changes when Git is material.
-3. Inspect only target files, direct dependencies, relevant documentation, and focused tests.
-4. Confirm the written authorization and preconditions.
-5. Protect unrelated state.
+1. Verifikasi identity repository/workspace dan starting state yang material.
+2. Verifikasi branch, HEAD, tracking, dan perubahan tidak terduga bila Git material.
+3. Inspeksi hanya file target, direct dependency, dokumentasi relevan, dan test yang fokus.
+4. Konfirmasi authorization tertulis dan precondition.
+5. Lindungi state yang tidak terkait.
 
-If verified state materially differs from the instruction, stop. Do not reset, clean, stash, overwrite, or normalize automatically.
+Jika state terverifikasi berbeda secara material dari instruction, berhenti. Jangan reset, clean, stash, overwrite, atau menormalkan state secara otomatis.
 
 ### Dependency boundary
 
-- Direct dependency: `<source, artifact, branch, runtime, or capability>`
+- Direct dependency: `<source, artifact, branch, runtime, atau capability>`
 - Dependency status: `<satisfied / unsatisfied / unknown / blocked>`
-- Dependency evidence: `<exact evidence>`
-- Dependency action authorized in this slice: `<yes/no and exact action>`
+- Dependency evidence: `<evidence exact>`
+- Dependency action authorized in this slice: `<yes/no dan action exact>`
 
-Do not resolve or implement a dependent task merely because its dependency is visible. Report unsatisfied or newly discovered dependencies.
+Jangan menyelesaikan atau mengimplementasikan task dependent hanya karena dependency-nya terlihat. Laporkan dependency yang unsatisfied atau baru ditemukan.
 
 ## Conditional Execution Modules
 
-Include only the modules material to the execution slice. Their internal order is contextual.
+Masukkan hanya module yang material terhadap execution slice. Urutan internalnya bergantung pada konteks.
 
 ### Conditional tools
 
-#### `Primary Runtime`
+#### `Primary Runtime`, `Main Runtime`, dan `Disposable Runtime`
 
-Use only when runtime validation is in scope. Treat runtime copy as disposable/non-authoritative. Do not turn a runtime port into a durable project identifier.
+Gunakan `Primary Runtime` sebagai default runtime environment. Dalam COPOT, `Primary Runtime` menunjuk ke `XAMPP` dan `Main Runtime` adalah instance existing yang dipakai untuk development, integration, debugging, validation normal, serta operational/human acceptance bila task dapat dijalankan dengan aman pada existing project state.
+
+Perubahan implementation/package-owned filesystem atau database state pada `Main Runtime` harus melalui Package Lifecycle yang berlaku. Jangan melakukan direct mutation bila task membutuhkan route lifecycle berbasis package.
+
+State `Main Runtime` adalah evidence eksekusi atau installed state. Jangan mengklaim human acceptance, closure, atau NRP hanya dari state tersebut.
+
+Gunakan `Disposable Runtime` hanya bila dibutuhkan isolation material, termasuk clean-state validation, destructive mutation testing, failure injection, incompatible-version coexistence, unknown blast radius, atau isolated technical validation yang eksplisit.
+
+`Disposable Runtime` bukan pengganti `Main Runtime` untuk operational atau human acceptance. Runtime bukan authority source Repository; rekonsiliasikan source state, installed state, package provenance, dan evidence bila material.
 
 #### `Gateway`
 
-Use only when remote access is in scope. Verify target runtime and route. Do not expose services, change firewall/network configuration, or alter credentials without explicit authorization.
+Gunakan hanya bila remote access masuk scope. Verifikasi target runtime dan route. Jangan expose service, mengubah konfigurasi firewall/network, atau mengubah credential tanpa authorization eksplisit.
 
 #### `Prototyping`
 
-Use only when visual/prototype work is in scope. Treat prototype output as reference until accepted. Do not infer implementation authorization from a design artifact.
+Gunakan hanya bila pekerjaan visual/prototype masuk scope. Perlakukan output prototype sebagai reference sampai diterima. Jangan menginfer implementation authorization dari design artifact.
 
 ### Git
 
-Apply only when Git is material and authorized:
+Terapkan hanya bila Git material dan diotorisasi:
 
-- verify repository, branch, HEAD, upstream, and unexpected state;
-- use short-lived feature branch when required;
-- preserve local/remote distinction;
-- commit/push/integrate/delete branches only when explicitly authorized;
-- do not rebase, reset, clean, stash, force-push, or rewrite accepted history unless explicitly authorized.
-- branch closure requires accepted-tip, containment/zero-ahead, remote, and workspace verification before deletion when deletion is authorized.
+- verifikasi repository, branch, HEAD, upstream, dan state tidak terduga;
+- gunakan feature branch berumur pendek bila diperlukan;
+- pertahankan perbedaan local/remote;
+- lakukan commit/push/integrate/delete branch hanya bila diotorisasi secara eksplisit;
+- jangan rebase, reset, clean, stash, force-push, atau rewrite history yang sudah diterima kecuali diotorisasi secara eksplisit;
+- branch closure memerlukan verifikasi accepted-tip, containment/zero-ahead, remote, dan workspace sebelum deletion bila deletion diotorisasi.
 
-The remote repository/branch remains durable authority. Do not treat an unpushed commit, runtime copy, or disposable workspace as an authoritative checkpoint. After an authorized push, independently verify the resulting remote tip when possible.
+Remote repository/branch tetap menjadi durable authority. Jangan memperlakukan commit yang belum dipush, runtime copy, atau disposable workspace sebagai checkpoint authoritative. Setelah push yang diotorisasi, verifikasi remote tip yang dihasilkan secara independen bila memungkinkan.
 
 ### Source of truth
 
-Use sources by function:
+Gunakan source berdasarkan fungsinya:
 
-- Rule for governance and authorization boundaries;
-- project instructions and Authoritative Documentation for accepted project constraints;
-- implementation for observed behavior;
-- tests/evidence for demonstrated behavior;
-- identified planning section only when explicitly required by this instruction;
-- Handoff only through the minimum context reproduced here.
+- `Rule` untuk boundary governance dan authorization;
+- project instructions dan Authoritative Documentation untuk constraint `Project` yang sudah diterima;
+- implementation untuk behavior yang diamati;
+- test/evidence untuk behavior yang terbukti;
+- section planning yang disebut hanya bila diwajibkan instruction ini;
+- `Handoff` hanya melalui context minimum yang direproduksi di sini.
 
-Do not request or reconstruct full continuity or planning artifacts.
+Jangan meminta atau merekonstruksi artifact continuity atau planning secara penuh.
 
-When material sources conflict, report the conflict and stop before substantive change.
+Bila source yang material bertentangan, laporkan conflict tersebut dan berhenti sebelum perubahan substantif.
 
-If documentation consistency is part of the task, inspect only the identified authoritative document and directly affected evidence. Do not perform a broad documentation rewrite for consistency alone.
+Jika konsistensi dokumentasi menjadi bagian task, inspeksi hanya dokumen authoritative yang disebutkan dan evidence yang terdampak langsung. Jangan melakukan rewrite dokumentasi luas hanya demi konsistensi.
 
 ### Progressive source reading
 
-Read in this order, expanding only when evidence is insufficient:
+Baca dengan urutan ini dan perluas hanya bila evidence belum cukup:
 
 1. project instructions;
 2. target source;
 3. direct dependencies;
-4. relevant tests;
-5. directly relevant documentation or contracts;
-6. additional sources only when required by an observed dependency or conflict.
+4. test yang relevan;
+5. dokumentasi atau contract yang relevan secara langsung;
+6. source tambahan hanya bila dibutuhkan oleh dependency atau conflict yang teramati.
 
-Do not ask the Technical Executor to reconstruct unavailable context. Translate only the execution delta required by this instruction.
+Jangan meminta `Technical Executor` merekonstruksi context yang tidak tersedia. Terjemahkan hanya execution delta yang dibutuhkan instruction ini.
 
 ### Planning-input boundary — internal GPT routing rule
 
-This section is an internal generation filter. Do not reproduce it as a governance explanation in a generated instruction. Render only the exact technical dependency or invariant that changes execution.
+Section ini adalah filter internal generation. Jangan mereproduksinya sebagai penjelasan governance di instruction yang digenerate. Render hanya dependency teknis atau invariant exact yang mengubah eksekusi.
 
-Planning artifacts are inputs, not implicit authorization.
+Planning artifact adalah input, bukan implicit authorization.
 
-- Do not implement an item merely because a planning source marks it `NEXT`, `ACTIVE`, or `PROVISIONAL`.
-- Do not auto-promote planning content into repository, contract, or roadmap authority.
-- Do not execute a deferred or future item merely because it is visible or referenced.
-- If planning context is material, name the exact target and reading purpose in this instruction.
-- If a Concept is material, identify its canonical title, source, relevant invariant, provenance, and unresolved technical dependency only.
-- Preserve stable Deferred Item identity when an explicitly authorized Deferred Item is in scope.
+- Jangan mengimplementasikan item hanya karena planning source menandainya `NEXT`, `ACTIVE`, atau `PROVISIONAL`.
+- Jangan otomatis mempromosikan planning content menjadi authority repository, contract, atau roadmap.
+- Jangan mengeksekusi item deferred atau future hanya karena item tersebut terlihat atau direferensikan.
+- Bila planning context material, sebutkan target exact dan tujuan pembacaannya di instruction ini.
+- Bila `Concept` material, identifikasi hanya canonical title, source, invariant relevan, provenance, dan technical dependency yang unresolved.
+- Pertahankan identity Deferred Item yang stabil bila Deferred Item tersebut diotorisasi dan masuk scope.
 
-Deferred Item statuses such as `Candidate`, `Unscheduled`, `future`, `KEEP DEFERRED`, `NOT APPLICABLE`, `REJECT`, or `SUPERSEDE` do not authorize execution.
+Status Deferred Item seperti `Candidate`, `Unscheduled`, `future`, `KEEP DEFERRED`, `NOT APPLICABLE`, `REJECT`, atau `SUPERSEDE` tidak mengotorisasi eksekusi.
 
 ### Conditional documentation and technical-evidence boundaries
 
-This section is an internal generation filter. In a generated instruction, include only the applicable technical operation and its evidence requirement.
+Section ini adalah filter internal generation. Di instruction yang digenerate, masukkan hanya operasi teknis yang berlaku dan kebutuhan evidence-nya.
 
-Use these boundaries only when the task explicitly includes them:
+Gunakan boundary ini hanya bila task secara eksplisit memasukkannya:
 
-- Documentation consistency: correct only materially stale or contradictory current-state wording against accepted implementation evidence; preserve historical records and avoid blind search-and-replace.
-- Technical evidence: report validation, possible human-required criteria, merge eligibility, blockers, and final Git/environment state. Do not make decisions outside the supplied technical slice.
-- Branch lifecycle: perform closure or deletion only when explicitly authorized and only after containment, zero-ahead, remote, and clean-state evidence is verified.
+- Konsistensi dokumentasi: koreksi hanya wording current-state yang material stale atau contradictory terhadap evidence implementation yang diterima; pertahankan historical record dan hindari search-and-replace buta.
+- Technical evidence: laporkan validation, kriteria yang mungkin membutuhkan manusia, kelayakan merge, blocker, dan final state Git/environment. Jangan membuat keputusan di luar technical slice yang disediakan.
+- Branch lifecycle: lakukan closure atau deletion hanya bila diotorisasi secara eksplisit dan setelah evidence containment, zero-ahead, remote, dan clean-state terverifikasi.
 
-### Minimum technical Concept continuity input
+### Minimum technical `Concept` continuity input
 
-When Concept continuity is material, include only:
+Bila continuity `Concept` material, masukkan hanya:
 
-- Concept identity and source;
-- required technical decision or invariant;
-- relevant revision/provenance;
-- unresolved technical dependency;
-- exact reading purpose.
+- identity dan source `Concept`;
+- technical decision atau invariant yang diperlukan;
+- revision/provenance yang relevan;
+- technical dependency yang unresolved;
+- tujuan pembacaan yang exact.
 
-Do not request or consume the full Concept set, full Handoff, or unrelated planning history.
+Jangan meminta atau menggunakan full `Concept` set, full `Handoff`, atau planning history yang tidak terkait.
 
 ## Execution Controls
 
 ### Execution gates
 
-Use only the gates material to this task:
+Gunakan hanya gate yang material terhadap task ini:
 
-- Gate 1 — inspect/plan: target, starting state, dependencies, and authorization verified;
-- Gate 2 — modify: implementation authorization and preconditions verified;
-- Gate 3 — validate: relevant technical checks completed or limitation recorded;
-- Gate 4 — repository/external action: separate authorization and final-state review verified.
+- Gate 1 — inspect/plan: target, starting state, dependency, dan authorization terverifikasi;
+- Gate 2 — modify: implementation authorization dan precondition terverifikasi;
+- Gate 3 — validate: pemeriksaan teknis relevan selesai atau limitation dicatat;
+- Gate 4 — repository/external action: authorization terpisah dan review final state terverifikasi.
 
-Do not cross a gate until its conditions are satisfied. Completion of one gate does not authorize the next. Stop before an unapproved gate.
+Jangan melewati gate sampai kondisinya terpenuhi. Selesainya satu gate tidak mengotorisasi gate berikutnya. Berhenti sebelum gate yang belum disetujui.
 
 ### Execution rules
 
-- Make the minimum sufficient change.
-- Preserve unrelated behavior and state.
-- Do not modify production, shared state, credentials, external services, or remote/network configuration without explicit authorization.
-- Do not perform repository mutation unless written authorization includes that mutation.
-- Do not treat test failure as permission to fix neighboring code or fixtures.
-- Do not make decisions outside the supplied technical slice.
+- lakukan perubahan minimum yang cukup;
+- pertahankan behavior dan state yang tidak terkait;
+- jangan mengubah production, shared state, credential, external service, atau konfigurasi remote/network tanpa authorization eksplisit;
+- jangan melakukan mutation `Repository` kecuali authorization tertulis mencakup mutation tersebut;
+- jangan memperlakukan test failure sebagai izin untuk memperbaiki code atau fixture yang berdekatan;
+- jangan membuat keputusan di luar technical slice yang disediakan.
 
 ### Validation
 
-Run validation closest to the target first. Report exact checks and distinguish:
+Jalankan validation yang paling dekat dengan target terlebih dahulu. Laporkan pemeriksaan exact dan bedakan:
 
 - passed;
 - failed;
@@ -308,37 +326,37 @@ Run validation closest to the target first. Report exact checks and distinguish:
 - blocked;
 - not applicable.
 
-Map acceptance evidence to the technical criteria written in this instruction. Do not claim project acceptance.
+Petakan acceptance evidence ke kriteria teknis yang tertulis di instruction ini. Jangan mengklaim project acceptance.
 
 Validation rules:
 
-1. start closest to the change;
-2. expand only by actual impact;
-3. never claim unexecuted tests;
-4. distinguish `PASS`, `FAILED`, `INSPECTED ONLY`, `NOT RUN`, `BLOCKED`, and `NOT APPLICABLE`;
-5. review the final diff and accidental changes;
-6. do not repeat accepted suites without a concrete regression reason;
-7. documentation-only work does not require runtime regression unless review exposes a behavior inconsistency.
+1. mulai dari pemeriksaan yang paling dekat dengan perubahan;
+2. perluas hanya berdasarkan impact aktual;
+3. jangan pernah mengklaim test yang tidak dijalankan;
+4. bedakan `PASS`, `FAILED`, `INSPECTED ONLY`, `NOT RUN`, `BLOCKED`, dan `NOT APPLICABLE`;
+5. review final diff dan perubahan tidak sengaja;
+6. jangan mengulang suite yang sudah diterima tanpa alasan regression yang konkret;
+7. pekerjaan yang hanya menyentuh dokumentasi tidak membutuhkan runtime regression kecuali review menemukan inkonsistensi behavior.
 
 ### Stop conditions
 
-Stop and report when:
+Berhenti dan laporkan bila:
 
-- the execution slice is complete;
-- a material source/authority conflict exists;
-- starting state drift is detected;
-- required access, capability, dependency, or approval is missing;
-- a finding requires scope expansion;
-- the next action is destructive, irreversible, external, or separately gated;
-- continuing would modify an adjacent Work Unit, project boundary, or unrelated artifact.
+- execution slice sudah selesai;
+- terdapat conflict source/authority yang material;
+- starting state drift terdeteksi;
+- access, capability, dependency, atau approval yang dibutuhkan tidak tersedia;
+- sebuah finding membutuhkan scope expansion;
+- action berikutnya bersifat destructive, irreversible, external, atau memiliki gate terpisah;
+- kelanjutan pekerjaan akan mengubah Work Unit berdekatan, boundary `Project`, atau artifact yang tidak terkait.
 
 ## Continuation
 
-For same-thread continuation, carry only the changed target, anchor, authorization, scope, validation, stop condition, and unresolved technical issue. Do not repeat unchanged governance, environment, or history. This is an internal GPT routing rule; the generated continuation must contain only the material technical delta.
+Untuk continuation dalam thread yang sama, bawa hanya target, anchor, authorization, scope, validation, stop condition, dan technical issue unresolved yang berubah. Jangan mengulang governance, environment, atau history yang tidak berubah. Ini adalah routing rule internal GPT; continuation yang digenerate hanya boleh memuat technical delta yang material.
 
-For same-thread continuation with accepted state, use `CHECK-AND-RUN`: verify only material drift in target, authorization, repository/branch anchor, dependencies, workspace, and relevant external state. Do not repeat equivalent continuity verification. If material drift, new evidence, authority conflict, or a changed boundary exists, return to full verification and stop when the issue cannot be resolved safely.
+Untuk continuation dalam thread yang sama dengan state yang sudah accepted, gunakan `CHECK-AND-RUN`: verifikasi hanya drift material pada target, authorization, anchor repository/branch, dependency, workspace, dan external state yang relevan. Jangan mengulang verification continuity yang setara. Jika ada drift material, evidence baru, conflict authority, atau boundary berubah, kembali ke full verification dan berhenti bila issue tidak dapat diselesaikan dengan aman.
 
-Use a concise continuation token such as:
+Gunakan continuation token yang ringkas seperti:
 
 `Continue the current task.`
 
@@ -350,6 +368,6 @@ Use a concise continuation token such as:
 
 `All other prior boundaries remain unchanged.`
 
-The controlling GPT/user evaluates those decisions from this report.
+GPT/user yang mengendalikan project mengevaluasi keputusan tersebut dari report ini.
 
-If execution continues in the same technical thread, return a concise continuation token containing the execution slice, final technical state, unresolved technical issue, and exact next technical check. Do not use the token to authorize a new scope or project decision.
+Jika eksekusi berlanjut di thread teknis yang sama, kembalikan continuation token ringkas yang memuat execution slice, final technical state, technical issue unresolved, dan technical check berikutnya yang exact. Jangan gunakan token untuk mengotorisasi scope baru atau keputusan project.

@@ -43,7 +43,8 @@ final class PackageLifecycleService
         ?CanonicalSchemaBaselineCatalog $baselineCatalog = null,
         private $recoveryEvidenceValidator = null,
         private ?NetZeroRetirementService $netZeroRetirement = null,
-        private $awaitingWu6EvidenceValidator = null
+        private $awaitingWu6EvidenceValidator = null,
+        private ?NormalPackageLifecycleRestoreService $normalRestore = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -64,6 +65,14 @@ final class PackageLifecycleService
             return new PackageLifecycleResult(false, 'unavailable', 'Net-zero retirement is unavailable.');
         }
         return $this->netZeroRetirement->retire($operationId, $plan, $context);
+    }
+
+    public function restore(string $operationId, string $reason): PackageLifecycleResult
+    {
+        if (!$this->normalRestore instanceof NormalPackageLifecycleRestoreService) {
+            return new PackageLifecycleResult(false, 'unavailable', 'Normal package restore is unavailable.', operationId: $operationId);
+        }
+        return $this->normalRestore->restore($operationId, $reason);
     }
 
     public function plan(string $zip): PackageLifecycleResult

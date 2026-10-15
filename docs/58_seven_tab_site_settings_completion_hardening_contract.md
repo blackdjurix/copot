@@ -582,18 +582,17 @@ Contract status:
 
 - authoritative contract: YES;
 - semantic scope locked: YES;
-- implementation authorization: SATISFIED for bounded work within this
-  contract scope under the current Rule and applicable execution instructions;
-- repository implementation mutation authorization: bounded to that accepted
-  contract scope and applicable execution instructions;
-- release/tag/publication/deployment authorization: NONE.
+- workstream scope defined and constrained by this contract: YES;
+- work outside this contract scope: NOT IMPLIED;
+- release/tag/publication/deployment: outside this contract scope unless
+  separately governed elsewhere.
 
-Contract ini menjadi authority workstream setelah user promotion authorization terhadap exact reviewed candidate.
+Contract ini menjadi authoritative boundary untuk workstream yang didefinisikan
+di dalamnya.
 
-Technical design dan implementation tetap bounded by the relevant Work Unit
-and execution instruction. Contract authority does not imply WU5 completion or
-acceptance, adjacent scope, release, tag, publication, deployment, or
-destructive action.
+Technical design dan implementation tetap bounded by the relevant Work Unit.
+Contract authority does not imply completion or acceptance of any Work Unit,
+adjacent scope, release, tag, publication, deployment, or destructive action.
 
 ## 25. Promotion provenance
 

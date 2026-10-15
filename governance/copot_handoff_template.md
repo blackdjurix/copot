@@ -1,5 +1,5 @@
 # copot <Batas Continuity> — <Judul>
-Date version: 2026-10-08 12:06:26 WIB
+Date version: 2026-10-12 13:35:01 WIB
 
 ## Batas penggunaan
 
@@ -151,9 +151,14 @@ Cantumkan hanya bila material:
 - Runtime identity/endpoint/port: `<current value / None>`
 - Isolation reason: `<required when DISPOSABLE; otherwise None>`
 - Runtime state relevant to continuity: `<state / None>`
+- Installed version/state: `<current installed version or state / None>`
+- Human-accepted version/state: `<accepted version or state / None>`
+- Package provenance: `<package/release identity and source / None>`
+- Synchronization delta: `<Repository-to-Main-Runtime delta / None>`
 - Divergence or lifecycle issue: `<value or None>`
 
 Runtime copy bukan authority Repository.
+Installed state, human-accepted state, dan Repository source state harus dicatat sebagai state yang berbeda bila material terhadap continuity. Installed state tidak dengan sendirinya berarti human acceptance, closure, atau NRP.
 
 ## Acceptance dan closure
 

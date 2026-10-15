@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-08 12:06:26 WIB
+Date version: 2026-10-14 15:22:39 WIB
 
 ## 1. Variabel
 
@@ -218,9 +218,17 @@ XAMPP adalah environment runtime/validation lokal inti.
 
 `Main Runtime` adalah instance runtime existing yang mencerminkan current project state. Identity, endpoint, port, dan state aktualnya bersifat dinamis dan dicatat pada Handoff atau execution context yang relevan.
 
+`Main Runtime` juga merupakan development mirror dan target operational/human acceptance bila workstream atau contract yang berlaku menetapkannya sebagai target acceptance. Installed state pada Main Runtime harus dapat direkonsiliasi terhadap Repository source state dan package provenance yang relevan. Installed state tidak dengan sendirinya membuktikan human acceptance, closure, atau NRP.
+
 `Disposable Runtime` adalah isolated runtime yang dibuat on-demand bila material isolation diperlukan. Disposable Runtime bukan default, bukan checkpoint durable, dan bukan replacement otomatis untuk Main Runtime.
 
 Gunakan `Disposable Runtime` hanya bila task membutuhkan clean state, destructive isolation, failure injection, incompatible-version coexistence, unknown blast radius, atau isolated validation yang eksplisit. `Repository` tetap menjadi authority untuk durable implementation state.
+
+Perubahan implementation/package-owned filesystem dan database state pada Main Runtime dilakukan melalui Package Lifecycle yang berlaku, bukan direct mutation. Operator-owned data, runtime-owned data, dan external/shared state tetap mengikuti boundary serta authorization masing-masing.
+
+Patch, update, dan upgrade untuk development atau operational validation tidak memerlukan public release atau Git tag kecuali contract, release policy, atau target action secara eksplisit mensyaratkannya.
+
+Repository source state, Main Runtime installed state, dan human-accepted state adalah state yang berbeda dan harus direkonsiliasi bila ketiganya material terhadap pekerjaan.
 
 - Mirror runtime XAMPP bukan authority Repository.
 - Runtime copy dan disposable runtime bukan checkpoint durable.
@@ -310,6 +318,8 @@ Setiap referensi authorization harus mengidentifikasi source, scope, actor, dan 
 
 Contract yang telah diterima, dipromosikan, dan durable merupakan perwujudan authorization agreement GPT/user untuk seluruh pekerjaan dalam contract scope dan tidak memerlukan fresh authorization.
 
+Operational mutation terhadap Main Runtime hanya tercakup bila target, route, dan mutation tersebut termasuk dalam contract atau authorization operational yang berlaku. Release, publication, deployment, dan action Repository lifecycle lain tetap mengikuti gate masing-masing.
+
 - Registrasi Workplan/Concept bukan implementation authorization.
 - Handoff bukan execution authorization.
 - Agent Instruction hanya mengotorisasi exact execution slice yang tertulis.
@@ -354,11 +364,14 @@ Panjang instruction harus proporsional terhadap task dan risk. Minimalisasi tida
 
 ## 8B. Boundary formatting artifact
 
-- Diskusi normal, reasoning, planning, dan Handoff tidak dibungkus sebagai actual code/config.
-- Fenced code block hanya untuk actual code atau literal config yang memang perlu dipresentasikan.
+- Untuk interaksi COPOT, gunakan Markdown, tabel, blockquote, fenced code block, dan editable Writing Block sebagai format penyajian.
+- Pilih format paling sederhana yang cukup untuk menyampaikan informasi secara jelas dan efektif.
+- Gunakan fenced code block bila actual code, literal config, atau content lain perlu dipertahankan dalam format exact.
+- Gunakan editable Writing Block untuk delivery artifact seperti Handoff atau Agent Instruction bila format artifact tersebut membutuhkan delivery yang dapat diedit.
 - Handoff mengikuti template Handoff dan tetap menjadi artifact continuity.
 - Agent Instruction mengikuti template Agent Instruction dan tetap menjadi execution contract.
 - Format presentasi tidak mengubah scope, authorization, validation, stop condition, atau lifecycle boundary.
+- Permintaan eksplisit user untuk output visual atau desain tetap ditangani sesuai kebutuhan output tersebut.
 
 ## 9. Governance Workplan dan Concept
 

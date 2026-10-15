@@ -46,7 +46,7 @@ $assert(str_contains($routes, "can('security.manage')") && str_contains($routes,
 $assert(str_contains($routes, '$app->router()->post($securityPath') && str_contains($routes, '$securityPolicy->update'), 'Security policy mutation route is not composed through the canonical policy service.');
 $assert(str_contains($routes, '$app->selfSessions()->listOwn') && str_contains($view, "'/account/sessions/revoke-others'") && str_contains($view, "'/account/password'"), 'Security projection does not reuse canonical session and password authorities.');
 $assert(str_contains($routes, '$requireSettingsUser') && str_contains($routes, '$app->settings()->set(\'site\''), 'Generic Site Settings mutation boundary was not preserved.');
-$assert(!str_contains($view, "'email' => 'Email'"), 'Email was fabricated before the Email capability exists.');
+$assert(str_contains($view, "'email' => 'Email'"), 'Accepted Email projection is missing from Site Settings.');
 $assert(str_contains($policySource, 'requireRecentProof') && str_contains($policySource, 'beginTransaction') && str_contains($policySource, 'recordSecurityPolicyChange'), 'Security policy service does not enforce proof, atomic persistence, and event evidence.');
 
 $host = (string) Env::get('DB_HOST', '127.0.0.1');

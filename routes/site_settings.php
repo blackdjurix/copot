@@ -34,12 +34,23 @@ if (!is_string($adminPermission) || trim($adminPermission) === '') {
 $adminPermission = trim($adminPermission);
 $systemPath = $path . '/system';
 $securityPath = $path . '/security';
+$emailPath = $path . '/email';
+$emailCredentialPath = $emailPath . '/credential';
+$emailTestPath = $emailPath . '/test';
 $securityPolicy = new \Copot\Core\SecurityPolicyService(
     $app->settings(),
     $app->reauthentication(),
     $app->securityEvents(),
     $app->database()
 );
+$emailCredentials = new \Copot\Core\EmailCredentialBoundary($app->path('.env'));
+$emailConfiguration = new \Copot\Core\EmailConfigurationResolver($app->settings(), $emailCredentials);
+$emailOperator = new \Copot\Core\EmailOperatorService(
+    $app->settings(), $emailConfiguration, $emailCredentials,
+    new \Copot\Core\EmailTransport($emailConfiguration, $emailCredentials),
+    $app->reauthentication()
+);
+$redirectRepository = new \Copot\Core\RedirectRepository($app->database());
 $modulesProjection = new SiteSettingsModulesAdmin($app, new ModuleManagerAdmin($app));
 $hero = static fn (): HomepageHeroImageService => new HomepageHeroImageService(
     $app->settings(),
@@ -66,13 +77,14 @@ $requireSettingsUser = static function ($request) use ($app, $permission) {
 };
 
 $value = static fn (string $namespace, string $key, mixed $default = null): mixed => $app->settings()->get($namespace, $key, $default);
-$render = static function ($request, $user, array $errors = [], ?string $notice = null, int $status = 200, ?array $moduleDetail = null, ?array $securityValues = null) use ($app, $adminUrl, $path, $systemPath, $securityPath, $value, $hero, $modulesProjection, $permission, $securityPolicy): Response {
+$render = static function ($request, $user, array $errors = [], ?string $notice = null, int $status = 200, ?array $moduleDetail = null, ?array $securityValues = null, ?array $emailValues = null, ?array $emailFeedback = null) use ($app, $adminUrl, $path, $systemPath, $securityPath, $emailPath, $emailCredentialPath, $emailTestPath, $value, $hero, $modulesProjection, $permission, $securityPolicy, $emailOperator, $redirectRepository): Response {
     try {
         $canUpdateSettings = $user->can($permission);
         $canManageModules = $user->can('modules.manage');
         $canManageSystem = $user->can('system.webcore.manage');
         $canManageRedirects = $user->can('redirects.manage');
         $canManageSecurity = $user->can('security.manage');
+        $canManageEmail = $user->can('email.manage');
         $health = (new SystemHealthDashboardConsumer())->content($app->systemHealthReport($user));
         $selected = $canUpdateSettings ? $hero()->selected() : null;
         $media = $canUpdateSettings && $user->can('media.use') ? (new MediaRepository($app->database()))->paginate('image', 100, 0) : [];
@@ -85,11 +97,29 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             try { $retryEligible = $app->packageLifecycle()->retryEvidence($operationId); } catch (Throwable) { $retryEligible = false; }
         }
         if ($securityValues === null && $canManageSecurity) $securityValues = $securityPolicy->values();
+        if ($emailValues === null && $canManageEmail) {
+            $emailRead = $emailOperator->read($user);
+            if ($emailRead->succeeded()) $emailValues = $emailRead->toArray()['data'];
+            else $emailFeedback ??= ['type' => 'error', 'code' => $emailRead->code()];
+        }
+        $redirects = [];
+        $redirectsError = null;
+        if ($canManageRedirects) {
+            try { $redirects = $redirectRepository->all(); } catch (Throwable) { $redirectsError = 'Redirects are temporarily unavailable.'; }
+        }
         $securitySessions = [];
         if ($canManageSecurity && $app->auth()->durableSessionIdentity() !== null) {
             foreach ($app->selfSessions()->listOwn($user->id(), (string) $app->auth()->durableSessionIdentity()) as $entry) {
                 $securitySessions[] = $entry;
             }
+        }
+        $initialArea = 'health';
+        foreach ([
+            ['modules', $moduleDetail !== null], ['identity', $canUpdateSettings], ['system', $canManageSystem],
+            ['security', $canManageSecurity], ['email', $canManageEmail], ['modules', $canManageModules],
+            ['redirects', $canManageRedirects],
+        ] as [$candidate, $available]) {
+            if ($available) { $initialArea = $candidate; break; }
         }
         $view = $app->view()->render('admin/site-settings', [
             'path' => $path,
@@ -127,13 +157,21 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
             'installationId' => $canManageSystem ? $app->installationIdentity()->value() : null,
             'releasePath' => $app->path('release.json'),
             'csrfToken' => $app->csrf()->token(),
-            'initialArea' => $moduleDetail !== null ? 'modules' : ($canUpdateSettings ? 'identity' : ($canManageSystem ? 'system' : ($canManageSecurity ? 'security' : ($canManageModules ? 'modules' : ($canManageRedirects ? 'redirects' : 'health'))))),
+            'initialArea' => $initialArea,
             'canManageSystem' => $canManageSystem,
             'canUpdateSettings' => $canUpdateSettings,
             'canManageModules' => $canManageModules,
             'canManageRedirects' => $canManageRedirects,
             'canManageSecurity' => $canManageSecurity,
+            'canManageEmail' => $canManageEmail,
+            'emailPath' => $emailPath,
+            'emailCredentialPath' => $emailCredentialPath,
+            'emailTestPath' => $emailTestPath,
+            'emailValues' => $emailValues ?? [],
+            'emailFeedback' => $emailFeedback ?? ($request->input('email_notice') !== null ? ['type' => 'success', 'code' => $request->input('email_notice')] : null),
             'redirectsProjectionPath' => $adminUrl->childUrl('redirects'),
+            'redirects' => $redirects,
+            'redirectsError' => $redirectsError,
             'health' => $health,
             'moduleItems' => $canManageModules ? $modulesProjection->inventory() : [],
             'moduleDetail' => $moduleDetail,
@@ -151,7 +189,7 @@ $render = static function ($request, $user, array $errors = [], ?string $notice 
 // Keep the established capability list visible to source-level compatibility
 // checks; Redirects is added below without changing the generic settings gate.
 // adminNavigation()->add('Site Settings', $path, [$adminPermission, $permission, 'modules.manage', 'system.webcore.manage']
-$app->adminNavigation()->add('Site Settings', $path, array_merge([$adminPermission, $permission, 'modules.manage', 'system.webcore.manage'], ['redirects.manage', 'security.manage']), 'settings', 70);
+$app->adminNavigation()->add('Site Settings', $path, array_merge([$adminPermission, $permission, 'modules.manage', 'system.webcore.manage'], ['redirects.manage', 'security.manage', 'email.manage']), 'settings', 70);
 
 $app->router()->get($path, function ($request) use ($requireSurfaceUser, $render): Response {
     $user = $requireSurfaceUser($request); if ($user instanceof Response) return $user;
@@ -209,6 +247,62 @@ $app->router()->post($securityPath, function ($request) use ($app, $path, $rende
     }
 
     return $render($request, $user, $errors, null, 422, null, $values);
+});
+
+$requireEmailUser = static function ($request) use ($app, $adminPermission): mixed {
+    if (!$app->auth()->check()) return Response::redirect($app->adminUrl()->baseUrl());
+    $user = $app->auth()->user();
+    if (!$user || !$user->can($adminPermission) || !$user->can('email.manage')) return $app->adminErrors()->response($request, 403);
+    return $user;
+};
+
+$emailSubmittedValues = static function ($request): array {
+    $port = $request->post('email_smtp_port', '');
+    $port = is_scalar($port) && preg_match('/^[0-9]+$/', (string) $port) === 1 ? (int) $port : (string) $port;
+    return [
+        'transport' => [
+            'host' => (string) $request->post('email_smtp_host', ''),
+            'port' => $port,
+            'security' => (string) $request->post('email_smtp_security', ''),
+            'username' => (string) $request->post('email_smtp_username', ''),
+        ],
+        'sender' => [
+            'email' => (string) $request->post('email_sender_email', ''),
+            'name' => (string) $request->post('email_sender_name', ''),
+        ],
+        'credential' => ['configured' => false],
+    ];
+};
+
+$app->router()->post($emailPath, function ($request) use ($app, $path, $render, $requireEmailUser, $emailOperator, $emailSubmittedValues): Response {
+    $user = $requireEmailUser($request); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    $values = $emailSubmittedValues($request);
+    $result = $emailOperator->updateConfiguration($user, [
+        'smtp_host' => $values['transport']['host'], 'smtp_port' => $values['transport']['port'],
+        'smtp_security' => $values['transport']['security'], 'smtp_username' => $values['transport']['username'],
+        'sender_email' => $values['sender']['email'], 'sender_name' => $values['sender']['name'],
+    ]);
+    if ($result->succeeded()) return Response::redirect($path . '?email_notice=configuration_updated#email');
+    return $render($request, $user, [], null, 422, null, null, $values, ['type' => 'error', 'code' => $result->code()]);
+});
+
+$app->router()->post($emailCredentialPath, function ($request) use ($app, $path, $render, $requireEmailUser, $emailOperator): Response {
+    $user = $requireEmailUser($request); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    $secret = $request->post('email_credential', '');
+    $result = $emailOperator->replaceCredential($user, is_string($secret) ? $secret : '');
+    if ($result->succeeded()) return Response::redirect($path . '?email_notice=credential_updated#email');
+    return $render($request, $user, [], null, 422, null, null, null, ['type' => 'error', 'code' => $result->code()]);
+});
+
+$app->router()->post($emailTestPath, function ($request) use ($app, $path, $render, $requireEmailUser, $emailOperator): Response {
+    $user = $requireEmailUser($request); if ($user instanceof Response) return $user;
+    if ($app->csrf()->validateOrReject($request) instanceof Response) return $app->adminErrors()->response($request, 419);
+    $recipient = $request->post('email_test_recipient', '');
+    $result = $emailOperator->sendTest($user, is_string($recipient) ? $recipient : '');
+    if ($result->succeeded()) return Response::redirect($path . '?email_notice=test_delivery_succeeded#email');
+    return $render($request, $user, [], null, 422, null, null, null, ['type' => 'error', 'code' => $result->code()]);
 });
 
 $modulesDetailPath = $path . '/modules/{name}';

@@ -22,6 +22,7 @@ $moduleRoutes = $read('modules/redirects/routes.php');
 $moduleContribution = $read('modules/redirects/resolver.php');
 $siteSettingsRoutes = $read('routes/site_settings.php');
 $siteSettingsView = $read('resources/views/admin/site-settings.php');
+$siteSettingsRedirectsView = $read('resources/views/admin/site-settings-redirects.php');
 
 $assert(substr_count($coreRepository, 'final class RedirectRepository') === 1, 'Core Repository authority is not singular.');
 $assert(substr_count($coreService, 'final class RedirectService') === 1, 'Core Service authority is not singular.');
@@ -33,7 +34,7 @@ $assert(str_contains($moduleRoutes, 'use Copot\\Core\\RedirectRepository;') && s
 $assert(str_contains($moduleContribution, 'new \\Copot\\Core\\RedirectResolver(') && str_contains($moduleContribution, 'new \\Copot\\Core\\RedirectRepository('), 'Module resolver contribution does not register Core authority.');
 $assert(!str_contains($moduleRepository, 'moduleTable(\'redirects\')') && !str_contains($moduleService, 'function assertAvailable'), 'Duplicate module Redirect business logic remains active.');
 $assert(str_contains($siteSettingsRoutes, "'redirects.manage'") && str_contains($siteSettingsRoutes, 'redirectsProjectionPath'), 'Site Settings lacks the Redirect capability projection.');
-$assert(str_contains($siteSettingsView, "'redirects' => 'Redirects'") && str_contains($siteSettingsView, 'Open Redirect Manager'), 'Site Settings Redirects panel is missing.');
+$assert(str_contains($siteSettingsView, "'redirects' => 'Redirects'") && str_contains($siteSettingsView, 'site-settings-redirects.php') && str_contains($siteSettingsRedirectsView, 'Open Redirect Manager'), 'Site Settings Redirects panel is missing.');
 $assert(str_contains($moduleRoutes, "['admin.access', 'redirects.manage']") && !str_contains($moduleRoutes, "['admin.access', 'settings.update']"), 'Redirect permission boundary changed.');
 
 require_once $basePath . '/bootstrap/autoload.php';

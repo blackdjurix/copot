@@ -38,4 +38,10 @@ final class InstalledLockRecoveryDomain
     {
         $this->restore($this->codec->decode($store->readArtifact($identity, $record)), $expectedMutatedIdentity);
     }
+
+    public function currentIdentity(): ?string
+    {
+        $marker = $this->state->readMarker();
+        return is_array($marker) ? $this->codec->artifactFromMarker(['version' => $marker['version'], 'installed_at' => $marker['installed_at']])->identity() : null;
+    }
 }

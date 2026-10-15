@@ -72,6 +72,38 @@ final class LifecycleOperationStore
         } finally { fclose($handle); }
         @chmod($temporary, 0600);
         if (!$replace && file_exists($this->path)) { @unlink($temporary); throw new \RuntimeException('A lifecycle operation is already active.'); }
-        if (!@rename($temporary, $this->path)) { @unlink($temporary); throw new \RuntimeException('Lifecycle operation record could not be activated.'); }
+
+        if (!$replace || DIRECTORY_SEPARATOR !== '\\') {
+            if (!@rename($temporary, $this->path)) {
+                @unlink($temporary);
+                throw new \RuntimeException('Lifecycle operation record could not be activated.');
+            }
+            return;
+        }
+
+        // Windows cannot reliably replace an existing file with rename().
+        // Preserve the prior record in the same directory, activate the new
+        // sibling, and restore the prior record if any replacement step fails.
+        $backup = $this->root . DIRECTORY_SEPARATOR . '.operation-backup-' . bin2hex(random_bytes(16)) . '.tmp';
+        if (is_link($this->path) || !is_file($this->path) || !@rename($this->path, $backup)) {
+            @unlink($temporary);
+            throw new \RuntimeException('Existing lifecycle operation record could not be preserved.');
+        }
+
+        try {
+            if (!@rename($temporary, $this->path)) {
+                throw new \RuntimeException('Lifecycle operation record could not be activated.');
+            }
+            if (!@unlink($backup)) {
+                throw new \RuntimeException('Previous lifecycle operation record could not be cleaned.');
+            }
+        } catch (\Throwable $exception) {
+            @unlink($temporary);
+            @unlink($this->path);
+            if (!@rename($backup, $this->path)) {
+                throw new \RuntimeException($exception->getMessage() . ' Previous lifecycle operation record could not be restored.', 0, $exception);
+            }
+            throw $exception;
+        }
     }
 }

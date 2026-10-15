@@ -25,7 +25,7 @@ require $autoloadPath;
 
 function usage(): void
 {
-    fwrite(STDERR, "Usage: bin/copot package:(plan|reconcile-plan|reconcile|apply|repair|adopt) <zip> [--confirm] [--format=human|json]\n       bin/copot package:status [--format=human|json]\n");
+    fwrite(STDERR, "Usage: bin/copot package:(plan|reconcile-plan|reconcile|apply|repair|adopt) <zip> [--confirm] [--format=human|json]\n       bin/copot package:restore <operation-id> --confirm [--reason=<text>] [--format=human|json]\n       bin/copot package:status [--format=human|json]\n");
 }
 
 function emit(array $data, string $format, int $code): never
@@ -44,18 +44,22 @@ if ($args === [] || in_array($args[0], ['--help', '-h'], true)) { usage(); exit(
 $command = array_shift($args);
 $format = 'human';
 $confirmed = false;
+$reason = '';
 foreach ($args as $key => $arg) {
     if (str_starts_with($arg, '--format=')) { $format = substr($arg, 9); unset($args[$key]); continue; }
     if ($arg === '--confirm') { $confirmed = true; unset($args[$key]); continue; }
+    if (str_starts_with($arg, '--reason=')) { $reason = substr($arg, 9); unset($args[$key]); continue; }
     if (str_starts_with($arg, '--')) { usage(); exit(2); }
 }
 if (!in_array($format, ['human', 'json'], true)) { usage(); exit(2); }
 $args = array_values($args);
 $needsZip = in_array($command, ['package:plan', 'package:reconcile-plan', 'package:reconcile', 'package:apply', 'package:repair', 'package:adopt'], true);
-if (!in_array($command, ['package:plan', 'package:reconcile-plan', 'package:reconcile', 'package:apply', 'package:repair', 'package:adopt', 'package:status'], true) || count($args) !== ($needsZip ? 1 : 0)) { usage(); exit(2); }
+$isRestore = $command === 'package:restore';
+if (!in_array($command, ['package:plan', 'package:reconcile-plan', 'package:reconcile', 'package:apply', 'package:repair', 'package:adopt', 'package:restore', 'package:status'], true) || count($args) !== (($needsZip || $isRestore) ? 1 : 0)) { usage(); exit(2); }
 if ($needsZip && (!is_file($args[0]) || is_link($args[0]) || !is_readable($args[0]))) {
     emit(['accepted' => false, 'status' => 'invalid_input', 'reason' => 'Local package ZIP path is invalid.'], $format, 2);
 }
+if ($isRestore && !$confirmed) { emit(['accepted' => false, 'status' => 'rejected', 'reason' => 'Explicit restore confirmation is required.'], $format, 4); }
 
 try {
     Env::load($autoloadRoot . DIRECTORY_SEPARATOR . '.env');
@@ -70,6 +74,7 @@ try {
         'package:reconcile-plan' => $service->reconcilePlan($args[0]),
         'package:reconcile' => $service->reconcile($args[0], $confirmed),
         'package:adopt' => $service->adopt($args[0]),
+        'package:restore' => $service->restore($args[0], $reason !== '' ? $reason : 'operator-authorized normal package restore'),
         default => $service->apply($args[0], $command === 'package:repair'),
     };
     $data = $result->toArray();

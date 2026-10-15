@@ -104,6 +104,14 @@ final class PackageLifecycleFactory
             $recoveryUnavailableReason
         );
 
+        $normalRestore = $recoveryComposition instanceof PackageLifecycleRecoveryComposition
+            ? new NormalPackageLifecycleRestoreService(
+                $recoveryComposition,
+                $maintenance,
+                new RestoredOperationTerminalizer($maintenance, new RestoredOperationEvidenceStore($storage))
+            )
+            : null;
+
         return new PackageLifecycleService(
             $intake,
             new PackageManifestReader(),
@@ -193,7 +201,8 @@ final class PackageLifecycleFactory
                         && $record->postReconciliationVerified()
                         && $record->confirmationMatches($record->recoveryIdentity(), $record->manifestIdentity(), $record->manifestIdentity());
                 } catch (\Throwable) { return false; }
-            }
+            },
+            $normalRestore
         );
     }
 

@@ -225,7 +225,7 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 
-    private function stateIdentityFromArtifact(DatabaseRecoveryArtifact $artifact): string
+    public function stateIdentityFromArtifact(DatabaseRecoveryArtifact $artifact): string
     {
         return hash('sha256', json_encode([
             'database_identity' => $artifact->databaseIdentity(),
@@ -255,6 +255,17 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
             throw new DatabaseRecoveryException('Database restore recovery identity does not match the attempt context.');
         }
         $this->restore($this->artifactFromBytes($store->readArtifact($identity, $record)), $context);
+    }
+
+    public function artifactFromStore(RecoveryIdentity $identity, RecoveryArtifactRecord $record, RecoveryArtifactStore $store): DatabaseRecoveryArtifact
+    {
+        return $this->artifactFromBytes($store->readArtifact($identity, $record));
+    }
+
+    public function tableSetIdentityFromArtifact(DatabaseRecoveryArtifact $artifact): string
+    {
+        $bundle = $this->codec->decode($artifact->bytes());
+        return $this->tableSetIdentityFromNames(array_map(static fn (array $table): string => $table['name'], $bundle['schema']['tables']));
     }
 
     public function verifyRestored(DatabaseRecoveryArtifact $artifact, DatabaseRestoreContext $context): DatabaseVerificationResult

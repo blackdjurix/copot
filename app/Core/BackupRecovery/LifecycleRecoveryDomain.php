@@ -45,4 +45,10 @@ final class LifecycleRecoveryDomain
     {
         $this->restore($this->codec->decode($store->readArtifact($identity, $record)), $expectedMutatedIdentity);
     }
+
+    public function currentIdentity(): ?string
+    {
+        $state = $this->store->read();
+        return $state === null ? null : $this->codec->artifactFromState($state)->identity();
+    }
 }
