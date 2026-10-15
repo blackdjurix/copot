@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-14 17:56:56 WIB
+Date version: 2026-10-15 12:18:05 WIB
 
 ## 1. Variabel
 
@@ -382,6 +382,16 @@ Workplan dan Concept adalah planning layer untuk sequencing, dependency, provena
 Activity Journal adalah historical index ringkas untuk meaningful events dan significant activities COPOT. Journal menggunakan `docs/devlog.md` sebagai working journal dan Git history sebagai historical recall. Journal tidak menggantikan Workplan, Concept, Contract, Authoritative Documentation, Repository state, atau evidence detail.
 
 Activity Journal dapat mencatat aktivitas lintas domain, termasuk Project, Workplan, Concept, Pre-contract, Contract, Implementation, Documentation, Governance, validation, acceptance, negative findings, dan perubahan pemahaman yang material. Pencatatan tidak menciptakan authority, authorization, acceptance, closure, NRP, promotion, atau implementation permission. Aktivitas yang sudah cukup tercatat pada artifact authoritative tidak perlu diduplikasi kecuali journal entry menambah nilai recall yang material.
+
+### Authority dan bahasa Activity Journal
+
+GPT adalah satu-satunya pihak yang menilai meaningfulness, menyusun, dan melakukan logging Activity Journal ke `docs/devlog.md`.
+
+Technical Executor tidak boleh membuat, menulis, mengubah, atau menghapus journal entry. Technical Executor hanya dapat menjalankan operasi Repository atau rollover terpisah bila didelegasikan secara explicit; delegation tersebut tidak memberi authority untuk menyusun isi journal.
+
+Activity Journal wajib menggunakan Bahasa Indonesia untuk `EVENT_TYPE` dan Description. Path, SHA, command, filename, status token, API name, dan istilah teknis tetap literal bila terjemahan mengurangi precision.
+
+Ketentuan ini tidak memberi GPT standing authorization untuk melakukan Repository mutation. Setiap write tetap mengikuti authorization dan verification gate Repository yang berlaku.
 
 Rollover Activity Journal dievaluasi ketika retrieval atau usability burden menjadi material, atau ketika project memasuki Workstream yang memang didefinisikan. Trigger tidak menjadi authorization Git dan tidak memaksakan fixed-volume threshold. Checkpoint, NRP, Handoff, acceptance, dan closure tidak otomatis memicu atau membuktikan rollover.
 
