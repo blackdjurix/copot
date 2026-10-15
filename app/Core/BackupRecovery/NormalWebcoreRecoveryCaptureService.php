@@ -23,7 +23,7 @@ final class NormalWebcoreRecoveryCaptureService
         try {
             $lease = $this->quiescence->acquire();
             if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable.');
-            $filesystem = $this->filesystem->capture(FilesystemRecoveryPlan::fromApplyPlan($request->applyPlan()));
+            $filesystem = $this->filesystem->capture($request->filesystemPlan() ?? FilesystemRecoveryPlan::fromApplyPlan($request->applyPlan()));
             $database = $this->database->capture(new DatabaseCaptureContext(($this->snapshotConnection)(), ($this->lockConnection)(), $request->databaseIdentity()));
             $lifecycle = $this->lifecycle->capture();
             $marker = $this->installedLock->capture();

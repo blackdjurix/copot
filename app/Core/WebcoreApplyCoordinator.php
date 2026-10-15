@@ -165,4 +165,5 @@ final class WebcoreApplyCoordinator
             $lock->release();
         }
     }
+
 }

@@ -23,7 +23,7 @@ final class SystemManagerLifecycleService
         try { return $this->preflight($path); } finally { $this->uploads->cleanup($path); }
     }
 
-    public function execute(string $zip, string $requestedAction): array
+    public function execute(string $zip, string $requestedAction, mixed $confirmation = null, ?string $authorizedActorIdentity = null): array
     {
         $plan = $this->lifecycle->plan($zip);
         $action = $this->actionFor($plan);
@@ -33,7 +33,7 @@ final class SystemManagerLifecycleService
         try {
             // PackageLifecycleService owns the production recovery boundary. The
             // System Manager must not capture, quiesce, or authorize directly.
-            $result = $this->lifecycle->apply($zip, $action === 'Repair');
+            $result = $this->lifecycle->apply($zip, $action === 'Repair', $confirmation, $authorizedActorIdentity);
             $safe = $this->safeResult($result, $action);
             return $safe;
         } catch (\Throwable) {
@@ -41,10 +41,10 @@ final class SystemManagerLifecycleService
         }
     }
 
-    public function executeUpload(?array $upload, string $requestedAction): array
+    public function executeUpload(?array $upload, string $requestedAction, mixed $confirmation = null, ?string $authorizedActorIdentity = null): array
     {
         $path = $this->uploads->stage($upload);
-        try { return $this->execute($path, $requestedAction); } finally { if (is_file($path)) $this->uploads->cleanup($path); }
+        try { return $this->execute($path, $requestedAction, $confirmation, $authorizedActorIdentity); } finally { if (is_file($path)) $this->uploads->cleanup($path); }
     }
 
     public function status(): array

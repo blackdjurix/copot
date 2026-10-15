@@ -25,7 +25,7 @@ require $autoloadPath;
 
 function usage(): void
 {
-    fwrite(STDERR, "Usage: bin/copot package:(plan|reconcile-plan|reconcile|apply|repair|adopt) <zip> [--confirm] [--format=human|json]\n       bin/copot package:restore <operation-id> --confirm [--reason=<text>] [--format=human|json]\n       bin/copot package:status [--format=human|json]\n");
+    fwrite(STDERR, "Usage: bin/copot package:(plan|reconcile-plan|reconcile|apply|repair|adopt) <zip> [--confirm] [--confirmation-json=<object>] [--format=human|json]\n       bin/copot package:status [--format=human|json]\n");
 }
 
 function emit(array $data, string $format, int $code): never
@@ -44,11 +44,20 @@ if ($args === [] || in_array($args[0], ['--help', '-h'], true)) { usage(); exit(
 $command = array_shift($args);
 $format = 'human';
 $confirmed = false;
-$reason = '';
-foreach ($args as $key => $arg) {
+ $reason = '';
+ $confirmation = null;
+ foreach ($args as $key => $arg) {
     if (str_starts_with($arg, '--format=')) { $format = substr($arg, 9); unset($args[$key]); continue; }
     if ($arg === '--confirm') { $confirmed = true; unset($args[$key]); continue; }
     if (str_starts_with($arg, '--reason=')) { $reason = substr($arg, 9); unset($args[$key]); continue; }
+    if (str_starts_with($arg, '--format=')) { $format = substr($arg, 9); unset($args[$key]); continue; }
+    if ($arg === '--confirm') { $confirmed = true; unset($args[$key]); continue; }
+    if (str_starts_with($arg, '--confirmation-json=')) {
+        $raw = substr($arg, 20);
+        try { $confirmation = json_decode($raw, true, 32, JSON_THROW_ON_ERROR); } catch (Throwable) { emit(['accepted' => false, 'status' => 'invalid_input', 'reason' => 'Typed destructive confirmation JSON is invalid.'], $format, 2); }
+        if (!is_array($confirmation)) emit(['accepted' => false, 'status' => 'invalid_input', 'reason' => 'Typed destructive confirmation must be an object.'], $format, 2);
+        unset($args[$key]); continue;
+    }
     if (str_starts_with($arg, '--')) { usage(); exit(2); }
 }
 if (!in_array($format, ['human', 'json'], true)) { usage(); exit(2); }
@@ -75,7 +84,7 @@ try {
         'package:reconcile' => $service->reconcile($args[0], $confirmed),
         'package:adopt' => $service->adopt($args[0]),
         'package:restore' => $service->restore($args[0], $reason !== '' ? $reason : 'operator-authorized normal package restore'),
-        default => $service->apply($args[0], $command === 'package:repair'),
+        default => $service->apply($args[0], $command === 'package:repair', $confirmation),
     };
     $data = $result->toArray();
     emit($data, $format, $result->exitCode());

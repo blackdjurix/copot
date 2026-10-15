@@ -7,6 +7,7 @@ final class WebcoreApplyResult
     public const COMPLETED = 'completed';
     public const FAILED = 'failed';
     public const BLOCKED = 'blocked';
+    public const INDETERMINATE = 'indeterminate';
     public const AWAITING_WU6 = 'awaiting_wu6';
 
     public function __construct(

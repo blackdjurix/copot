@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-10-08 10:25:24 WIB
+Date version: 2026-10-14 15:52:00 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -55,16 +55,23 @@ Current durable planning state:
   COMPLETE / durable at `ab2ef3ab254c04513128d9385fb2c57662e52ad9`;
   WU3 System Email COMPLETE / ACCEPTED / durable at
   `fc4bf7754005b85ad890be32749f9c17f218c4e9`; WU4 Redirects COMPLETE /
-  ACCEPTED. WU5 Seven-Tab Integration & Hardening is OPEN / HOLD / BLOCKED
-  pending corrective Package Lifecycle forward-update bootstrap authority
-  reconciliation. WU5 is not failed, accepted, or closed.
+  ACCEPTED. WU5 Seven-Tab Integration & Hardening is COMPLETE / ACCEPTED / CLOSED
+  (BOUNDED): its WU2/WU3/WU4 HARD dependencies were satisfied; accepted
+  implementation is integrated at
+  `35ff0e050ac485520878bca7832110acd844deb4`.
+  Existing Modules test assertion/source-shape mismatch was reproduced at
+  pre-WU5 baseline `14a2ff73f7fcc8143a9feabb4a3410dd284e7cf5` and
+  current WU5 baseline, and is retained as separate pre-existing test debt.
+  Seven-Tab WU6 is now dependency-eligible but NOT STARTED / NOT ACCEPTED.
+  Specific legacy runtimes still require per-instance proof and separate
+  reconciliation authorization.
 - Package Lifecycle Forward-Update Bootstrap Authority Reconciliation:
-  corrective next-session target / GAP CONFIRMED by technical audit;
-  existing-install forward transition is blocked when the target full COPOT
-  package introduces manifest v2 and Core migration authority unknown to the
-  installed runtime. This is separate from server-empty package bootstrap;
-  the gap and proposed resolution remain next-session Handoff material,
-  not a newly promoted contract or a Thread-Level Saved Concept.
+  former technical authority gap RESOLVED through existing legacy classification,
+  exact-match adoption and separately guarded reconciliation services/routes.
+  Normal package apply intentionally remains BOOTSTRAP_REQUIRED for LEGACY.
+  Unknown/unprovable migration history remains fail-closed; actual existing
+  runtime readiness is separately UNRESOLVED per instance. Server-empty
+  bootstrap remains deferred. Earlier GAP CONFIRMED findings are historical.
 - Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation:
   previously saved thread-level Concept materialized in
   `concepts/copot_lifecycle_net_zero_retirement_safe_retry_capability_concept.md`;
@@ -382,6 +389,151 @@ Relations:
 Planning action: NONE / PROVENANCE
 
 ## 5. Active / Future / Deferred / Operational Registry
+
+### Adaptive Package Lifecycle & Independent Domain Compatibility
+Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
+Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU6 ACCEPTED / PUBLIC V3 OPERATIONAL COVERAGE CLOSED (BOUNDED)
+
+Sources:
+- `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PRIMARY BROADER CONCEPT; NOT PROMOTED]
+- `docs/canonical_target_inventory_fingerprint_contract.md` [ACCEPTED BOUNDED WEBCORE FILE-STATE AUTHORITY]
+- `docs/shared_destructive_plan_confirmation_operator_input_contract.md` [ACCEPTED SHARED CONFIRMATION INPUT]
+- `docs/28_package_lifecycle_migration_foundation_contract.md` [ACCEPTED PROSPECTIVE V3 PACKAGE APPLY AMENDMENT]
+- `docs/31_backup_recovery_foundation_contract.md` [ACCEPTED PROSPECTIVE V3 RECOVERY AMENDMENT]
+
+Promotion evidence:
+- Coordinated four-surface promotion accepted and materialized at `main @ f7c3987fb6bd8559b09f960bdcd1be1fd758f0ce` on 2026-10-11.
+- Manifest v1/v2 acceptance and historical WU5/WU6 no-deletion record retained; offline-only and existing public output statuses preserved.
+- These are specification authorities only; manifest-v3 package apply, explicit file removal/rename, operator confirmation, recovery mutations and deployment remain NOT IMPLEMENTED/NOT AUTHORIZED by promotion.
+
+Bounded implementation-gap audit evidence (completed read-only Codex review; no mutation):
+- `app/Core/PackageContract.php` still declares `CURRENT_MANIFEST_CONTRACT_VERSION = 2`, with accepted versions 1/2.
+- `app/Core/PackageManifestReader.php` validates current keys via existing associative decoding and does not contain v3 scheme-bound package handling.
+- `app/Core/PackageTargetRequirements.php` and `PackageTargetRequirement.php` provide existing v2 target-requirement validation to reuse rather than duplicate.
+- Codex verified reuse/extension boundaries for existing Package Lifecycle, CommittedLifecycleStateStore, WebcoreApplyPlan, PackageOwnedFileApplier, Backup & Recovery domains/journals, CLI bin/copot, SystemManagerLifecycleService and routes/system_manager.php. No second recovery engine, mutex or independently authoritative confirmation surface is justified.
+- Audit verdict: DOCUMENTATION READY / TOPOLOGY READY / IMPLEMENTATION AUTHORIZATION PENDING. Six WUs retain stated order and dependencies; no added WU required.
+
+WU1 completion and governance acceptance (2026-10-11):
+- WU1 V3 Manifest & Canonical Identity implementation and fast-forward integration verified at `e67ba93b02d1f481d452c671935381dc5d41a9fc` (10 scoped source/test files).
+- Codex reported 257 assertions PASS across focused/regression suites and normative digest fixtures. `package_lifecycle_wu7.php` NOT RUN: requires generated official package and exercises broader E2E, not mandatory WU1 coverage. Zip-disabled branch and Windows symlink cleanup fixture unavailable in this environment; retain these as validation limitations, not passes.
+- GPT/user governance acceptance: WU1 COMPLETE / ACCEPTED / CLOSED for bounded WU1 scope, based on verified integration, technical evidence, and non-blocking test classification. This does not assert full v3 apply/recovery completion.
+- WU2 HARD dependency on WU1 satisfied. WU2 is next implementation target under accepted contracts; preserve original dirty checkout and verify a clean isolated workspace and current remote baseline before execution.
+- Historical pre-implementation audit and former authorization-pending language below are provenance, not current state. In-contract authorization follows canonical Rule Section 7; separately gated actions remain separate.
+
+WU2 completion and bounded governance acceptance (2026-10-11):
+- WU2 committed source-inventory implementation is integrated on remote `main` at `8838b6cbe9332b7b2cbd2d438e34de933ab99a19`; six changed source/test files verified within source-inventory scope.
+- Codex reported manifest-v3 12, package-contract 73, existing package-lifecycle WU2 67 assertions PASS plus the new focused source-inventory test PASS. Test environment ZIP/symlink capability cases remained skipped. Installer regression NOT PASS/NOT RUN TO COMPLETION due to reported pre-existing installer fixture validation failure; prior origin of failure is not independently verified. This limitation remains explicitly unresolved for broader E2E acceptance, without asserting WU2 regression PASS.
+- WU2 COMPLETE / ACCEPTED / CLOSED for its bounded durable artifact, reference-linkage, and fail-closed validation scope. No WU3–WU6 execution inferred. WU3 HARD dependency on WU1+WU2 is satisfied; WU3 next for source-relative planner and immutable action identity. Revalidate any installer-fixture overlap if later cross-lifecycle E2E depends on it.
+
+WU3 completion and bounded governance acceptance (2026-10-11):
+- Implementation and fast-forward integration verified at `614650202581cc0542abb322fdcdb36c2541ef90`, with four source/test files confined to WU3 source-relative planning and immutable identities.
+- Codex reported PASS for focused WU3, manifest-v3 (12), package contract (73), WU2 inventory, existing package-lifecycle WU2 (67), and runtime lifecycle (10 and 19 assertions); focused WU3 assertion total not supplied. Existing ZipArchive/symlink environment skips remain. Installer fixture failure was outside pure WU3 planner scope and remains broader regression limitation.
+- WU3 COMPLETE / ACCEPTED / CLOSED for bounded source-relative planning only, not execution of destructive actions. WU4 HARD dependency on WU3 is satisfied; WU4 is next. WU5–WU6 have not started.
+
+WU4 completion and bounded governance acceptance (2026-10-11):
+- WU4 confirmation authority, actor evidence, typed CLI/System Manager adapters, durable receipt and optional operation-record linkage integrated at `43f2c93f3825bd491690081c0059d9467b25237f`; eight scoped source/test files verified.
+- Codex reported PASS on focused WU4, WU3, WU1 (12 and 73 assertions), WU2 inventory/lifecycle (67), and pre-mutation retry (8) regressions. Existing Windows ZipArchive-disabled and symlink-fixture skips retained. No unresolved WU4 blocker reported; independent runtime test execution not claimed.
+- WU4 COMPLETE / ACCEPTED / CLOSED for shared plan-bound confirmation only. WU5 HARD dependency on WU3+WU4 is satisfied. WU5 is next for explicit apply and existing recovery integration; WU6 has not started.
+
+WU5 completion and bounded governance acceptance (2026-10-11):
+- WU5 explicit add/replace/remove/rename apply, coordinator/result integration and focused tests integrated in remote `main` at `739f0368c0027e0fe38727393cb81503da511220`; four scoped source/test files verified.
+- Codex reported existing WU5 34, v3 WU5 5, manifest WU1 12, contract WU1 73, Backup & Recovery WU1 25 assertions PASS, and WU4/WU3/WU2 focused suites PASS. Tests independently not rerun by governance side. Mutating scenarios exercised in disposable fixtures only; no live installation changed.
+- WU5 COMPLETE / ACCEPTED / CLOSED for bounded implementation and focused fixtures; this does not assert cross-lifecycle recovery/crash/E2E acceptance. WU6 dependency on WU1–WU5 satisfied. WU6 remains the final cross-lifecycle acceptance gate and must assess previous platform/installer fixture limitations and negative/recovery cases.
+
+WU6 validation checkpoint — BLOCKED / NOT ACCEPTED (2026-10-11):
+- WU6 code correction integrated at `3a275234384966e9ca0cd375a74c96fb5f8d5457`, changing only `app/Core/WebcoreApplyCoordinator.php` to remove a redundant V3 coordinator mutex adapter and restore the locked two-site mutex topology.
+- Codex reported extensive standalone/focused PASS across manifest v3, source-relative planner, confirmation, explicit apply, lifecycle retry/finalization, backup/recovery and negative cases. These are not a substitute for mandatory composed lifecycle/recovery E2E.
+- Mandatory `package_lifecycle_wu6_retry_e2e.php` NOT RUN TO COMPLETION: disposable MariaDB setup failed at `C:\xampp\mysql\data\aria_log.00000001` with Errcode 22 Invalid argument. Root cause has not been established; do not assume application regression or reinstall/alter MariaDB data. Resolve in isolated/disposable environment and rerun.
+- `package_lifecycle_wu7.php` NOT RUN because official package artifact absent; do not create/publish artifact without separate authorization. ZIP-disabled and Windows symlink capability branch remain environment-limited.
+- WU6 acceptance / closure BLOCKED. WU1–WU5 accepted status preserved. Next action: non-destructive disposable MariaDB environment diagnosis, retry E2E execution, evidence classification and WU6 reassessment.
+
+WU6 mandatory E2E resolution and bounded governance acceptance (2026-10-12):
+- Codex confirmed `package_lifecycle_wu6_retry_e2e.php` PASS (24 assertions), exercising composed retry, file mutation, migrations, recovery capture/reconciliation, committed-state publication, cleanup and terminal state on an independent MariaDB 10.4.32 instance with temporary datadir/logs, port 13308, and non-empty disposable credential. Root cause of prior blockade: normal XAMPP datadir was inadvertently targeted, then empty disposable credential was converted to null by `Env::get()` and quiescence became unavailable; no normal XAMPP database modification or repository code change was required.
+- Affected reported regression PASS: WU6 health 16, retry finalization 14, awaiting-WU6 12, pre-mutation retry 8, WU5 34, V3 WU5 5, recovery topology 33/9, Backup & Recovery WU6 20 assertions. Identity evidence was supplied for migration, recovery and recovery manifest.
+- Retained limitations: ZipArchive-disabled branch executor-dependent; Windows symlink fixture unavailable; official-package WU7 NOT RUN without an official artifact; Backup & Recovery WU7 previously 18 PASS, later batch rerun stalled/stopped. These are explicitly NOT counted as new PASS or comprehensive release/deployment acceptance.
+- GPT/user governance-side bounded acceptance: WU6 COMPLETE / ACCEPTED / CLOSED for accepted six-WU v3 scope, based on technical E2E result and prior integrated WU1–WU5 evidence. Cross-lifecycle acceptance does not authorize release, official package generation, deployment, or live mutations. Broader E2E/environment limitations retained separately.
+
+Post-closure read-only audit correction (2026-10-12; CURRENT STATE OVERRIDES EARLIER CLOSURE PROJECTION):
+- Codex audit at `main @ 132c8e79cf85dceae459dd39262ca69a75e6c618` identified V3 standalone parser/inventory/planner/confirmation/executor primitives but no verified dispatch from public `PackageLifecycleService::apply()` and `PackageLifecycleFactory` into that V3 path. Public CLI/System Manager V3 destructive apply and action-level Backup & Recovery binding are UNVERIFIED / IMPLEMENTATION GAP.
+- Previously accepted `package_lifecycle_wu6_retry_e2e.php` PASS (24 assertions) executes `PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION` (V2), so it establishes legacy composed retry/recovery behavior, NOT manifest-V3 public destructive E2E. Historical test results and governance acceptance records remain factually retained, but the current claim of completed public V3 operational acceptance is WITHDRAWN pending evidence.
+- The coordinated docs/28 and docs/31 V3 addenda require existing Package Lifecycle coordinated apply and action-bound recovery. Public V3 routing therefore belongs to the already accepted bounded Webcore V3 contract scope, not a newly adopted database/module/composite Concept or a seventh work unit.
+- Next gate: bounded technical implementation-gap reconciliation and safe public V3 routing through existing lifecycle/recovery authority; disposable public V3 removal/rename E2E and verified action/recovery linkage MUST PASS before WU6 operational acceptance may be restored. WU1–WU5 integrated primitives and their focused validation remain accepted as such; historical closure not erased.
+- No release, deployment, official package publication, or live-runtime mutation is authorized by this correction.
+
+Public V3 operational WU6 acceptance restored (2026-10-12):
+- Remote main verified at `daa1426ceab8de2e5ebed18d6980aba569a99e56`. Public V3 dispatch corrections are integrated; final commit contains `app/Core/PackageLifecycleService.php` and new `tests/package_lifecycle_wu6_public_v3_e2e.php`.
+- Codex reports actual `PackageLifecycleService::apply()` manifest-V3 E2E PASS (9 assertions): typed confirmation, rename/removal, recovery-backed mutation, committed source/target linkage, replay rejection, and terminal completion. WU1–WU6 focused and affected recovery regressions reported PASS. The legacy V2 retry E2E is not substituted for this public V3 proof.
+- Disposable MariaDB 10.4.32 tests used isolated datadir/logs/port/credentials, with CREATE USER and quiescence/read_only acquisition-release/restoration PASS. Normal XAMPP MariaDB remained running and its datadir was not modified. Codex identified normal XAMPP `mysql.global_priv` Aria bitmap corruption; this is a separately unresolved LOCAL ENVIRONMENT HEALTH issue and no repair is authorized or performed.
+- Bounded public V3 operational WU6 governance acceptance is RESTORED / ACCEPTED / CLOSED based on reported mandatory direct-entrypoint E2E and verified integrated commit. Preserved limitations: ext-zip-disabled and Windows symlink capability skips; official-package WU7 NOT RUN because artifact absent; IU1 adoption fixture has reported unrelated pre-existing failure. No claim of complete release readiness, production health, or deployment permission.
+
+Accepted and locked sequential Work Units (implementation sequencing; each limited to its accepted contract scope):
+1. WU1 — V3 Manifest & Canonical Identity: bounded duplicate-key-aware parser, exact v3 grammar, package evidence identity, target/removal digest and fixture regression; preserve v1/v2.
+2. WU2 — Committed Complete Source Inventory: protected artifact store, committed-state references, root/owner policies, full/partial proof and durability/crash handling; HARD WU1.
+3. WU3 — Source-Relative Planner & Immutable Action Identity: resulting full/partial inventory, retention/removal/rename constraints, operator-facing prepared plan and collision checks; HARD WU1+WU2.
+4. WU4 — Shared Plan-Bound Destructive Confirmation: one service authority with typed CLI/System Manager adapter inputs, actor authorization, persistence and replay/stale handling; HARD WU3.
+5. WU5 — Explicit Apply & Existing Recovery Integration: verified add/rename/remove with recovery capture, action journal, interruption reconciliation, terminal-state gates; HARD WU3+WU4. Do NOT build a second recovery engine.
+6. WU6 — Cross-Lifecycle Acceptance & Closure: v1/v2 regression, full/partial equality, offline operation, crash/retry/recovery, unsafe path and negative confirmation cases, plus lifecycle/health acceptance; HARD WU1–WU5.
+
+Topology acceptance gates:
+- Completed Codex read-only capability/ownership and dependency audit; no documented normative blocker or required additional WU.
+- Six-WU topology was explicitly accepted by user in current governance session; LOCKED as implementation planning topology only. Any change to WU decomposition/dependency requires new GPT/user acceptance.
+- Preserve Package declares WHAT / Lifecycle determines WHAT CAN/MUST HAPPEN conceptual separation; independently scoped Database/Module/composite lifecycle and forward-update bootstrap remain separate workstreams.
+- Topology acceptance is COMPLETE. In-contract implementation follows current Rule Section 7; separately gated actions retain their own authorization boundaries. Existing local dirty/stale checkout must remain untouched; new-session executor must verify a clean isolated worktree or authorized clean remote baseline.
+
+Planning action: WU1–WU6 BOUNDED V3 SCOPE ACCEPTED AND CLOSED / NORMAL XAMPP PRIVILEGE-TABLE CORRUPTION TRACKED SEPARATELY / NO RELEASE OR DEPLOYMENT AUTHORIZATION
+
+### Installer Distribution, Automatic Root Deployment & Retained Sources
+Class: DEFERRED CONCEPT
+Status: MATERIALIZED / DEFERRED / NOT PROMOTED
+
+Sources:
+- `concepts/copot_installer_automatic_root_deployment_retained_sources_concept.md` [PRIMARY]
+
+Relations:
+- Future installer auto-deploys private APP_ROOT and public document root from a distributable installer package; retained sources and later repair support are subordinate parts of this installer architecture.
+- Related to MR.1 Installation Refinement, Webcore Deployment & Portability, Backup & Recovery and System Health; distinct from Seven-Tab WU5.
+
+Planning action: KEEP DEFERRED / NO ADOPTION OR IMPLEMENTATION AUTHORITY
+
+### Versioning Management
+Class: DEFERRED CONCEPT
+Status: MATERIALIZED / DEFERRED / NOT PROMOTED
+
+Sources:
+- `concepts/copot_versioning_management_concept.md` [PRIMARY]
+
+Relations:
+- Future consistent version identity, intended release scope, and stable Git release development baseline; possible initiation around v0.14.0 or v0.15.0 is not locked.
+- Accepted checkpoints remain distinct and continue to exist.
+
+Planning action: KEEP DEFERRED / NO RELEASE, TAG OR IMPLEMENTATION AUTHORITY
+
+### Project Logging — Project State Checkpoint & Activity Journal Rollover
+Class: PROJECT GOVERNANCE CAPABILITY / GOVERNANCE-PROMOTED ACTIVITY JOURNAL POLICY
+Status: UNIFIED CONCEPT RECONCILED / TWO INDEPENDENT OBJECT LIFECYCLES / ACTIVITY JOURNAL POLICY PROMOTED / ROLLOVER OPERATIONALLY DEMONSTRATED
+
+Sources:
+- `concepts/copot_checkpoint_devlog_project_governance_trial_concept.md` [PRIMARY; UNIFIED CONCEPT RECONCILED 2026-10-11]
+
+Conceptual scope and boundaries:
+- Project Logging is proposed as a governance-regulated project capability, a peer of Documentation in responsibility rather than a replacement for authoritative contracts or repository history.
+- Object 1 — Project State: a Checkpoint is an annotated Git tag targeting an exact accepted, sufficiently validated stable project baseline commit usable for subsequent workflow. Optional validated installation/distribution package is a separate artifact, not an automatic tag output.
+- Object 2 — Activity Journal: `docs/devlog.md` is a running event record and chronological anchor. A Rollover is a separately named annotated Git tag targeting the exact committed complete journal state before cleanup; fresh-cycle journal content is committed normally, with previous tag reference. Git history preserves the earlier journal without needing an additional exported file.
+- Both object types share the Git commit timeline but have distinct save-point names, validity checks, retention semantics, and authorization gates. Neither is a release tag by default.
+- NRP, Handoff, acceptance, and closure are separate governance/project-flow domains. Their evidence or state may inform save-point validity, but none automatically triggers, defines, authorizes, or proves either Checkpoint or Rollover.
+- Checkpoint is not automatically made at NRP. Activity Journal rollover is triggered for evaluation by material retrieval/usability burden or transition into an actually defined Workstream; a trigger does not authorize Git operations. Trial parameters: monitor approximately every 50 lines, provisionally evaluate around 150 lines (100–200 reference only), and consider content size/density, retrieval/append cost, and human usability. A new cycle preferably begins with its first meaningful event after authorized rollover; no automatic NRP/Handoff/WU-closure trigger or fixed-volume limit.
+- A Git annotated tag references a commit snapshot, not a file and not an automatic package ZIP. Tag creation, cleanup, artifact packaging, publication, and application release are distinct separately authorized actions.
+- Historical tags must be stable and verifiable; no automatic tag replacement, history rewrite, or discard of uncommitted/unverified journal content.
+- Current journal writes via GitHub connector are committed on `main`, despite the older Concept's trial-era description. This does not itself grant standing tag/cleanup authorization or promote the Concept into the Rule.
+
+Open decisions:
+- Exact checkpoint acceptance/validation gates for different project baseline types.
+- Empirical fair-volume optimization and semantic historical retrieval usability; independent recheck of annotated-tag object type and subsequent-commit historical recall evidence where required.
+- Checkpoint validity policy remains independently open. Fair-volume optimization and historical retrieval usability remain continuous refinement topics, not automatic promotion blockers.
+
+First rollover evidence: 2026-10-11 approved trial, tag `journal/rollover-20261011-755bfe7`, pre-cleanup commit `755bfe7edbacb948ddada6f950f544513222559e`; new cycle and pre-cleanup retrieval PASS, subsequent-commit historical recall reported PASS in 2026-10-14 evaluation. Historical initial `PENDING` event is retained as originally recorded.
+
+Planning action: ACTIVITY JOURNAL GOVERNANCE PROMOTED / RETAIN CONCEPT AND ROLLOVER EVIDENCE AS PROVENANCE / CONTINUE CHECKPOINT VALIDITY POLICY SEPARATELY / NO STANDING FUTURE TAG OR CLEANUP AUTHORITY
 
 ### Lifecycle Net-Zero Retirement & Safe-Retry Capability Continuation
 Class: DURABLE CONCEPT / IMPLEMENTATION-STATE INVENTORY
@@ -1078,6 +1230,24 @@ Relations:
 
 Planning action: KEEP REGISTERED / NO AUTOMATIC SEQUENCING
 
+### Trusted Developer & Package Publisher Trust
+Class: DEFERRED ECOSYSTEM / PACKAGE TRUST CONCEPT
+Status: DURABLE PLANNING REGISTRATION / DEFERRED / SEMANTIC PARTIAL / NOT CONTRACT-PROMOTED / TRUST ENFORCEMENT NOT IMPLEMENTED
+
+Sources:
+- `concepts/copot_adaptive_package_lifecycle_independent_domain_compatibility_concept.md` [PACKAGE TRUST AND EXECUTION-GATE SEPARATION]
+- `concepts/copot_module_package_identity_and_capability_provider_concept.md` [PUBLISHER/PROVENANCE IDENTITY AND DEVELOPER-FACING GUIDANCE]
+
+Relations:
+- Trusted Developer is distinct from package content integrity, package identity, release identity, runtime compatibility, and operator execution authorization.
+- Existing ZIP manifest/hash validation is not publisher authenticity proof, nor a Trusted Developer registry, signature trust anchor, or verified authorization of execution.
+- Future scope may address developer/publisher identity, trust establishment, package signing/authenticity, trusted-key lifecycle, revocation, and policy tying publisher trust to package consumption. These are deferred semantic directions; no particular provider, signature scheme, online service, or approval policy is locked.
+- The accepted offline-only manifest-v3 Canonical Target Inventory contract, `docs/28`, `docs/29`, and shared operator-input contract remain unchanged. A trusted developer does not automatically gain arbitrary migration, file removal, or runtime modification authority.
+- Related but separate: Official Remote Update / Distribution Ecosystem and Module Package Identity & Capability Provider. Do not subsume Trusted Developer into either without future explicit reconciliation.
+- Current source inspection has not established any implemented Trusted Developer registry, verified publisher signature enforcement, trust-anchor management, or revocation flow. Existing general package integrity is only reusable foundation, not partial trust enforcement.
+
+Planning action: RETAIN INDEPENDENT DEFERRED CONCEPT ENTRY / NO DEDICATED PRECONTRACT OR CONTRACT NOW / NO IMPLEMENTATION AUTHORIZATION
+
 ### Official Remote Update / Distribution Ecosystem
 Class: FUTURE ECOSYSTEM CONCEPT
 Status: DEFERRED / NOT ADOPTED
@@ -1639,20 +1809,31 @@ authorization. The Site Settings architecture Concept separately records
 capability-gated product projection and the bounded Database adoption
 reconciliation item.
 
+Seven-Tab WU5 implementation checkpoint (2026-10-12):
+- Codex integrated `35ff0e050ac485520878bca7832110acd844deb4` on `main`; five changed view/route/test files verified, implementing seven-tab integration and canonical EmailOperatorService delegation.
+- Codex reported WU5 16 assertions PASS, Email suites 28/32/23/24/28/15 PASS, System Health 10 and Redirects 15 PASS; PHP lint and diff check PASS. Existing Modules presentation test failure attributed to older CSS/class expectation remains UNRESOLVED pending focused source/baseline comparison; no claim of full Modules regression PASS.
+- WU5 implementation INTEGRATED / ACCEPTANCE PENDING. Seven-Tab WU6 dependency remains unsatisfied until WU5 acceptance/closure. No live runtime, production reconciliation or release action performed.
+
+Seven-Tab WU5 governance acceptance and closure (2026-10-12):
+- Bounded WU5 integration at `35ff0e050ac485520878bca7832110acd844deb4` ACCEPTED / CLOSED based on Codex's focused evidence: WU5 16, Email 28/32/23/24/28/15, System Health 10 and Redirects 15 assertions PASS; source integration verified.
+- The sole Modules presentation source-string assertion `tests/wu4_batch2_site_settings_modules.php:150` FAIL is reproducible at pre-WU5 `14a2ff73f7fcc8143a9feabb4a3410dd284e7cf5` and current state with identical message. Modules view, CSS and JS blobs are unchanged; test debt is NOT counted as PASS, and is not a WU5-created regression. No Modules code or test correction is implicitly authorized by closure.
+- Seven-Tab WU6 dependency on WU5 is now satisfied; cross-capability acceptance, human/product gates and independent operational validation remain WU6 work. No claim of full Seven-Tab workstream closure or production eligibility.
+
+## Main Runtime Acceptance Decision — 2026-10-12
+
+User-approved operational policy: main COPOT XAMPP installation is the development mirror and target for human/operational acceptance; the former immutable restriction is revoked. Required files and database changes are delivered via Package Lifecycle development patch/update/upgrade, not manual direct mutation. Such lifecycle artifacts do not require public repository releases. Separate disposable installation is reserved for mutation testing, debugging, and risk isolation, not final human acceptance. Keep durable repository source, installed main-runtime state, and human-accepted version distinct. Each main-runtime operation still needs its own verified plan, eligibility, recovery safeguards, and applicable authorization; this policy does not grant blanket mutation permission. Seven-Tab WU6 remains ACCEPTANCE BLOCKED pending operational evidence and product review.
+
 ## 9. Immediate Next Planning Target
 
-Current immediate target: prepare the EMERGENCY session transition into
-`Package Lifecycle Forward-Update Bootstrap Authority Reconciliation`.
-The technical audit confirmed both manifest-contract incompatibility and
-missing target-only migration bootstrap authority in the installed runtime.
-Seven-Tab Site Settings WU5 remains OPEN / HOLD / BLOCKED until the corrective
-lifecycle dependency is resolved and accepted; historical Package Lifecycle
-WU1–WU7 closure and previously accepted Seven-Tab WU2–WU4 evidence are
-preserved. Corrective lifecycle contract/documentation amendments are reserved
-for the new session. Main runtime operational reconciliation remains a
-pre-Handoff action, not a new Concept. No implementation, destructive
-runtime/database action, contract promotion, release, or deployment is
-authorized by this Workplan update.
+Current immediate target: Seven-Tab Site Settings WU6 Cross-Capability Acceptance & Closure under accepted `docs/58` contract; WU5 accepted/closed and its dependency gate satisfied. A read-only
+dependency audit on 2026-10-12 confirmed existing guarded legacy adoption and
+forward-reconciliation authority; the former bootstrap-authority blocker is
+superseded. HARD WU2/WU3/WU4 dependencies are satisfied. WU5 is READY for
+bounded implementation, not yet implemented or accepted; downstream Seven-Tab
+WU6 remains dependent on WU5. Production runtime reconciliation is NOT STARTED,
+requires separate authorization and objective per-instance eligibility.
+Server-empty bootstrap remains deferred. No new release, tag, publication,
+deployment or destructive live-runtime/database action is authorized here.
 
 ## 10. Retention and Planning Freshness
 

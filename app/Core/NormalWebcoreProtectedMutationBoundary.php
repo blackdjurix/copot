@@ -76,7 +76,8 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
             $context->applyPlan(),
             $this->preLifecycleIdentity($installed),
             $installed?->migrationStateIdentity() ?? hash('sha256', 'copot-empty-migration-ledger'),
-            $this->databaseIdentity
+            $this->databaseIdentity,
+            $context->filesystemRecoveryPlan()
         );
     }
 

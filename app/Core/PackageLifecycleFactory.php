@@ -61,7 +61,7 @@ final class PackageLifecycleFactory
 
         $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath, $installationIdentity->value());
         $applier = new PackageOwnedFileApplier($liveGuard, LiveFileActivationCapability::current(), $applyTemporaryRoot);
-        $applyCoordinator = new WebcoreApplyCoordinator($mutex, $maintenance, $applier, static function (CoreMigrationPlan $plan, string $operationId, string $classification) use ($database, $migrationRunner, $installationIdentity, $designatedMigrationConnection): MigrationRunResult {
+        $v3MigrationRunner = static function (CoreMigrationPlan $plan, string $operationId, string $classification) use ($database, $migrationRunner, $installationIdentity, $designatedMigrationConnection): MigrationRunResult {
             if ($plan->migrations() !== [] && !is_callable($designatedMigrationConnection)) {
                 return new MigrationRunResult(MigrationRunResult::FAILED, [], 'Designated migration connection is unavailable; migration execution is blocked.');
             }
@@ -76,7 +76,8 @@ final class PackageLifecycleFactory
                 $authorization = new MigrationAuthorizationContext($installationIdentity, $database->tables(), $operationId, $classification, DatabaseTableOwner::webcore(), $migration->id(), $migration->checksum(), $plan->initialWebcoreVersion(), $plan->virtualFinalWebcoreVersion(), true, $migration->schemaSurface());
                 return new AuthorizedMigrationContext($connection, $authorization, $catalog);
             });
-        }, new RuntimeRegistry($storage, $installationIdentity, $mutex), $normalRecoveryBoundary);
+        };
+        $applyCoordinator = new WebcoreApplyCoordinator($mutex, $maintenance, $applier, $v3MigrationRunner, new RuntimeRegistry($storage, $installationIdentity, $mutex), $normalRecoveryBoundary);
         $healthCoordinator = new HealthIntegrityCommitCoordinator(
             $mutex,
             $maintenance,
@@ -202,6 +203,18 @@ final class PackageLifecycleFactory
                         && $record->confirmationMatches($record->recoveryIdentity(), $record->manifestIdentity(), $record->manifestIdentity());
                 } catch (\Throwable) { return false; }
             },
+            new CommittedLifecycleStateStore($storage),
+            new SourceInventoryArtifactStore($storage),
+            new PackageV3SourceRelativePlanner(),
+            new V3ExplicitApplyExecutor(),
+            $applier,
+            new DestructivePlanConfirmationAuthority(
+                $operationStore,
+                static fn (DestructiveActorAuthorizationEvidence $actor): bool => $actor->actorIdentity() !== '' && $actor->capabilityReference() !== ''
+            ),
+            $normalRecoveryBoundary,
+            $operationStore,
+            $v3MigrationRunner,
             $normalRestore
         );
     }

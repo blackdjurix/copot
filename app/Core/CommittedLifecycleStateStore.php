@@ -104,6 +104,41 @@ final class CommittedLifecycleStateStore
         }
     }
 
+    /** Publish the immutable source artifact, then durably link it from committed state. */
+    public function commitWithSourceInventory(
+        InstallationState $installationState,
+        CommittedLifecycleState $state,
+        SourceInventoryArtifactStore $artifacts,
+        SourceInventoryArtifact $artifact
+    ): void {
+        if (!function_exists('fsync')) {
+            throw new \RuntimeException('Committed source inventory linkage requires durable synchronization.');
+        }
+        $reference = $state->sourceInventoryReference();
+        if ($reference === null || $artifact->reference()->toArray() !== $reference->toArray()) {
+            throw new \RuntimeException('Committed source inventory reference is not exact.');
+        }
+        if ($artifact->inventory()->fingerprint() !== $reference->fingerprint()) {
+            throw new \RuntimeException('Committed source inventory fingerprint is not linked.');
+        }
+        $published = $artifacts->publish(
+            $artifact->inventory(),
+            $reference->releaseIdentity(),
+            $reference->manifestContractVersion(),
+            $reference->sourceTreeIdentity()
+        );
+        if ($published->reference()->toArray() !== $reference->toArray()) {
+            throw new \RuntimeException('Published source inventory reference changed.');
+        }
+        $this->commit($installationState, $state);
+        $linked = $this->read();
+        if (!$linked instanceof CommittedLifecycleState
+            || $linked->sourceInventoryReference()?->toArray() !== $reference->toArray()
+            || $artifacts->read($reference)->inventory()->fingerprint() !== $reference->fingerprint()) {
+            throw new \RuntimeException('Committed source inventory linkage verification failed.');
+        }
+    }
+
     public function remove(): void
     {
         if (!file_exists($this->path)) {

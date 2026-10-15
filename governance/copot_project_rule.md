@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-14 15:22:39 WIB
+Date version: 2026-10-15 12:18:05 WIB
 
 ## 1. Variabel
 
@@ -123,7 +123,7 @@ Jika Agent Instruction tidak tersedia, pembuatan atau delivery instruction execu
 
 ### Routing bahasa
 
-Rule dan Handoff menggunakan bahasa utama user/conversation, yaitu Bahasa Indonesia santai untuk penggunaan COPOT ini. Agent Instruction menggunakan English sebagai bahasa default technical-executor. Identifier, path, command, API name, filename, status token, dan technical vocabulary tetap literal bila terjemahan mengurangi precision.
+Rule, Handoff, dan Agent Instruction menggunakan bahasa utama user/conversation, yaitu Bahasa Indonesia santai untuk penggunaan COPOT ini. Identifier, path, command, API name, filename, status token, dan technical vocabulary tetap literal bila terjemahan mengurangi precision.
 
 ### Fail-closed versi terbaru dan retry retrieval
 
@@ -376,6 +376,35 @@ Panjang instruction harus proporsional terhadap task dan risk. Minimalisasi tida
 ## 9. Governance Workplan dan Concept
 
 Workplan dan Concept adalah planning layer untuk sequencing, dependency, provenance, pre-contract, dan pekerjaan deferred.
+
+### Activity Journal dan Rollover
+
+Activity Journal adalah historical index ringkas untuk meaningful events dan significant activities COPOT. Journal menggunakan `docs/devlog.md` sebagai working journal dan Git history sebagai historical recall. Journal tidak menggantikan Workplan, Concept, Contract, Authoritative Documentation, Repository state, atau evidence detail.
+
+Activity Journal dapat mencatat aktivitas lintas domain, termasuk Project, Workplan, Concept, Pre-contract, Contract, Implementation, Documentation, Governance, validation, acceptance, negative findings, dan perubahan pemahaman yang material. Pencatatan tidak menciptakan authority, authorization, acceptance, closure, NRP, promotion, atau implementation permission. Aktivitas yang sudah cukup tercatat pada artifact authoritative tidak perlu diduplikasi kecuali journal entry menambah nilai recall yang material.
+
+### Authority dan bahasa Activity Journal
+
+GPT adalah satu-satunya pihak yang menilai meaningfulness, menyusun, dan melakukan logging Activity Journal ke `docs/devlog.md`.
+
+Technical Executor tidak boleh membuat, menulis, mengubah, atau menghapus journal entry. Technical Executor hanya dapat menjalankan operasi Repository atau rollover terpisah bila didelegasikan secara explicit; delegation tersebut tidak memberi authority untuk menyusun isi journal.
+
+Activity Journal wajib menggunakan Bahasa Indonesia untuk `EVENT_TYPE` dan Description. Path, SHA, command, filename, status token, API name, dan istilah teknis tetap literal bila terjemahan mengurangi precision.
+
+Ketentuan ini tidak memberi GPT standing authorization untuk melakukan Repository mutation. Setiap write tetap mengikuti authorization dan verification gate Repository yang berlaku.
+
+Rollover Activity Journal dievaluasi ketika retrieval atau usability burden menjadi material, atau ketika project memasuki Workstream yang memang didefinisikan. Trigger tidak menjadi authorization Git dan tidak memaksakan fixed-volume threshold. Checkpoint, NRP, Handoff, acceptance, dan closure tidak otomatis memicu atau membuktikan rollover.
+
+Rollover hanya boleh melanjutkan reset working journal setelah:
+
+1. journal lama committed dan current Repository state diverifikasi;
+2. annotated Git tag unik dibuat pada exact pre-cleanup commit;
+3. tag identity, target, dan historical retrieval `docs/devlog.md` diverifikasi;
+4. tidak ada concurrent modification atau uncommitted journal content yang hilang.
+
+Jika tag creation atau historical retrieval gagal, hentikan proses sebelum working journal di-reset. Historical tag tidak boleh dipindahkan, dihapus, atau ditimpa. Tag creation, journal cleanup, commit, push, publication, dan release tetap mengikuti authorization serta gate masing-masing.
+
+Checkpoint dan Activity Journal adalah dua object Project Logging yang independen. Keduanya dapat berbagi Git timeline, tetapi memiliki tujuan, evidence, timing, retention, dan lifecycle yang berbeda.
 
 ### Non-synchronization
 

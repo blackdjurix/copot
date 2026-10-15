@@ -535,3 +535,15 @@ authorized.
 Module Package Lifecycle WU7 human/E2E acceptance is **COMPLETE AND CLOSED**
 for the accepted scope. Production reconciliation and release work remain
 separate gates and are not resumed by this contract.
+
+## Prospective manifest-v3 removed-file recovery authority
+Date version: 2026-10-11 13:48:08 WIB
+This addendum applies together with the Canonical Target Inventory & Fingerprint contract, the bounded docs/28 manifest-v3 exception and Shared Destructive Plan Confirmation input contract. Historical accepted recovery capability remains unchanged for manifest v1/v2.
+
+Backup & Recovery retains authority for immutable recovery identity and manifests, protected recovery artifacts, physical file/database restoration, verification and authorized cleanup. Before any explicit manifest-v3 source removal or rename-source removal it must durably capture and reread original byte evidence, binding original logical root/path, size and hash, operation identity, immutable plan identity, action ordinal/kind, scheme-versioned package evidence identity, source/target fingerprints, removal-set digest and recovery identity. Published recovery artifact and immutable manifest identities cannot be rewritten.
+
+The authoritative recovery/lifecycle journal durably records action intent/cursor before mutation and verified completion afterward; only its authorized writer may advance mutable action state. Package Lifecycle operation record and Backup & Recovery action journal must cross-reference the **same** operation, plan, action ordinal and recovery identity. Neither alone proves completion if the other is inconsistent, missing or unreadable. Cursor alone does not prove physical action success; reconciliation checks actual filesystem bytes, identities, journal, plan and artifact before retry, without blind deletion replay.
+
+Where removal already occurred but final fingerprint fails, lifecycle remains non-finalized INDETERMINATE/recovery-required. Recovery state must not claim RESTORED without actual canonical restoration and independent applicable-domain verification. Recovery closure requires a durable record discharging **all** applicable recovery obligations for the operation. Removed-file evidence remains retained through both lifecycle finalization and recovery closure; later deletion requires separately accepted cleanup policy and verified non-reference. A published inventory artifact lacking a committed-state reference remains non-authoritative and is not automatically scavenged. Verified primary completion with separately outstanding authorized cleanup may use cleanup_pending, but no post-mutation corruption is disguised as an ordinary preflight rejection.
+
+No new recovery engine, transfer of restoration authority, cross-domain atomic rollback guarantee, or implementation authorization is granted.
