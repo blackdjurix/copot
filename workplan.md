@@ -1,5 +1,5 @@
 # COPOT — Non-Linear Workplan
-Date version: 2026-10-14 15:52:00 WIB
+Date version: 2026-10-17 09:33:57 WIB
 Workplan lifecycle: CURRENT
 Project: COPOT
 
@@ -481,6 +481,45 @@ Topology acceptance gates:
 - Topology acceptance is COMPLETE. In-contract implementation follows current Rule Section 7; separately gated actions retain their own authorization boundaries. Existing local dirty/stale checkout must remain untouched; new-session executor must verify a clean isolated worktree or authorized clean remote baseline.
 
 Planning action: WU1–WU6 BOUNDED V3 SCOPE ACCEPTED AND CLOSED / NORMAL XAMPP PRIVILEGE-TABLE CORRUPTION TRACKED SEPARATELY / NO RELEASE OR DEPLOYMENT AUTHORIZATION
+
+### Installation-Scoped Maintenance Guard — Bounded WU6 Support
+Class: ACTIVE WORKSTREAM SUPPORTING FOUNDATION / CONCEPT-GATED
+Status: USER DIRECTION ACCEPTED / DESIGN HARDENED / CONTRACT AMENDMENT PENDING / NOT IMPLEMENTED
+
+Sources:
+- `concepts/copot_installation_scoped_maintenance_management_concept.md` [PRIMARY]
+
+Authority:
+- `docs/28_package_lifecycle_migration_foundation_contract.md` [EXISTING PACKAGE LIFECYCLE]
+- `docs/31_backup_recovery_foundation_contract.md` [EXISTING RECOVERY/QUIESCENCE]
+- `docs/58_seven_tab_site_settings_completion_hardening_contract.md` [ACTIVE WU6 BOUNDARY]
+
+Relations and bounded execution gates:
+- Remains supporting scope of existing Seven-Tab WU6, not a newly activated WU, independent bootstrap, or NRP; immediate target remains two-phase Contract-v1-readable engine activation REPAIR then canonical BOOTSTRAP_V3, with normative amendment required before implementation.
+- Authenticated Webcore Admin is current manual lock authority; future multi-user delegation is deferred. Default: installation-specific application write guard, not complete Admin Shell lock or shared MariaDB GLOBAL read_only.
+- Full normal HTTP/Admin/API/CLI/cron/worker write-path coverage, controlled drain of queued and in-flight writes, maintenance/readiness evidence, bounded lifecycle-executor exception, and interrupted/recovery safety are implementation prerequisites; external MySQL writers remain an explicitly unmitigated technical limitation, even if operational DB access is restricted.
+- Package inspection/initial preflight can be accessible before maintenance; authoritative preflight reports prerequisites and stale-plan invalidation; any mutation requires verified execution protection. Exact preflight/apply UI gating requires contract/product reconciliation.
+- Existing `InstallationMutex`, maintenance/recovery ownership, `DatabaseQuiescenceCapability`, `MariaDbReadOnlyQuiescence`, and restore consistency gates MUST remain available. Application guard is not an automatic quiescence lease or proof of DB snapshot consistency. No existing Contract-v1 REPAIR limitation is declared solved without E2E evidence.
+- System Health/Dashboard may consume maintenance readiness/status information; do not create separate owner or broaden Seven-Tab WU6 to a UI redesign.
+- Required acceptance: other installation unaffected, DB writes from COPOT blocked, authorized lifecycle mutation controlled, queue/in-flight semantics, fail-closed unknown/external writer condition, crash/restart/unlock/retry/restore safety, existing quiescence regression, and verified target-specific backup/rollback before disposable runtime mutation.
+
+Planning action: BOUNDED CONTRACT RECONCILIATION NEXT / NO SOURCE, RUNTIME, DATABASE, OR DEPLOYMENT AUTHORIZATION FROM WORKPLAN ALONE
+
+### Maintenance Management & Installation Backup / Portability
+Class: FUTURE DEDICATED WORKSTREAM / DEFERRED CONCEPT
+Status: REGISTERED / FUTURE / NOT CONTRACT-PROMOTED / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concepts/copot_installation_scoped_maintenance_management_concept.md` [PRIMARY]
+
+Relations:
+- Consumes accepted minimum WU6 maintenance foundation, but full implementation is NOT a hard dependency of v3 bootstrap or Seven-Tab WU6 closure.
+- Owns extended manual modes, delegated permission (only when multi-user capability exists), full queue/scheduling/health projections and maintenance operator workflow.
+- Owns exportable single-ZIP installation backup (APP_ROOT, PUBLIC_ROOT, media/storage, logical DB, installation metadata) with secure secrets, integrity manifest, compatibility, verified restore/import and migration portability; distinct from package ZIP and internal recovery snapshots.
+- Future scheduled backup additionally requires access control, retention, integrity verification, failure and restoration evidence; not delivered today.
+- Native table locks, DB-scoped privilege isolation and dedicated DB instance remain future options. Existing global MariaDB quiescence capability is retained, not retired.
+
+Planning action: KEEP DEFERRED / SEPARATE FUTURE CONTRACT AND WORKSTREAM ACCEPTANCE REQUIRED
 
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
@@ -1825,7 +1864,7 @@ User-approved operational policy: main COPOT XAMPP installation is the developme
 
 ## 9. Immediate Next Planning Target
 
-Current immediate target: Seven-Tab Site Settings WU6 Cross-Capability Acceptance & Closure under accepted `docs/58` contract; WU5 accepted/closed and its dependency gate satisfied. A read-only
+Current immediate target: Seven-Tab Site Settings WU6 Cross-Capability Acceptance & Closure under accepted `docs/58` contract; WU5 accepted/closed and its dependency gate satisfied. Bounded Installation-Scoped Maintenance Guard is a newly reconciled supporting planning foundation, with contract amendment and safety verification still pending. A read-only
 dependency audit on 2026-10-12 confirmed existing guarded legacy adoption and
 forward-reconciliation authority; the former bootstrap-authority blocker is
 superseded. HARD WU2/WU3/WU4 dependencies are satisfied. WU5 is READY for
