@@ -4,6 +4,7 @@ namespace Copot\Core\BackupRecovery;
 
 use Copot\Core\CoreMigrationLedger;
 use Copot\Core\CoreMigrationStateIdentity;
+use Copot\Core\DatabaseTableNames;
 use PDO;
 
 final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
@@ -24,12 +25,14 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
         try {
             $this->assertConnectionDatabase($snapshot, $context->databaseIdentity());
             $this->assertConnectionDatabase($lock, $context->databaseIdentity());
-            $lock->exec('FLUSH TABLES WITH READ LOCK');
-            $locked = true;
+            if ($context->scope() === null) {
+                $lock->exec('FLUSH TABLES WITH READ LOCK');
+                $locked = true;
+            }
             $snapshot->exec('SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ');
             $snapshot->exec('START TRANSACTION WITH CONSISTENT SNAPSHOT');
             $transaction = true;
-            $bundle = $this->captureBundle($snapshot, $context->databaseIdentity());
+            $bundle = $this->captureBundle($snapshot, $context->databaseIdentity(), $context->scope());
             $bytes = $this->codec->encode($bundle);
             if (strlen($bytes) > $context->maximumArtifactBytes()) {
                 throw new DatabaseRecoveryException('Database recovery artifact exceeds the configured bound.');
@@ -69,7 +72,10 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
                 || $ledger !== $artifact->migrationLedgerIdentity()) {
                 return DatabaseVerificationResult::failed('Database artifact identity mismatch.');
             }
-            return DatabaseVerificationResult::valid(['schema' => $schema, 'data' => $data, 'migration_ledger' => $ledger, 'artifact' => $artifact->record()->artifactIdentity()]);
+            if (($artifact->scope() === null) !== !isset($bundle['scope']) || ($artifact->scope() !== null && $artifact->scope()->identity() !== $bundle['scope']['scope_identity'])) {
+                return DatabaseVerificationResult::failed('Database artifact scope identity mismatch.');
+            }
+            return DatabaseVerificationResult::valid(['schema' => $schema, 'data' => $data, 'migration_ledger' => $ledger, 'artifact' => $artifact->record()->artifactIdentity(), 'scope' => $artifact->scope()?->identity()]);
         } catch (\Throwable $exception) {
             return DatabaseVerificationResult::failed($exception->getMessage());
         }
@@ -87,10 +93,16 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
         try {
             $this->assertConnectionDatabase($restore, $context->databaseIdentity());
             $bundle = $this->codec->decode($artifact->bytes());
+            $scope = $context->scope() ?? $artifact->scope();
+            if (($context->scope() !== null || $artifact->scope() !== null)
+                && ($scope === null || $context->scope() === null || $artifact->scope() === null
+                    || $context->scope()->identity() !== $artifact->scope()->identity())) {
+                throw new DatabaseRecoveryException('Scoped database restore identity does not match the artifact and target.');
+            }
             $tableNames = array_map(static fn (array $table): string => $table['name'], $bundle['schema']['tables']);
 
             $attempt = $context->attempt();
-            $current = $this->classifyRestoreTarget($restore, $context->databaseIdentity(), $artifact, $attempt, $tableNames);
+            $current = $this->classifyRestoreTarget($restore, $context->databaseIdentity(), $artifact, $attempt, $tableNames, $scope);
             if ($current === 'restored') {
                 return;
             }
@@ -98,11 +110,11 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
                 throw new DatabaseRecoveryException('Database restore requires a recovery-bound attempt context.');
             }
 
-            $currentNames = $this->baseTableNames($restore);
+            $currentNames = $scope === null ? $this->baseTableNames($restore) : $this->scopedTableNames($restore, $scope);
             if ($current === 'partial') {
                 $this->validatePartialState($restore, $bundle, $currentNames, $attempt, $tableNames);
             } else {
-                $this->validateExpectedTarget($restore, $context->databaseIdentity(), $attempt);
+                $this->validateExpectedTarget($restore, $context->databaseIdentity(), $attempt, $scope);
             }
 
             if ($currentNames !== []) {
@@ -132,7 +144,7 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
             }
             $restore->exec('SET FOREIGN_KEY_CHECKS=1');
             $attempt->recordStage(DatabaseRestoreAttemptContext::VERIFYING);
-            $result = $this->compareBundleToArtifact($this->captureBundle($restore, $context->databaseIdentity()), $artifact);
+            $result = $this->compareBundleToArtifact($this->captureBundle($restore, $context->databaseIdentity(), $scope), $artifact);
             if (!$result->isValid()) { throw new DatabaseRecoveryException($result->failure() ?? 'Restored database verification failed.'); }
             $attempt->recordStage(DatabaseRestoreAttemptContext::COMPLETED);
         } catch (DatabaseRecoveryException $exception) {
@@ -145,23 +157,23 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
         }
     }
 
-    public function stateIdentity(PDO $connection, string $database): string
+    public function stateIdentity(PDO $connection, string $database, ?DatabaseScope $scope = null): string
     {
         $this->assertConnectionDatabase($connection, $database);
-        return $this->stateIdentityFromBundle($this->captureBundle($connection, $database));
+        return $this->stateIdentityFromBundle($this->captureBundle($connection, $database, $scope));
     }
 
-    public function tableSetIdentity(PDO $connection, string $database): string
+    public function tableSetIdentity(PDO $connection, string $database, ?DatabaseScope $scope = null): string
     {
         $this->assertConnectionDatabase($connection, $database);
-        return $this->tableSetIdentityFromNames($this->baseTableNames($connection));
+        return $scope === null ? $this->tableSetIdentityFromNames($this->baseTableNames($connection)) : $scope->tablesetFingerprint();
     }
 
     /** @param array<string, mixed> $bundle */
-    private function classifyRestoreTarget(PDO $connection, string $database, DatabaseRecoveryArtifact $artifact, ?DatabaseRestoreAttemptContext $attempt, array $tableNames): string
+    private function classifyRestoreTarget(PDO $connection, string $database, DatabaseRecoveryArtifact $artifact, ?DatabaseRestoreAttemptContext $attempt, array $tableNames, ?DatabaseScope $scope): string
     {
         try {
-            $current = $this->captureBundle($connection, $database);
+            $current = $this->captureBundle($connection, $database, $scope);
             if ($this->stateIdentityFromBundle($current) === $this->stateIdentityFromArtifact($artifact)) {
                 return 'restored';
             }
@@ -206,10 +218,10 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
         }
     }
 
-    private function validateExpectedTarget(PDO $connection, string $database, DatabaseRestoreAttemptContext $attempt): void
+    private function validateExpectedTarget(PDO $connection, string $database, DatabaseRestoreAttemptContext $attempt, ?DatabaseScope $scope): void
     {
-        if ($this->tableSetIdentity($connection, $database) !== $attempt->expectedTableSetIdentity()
-            || $this->stateIdentity($connection, $database) !== $attempt->expectedDatabaseStateIdentity()) {
+        if ($this->tableSetIdentity($connection, $database, $scope) !== $attempt->expectedTableSetIdentity()
+            || $this->stateIdentity($connection, $database, $scope) !== $attempt->expectedDatabaseStateIdentity()) {
             throw new DatabaseRecoveryException('Database target identity is unexpected or ambiguous.');
         }
     }
@@ -217,22 +229,26 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
     /** @param array<string, mixed> $bundle */
     private function stateIdentityFromBundle(array $bundle): string
     {
-        return hash('sha256', json_encode([
+        $identity = [
             'database_identity' => $bundle['database_identity'],
             'schema' => $bundle['identities']['schema'],
             'data' => $bundle['identities']['data'],
             'migration_ledger' => $bundle['identities']['migration_ledger'],
-        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+        ];
+        if (isset($bundle['scope']['scope_identity'])) { $identity['scope'] = $bundle['scope']['scope_identity']; }
+        return hash('sha256', json_encode($identity, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 
     private function stateIdentityFromArtifact(DatabaseRecoveryArtifact $artifact): string
     {
-        return hash('sha256', json_encode([
+        $identity = [
             'database_identity' => $artifact->databaseIdentity(),
             'schema' => $artifact->schemaIdentity(),
             'data' => $artifact->dataIdentity(),
             'migration_ledger' => $artifact->migrationLedgerIdentity(),
-        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+        ];
+        if ($artifact->scope() !== null) { $identity['scope'] = $artifact->scope()->identity(); }
+        return hash('sha256', json_encode($identity, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 
     /** @param array<int, string> $names */
@@ -260,7 +276,7 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
     public function verifyRestored(DatabaseRecoveryArtifact $artifact, DatabaseRestoreContext $context): DatabaseVerificationResult
     {
         try {
-            $current = $this->capture(new DatabaseCaptureContext($context->restoreConnection(), $context->lockConnection(), $context->databaseIdentity()));
+            $current = $this->capture(new DatabaseCaptureContext($context->restoreConnection(), $context->lockConnection(), $context->databaseIdentity(), 67108864, $context->scope(), $context->consistencyEvidence()));
             $expected = $this->verifyCaptured($artifact);
             $actual = $this->verifyCaptured($current);
             if (!$expected->isValid() || !$actual->isValid() || $expected->identities() !== $actual->identities()) {
@@ -284,15 +300,19 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
             || $ledger !== $artifact->migrationLedgerIdentity()) {
             return DatabaseVerificationResult::failed('Restored database semantic identity does not match the artifact.');
         }
+        if (($artifact->scope() === null) !== !isset($bundle['scope']) || ($artifact->scope() !== null && $artifact->scope()->identity() !== $bundle['scope']['scope_identity'])) {
+            return DatabaseVerificationResult::failed('Restored database scope identity does not match the artifact.');
+        }
         return DatabaseVerificationResult::valid(['schema' => $schema, 'data' => $data, 'migration_ledger' => $ledger, 'artifact' => $artifact->record()->artifactIdentity()]);
     }
 
     /** @return array<string, mixed> */
-    private function captureBundle(PDO $connection, string $database): array
+    private function captureBundle(PDO $connection, string $database, ?DatabaseScope $scope = null): array
     {
         $provider = $connection->query("SELECT @@version AS version, @@version_comment AS version_comment, @@character_set_database AS charset_name, @@collation_database AS collation_name, @@sql_mode AS sql_mode")->fetch(PDO::FETCH_ASSOC);
-        $tables = $this->baseTableNames($connection);
-        if (!in_array(CoreMigrationLedger::TABLE, $tables, true)) { throw new DatabaseRecoveryException('Required Core migration ledger is missing.'); }
+        $tables = $scope === null ? $this->baseTableNames($connection) : $this->scopedTableNames($connection, $scope);
+        $ledger = new CoreMigrationLedger($scope === null ? null : new DatabaseTableNames($scope->namespaceIdentity()));
+        if (!in_array($ledger->table(), $tables, true)) { throw new DatabaseRecoveryException('Required Core migration ledger is missing.'); }
         $schemaTables = [];
         $dataTables = [];
         foreach ($tables as $tableName) {
@@ -303,21 +323,22 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
             $schemaTables[] = $schemaTable;
             $dataTables[] = $this->dataTable($connection, $schemaTable, $primary);
         }
-        $records = (new CoreMigrationLedger())->records($connection);
-        $ledger = array_map(static fn ($record): array => [
+        $records = $ledger->records($connection);
+        $ledgerRows = array_map(static fn ($record): array => [
             'migration_id' => $record->migrationId(), 'sequence_number' => $record->sequence(), 'target_webcore_version' => $record->targetWebcoreVersion(),
             'target_schema_identity' => $record->targetSchemaIdentity(), 'migration_checksum' => $record->checksum(), 'applied_at' => $record->appliedAt()->format('Y-m-d H:i:s'),
         ], $records);
         $schema = ['tables' => $schemaTables];
         $data = ['tables' => $dataTables];
         return [
-            'format_version' => 1,
+            'format_version' => $scope === null ? 1 : 2,
             'domain_identifier' => self::DOMAIN,
             'database_identity' => $database,
+            ...($scope === null ? [] : ['scope' => ['installation_identity' => $scope->installationIdentity(), 'database_identity' => $scope->databaseIdentity(), 'namespace_identity' => $scope->namespaceIdentity(), 'physical_tables' => $scope->physicalTables(), 'tableset_fingerprint' => $scope->tablesetFingerprint(), 'scope_identity' => $scope->identity()]]),
             'provider' => ['product' => (string) ($provider['version_comment'] ?? ''), 'version' => (string) ($provider['version'] ?? ''), 'charset' => (string) ($provider['charset_name'] ?? ''), 'collation' => (string) ($provider['collation_name'] ?? ''), 'sql_mode' => (string) ($provider['sql_mode'] ?? '')],
             'schema' => $schema,
             'data' => $data,
-            'migration_ledger' => $ledger,
+            'migration_ledger' => $ledgerRows,
             'identities' => ['schema' => $this->identity($schema), 'data' => $this->identity($data), 'migration_ledger' => CoreMigrationStateIdentity::fromRecords($records)],
         ];
     }
@@ -375,7 +396,8 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
     private function artifactFromBytes(string $bytes): DatabaseRecoveryArtifact
     {
         $bundle = $this->codec->decode($bytes);
-        return new DatabaseRecoveryArtifact(new RecoveryArtifactRecord(self::DOMAIN, hash('sha256', $bytes), strlen($bytes)), $bytes, $bundle['database_identity'], $bundle['identities']['schema'], $bundle['identities']['data'], $bundle['identities']['migration_ledger']);
+        $scope = isset($bundle['scope']) ? new DatabaseScope($bundle['scope']['installation_identity'], $bundle['scope']['database_identity'], $bundle['scope']['namespace_identity'], $bundle['scope']['physical_tables']) : null;
+        return new DatabaseRecoveryArtifact(new RecoveryArtifactRecord(self::DOMAIN, hash('sha256', $bytes), strlen($bytes)), $bytes, $bundle['database_identity'], $bundle['identities']['schema'], $bundle['identities']['data'], $bundle['identities']['migration_ledger'], $scope);
     }
 
     /** @return array<int, string> */
@@ -389,6 +411,14 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
             $names[] = (string) $row['name'];
         }
         return $names;
+    }
+
+    /** @return list<string> */
+    private function scopedTableNames(PDO $connection, DatabaseScope $scope): array
+    {
+        $actual = $this->baseTableNames($connection);
+        $scope->assertPhysicalTables($actual);
+        return $scope->physicalTables();
     }
 
     private function assertConnectionDatabase(PDO $connection, string $expected): void

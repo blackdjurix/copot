@@ -5,7 +5,7 @@ final class NormalWebcoreRecoverySession
 {
     private bool $closed = false;
     private ?RecoveryMutationPermit $permit = null;
-    public function __construct(private RecoveryLifecycleCoordinator $coordinator, private RecoveryIdentity $identity, private string $manifest, private RecoveryLifecycleRecord $record, private DatabaseQuiescenceLease $lease) {}
+    public function __construct(private RecoveryLifecycleCoordinator $coordinator, private RecoveryIdentity $identity, private string $manifest, private RecoveryLifecycleRecord $record, private ?DatabaseQuiescenceLease $lease = null, private ?ScopedDatabaseConsistencyEvidence $scopedDatabase = null) {}
     public function recoveryIdentity(): RecoveryIdentity { return $this->identity; }
     public function manifestIdentity(): string { return $this->manifest; }
     public function record(): RecoveryLifecycleRecord { return $this->record; }
@@ -13,7 +13,7 @@ final class NormalWebcoreRecoverySession
     public function authorizeMutation(): RecoveryMutationPermit
     {
         if (!$this->ready() || $this->permit instanceof RecoveryMutationPermit) throw new RecoveryLifecycleException('Recovery session is not ready for mutation.');
-        return $this->permit = $this->coordinator->authorizeMutation($this->identity, $this->manifest, $this->record->manifestIdentity(), $this->lease);
+        return $this->permit = $this->coordinator->authorizeMutation($this->identity, $this->manifest, $this->record->manifestIdentity(), $this->lease, $this->scopedDatabase);
     }
     public function completeMutation(): void
     {
@@ -30,7 +30,7 @@ final class NormalWebcoreRecoverySession
     {
         if ($this->closed) return;
         $this->permit?->release();
-        if ($this->lease->isActive()) $this->lease->release();
+        if ($this->lease?->isActive()) $this->lease->release();
         try { $this->coordinator->leaveMaintenance($this->identity); } finally { $this->closed = true; }
     }
 }

@@ -4,7 +4,7 @@ namespace Copot\Core\BackupRecovery;
 
 final class MySqlDatabaseArtifactCodec
 {
-    private const VERSION = 1;
+    private const VERSION = 2;
     private const MAX_DEPTH = 64;
 
     /** @param array<string, mixed> $bundle */
@@ -42,11 +42,24 @@ final class MySqlDatabaseArtifactCodec
     /** @param array<string, mixed> $bundle */
     private function validate(array $bundle): void
     {
-        $this->keys($bundle, ['format_version', 'domain_identifier', 'database_identity', 'provider', 'schema', 'data', 'migration_ledger', 'identities']);
-        if ($bundle['format_version'] !== self::VERSION || $bundle['domain_identifier'] !== 'database.webcore') {
+        $this->keys($bundle, ['format_version', 'domain_identifier', 'database_identity', 'provider', 'schema', 'data', 'migration_ledger', 'identities'], true);
+        if (!in_array($bundle['format_version'], [1, self::VERSION], true) || $bundle['domain_identifier'] !== 'database.webcore') {
             throw new DatabaseRecoveryException('Database artifact format or domain is unsupported.');
         }
         $this->technical((string) $bundle['database_identity'], 'Database identity');
+        if ($bundle['format_version'] === self::VERSION) {
+            if (!is_array($bundle['scope'])) { throw new DatabaseRecoveryException('Scoped database artifact scope is invalid.'); }
+            $this->keys($bundle['scope'], ['installation_identity', 'database_identity', 'namespace_identity', 'physical_tables', 'tableset_fingerprint', 'scope_identity']);
+            if (!is_string($bundle['scope']['installation_identity']) || !is_string($bundle['scope']['database_identity']) || !is_string($bundle['scope']['namespace_identity']) || !is_array($bundle['scope']['physical_tables']) || !is_string($bundle['scope']['tableset_fingerprint']) || !is_string($bundle['scope']['scope_identity'])) {
+                throw new DatabaseRecoveryException('Scoped database artifact scope fields are invalid.');
+            }
+            $scope = new DatabaseScope($bundle['scope']['installation_identity'], $bundle['scope']['database_identity'], $bundle['scope']['namespace_identity'], $bundle['scope']['physical_tables']);
+            if ($scope->databaseIdentity() !== $bundle['database_identity'] || $scope->tablesetFingerprint() !== $bundle['scope']['tableset_fingerprint'] || $scope->identity() !== $bundle['scope']['scope_identity']) {
+                throw new DatabaseRecoveryException('Scoped database artifact scope identity is invalid.');
+            }
+        } elseif (array_key_exists('scope', $bundle)) {
+            throw new DatabaseRecoveryException('Legacy database artifact contains unsupported scope metadata.');
+        }
         if (!is_array($bundle['provider']) || !is_array($bundle['schema']) || !is_array($bundle['data']) || !is_array($bundle['migration_ledger']) || !is_array($bundle['identities'])) {
             throw new DatabaseRecoveryException('Database artifact structure is invalid.');
         }
@@ -139,8 +152,11 @@ final class MySqlDatabaseArtifactCodec
         if ($value['type'] === 'binary' && base64_decode($value['value'], true) === false) { throw new DatabaseRecoveryException('Database binary value is invalid.'); }
     }
 
-    private function keys(array $value, array $required): void
+    private function keys(array $value, array $required, bool $allowScope = false): void
     {
+        if ($allowScope && isset($value['format_version']) && $value['format_version'] === self::VERSION) {
+            $required = ['format_version', 'domain_identifier', 'database_identity', 'scope', 'provider', 'schema', 'data', 'migration_ledger', 'identities'];
+        }
         if (array_keys($value) !== $required) { throw new DatabaseRecoveryException('Database artifact contains unknown or out-of-order fields.'); }
     }
 

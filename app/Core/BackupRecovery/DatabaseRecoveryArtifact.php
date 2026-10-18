@@ -10,7 +10,8 @@ final class DatabaseRecoveryArtifact
         private string $databaseIdentity,
         private string $schemaIdentity,
         private string $dataIdentity,
-        private string $migrationLedgerIdentity
+        private string $migrationLedgerIdentity,
+        private ?DatabaseScope $scope = null
     ) {
         if ($record->domainIdentifier() !== 'database.webcore'
             || strlen($bytes) !== $record->byteSize()
@@ -25,4 +26,5 @@ final class DatabaseRecoveryArtifact
     public function schemaIdentity(): string { return $this->schemaIdentity; }
     public function dataIdentity(): string { return $this->dataIdentity; }
     public function migrationLedgerIdentity(): string { return $this->migrationLedgerIdentity; }
+    public function scope(): ?DatabaseScope { return $this->scope; }
 }

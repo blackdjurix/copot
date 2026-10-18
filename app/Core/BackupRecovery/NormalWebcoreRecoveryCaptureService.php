@@ -19,23 +19,34 @@ final class NormalWebcoreRecoveryCaptureService
     public function capture(NormalWebcoreRecoveryCaptureRequest $request): NormalWebcoreRecoverySession
     {
         $recovery = new RecoveryIdentity('webcore-' . hash('sha256', $request->operationId() . ':' . $request->applyPlan()->identity()));
-        $lease = null; $record = null;
+        $lease = null; $record = null; $hasScopedEvidence = $request->databaseScope() !== null
+            || $request->databaseConsistencyEvidence() !== null
+            || $request->applicationWriteProtectionEvidence() !== null;
+        $scoped = $request->databaseScope() instanceof DatabaseScope
+            && $request->databaseConsistencyEvidence() instanceof ScopedDatabaseConsistencyEvidence
+            && $request->applicationWriteProtectionEvidence() instanceof ApplicationWriteProtectionEvidence;
         try {
-            $lease = $this->quiescence->acquire();
-            if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable.');
+            if ($hasScopedEvidence && !$scoped) throw new RecoveryLifecycleException('Scoped protection requires complete application and database evidence.');
+            if ($scoped && $request->databaseScope()->identity() !== $request->databaseConsistencyEvidence()->scope()->identity()) throw new RecoveryLifecycleException('Scoped database request and consistency scope do not match.');
+            if ($scoped) {
+                $this->coordinator->enterScopedMaintenance($recovery, $request->applicationWriteProtectionEvidence(), $request->databaseConsistencyEvidence());
+            } else {
+                $lease = $this->quiescence->acquire();
+                if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable.');
+            }
             $filesystem = $this->filesystem->capture($request->filesystemPlan() ?? FilesystemRecoveryPlan::fromApplyPlan($request->applyPlan()));
-            $database = $this->database->capture(new DatabaseCaptureContext(($this->snapshotConnection)(), ($this->lockConnection)(), $request->databaseIdentity()));
+            $database = $this->database->capture(new DatabaseCaptureContext(($this->snapshotConnection)(), ($this->lockConnection)(), $request->databaseIdentity(), 67108864, $request->databaseScope(), $request->databaseConsistencyEvidence()));
             $lifecycle = $this->lifecycle->capture();
             $marker = $this->installedLock->capture();
             $manifest = new RecoveryManifest($recovery, $request->operationId(), $request->targetPackageIdentity(), $request->targetReleaseIdentity(), $request->archiveIdentity(), $request->applyPlan()->identity(), [
-                new RecoveryDomainIdentity('database.webcore', 'database.webcore', $request->namespaceIdentity(), $database->record()->artifactIdentity()),
+                new RecoveryDomainIdentity('database.webcore', 'database.webcore', $request->databaseScope()?->identity() ?? $request->namespaceIdentity(), $database->record()->artifactIdentity()),
                 new RecoveryDomainIdentity('filesystem.package-owned', 'filesystem.package-owned', $request->applyPlan()->identity(), $filesystem->artifact()->artifactIdentity()),
                 new RecoveryDomainIdentity('filesystem.lifecycle.committed', 'filesystem.lifecycle.committed', $request->deploymentIdentity(), $lifecycle->record()->artifactIdentity()),
                 new RecoveryDomainIdentity('filesystem.lifecycle.installed-lock', 'filesystem.lifecycle.installed-lock', $request->installationIdentity(), $marker->record()->artifactIdentity()),
             ], $request->preLifecycleIdentity(), $request->migrationLedgerIdentity());
             $record = new RecoveryLifecycleRecord($recovery, $manifest->identity(), $request->operationId(), RecoveryLifecycleState::CREATED);
             $this->coordinator->create($record);
-            $this->coordinator->enterMaintenance($recovery);
+            if (!$scoped) { $this->coordinator->enterMaintenance($recovery); }
             $this->coordinator->transition($recovery, RecoveryLifecycleState::CAPTURING);
             $this->artifacts->publish($manifest, [
                 ['record'=>$database->record(), 'bytes'=>$database->bytes()], ['record'=>$filesystem->artifact(), 'bytes'=>$filesystem->artifactBytes()],
@@ -48,7 +59,7 @@ final class NormalWebcoreRecoveryCaptureService
             $this->coordinator->confirm($recovery, $manifest->identity(), $manifest->identity());
             $ready = $this->store->read($recovery);
             if ($ready->state() !== RecoveryLifecycleState::READY || !$ready->captureComplete()) throw new RecoveryLifecycleException('Recovery capture did not reach READY.');
-            return new NormalWebcoreRecoverySession($this->coordinator, $recovery, $manifest->identity(), $ready, $lease);
+            return new NormalWebcoreRecoverySession($this->coordinator, $recovery, $manifest->identity(), $ready, $lease, $scoped ? $request->databaseConsistencyEvidence() : null);
         } catch (\Throwable $exception) {
             if ($record instanceof RecoveryLifecycleRecord) { try { $this->coordinator->transition($recovery, RecoveryLifecycleState::FAILED_BEFORE_MUTATION, 'Recovery capture failed.'); } catch (\Throwable) {} }
             throw $exception;
@@ -62,13 +73,25 @@ final class NormalWebcoreRecoveryCaptureService
 
     public function resume(NormalWebcoreRecoveryCaptureRequest $request, RecoveryIdentity $identity, string $manifest): NormalWebcoreRecoverySession
     {
-        $lease = $this->quiescence->acquire();
+        $hasScopedEvidence = $request->databaseScope() !== null
+            || $request->databaseConsistencyEvidence() !== null
+            || $request->applicationWriteProtectionEvidence() !== null;
+        $scoped = $request->databaseScope() instanceof DatabaseScope
+            && $request->databaseConsistencyEvidence() instanceof ScopedDatabaseConsistencyEvidence
+            && $request->applicationWriteProtectionEvidence() instanceof ApplicationWriteProtectionEvidence;
+        $lease = null;
         try {
-            if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable.');
+            if ($hasScopedEvidence && !$scoped) throw new RecoveryLifecycleException('Scoped protection requires complete application and database evidence.');
+            if ($scoped && $request->databaseScope()->identity() !== $request->databaseConsistencyEvidence()->scope()->identity()) throw new RecoveryLifecycleException('Scoped database request and consistency scope do not match.');
+            if (!$scoped) {
+                $lease = $this->quiescence->acquire();
+                if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable.');
+            }
             $record = $this->store->read($identity);
             if ($record->operationIdentity() !== $request->operationId() || $record->manifestIdentity() !== $manifest || $record->state() !== RecoveryLifecycleState::READY || !$record->captureComplete() || $record->mutationStarted()) throw new RecoveryLifecycleException('Persisted recovery evidence is not retry-eligible.');
-            $this->coordinator->enterMaintenance($identity);
-            return new NormalWebcoreRecoverySession($this->coordinator, $identity, $manifest, $record, $lease);
+            if ($scoped) { $this->coordinator->enterScopedMaintenance($identity, $request->applicationWriteProtectionEvidence(), $request->databaseConsistencyEvidence()); }
+            else { $this->coordinator->enterMaintenance($identity); }
+            return new NormalWebcoreRecoverySession($this->coordinator, $identity, $manifest, $record, $lease, $scoped ? $request->databaseConsistencyEvidence() : null);
         } catch (\Throwable $e) { if ($lease instanceof DatabaseQuiescenceLease && $lease->isActive()) $lease->release(); throw $e; }
     }
 }

@@ -8,6 +8,9 @@ use Copot\Core\BackupRecovery\InstallationRecoveryMaintenance;
 use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureRequest;
 use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureService;
 use Copot\Core\BackupRecovery\NormalWebcoreRecoverySession;
+use Copot\Core\BackupRecovery\ApplicationWriteProtectionEvidence;
+use Copot\Core\BackupRecovery\DatabaseScope;
+use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
 
 final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMutationBoundary
 {
@@ -17,7 +20,10 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
         private string $installationIdentity,
         private string $namespaceIdentity,
         private string $deploymentIdentity,
-        private string $databaseIdentity
+        private string $databaseIdentity,
+        private ?DatabaseScope $databaseScope = null,
+        private ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null,
+        private ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null
     ) {}
 
     public function enter(WebcoreMutationContext $context): ProtectedWebcoreMutationSession
@@ -77,7 +83,10 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
             $this->preLifecycleIdentity($installed),
             $installed?->migrationStateIdentity() ?? hash('sha256', 'copot-empty-migration-ledger'),
             $this->databaseIdentity,
-            $context->filesystemRecoveryPlan()
+            $context->filesystemRecoveryPlan(),
+            $this->databaseScope,
+            $this->databaseConsistencyEvidence,
+            $this->applicationWriteProtectionEvidence
         );
     }
 

@@ -17,7 +17,10 @@ final class NormalWebcoreRecoveryCaptureRequest
         private string $preLifecycleIdentity,
         private string $migrationLedgerIdentity,
         private string $databaseIdentity,
-        private ?FilesystemRecoveryPlan $filesystemPlan = null
+        private ?FilesystemRecoveryPlan $filesystemPlan = null,
+        private ?DatabaseScope $databaseScope = null,
+        private ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null,
+        private ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null
     ) {}
     public function operationId(): string { return $this->operationId; }
     public function installationIdentity(): string { return $this->installationIdentity; }
@@ -31,4 +34,7 @@ final class NormalWebcoreRecoveryCaptureRequest
     public function migrationLedgerIdentity(): string { return $this->migrationLedgerIdentity; }
     public function databaseIdentity(): string { return $this->databaseIdentity; }
     public function filesystemPlan(): ?FilesystemRecoveryPlan { return $this->filesystemPlan; }
+    public function databaseScope(): ?DatabaseScope { return $this->databaseScope; }
+    public function databaseConsistencyEvidence(): ?ScopedDatabaseConsistencyEvidence { return $this->databaseConsistencyEvidence; }
+    public function applicationWriteProtectionEvidence(): ?ApplicationWriteProtectionEvidence { return $this->applicationWriteProtectionEvidence; }
 }

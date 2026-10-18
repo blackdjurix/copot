@@ -7,6 +7,7 @@ use Copot\Core\Admin\AdminErrorRenderer;
 use Copot\Core\Admin\AdminIcon;
 use Copot\Core\Admin\AdminPageRenderer;
 use Copot\Core\Admin\AdminUrl;
+use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
 use RuntimeException;
 use Throwable;
 
@@ -53,6 +54,7 @@ class Application
     private AdminErrorRenderer $adminErrors;
     private SystemHealthReportProvider $systemHealthReports;
     private ?PackageLifecycleService $packageLifecycle = null;
+    private InstallationScopedMaintenanceGuard $writeProtection;
 
     public function __construct(DeploymentContext|string $deployment, ?callable $systemHealthReportResolver = null)
     {
@@ -61,6 +63,7 @@ class Application
             : $deployment;
         $basePath = $this->deployment->appRoot();
         $this->basePath = rtrim($basePath, DIRECTORY_SEPARATOR);
+        $this->writeProtection = new InstallationScopedMaintenanceGuard(new InstallationMutex($this->path('storage')), $this->path('storage'));
         $this->diagnostics = new Diagnostics($this->basePath);
         $this->config = new Config($this->path('config'));
         $this->installationIdentity = (new InstallationIdentityStore($this->path('storage')))->getOrCreate();
@@ -388,8 +391,13 @@ class Application
     public function run(Request $request): Response
     {
         $initialOutputLevel = ob_get_level();
+        $writeLease = $request->method() === 'GET' ? null : $this->writeProtection->admit('http');
+        if ($request->method() !== 'GET' && $writeLease === null) {
+            return Response::html('Application maintenance is active.', 503);
+        }
 
         if (!@ob_start()) {
+            $writeLease?->release();
             return $this->unexpectedFailureResponse(
                 new RuntimeException('Application dispatch output buffer is unavailable.'),
                 $request
@@ -413,9 +421,11 @@ class Application
                 throw new RuntimeException('Application route emitted direct output.');
             }
 
+            $writeLease?->release();
             return $response;
         } catch (Throwable $exception) {
             $this->discardOutputBuffersTo($initialOutputLevel);
+            $writeLease?->release();
 
             return $this->unexpectedFailureResponse($exception, $request);
         }

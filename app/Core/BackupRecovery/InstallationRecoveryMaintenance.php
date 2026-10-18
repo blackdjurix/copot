@@ -6,12 +6,13 @@ use Copot\Core\InstallationLock;
 use Copot\Core\InstallationMutex;
 
 /** Binds recovery maintenance to the existing lifecycle mutex. */
-final class InstallationRecoveryMaintenance implements RecoveryMaintenanceBoundary
+class InstallationRecoveryMaintenance implements RecoveryMaintenanceBoundary
 {
     private ?InstallationLock $lock = null;
     private ?string $identity = null;
+    protected InstallationMutex $mutex;
 
-    public function __construct(private InstallationMutex $mutex) {}
+    public function __construct(InstallationMutex $mutex, ?string $storagePath = null) { $this->mutex = $mutex; }
 
     /** Adopt the already-held lifecycle lock; this never acquires a mutex. */
     public function adopt(InstallationLock $lock): void

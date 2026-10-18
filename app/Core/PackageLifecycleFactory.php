@@ -3,9 +3,12 @@
 namespace Copot\Core;
 
 use Copot\Core\BackupRecovery\DatabaseQuiescenceCapability;
+use Copot\Core\BackupRecovery\ApplicationWriteProtectionEvidence;
+use Copot\Core\BackupRecovery\DatabaseScope;
 use Copot\Core\BackupRecovery\FilesystemRecoveryDomain;
 use Copot\Core\BackupRecovery\FilesystemRecoveryPathGuard;
 use Copot\Core\BackupRecovery\InstallationRecoveryMaintenance;
+use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
 use Copot\Core\BackupRecovery\InstalledLockRecoveryDomain;
 use Copot\Core\BackupRecovery\LifecycleRecoveryDomain;
 use Copot\Core\BackupRecovery\MariaDbReadOnlyQuiescence;
@@ -17,6 +20,7 @@ use Copot\Core\BackupRecovery\RecoveryLifecycleStore;
 use Copot\Core\BackupRecovery\RecoveryOrchestrator;
 use Copot\Core\BackupRecovery\RecoveryRootResolver;
 use Copot\Core\BackupRecovery\RecoveryStorageRoot;
+use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
 use Copot\Core\BackupRecovery\UnavailableDatabaseQuiescence;
 use PDO;
 
@@ -374,7 +378,7 @@ final class PackageLifecycleFactory
             $store = new RecoveryLifecycleStore($root);
             $artifacts = new RecoveryArtifactStore($root);
             $mutex = new InstallationMutex($storage);
-            $maintenance = new InstallationRecoveryMaintenance($mutex);
+            $maintenance = new InstallationScopedMaintenanceGuard($mutex, $storage);
             $coordinator = new RecoveryLifecycleCoordinator($store, $mutex, $quiescence, $maintenance);
             $pathGuard = new FilesystemRecoveryPathGuard($liveGuard);
 
@@ -444,7 +448,7 @@ final class PackageLifecycleRecoveryComposition
         );
     }
 
-    public function normalProtectedMutationBoundary(string $installationIdentity, string $deploymentIdentity, ?NormalWebcoreRecoveryCaptureService $capture = null): ProtectedWebcoreMutationBoundary
+    public function normalProtectedMutationBoundary(string $installationIdentity, string $deploymentIdentity, ?NormalWebcoreRecoveryCaptureService $capture = null, ?DatabaseScope $databaseScope = null, ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null, ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null): ProtectedWebcoreMutationBoundary
     {
         return new NormalWebcoreProtectedMutationBoundary(
             $capture ?? $this->normalCaptureService(),
@@ -452,7 +456,10 @@ final class PackageLifecycleRecoveryComposition
             $installationIdentity,
             $this->databaseIdentity,
             $deploymentIdentity,
-            $this->databaseIdentity
+            $this->databaseIdentity,
+            $databaseScope,
+            $databaseConsistencyEvidence,
+            $applicationWriteProtectionEvidence
         );
     }
 }

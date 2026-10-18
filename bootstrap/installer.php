@@ -7,6 +7,8 @@ use Copot\Core\Database;
 use Copot\Core\DeploymentContext;
 use Copot\Core\Env;
 use Copot\Core\CommittedLifecycleStateStore;
+use Copot\Core\BackupRecovery\ApplicationWriteAdmissionLease;
+use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
 use Copot\Core\InstallationException;
 use Copot\Core\InstallationMutex;
 use Copot\Core\InstallerAdministratorSetup;
@@ -236,10 +238,20 @@ if ($installationStateError) {
     $status = 503;
     $message = 'Installer storage is not writable.';
 } elseif ($request->method() === 'POST') {
-    if (!$csrf instanceof Csrf) {
+    $installerWriteLease = null;
+    try {
+        $installerWriteLease = (new InstallationScopedMaintenanceGuard(
+            new InstallationMutex($basePath . '/storage'),
+            $basePath . '/storage'
+        ))->admit('http');
+
+        if (!$installerWriteLease instanceof ApplicationWriteAdmissionLease) {
+            $status = 503;
+            $message = 'Installer writes are temporarily blocked by installation maintenance.';
+        } elseif (!$csrf instanceof Csrf) {
         $status = 503;
         $message = 'Installer session support is unavailable.';
-    } else {
+        } else {
         $csrfResponse = $csrf->validateOrReject($request);
 
         if ($csrfResponse instanceof Response) {
@@ -548,6 +560,9 @@ if ($installationStateError) {
                 }
             }
         }
+        }
+    } finally {
+        $installerWriteLease?->release();
     }
 }
 

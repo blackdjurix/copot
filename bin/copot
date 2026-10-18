@@ -6,6 +6,8 @@ declare(strict_types=1);
 use Copot\Core\Env;
 use Copot\Core\DeploymentContext;
 use Copot\Core\PackageLifecycleFactory;
+use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
+use Copot\Core\InstallationMutex;
 
 $defaultAppRoot = dirname(__DIR__);
 $configuredAppRoot = getenv('COPOT_APP_ROOT');
@@ -66,6 +68,13 @@ if ($needsZip && (!is_file($args[0]) || is_link($args[0]) || !is_readable($args[
 
 try {
     Env::load($autoloadRoot . DIRECTORY_SEPARATOR . '.env');
+    $cliLease = null;
+    if (in_array($command, ['package:reconcile', 'package:adopt', 'package:apply', 'package:repair'], true)) {
+        $cliGuard = new InstallationScopedMaintenanceGuard(new InstallationMutex($autoloadRoot . DIRECTORY_SEPARATOR . 'storage'), $autoloadRoot . DIRECTORY_SEPARATOR . 'storage');
+        $cliLease = $cliGuard->admit('cli');
+        if ($cliLease === null) { emit(['accepted' => false, 'status' => 'blocked', 'reason' => 'Installation-scoped maintenance is active.'], $format, 7); }
+        register_shutdown_function(static function () use ($cliLease): void { $cliLease?->release(); });
+    }
     $deploymentContext = DeploymentContext::forCli($defaultAppRoot);
     $service = PackageLifecycleFactory::forProject($deploymentContext);
     if ($command === 'package:status') {
