@@ -5,6 +5,9 @@ declare(strict_types=1);
 use Copot\Core\PackageContract;
 use Copot\Core\PackageManifestReader;
 use Copot\Core\PackageOwnership;
+use Copot\Core\CanonicalTargetInventory;
+use Copot\Core\CanonicalTargetInventoryEntry;
+use Copot\Core\PackageV3Identity;
 use Copot\Core\Version;
 
 $basePath = dirname(__DIR__);
@@ -18,6 +21,46 @@ function fail(string $message): void
 {
     fwrite(STDERR, 'Package build failed: ' . $message . PHP_EOL);
     exit(1);
+}
+
+/** @return array{manifest_version:int, output:?string} */
+function parseOptions(array $arguments): array
+{
+    $manifestVersion = PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION;
+    $output = null;
+
+    for ($index = 1, $count = count($arguments); $index < $count; $index++) {
+        $argument = $arguments[$index];
+        if ($argument === '--manifest-version=3' || ($argument === '--manifest-version' && ($arguments[$index + 1] ?? null) === '3')) {
+            $manifestVersion = PackageContract::V3_MANIFEST_CONTRACT_VERSION;
+            if ($argument === '--manifest-version') {
+                $index++;
+            }
+            continue;
+        }
+        if ($argument === '--manifest-version=2' || ($argument === '--manifest-version' && ($arguments[$index + 1] ?? null) === '2')) {
+            $manifestVersion = PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION;
+            if ($argument === '--manifest-version') {
+                $index++;
+            }
+            continue;
+        }
+        if (str_starts_with($argument, '--output=')) {
+            $output = substr($argument, 9);
+            continue;
+        }
+        if ($argument === '--output' && isset($arguments[$index + 1])) {
+            $output = $arguments[++$index];
+            continue;
+        }
+        fail('unsupported option: ' . $argument);
+    }
+
+    if ($output === '') {
+        fail('output path cannot be empty.');
+    }
+
+    return ['manifest_version' => $manifestVersion, 'output' => $output];
 }
 
 /**
@@ -256,9 +299,45 @@ function writeStoredZip(string $zipPath, array $files): void
     }
 }
 
+/** @param list<array{path:string,byte_size:int,sha256:string,ownership:string}> $inventory */
+function buildTargetInventory(array $inventory): CanonicalTargetInventory
+{
+    $runtimeOwned = [
+        '.env',
+        '.copot/package.json',
+        'storage/.install.lock',
+        'storage/installed.lock',
+        'storage/.copot-lifecycle/committed-state.json',
+        'storage/.copot-lifecycle/installation-identity.json',
+    ];
+    $entries = [];
+    foreach ($inventory as $item) {
+        $path = $item['path'];
+        if (in_array($path, $runtimeOwned, true) || $item['ownership'] !== PackageOwnership::PACKAGE_OWNED) {
+            fail('v3 target inventory encountered runtime-owned or non-package-owned path: ' . $path);
+        }
+        $isPublic = $path === 'public' || str_starts_with($path, 'public/');
+        $targetPath = $isPublic ? substr($path, 7) : $path;
+        if ($targetPath === '') {
+            fail('v3 target inventory contains an invalid public path.');
+        }
+        $entries[] = new CanonicalTargetInventoryEntry(
+            $isPublic ? CanonicalTargetInventoryEntry::PUBLIC_ROOT : CanonicalTargetInventoryEntry::APP_ROOT,
+            CanonicalTargetInventoryEntry::PACKAGE_OWNED,
+            $targetPath,
+            $item['byte_size'],
+            $item['sha256']
+        );
+    }
+    return new CanonicalTargetInventory($entries);
+}
+
 if (PHP_SAPI !== 'cli') {
     fail('package builder must be run from the CLI.');
 }
+
+$options = parseOptions($argv);
+$manifestVersion = $options['manifest_version'];
 
 $manifest = loadManifest(__DIR__ . '/package_manifest.php');
 $files = collectPackageFiles($basePath, $manifest['include'], $manifest['exclude']);
@@ -279,19 +358,20 @@ $schemaIdentity = (new Copot\Core\CanonicalSchemaBaselineVerifier())->identity(
     $basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql'
 );
 
+$targetInventory = null;
+
 $distPath = $basePath . DIRECTORY_SEPARATOR . 'dist';
 
-if (!is_dir($distPath) && !mkdir($distPath, 0775, true)) {
-    fail('unable to create dist directory.');
+$packageName = 'copot-v' . $version . ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION ? '-v3' : '') . '.zip';
+$targetPath = $options['output'] ?? ($distPath . DIRECTORY_SEPARATOR . $packageName);
+$targetDirectory = dirname($targetPath);
+if (!is_dir($targetDirectory) && !mkdir($targetDirectory, 0775, true)) {
+    fail('unable to create output directory: ' . $targetDirectory);
 }
-
-if (!is_dir($distPath) || !is_writable($distPath)) {
-    fail('dist directory is not writable.');
+if (!is_dir($targetDirectory) || !is_writable($targetDirectory)) {
+    fail('output directory is not writable: ' . $targetDirectory);
 }
-
-$packageName = 'copot-v' . $version . '.zip';
-$targetPath = $distPath . DIRECTORY_SEPARATOR . $packageName;
-$temporaryPath = $distPath . DIRECTORY_SEPARATOR . '.' . $packageName . '.tmp';
+$temporaryPath = $targetDirectory . DIRECTORY_SEPARATOR . '.' . basename($targetPath) . '.tmp';
 
 /* The manifest is metadata, not package-owned inventory. It is added after
  * the inventory is calculated so WU7 can remove it before live-tree apply. */
@@ -310,6 +390,15 @@ foreach ($files as $relative => $source) {
     ];
 }
 
+if ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
+    foreach (['public/.htaccess', 'routes/site_settings.php'] as $requiredPolicyPath) {
+        if (!isset($files[$requiredPolicyPath])) {
+            fail('v3 packaging policy cannot determine ownership for required path: ' . $requiredPolicyPath);
+        }
+    }
+    $targetInventory = buildTargetInventory($inventory);
+}
+
 $manifestPath = tempnam(sys_get_temp_dir(), 'copot-package-manifest-');
 if ($manifestPath === false) {
     fail('unable to prepare package metadata.');
@@ -317,7 +406,7 @@ if ($manifestPath === false) {
 
 $manifestData = [
     'package_type' => PackageContract::WEBCORE_PACKAGE_TYPE,
-    'manifest_contract_version' => PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION,
+    'manifest_contract_version' => $manifestVersion,
     'target_webcore_version' => $version,
     'release_identity' => 'copot-v' . $version,
     'source_tree_identity' => $sourceTreeIdentity !== '' ? $sourceTreeIdentity : null,
@@ -340,8 +429,30 @@ $manifestData = [
     ]))->toArray(),
 ];
 
+if ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
+    $targetEntries = $targetInventory->entries();
+    usort($targetEntries, static fn (CanonicalTargetInventoryEntry $a, CanonicalTargetInventoryEntry $b): int => strcmp(
+        $a->root() . "\0" . $a->ownership() . "\0" . $a->path(),
+        $b->root() . "\0" . $b->ownership() . "\0" . $b->path()
+    ));
+    $manifestData += [
+        'coverage' => 'full',
+        'target_inventory' => [
+            'serialization_version' => 1,
+            'fingerprint' => $targetInventory->fingerprint(),
+            'entries' => array_map(static fn (CanonicalTargetInventoryEntry $entry): array => $entry->toArray(), $targetEntries),
+        ],
+        'source_state_requirements' => ['allowed_inventory_fingerprints' => []],
+        'removals' => [],
+        'renames' => [],
+    ];
+}
+
 try {
-    $encodedManifest = json_encode($manifestData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . PHP_EOL;
+    $encodedManifest = json_encode(
+        $manifestData,
+        ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION ? JSON_UNESCAPED_UNICODE : JSON_PRETTY_PRINT) | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+    ) . PHP_EOL;
     if (file_put_contents($manifestPath, $encodedManifest) !== strlen($encodedManifest)) {
         fail('unable to write package metadata.');
     }
@@ -367,4 +478,29 @@ try {
     @unlink($manifestPath);
 }
 
-echo 'Built dist/' . $packageName . ' with ' . count($files) . ' files.' . PHP_EOL;
+if ($manifestVersion === PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION && $options['output'] === null) {
+    echo 'Built dist/' . $packageName . ' with ' . count($files) . ' files.' . PHP_EOL;
+} else {
+    echo 'Built ' . $targetPath . ' with ' . count($files) . ' files.' . PHP_EOL;
+}
+if ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
+    $manifestSha256 = PackageV3Identity::manifestDigest($encodedManifest);
+    $payloadIntegrityIdentity = (new PackageContract(
+        PackageContract::WEBCORE_PACKAGE_TYPE,
+        PackageContract::V3_MANIFEST_CONTRACT_VERSION,
+        $version,
+        'copot-v' . $version,
+        $sourceTreeIdentity !== '' ? $sourceTreeIdentity : null,
+        new Copot\Core\PackageCompatibility('0.0.0'),
+        new Copot\Core\PackageRuntimeCompatibility('8.2.0', ['mysql' => '8.0.0'], ['json', 'pdo', 'pdo_mysql', 'session', 'filter', 'zip']),
+        array_map(static fn (array $entry): Copot\Core\PackageInventoryEntry => new Copot\Core\PackageInventoryEntry($entry['path'], $entry['byte_size'], $entry['sha256'], $entry['ownership']),
+            $inventory),
+        new Copot\Core\PackageMigrationDeclaration(true, Copot\Core\CoreMigrationRegistry::IDENTITY),
+        Copot\Core\PackageTargetRequirements::fromArray($manifestData['target_requirements']),
+        $targetInventory,
+        'full', [], [], []
+    ))->integrityIdentity();
+    echo 'Manifest SHA-256: ' . $manifestSha256 . PHP_EOL;
+    echo 'Delivered payload integrity identity: ' . $payloadIntegrityIdentity . PHP_EOL;
+    echo 'Package identity: ' . PackageV3Identity::identity($manifestSha256, $payloadIntegrityIdentity) . PHP_EOL;
+}
