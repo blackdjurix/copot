@@ -32,4 +32,24 @@ final class LegacyBootstrapPreparation
     public function sourceInventory(): ?LegacyBootstrapSourceInventory { return $this->sourceInventory; }
     public function collisions(): array { return $this->collisions; }
     public function artifactPath(): ?string { return $this->artifactPath; }
+
+    public function toArray(): array
+    {
+        return [
+            'accepted' => $this->eligible(),
+            'status' => $this->status,
+            'operation_type' => self::OPERATION_TYPE,
+            'operation_identity' => $this->operationIdentity,
+            'plan_identity' => $this->planIdentity,
+            'installation_identity' => $this->installationIdentity,
+            'legacy_classification' => $this->legacyClassification->classification(),
+            'source_inventory_fingerprint' => $this->sourceInventory?->fingerprint(),
+            'source_inventory_entries' => $this->sourceInventory === null ? null : count($this->sourceInventory->entries()),
+            'collisions' => $this->collisions,
+            'artifact_path' => $this->artifactPath,
+            'provisional_source_evidence' => true,
+            'operational_ready' => false,
+            'reason' => $this->reason,
+        ];
+    }
 }

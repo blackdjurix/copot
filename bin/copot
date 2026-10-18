@@ -6,6 +6,7 @@ declare(strict_types=1);
 use Copot\Core\Env;
 use Copot\Core\DeploymentContext;
 use Copot\Core\PackageLifecycleFactory;
+use Copot\Core\LegacyToV3BootstrapPreparationComposer;
 use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
 use Copot\Core\InstallationMutex;
 
@@ -27,7 +28,7 @@ require $autoloadPath;
 
 function usage(): void
 {
-    fwrite(STDERR, "Usage: bin/copot package:(plan|reconcile-plan|reconcile|apply|repair|adopt) <zip> [--confirm] [--confirmation-json=<object>] [--format=human|json]\n       bin/copot package:status [--format=human|json]\n");
+    fwrite(STDERR, "Usage: bin/copot package:(plan|reconcile-plan|reconcile|apply|repair|adopt) <zip> [--confirm] [--confirmation-json=<object>] [--format=human|json]\n       bin/copot package:bootstrap-prepare <zip> [--format=human|json]\n       bin/copot package:status [--format=human|json]\n");
 }
 
 function emit(array $data, string $format, int $code): never
@@ -60,14 +61,19 @@ foreach ($args as $key => $arg) {
 }
 if (!in_array($format, ['human', 'json'], true)) { usage(); exit(2); }
 $args = array_values($args);
-$needsZip = in_array($command, ['package:plan', 'package:reconcile-plan', 'package:reconcile', 'package:apply', 'package:repair', 'package:adopt'], true);
-if (!in_array($command, ['package:plan', 'package:reconcile-plan', 'package:reconcile', 'package:apply', 'package:repair', 'package:adopt', 'package:status'], true) || count($args) !== ($needsZip ? 1 : 0)) { usage(); exit(2); }
+$needsZip = in_array($command, ['package:plan', 'package:reconcile-plan', 'package:reconcile', 'package:apply', 'package:repair', 'package:adopt', 'package:bootstrap-prepare'], true);
+if (!in_array($command, ['package:plan', 'package:reconcile-plan', 'package:reconcile', 'package:apply', 'package:repair', 'package:adopt', 'package:bootstrap-prepare', 'package:status'], true) || count($args) !== ($needsZip ? 1 : 0)) { usage(); exit(2); }
 if ($needsZip && (!is_file($args[0]) || is_link($args[0]) || !is_readable($args[0]))) {
     emit(['accepted' => false, 'status' => 'invalid_input', 'reason' => 'Local package ZIP path is invalid.'], $format, 2);
 }
 
 try {
     Env::load($autoloadRoot . DIRECTORY_SEPARATOR . '.env');
+    $deploymentContext = DeploymentContext::forCli($defaultAppRoot);
+    if ($command === 'package:bootstrap-prepare') {
+        $preparation = LegacyToV3BootstrapPreparationComposer::forProject($deploymentContext)->prepare($args[0]);
+        emit($preparation->toArray(), $format, $preparation->eligible() ? 0 : 5);
+    }
     $cliLease = null;
     if (in_array($command, ['package:reconcile', 'package:adopt', 'package:apply', 'package:repair'], true)) {
         $cliGuard = new InstallationScopedMaintenanceGuard(new InstallationMutex($autoloadRoot . DIRECTORY_SEPARATOR . 'storage'), $autoloadRoot . DIRECTORY_SEPARATOR . 'storage');
@@ -75,7 +81,6 @@ try {
         if ($cliLease === null) { emit(['accepted' => false, 'status' => 'blocked', 'reason' => 'Installation-scoped maintenance is active.'], $format, 7); }
         register_shutdown_function(static function () use ($cliLease): void { $cliLease?->release(); });
     }
-    $deploymentContext = DeploymentContext::forCli($defaultAppRoot);
     $service = PackageLifecycleFactory::forProject($deploymentContext);
     if ($command === 'package:status') {
         $status = $service->status();
