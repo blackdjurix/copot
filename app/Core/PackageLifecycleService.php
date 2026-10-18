@@ -52,7 +52,8 @@ final class PackageLifecycleService
         private ?DestructivePlanConfirmationAuthority $v3ConfirmationAuthority = null,
         private ?ProtectedWebcoreMutationBoundary $v3RecoveryBoundary = null,
         private ?LifecycleOperationStore $operationStore = null,
-        private $v3MigrationRunner = null
+        private $v3MigrationRunner = null,
+        private ?LegacyToV3BootstrapEntry $legacyBootstrap = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -66,6 +67,36 @@ final class PackageLifecycleService
     private LegacyRuntimeClassifier $legacyClassifier;
     private LegacyReconciliationPlanner $reconciliationPlanner;
     private DatabaseLifecycleClassifier $databaseLifecycleClassifier;
+
+    /** Preparation only: no package apply, migration, recovery, or committed-state mutation. */
+    public function prepareLegacyToV3Bootstrap(string $zip): LegacyBootstrapPreparation
+    {
+        if (!$this->legacyBootstrap instanceof LegacyToV3BootstrapEntry) {
+            return new LegacyBootstrapPreparation(
+                LegacyBootstrapPreparation::BLOCKED,
+                'LEGACY_TO_V3_BOOTSTRAP composition is unavailable.',
+                'legacy-to-v3-bootstrap-unavailable', hash('sha256', 'unavailable'), '',
+                LegacyClassificationResult::unknown('Bootstrap composition is unavailable.'), null,
+                [['action' => 'BLOCK', 'reason' => 'Bootstrap composition is unavailable.']], null
+            );
+        }
+        try {
+            $payload = $this->intake->intake($zip);
+            try {
+                $manifest = $this->manifestReader->read($payload);
+                $this->inventoryVerifier->verify($payload, $manifest->contract()->inventory(), [PackageManifestReader::PATH]);
+                return $this->legacyBootstrap->prepare($manifest);
+            }
+            finally { $payload->cleanup(); }
+        } catch (\Throwable $exception) {
+            return new LegacyBootstrapPreparation(
+                LegacyBootstrapPreparation::BLOCKED, $exception->getMessage(),
+                'legacy-to-v3-bootstrap-invalid-package', hash('sha256', $exception->getMessage()), '',
+                LegacyClassificationResult::unknown($exception->getMessage()), null,
+                [['action' => 'BLOCK', 'reason' => $exception->getMessage()]], null
+            );
+        }
+    }
 
     public function retireNetZero(string $operationId, WebcoreApplyPlan $plan, NetZeroRetirementContext $context): PackageLifecycleResult
     {
