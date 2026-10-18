@@ -93,3 +93,37 @@ retirement; it is not a blanket prohibition and does not automatically expand
 WU3 or create a separate recovery engine. WU3 may consume only an already
 proven protection capability; provider implementation and project-wide
 mechanism rationalization remain separately bounded work.
+
+## 9. Maintenance Guard authority clarification
+
+The installation-scoped Maintenance Guard is an application-level write-freeze
+for the current COPOT installation. Its enforcement boundary is the verified
+installation identity, canonical database namespace and owned physical
+tableset. Bootstrap must prove admission, in-flight drain and exclusion for
+all relevant COPOT-owned writer paths that enter that boundary, including the
+HTTP application, installer, CLI, scheduled, background and any future COPOT
+entrypoint explicitly registered with the guard. An unregistered or
+unprotected COPOT writer remains a pre-mutation `BLOCKED` condition.
+
+The Maintenance Guard is not a MariaDB or server-wide lock. It does not block,
+intercept or claim authority over direct writes from external applications,
+DBA sessions, privileged users, `root`, or third-party database writers. It
+must not interfere with another installation that shares a MariaDB instance or
+database. The inability to control those external writers is a **KNOWN
+LIMITATION / NOT A DEFECT** of the current installation-scoped boundary and a
+possible future refinement outside this bootstrap scope.
+
+The limitation does not waive the independent namespace-scoped database
+consistency requirement. An active Maintenance Guard is not evidence that
+concurrent external writes or DDL are absent, and namespace identity alone is
+not a consistency proof. Bootstrap may use scoped protection only when the
+independent database capability proves the target database identity, canonical
+physical tableset, schema stability, data and migration-ledger integrity, and
+applicable safety against the observed external-writer boundary. Missing,
+stale, incomplete or ambiguous proof remains `BLOCKED` before mutation.
+
+This clarification preserves the existing immutable RecoveryManifest,
+original-byte evidence, operation/action-journal linkage, interruption,
+recovery-required, `AWAITING_WU6`, v1/v2 compatibility and WU6 finalization
+semantics. It does not expand COPOT ownership, select a server-wide mechanism
+automatically, or create a parallel recovery engine.

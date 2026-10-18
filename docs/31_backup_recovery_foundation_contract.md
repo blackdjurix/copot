@@ -594,3 +594,39 @@ validate equivalence against recovery guarantees, and retire the broader
 mechanism only through a separately authorized decision. Existing mechanisms
 may remain controlled transitional capabilities where scoped equivalence is
 not yet proven; shared-runtime eligibility must not silently select them.
+
+## Maintenance Guard authority clarification
+
+Date version: 2026-10-18
+
+The installation-scoped Maintenance Guard is an application-level write-freeze
+for the current COPOT installation. Its enforcement boundary is the verified
+installation identity, canonical database namespace and owned physical
+tableset. It coordinates admission, in-flight drain and exclusion only for
+COPOT-owned writer paths that enter the enforcement boundary, including the
+HTTP application, installer, CLI, scheduled, background and later COPOT
+entrypoints that are explicitly registered with the guard.
+
+The Maintenance Guard is not a MariaDB or server-wide lock. It does not block,
+intercept or claim authority over direct writes from external applications,
+DBA sessions, privileged users, `root`, or third-party database writers. It
+must not affect another installation merely because that installation shares
+the MariaDB instance or database. Absence of control over those external
+writers is a **KNOWN LIMITATION / NOT A DEFECT** of the installation-scoped
+guard and is a candidate for future refinement outside this contract scope.
+
+This limitation does not waive database consistency requirements. The
+Maintenance Guard never proves that concurrent external writes or DDL did not
+occur. A scoped recovery operation therefore requires an independent
+namespace-scoped consistency capability proving the target database identity,
+canonical physical tableset, schema stability, data and migration-ledger
+integrity, and applicable external-activity safety. If that proof is absent,
+stale, ambiguous or incompatible with the observed external-writer boundary,
+capture or mutation remains `BLOCKED`; the transitional server/database
+quiescence profile remains available only when its full blast radius and
+authority are explicitly authorized.
+
+This clarification changes no RecoveryManifest, immutable original-byte,
+interruption, recovery-required, v1/v2 compatibility or WU6 finalization
+guarantee. It creates no new recovery engine and grants no additional COPOT
+ownership or authority.
