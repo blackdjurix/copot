@@ -801,6 +801,35 @@ Prefer deterministic evidence for:
 - Installer routing;
 - focused regression integrity.
 
+## Recovery tableset boundary amendment
+Date version: 2026-10-18
+
+Recovery capture, lifecycle mutation and restore must resolve through the
+canonical installation namespace and a verified physical tableset. The
+database name alone is not an ownership or isolation proof. The recovery
+scope must bind installation identity, database identity, namespace, expected
+physical tables and a deterministic tableset fingerprint.
+
+Distinct namespaces in one database remain supported and are independent only
+when their physical tablesets are complete, disjoint and consistently
+resolved. A verified table belonging to another installation is not a
+collision with the target merely because it is present in the same database;
+it remains outside the target recovery scope. Unknown, partial, overlapping,
+cross-namespace or ambiguously owned tables fail closed and must not be
+captured, mutated or restored under the target installation.
+
+This boundary applies equally to schema, data, migration-ledger and recovery
+evidence. Namespace resolution does not prove that all write paths are
+controlled; recovery eligibility additionally requires the applicable
+installation-scoped Maintenance Guard, in-flight drain and writer exclusion
+defined by the Backup & Recovery contract. Existing collision classifications,
+ownership authority and v1/v2 compatibility remain unchanged.
+
+The amendment does not create a second recovery or migration engine. Existing
+providers, lifecycle orchestration and WU6 finalization remain authoritative.
+Provider changes and scoped protection equivalence validation are implementation
+dependencies, not a new WU or an automatic expansion of this contract.
+
 ### Genuine human/product acceptance
 
 Human/product decision is required only when objective repository evidence cannot

@@ -58,3 +58,38 @@ Technical implementation may refine field layout and interfaces without weakenin
 
 ## 7. Promotion disposition
 `CONTRACT ACCEPTED / BOOTSTRAP IMPLEMENTATION NOT STARTED / PRE-MUTATION READINESS BLOCKED / OPERATIONAL ACCEPTANCE NOT STARTED`.
+
+## 8. Shared-runtime protection amendment
+Date version: 2026-10-18
+
+`LEGACY_TO_V3_BOOTSTRAP` eligibility must prove two distinct protections:
+
+- installation-scoped application-write protection, including Maintenance
+  Guard ownership, verified in-flight drain and exclusion of relevant HTTP,
+  CLI, scheduled and background writers; and
+- namespace-scoped database consistency bound to the target installation's
+  canonical physical tableset.
+
+Neither namespace identity nor an active application guard alone proves the
+other capability. If writer isolation, drain, tableset ownership or database
+consistency is unknown, incomplete or ambiguous, bootstrap remains
+`BLOCKED` before mutation. Existing `ADD`, `PRESERVE`, `REPLACE`, `BLOCK` and
+`UNVERIFIED` collision classifications are unchanged; this amendment grants
+no ownership from a live scan, legacy metadata or namespace string.
+
+The provisional source inventory, recovery artifact, operation, plan, action
+journal and installation identity must carry the same scoped database and
+tableset linkage where database evidence is applicable. Provisional evidence
+must not become `SourceInventoryReference` or committed v3 state before the
+existing WU6 health, integrity and finalization gates succeed. Interruption
+continues to use the existing `BLOCKED`, `INDETERMINATE`, recovery-required
+and `AWAITING_WU6` semantics.
+
+Existing server-level or server-wide consistency mechanisms remain available
+as controlled transitional profiles only when their blast radius, ownership
+and authorized scope are proven. The progressive policy is inventory, risk
+classification, scoped/custom replacement, equivalence validation and later
+retirement; it is not a blanket prohibition and does not automatically expand
+WU3 or create a separate recovery engine. WU3 may consume only an already
+proven protection capability; provider implementation and project-wide
+mechanism rationalization remain separately bounded work.

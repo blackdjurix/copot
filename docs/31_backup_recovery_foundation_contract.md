@@ -547,3 +547,50 @@ The authoritative recovery/lifecycle journal durably records action intent/curso
 Where removal already occurred but final fingerprint fails, lifecycle remains non-finalized INDETERMINATE/recovery-required. Recovery state must not claim RESTORED without actual canonical restoration and independent applicable-domain verification. Recovery closure requires a durable record discharging **all** applicable recovery obligations for the operation. Removed-file evidence remains retained through both lifecycle finalization and recovery closure; later deletion requires separately accepted cleanup policy and verified non-reference. A published inventory artifact lacking a committed-state reference remains non-authoritative and is not automatically scavenged. Verified primary completion with separately outstanding authorized cleanup may use cleanup_pending, but no post-mutation corruption is disguised as an ordinary preflight rejection.
 
 No new recovery engine, transfer of restoration authority, cross-domain atomic rollback guarantee, or implementation authorization is granted.
+
+## Scoped protection and progressive server-mechanism policy amendment
+Date version: 2026-10-18
+
+This amendment reconciles shared-runtime recovery with the accepted
+installation-namespace and ownership model. It does not remove the existing
+`DatabaseQuiescenceCapability`, change manifest v1/v2 behavior, or authorize
+promotion or implementation outside the existing Backup & Recovery boundary.
+
+`DatabaseQuiescenceCapability` may be satisfied by either:
+
+1. a verified installation-scoped protection profile consisting of the
+   installation-scoped Maintenance Guard, verified in-flight drain and
+   relevant-writer exclusion, together with namespace-scoped database
+   consistency evidence; or
+2. an explicitly eligible transitional server/database quiescence profile,
+   including existing server-wide mechanisms, whose blast radius and
+   ownership are proven for the authorized operation.
+
+Application-write protection and database consistency are separate
+capabilities. An active Maintenance Guard does not by itself prove a stable
+database snapshot, and a database snapshot does not by itself intercept
+application writers. The scoped profile is valid only when both capabilities
+are independently evidenced. Unknown writers, incomplete drain, ambiguous
+ownership, incomplete physical tablesets, or unverifiable consistency fail
+closed before mutation.
+
+For a shared database, capture, mutation, and restore must bind the recovery
+identity to the canonical installation namespace and its verified physical
+tableset. Recovery providers must not infer the target from the database name
+alone or enumerate and mutate unrelated tables. The recovery artifact and
+immutable manifest must retain database identity, namespace identity, physical
+tableset identity and fingerprint, together with the existing installation,
+operation, plan, action and migration linkage.
+
+The scoped profile must preserve complete recovery capture, immutable original
+evidence, interruption and recovery-required semantics, and WU6 finalization.
+`SourceInventoryReference` and committed lifecycle state remain prohibited
+until the existing WU6 health and integrity gates succeed.
+
+Server-level or server-wide mechanisms are not blanket-prohibited by this
+contract. Their use is governed progressively: inventory the mechanism,
+classify its risk and blast radius, define a scoped or custom alternative,
+validate equivalence against recovery guarantees, and retire the broader
+mechanism only through a separately authorized decision. Existing mechanisms
+may remain controlled transitional capabilities where scoped equivalence is
+not yet proven; shared-runtime eligibility must not silently select them.
