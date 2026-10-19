@@ -4,6 +4,11 @@ namespace Copot\Core;
 
 final class LegacyReconciliationPlanner
 {
+    public function __construct(private ?LegacyCoreMigrationPlanner $migrationPlanner = null)
+    {
+        $this->migrationPlanner ??= new LegacyCoreMigrationPlanner();
+    }
+
     public function plan(
         TrustedWebcorePackageTarget $target,
         LegacyClassificationResult $classification,
@@ -22,7 +27,7 @@ final class LegacyReconciliationPlanner
         }
 
         PackageVersion::assertValid($canonicalCurrentVersion);
-        $migrationPlan = $this->migrationPlan($target->contract(), $classification, $registry, $canonicalCurrentVersion);
+        $migrationPlan = $this->migrationPlanner->plan($target->contract(), $classification, $registry, $canonicalCurrentVersion);
         $actions = $this->filesystemActions($target->contract(), $liveGuard);
         $preStateIdentity = self::hash([
             'classification' => $classification->classification(),
@@ -54,56 +59,6 @@ final class LegacyReconciliationPlanner
             $preStateIdentity,
             $expectedPostStateIdentity,
             $expectedMigrationStateIdentity
-        );
-    }
-
-    private function migrationPlan(PackageContract $package, LegacyClassificationResult $classification, CoreMigrationRegistry $registry, string $canonicalCurrentVersion): CoreMigrationPlan
-    {
-        $sourceVersion = $classification->sourceWebcoreVersion();
-        $sourceSchema = $classification->sourceSchemaIdentity();
-        if ($sourceVersion === null || $sourceSchema === null) {
-            return CoreMigrationPlan::rejected('Legacy database source identity is unavailable.');
-        }
-        if (PackageVersion::compare($package->targetWebcoreVersion(), $sourceVersion) < 0) {
-            return CoreMigrationPlan::rejected('Downgrade and reverse migration are unsupported.');
-        }
-
-        try {
-            $descriptors = $registry->resolve($package->migrationDeclaration());
-        } catch (\RuntimeException $exception) {
-            return CoreMigrationPlan::rejected($exception->getMessage());
-        }
-
-        $planned = [];
-        $virtualVersion = $sourceVersion;
-        $virtualSchema = $sourceSchema;
-        $offset = count($classification->records());
-        foreach (array_slice($descriptors, $offset) as $descriptor) {
-            if (PackageVersion::compare($descriptor->targetWebcoreVersion(), $package->targetWebcoreVersion()) > 0) {
-                break;
-            }
-            if (!$descriptor->appliesTo($virtualVersion)) {
-                return CoreMigrationPlan::rejected('A required migration is not applicable to the evolving legacy state.');
-            }
-            $planned[] = $descriptor;
-            $virtualVersion = $descriptor->targetWebcoreVersion();
-            $virtualSchema = $descriptor->targetSchemaIdentity();
-        }
-
-        if (!$package->migrationDeclaration()->declaresCoreMigrations() && $planned !== []) {
-            return CoreMigrationPlan::rejected('Package omitted a required Core migration declaration.');
-        }
-        if (PackageVersion::compare($virtualVersion, $package->targetWebcoreVersion()) !== 0) {
-            return CoreMigrationPlan::rejected('Migration registry cannot converge the proven legacy state to the package target.');
-        }
-
-        return CoreMigrationPlan::allow(
-            $sourceVersion,
-            $virtualVersion,
-            $sourceSchema,
-            $virtualSchema,
-            $planned,
-            $classification->classification() === LegacyClassification::CANONICAL_SCHEMA_BASELINE
         );
     }
 

@@ -8,8 +8,9 @@ final class LegacyBootstrapIdentityComposer
     public function __construct(
         private LegacyBootstrapSourceArtifactStore $artifacts,
         private PackageInventoryVerifier $inventoryVerifier,
-        private CoreMigrationRegistry $registry
-    ) {}
+        private CoreMigrationRegistry $registry,
+        private ?LegacyCoreMigrationPlanner $migrationPlanner = null
+    ) { $this->migrationPlanner ??= new LegacyCoreMigrationPlanner(); }
 
     public function compose(string $artifactPath, PackageManifest $manifest, string $installationIdentity): LegacyBootstrapIdentityHandoff
     {
@@ -59,6 +60,8 @@ final class LegacyBootstrapIdentityComposer
         if (!$package->sourceCompatibility()->supports($classification->sourceWebcoreVersion())) throw new \RuntimeException('Bootstrap package does not support the classified source version.');
         $this->registry->resolve($package->migrationDeclaration());
         $migrationInput = new LegacyBootstrapMigrationInput($classification, $this->registry->identity(), $package->targetWebcoreVersion(), $package->migrationDeclaration());
-        return new LegacyBootstrapIdentityHandoff($artifact, $target, $applyPlan, $migrationInput);
+        $migrationPlan = $this->migrationPlanner->plan($package, $classification, $this->registry);
+        if (!$migrationPlan->isAccepted()) throw new \RuntimeException('Bootstrap migration planning was rejected: ' . $migrationPlan->reason());
+        return new LegacyBootstrapIdentityHandoff($artifact, $target, $applyPlan, $migrationInput, $migrationPlan);
     }
 }

@@ -32,11 +32,7 @@ final class LegacyBootstrapMigrationInput
 
     public function toArray(): array
     {
-        return $this->toIdentityArray() + [
-            'migration_input_identity' => $this->identity,
-            'core_migration_plan_available' => false,
-            'planning_status' => 'requires-canonical-legacy-migration-planner',
-        ];
+        return $this->toIdentityArray() + ['migration_input_identity' => $this->identity];
     }
 
     private function toIdentityArray(): array

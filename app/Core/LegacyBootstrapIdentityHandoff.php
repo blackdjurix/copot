@@ -11,8 +11,10 @@ final class LegacyBootstrapIdentityHandoff
         private LegacyBootstrapSourceArtifact $artifact,
         private TrustedWebcorePackageTarget $target,
         private WebcoreApplyPlan $applyPlan,
-        private LegacyBootstrapMigrationInput $migrationInput
+        private LegacyBootstrapMigrationInput $migrationInput,
+        private CoreMigrationPlan $migrationPlan
     ) {
+        if (!$migrationPlan->isAccepted()) throw new \InvalidArgumentException('Bootstrap identity handoff requires an accepted migration plan.');
         $this->identity = hash('sha256', json_encode([
             'operation_identity' => $artifact->operationIdentity(),
             'preparation_plan_identity' => $artifact->planIdentity(),
@@ -24,6 +26,7 @@ final class LegacyBootstrapIdentityHandoff
             'source_inventory_fingerprint' => $artifact->sourceInventoryFingerprint(),
             'target_inventory_fingerprint' => $artifact->targetInventoryFingerprint(),
             'migration_input_identity' => $migrationInput->identity(),
+            'migration_plan' => self::migrationPlanArray($migrationPlan),
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 
@@ -32,6 +35,7 @@ final class LegacyBootstrapIdentityHandoff
     public function target(): TrustedWebcorePackageTarget { return $this->target; }
     public function applyPlan(): WebcoreApplyPlan { return $this->applyPlan; }
     public function migrationInput(): LegacyBootstrapMigrationInput { return $this->migrationInput; }
+    public function migrationPlan(): CoreMigrationPlan { return $this->migrationPlan; }
     public function operationalReady(): bool { return false; }
     public function targetFreshnessVerified(): bool { return false; }
     public function recoveryBound(): bool { return false; }
@@ -50,10 +54,29 @@ final class LegacyBootstrapIdentityHandoff
             'source_inventory_fingerprint' => $this->artifact->sourceInventoryFingerprint(),
             'target_inventory_fingerprint' => $this->artifact->targetInventoryFingerprint(),
             'migration_input' => $this->migrationInput->toArray(),
+            'migration_plan' => self::migrationPlanArray($this->migrationPlan),
+            'core_migration_plan_available' => true,
+            'migration_execution_authorized' => false,
             'provisional_source_evidence' => true,
             'target_freshness_verified' => false,
             'recovery_bound' => false,
             'operational_ready' => false,
+        ];
+    }
+
+    private static function migrationPlanArray(CoreMigrationPlan $plan): array
+    {
+        return [
+            'initial_webcore_version' => $plan->initialWebcoreVersion(),
+            'virtual_final_webcore_version' => $plan->virtualFinalWebcoreVersion(),
+            'initial_schema_identity' => $plan->initialSchemaIdentity(),
+            'virtual_final_schema_identity' => $plan->virtualFinalSchemaIdentity(),
+            'fresh_baseline' => $plan->isFreshBaseline(),
+            'migrations' => array_map(static fn (CoreMigrationDescriptor $migration): array => [
+                'id' => $migration->id(), 'sequence' => $migration->sequence(),
+                'target_webcore_version' => $migration->targetWebcoreVersion(),
+                'target_schema_identity' => $migration->targetSchemaIdentity(), 'checksum' => $migration->checksum(),
+            ], $plan->migrations()),
         ];
     }
 }

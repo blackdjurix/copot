@@ -56,7 +56,7 @@ $target = new CanonicalTargetInventory([
     new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'future.php', 5, hash('sha256', 'later')),
 ]);
 $package = new PackageContract(
-    PackageContract::WEBCORE_PACKAGE_TYPE, 3, '0.14.0', 'release-test', 'tree-test',
+    PackageContract::WEBCORE_PACKAGE_TYPE, 3, '0.13.0', 'release-test', 'tree-test',
     new PackageCompatibility('0.13.0'), new PackageRuntimeCompatibility('8.1.0', ['mysql' => '8.0.0'], ['json']),
     [new PackageInventoryEntry('future.php', 5, hash('sha256', 'later'), PackageOwnership::PACKAGE_OWNED)],
     new PackageMigrationDeclaration(), new PackageTargetRequirements(), $target, 'full'
@@ -104,6 +104,7 @@ $assert($handoff instanceof LegacyBootstrapIdentityHandoff, 'eligible immutable 
 $assert(!$handoff->operationalReady() && !$handoff->targetFreshnessVerified() && !$handoff->recoveryBound(), 'identity handoff must remain non-operational');
 $assert($handoff->target()->archiveIdentity() === $rehydrated->archiveIdentity() && $handoff->applyPlan()->identity() === $rehydrated->applyPlanIdentity(), 'canonical target/apply identities changed during composition');
 $assert($handoff->migrationInput()->sourceMigrationStateIdentity() === Copot\Core\CoreMigrationStateIdentity::fromRecords($rehydrated->classification()->records()), 'migration input changed the classified prefix identity');
+$assert($handoff->migrationPlan()->isAccepted() && $handoff->toArray()['core_migration_plan_available'] === true && $handoff->toArray()['migration_execution_authorized'] === false, 'canonical migration plan must remain provisional and non-executable');
 $assert($identityComposer->compose($eligible->artifactPath(), $manifest, $eligible->installationIdentity())->identity() === $handoff->identity(), 'bootstrap identity handoff reconstruction is not deterministic');
 $changedTarget = new CanonicalTargetInventory([new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'future.php', 6, hash('sha256', 'stale'))]);
 $assert($artifactStore->rehydrate($eligible->artifactPath())->targetInventoryFingerprint() !== $changedTarget->fingerprint(), 'rehydration must not claim freshness against a changed target');
