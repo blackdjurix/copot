@@ -23,7 +23,11 @@ final class LegacyBootstrapSourceArtifact
     public function planIdentity(): string { return $this->record['plan_identity']; }
     public function packageIdentity(): string { return $this->record['package_identity']; }
     public function targetInventoryFingerprint(): string { return $this->record['target_inventory_fingerprint']; }
+    public function archiveIdentity(): string { return $this->record['archive_identity']; }
+    public function payloadIdentity(): string { return $this->record['payload_identity']; }
+    public function applyPlanIdentity(): string { return $this->record['apply_plan_identity']; }
     public function recoveryIdentity(): ?string { return $this->record['recovery_identity']; }
+    public function classification(): LegacyClassificationResult { return LegacyClassificationResult::fromEvidenceArray($this->record['legacy_classification']); }
     public function sourceInventory(): LegacyBootstrapSourceInventory { return $this->sourceInventory; }
     public function sourceInventoryFingerprint(): string { return $this->sourceInventory->fingerprint(); }
     public function collisions(): array { return $this->record['collisions']; }

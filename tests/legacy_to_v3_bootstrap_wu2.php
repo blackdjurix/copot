@@ -29,6 +29,7 @@ use Copot\Core\PackageTargetRequirements;
 use Copot\Core\PackageV3SourceRelativePlanner;
 use Copot\Core\StagedPayload;
 use Copot\Core\StagingSession;
+use Copot\Core\WebcoreApplyPlan;
 
 $assertions = 0;
 $assert = static function (bool $condition, string $message) use (&$assertions): void {
@@ -47,7 +48,7 @@ file_put_contents($tmp . '/app/storage/.env', "DB_DATABASE=test\n");
 $identityStore = new InstallationIdentityStore($tmp . '/app/storage');
 $identityStore->getOrCreate();
 $identity = new InstallationIdentityStore($tmp . '/app/storage');
-$artifactStore = new LegacyBootstrapSourceArtifactStore($tmp . '/app/storage');
+$artifactStore = new LegacyBootstrapSourceArtifactStore($tmp . '/app/storage', CoreMigrationRegistry::forProject($base));
 $target = new CanonicalTargetInventory([
     new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'future.php', 5, hash('sha256', 'later')),
 ]);
@@ -78,11 +79,17 @@ $rehydrated = $artifactStore->rehydrate($eligible->artifactPath(), [
     'plan_identity' => $eligible->planIdentity(),
     'package_identity' => PackageV3SourceRelativePlanner::packageIdentity($package),
     'target_inventory_fingerprint' => $target->fingerprint(),
+    'archive_identity' => $manifest->payload()->archiveSha256(),
+    'payload_identity' => WebcoreApplyPlan::fromPayload($manifest->payload())->identity(),
+    'apply_plan_identity' => WebcoreApplyPlan::fromPayload($manifest->payload())->identity(),
     'source_inventory_fingerprint' => $eligible->sourceInventory()->fingerprint(),
 ]);
 $assert($rehydrated instanceof LegacyBootstrapSourceArtifact, 'valid artifact must rehydrate to a typed provisional result');
 $assert($rehydrated->sourceInventoryFingerprint() === $eligible->sourceInventory()->fingerprint(), 'rehydrated source fingerprint changed');
 $assert($rehydrated->targetInventoryFingerprint() === $target->fingerprint(), 'rehydrated target fingerprint changed');
+$assert($rehydrated->classification()->sourceWebcoreVersion() === '0.13.0' && $rehydrated->classification()->sourceSchemaIdentity() === 'schema-test', 'classification source identity did not round-trip');
+$assert($rehydrated->archiveIdentity() === $manifest->payload()->archiveSha256(), 'archive identity did not round-trip');
+$assert($rehydrated->payloadIdentity() === $rehydrated->applyPlanIdentity(), 'payload/apply-plan identity linkage changed');
 $assert($rehydrated->recoveryIdentity() === null, 'preparation artifact must not invent a recovery identity');
 $assert($rehydrated->provisional() && !$rehydrated->operationalReady() && !$rehydrated->targetFreshnessVerified(), 'rehydration must remain provisional and non-operational');
 $changedTarget = new CanonicalTargetInventory([new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'future.php', 6, hash('sha256', 'stale'))]);
@@ -103,6 +110,36 @@ $throws(static fn () => $artifactStore->rehydrate($file), 'corrupted artifact mu
 file_put_contents($file, $artifactContents);
 $throws(static fn () => $artifactStore->rehydrate($file, ['operation_identity' => 'legacy-to-v3-bootstrap-sha256:' . str_repeat('a', 64)]), 'identity-mismatched artifact must be rejected');
 $throws(static fn () => $artifactStore->rehydrate($file, ['target_inventory_fingerprint' => str_repeat('a', 64)]), 'stale target evidence must fail identity binding');
+$registry = CoreMigrationRegistry::forProject($base);
+$descriptor = $registry->migrations()[0];
+$prefixRecord = [
+    'migration_id' => $descriptor->id(), 'sequence' => $descriptor->sequence(),
+    'target_webcore_version' => $descriptor->targetWebcoreVersion(), 'target_schema_identity' => $descriptor->targetSchemaIdentity(),
+    'checksum' => str_repeat('a', 64), 'applied_at' => gmdate(DATE_ATOM),
+];
+$prefixRecordArtifact = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
+$prefixRecordArtifact['legacy_classification']['classification'] = 'known_migration_prefix';
+$prefixRecordArtifact['legacy_classification']['source_webcore_version'] = '0.13.0';
+$prefixRecordArtifact['legacy_classification']['source_schema_identity'] = 'schema-test';
+$prefixRecordArtifact['legacy_classification']['records'] = [$prefixRecord];
+file_put_contents($file, json_encode($prefixRecordArtifact, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
+$throws(static fn () => $artifactStore->rehydrate($file), 'migration-prefix evidence with registry checksum drift must be rejected');
+$prefixRecordArtifact['legacy_classification']['records'][0]['checksum'] = $descriptor->checksum();
+file_put_contents($file, json_encode($prefixRecordArtifact, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
+$assert($artifactStore->rehydrate($file)->classification()->records()[0]->checksum() === $descriptor->checksum(), 'validated migration-prefix evidence did not rehydrate');
+file_put_contents($file, $artifactContents);
+$schemaDrift = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
+$schemaDrift['serialization_version'] = 2;
+file_put_contents($file, json_encode($schemaDrift, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
+$throws(static fn () => $artifactStore->rehydrate($file), 'legacy artifact schema version must be rejected');
+$missingPayload = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
+unset($missingPayload['archive_identity']);
+file_put_contents($file, json_encode($missingPayload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
+$throws(static fn () => $artifactStore->rehydrate($file), 'artifact without archive identity must be rejected');
+$missingPayload = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
+unset($missingPayload['payload_identity'], $missingPayload['apply_plan_identity']);
+file_put_contents($file, json_encode($missingPayload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
+$throws(static fn () => $artifactStore->rehydrate($file), 'artifact without payload identity must be rejected');
 $missingFingerprint = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
 unset($missingFingerprint['target_inventory_fingerprint']);
 file_put_contents($file, json_encode($missingFingerprint, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);

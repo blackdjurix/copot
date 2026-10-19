@@ -62,14 +62,17 @@ final class LegacyToV3BootstrapEntry
         $reason = !$classification->isLegacyCandidate() ? ($classification->reason() !== '' ? $classification->reason() : 'Installation is not an eligible legacy baseline.') : ($blocked ? 'Legacy bootstrap has unverified destination collisions.' : '');
         $status = $blocked ? LegacyBootstrapPreparation::BLOCKED : LegacyBootstrapPreparation::ELIGIBLE;
         $record = [
-            'serialization_version' => 2, 'operation_type' => LegacyBootstrapPreparation::OPERATION_TYPE,
+            'serialization_version' => 3, 'operation_type' => LegacyBootstrapPreparation::OPERATION_TYPE,
             'operation_identity' => $operationIdentity, 'installation_identity' => $identity->value(),
             'plan_identity' => $planIdentity, 'package_identity' => $manifest->packageEvidenceIdentity() ?? $this->planner::packageIdentity($package),
             'target_inventory_fingerprint' => $targetInventoryFingerprint,
+            'archive_identity' => $manifest->payload()->archiveSha256(),
+            'payload_identity' => WebcoreApplyPlan::fromPayload($manifest->payload())->identity(),
+            'apply_plan_identity' => WebcoreApplyPlan::fromPayload($manifest->payload())->identity(),
             'recovery_identity' => null, 'captured_at' => gmdate(DATE_ATOM),
             'provenance' => ['kind' => 'legacy-live-tree-scan', 'app_root' => $this->appRoot, 'public_root' => $this->publicRoot],
             'legacy_package_evidence' => $legacyPackageEvidence->toArray(),
-            'legacy_classification' => ['classification' => $classification->classification(), 'reason' => $classification->reason()],
+            'legacy_classification' => $classification->toEvidenceArray($this->registry->identity(), $installed->status()),
             'source_inventory' => ['fingerprint' => $source->fingerprint(), 'entries' => array_map(static fn (LegacyBootstrapSourceEntry $e): array => $e->toArray(), $source->entries())],
             'collisions' => $collisions, 'status' => $status,
         ];

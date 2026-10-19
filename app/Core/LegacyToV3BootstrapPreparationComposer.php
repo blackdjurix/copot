@@ -63,7 +63,7 @@ final class LegacyToV3BootstrapPreparationComposer
             $basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql',
             $registry,
             new PackageV3SourceRelativePlanner(),
-            new LegacyBootstrapSourceArtifactStore($storage)
+            new LegacyBootstrapSourceArtifactStore($storage, $registry)
         );
 
         return new self(
