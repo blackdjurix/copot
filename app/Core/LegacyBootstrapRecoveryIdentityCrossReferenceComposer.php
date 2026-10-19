@@ -37,6 +37,11 @@ final class LegacyBootstrapRecoveryIdentityCrossReferenceComposer
             if (!$application->isValidAt() || !$database->isValidAt()) $diagnostics[] = 'Scoped protection evidence is expired.';
             $domains = $this->domains($manifest);
             $expectedDomains = ['database.webcore', 'filesystem.lifecycle.committed', 'filesystem.lifecycle.installed-lock', 'filesystem.package-owned'];
+            // The immutable action-linkage artifact is an optional extension of
+            // the canonical recovery set. Its own recovery-plan identity is
+            // verified by the bootstrap binder; it is not a replacement for
+            // the package-owned domain.
+            if (isset($domains['filesystem.action-linkage'])) unset($domains['filesystem.action-linkage']);
             $actualDomains = array_keys($domains);
             sort($actualDomains, SORT_STRING);
             if ($actualDomains !== $expectedDomains) $diagnostics[] = 'Recovery manifest domain set is incomplete or contains an unexpected owner.';
