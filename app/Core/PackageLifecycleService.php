@@ -98,6 +98,105 @@ final class PackageLifecycleService
         }
     }
 
+    /** Execute an already admitted bootstrap context through canonical V3, migration, and WU6 machinery. */
+    public function executeLegacyToV3Bootstrap(LegacyBootstrapLifecycleRequest $request): PackageLifecycleResult
+    {
+        if (!$this->v3Executor instanceof V3ExplicitApplyExecutor
+            || !$this->v3Applier instanceof PackageOwnedFileApplier
+            || !$this->operationStore instanceof LifecycleOperationStore
+            || !$this->sourceInventoryArtifacts instanceof SourceInventoryArtifactStore
+            || !is_callable($this->v3MigrationRunner)) {
+            return new PackageLifecycleResult(false, 'unavailable', 'LEGACY_TO_V3_BOOTSTRAP lifecycle composition is unavailable.', null, $request->context()->handoff()->migrationPlan(), $request->context()->operation()->operationId());
+        }
+
+        $context = $request->context();
+        $admission = $request->admission();
+        $migration = $context->handoff()->migrationPlan();
+        $bridge = new LegacyBootstrapV3ExecutionBridge($this->v3Executor);
+
+        try {
+            $apply = $bridge->execute(
+                $context,
+                $admission,
+                $request->payload(),
+                $this->operationStore,
+                $this->v3Applier,
+                $this->liveGuard,
+                $request->confirmationAuthority(),
+                $request->confirmation(),
+                $request->journal(),
+                $request->beforeActivation()
+            );
+            if ($apply->status() !== WebcoreApplyResult::AWAITING_WU6) {
+                return new PackageLifecycleResult(false, strtolower($apply->status()), $apply->reason(), null, $migration, $context->operation()->operationId());
+            }
+
+            $latest = $this->operationStore->read();
+            if (!$latest instanceof LifecycleOperationRecord || $latest->operationId() !== $context->operation()->operationId()) {
+                throw new \RuntimeException('Bootstrap lifecycle operation disappeared before migration.');
+            }
+            if ($latest->migrationPlanIdentity() !== $this->bootstrapMigrationPlanIdentity($migration)) {
+                throw new \RuntimeException('Bootstrap migration-plan identity does not match the persisted operation.');
+            }
+            $admission->revalidate($this->operationStore);
+            $this->operationStore->save($latest->advance(LifecycleOperationRecord::MIGRATING, $latest->fileCursor(), $latest->lastVerifiedPath()));
+
+            try {
+                $migrationResult = ($this->v3MigrationRunner)($migration, $context->operation()->operationId(), LegacyBootstrapPreparation::OPERATION_TYPE);
+            } catch (\Throwable $exception) {
+                $migrationResult = new MigrationRunResult(MigrationRunResult::INDETERMINATE, [], $exception->getMessage());
+            }
+
+            if (!$migrationResult instanceof MigrationRunResult || $migrationResult->status() === MigrationRunResult::INDETERMINATE) {
+                $reason = $migrationResult instanceof MigrationRunResult ? $migrationResult->reason() : 'Bootstrap migration outcome is indeterminate.';
+                $latest = $this->operationStore->read();
+                if ($latest instanceof LifecycleOperationRecord) {
+                    $this->operationStore->save($latest->advance(LifecycleOperationRecord::INDETERMINATE, $latest->fileCursor(), $latest->lastVerifiedPath(), MigrationRunResult::INDETERMINATE, $reason));
+                }
+                $admission->fail($reason);
+                return new PackageLifecycleResult(false, 'indeterminate', $reason, null, $migration, $context->operation()->operationId());
+            }
+            if (!in_array($migrationResult->status(), [MigrationRunResult::COMPLETED, MigrationRunResult::NOOP], true)) {
+                $reason = $migrationResult->reason();
+                $latest = $this->operationStore->read();
+                if ($latest instanceof LifecycleOperationRecord) {
+                    $this->operationStore->save($latest->advance(LifecycleOperationRecord::BLOCKED, $latest->fileCursor(), $latest->lastVerifiedPath(), $migrationResult->status(), $reason));
+                }
+                $admission->fail($reason);
+                return new PackageLifecycleResult(false, 'blocked', $reason, null, $migration, $context->operation()->operationId());
+            }
+
+            $latest = $this->operationStore->read();
+            if (!$latest instanceof LifecycleOperationRecord || $latest->operationId() !== $context->operation()->operationId()) {
+                throw new \RuntimeException('Bootstrap lifecycle operation disappeared before WU6 handoff.');
+            }
+            $this->operationStore->save($latest->advance(LifecycleOperationRecord::AWAITING_WU6, $latest->fileCursor(), $latest->lastVerifiedPath(), $migrationResult->status()));
+            // WU6 owns health verification, committed-source publication, and
+            // lifecycle completion. This slice only publishes the durable
+            // pre-finalization handoff and must leave the staging evidence and
+            // single-use admission available to that canonical boundary.
+            return new PackageLifecycleResult(false, 'awaiting_wu6', 'Bootstrap filesystem and migration execution completed; WU6 finalization is pending.', null, $migration, $context->operation()->operationId());
+        } catch (\Throwable $exception) {
+            try { $admission->fail($exception->getMessage()); } catch (\Throwable) {}
+            $latest = $this->operationStore->read();
+            if ($latest instanceof LifecycleOperationRecord
+                && !$latest->isTerminal()
+                && ($latest->fileCursor() > 0 || in_array($latest->phase(), [LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::MIGRATING], true))) {
+                try { $this->operationStore->save($latest->advance(LifecycleOperationRecord::INDETERMINATE, $latest->fileCursor(), $latest->lastVerifiedPath(), MigrationRunResult::INDETERMINATE, $exception->getMessage())); } catch (\Throwable) {}
+                return new PackageLifecycleResult(false, 'indeterminate', $exception->getMessage(), null, $migration, $context->operation()->operationId());
+            }
+            return new PackageLifecycleResult(false, 'blocked', $exception->getMessage(), null, $migration, $context->operation()->operationId());
+        }
+    }
+
+    private function bootstrapMigrationPlanIdentity(CoreMigrationPlan $migration): string
+    {
+        return hash('sha256', implode("\n", array_map(
+            static fn (CoreMigrationDescriptor $descriptor): string => $descriptor->id() . ':' . $descriptor->checksum(),
+            array_filter($migration->migrations(), static fn ($candidate): bool => $candidate instanceof CoreMigrationDescriptor)
+        )));
+    }
+
     public function retireNetZero(string $operationId, WebcoreApplyPlan $plan, NetZeroRetirementContext $context): PackageLifecycleResult
     {
         if (!$this->netZeroRetirement instanceof NetZeroRetirementService) {

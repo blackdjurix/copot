@@ -67,7 +67,11 @@ $pdo = static fn (): PDO => (new ReflectionClass(PDO::class))->newInstanceWithou
 $capture = new NormalWebcoreRecoveryCaptureService($coordinator, $recoveryStore, $artifacts, $filesystem, $lifecycle, $installedLock, $databaseProvider, new UnavailableDatabaseQuiescence(), $pdo, $pdo);
 $operations = new LifecycleOperationStore($tmp . '/app/storage');
 $recovery = NormalWebcoreRecoveryCaptureService::forOperation($handoff->artifact()->operationIdentity(), $handoff->applyPlan()->identity());
-$operation = new LifecycleOperationRecord($handoff->artifact()->operationIdentity(), 'LEGACY_TO_V3_BOOTSTRAP', $handoff->target()->contract()->targetWebcoreVersion(), $handoff->target()->contract()->releaseIdentity(), $handoff->target()->archiveIdentity(), $tmp . '/staging', $handoff->target()->payloadIdentity(), $handoff->applyPlan()->identity(), LifecycleOperationRecord::PREPARING, 0, null, hash('sha256', 'migration'), null, gmdate(DATE_ATOM), gmdate(DATE_ATOM));
+$migrationPlanIdentity = hash('sha256', implode("\n", array_map(
+    static fn (Copot\Core\CoreMigrationDescriptor $descriptor): string => $descriptor->id() . ':' . $descriptor->checksum(),
+    array_filter($handoff->migrationPlan()->migrations(), static fn ($candidate): bool => $candidate instanceof Copot\Core\CoreMigrationDescriptor)
+)));
+$operation = new LifecycleOperationRecord($handoff->artifact()->operationIdentity(), 'LEGACY_TO_V3_BOOTSTRAP', $handoff->target()->contract()->targetWebcoreVersion(), $handoff->target()->contract()->releaseIdentity(), $handoff->target()->archiveIdentity(), $session->path(), $handoff->target()->payloadIdentity(), $handoff->applyPlan()->identity(), LifecycleOperationRecord::PREPARING, 0, null, $migrationPlanIdentity, null, gmdate(DATE_ATOM), gmdate(DATE_ATOM));
 $operations->create($operation);
 $inventoryBeforeLifecycleWrite = $liveInventory->capture();
 $activeOperationPath = $tmp . '/app/storage/.copot-lifecycle/active-operation.json';
@@ -93,12 +97,25 @@ $protection = new LegacyBootstrapScopedProtectionComposer($freshness, $guard, $s
 try {
     $admission = LegacyBootstrapExecutionAdmission::issue($context, $bound, $session, $artifacts, $operations, $protection, $application, $database);
     $assert($admission->identity() !== '' && !$admission->authorized(), 'Canonical admission was not issued as a single-use proof.');
-    $bridge = new Copot\Core\LegacyBootstrapV3ExecutionBridge(new Copot\Core\V3ExplicitApplyExecutor());
-    $result = $bridge->execute($context, $admission, $manifest->payload(), $operations, new Copot\Core\PackageOwnedFileApplier(new Copot\Core\LiveTreePathGuard($tmp . '/app'), Copot\Core\LiveFileActivationCapability::current(), $tmp . '/apply-temp'), new Copot\Core\LiveTreePathGuard($tmp . '/app'));
-    $assert($admission->authorized() && $result->status() === Copot\Core\WebcoreApplyResult::AWAITING_WU6, 'Valid canonical admission did not delegate to the existing executor.');
-    $admission->fail('isolated admission fixture complete');
+    $service = (new ReflectionClass(Copot\Core\PackageLifecycleService::class))->newInstanceWithoutConstructor();
+    $set = static function (string $name, mixed $value) use ($service): void {
+        $property = new ReflectionProperty(Copot\Core\PackageLifecycleService::class, $name);
+        $property->setValue($service, $value);
+    };
+    $set('v3Executor', new Copot\Core\V3ExplicitApplyExecutor());
+    $set('v3Applier', new Copot\Core\PackageOwnedFileApplier(new Copot\Core\LiveTreePathGuard($tmp . '/app'), Copot\Core\LiveFileActivationCapability::current(), $tmp . '/apply-temp'));
+    $set('liveGuard', new Copot\Core\LiveTreePathGuard($tmp . '/app'));
+    $set('operationStore', $operations);
+    $set('sourceInventoryArtifacts', new Copot\Core\SourceInventoryArtifactStore($tmp . '/app/storage'));
+    $set('v3MigrationRunner', static fn (): Copot\Core\MigrationRunResult => new Copot\Core\MigrationRunResult(Copot\Core\MigrationRunResult::INDETERMINATE, [], 'forced isolated migration ambiguity'));
+    $request = new Copot\Core\LegacyBootstrapLifecycleRequest($manifest, $manifest->payload(), $context, $admission);
+    $result = $service->executeLegacyToV3Bootstrap($request);
+    $assert($result->status() === 'indeterminate', 'Indeterminate bootstrap migration did not fail closed: ' . $result->status() . ' / ' . $result->reason());
+    $assert($operations->read()?->phase() === LifecycleOperationRecord::INDETERMINATE, 'Indeterminate bootstrap migration did not persist the indeterminate operation state.');
+    $assert($admission->authorized(), 'Bootstrap admission was not consumed before migration execution.');
+    $assert(!($result->accepted()), 'Indeterminate bootstrap migration was reported as successful.');
 } catch (Throwable $exception) {
-    $assert(str_contains(strtolower($exception->getMessage()), 'protected') || str_contains(strtolower($exception->getMessage()), 'mismatch'), 'Admission failure was not classified as a protected-boundary rejection.');
+    $assert(str_contains(strtolower($exception->getMessage()), 'protected') || str_contains(strtolower($exception->getMessage()), 'mismatch') || str_contains(strtolower($exception->getMessage()), 'identity'), 'Admission failure was not classified as a protected-boundary rejection: ' . $exception->getMessage());
     $assert($operations->read()?->fileCursor() === 0, 'Failed admission advanced the lifecycle operation.');
     $session->fail('isolated admission rejection fixture complete');
 }

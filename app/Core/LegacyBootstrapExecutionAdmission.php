@@ -24,6 +24,9 @@ final class LegacyBootstrapExecutionAdmission
     private function __construct(
         private LegacyBootstrapV3ExecutionContext $context,
         private NormalWebcoreProtectedMutationSession $session,
+        private LegacyBootstrapScopedProtectionComposer $protectionComposer,
+        private ApplicationWriteProtectionEvidence $application,
+        private ScopedDatabaseConsistencyEvidence $database,
         private string $identity
     ) {}
 
@@ -132,18 +135,46 @@ final class LegacyBootstrapExecutionAdmission
             'action_linkage' => $linkageRecord?->artifactIdentity(),
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
 
-        return new self($context, $session, $identity);
+        return new self($context, $session, $protectionComposer, $application, $database, $identity);
     }
 
     public function identity(): string { return $this->identity; }
     public function context(): LegacyBootstrapV3ExecutionContext { return $this->context; }
     public function authorized(): bool { return $this->authorized; }
 
+    /** Re-checks the protected boundary immediately before database mutation. */
+    public function revalidate(LifecycleOperationStore $operations): void
+    {
+        $operation = $operations->read();
+        if (!$operation instanceof LifecycleOperationRecord
+            || $operation->operationId() !== $this->context->operation()->operationId()
+            || $operation->applyPlanIdentity() !== $this->context->handoff()->applyPlan()->identity()
+            || $operation->phase() !== LifecycleOperationRecord::AWAITING_WU6) {
+            throw new \RuntimeException('Bootstrap protected boundary operation changed before migration.');
+        }
+        $protection = $this->protectionComposer->compose($this->context->handoff(), $this->application, $this->database);
+        if (!$protection->valid()) {
+            throw new \RuntimeException('Bootstrap protected evidence expired or drifted before migration.');
+        }
+        $evidence = $this->session->evidence();
+        if (($evidence['identity'] ?? null) !== $this->context->recovery()->value()
+            || ($evidence['manifest'] ?? null) !== $operation->recoveryManifestIdentity()
+            || ($evidence['state'] ?? null) !== BackupRecovery\RecoveryLifecycleState::READY) {
+            throw new \RuntimeException('Bootstrap recovery protection is no longer READY before migration.');
+        }
+    }
+
     public function authorize(): void
     {
         if ($this->authorized) throw new \RuntimeException('Bootstrap execution admission was already consumed.');
         $this->session->authorize();
         $this->authorized = true;
+    }
+
+    public function complete(): void
+    {
+        if (!$this->authorized) throw new \RuntimeException('Bootstrap execution admission was not authorized.');
+        $this->session->complete();
     }
 
     public function fail(string $reason): void { $this->session->fail($reason); }
