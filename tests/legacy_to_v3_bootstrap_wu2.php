@@ -12,6 +12,7 @@ use Copot\Core\InstallationIdentityStore;
 use Copot\Core\InstallationState;
 use Copot\Core\InstalledStateInspector;
 use Copot\Core\LegacyBootstrapSourceArtifactStore;
+use Copot\Core\LegacyBootstrapSourceArtifact;
 use Copot\Core\LegacyBootstrapSourceInventory;
 use Copot\Core\LegacyBootstrapPreparation;
 use Copot\Core\LegacyClassificationResult;
@@ -71,26 +72,42 @@ $assert($eligible->legacyClassification()->isLegacyCandidate(), 'legacy classifi
 $assert($eligible->sourceInventory() instanceof LegacyBootstrapSourceInventory, 'provisional source inventory must be captured');
 $assert($eligible->artifactPath() !== null && is_file($eligible->artifactPath()), 'provisional artifact must be durable and inspectable');
 $assert($eligible->collisions()[0]['action'] === 'ADD', 'absent target must classify as ADD');
-$retryRecord = [
-    'serialization_version' => 1,
-    'operation_type' => LegacyBootstrapPreparation::OPERATION_TYPE,
-    'operation_identity' => 'legacy-to-v3-bootstrap-sha256:' . str_repeat('a', 64),
-    'installation_identity' => 'installation-test',
-    'plan_identity' => str_repeat('b', 64),
-    'package_identity' => str_repeat('c', 64),
-    'recovery_identity' => null,
-    'captured_at' => gmdate(DATE_ATOM),
-    'provenance' => ['kind' => 'test'],
-    'legacy_package_evidence' => [],
-    'legacy_classification' => [],
-    'source_inventory' => [],
-    'collisions' => [],
-    'status' => LegacyBootstrapPreparation::ELIGIBLE,
-];
-$retryPath = $artifactStore->publish($retryRecord);
-$retryContents = file_get_contents($retryPath);
-$assert($artifactStore->publish($retryRecord) === $retryPath, 'identical artifact retry must reuse the immutable provisional artifact');
-$assert(file_get_contents($retryPath) === $retryContents, 'identical artifact retry must not overwrite published bytes');
+$rehydrated = $artifactStore->rehydrate($eligible->artifactPath(), [
+    'operation_identity' => $eligible->operationIdentity(),
+    'installation_identity' => $eligible->installationIdentity(),
+    'plan_identity' => $eligible->planIdentity(),
+    'package_identity' => PackageV3SourceRelativePlanner::packageIdentity($package),
+    'target_inventory_fingerprint' => $target->fingerprint(),
+    'source_inventory_fingerprint' => $eligible->sourceInventory()->fingerprint(),
+]);
+$assert($rehydrated instanceof LegacyBootstrapSourceArtifact, 'valid artifact must rehydrate to a typed provisional result');
+$assert($rehydrated->sourceInventoryFingerprint() === $eligible->sourceInventory()->fingerprint(), 'rehydrated source fingerprint changed');
+$assert($rehydrated->targetInventoryFingerprint() === $target->fingerprint(), 'rehydrated target fingerprint changed');
+$assert($rehydrated->recoveryIdentity() === null, 'preparation artifact must not invent a recovery identity');
+$assert($rehydrated->provisional() && !$rehydrated->operationalReady() && !$rehydrated->targetFreshnessVerified(), 'rehydration must remain provisional and non-operational');
+$changedTarget = new CanonicalTargetInventory([new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'future.php', 6, hash('sha256', 'stale'))]);
+$assert($artifactStore->rehydrate($eligible->artifactPath())->targetInventoryFingerprint() !== $changedTarget->fingerprint(), 'rehydration must not claim freshness against a changed target');
+$assert($artifactStore->rehydrate($eligible->artifactPath())->toArray() === $rehydrated->toArray(), 'identical artifact reread must be stable');
+$artifactContents = file_get_contents($eligible->artifactPath());
+$assert(is_string($artifactContents), 'artifact contents must be readable for fixture validation');
+$retryRecord = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
+$assert($artifactStore->publish($retryRecord) === $eligible->artifactPath(), 'identical artifact retry must reuse the immutable provisional artifact');
+$assert(file_get_contents($eligible->artifactPath()) === $artifactContents, 'identical artifact retry must not overwrite published bytes');
+$file = $eligible->artifactPath();
+$throws = static function (callable $callback, string $message) use ($assert): void {
+    try { $callback(); } catch (Throwable) { return; }
+    $assert(false, $message);
+};
+file_put_contents($file, str_replace('legacy-live-tree-scan', 'corrupted-tree-scan', $artifactContents));
+$throws(static fn () => $artifactStore->rehydrate($file), 'corrupted artifact must be rejected');
+file_put_contents($file, $artifactContents);
+$throws(static fn () => $artifactStore->rehydrate($file, ['operation_identity' => 'legacy-to-v3-bootstrap-sha256:' . str_repeat('a', 64)]), 'identity-mismatched artifact must be rejected');
+$throws(static fn () => $artifactStore->rehydrate($file, ['target_inventory_fingerprint' => str_repeat('a', 64)]), 'stale target evidence must fail identity binding');
+$missingFingerprint = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
+unset($missingFingerprint['target_inventory_fingerprint']);
+file_put_contents($file, json_encode($missingFingerprint, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
+$throws(static fn () => $artifactStore->rehydrate($file), 'artifact without target fingerprint must be rejected');
+file_put_contents($file, $artifactContents);
 
 file_put_contents($tmp . '/app/future.php', 'old!!');
 $blocked = $entry->prepare($manifest);
