@@ -1,0 +1,70 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Copot\Core\Env;
+use Copot\Core\LegacyBootstrapPreparationRunner;
+
+$sourceRoot = dirname(__DIR__);
+require $sourceRoot . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'autoload.php';
+
+function bootstrapPreparationUsage(): void
+{
+    fwrite(STDERR, "Usage: bin/copot-bootstrap-prepare <zip> --target-app-root=<path> --target-public-root=<path> --reviewed-injection-manifest=<path> --reviewed-injection-manifest-identity=<sha256> [--base-path=/path] [--format=human|json]\n");
+}
+
+function bootstrapPreparationEmit(array $data, string $format, int $code): never
+{
+    if ($format === 'json') {
+        echo json_encode($data, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . PHP_EOL;
+    } else {
+        echo ($data['status'] ?? 'unknown') . ': ' . ($data['reason'] ?? '') . PHP_EOL;
+    }
+    exit($code);
+}
+
+$args = array_slice($argv, 1);
+if (($args[0] ?? null) === '--help') {
+    bootstrapPreparationUsage();
+    exit(0);
+}
+$zip = array_shift($args);
+$options = [];
+foreach ($args as $arg) {
+    if (!str_starts_with($arg, '--') || !str_contains($arg, '=')) {
+        bootstrapPreparationUsage();
+        exit(2);
+    }
+    [$key, $value] = explode('=', substr($arg, 2), 2);
+    if (!in_array($key, ['target-app-root', 'target-public-root', 'reviewed-injection-manifest', 'reviewed-injection-manifest-identity', 'base-path', 'format'], true) || $value === '') {
+        bootstrapPreparationUsage();
+        exit(2);
+    }
+    $options[$key] = $value;
+}
+
+$format = $options['format'] ?? 'human';
+$appRoot = $options['target-app-root'] ?? '';
+$publicRoot = $options['target-public-root'] ?? '';
+$reviewedManifestPath = $options['reviewed-injection-manifest'] ?? '';
+$reviewedManifestIdentity = $options['reviewed-injection-manifest-identity'] ?? '';
+$basePath = $options['base-path'] ?? '/';
+if (!is_string($zip) || !is_file($zip) || is_link($zip) || !is_readable($zip)
+    || !in_array($format, ['human', 'json'], true) || $appRoot === '' || $publicRoot === '' || $reviewedManifestPath === '' || $reviewedManifestIdentity === '') {
+    bootstrapPreparationUsage();
+    exit(2);
+}
+
+try {
+    Env::load($appRoot . DIRECTORY_SEPARATOR . '.env');
+    $runner = LegacyBootstrapPreparationRunner::forSourceAndTarget($sourceRoot, $appRoot, $publicRoot, $basePath);
+    $result = $runner->prepareHandoff($zip, $reviewedManifestPath, $reviewedManifestIdentity);
+    bootstrapPreparationEmit($result->toArray(), $format, $result->preparation()->eligible() ? 0 : 5);
+} catch (InvalidArgumentException $exception) {
+    bootstrapPreparationEmit(['accepted' => false, 'status' => 'invalid_input', 'reason' => $exception->getMessage()], $format, 2);
+} catch (RuntimeException $exception) {
+    bootstrapPreparationEmit(['accepted' => false, 'status' => 'unavailable', 'reason' => $exception->getMessage()], $format, 7);
+} catch (Throwable $exception) {
+    bootstrapPreparationEmit(['accepted' => false, 'status' => 'failed', 'reason' => 'Unexpected bootstrap preparation failure.'], $format, 8);
+}
