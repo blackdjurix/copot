@@ -40,22 +40,51 @@ final class LegacyBootstrapPreparationRunner
         return $this->composer->prepare($zip);
     }
 
-    public function prepareHandoff(string $zip, string $reviewedInjectionManifestPath, string $reviewedInjectionManifestIdentity): LegacyBootstrapPreparationHandoff
-    {
-        $reviewedInjectionManifest = LegacyBootstrapReviewedInjectionManifest::fromFile($reviewedInjectionManifestPath, $reviewedInjectionManifestIdentity);
+    public function bindReviewedInjectionManifest(
+        LegacyBootstrapPreparation $preparation,
+        string $reviewedInjectionManifestPath,
+        string $reviewedInjectionManifestIdentity
+    ): LegacyBootstrapPreparationHandoff {
+        if (!$preparation->eligible()) {
+            throw new \InvalidArgumentException('Only eligible bootstrap preparation can be bound to an injection manifest.');
+        }
+
+        $reviewedInjectionManifest = LegacyBootstrapReviewedInjectionManifest::fromFile(
+            $reviewedInjectionManifestPath,
+            $reviewedInjectionManifestIdentity
+        );
         $targetIdentity = (new InstallationIdentityStore($this->target->appRoot() . DIRECTORY_SEPARATOR . 'storage'))->read();
         if (!$targetIdentity instanceof InstallationIdentity) {
             throw new \InvalidArgumentException('Target installation identity is unavailable for manifest binding.');
         }
-        $reviewedInjectionManifest->assertTargetBoundTo($targetIdentity->value(), $this->target, $this->sourceRoot);
-        $preparation = $this->prepare($zip);
-        if ($preparation->installationIdentity() !== $targetIdentity->value()) throw new \RuntimeException('Preparation installation identity changed during manifest binding.');
-        $reviewedInjectionManifest->assertBoundTo($preparation->installationIdentity(), $this->target, $this->sourceRoot, $preparation->operationIdentity(), $preparation->planIdentity(), $preparation->sourceInventory()?->fingerprint() ?? '');
+
+        $reviewedInjectionManifest->assertBoundTo(
+            $targetIdentity->value(),
+            $this->target,
+            $this->sourceRoot,
+            $preparation->operationIdentity(),
+            $preparation->planIdentity(),
+            $preparation->sourceInventory()?->fingerprint() ?? ''
+        );
+        if ($preparation->installationIdentity() !== $targetIdentity->value()) {
+            throw new \RuntimeException('Preparation installation identity changed during manifest binding.');
+        }
+
         return new LegacyBootstrapPreparationHandoff(
             $preparation,
             $this->sourceRoot,
             $this->target,
             $reviewedInjectionManifest
+        );
+    }
+
+    public function prepareHandoff(string $zip, string $reviewedInjectionManifestPath, string $reviewedInjectionManifestIdentity): LegacyBootstrapPreparationHandoff
+    {
+        $preparation = $this->prepare($zip);
+        return $this->bindReviewedInjectionManifest(
+            $preparation,
+            $reviewedInjectionManifestPath,
+            $reviewedInjectionManifestIdentity
         );
     }
 

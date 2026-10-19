@@ -130,6 +130,8 @@ $composer = new LegacyToV3BootstrapPreparationComposer(
 $runner = new LegacyBootstrapPreparationRunner($sourceRoot, $context, $composer);
 $preparation = $runner->prepare($zipPath);
 $assert($preparation->status() === LegacyBootstrapPreparation::ELIGIBLE, 'separate-source preparation did not delegate successfully');
+$assert($preparation->toArray()['operational_ready'] === false, 'unbound preparation claimed operational readiness');
+$assert($preparation->artifactPath() !== null, 'unbound preparation did not publish provisional evidence');
 $assert($runner->sourceRoot() === realpath($sourceRoot), 'execution source identity was not retained');
 $assert($runner->target()->appRoot() === realpath($appRoot) && $runner->target()->publicRoot() === realpath($publicRoot), 'target roots were not retained independently');
 $assert($preparation->artifactPath() !== null && str_starts_with($preparation->artifactPath(), realpath($appRoot)), 'artifact was not published under the target lifecycle storage');
@@ -158,8 +160,7 @@ $manifestContents = json_encode([
 ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
 file_put_contents($manifestPath, $manifestContents);
 $manifestIdentity = hash('sha256', $manifestContents);
-$reviewedManifest = LegacyBootstrapReviewedInjectionManifest::fromFile($manifestPath, $manifestIdentity);
-$handoff = new LegacyBootstrapPreparationHandoff($preparation, $runner->sourceRoot(), $runner->target(), $reviewedManifest);
+$handoff = $runner->bindReviewedInjectionManifest($preparation, $manifestPath, $manifestIdentity);
 $assert($handoff->preparation()->eligible(), 'typed separate-source handoff was not produced');
 $handoffData = $handoff->toArray();
 $assert($handoffData['reviewed_injection_manifest_identity'] === $manifestIdentity, 'reviewed injection manifest identity was not bound');
@@ -208,7 +209,12 @@ $wrongBinding = json_encode([
     'changes' => [],
 ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
 file_put_contents($wrongBindingPath, $wrongBinding);
-$throws(static fn () => $runner->prepareHandoff($zipPath, $wrongBindingPath, hash('sha256', $wrongBinding)), 'cross-installation manifest binding was accepted');
+$throws(static fn () => $runner->bindReviewedInjectionManifest($preparation, $wrongBindingPath, hash('sha256', $wrongBinding)), 'cross-installation manifest binding was accepted');
+$wrongOperation = str_replace($preparation->operationIdentity(), $preparation->operationIdentity() . '-mismatch', $manifestContents);
+$wrongOperationPath = $tmp . DIRECTORY_SEPARATOR . 'wrong-operation-manifest.json';
+file_put_contents($wrongOperationPath, $wrongOperation);
+$throws(static fn () => $runner->bindReviewedInjectionManifest($preparation, $wrongOperationPath, hash('sha256', $wrongOperation)), 'operation identity mismatch was accepted');
+$throws(static fn () => $runner->bindReviewedInjectionManifest($preparation, $manifestPath, str_repeat('0', 64)), 'manifest hash mismatch was accepted by explicit binding');
 mkdir($appRoot . DIRECTORY_SEPARATOR . 'bootstrap', 0700, true);
 file_put_contents($appRoot . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'autoload.php', '<?php');
 $throws(static fn () => new LegacyBootstrapPreparationRunner($appRoot, $context, $composer), 'source/target aliasing was accepted');
