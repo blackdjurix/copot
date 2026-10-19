@@ -13,6 +13,8 @@ use Copot\Core\InstallationState;
 use Copot\Core\InstalledStateInspector;
 use Copot\Core\LegacyBootstrapSourceArtifactStore;
 use Copot\Core\LegacyBootstrapSourceArtifact;
+use Copot\Core\LegacyBootstrapIdentityComposer;
+use Copot\Core\LegacyBootstrapIdentityHandoff;
 use Copot\Core\LegacyBootstrapSourceInventory;
 use Copot\Core\LegacyBootstrapPreparation;
 use Copot\Core\LegacyClassificationResult;
@@ -28,6 +30,7 @@ use Copot\Core\PackageRuntimeCompatibility;
 use Copot\Core\PackageTargetRequirements;
 use Copot\Core\PackageV3SourceRelativePlanner;
 use Copot\Core\StagedPayload;
+use Copot\Core\StagedFile;
 use Copot\Core\StagingSession;
 use Copot\Core\WebcoreApplyPlan;
 
@@ -59,7 +62,10 @@ $package = new PackageContract(
     new PackageMigrationDeclaration(), new PackageTargetRequirements(), $target, 'full'
 );
 $session = StagingSession::create($tmp . '/app');
-$manifest = new PackageManifest($package, '.copot/package.json', new StagedPayload($session, str_repeat('a', 64), []));
+mkdir($session->payloadPath(), 0700, true);
+file_put_contents($session->payloadPath() . '/future.php', 'later');
+$stagedFuture = new StagedFile('future.php', 5, hash('sha256', 'later'));
+$manifest = new PackageManifest($package, '.copot/package.json', new StagedPayload($session, str_repeat('a', 64), [$stagedFuture]));
 $classifier = static fn (): LegacyClassificationResult => LegacyClassificationResult::canonicalBaseline('schema-test', '0.13.0');
 $entry = new LegacyToV3BootstrapEntry(
     $tmp . '/app', $tmp . '/public', $identity, $state, new InstalledStateInspector(),
@@ -92,6 +98,13 @@ $assert($rehydrated->archiveIdentity() === $manifest->payload()->archiveSha256()
 $assert($rehydrated->payloadIdentity() === $rehydrated->applyPlanIdentity(), 'payload/apply-plan identity linkage changed');
 $assert($rehydrated->recoveryIdentity() === null, 'preparation artifact must not invent a recovery identity');
 $assert($rehydrated->provisional() && !$rehydrated->operationalReady() && !$rehydrated->targetFreshnessVerified(), 'rehydration must remain provisional and non-operational');
+$identityComposer = new LegacyBootstrapIdentityComposer($artifactStore, new Copot\Core\PackageInventoryVerifier(), CoreMigrationRegistry::forProject($base));
+$handoff = $identityComposer->compose($eligible->artifactPath(), $manifest, $eligible->installationIdentity());
+$assert($handoff instanceof LegacyBootstrapIdentityHandoff, 'eligible immutable evidence must produce a typed identity handoff');
+$assert(!$handoff->operationalReady() && !$handoff->targetFreshnessVerified() && !$handoff->recoveryBound(), 'identity handoff must remain non-operational');
+$assert($handoff->target()->archiveIdentity() === $rehydrated->archiveIdentity() && $handoff->applyPlan()->identity() === $rehydrated->applyPlanIdentity(), 'canonical target/apply identities changed during composition');
+$assert($handoff->migrationInput()->sourceMigrationStateIdentity() === Copot\Core\CoreMigrationStateIdentity::fromRecords($rehydrated->classification()->records()), 'migration input changed the classified prefix identity');
+$assert($identityComposer->compose($eligible->artifactPath(), $manifest, $eligible->installationIdentity())->identity() === $handoff->identity(), 'bootstrap identity handoff reconstruction is not deterministic');
 $changedTarget = new CanonicalTargetInventory([new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'future.php', 6, hash('sha256', 'stale'))]);
 $assert($artifactStore->rehydrate($eligible->artifactPath())->targetInventoryFingerprint() !== $changedTarget->fingerprint(), 'rehydration must not claim freshness against a changed target');
 $assert($artifactStore->rehydrate($eligible->artifactPath())->toArray() === $rehydrated->toArray(), 'identical artifact reread must be stable');
@@ -109,6 +122,11 @@ file_put_contents($file, str_replace('legacy-live-tree-scan', 'corrupted-tree-sc
 $throws(static fn () => $artifactStore->rehydrate($file), 'corrupted artifact must be rejected');
 file_put_contents($file, $artifactContents);
 $throws(static fn () => $artifactStore->rehydrate($file, ['operation_identity' => 'legacy-to-v3-bootstrap-sha256:' . str_repeat('a', 64)]), 'identity-mismatched artifact must be rejected');
+$throws(static fn () => $identityComposer->compose($file, $manifest, 'wrong-installation'), 'installation identity drift must be rejected');
+$archiveDriftManifest = new PackageManifest($package, '.copot/package.json', new StagedPayload($session, str_repeat('b', 64), [$stagedFuture]));
+$throws(static fn () => $identityComposer->compose($file, $archiveDriftManifest, $eligible->installationIdentity()), 'archive drift must be rejected');
+$payloadDriftManifest = new PackageManifest($package, '.copot/package.json', new StagedPayload($session, str_repeat('a', 64), [new StagedFile('future.php', 5, hash('sha256', 'other'))]));
+$throws(static fn () => $identityComposer->compose($file, $payloadDriftManifest, $eligible->installationIdentity()), 'payload drift must be rejected');
 $throws(static fn () => $artifactStore->rehydrate($file, ['target_inventory_fingerprint' => str_repeat('a', 64)]), 'stale target evidence must fail identity binding');
 $registry = CoreMigrationRegistry::forProject($base);
 $descriptor = $registry->migrations()[0];
