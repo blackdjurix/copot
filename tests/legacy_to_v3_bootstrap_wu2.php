@@ -43,6 +43,9 @@ use Copot\Core\BackupRecovery\DatabaseScope;
 use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
 use Copot\Core\BackupRecovery\RecoveryIdentity;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
+use Copot\Core\BackupRecovery\RecoveryDomainIdentity;
+use Copot\Core\BackupRecovery\RecoveryManifest;
+use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureService;
 
 $assertions = 0;
 $assert = static function (bool $condition, string $message) use (&$assertions): void {
@@ -153,6 +156,27 @@ $operation = new RecoveryIdentity($eligible->operationIdentity());
 $now = time();
 $applicationEvidence = new ApplicationWriteProtectionEvidence($scope, $operation, str_repeat('1', 64), str_repeat('2', 64), ['http', 'cli', 'scheduled', 'background'], true, true, $now - 1, $now + 300);
 $databaseEvidence = new ScopedDatabaseConsistencyEvidence($scope, $operation, str_repeat('3', 64), str_repeat('4', 64), $now - 1, $now + 300);
+$recoveryIdentity = NormalWebcoreRecoveryCaptureService::forOperation($eligible->operationIdentity(), $handoff->applyPlan()->identity());
+$operationRecord = new Copot\Core\LifecycleOperationRecord($eligible->operationIdentity(), Copot\Core\TransitionPlan::UPGRADE, $handoff->target()->contract()->targetWebcoreVersion(), $handoff->target()->contract()->releaseIdentity(), $handoff->target()->archiveIdentity(), $tmp . '/staging', $handoff->target()->payloadIdentity(), $handoff->applyPlan()->identity(), Copot\Core\LifecycleOperationRecord::PREPARING, 0, null, hash('sha256', ''), null, gmdate(DATE_ATOM), gmdate(DATE_ATOM), '', $recoveryIdentity->value(), null, null);
+$recoveryManifest = new RecoveryManifest($recoveryIdentity, $eligible->operationIdentity(), $handoff->target()->packageIdentity(), $handoff->target()->contract()->releaseIdentity(), $handoff->target()->archiveIdentity(), $handoff->applyPlan()->identity(), [
+    new RecoveryDomainIdentity('database.webcore', 'database.webcore', $scope->identity(), str_repeat('5', 64)),
+    new RecoveryDomainIdentity('filesystem.package-owned', 'filesystem.package-owned', $handoff->applyPlan()->identity(), str_repeat('6', 64)),
+    new RecoveryDomainIdentity('filesystem.lifecycle.committed', 'filesystem.lifecycle.committed', 'deployment-test', str_repeat('7', 64)),
+    new RecoveryDomainIdentity('filesystem.lifecycle.installed-lock', 'filesystem.lifecycle.installed-lock', $eligible->installationIdentity(), str_repeat('8', 64)),
+], 'pre-lifecycle-test', 'pre-migration-test');
+$derivedApplication = new ApplicationWriteProtectionEvidence($scope, $recoveryIdentity, str_repeat('1', 64), str_repeat('2', 64), ['http', 'cli', 'scheduled', 'background'], true, true, $now - 1, $now + 300);
+$derivedDatabase = new ScopedDatabaseConsistencyEvidence($scope, $recoveryIdentity, str_repeat('3', 64), str_repeat('4', 64), $now - 1, $now + 300);
+$crossReferenceComposer = new Copot\Core\LegacyBootstrapRecoveryIdentityCrossReferenceComposer();
+$crossReference = $crossReferenceComposer->compose($handoff, $operationRecord, $recoveryManifest, $scope, $derivedApplication, $derivedDatabase, 'deployment-test');
+$assert($crossReference->valid() && !$crossReference->operationalReady() && !$crossReference->mutationAuthorized(), 'canonical operation/recovery cross-reference must be valid but non-operational');
+$assert($crossReference->crossReference()?->recoveryIdentity()->equals($recoveryIdentity), 'cross-reference lost the derived recovery identity');
+$assert($crossReference->identity() === $crossReferenceComposer->compose($handoff, $operationRecord, $recoveryManifest, $scope, $derivedApplication, $derivedDatabase, 'deployment-test')->identity(), 'cross-reference reconstruction is not deterministic');
+$mismatchedOperation = new ReflectionProperty(Copot\Core\LifecycleOperationRecord::class, 'recoveryIdentity');
+$mismatchedOperation->setValue($operationRecord, 'wrong-recovery');
+$assert(!$crossReferenceComposer->compose($handoff, $operationRecord, $recoveryManifest, $scope, $derivedApplication, $derivedDatabase, 'deployment-test')->valid(), 'operation/recovery mismatch was accepted');
+$mismatchedOperation->setValue($operationRecord, $recoveryIdentity->value());
+$expiredDerivedDatabase = new ScopedDatabaseConsistencyEvidence($scope, $recoveryIdentity, str_repeat('3', 64), str_repeat('4', 64), $now - 10, $now - 2);
+$assert(!$crossReferenceComposer->compose($handoff, $operationRecord, $recoveryManifest, $scope, $derivedApplication, $expiredDerivedDatabase, 'deployment-test')->valid(), 'expired recovery-scoped evidence was accepted');
 $guard = new InstallationScopedMaintenanceGuard(new Copot\Core\InstallationMutex($tmp . '/app/storage'), $tmp . '/app/storage');
 $protectionComposer = new LegacyBootstrapScopedProtectionComposer($freshness, $guard, $scope);
 $inactive = $protectionComposer->compose($handoff, $applicationEvidence, $databaseEvidence);

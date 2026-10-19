@@ -18,7 +18,7 @@ final class NormalWebcoreRecoveryCaptureService
 
     public function capture(NormalWebcoreRecoveryCaptureRequest $request): NormalWebcoreRecoverySession
     {
-        $recovery = new RecoveryIdentity('webcore-' . hash('sha256', $request->operationId() . ':' . $request->applyPlan()->identity()));
+        $recovery = self::forOperation($request->operationId(), $request->applyPlan()->identity());
         $lease = null; $record = null; $hasScopedEvidence = $request->databaseScope() !== null
             || $request->databaseConsistencyEvidence() !== null
             || $request->applicationWriteProtectionEvidence() !== null;
@@ -69,6 +69,11 @@ final class NormalWebcoreRecoveryCaptureService
                 try { $this->coordinator->leaveMaintenance($recovery); } catch (\Throwable) {}
             }
         }
+    }
+
+    public static function forOperation(string $operationIdentity, string $applyPlanIdentity): RecoveryIdentity
+    {
+        return new RecoveryIdentity('webcore-' . hash('sha256', $operationIdentity . ':' . $applyPlanIdentity));
     }
 
     public function resume(NormalWebcoreRecoveryCaptureRequest $request, RecoveryIdentity $identity, string $manifest): NormalWebcoreRecoverySession

@@ -46,6 +46,15 @@ final class RecoveryLifecycleCoordinator
             && $this->maintenance->scopedActive($identity, $evidence['application']);
     }
 
+    /** Validate the explicit lifecycle-operation/recovery cross-reference without changing ownership. */
+    public function scopedProtectionMatchesCrossReference(RecoveryIdentityCrossReference $binding, ScopedDatabaseConsistencyEvidence $database): bool
+    {
+        $registered = $this->scopedEvidence[$binding->recoveryIdentity()->value()] ?? null;
+        if (!is_array($registered) || !$registered['application'] instanceof ApplicationWriteProtectionEvidence) return false;
+        return $binding->matchesEvidence($registered['application'], $database)
+            && $this->scopedProtectionMatches($binding->recoveryIdentity(), $database);
+    }
+
     public function leaveMaintenance(RecoveryIdentity $identity): void
     { unset($this->scopedEvidence[$identity->value()]); if ($this->maintenance === null || !$this->maintenance->leave($identity)) throw new RecoveryLifecycleException('Recovery maintenance could not be released.'); }
 
