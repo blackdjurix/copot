@@ -35,24 +35,33 @@ final class NormalWebcoreRecoveryCaptureService
                 if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable.');
             }
             $filesystem = $this->filesystem->capture($request->filesystemPlan() ?? FilesystemRecoveryPlan::fromApplyPlan($request->applyPlan()));
+            $actionLinkage = $request->orderedV3Plan() === null ? null : FilesystemRecoveryActionLinkageBuilder::build($request->orderedV3Plan(), $filesystem->entries(), $request->operationId(), $recovery, $filesystem->artifact()->artifactIdentity());
             $database = $this->database->capture(new DatabaseCaptureContext(($this->snapshotConnection)(), ($this->lockConnection)(), $request->databaseIdentity(), 67108864, $request->databaseScope(), $request->databaseConsistencyEvidence()));
             $lifecycle = $this->lifecycle->capture();
             $marker = $this->installedLock->capture();
-            $manifest = new RecoveryManifest($recovery, $request->operationId(), $request->targetPackageIdentity(), $request->targetReleaseIdentity(), $request->archiveIdentity(), $request->applyPlan()->identity(), [
+            $domains = [
                 new RecoveryDomainIdentity('database.webcore', 'database.webcore', $request->databaseScope()?->identity() ?? $request->namespaceIdentity(), $database->record()->artifactIdentity()),
                 new RecoveryDomainIdentity('filesystem.package-owned', 'filesystem.package-owned', $request->applyPlan()->identity(), $filesystem->artifact()->artifactIdentity()),
                 new RecoveryDomainIdentity('filesystem.lifecycle.committed', 'filesystem.lifecycle.committed', $request->deploymentIdentity(), $lifecycle->record()->artifactIdentity()),
                 new RecoveryDomainIdentity('filesystem.lifecycle.installed-lock', 'filesystem.lifecycle.installed-lock', $request->installationIdentity(), $marker->record()->artifactIdentity()),
-            ], $request->preLifecycleIdentity(), $request->migrationLedgerIdentity());
+            ];
+            if ($actionLinkage !== null) $domains[] = new RecoveryDomainIdentity('filesystem.action-linkage', 'filesystem.action-linkage', $request->applyPlan()->identity(), $actionLinkage->artifact()->artifactIdentity());
+            $manifest = new RecoveryManifest($recovery, $request->operationId(), $request->targetPackageIdentity(), $request->targetReleaseIdentity(), $request->archiveIdentity(), $request->applyPlan()->identity(), $domains, $request->preLifecycleIdentity(), $request->migrationLedgerIdentity());
             $record = new RecoveryLifecycleRecord($recovery, $manifest->identity(), $request->operationId(), RecoveryLifecycleState::CREATED);
             $this->coordinator->create($record);
             if (!$scoped) { $this->coordinator->enterMaintenance($recovery); }
             $this->coordinator->transition($recovery, RecoveryLifecycleState::CAPTURING);
-            $this->artifacts->publish($manifest, [
+            $artifactRows = [
                 ['record'=>$database->record(), 'bytes'=>$database->bytes()], ['record'=>$filesystem->artifact(), 'bytes'=>$filesystem->artifactBytes()],
                 ['record'=>$lifecycle->record(), 'bytes'=>$lifecycle->bytes()], ['record'=>$marker->record(), 'bytes'=>$marker->bytes()],
-            ]);
+            ];
+            if ($actionLinkage !== null) $artifactRows[] = ['record' => $actionLinkage->artifact(), 'bytes' => $actionLinkage->artifactBytes()];
+            $this->artifacts->publish($manifest, $artifactRows);
             $this->artifacts->readManifest($recovery);
+            if ($actionLinkage !== null) {
+                $linked = $this->artifacts->readArtifact($recovery, $actionLinkage->artifact());
+                if ((new FilesystemRecoveryActionLinkageCodec())->decode($linked)->identity() !== $actionLinkage->identity()) throw new RecoveryLifecycleException('Persisted filesystem action linkage changed during reread.');
+            }
             $this->coordinator->transition($recovery, RecoveryLifecycleState::CAPTURED);
             $this->coordinator->recordCaptureComplete($recovery);
             $this->coordinator->transition($recovery, RecoveryLifecycleState::READY);
