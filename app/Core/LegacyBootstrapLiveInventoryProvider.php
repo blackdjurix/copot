@@ -30,6 +30,11 @@ final class LegacyBootstrapLiveInventoryProvider
                 if (!$file->isFile()) continue;
                 $relative = str_replace('\\', '/', substr($file->getPathname(), strlen($base) + 1));
                 if ($root === CanonicalTargetInventoryEntry::APP_ROOT && str_starts_with(strtolower($relative), 'storage/.copot-lifecycle/legacy-bootstrap-source/')) continue;
+                if ($root === CanonicalTargetInventoryEntry::APP_ROOT && in_array(strtolower($relative), [
+                    'storage/.install.lock',
+                    'storage/.copot-lifecycle/application-write-admission.lock',
+                    'storage/.copot-lifecycle/application-write-guard.json',
+                ], true)) continue;
                 $entries[] = new LegacyBootstrapSourceEntry($root, $relative, (int) $file->getSize(), (string) hash_file('sha256', $file->getPathname()));
             }
         }
