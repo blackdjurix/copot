@@ -15,6 +15,9 @@ use Copot\Core\LegacyBootstrapPreparation;
 use Copot\Core\LegacyBootstrapPreparationRunner;
 use Copot\Core\LegacyBootstrapPreparationHandoff;
 use Copot\Core\LegacyBootstrapReviewedInjectionManifest;
+use Copot\Core\LegacyBootstrapLiveInventoryProvider;
+use Copot\Core\LegacyBootstrapPostInjectionReconciler;
+use Copot\Core\LegacyBootstrapPostInjectionReconciliationResult;
 use Copot\Core\LegacyClassificationResult;
 use Copot\Core\LegacyToV3BootstrapEntry;
 use Copot\Core\LegacyToV3BootstrapPreparationComposer;
@@ -134,13 +137,24 @@ $rehydrated = $artifacts->rehydrate($preparation->artifactPath());
 $assert($rehydrated->provisional() && !$rehydrated->operationalReady(), 'rehydrated evidence became operational');
 $assert($rehydrated->sourceInventory() instanceof LegacyBootstrapSourceInventory, 'original source inventory was not rehydrated');
 $before = $rehydrated->sourceInventoryFingerprint();
+$injectedPath = $appRoot . DIRECTORY_SEPARATOR . 'injected-tool.php';
+$injectedBytes = '<?php tooling';
+file_put_contents($injectedPath, $injectedBytes);
 $manifestPath = $tmp . DIRECTORY_SEPARATOR . 'reviewed-injection-manifest.json';
 $manifestContents = json_encode([
     'installation_identity' => $installation->value(),
+    'operation_identity' => $preparation->operationIdentity(),
+    'plan_identity' => $preparation->planIdentity(),
+    'original_source_inventory_fingerprint' => $before,
+    'target_inventory_fingerprint' => $target->fingerprint(),
     'target_app_root' => realpath($appRoot),
     'target_public_root' => realpath($publicRoot),
     'execution_source_root' => realpath($sourceRoot),
     'paths' => ['bootstrap/autoload.php'],
+    'changes' => [[
+        'action' => 'ADD', 'root' => 'APP_ROOT', 'path' => 'injected-tool.php',
+        'byte_size' => strlen($injectedBytes), 'sha256' => hash('sha256', $injectedBytes),
+    ]],
 ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
 file_put_contents($manifestPath, $manifestContents);
 $manifestIdentity = hash('sha256', $manifestContents);
@@ -152,18 +166,46 @@ $assert($handoffData['reviewed_injection_manifest_identity'] === $manifestIdenti
 $assert($handoffData['reviewed_injection_manifest_path'] === realpath($manifestPath), 'reviewed injection manifest path was not retained');
 $assert($handoffData['original_source_inventory_fingerprint'] === $before, 'handoff did not retain original inventory evidence');
 $assert($handoffData['post_injection_freshness_reconciliation_required'] === true && $handoffData['operational_ready'] === false, 'handoff incorrectly claimed post-injection readiness');
-file_put_contents($appRoot . DIRECTORY_SEPARATOR . 'injected-tool.php', '<?php tooling');
 $after = $artifacts->rehydrate($preparation->artifactPath());
 $assert($after->sourceInventoryFingerprint() === $before, 'post-injection bytes changed immutable pre-injection evidence');
 $assert(!array_filter($after->sourceInventory()->entries(), static fn ($entry): bool => $entry->path() === 'injected-tool.php'), 'post-injection tooling was incorrectly added to original evidence');
+$reconciler = new LegacyBootstrapPostInjectionReconciler($artifacts, new LegacyBootstrapLiveInventoryProvider($appRoot, $publicRoot));
+$reconciled = $reconciler->reconcile($handoff);
+$assert($reconciled->status() === LegacyBootstrapPostInjectionReconciliationResult::MATCHED && !$reconciled->operationalReady(), 'reviewed post-injection transition did not reconcile as non-operational evidence');
+$assert($reconciled->collisionEvidence() === $rehydrated->collisions(), 'original collision evidence was not retained during reconciliation');
+file_put_contents($injectedPath, '<?php unexpected');
+$assert($reconciler->reconcile($handoff)->status() === LegacyBootstrapPostInjectionReconciliationResult::STALE, 'unexpected injected byte drift was accepted');
+file_put_contents($injectedPath, $injectedBytes);
+file_put_contents($appRoot . DIRECTORY_SEPARATOR . 'unreviewed.php', '<?php unreviewed');
+$assert($reconciler->reconcile($handoff)->status() === LegacyBootstrapPostInjectionReconciliationResult::STALE, 'unreviewed extra file was accepted');
+unlink($appRoot . DIRECTORY_SEPARATOR . 'unreviewed.php');
+unlink($injectedPath);
+$assert($reconciler->reconcile($handoff)->status() === LegacyBootstrapPostInjectionReconciliationResult::STALE, 'missing reviewed transition file was accepted');
+file_put_contents($injectedPath, $injectedBytes);
+$artifactContents = file_get_contents($preparation->artifactPath());
+$assert(is_string($artifactContents), 'published artifact could not be read for tamper fixture');
+file_put_contents($preparation->artifactPath(), '{"corrupt":true}');
+$assert($reconciler->reconcile($handoff)->status() === LegacyBootstrapPostInjectionReconciliationResult::UNVERIFIED, 'corrupted provisional artifact was accepted');
+file_put_contents($preparation->artifactPath(), $artifactContents);
+$mismatchedManifestContents = str_replace($target->fingerprint(), str_repeat('f', 64), $manifestContents);
+$mismatchedManifestPath = $tmp . DIRECTORY_SEPARATOR . 'mismatched-target-manifest.json';
+file_put_contents($mismatchedManifestPath, $mismatchedManifestContents);
+$mismatchedManifest = LegacyBootstrapReviewedInjectionManifest::fromFile($mismatchedManifestPath, hash('sha256', $mismatchedManifestContents));
+$mismatchedHandoff = new LegacyBootstrapPreparationHandoff($preparation, $runner->sourceRoot(), $runner->target(), $mismatchedManifest);
+$assert($reconciler->reconcile($mismatchedHandoff)->status() === LegacyBootstrapPostInjectionReconciliationResult::STALE, 'target fingerprint manifest mismatch was accepted');
 $throws(static fn () => $runner->prepareHandoff($zipPath, $manifestPath, str_repeat('0', 64)), 'manifest hash mismatch was accepted');
 $throws(static fn () => $runner->prepareHandoff($zipPath, $tmp . DIRECTORY_SEPARATOR . 'missing-manifest.json', $manifestIdentity), 'missing reviewed injection manifest was accepted');
 $wrongBindingPath = $tmp . DIRECTORY_SEPARATOR . 'wrong-binding-manifest.json';
 $wrongBinding = json_encode([
     'installation_identity' => 'other-installation',
+    'operation_identity' => $preparation->operationIdentity(),
+    'plan_identity' => $preparation->planIdentity(),
+    'original_source_inventory_fingerprint' => $before,
+    'target_inventory_fingerprint' => $target->fingerprint(),
     'target_app_root' => realpath($appRoot),
     'target_public_root' => realpath($publicRoot),
     'execution_source_root' => realpath($sourceRoot),
+    'changes' => [],
 ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES);
 file_put_contents($wrongBindingPath, $wrongBinding);
 $throws(static fn () => $runner->prepareHandoff($zipPath, $wrongBindingPath, hash('sha256', $wrongBinding)), 'cross-installation manifest binding was accepted');

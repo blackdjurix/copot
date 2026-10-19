@@ -17,10 +17,25 @@ final class LegacyBootstrapTargetFreshnessVerifier
         private LegacyBootstrapLiveInventoryProvider $liveInventory
     ) {}
 
-    public function verify(LegacyBootstrapIdentityHandoff $handoff): LegacyBootstrapTargetFreshnessResult
+    public function verify(LegacyBootstrapIdentityHandoff $handoff, ?LegacyBootstrapPostInjectionReconciliationResult $reconciliation = null): LegacyBootstrapTargetFreshnessResult
     {
         $artifact = $handoff->artifact();
         $stale = []; $unverified = [];
+        if ($reconciliation !== null) {
+            if ($reconciliation->installationIdentity() !== $artifact->installationIdentity()
+                || $reconciliation->operationIdentity() !== $artifact->operationIdentity()
+                || $reconciliation->planIdentity() !== $artifact->planIdentity()) {
+                $stale[] = 'Post-injection reconciliation identity is not bound to the bootstrap handoff.';
+            } elseif (!$reconciliation->matched()) {
+                if ($reconciliation->status() === LegacyBootstrapPostInjectionReconciliationResult::STALE) {
+                    $stale[] = 'Post-injection reconciliation is not MATCHED.';
+                    foreach ($reconciliation->diagnostics() as $diagnostic) $stale[] = $diagnostic;
+                } else {
+                    $unverified[] = 'Post-injection reconciliation is not MATCHED.';
+                    foreach ($reconciliation->diagnostics() as $diagnostic) $unverified[] = $diagnostic;
+                }
+            }
+        }
         try {
             $identity = $this->identityStore->read();
             if (!$identity instanceof InstallationIdentity) $unverified[] = 'Current installation identity is unavailable.';
@@ -37,9 +52,13 @@ final class LegacyBootstrapTargetFreshnessVerifier
 
         try {
             $currentSource = $this->liveInventory->capture();
-            if (!hash_equals($artifact->sourceInventoryFingerprint(), $currentSource->fingerprint())) $stale[] = 'Live source inventory fingerprint changed.';
-            $currentCollisions = $this->liveInventory->collisions($handoff->target()->contract()->targetInventory(), $currentSource);
-            if ($currentCollisions !== $artifact->collisions()) $stale[] = 'Live collision evidence changed.';
+            if ($reconciliation === null) {
+                if (!hash_equals($artifact->sourceInventoryFingerprint(), $currentSource->fingerprint())) $stale[] = 'Live source inventory fingerprint changed.';
+                $currentCollisions = $this->liveInventory->collisions($handoff->target()->contract()->targetInventory(), $currentSource);
+                if ($currentCollisions !== $artifact->collisions()) $stale[] = 'Live collision evidence changed.';
+            } elseif (!hash_equals($reconciliation->currentInventoryFingerprint(), $currentSource->fingerprint())) {
+                $stale[] = 'Live source inventory changed after post-injection reconciliation.';
+            }
             foreach ($this->liveInventory->targetTypeMismatches($handoff->target()->contract()->targetInventory()) as $mismatch) $stale[] = 'Target path type changed: ' . $mismatch['root'] . '/' . $mismatch['path'] . ' is ' . $mismatch['actual_type'] . '.';
         } catch (\Throwable $exception) { $unverified[] = 'Live source inventory could not be verified: ' . $exception->getMessage(); }
 

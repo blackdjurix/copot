@@ -47,11 +47,10 @@ final class LegacyBootstrapPreparationRunner
         if (!$targetIdentity instanceof InstallationIdentity) {
             throw new \InvalidArgumentException('Target installation identity is unavailable for manifest binding.');
         }
-        $reviewedInjectionManifest->assertBoundTo($targetIdentity->value(), $this->target, $this->sourceRoot);
+        $reviewedInjectionManifest->assertTargetBoundTo($targetIdentity->value(), $this->target, $this->sourceRoot);
         $preparation = $this->prepare($zip);
-        if ($preparation->installationIdentity() !== $targetIdentity->value()) {
-            throw new \RuntimeException('Preparation installation identity changed during manifest binding.');
-        }
+        if ($preparation->installationIdentity() !== $targetIdentity->value()) throw new \RuntimeException('Preparation installation identity changed during manifest binding.');
+        $reviewedInjectionManifest->assertBoundTo($preparation->installationIdentity(), $this->target, $this->sourceRoot, $preparation->operationIdentity(), $preparation->planIdentity(), $preparation->sourceInventory()?->fingerprint() ?? '');
         return new LegacyBootstrapPreparationHandoff(
             $preparation,
             $this->sourceRoot,

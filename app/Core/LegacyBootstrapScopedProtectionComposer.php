@@ -21,7 +21,8 @@ final class LegacyBootstrapScopedProtectionComposer
     public function compose(
         LegacyBootstrapIdentityHandoff $handoff,
         ApplicationWriteProtectionEvidence $application,
-        ScopedDatabaseConsistencyEvidence $database
+        ScopedDatabaseConsistencyEvidence $database,
+        ?LegacyBootstrapPostInjectionReconciliationResult $reconciliation = null
     ): LegacyBootstrapProtectionCompositionResult {
         $at = time();
         $artifact = $handoff->artifact();
@@ -56,7 +57,7 @@ final class LegacyBootstrapScopedProtectionComposer
             return $this->result(LegacyBootstrapProtectionCompositionResult::INCOMPLETE, $handoff, $application, $database, null, ['Installation-scoped application write protection is not durably active for this evidence.']);
         }
 
-        $freshness = $this->freshnessVerifier->verify($handoff);
+        $freshness = $this->freshnessVerifier->verify($handoff, $reconciliation);
         if ($freshness->status() === LegacyBootstrapTargetFreshnessResult::STALE) {
             return $this->result(LegacyBootstrapProtectionCompositionResult::STALE, $handoff, $application, $database, $freshness, $freshness->diagnostics());
         }

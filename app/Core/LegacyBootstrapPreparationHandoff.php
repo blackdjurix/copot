@@ -15,6 +15,14 @@ final class LegacyBootstrapPreparationHandoff
         private DeploymentContext $target,
         private LegacyBootstrapReviewedInjectionManifest $reviewedInjectionManifest
     ) {
+        $this->reviewedInjectionManifest->assertBoundTo(
+            $preparation->installationIdentity(),
+            $target,
+            $sourceRoot,
+            $preparation->operationIdentity(),
+            $preparation->planIdentity(),
+            $preparation->sourceInventory()?->fingerprint() ?? ''
+        );
     }
 
     public function preparation(): LegacyBootstrapPreparation { return $this->preparation; }
