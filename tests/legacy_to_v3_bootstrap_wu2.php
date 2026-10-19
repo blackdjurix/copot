@@ -15,6 +15,9 @@ use Copot\Core\LegacyBootstrapSourceArtifactStore;
 use Copot\Core\LegacyBootstrapSourceArtifact;
 use Copot\Core\LegacyBootstrapIdentityComposer;
 use Copot\Core\LegacyBootstrapIdentityHandoff;
+use Copot\Core\LegacyBootstrapLiveInventoryProvider;
+use Copot\Core\LegacyBootstrapTargetFreshnessResult;
+use Copot\Core\LegacyBootstrapTargetFreshnessVerifier;
 use Copot\Core\LegacyBootstrapSourceInventory;
 use Copot\Core\LegacyBootstrapPreparation;
 use Copot\Core\LegacyClassificationResult;
@@ -66,7 +69,10 @@ mkdir($session->payloadPath(), 0700, true);
 file_put_contents($session->payloadPath() . '/future.php', 'later');
 $stagedFuture = new StagedFile('future.php', 5, hash('sha256', 'later'));
 $manifest = new PackageManifest($package, '.copot/package.json', new StagedPayload($session, str_repeat('a', 64), [$stagedFuture]));
-$classifier = static fn (): LegacyClassificationResult => LegacyClassificationResult::canonicalBaseline('schema-test', '0.13.0');
+$classificationDrift = false;
+$classifier = static function (Copot\Core\InstalledStateInspection $installed) use (&$classificationDrift): LegacyClassificationResult {
+    return $classificationDrift ? LegacyClassificationResult::unknown('migration ledger drift') : LegacyClassificationResult::canonicalBaseline('schema-test', '0.13.0', $installed->snapshot());
+};
 $entry = new LegacyToV3BootstrapEntry(
     $tmp . '/app', $tmp . '/public', $identity, $state, new InstalledStateInspector(),
     static fn (): ExistingInstallEvidence => new ExistingInstallEvidence(true, true), $classifier,
@@ -105,6 +111,36 @@ $assert(!$handoff->operationalReady() && !$handoff->targetFreshnessVerified() &&
 $assert($handoff->target()->archiveIdentity() === $rehydrated->archiveIdentity() && $handoff->applyPlan()->identity() === $rehydrated->applyPlanIdentity(), 'canonical target/apply identities changed during composition');
 $assert($handoff->migrationInput()->sourceMigrationStateIdentity() === Copot\Core\CoreMigrationStateIdentity::fromRecords($rehydrated->classification()->records()), 'migration input changed the classified prefix identity');
 $assert($handoff->migrationPlan()->isAccepted() && $handoff->toArray()['core_migration_plan_available'] === true && $handoff->toArray()['migration_execution_authorized'] === false, 'canonical migration plan must remain provisional and non-executable');
+$liveInventory = new LegacyBootstrapLiveInventoryProvider($tmp . '/app', $tmp . '/public');
+$freshness = new LegacyBootstrapTargetFreshnessVerifier($identity, $state, new InstalledStateInspector(), static fn (): ExistingInstallEvidence => new ExistingInstallEvidence(true, true), $classifier, static fn (): PDO => throw new RuntimeException('not used by fixture classifier'), $tmp . '/schema.sql', CoreMigrationRegistry::forProject($base), $liveInventory);
+$matched = $freshness->verify($handoff);
+$assert($matched->status() === LegacyBootstrapTargetFreshnessResult::MATCHED && !$matched->operationalReady() && $matched->requiresProtectedBoundaryRevalidation(), 'unchanged target must match without granting operational authority');
+$originalLegacyBytes = file_get_contents($tmp . '/app/legacy.php');
+file_put_contents($tmp . '/app/legacy.php', '<?php // changed');
+$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'changed live bytes must be stale');
+file_put_contents($tmp . '/app/legacy.php', $originalLegacyBytes);
+file_put_contents($tmp . '/app/future.php', 'later');
+$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'added target collision must be stale');
+unlink($tmp . '/app/future.php');
+$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::MATCHED, 'removed transient collision must restore the immutable evidence match');
+mkdir($tmp . '/app/future.php');
+$typeResult = $freshness->verify($handoff);
+$assert($typeResult->status() === LegacyBootstrapTargetFreshnessResult::STALE && str_contains(implode(' ', $typeResult->diagnostics()), 'Target path type changed'), 'target path/type mismatch must be stale');
+rmdir($tmp . '/app/future.php');
+$markerPath = $tmp . '/app/storage/installed.lock';
+$markerBytes = file_get_contents($markerPath);
+file_put_contents($markerPath, str_replace('0.13.0', '0.12.0', $markerBytes));
+$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'installed-state marker drift must be stale');
+file_put_contents($markerPath, $markerBytes);
+$classificationDrift = true;
+$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'migration-ledger/classification drift must be stale');
+$classificationDrift = false;
+$targetProperty = new ReflectionProperty(PackageContract::class, 'targetInventory');
+$targetProperty->setValue($package, new CanonicalTargetInventory([new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'other.php', 5, hash('sha256', 'later'))]));
+$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'candidate target fingerprint drift must be stale');
+$targetProperty->setValue($package, $target);
+$unverified = new LegacyBootstrapTargetFreshnessVerifier($identity, $state, new InstalledStateInspector(), static fn (): ExistingInstallEvidence => new ExistingInstallEvidence(true, true), static fn (): LegacyClassificationResult => throw new RuntimeException('classification unavailable'), static fn (): PDO => throw new RuntimeException('connection unavailable'), $tmp . '/schema.sql', CoreMigrationRegistry::forProject($base), $liveInventory);
+$assert($unverified->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::UNVERIFIED, 'incomplete classifier evidence must remain unverified');
 $assert($identityComposer->compose($eligible->artifactPath(), $manifest, $eligible->installationIdentity())->identity() === $handoff->identity(), 'bootstrap identity handoff reconstruction is not deterministic');
 $changedTarget = new CanonicalTargetInventory([new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'future.php', 6, hash('sha256', 'stale'))]);
 $assert($artifactStore->rehydrate($eligible->artifactPath())->targetInventoryFingerprint() !== $changedTarget->fingerprint(), 'rehydration must not claim freshness against a changed target');

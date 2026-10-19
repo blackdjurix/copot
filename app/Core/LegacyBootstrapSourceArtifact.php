@@ -29,6 +29,8 @@ final class LegacyBootstrapSourceArtifact
     public function recoveryIdentity(): ?string { return $this->record['recovery_identity']; }
     public function classification(): LegacyClassificationResult { return LegacyClassificationResult::fromEvidenceArray($this->record['legacy_classification']); }
     public function migrationRegistryIdentity(): string { return $this->record['legacy_classification']['migration_registry_identity']; }
+    public function installedStateStatus(): string { return $this->record['legacy_classification']['installed_state_status']; }
+    public function classificationEvidence(): array { return $this->record['legacy_classification']; }
     public function sourceInventory(): LegacyBootstrapSourceInventory { return $this->sourceInventory; }
     public function sourceInventoryFingerprint(): string { return $this->sourceInventory->fingerprint(); }
     public function collisions(): array { return $this->record['collisions']; }

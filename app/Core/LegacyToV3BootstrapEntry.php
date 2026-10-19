@@ -2,10 +2,6 @@
 
 namespace Copot\Core;
 
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
-use FilesystemIterator;
-
 /** WU2 preparation boundary. It never applies a package or commits v3 state. */
 final class LegacyToV3BootstrapEntry
 {
@@ -21,12 +17,14 @@ final class LegacyToV3BootstrapEntry
         private string $canonicalSchemaPath,
         private CoreMigrationRegistry $registry,
         private PackageV3SourceRelativePlanner $planner,
-        private LegacyBootstrapSourceArtifactStore $artifacts
+        private LegacyBootstrapSourceArtifactStore $artifacts,
+        private ?LegacyBootstrapLiveInventoryProvider $liveInventory = null
     ) {
         if (!is_dir($appRoot) || !is_dir($publicRoot) || $appRoot === $publicRoot) throw new \InvalidArgumentException('Legacy bootstrap roots are invalid.');
         $this->appRoot = rtrim(realpath($appRoot) ?: '', DIRECTORY_SEPARATOR);
         $this->publicRoot = rtrim(realpath($publicRoot) ?: '', DIRECTORY_SEPARATOR);
         if ($this->appRoot === '' || $this->publicRoot === '') throw new \InvalidArgumentException('Legacy bootstrap roots are unavailable.');
+        $this->liveInventory ??= new LegacyBootstrapLiveInventoryProvider($this->appRoot, $this->publicRoot);
     }
 
     public function prepare(PackageManifest $manifest): LegacyBootstrapPreparation
@@ -41,12 +39,12 @@ final class LegacyToV3BootstrapEntry
         if (!$identity instanceof InstallationIdentity) return $this->blocked('Installation identity is unavailable.', 'identity');
         $installed = $this->installedInspector->inspect($this->installationState, ($this->evidence)());
         $legacyPackageEvidence = $this->legacyPackageEvidence();
-        $source = $this->capture();
+        $source = $this->liveInventory->capture();
         $classification = LegacyClassificationResult::unknown('Classification was not completed.');
         try { $classification = ($this->legacyClassifier)($installed, $this->connection, $this->canonicalSchemaPath, $this->registry); }
         catch (\Throwable $e) { $classification = LegacyClassificationResult::unknown('Legacy baseline classification failed: ' . $e->getMessage()); }
 
-        $collisions = $this->collisions($package->targetInventory(), $source);
+        $collisions = $this->liveInventory->collisions($package->targetInventory(), $source);
         $targetInventoryFingerprint = $package->targetInventory()->fingerprint();
         $planIdentity = hash('sha256', json_encode([
             'operation_type' => LegacyBootstrapPreparation::OPERATION_TYPE,
@@ -87,21 +85,6 @@ final class LegacyToV3BootstrapEntry
         return new LegacyBootstrapPreparation(LegacyBootstrapPreparation::BLOCKED, $reason, $identity, hash('sha256', $reason), '', $empty, null, [['action' => 'BLOCK', 'reason' => $reason]], null);
     }
 
-    private function capture(): LegacyBootstrapSourceInventory
-    {
-        $entries = [];
-        foreach ([[CanonicalTargetInventoryEntry::APP_ROOT, $this->appRoot], [CanonicalTargetInventoryEntry::PUBLIC_ROOT, $this->publicRoot]] as [$root, $base]) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($base, FilesystemIterator::SKIP_DOTS));
-            foreach ($iterator as $file) {
-                if ($file->isLink()) throw new \RuntimeException('Legacy bootstrap source scan encountered a symlink.');
-                if (!$file->isFile()) continue;
-                $relative = str_replace('\\', '/', substr($file->getPathname(), strlen($base) + 1));
-                $entries[] = new LegacyBootstrapSourceEntry($root, $relative, (int) $file->getSize(), (string) hash_file('sha256', $file->getPathname()));
-            }
-        }
-        return new LegacyBootstrapSourceInventory($entries);
-    }
-
     private function legacyPackageEvidence(): LegacyBootstrapPackageEvidence
     {
         $path = $this->appRoot . DIRECTORY_SEPARATOR . '.copot' . DIRECTORY_SEPARATOR . 'package.json';
@@ -115,23 +98,4 @@ final class LegacyToV3BootstrapEntry
         return new LegacyBootstrapPackageEvidence(true, $valid, $valid ? $version : null, hash('sha256', $raw), $valid ? '' : 'Legacy package metadata is not a recognized v1/v2 manifest.');
     }
 
-    private function collisions(CanonicalTargetInventory $target, LegacyBootstrapSourceInventory $source): array
-    {
-        $live = [];
-        foreach ($source->entries() as $entry) $live[strtolower($entry->root()."\0".$entry->path())] = $entry;
-        $rows = [];
-        foreach ($target->entries() as $entry) {
-            $key = strtolower($entry->root()."\0".$entry->path());
-            $rows[] = isset($live[$key])
-                ? ['action' => 'BLOCK', 'root' => $entry->root(), 'path' => $entry->path(), 'reason' => 'Legacy live bytes do not prove package ownership; explicit collision authority is required.']
-                : ['action' => 'ADD', 'root' => $entry->root(), 'path' => $entry->path(), 'reason' => 'Destination is absent and delivered by the full v3 package.'];
-        }
-        foreach ($live as $key => $entry) {
-            if (!isset(array_fill_keys(array_map(static fn (CanonicalTargetInventoryEntry $e): string => strtolower($e->root()."\0".$e->path()), $target->entries()), true)[$key])) {
-                $rows[] = ['action' => 'UNVERIFIED', 'root' => $entry->root(), 'path' => $entry->path(), 'reason' => 'Live file is outside the package target inventory and remains untouched.'];
-            }
-        }
-        usort($rows, static fn (array $a, array $b): int => strcmp($a['root'].'\0'.$a['path'], $b['root'].'\0'.$b['path']));
-        return $rows;
-    }
 }
