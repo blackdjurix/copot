@@ -42,6 +42,21 @@ Section conditional hanya dimasukkan bila material terhadap continuity transitio
 
 GPT penerima tidak boleh mengandalkan implicit memory, summary session sebelumnya, chat history, atau model context sebagai pengganti Handoff ini dan sumber authoritative saat ini. Lakukan rekonstruksi hanya dari governance saat ini, Handoff ini, project instructions, state Repository yang diverifikasi, dan source material yang diidentifikasi secara eksplisit.
 
+## Governance Canonical Paths
+
+Sebelum memulai, resolve, buka, baca, verifikasi, dan apply `Governance` berikut:
+
+- Governance Source: `Source Link`
+- Project Rule: `Rule`
+- Handoff Template: `Handoff`
+- Agent Instruction Template: `Agent Instruction`
+
+Receiving GPT/session wajib memverifikasi nilai canonical Variable tersebut dari `Rule` sebelum menerapkannya. Jika source atau path tidak tersedia, berubah, atau tidak dapat diverifikasi, laporkan secara eksplisit dan terapkan fail-closed behavior.
+
+Selalu resolve, buka, baca, dan apply `Governance` dimulai dari `Rule` pada canonical paths yang dapat diverifikasi, bukan dari konteks thread, sebelum memberikan feedback substantif.
+
+Nilai setiap event sesuai policy Activity Journal pada `Rule`. Lakukan logging ke `devlog.md` bila event tersebut meaningful atau material terhadap project.
+
 Gunakan bahasa utama conversation untuk prosa Handoff. Pertahankan identifier, path, command, filename, dan technical token secara literal bila precision memerlukannya.
 
 ## Perpindahan
