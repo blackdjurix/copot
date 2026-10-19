@@ -29,16 +29,25 @@ final class LegacyBootstrapLiveInventoryProvider
                 if ($file->isLink()) throw new \RuntimeException('Legacy bootstrap source scan encountered a symlink.');
                 if (!$file->isFile()) continue;
                 $relative = str_replace('\\', '/', substr($file->getPathname(), strlen($base) + 1));
-                if ($root === CanonicalTargetInventoryEntry::APP_ROOT && str_starts_with(strtolower($relative), 'storage/.copot-lifecycle/legacy-bootstrap-source/')) continue;
-                if ($root === CanonicalTargetInventoryEntry::APP_ROOT && in_array(strtolower($relative), [
-                    'storage/.install.lock',
-                    'storage/.copot-lifecycle/application-write-admission.lock',
-                    'storage/.copot-lifecycle/application-write-guard.json',
-                ], true)) continue;
+                if ($root === CanonicalTargetInventoryEntry::APP_ROOT && $this->isLifecycleOwnedPath($relative)) continue;
                 $entries[] = new LegacyBootstrapSourceEntry($root, $relative, (int) $file->getSize(), (string) hash_file('sha256', $file->getPathname()));
             }
         }
         return new LegacyBootstrapSourceInventory($entries);
+    }
+
+    private function isLifecycleOwnedPath(string $relative): bool
+    {
+        $path = strtolower($relative);
+        if (str_starts_with($path, 'storage/.copot-lifecycle/legacy-bootstrap-source/')) return true;
+        if (in_array($path, [
+            'storage/.install.lock',
+            'storage/installed.lock',
+            'storage/.copot-lifecycle/active-operation.json',
+            'storage/.copot-lifecycle/application-write-admission.lock',
+            'storage/.copot-lifecycle/application-write-guard.json',
+        ], true)) return true;
+        return preg_match('/^storage\/\.copot-lifecycle\/\.operation-[a-f0-9]+\.tmp$/', $path) === 1;
     }
 
     public function collisions(CanonicalTargetInventory $target, LegacyBootstrapSourceInventory $source): array

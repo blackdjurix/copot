@@ -5,6 +5,7 @@ namespace Copot\Core;
 use Copot\Core\BackupRecovery\ApplicationWriteProtectionEvidence;
 use Copot\Core\BackupRecovery\DatabaseScope;
 use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
+use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureService;
 use Copot\Core\BackupRecovery\RecoveryIdentity;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
 
@@ -24,14 +25,17 @@ final class LegacyBootstrapScopedProtectionComposer
     ): LegacyBootstrapProtectionCompositionResult {
         $at = time();
         $artifact = $handoff->artifact();
-        $operation = new RecoveryIdentity($artifact->operationIdentity());
+        $bootstrapOperation = new RecoveryIdentity($artifact->operationIdentity());
+        $recoveryOperation = NormalWebcoreRecoveryCaptureService::forOperation($artifact->operationIdentity(), $handoff->applyPlan()->identity());
+        $scopedOperation = $application->operationIdentity();
         $diagnostics = [];
 
         if (!hash_equals($this->expectedDatabaseScope->installationIdentity(), $artifact->installationIdentity())) {
             $diagnostics[] = 'Expected database scope is bound to a different installation.';
         }
-        if (!$application->operationIdentity()->equals($operation) || !$database->operationIdentity()->equals($operation)) {
-            $diagnostics[] = 'Protection evidence operation identity does not match the bootstrap operation.';
+        if ((!$application->operationIdentity()->equals($bootstrapOperation) && !$application->operationIdentity()->equals($recoveryOperation))
+            || !$database->operationIdentity()->equals($scopedOperation)) {
+            $diagnostics[] = 'Protection evidence operation identity does not match the bootstrap/recovery cross-reference.';
         }
         if (!hash_equals($this->expectedDatabaseScope->identity(), $application->scope()->identity())) {
             $diagnostics[] = 'Application protection database scope does not match the expected installation scope.';
@@ -48,7 +52,7 @@ final class LegacyBootstrapScopedProtectionComposer
         if (!$database->isValidAt($at)) {
             return $this->result(LegacyBootstrapProtectionCompositionResult::STALE, $handoff, $application, $database, null, ['Scoped database consistency evidence is expired or not yet valid.']);
         }
-        if (!$this->guard->scopedActive($operation, $application)) {
+        if (!$this->guard->scopedActive($scopedOperation, $application)) {
             return $this->result(LegacyBootstrapProtectionCompositionResult::INCOMPLETE, $handoff, $application, $database, null, ['Installation-scoped application write protection is not durably active for this evidence.']);
         }
 
