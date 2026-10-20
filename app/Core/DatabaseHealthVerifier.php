@@ -6,13 +6,6 @@ use PDO;
 
 final class DatabaseHealthVerifier
 {
-    private const TABLES = [
-        'users', 'roles', 'permissions', 'user_roles', 'role_permissions', 'settings',
-        'modules', 'module_permissions', 'themes', 'content', 'media', 'media_usages',
-        'navigation_menus', 'navigation_items', 'redirects', 'security_login_attempts',
-        'security_sessions', 'security_events', 'core_migration_history',
-    ];
-
     public function __construct(private ?DatabaseTableNames $tables = null)
     {
         $this->tables ??= new DatabaseTableNames();
@@ -23,7 +16,7 @@ final class DatabaseHealthVerifier
         try {
             $connection->query('SELECT 1')->fetchColumn();
             $tables = $this->tables($connection);
-            $expected = array_map(fn (string $table): string => $this->physicalTable($table), self::TABLES);
+            $expected = array_map(fn (string $table): string => $this->physicalTable($table), DatabaseTableOwnershipCatalog::materializedWebcoreLogicalNames());
             $missing = array_values(array_diff($expected, $tables));
             if ($missing !== []) {
                 return new HealthGateMatrix([HealthGateResult::fail('database-schema', 'Required Core tables are missing: ' . implode(', ', $missing))]);

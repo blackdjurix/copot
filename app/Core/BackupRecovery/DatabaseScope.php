@@ -17,10 +17,13 @@ final class DatabaseScope
         private string $namespaceIdentity,
         array $physicalTables
     ) {
-        foreach ([$installationIdentity, $databaseIdentity, $namespaceIdentity] as $value) {
+        foreach ([$installationIdentity, $databaseIdentity] as $value) {
             if ($value === '' || trim($value) !== $value || preg_match('/[\x00-\x1F\x7F]/', $value) === 1) {
                 throw new DatabaseRecoveryException('Database scope identity is invalid.');
             }
+        }
+        if (trim($namespaceIdentity) !== $namespaceIdentity || preg_match('/[\x00-\x1F\x7F]/', $namespaceIdentity) === 1) {
+            throw new DatabaseRecoveryException('Database scope namespace identity is invalid.');
         }
         if (preg_match('/^[A-Za-z0-9_]+$/D', $databaseIdentity) !== 1
             || ($namespaceIdentity !== '' && preg_match('/^[a-z][a-z0-9_]{0,30}$/D', $namespaceIdentity) !== 1)) {
@@ -40,12 +43,36 @@ final class DatabaseScope
         $this->physicalTables = array_keys($unique);
     }
 
-    public static function fromOwnershipCatalog(string $installationIdentity, string $databaseIdentity, string $namespaceIdentity, DatabaseTableOwnershipCatalog $catalog): self
+    /**
+     * Build a scope from the declared Webcore baseline plus explicitly verified
+     * Module materialization evidence. Runtime table enumeration is not an
+     * ownership or materialization authority.
+     *
+     * @param list<string> $verifiedModuleTables
+     * @param array{namespace:string,schema_generation:string}|null $verifiedGenerationEvidence
+     */
+    public static function fromOwnershipCatalog(string $installationIdentity, string $databaseIdentity, string $namespaceIdentity, DatabaseTableOwnershipCatalog $catalog, array $verifiedModuleTables = [], ?array $verifiedGenerationEvidence = null): self
     {
         $tables = new DatabaseTableNames($namespaceIdentity);
         $physical = [];
-        foreach ($catalog->all() as $ownership) {
-            $physical[] = $catalog->physicalName($ownership->logicalName(), $tables);
+        if ($verifiedGenerationEvidence !== null
+            && (($verifiedGenerationEvidence['namespace'] ?? null) !== $namespaceIdentity
+                || !is_string($verifiedGenerationEvidence['schema_generation'] ?? null)
+                || !str_starts_with($verifiedGenerationEvidence['schema_generation'], 'core-schema-generation:'))) {
+            throw new DatabaseRecoveryException('Verified schema-generation materialization evidence is invalid.');
+        }
+        $logicalNames = DatabaseTableOwnershipCatalog::materializedWebcoreLogicalNames($verifiedGenerationEvidence !== null);
+        foreach ($verifiedModuleTables as $logicalName) {
+            if (!is_string($logicalName) || !in_array($logicalName, DatabaseTableNames::moduleTables(), true)) {
+                throw new DatabaseRecoveryException('Verified Module materialization evidence is invalid.');
+            }
+            if ($catalog->owner($logicalName)->isWebcore()) {
+                throw new DatabaseRecoveryException('Verified Module materialization evidence crosses ownership boundary.');
+            }
+            $logicalNames[] = $logicalName;
+        }
+        foreach (array_values(array_unique($logicalNames)) as $logicalName) {
+            $physical[] = $catalog->physicalName($logicalName, $tables);
         }
         return new self($installationIdentity, $databaseIdentity, $namespaceIdentity, $physical);
     }
