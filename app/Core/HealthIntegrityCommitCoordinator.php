@@ -2,6 +2,8 @@
 
 namespace Copot\Core;
 
+use Copot\Core\BackupRecovery\RecoveryArtifactStore;
+use Copot\Core\BackupRecovery\RecoveryLifecycleCoordinator;
 use PDO;
 
 final class HealthIntegrityCommitCoordinator
@@ -152,6 +154,115 @@ final class HealthIntegrityCommitCoordinator
         } catch (\Throwable $exception) {
             return $this->failure('finalization', $exception->getMessage(), $operationId);
         } finally { $lock->release(); }
+    }
+
+    /**
+     * WU6 finalization for authority-only source reconciliation. It reuses the
+     * existing health, committed-state, source-artifact, and operation stores;
+     * it does not apply files or execute migrations.
+     */
+    public function finalizeCommittedSourceAuthority(
+        CommittedSourceAuthorityExecutionAdmission $admission,
+        RecoveryLifecycleCoordinator $recoveryCoordinator,
+        LifecycleOperationStore $operations,
+        RecoveryArtifactStore $recoveryArtifacts,
+        LiveTreePathGuard $liveGuard,
+        PDO $connection,
+        SourceInventoryArtifactStore $sourceArtifacts,
+        array $runtimeChecks = [],
+        ?InstallationLock $existingLock = null
+    ): HealthIntegrityCommitResult {
+        $ownsLock = $existingLock === null;
+        $lock = $existingLock ?? $this->mutex->acquire();
+        if (!$lock instanceof InstallationLock) {
+            return new HealthIntegrityCommitResult(HealthIntegrityCommitResult::FAILED, new HealthGateMatrix([HealthGateResult::fail('mutex', 'Another lifecycle operation is already running.')]), 'Another lifecycle operation is already running.');
+        }
+
+        try {
+            $plan = $admission->plan();
+            $binding = $admission->binding();
+            $application = $binding->applicationProtection();
+            $database = $binding->databaseConsistency();
+            $record = $admission->revalidateForWu6($recoveryCoordinator, $operations, $recoveryArtifacts, $application, $database);
+            $package = $plan->sourcePlan()->package();
+            $target = $package->targetInventory();
+            if (!$target instanceof CanonicalTargetInventory) {
+                return $this->failure('source-inventory', 'Canonical target inventory is unavailable.', $record->operationId());
+            }
+
+            $committed = $this->committedStore->read();
+            if (!$committed instanceof CommittedLifecycleState
+                || $committed->webcoreVersion() !== $package->targetWebcoreVersion()
+                || $committed->releaseIdentity() !== $package->releaseIdentity()
+                || $committed->migrationStateIdentity() !== $plan->migrationStateIdentity()) {
+                return $this->failure('committed-state', 'Committed lifecycle state does not match the authority plan.', $record->operationId());
+            }
+            if ($committed->sourceInventoryReference() === null
+                && hash('sha256', json_encode($committed->toArray(), JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)) !== $plan->committedLifecycleIdentity()) {
+                return $this->failure('committed-state', 'Pre-reconciliation committed lifecycle identity is stale.', $record->operationId());
+            }
+            if ($committed->sourceInventoryReference() !== null
+                && ($committed->sourceInventoryReference()->fingerprint() !== $target->fingerprint()
+                    || $committed->sourceInventoryReference()->releaseIdentity() !== $package->releaseIdentity()
+                    || $committed->sourceInventoryReference()->manifestContractVersion() !== PackageContract::V3_MANIFEST_CONTRACT_VERSION)) {
+                return $this->failure('source-inventory', 'Existing committed source reference is foreign to the authority plan.', $record->operationId());
+            }
+
+            $identityGates = new HealthGateMatrix([
+                $record->classification() === 'COMMITTED_SOURCE_AUTHORITY_RECONCILIATION' ? HealthGateResult::pass('operation-classification') : HealthGateResult::fail('operation-classification', 'Operation classification is not source-authority reconciliation.'),
+                $record->phase() === LifecycleOperationRecord::AWAITING_WU6 || $record->phase() === LifecycleOperationRecord::CLEANUP_PENDING ? HealthGateResult::pass('operation-phase') : HealthGateResult::fail('operation-phase', 'Operation is not in an accepted WU6 finalization phase.'),
+                $record->fileCursor() === 0 && $record->lastVerifiedPath() === null ? HealthGateResult::pass('authority-progress') : HealthGateResult::fail('authority-progress', 'Authority-only operation contains mutation progress.'),
+                $record->migrationOutcome() === null ? HealthGateResult::pass('authority-migration') : HealthGateResult::fail('authority-migration', 'Authority-only operation contains migration outcome evidence.'),
+                $binding->mutationAuthorized() === false ? HealthGateResult::pass('mutation-boundary') : HealthGateResult::fail('mutation-boundary', 'Authority-only binding has mutation authority.'),
+            ]);
+            $gates = new HealthGateMatrix(array_merge(
+                $identityGates->gates(),
+                $this->integrity->verify($package, $liveGuard, $target)->gates(),
+                $this->databaseHealth->verify($connection)->gates(),
+                $this->migrationHealth->verify($connection, $this->migrationRegistry, $plan->migrationStateIdentity())->gates(),
+                $this->runtimeHealth->verify($runtimeChecks)->gates()
+            ));
+            if (!$gates->passed()) {
+                return $this->failure('health', $gates->failureReason(), $record->operationId(), $gates);
+            }
+
+            $source = $sourceArtifacts->publish($target, $package->releaseIdentity(), PackageContract::V3_MANIFEST_CONTRACT_VERSION, $package->sourceTreeIdentity());
+            $state = new CommittedLifecycleState(
+                $committed->webcoreVersion(),
+                $committed->releaseIdentity(),
+                $committed->sourceTreeIdentity(),
+                $committed->manifestContractVersion(),
+                $committed->schemaStateIdentity(),
+                $committed->migrationStateIdentity(),
+                $committed->committedAt(),
+                $committed->packageIntegrityIdentity(),
+                $source->reference()
+            );
+            $this->committedStore->commitWithSourceInventory($this->installationState, $state, $sourceArtifacts, $source);
+            $linked = $this->committedStore->read();
+            if (!$linked instanceof CommittedLifecycleState || $linked->sourceInventoryReference()?->toArray() !== $source->reference()->toArray() || $sourceArtifacts->read($source->reference())->inventory()->fingerprint() !== $target->fingerprint()) {
+                return $this->failure('source-inventory', 'Committed source reference failed post-publication verification.', $record->operationId(), $gates);
+            }
+
+            $latest = $operations->read();
+            if (!$latest instanceof LifecycleOperationRecord || $latest->operationId() !== $record->operationId() || !in_array($latest->phase(), [LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], true)) {
+                return $this->failure('operation', 'Operation changed before source-authority completion.', $record->operationId(), $gates);
+            }
+            try {
+                $this->maintenance->clear($latest->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Source authority reference published after WU6 verification.'));
+            } catch (\Throwable $exception) {
+                $pending = $latest->advance(LifecycleOperationRecord::CLEANUP_PENDING, 0, null, null, 'Source authority is committed; lifecycle cleanup is pending.');
+                try { $this->maintenance->update($pending); } catch (\Throwable) {}
+                return new HealthIntegrityCommitResult(HealthIntegrityCommitResult::CLEANUP_PENDING, $gates, $exception->getMessage(), $record->operationId());
+            }
+            return new HealthIntegrityCommitResult(HealthIntegrityCommitResult::COMPLETED, $gates, '', $record->operationId());
+        } catch (\Throwable $exception) {
+            return $this->failure('finalization', $exception->getMessage(), $admission->plan()->operation()->operationId());
+        } finally {
+            if ($ownsLock) {
+                $lock->release();
+            }
+        }
     }
 
     private function retryCleanup(

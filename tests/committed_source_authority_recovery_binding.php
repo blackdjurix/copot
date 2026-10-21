@@ -26,6 +26,36 @@ use Copot\Core\InstallationIdentity;
 use Copot\Core\InstallerOwnershipProof;
 use Copot\Core\LifecycleOperationStore;
 use Copot\Core\InstallationMutex;
+use Copot\Core\CoreMigrationStateIdentity;
+use Copot\Core\HealthIntegrityCommitCoordinator;
+use Copot\Core\MaintenanceCoordinator;
+use Copot\Core\RuntimeHealthVerifier;
+use Copot\Core\TargetPackageIntegrityVerifier;
+use Copot\Core\DatabaseHealthVerifier;
+use Copot\Core\CoreMigrationHealthVerifier;
+use Copot\Core\CoreMigrationRegistry;
+use Copot\Core\LiveTreePathGuard;
+use Copot\Core\HealthIntegrityCommitResult;
+
+final class AuthorityFinalizationStatement
+{
+    public function __construct(private array $rows = [], private mixed $column = null) {}
+    public function fetchAll(...$arguments): array { return $this->rows; }
+    public function fetchColumn(...$arguments): mixed { return $this->column; }
+}
+
+final class AuthorityFinalizationPdo extends PDO
+{
+    public function __construct() {}
+    public function query($query, ...$arguments)
+    {
+        if (str_contains($query, 'SELECT 1')) return new AuthorityFinalizationStatement([], 1);
+        if (str_contains($query, 'information_schema.tables')) return new AuthorityFinalizationStatement(['users', 'roles', 'permissions', 'user_roles', 'role_permissions', 'settings', 'modules', 'module_permissions', 'themes', 'content', 'media', 'media_usages', 'navigation_menus', 'navigation_items', 'redirects', 'security_login_attempts', 'security_sessions', 'security_events', 'core_migration_history']);
+        if (str_contains($query, 'DESCRIBE core_migration_history')) return new AuthorityFinalizationStatement(['migration_id', 'sequence_number', 'target_webcore_version', 'target_schema_identity', 'migration_checksum', 'applied_at']);
+        if (str_contains($query, 'FROM core_migration_history')) return new AuthorityFinalizationStatement([]);
+        throw new RuntimeException('Unexpected authority finalization query: ' . $query);
+    }
+}
 use Copot\Core\PackageCompatibility;
 use Copot\Core\PackageContract;
 use Copot\Core\PackageInventoryEntry;
@@ -54,7 +84,7 @@ try {
     $package = new PackageContract(PackageContract::WEBCORE_PACKAGE_TYPE, 3, '0.13.0', 'release-test', 'tree-test', new PackageCompatibility('0.13.0'), new PackageRuntimeCompatibility('8.0', ['sqlite' => '3.0'], ['json']), [new PackageInventoryEntry('app/target.txt', strlen($content), $sha, \Copot\Core\PackageOwnership::PACKAGE_OWNED)], new PackageMigrationDeclaration(false), null, $inventory, 'full');
     $raw = str_repeat('a', 64); $evidence = \Copot\Core\PackageV3Identity::identity($raw, $package->integrityIdentity());
     $manifest = new PackageManifest($package, '.copot/package.json', $payload, $raw, $evidence);
-    $installation = new InstallationIdentity('inst_' . str_repeat('1', 32)); $migration = str_repeat('c', 64);
+    $installation = new InstallationIdentity('inst_' . str_repeat('1', 32)); $migration = CoreMigrationStateIdentity::fromRecords([]);
     $committed = new CommittedLifecycleState('0.13.0', 'release-test', null, 3, 'schema-test', $migration, new DateTimeImmutable('2026-10-21T00:00:00+00:00'));
     $scope = DatabaseScope::fromOwnershipCatalog($installation->value(), 'copot_test', '', DatabaseTableOwnershipCatalog::current());
     $proof = new InstallerOwnershipProof($installation, '', 'core-schema-generation:test', $migration);
@@ -106,6 +136,39 @@ try {
     $assert($admission->mutationAuthorized() === false && $admission->wu6Required(), 'Authority admission granted mutation or lost WU6 requirement.');
     $awaiting = $admission->advanceToAwaitingWu6($coordinator, $operations, $artifactStore, $application, $database);
     $assert($awaiting->phase() === \Copot\Core\LifecycleOperationRecord::AWAITING_WU6 && $awaiting->fileCursor() === 0 && $awaiting->migrationOutcome() === null, 'Authority-only handoff created mutation or migration evidence.');
+
+    mkdir($root . '/live/app', 0700, true);
+    file_put_contents($root . '/live/app/target.txt', $content);
+    $installationState = new \Copot\Core\InstallationState($operationRoot);
+    $installationState->createMarker('0.13.0');
+    $committedStore = new \Copot\Core\CommittedLifecycleStateStore($operationRoot);
+    $committedStore->write($committed);
+    $healthCoordinator = new HealthIntegrityCommitCoordinator(
+        new InstallationMutex($operationRoot),
+        new MaintenanceCoordinator($operations),
+        $installationState,
+        $committedStore,
+        new TargetPackageIntegrityVerifier(),
+        new DatabaseHealthVerifier(),
+        new CoreMigrationHealthVerifier(),
+        new RuntimeHealthVerifier(),
+        new CoreMigrationRegistry('authority-finalization-test', [])
+    );
+    $sourceArtifacts = new \Copot\Core\SourceInventoryArtifactStore($operationRoot, static fn ($resource): bool => true);
+    $final = $healthCoordinator->finalizeCommittedSourceAuthority(
+        $admission,
+        $coordinator,
+        $operations,
+        $artifactStore,
+        new LiveTreePathGuard($root . '/live'),
+        new AuthorityFinalizationPdo(),
+        $sourceArtifacts,
+        ['bootstrap' => static fn (): bool => true, 'public' => static fn (): bool => true, 'admin' => static fn (): bool => true],
+        $coordinator->activeLifecycleLock()
+    );
+    $assert($final->status() === HealthIntegrityCommitResult::COMPLETED, 'Canonical source-authority WU6 finalization did not complete: ' . $final->reason());
+    $assert($committedStore->read()?->sourceInventoryReference() !== null, 'SourceInventoryReference was not durably committed.');
+    $assert($operations->read() === null, 'Completed authority operation was not cleared through canonical lifecycle cleanup.');
     $coordinator->leaveMaintenance($recovery);
 
     $badManifest = new RecoveryManifest($recovery, 'other-operation', $plan->sourcePlan()->packageEvidenceIdentity(), $plan->operation()->releaseIdentity(), $plan->operation()->archiveSha256(), $plan->applyPlan()->identity(), $domains, $plan->committedLifecycleIdentity(), $plan->migrationStateIdentity());

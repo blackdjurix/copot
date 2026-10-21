@@ -31,6 +31,12 @@ class InstallationRecoveryMaintenance implements RecoveryMaintenanceBoundary
         $this->identity = null;
     }
 
+    /** Exposes the already-owned lifecycle lock for canonical coordinator handoff. */
+    public function activeLock(): ?InstallationLock
+    {
+        return $this->lock;
+    }
+
     public function enter(RecoveryIdentity $identity): bool
     {
         if ($this->lock instanceof InstallationLock && $this->identity === null) {

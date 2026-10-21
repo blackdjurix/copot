@@ -89,6 +89,23 @@ final class CommittedSourceAuthorityExecutionAdmission
         return $reread;
     }
 
+    /** Revalidates the durable handoff for WU6, including cleanup retry. */
+    public function revalidateForWu6(
+        RecoveryLifecycleCoordinator $recoveryCoordinator,
+        LifecycleOperationStore $operations,
+        RecoveryArtifactStore $artifacts,
+        ApplicationWriteProtectionEvidence $application,
+        ScopedDatabaseConsistencyEvidence $database
+    ): LifecycleOperationRecord {
+        $current = $operations->read();
+        if (!$current instanceof LifecycleOperationRecord
+            || !in_array($current->phase(), [LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], true)) {
+            throw new \RuntimeException('Committed source-authority operation is not awaiting WU6.');
+        }
+        self::assertPrerequisites($this->plan, $this->binding, $recoveryCoordinator, $operations, $artifacts, $application, $database, [LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], false);
+        return $current;
+    }
+
     private static function assertPrerequisites(
         CommittedSourceAuthorityPlan $plan,
         CommittedSourceAuthorityRecoveryBinding $binding,
@@ -96,12 +113,14 @@ final class CommittedSourceAuthorityExecutionAdmission
         LifecycleOperationStore $operations,
         RecoveryArtifactStore $artifacts,
         ApplicationWriteProtectionEvidence $application,
-        ScopedDatabaseConsistencyEvidence $database
+        ScopedDatabaseConsistencyEvidence $database,
+        array $allowedPhases = [LifecycleOperationRecord::PREPARING],
+        bool $requirePlanPhase = true
     ): void {
         $operation = $plan->operation();
         if (!$plan->authorityOnly()
             || $operation->classification() !== 'COMMITTED_SOURCE_AUTHORITY_RECONCILIATION'
-            || $operation->phase() !== LifecycleOperationRecord::PREPARING
+            || ($requirePlanPhase && !in_array($operation->phase(), $allowedPhases, true))
             || $operation->fileCursor() !== 0
             || $operation->lastVerifiedPath() !== null
             || $operation->migrationOutcome() !== null
@@ -116,7 +135,7 @@ final class CommittedSourceAuthorityExecutionAdmission
         if (!$persisted instanceof LifecycleOperationRecord
             || $persisted->operationId() !== $operation->operationId()
             || $persisted->classification() !== $operation->classification()
-            || $persisted->phase() !== LifecycleOperationRecord::PREPARING
+            || !in_array($persisted->phase(), $allowedPhases, true)
             || $persisted->applyPlanIdentity() !== $plan->applyPlan()->identity()
             || $persisted->recoveryIdentity() !== $binding->crossReference()->recoveryIdentity()->value()
             || $persisted->recoveryManifestIdentity() !== $binding->manifest()->identity()

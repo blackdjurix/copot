@@ -112,6 +112,12 @@ final class RecoveryLifecycleCoordinator
     }
     public function mutex(): ?InstallationLock { return $this->mutex->acquire(); }
 
+    /** Returns the lock held by the recovery maintenance boundary, if any. */
+    public function activeLifecycleLock(): ?InstallationLock
+    {
+        return $this->maintenance instanceof InstallationRecoveryMaintenance ? $this->maintenance->activeLock() : null;
+    }
+
     private function assertScopedEvidence(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $application, ScopedDatabaseConsistencyEvidence $database): void
     {
         if (!$application->isValidAt()
