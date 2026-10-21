@@ -22,7 +22,8 @@ final class NormalWebcoreRecoveryCaptureRequest
         private ?DatabaseScope $databaseScope = null,
         private ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null,
         private ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null,
-        private ?V3SourceRelativePlan $orderedV3Plan = null
+        private ?V3SourceRelativePlan $orderedV3Plan = null,
+        private bool $metadataOnly = false
     ) {}
     public function operationId(): string { return $this->operationId; }
     public function installationIdentity(): string { return $this->installationIdentity; }
@@ -40,4 +41,5 @@ final class NormalWebcoreRecoveryCaptureRequest
     public function databaseConsistencyEvidence(): ?ScopedDatabaseConsistencyEvidence { return $this->databaseConsistencyEvidence; }
     public function applicationWriteProtectionEvidence(): ?ApplicationWriteProtectionEvidence { return $this->applicationWriteProtectionEvidence; }
     public function orderedV3Plan(): ?V3SourceRelativePlan { return $this->orderedV3Plan; }
+    public function metadataOnly(): bool { return $this->metadataOnly; }
 }

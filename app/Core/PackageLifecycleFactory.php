@@ -93,6 +93,17 @@ final class PackageLifecycleFactory
             new RuntimeHealthVerifier(),
             $registry
         );
+        $metadataReconciliation = new CommittedLifecycleMetadataReconciliationService(
+            $installationState,
+            $committedStore,
+            $operationStore,
+            $mutex,
+            $registry,
+            $ledger,
+            new DatabaseHealthVerifier($database->tables()),
+            new CoreMigrationHealthVerifier($ledger),
+            static fn (): PDO => $database->connection()
+        );
 
         $legacyBootstrap = new LegacyToV3BootstrapEntry(
             $basePath,
@@ -233,6 +244,7 @@ final class PackageLifecycleFactory
             $operationStore,
             $v3MigrationRunner,
             $legacyBootstrap,
+            $metadataReconciliation,
             new CommittedSourceAuthorityPlanner()
         );
     }

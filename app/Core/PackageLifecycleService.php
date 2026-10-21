@@ -59,6 +59,7 @@ final class PackageLifecycleService
         private ?LifecycleOperationStore $operationStore = null,
         private $v3MigrationRunner = null,
         private ?LegacyToV3BootstrapEntry $legacyBootstrap = null,
+        private ?CommittedLifecycleMetadataReconciliationService $metadataReconciliation = null,
         private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null
     ) {
         $this->evidence = $evidence;
@@ -102,6 +103,29 @@ final class PackageLifecycleService
         ScopedDatabaseConsistencyEvidence $database
     ): CommittedSourceAuthorityExecutionAdmission {
         return CommittedSourceAuthorityExecutionAdmission::issue($plan, $binding, $recoveryCoordinator, $operations, $artifacts, $application, $database);
+    }
+
+    /** Plans canonical metadata-only reconciliation without persisting an operation. */
+    public function planCommittedLifecycleMetadataReconciliation(
+        CommittedLifecycleMetadataReconciliationEvidence $evidence
+    ): CommittedLifecycleMetadataReconciliationPlan {
+        if (!$this->metadataReconciliation instanceof CommittedLifecycleMetadataReconciliationService) {
+            throw new \RuntimeException('Committed lifecycle metadata reconciliation is unavailable.');
+        }
+        return $this->metadataReconciliation->plan($evidence);
+    }
+
+    /** Executes only a previously evidenced metadata reconciliation plan. */
+    public function executeCommittedLifecycleMetadataReconciliation(
+        CommittedLifecycleMetadataReconciliationPlan $plan,
+        RecoveryLifecycleCoordinator $recovery,
+        \Copot\Core\BackupRecovery\RecoveryLifecycleStore $recoveryStore,
+        RecoveryArtifactStore $artifacts
+    ): LifecycleOperationRecord {
+        if (!$this->metadataReconciliation instanceof CommittedLifecycleMetadataReconciliationService) {
+            throw new \RuntimeException('Committed lifecycle metadata reconciliation is unavailable.');
+        }
+        return $this->metadataReconciliation->execute($plan, $recovery, $recoveryStore, $artifacts);
     }
 
     /** Preparation only: no package apply, migration, recovery, or committed-state mutation. */
