@@ -18,9 +18,10 @@ final class V3ExplicitApplyExecutor
         StagedPayload $payload,
         ?SourceInventoryArtifact $source,
         LifecycleOperationRecord $operation,
-        LiveTreePathGuard $guard
+        LiveTreePathGuard $guard,
+        ?string $expectedOperationIdentity = null
     ): void {
-        $this->verifyOperation($plan, $operation);
+        $this->verifyOperation($plan, $operation, null, $expectedOperationIdentity);
         $this->verifySourceState($plan, $source, $guard, true);
         $this->verifyTargetPreconditions($plan, $guard);
         $this->verifyPayload($plan, $this->deliveredPayload($plan, $payload));
@@ -44,11 +45,12 @@ final class V3ExplicitApplyExecutor
         ?callable $journal = null,
         ?callable $beforeActivation = null,
         ?LegacyBootstrapV3ExecutionContext $bootstrap = null,
+        ?string $expectedOperationIdentity = null,
         bool $requireTargetPreconditions = false
     ): WebcoreApplyResult {
         $mutationStarted = false;
         try {
-            $this->verifyOperation($plan, $operation, $bootstrap);
+            $this->verifyOperation($plan, $operation, $bootstrap, $expectedOperationIdentity);
             $this->verifySourceState($plan, $source, $guard, $requireTargetPreconditions);
             if ($requireTargetPreconditions) {
                 $this->verifyTargetPreconditions($plan, $guard);
@@ -114,7 +116,7 @@ final class V3ExplicitApplyExecutor
         }
     }
 
-    private function verifyOperation(V3SourceRelativePlan $plan, LifecycleOperationRecord $operation, ?LegacyBootstrapV3ExecutionContext $bootstrap = null): void
+    private function verifyOperation(V3SourceRelativePlan $plan, LifecycleOperationRecord $operation, ?LegacyBootstrapV3ExecutionContext $bootstrap = null, ?string $expectedOperationIdentity = null): void
     {
         if (!in_array($operation->phase(), [LifecycleOperationRecord::PREPARING, LifecycleOperationRecord::BLOCKED], true)
             || $operation->fileCursor() !== 0 || $operation->lastVerifiedPath() !== null) {
@@ -128,7 +130,7 @@ final class V3ExplicitApplyExecutor
             }
             return;
         }
-        if ($operation->operationId() !== $plan->operationIdentity()) {
+        if ($operation->operationId() !== ($expectedOperationIdentity ?? $plan->operationIdentity())) {
             throw new \RuntimeException('V3 operation identity does not match the prepared plan.');
         }
     }
@@ -151,7 +153,7 @@ final class V3ExplicitApplyExecutor
     private function deliveredPayload(V3SourceRelativePlan $plan, StagedPayload $payload): StagedPayload
     {
         $retained = array_map(
-            static fn (V3SourceRelativeAction $action): string => $this->relativePath($action->root(), $action->path()),
+            fn (V3SourceRelativeAction $action): string => $this->relativePath($action->root(), $action->path()),
             array_filter($plan->actions(), static fn (V3SourceRelativeAction $action): bool => $action->action() === V3SourceRelativeAction::RETAIN)
         );
         return $payload->withoutPaths($retained);
@@ -211,10 +213,21 @@ final class V3ExplicitApplyExecutor
 
     private function verifyTarget(V3SourceRelativePlan $plan, LiveTreePathGuard $guard): void
     {
+        $actions = [];
+        foreach ($plan->actions() as $action) {
+            $actions[$this->relativePath($action->root(), $action->path())] = $action;
+        }
         foreach ($plan->package()->targetInventory()->entries() as $entry) {
             $path = $this->relativePath($entry->root(), $entry->path());
             $destination = $guard->destination($path);
-            if (!is_file($destination) || is_link($destination) || @filesize($destination) !== $entry->byteSize() || @hash_file('sha256', $destination) !== $entry->sha256()) { throw new \RuntimeException('Target inventory verification failed after mutation.'); }
+            $action = $actions[$path] ?? null;
+            $expectedSize = $entry->byteSize();
+            $expectedHash = $entry->sha256();
+            if ($action instanceof V3SourceRelativeAction && $action->action() === V3SourceRelativeAction::RETAIN && $action->expectedTargetState() === 'PRESENT') {
+                $expectedSize = $action->expectedTargetByteSize();
+                $expectedHash = $action->expectedTargetSha256();
+            }
+            if (!is_file($destination) || is_link($destination) || @filesize($destination) !== $expectedSize || @hash_file('sha256', $destination) !== $expectedHash) { throw new \RuntimeException('Target inventory verification failed after mutation.'); }
         }
     }
 

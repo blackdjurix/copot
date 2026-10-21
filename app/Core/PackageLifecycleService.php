@@ -251,8 +251,12 @@ final class PackageLifecycleService
 
         $plan = $admission->plan();
         $binding = $admission->binding();
-        $plan->assertTargetFingerprint($actualTarget);
-        $this->v3Executor->assertMutationPreconditions($plan->sourcePlan(), $payload, $source, $plan->operation(), $this->liveGuard);
+        try {
+            $plan->assertTargetFingerprint($actualTarget);
+            $this->v3Executor->assertMutationPreconditions($plan->sourcePlan(), $payload, $source, $plan->operation(), $this->liveGuard, $plan->operation()->operationId());
+        } catch (\Throwable $exception) {
+            return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], $exception->getMessage(), $plan->operation()->operationId());
+        }
         $persisted = $operations->read();
         if (!$persisted instanceof LifecycleOperationRecord
             || $persisted->operationId() !== $plan->operation()->operationId()
@@ -288,6 +292,7 @@ final class PackageLifecycleService
                 $journal,
                 $beforeActivation,
                 null,
+                $plan->operation()->operationId(),
                 true
             );
             if ($result->status() !== WebcoreApplyResult::AWAITING_WU6) {
