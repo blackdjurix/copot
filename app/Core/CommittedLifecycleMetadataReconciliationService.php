@@ -20,7 +20,8 @@ final class CommittedLifecycleMetadataReconciliationService
         private CoreMigrationLedger $ledger,
         private DatabaseHealthVerifier $databaseHealth,
         private CoreMigrationHealthVerifier $migrationHealth,
-        private $connection
+        private $connection,
+        private $faultInjector = null
     ) {}
 
     public function plan(CommittedLifecycleMetadataReconciliationEvidence $evidence): CommittedLifecycleMetadataReconciliationPlan
@@ -94,15 +95,36 @@ final class CommittedLifecycleMetadataReconciliationService
         $artifacts->readManifest($evidence->recoveryIdentity());
         $lock = $this->mutex->acquire();
         if (!$lock instanceof InstallationLock) throw new \RuntimeException('Installation mutex is unavailable.');
+        $permit = null;
+        $journaled = false;
+        $metadataWriteAttempted = false;
+        $originalMarker = $this->installationState->readMarker();
         try {
             if ($this->operations->read() !== null) throw new \RuntimeException('A lifecycle operation is already active.');
             $current = $this->committedStore->read();
             if (!$current instanceof CommittedLifecycleState || !hash_equals(self::stateIdentity($current), self::stateIdentity($plan->before()))) throw new \RuntimeException('Committed lifecycle state changed after planning.');
             if (!hash_equals(self::stateIdentity($current), $evidence->committedStateIdentity())) throw new \RuntimeException('Committed lifecycle evidence no longer matches.');
-            $this->operations->create($plan->operation()->bindRecovery($evidence->recoveryIdentity()->value(), $evidence->recoveryManifestIdentity(), RecoveryLifecycleState::READY));
-            $awaiting = $plan->operation()->bindRecovery($evidence->recoveryIdentity()->value(), $evidence->recoveryManifestIdentity(), RecoveryLifecycleState::READY)->advance(LifecycleOperationRecord::AWAITING_WU6, 0, null, null, 'Metadata preconditions passed; guarded metadata write is authorized by canonical evidence.');
+            $bound = $plan->operation()->bindRecovery($evidence->recoveryIdentity()->value(), $evidence->recoveryManifestIdentity(), RecoveryLifecycleState::READY);
+            $this->operations->create($bound);
+            $awaiting = $bound->advance(LifecycleOperationRecord::AWAITING_WU6, 0, null, null, 'Metadata preconditions passed; guarded metadata write is authorized by canonical evidence.');
             $this->operations->save($awaiting);
-            $this->committedStore->write($plan->after());
+            $journaled = true;
+            $this->injectFault('after_journal_before_mutation');
+
+            $recovery->confirm($evidence->recoveryIdentity(), $evidence->recoveryManifestIdentity(), $evidence->recoveryManifestIdentity());
+            $permit = $recovery->authorizeMutation(
+                $evidence->recoveryIdentity(),
+                $evidence->recoveryManifestIdentity(),
+                $evidence->recoveryManifestIdentity(),
+                null,
+                $evidence->databaseEvidence()
+            );
+            if (!$permit->isValid()) throw new \RuntimeException('Metadata reconciliation recovery mutation permit is invalid.');
+
+            $this->injectFault('before_metadata_write');
+            $metadataWriteAttempted = true;
+            $this->committedStore->commit($this->installationState, $plan->after());
+            $this->injectFault('after_metadata_write');
             $written = $this->committedStore->read();
             if (!$written instanceof CommittedLifecycleState || self::stateIdentity($written) !== self::stateIdentity($plan->after())) throw new \RuntimeException('Committed lifecycle metadata reread failed.');
             $postDatabase = $this->databaseHealth->verify($this->connection());
@@ -113,13 +135,66 @@ final class CommittedLifecycleMetadataReconciliationService
             $this->operations->clear($completed);
             return $completed;
         } catch (\Throwable $exception) {
+            $rollbackSucceeded = !$metadataWriteAttempted;
+            $rollbackReason = '';
+            if ($metadataWriteAttempted) {
+                try {
+                    $this->injectFault('before_metadata_rollback');
+                    $this->committedStore->commit($this->installationState, $plan->before());
+                    if (!is_array($originalMarker)) {
+                        throw new \RuntimeException('Original installed marker evidence is unavailable for rollback.');
+                    }
+                    $this->installationState->replaceMarker($originalMarker['version'], $originalMarker['installed_at']);
+                    $restored = $this->committedStore->read();
+                    $restoredMarker = $this->installationState->readMarker();
+                    $markerMatches = is_array($originalMarker)
+                        ? is_array($restoredMarker) && self::markerIdentity($restoredMarker) === self::markerIdentity($originalMarker)
+                        : $restoredMarker === null;
+                    if (!$restored instanceof CommittedLifecycleState
+                        || self::stateIdentity($restored) !== self::stateIdentity($plan->before())
+                        || !$markerMatches) {
+                        throw new \RuntimeException('Committed lifecycle original state reread failed after rollback.');
+                    }
+                    $rollbackSucceeded = true;
+                } catch (\Throwable $rollbackException) {
+                    $rollbackReason = $rollbackException->getMessage();
+                    $rollbackSucceeded = false;
+                }
+            }
+
+            if ($journaled) {
+                try {
+                    $persisted = $this->operations->read();
+                    if ($persisted instanceof LifecycleOperationRecord
+                        && $persisted->operationId() === $plan->operation()->operationId()) {
+                        $phase = $rollbackSucceeded ? LifecycleOperationRecord::BLOCKED : LifecycleOperationRecord::INDETERMINATE;
+                        $reason = $rollbackSucceeded
+                            ? 'Metadata reconciliation failed; original committed state was restored and requires explicit reconciliation retry.'
+                            : 'Metadata reconciliation outcome is indeterminate; rollback failed and recovery evidence must be reconciled before retry.';
+                        if ($rollbackReason !== '') $reason .= ' Rollback: ' . $rollbackReason;
+                        $this->operations->save($persisted->advance($phase, $persisted->fileCursor(), $persisted->lastVerifiedPath(), null, $reason));
+                    }
+                } catch (\Throwable) {
+                    // Preserve the active operation and recovery evidence when
+                    // even disposition persistence is unavailable.
+                }
+            }
             throw $exception;
-        } finally { $lock->release(); }
+        } finally {
+            $permit?->release();
+            $lock->release();
+        }
     }
 
     public static function classify(): string { return 'COMMITTED_LIFECYCLE_METADATA_RECONCILIATION'; }
     public static function stateIdentity(CommittedLifecycleState $state): string { return hash('sha256', json_encode($state->toArray(), JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)); }
     public static function markerIdentity(array $marker): string { return hash('sha256', json_encode($marker, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)); }
+    private function injectFault(string $stage): void
+    {
+        if ($this->faultInjector !== null) {
+            ($this->faultInjector)($stage);
+        }
+    }
     private function connection(): PDO
     {
         $connection = ($this->connection)();
