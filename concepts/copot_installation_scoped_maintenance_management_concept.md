@@ -3,7 +3,7 @@ Date version: 2026-10-17 09:33:26 WIB
 Status: RECONCILED PLANNING CONCEPT / NOT CONTRACT / NOT IMPLEMENTATION AUTHORITY
 
 ## Scope and intent
-One installation-owned maintenance authority supports protected Package Lifecycle operations now, while a dedicated future Maintenance Management workstream owns the complete operator surface, installation backup/portability, and scheduling. This Concept does not supersede existing Package Lifecycle, InstallationMutex, recovery, restore, quiescence, or System Health authorities.
+A reusable, Webcore-owned installation-scoped Maintenance Guard foundation protects authorized operations across COPOT capabilities, including Package Lifecycle, while a dedicated future Maintenance Management workstream owns the complete operator surface, installation backup/portability, and scheduling. This Concept does not supersede existing Package Lifecycle, InstallationMutex, recovery, restore, quiescence, or System Health authorities.
 
 ## A. Bounded WU6 supporting foundation
 - Active continuity: Seven-Tab Site Settings WU6 / Contract-v3 bootstrap stabilization. Adding bounded maintenance work does not create another WU, NRP, or a release/deployment grant.
@@ -25,6 +25,20 @@ One installation-owned maintenance authority supports protected Package Lifecycl
 - Scheduled backup is FUTURE: retention, encryption/access control, incremental strategy if adopted, pruning, integrity verification, and job failure/status reporting. No capability is assumed delivered.
 - External database writes need separate isolation/quiescence design; native table locks, database privilege isolation, or dedicated MariaDB instance remain future candidates, not replacements already selected.
 - Complete future feature is NOT HARD dependency for bounded WU6 and does not auto-open new WU implementation.
+
+## C. Webcore-owned reusable Maintenance Guard foundation — accepted direction
+
+Status: USER DECISION MATERIALIZED AS CONCEPT / STANDALONE CONTRACT PENDING / NO IMPLEMENTATION AUTHORITY
+
+- **Ownership:** Maintenance Guard Foundation belongs to Webcore at installation scope. Package Lifecycle is a consumer, not its owner. Implementing the initial bounded guard during lifecycle work does not confer exclusive ownership on Package Lifecycle.
+- **Reusable authority:** Package Lifecycle V3, Backup & Recovery, Legacy-to-V3 bootstrap, and future authorized capabilities may use the common Guard through explicitly scoped operation identity, admission, and protection requirements. Guard availability does not itself grant mutation, recovery, release, or execution authority.
+- **Single installation authority:** Shared consumers must reuse the same installation-owned protection boundary, without duplicate guards, competing operation owners, or parallel recovery coordinators.
+- **Standalone contract requirement:** Establish a dedicated Webcore Installation-Scoped Maintenance Guard Foundation Contract as the normative authority for installation/operation identity, writer registration, admission, drain, exclusion, executor exceptions, durable state, interruption, retry, safe release, isolation, status observation, and verification. This concept does not claim that contract is already published.
+- **Consumer contracts:** Package Lifecycle (docs/28), Backup & Recovery (docs/31), existing-runtime adoption (docs/30), and Legacy-to-V3 bootstrap retain their specific authorizations, recovery, database-consistency and finalization invariants. Reconcile references once the standalone contract is accepted.
+- **Database boundary:** Guard excludes COPOT-controlled writers only, not direct external or privileged MariaDB writers. It is not server-wide locking or independent proof of a consistent database snapshot. Keep existing quiescence and independently verified scoped database consistency.
+- **Foundation versus Management:** The Webcore technical foundation functions independently of a management UI. Future Maintenance Management remains a separate deferred workstream that consumes/extends it for operator controls, delegated permissions, scheduling and installation backup/portability.
+- **Compatibility and governance:** Audit existing code ownership and consumer coupling before any refactor. Do not reopen accepted tests by assumption, alter accepted Work Unit topology, or authorize operational target mutation. Reconcile historical Workplan implementation-status labels separately against verified evidence.
+- **Promotion sequence:** Audit existing normative sources and implementation evidence; publish standalone foundation contract; reconcile consumer contract references and Workplan; validate compatibility; continue V3 operational closure through its own approval gates.
 
 ## Boundaries, dependencies, authority
 Related existing authority: docs/28_package_lifecycle_migration_foundation_contract.md; docs/31_backup_recovery_foundation_contract.md; docs/30_existing_runtime_webcore_lifecycle_adoption_contract.md; docs/58_seven_tab_site_settings_completion_hardening_contract.md. Workplan controls sequencing. This Concept is not a contract, schema migration, release, operational lock activation, or authorization to edit installed runtimes.
