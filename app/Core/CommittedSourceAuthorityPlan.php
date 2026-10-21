@@ -13,12 +13,17 @@ final class CommittedSourceAuthorityPlan
         private V3SourceRelativePlan $sourcePlan,
         private WebcoreApplyPlan $applyPlan,
         private DatabaseScope $databaseScope,
-        private bool $authorityOnly
+        private bool $authorityOnly,
+        private string $committedLifecycleIdentity,
+        private string $migrationStateIdentity
     ) {
         if (preg_match('/^[a-f0-9]{64}$/D', $identity) !== 1
             || $operation->classification() !== 'COMMITTED_SOURCE_AUTHORITY_RECONCILIATION'
             || $operation->phase() !== LifecycleOperationRecord::PREPARING
-            || $operation->applyPlanIdentity() !== $applyPlan->identity()) {
+            || $operation->applyPlanIdentity() !== $applyPlan->identity()
+            || preg_match('/^[a-f0-9]{64}$/D', $committedLifecycleIdentity) !== 1
+            || preg_match('/^[a-f0-9]{64}$/D', $migrationStateIdentity) !== 1
+            || ($authorityOnly && array_filter($sourcePlan->actions(), static fn (V3SourceRelativeAction $action): bool => in_array($action->action(), [V3SourceRelativeAction::REPLACE, V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true)) !== [])) {
             throw new \InvalidArgumentException('Committed source-authority plan identity is invalid.');
         }
     }
@@ -29,6 +34,8 @@ final class CommittedSourceAuthorityPlan
     public function applyPlan(): WebcoreApplyPlan { return $this->applyPlan; }
     public function databaseScope(): DatabaseScope { return $this->databaseScope; }
     public function authorityOnly(): bool { return $this->authorityOnly; }
+    public function committedLifecycleIdentity(): string { return $this->committedLifecycleIdentity; }
+    public function migrationStateIdentity(): string { return $this->migrationStateIdentity; }
     public function toArray(): array
     {
         return [
@@ -39,6 +46,8 @@ final class CommittedSourceAuthorityPlan
             'installation_identity' => $this->databaseScope->installationIdentity(),
             'database_scope_identity' => $this->databaseScope->identity(),
             'target_inventory_fingerprint' => $this->sourcePlan->targetFingerprint(),
+            'committed_lifecycle_identity' => $this->committedLifecycleIdentity,
+            'migration_state_identity' => $this->migrationStateIdentity,
             'authority_only' => $this->authorityOnly,
             'mutation_executed' => false,
             'recovery_required' => true,

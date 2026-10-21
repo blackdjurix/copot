@@ -48,6 +48,7 @@ final class CommittedSourceAuthorityPlanner
             $now,
             'Authority-only source inventory reconciliation is planned; execution and WU6 are pending.'
         );
+        $committedLifecycleIdentity = hash('sha256', json_encode($committed->toArray(), JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
         $identity = hash('sha256', json_encode([
             'plan_scheme' => 'committed-source-authority-reconciliation-v1',
             'operation_identity' => $operationId,
@@ -57,6 +58,6 @@ final class CommittedSourceAuthorityPlanner
             'target_inventory_fingerprint' => $actualTarget->fingerprint(),
             'authority_only' => true,
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
-        return new CommittedSourceAuthorityPlan($identity, $operation, $sourcePlan, $applyPlan, $databaseScope, true);
+        return new CommittedSourceAuthorityPlan($identity, $operation, $sourcePlan, $applyPlan, $databaseScope, true, $committedLifecycleIdentity, $committed->migrationStateIdentity());
     }
 }
