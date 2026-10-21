@@ -27,5 +27,6 @@ final class InstallerOwnershipProof
 
     public function namespace(): string { return $this->namespace; }
     public function installationId(): string { return $this->installation->value(); }
+    public function migrationIdentity(): string { return $this->migrationIdentity; }
     public function isVerified(): bool { return $this->schemaHealthy && $this->migrationLedgerHealthy; }
 }
