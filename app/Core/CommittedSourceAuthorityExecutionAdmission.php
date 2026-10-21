@@ -29,8 +29,10 @@ final class CommittedSourceAuthorityExecutionAdmission
         LifecycleOperationStore $operations,
         RecoveryArtifactStore $artifacts,
         ApplicationWriteProtectionEvidence $application,
-        ScopedDatabaseConsistencyEvidence $database
+        ScopedDatabaseConsistencyEvidence $database,
+        CommittedSourceAuthorityMetadataGate $metadataGate
     ): self {
+        $metadataGate->assert(null, $plan);
         self::assertPrerequisites($plan, $binding, $recoveryCoordinator, $operations, $artifacts, $application, $database);
         $identity = hash('sha256', json_encode([
             'admission_scheme' => 'committed-source-authority-admission-v1',

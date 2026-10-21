@@ -20,6 +20,7 @@ use Copot\Core\CanonicalTargetInventory;
 use Copot\Core\CanonicalTargetInventoryEntry;
 use Copot\Core\CommittedLifecycleState;
 use Copot\Core\CommittedSourceAuthorityExecutionAdmission;
+use Copot\Core\CommittedSourceAuthorityMetadataGate;
 use Copot\Core\CommittedSourceAuthorityPlanner;
 use Copot\Core\DatabaseTableOwnershipCatalog;
 use Copot\Core\InstallationIdentity;
@@ -46,13 +47,14 @@ final class AuthorityFinalizationStatement
 
 final class AuthorityFinalizationPdo extends PDO
 {
+    public static array $migrationRows = [];
     public function __construct() {}
     public function query($query, ...$arguments)
     {
         if (str_contains($query, 'SELECT 1')) return new AuthorityFinalizationStatement([], 1);
         if (str_contains($query, 'information_schema.tables')) return new AuthorityFinalizationStatement(['users', 'roles', 'permissions', 'user_roles', 'role_permissions', 'settings', 'modules', 'module_permissions', 'themes', 'content', 'media', 'media_usages', 'navigation_menus', 'navigation_items', 'redirects', 'security_login_attempts', 'security_sessions', 'security_events', 'core_migration_history']);
         if (str_contains($query, 'DESCRIBE core_migration_history')) return new AuthorityFinalizationStatement(['migration_id', 'sequence_number', 'target_webcore_version', 'target_schema_identity', 'migration_checksum', 'applied_at']);
-        if (str_contains($query, 'FROM core_migration_history')) return new AuthorityFinalizationStatement([]);
+        if (str_contains($query, 'FROM core_migration_history')) return new AuthorityFinalizationStatement(self::$migrationRows);
         throw new RuntimeException('Unexpected authority finalization query: ' . $query);
     }
 }
@@ -84,8 +86,28 @@ try {
     $package = new PackageContract(PackageContract::WEBCORE_PACKAGE_TYPE, 3, '0.13.0', 'release-test', 'tree-test', new PackageCompatibility('0.13.0'), new PackageRuntimeCompatibility('8.0', ['sqlite' => '3.0'], ['json']), [new PackageInventoryEntry('app/target.txt', strlen($content), $sha, \Copot\Core\PackageOwnership::PACKAGE_OWNED)], new PackageMigrationDeclaration(false), null, $inventory, 'full');
     $raw = str_repeat('a', 64); $evidence = \Copot\Core\PackageV3Identity::identity($raw, $package->integrityIdentity());
     $manifest = new PackageManifest($package, '.copot/package.json', $payload, $raw, $evidence);
-    $installation = new InstallationIdentity('inst_' . str_repeat('1', 32)); $migration = CoreMigrationStateIdentity::fromRecords([]);
-    $committed = new CommittedLifecycleState('0.13.0', 'release-test', null, 3, 'schema-test', $migration, new DateTimeImmutable('2026-10-21T00:00:00+00:00'));
+    $installation = new InstallationIdentity('inst_' . str_repeat('1', 32));
+    $operationRoot = $root . '/storage'; mkdir($operationRoot, 0700, true);
+    $installationState = new \Copot\Core\InstallationState($operationRoot);
+    $installationState->createMarker('0.13.0');
+    $pdo = new PDO('sqlite:' . $root . '/authority.sqlite', null, null, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+    $pdo->exec('CREATE TABLE core_migration_history (migration_id TEXT, sequence_number INTEGER, target_webcore_version TEXT, target_schema_identity TEXT, migration_checksum TEXT, applied_at TEXT)');
+    $registry = CoreMigrationRegistry::forProject($base);
+    $descriptor = $registry->migrations()[0];
+    $applied = new \Copot\Core\AppliedMigrationRecord($descriptor->id(), $descriptor->sequence(), $descriptor->targetWebcoreVersion(), $descriptor->targetSchemaIdentity(), $descriptor->checksum(), new DateTimeImmutable());
+    $pdo->exec('INSERT INTO core_migration_history VALUES (' . implode(',', array_map(static fn (string $value): string => $pdo->quote($value), [$applied->migrationId(), (string) $applied->sequence(), $applied->targetWebcoreVersion(), $applied->targetSchemaIdentity(), $applied->checksum(), $applied->appliedAt()->format('Y-m-d H:i:s')])) . ')');
+    AuthorityFinalizationPdo::$migrationRows = [[
+        'migration_id' => $applied->migrationId(),
+        'sequence_number' => $applied->sequence(),
+        'target_webcore_version' => $applied->targetWebcoreVersion(),
+        'target_schema_identity' => $applied->targetSchemaIdentity(),
+        'migration_checksum' => $applied->checksum(),
+        'applied_at' => $applied->appliedAt()->format('Y-m-d H:i:s'),
+    ]];
+    $migration = CoreMigrationStateIdentity::fromRecords([$applied]);
+    $committed = new CommittedLifecycleState('0.13.0', 'release-test', null, 3, $descriptor->targetSchemaIdentity(), $migration, new DateTimeImmutable($installationState->readMarker()['installed_at']));
+    $committedStore = new \Copot\Core\CommittedLifecycleStateStore($operationRoot);
+    $committedStore->write($committed);
     $scope = DatabaseScope::fromOwnershipCatalog($installation->value(), 'copot_test', '', DatabaseTableOwnershipCatalog::current());
     $proof = new InstallerOwnershipProof($installation, '', 'core-schema-generation:test', $migration);
     $plan = (new CommittedSourceAuthorityPlanner())->plan($committed, $installation, $manifest, $inventory, $scope, $proof);
@@ -113,7 +135,6 @@ try {
     CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $request);
     $assert(true, 'Canonical capture request binding passed.');
 
-    $operationRoot = $root . '/storage'; mkdir($operationRoot, 0700, true);
     $operations = new LifecycleOperationStore($operationRoot); $operations->create($plan->operation());
     $bound = $plan->operation()->bindRecovery($recovery->value(), $recoveryManifest->identity(), RecoveryLifecycleState::READY); $operations->save($bound);
     $assert($operations->read()?->recoveryManifestIdentity() === $recoveryManifest->identity(), 'Persisted operation recovery binding did not reread exactly.');
@@ -132,17 +153,17 @@ try {
     $guard = new InstallationScopedMaintenanceGuard(new InstallationMutex($operationRoot), $operationRoot);
     $coordinator = new RecoveryLifecycleCoordinator(new Copot\Core\BackupRecovery\RecoveryLifecycleStore($recoveryStorage), new InstallationMutex($operationRoot), new UnavailableDatabaseQuiescence(), $guard);
     $coordinator->enterScopedMaintenance($recovery, $application, $database);
-    $admission = CommittedSourceAuthorityExecutionAdmission::issue($plan, $binding, $coordinator, $operations, $artifactStore, $application, $database);
+    $metadataGate = new CommittedSourceAuthorityMetadataGate($committedStore, $installationState, new \Copot\Core\CoreMigrationLedger(), static fn (): PDO => $pdo, new \Copot\Core\CanonicalSchemaBaselineVerifier(), $base . '/database/schema.sql', $operations);
+    $admission = CommittedSourceAuthorityExecutionAdmission::issue($plan, $binding, $coordinator, $operations, $artifactStore, $application, $database, $metadataGate);
     $assert($admission->mutationAuthorized() === false && $admission->wu6Required(), 'Authority admission granted mutation or lost WU6 requirement.');
+    $committedStore->write(new CommittedLifecycleState('0.13.0', 'release-test', null, 3, 'stale-schema', $migration, $committed->committedAt()));
+    $throws(static fn () => CommittedSourceAuthorityExecutionAdmission::issue($plan, $binding, $coordinator, $operations, $artifactStore, $application, $database, $metadataGate));
+    $committedStore->write($committed);
     $awaiting = $admission->advanceToAwaitingWu6($coordinator, $operations, $artifactStore, $application, $database);
     $assert($awaiting->phase() === \Copot\Core\LifecycleOperationRecord::AWAITING_WU6 && $awaiting->fileCursor() === 0 && $awaiting->migrationOutcome() === null, 'Authority-only handoff created mutation or migration evidence.');
 
     mkdir($root . '/live/app', 0700, true);
     file_put_contents($root . '/live/app/target.txt', $content);
-    $installationState = new \Copot\Core\InstallationState($operationRoot);
-    $installationState->createMarker('0.13.0');
-    $committedStore = new \Copot\Core\CommittedLifecycleStateStore($operationRoot);
-    $committedStore->write($committed);
     $healthCoordinator = new HealthIntegrityCommitCoordinator(
         new InstallationMutex($operationRoot),
         new MaintenanceCoordinator($operations),
@@ -152,7 +173,7 @@ try {
         new DatabaseHealthVerifier(),
         new CoreMigrationHealthVerifier(),
         new RuntimeHealthVerifier(),
-        new CoreMigrationRegistry('authority-finalization-test', [])
+        $registry
     );
     $sourceArtifacts = new \Copot\Core\SourceInventoryArtifactStore($operationRoot, static fn ($resource): bool => true);
     $final = $healthCoordinator->finalizeCommittedSourceAuthority(

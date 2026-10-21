@@ -89,7 +89,8 @@ final class PackageLifecycleService
         if (!$this->sourceAuthorityPlanner instanceof CommittedSourceAuthorityPlanner) {
             throw new \RuntimeException('Committed source-authority planning is unavailable.');
         }
-        return $this->sourceAuthorityPlanner->plan($committed, $installation, $manifest, $actualTarget, $databaseScope, $ownershipProof, $migrationPlan, $preservationPolicy);
+        $current = $this->sourceAuthorityMetadataGate()->assert($committed);
+        return $this->sourceAuthorityPlanner->plan($current, $installation, $manifest, $actualTarget, $databaseScope, $ownershipProof, $migrationPlan, $preservationPolicy);
     }
 
     /** Routes a prepared plan through canonical, non-authorizing admission. */
@@ -102,7 +103,7 @@ final class PackageLifecycleService
         ApplicationWriteProtectionEvidence $application,
         ScopedDatabaseConsistencyEvidence $database
     ): CommittedSourceAuthorityExecutionAdmission {
-        return CommittedSourceAuthorityExecutionAdmission::issue($plan, $binding, $recoveryCoordinator, $operations, $artifacts, $application, $database);
+        return CommittedSourceAuthorityExecutionAdmission::issue($plan, $binding, $recoveryCoordinator, $operations, $artifacts, $application, $database, $this->sourceAuthorityMetadataGate());
     }
 
     /** Plans canonical metadata-only reconciliation without persisting an operation. */
@@ -264,6 +265,11 @@ final class PackageLifecycleService
         ?callable $journal = null,
         ?callable $beforeActivation = null
     ): WebcoreApplyResult {
+        try {
+            $this->sourceAuthorityMetadataGate()->assert(null, $admission->plan());
+        } catch (\Throwable $exception) {
+            return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], $exception->getMessage(), $admission->plan()->operation()->operationId());
+        }
         if (!$admission->mutationRequired() || $admission->mutationAuthorized()) {
             return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Only an admitted mutation-required plan may enter canonical mutation execution.');
         }
@@ -329,6 +335,19 @@ final class PackageLifecycleService
         } finally {
             $permit?->release();
         }
+    }
+
+    private function sourceAuthorityMetadataGate(): CommittedSourceAuthorityMetadataGate
+    {
+        return new CommittedSourceAuthorityMetadataGate(
+            $this->committedStore,
+            $this->installationState,
+            $this->ledger,
+            $this->connection,
+            $this->canonicalSchema,
+            $this->canonicalSchemaPath,
+            $this->operationStore
+        );
     }
 
     private function bootstrapMigrationPlanIdentity(CoreMigrationPlan $migration): string

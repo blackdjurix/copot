@@ -19,8 +19,9 @@ use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
 use Copot\Core\BackupRecovery\UnavailableDatabaseQuiescence;
 use Copot\Core\CanonicalTargetInventory;
 use Copot\Core\CanonicalTargetInventoryEntry;
+use Copot\Core\AppliedMigrationRecord;
 use Copot\Core\CommittedLifecycleState;
-use Copot\Core\CommittedSourceAuthorityExecutionAdmission;
+use Copot\Core\CommittedLifecycleStateStore;
 use Copot\Core\CommittedSourceAuthorityPlanner;
 use Copot\Core\CommittedSourceAuthorityPreservationPolicy;
 use Copot\Core\CoreMigrationPlan;
@@ -28,6 +29,7 @@ use Copot\Core\CoreMigrationStateIdentity;
 use Copot\Core\DatabaseTableOwnershipCatalog;
 use Copot\Core\InstallationIdentity;
 use Copot\Core\InstallationMutex;
+use Copot\Core\InstallationState;
 use Copot\Core\InstallerOwnershipProof;
 use Copot\Core\LifecycleOperationStore;
 use Copot\Core\LiveFileActivationCapability;
@@ -71,6 +73,7 @@ $applyRoot = $root . DIRECTORY_SEPARATOR . 'apply';
 $stagingRoot = $root . DIRECTORY_SEPARATOR . 'staging';
 mkdir($live . DIRECTORY_SEPARATOR . 'app', 0700, true);
 mkdir($live . DIRECTORY_SEPARATOR . 'public', 0700, true);
+mkdir($storage, 0700, true);
 
 try {
     $oldTarget = 'old-target';
@@ -123,11 +126,21 @@ try {
     $rawManifest = str_repeat('b', 64);
     $manifest = new PackageManifest($package, '.copot/package.json', $payload, $rawManifest, \Copot\Core\PackageV3Identity::identity($rawManifest, $package->integrityIdentity()));
     $installation = new InstallationIdentity('inst_' . str_repeat('2', 32));
-    $migrationState = CoreMigrationStateIdentity::fromRecords([]);
-    $committed = new CommittedLifecycleState('0.13.0', 'release-test', null, 3, 'schema-test', $migrationState, new DateTimeImmutable('2026-10-21T00:00:00+00:00'));
+    $pdo = new \PDO('sqlite:' . $root . DIRECTORY_SEPARATOR . 'authority.sqlite', null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+    $pdo->exec('CREATE TABLE core_migration_history (migration_id TEXT, sequence_number INTEGER, target_webcore_version TEXT, target_schema_identity TEXT, migration_checksum TEXT, applied_at TEXT)');
+    $registry = \Copot\Core\CoreMigrationRegistry::forProject(dirname(__DIR__));
+    $descriptor = $registry->migrations()[0];
+    $record = new AppliedMigrationRecord($descriptor->id(), $descriptor->sequence(), $descriptor->targetWebcoreVersion(), $descriptor->targetSchemaIdentity(), $descriptor->checksum(), new DateTimeImmutable());
+    $pdo->exec('INSERT INTO core_migration_history VALUES (' . implode(',', array_map(static fn (string $value): string => $pdo->quote($value), [$record->migrationId(), (string) $record->sequence(), $record->targetWebcoreVersion(), $record->targetSchemaIdentity(), $record->checksum(), $record->appliedAt()->format('Y-m-d H:i:s')])) . ')');
+    $migrationState = CoreMigrationStateIdentity::fromRecords([$record]);
+    $installationState = new InstallationState($storage);
+    $installationState->createMarker('0.13.0');
+    $committed = new CommittedLifecycleState('0.13.0', 'release-test', null, 3, $descriptor->targetSchemaIdentity(), $migrationState, new DateTimeImmutable($installationState->readMarker()['installed_at']));
+    $committedStore = new CommittedLifecycleStateStore($storage);
+    $committedStore->write($committed);
     $scope = new DatabaseScope($installation->value(), 'copot_rehearsal', '', ['users']);
     $proof = new InstallerOwnershipProof($installation, '', 'core-schema-generation:test', $migrationState);
-    $migration = CoreMigrationPlan::allow('0.13.0', '0.13.0', 'schema-test', 'schema-test', []);
+    $migration = CoreMigrationPlan::allow('0.13.0', '0.13.0', $descriptor->targetSchemaIdentity(), $descriptor->targetSchemaIdentity(), []);
     $policy = new CommittedSourceAuthorityPreservationPolicy('PUBLIC_ROOT', '.htaccess', CanonicalTargetInventoryEntry::PACKAGE_OWNED, CommittedSourceAuthorityPreservationPolicy::PRESERVE_EXCEPTION, 'runtime-owned', strlen($routing), $hash($routing), $actual->fingerprint());
     $plan = (new CommittedSourceAuthorityPlanner())->plan($committed, $installation, $manifest, $actual, $scope, $proof, $migration, $policy);
     $assert($plan->mutationRequired(), 'Rehearsal did not produce MUTATION_REQUIRED.');
@@ -165,14 +178,33 @@ try {
     $coordinator = new RecoveryLifecycleCoordinator($recoveryStore, new InstallationMutex($operationRoot), new UnavailableDatabaseQuiescence(), $guard);
     $coordinator->enterScopedMaintenance($recovery, $application, $database);
     $operations->save($plan->operation()->bindRecovery($recovery->value(), $recoveryManifest->identity(), RecoveryLifecycleState::READY));
-    $admission = CommittedSourceAuthorityExecutionAdmission::issue($plan, $binding, $coordinator, $operations, $artifacts, $application, $database);
-
     $service = (new ReflectionClass(PackageLifecycleService::class))->newInstanceWithoutConstructor();
     $set = static function (string $property, mixed $value) use ($service): void { $reflection = new ReflectionProperty($service, $property); $reflection->setAccessible(true); $reflection->setValue($service, $value); };
     $set('v3Executor', new \Copot\Core\V3ExplicitApplyExecutor());
     $set('v3Applier', new PackageOwnedFileApplier(new LiveTreePathGuard($live), LiveFileActivationCapability::current(), $applyRoot));
     $set('liveGuard', new LiveTreePathGuard($live));
     $set('operationStore', $operations);
+    $set('committedStore', $committedStore);
+    $set('installationState', $installationState);
+    $set('ledger', new \Copot\Core\CoreMigrationLedger());
+    $set('connection', static fn (): \PDO => $pdo);
+    $set('canonicalSchema', new \Copot\Core\CanonicalSchemaBaselineVerifier());
+    $set('canonicalSchemaPath', dirname(__DIR__) . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql');
+    $serviceAdmission = $service->admitCommittedSourceAuthority($plan, $binding, $coordinator, $operations, $artifacts, $application, $database);
+    $admission = $serviceAdmission;
+    $stale = new CommittedLifecycleState('0.13.0', 'release-test', null, 3, 'stale-schema', $migrationState, new DateTimeImmutable($installationState->readMarker()['installed_at']));
+    $committedStore->write($stale);
+    try {
+        $service->admitCommittedSourceAuthority($plan, $binding, $coordinator, $operations, $artifacts, $application, $database);
+        $assert(false, 'Stale committed metadata bypassed service admission.');
+    } catch (Throwable) {
+        $assert(true, 'Stale committed metadata was rejected before admission.');
+    }
+    $staleExecution = $service->executeCommittedSourceAuthorityMutation($serviceAdmission, $payload, null, $actual, $coordinator, $operations);
+    $assert($staleExecution->status() === WebcoreApplyResult::BLOCKED, 'Stale pre-mutation plan did not fail closed.');
+    $assert(file_get_contents($live . '/app/target.txt') === $oldTarget, 'Stale pre-mutation plan changed live bytes.');
+    $assert(!$recoveryStore->read($recovery)->mutationStarted(), 'Stale pre-mutation plan crossed recovery mutation boundary.');
+    $committedStore->write($committed);
     $residue = $live . '/app/DatabaseScope.php.dbscope-correction-rehearsal.tmp';
     file_put_contents($residue, 'operation residue');
     file_put_contents($live . '/app/new.txt', 'foreign collision');
