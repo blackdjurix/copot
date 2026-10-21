@@ -34,4 +34,12 @@ final class CoreMigrationPlan
     public function virtualFinalSchemaIdentity(): ?string { return $this->virtualFinalSchemaIdentity; }
     public function migrations(): array { return $this->migrations; }
     public function isFreshBaseline(): bool { return $this->freshBaseline; }
+
+    public function identity(): string
+    {
+        return hash('sha256', implode("\n", array_map(
+            static fn (CoreMigrationDescriptor $migration): string => $migration->id() . ':' . $migration->checksum(),
+            array_filter($this->migrations, static fn ($migration): bool => $migration instanceof CoreMigrationDescriptor)
+        )));
+    }
 }

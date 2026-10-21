@@ -18,7 +18,10 @@ final class V3SourceRelativeAction
         private string $sha256,
         private ?string $sourceRoot = null,
         private ?string $sourcePath = null,
-        private ?string $reason = null
+        private ?string $reason = null,
+        private ?string $expectedTargetState = null,
+        private ?int $expectedTargetByteSize = null,
+        private ?string $expectedTargetSha256 = null
     ) {
         if (!in_array($action, [self::DELIVER, self::RETAIN, self::REPLACE, self::REMOVE, self::RENAME], true)
             || !in_array($root, [CanonicalTargetInventoryEntry::APP_ROOT, CanonicalTargetInventoryEntry::PUBLIC_ROOT], true)
@@ -31,6 +34,9 @@ final class V3SourceRelativeAction
             CanonicalTargetInventoryEntry::assertPath($sourcePath);
         }
         if ($reason !== null && !in_array($reason, ['obsolete', 'replaced', 'renamed'], true)) { throw new \InvalidArgumentException('V3 source-relative reason is invalid.'); }
+        if ($expectedTargetState !== null && !in_array($expectedTargetState, ['ABSENT', 'PRESENT'], true)) { throw new \InvalidArgumentException('Expected target state is invalid.'); }
+        if ($expectedTargetState === 'ABSENT' && ($expectedTargetByteSize !== null || $expectedTargetSha256 !== null)) { throw new \InvalidArgumentException('Absent target state cannot carry an existing target hash.'); }
+        if ($expectedTargetState === 'PRESENT' && ($expectedTargetByteSize === null || $expectedTargetByteSize < 0 || !is_string($expectedTargetSha256) || preg_match('/^[a-f0-9]{64}$/D', $expectedTargetSha256) !== 1)) { throw new \InvalidArgumentException('Present target state requires an original byte identity.'); }
     }
 
     public function action(): string { return $this->action; }
@@ -41,10 +47,13 @@ final class V3SourceRelativeAction
     public function sourceRoot(): ?string { return $this->sourceRoot; }
     public function sourcePath(): ?string { return $this->sourcePath; }
     public function reason(): ?string { return $this->reason; }
+    public function expectedTargetState(): ?string { return $this->expectedTargetState; }
+    public function expectedTargetByteSize(): ?int { return $this->expectedTargetByteSize; }
+    public function expectedTargetSha256(): ?string { return $this->expectedTargetSha256; }
 
     public function toArray(): array
     {
-        return [
+        $result = [
             'action' => $this->action,
             'root' => $this->root,
             'path' => $this->path,
@@ -54,5 +63,11 @@ final class V3SourceRelativeAction
             'source_path' => $this->sourcePath,
             'reason' => $this->reason,
         ];
+        if ($this->expectedTargetState !== null) {
+            $result['expected_target_state'] = $this->expectedTargetState;
+            $result['expected_target_byte_size'] = $this->expectedTargetByteSize;
+            $result['expected_target_sha256'] = $this->expectedTargetSha256;
+        }
+        return $result;
     }
 }

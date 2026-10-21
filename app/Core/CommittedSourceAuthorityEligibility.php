@@ -13,7 +13,8 @@ final class CommittedSourceAuthorityEligibility
         PackageManifest $manifest,
         CanonicalTargetInventory $actualTarget,
         DatabaseScope $databaseScope,
-        InstallerOwnershipProof $ownershipProof
+        InstallerOwnershipProof $ownershipProof,
+        bool $allowTargetDrift = false
     ): CommittedSourceAuthorityEligibilityResult {
         if ($committed->sourceInventoryReference() !== null) {
             return $this->blocked('Committed source authority already exists.');
@@ -43,7 +44,7 @@ final class CommittedSourceAuthorityEligibility
         } catch (\Throwable $exception) {
             return $this->blocked($exception->getMessage());
         }
-        if ($package->targetInventory()->fingerprint() !== $actualTarget->fingerprint()) {
+        if (!$allowTargetDrift && $package->targetInventory()->fingerprint() !== $actualTarget->fingerprint()) {
             return $this->blocked('Target inventory fingerprint does not match the trusted manifest.');
         }
         if ($package->targetWebcoreVersion() !== $committed->webcoreVersion()
