@@ -43,10 +43,18 @@ final class CoreSchemaGenerationStore
 
     public function read(PDO $connection, ?string $namespace = null): ?array
     {
-        $this->ensure($connection);
+        return $this->readIfPresent($connection, $namespace);
+    }
+
+    public function readIfPresent(PDO $connection, ?string $namespace = null): ?array
+    {
         $statement = $connection->prepare('SELECT namespace, schema_generation, compatibility_state, updated_at FROM ' . $this->tables->table('core_schema_generation') . ' WHERE namespace = :namespace LIMIT 1');
-        $statement->execute(['namespace' => $namespace ?? $this->tables->namespace()]);
-        $row = $statement->fetch(PDO::FETCH_ASSOC);
+        try {
+            $statement->execute(['namespace' => $namespace ?? $this->tables->namespace()]);
+            $row = $statement->fetch(PDO::FETCH_ASSOC);
+        } catch (\Throwable) {
+            return null;
+        }
 
         return is_array($row) ? $row : null;
     }

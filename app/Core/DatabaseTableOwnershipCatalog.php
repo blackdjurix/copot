@@ -68,6 +68,21 @@ final class DatabaseTableOwnershipCatalog
     public function physicalName(string $logicalName, DatabaseTableNames $tables): string { return $this->ownership($logicalName)->physicalName($tables); }
     /** @return list<DatabaseTableOwnership> */
     public function all(): array { return array_values($this->byTable); }
+    /** @return list<string> */
+    public static function materializedWebcoreLogicalNames(bool $includeSchemaGeneration = false): array
+    {
+        $names = [
+            'users', 'roles', 'permissions', 'user_roles', 'role_permissions',
+            'settings', 'themes', 'modules', 'module_permissions', 'content',
+            'core_migration_history', 'media',
+            'media_usages', 'navigation_menus', 'navigation_items', 'redirects',
+            'security_login_attempts', 'security_sessions', 'security_events',
+        ];
+        if ($includeSchemaGeneration) {
+            $names[] = 'core_schema_generation';
+        }
+        return $names;
+    }
     /** @return list<DatabaseTableExtensionGrant> */
     public function extensions(): array { return array_values($this->extensions); }
     public function extension(string $module, string $table, string $kind, string $element): DatabaseTableExtensionGrant

@@ -28,9 +28,9 @@ final class InstallerOwnershipProofAssembler
         $proofs = [];
         foreach ((new InstallerDatabaseOccupancyClassifier())->candidateNamespaces($objects) as $namespace) {
             $tables = new DatabaseTableNames($namespace);
-            $expected = array_merge(
-                array_map(fn (string $name): string => $tables->table($name), DatabaseTableNames::coreTables()),
-                array_map(fn (string $name): string => $tables->moduleTable($name), DatabaseTableNames::moduleTables())
+            $expected = array_map(
+                fn (string $name): string => $tables->resolve($name),
+                DatabaseTableOwnershipCatalog::materializedWebcoreLogicalNames($namespace !== '')
             );
             if (array_diff($expected, $objects) !== []) {
                 continue;
@@ -40,7 +40,7 @@ final class InstallerOwnershipProofAssembler
                 if (!(new DatabaseHealthVerifier($tables))->verify($connection)->passed()) {
                     continue;
                 }
-                $generation = (new CoreSchemaGenerationStore($tables))->read($connection, $namespace);
+                $generation = (new CoreSchemaGenerationStore($tables))->readIfPresent($connection, $namespace);
                 if (!is_array($generation) || ($generation['namespace'] ?? null) !== $namespace || !is_string($generation['schema_generation'] ?? null)) {
                     continue;
                 }
