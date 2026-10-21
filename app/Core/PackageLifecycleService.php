@@ -225,6 +225,83 @@ final class PackageLifecycleService
         }
     }
 
+    /**
+     * Executes a mutation-required source-authority plan through the existing
+     * V3 executor and recovery coordinator. This method does not publish
+     * committed source authority or perform WU6 finalization.
+     */
+    public function executeCommittedSourceAuthorityMutation(
+        CommittedSourceAuthorityExecutionAdmission $admission,
+        StagedPayload $payload,
+        ?SourceInventoryArtifact $source,
+        CanonicalTargetInventory $actualTarget,
+        RecoveryLifecycleCoordinator $recoveryCoordinator,
+        LifecycleOperationStore $operations,
+        ?callable $journal = null,
+        ?callable $beforeActivation = null
+    ): WebcoreApplyResult {
+        if (!$admission->mutationRequired() || $admission->mutationAuthorized()) {
+            return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Only an admitted mutation-required plan may enter canonical mutation execution.');
+        }
+        if (!$this->v3Executor instanceof V3ExplicitApplyExecutor
+            || !$this->v3Applier instanceof PackageOwnedFileApplier
+            || !$this->operationStore instanceof LifecycleOperationStore) {
+            return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Canonical mutation execution composition is unavailable.');
+        }
+
+        $plan = $admission->plan();
+        $binding = $admission->binding();
+        $plan->assertTargetFingerprint($actualTarget);
+        $this->v3Executor->assertMutationPreconditions($plan->sourcePlan(), $payload, $source, $plan->operation(), $this->liveGuard);
+        $persisted = $operations->read();
+        if (!$persisted instanceof LifecycleOperationRecord
+            || $persisted->operationId() !== $plan->operation()->operationId()
+            || $persisted->classification() !== $plan->operation()->classification()) {
+            return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Canonical mutation operation identity is stale or conflicting.');
+        }
+        $recovery = $binding->crossReference()->recoveryIdentity();
+        $permit = null;
+        try {
+            $recoveryCoordinator->confirm($recovery, $binding->manifest()->identity(), $plan->identity());
+            $permit = $recoveryCoordinator->authorizeMutation(
+                $recovery,
+                $binding->manifest()->identity(),
+                $plan->identity(),
+                null,
+                $binding->databaseConsistency()
+            );
+            if (!$permit->isValid()) {
+                return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Canonical recovery mutation permit is invalid.');
+            }
+
+            $result = $this->v3Executor->execute(
+                $plan->sourcePlan(),
+                $payload,
+                $source,
+                $plan->operation(),
+                $operations,
+                $this->v3Applier,
+                $this->liveGuard,
+                static fn (V3SourceRelativePlan $_plan, LifecycleOperationRecord $_operation): bool => true,
+                null,
+                null,
+                $journal,
+                $beforeActivation,
+                null,
+                true
+            );
+            if ($result->status() !== WebcoreApplyResult::AWAITING_WU6) {
+                return $result;
+            }
+            $recoveryCoordinator->recordPostReconciliationVerification($recovery, $binding->manifest()->identity(), $plan->identity());
+            return $result;
+        } catch (\Throwable $exception) {
+            return new WebcoreApplyResult(WebcoreApplyResult::INDETERMINATE, [], $exception->getMessage(), $plan->operation()->operationId());
+        } finally {
+            $permit?->release();
+        }
+    }
+
     private function bootstrapMigrationPlanIdentity(CoreMigrationPlan $migration): string
     {
         return hash('sha256', implode("\n", array_map(

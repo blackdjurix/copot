@@ -12,6 +12,20 @@ namespace Copot\Core;
  */
 final class V3ExplicitApplyExecutor
 {
+    /** Validates mutation evidence without crossing the recovery mutation boundary. */
+    public function assertMutationPreconditions(
+        V3SourceRelativePlan $plan,
+        StagedPayload $payload,
+        ?SourceInventoryArtifact $source,
+        LifecycleOperationRecord $operation,
+        LiveTreePathGuard $guard
+    ): void {
+        $this->verifyOperation($plan, $operation);
+        $this->verifySourceState($plan, $source, $guard, true);
+        $this->verifyTargetPreconditions($plan, $guard);
+        $this->verifyPayload($plan, $this->deliveredPayload($plan, $payload));
+    }
+
     /**
      * @param callable(V3SourceRelativePlan, LifecycleOperationRecord):bool $captureBeforeMutation
      * @param callable(string, string, int):void|null $journal
@@ -29,13 +43,16 @@ final class V3ExplicitApplyExecutor
         ?DestructivePlanConfirmation $confirmation = null,
         ?callable $journal = null,
         ?callable $beforeActivation = null,
-        ?LegacyBootstrapV3ExecutionContext $bootstrap = null
+        ?LegacyBootstrapV3ExecutionContext $bootstrap = null,
+        bool $requireTargetPreconditions = false
     ): WebcoreApplyResult {
         $mutationStarted = false;
         try {
             $this->verifyOperation($plan, $operation, $bootstrap);
-            $this->verifyPayload($plan, $payload);
-            $this->verifySourceState($plan, $source, $guard);
+            $this->verifySourceState($plan, $source, $guard, $requireTargetPreconditions);
+            if ($requireTargetPreconditions) {
+                $this->verifyTargetPreconditions($plan, $guard);
+            }
 
             $hasRemovals = $plan->removalActions() !== [];
             if ($hasRemovals && (!$confirmationAuthority instanceof DestructivePlanConfirmationAuthority || !$confirmation instanceof DestructivePlanConfirmation)) {
@@ -53,6 +70,7 @@ final class V3ExplicitApplyExecutor
             }
 
             $delivered = $this->deliveredPayload($plan, $payload);
+            $this->verifyPayload($plan, $delivered);
             if ($delivered->files() !== []) {
                 $mutationStarted = true;
                 $delivery = $deliverer->apply(WebcoreApplyPlan::fromPayload($delivered), null, $beforeActivation);
@@ -61,8 +79,9 @@ final class V3ExplicitApplyExecutor
                     return new WebcoreApplyResult($status, $delivery->appliedPaths(), $delivery->reason());
                 }
                 foreach ($delivery->appliedPaths() as $path) {
-                    $this->recordProgress($operations, $operation, count($delivery->appliedPaths()), $path);
-                    if ($journal !== null) { $journal('deliver', $path, count($delivery->appliedPaths())); }
+                    $ordinal = $this->actionOrdinal($plan, $path);
+                    $this->recordProgress($operations, $operation, $ordinal, $path);
+                    if ($journal !== null) { $journal('deliver', $path, $ordinal); }
                 }
             }
 
@@ -73,8 +92,9 @@ final class V3ExplicitApplyExecutor
                     $this->removeOne($action, $guard);
                     $removed++;
                     $path = $this->relativePath($action['source_root'], $action['source_path']);
-                    $this->recordProgress($operations, $operation, count($plan->actions()) + $removed, $path);
-                    if ($journal !== null) { $journal($action['kind'] === PackageRemovalSet::RENAME_SOURCE_REMOVAL ? 'rename-source-remove' : 'remove', $path, $removed); }
+                    $ordinal = $this->actionOrdinal($plan, $path);
+                    $this->recordProgress($operations, $operation, $ordinal, $path);
+                    if ($journal !== null) { $journal($action['kind'] === PackageRemovalSet::RENAME_SOURCE_REMOVAL ? 'rename-source-remove' : 'remove', $path, $ordinal); }
                 }
             }
 
@@ -130,10 +150,36 @@ final class V3ExplicitApplyExecutor
 
     private function deliveredPayload(V3SourceRelativePlan $plan, StagedPayload $payload): StagedPayload
     {
-        return $payload;
+        $retained = array_map(
+            static fn (V3SourceRelativeAction $action): string => $this->relativePath($action->root(), $action->path()),
+            array_filter($plan->actions(), static fn (V3SourceRelativeAction $action): bool => $action->action() === V3SourceRelativeAction::RETAIN)
+        );
+        return $payload->withoutPaths($retained);
     }
 
-    private function verifySourceState(V3SourceRelativePlan $plan, ?SourceInventoryArtifact $source, LiveTreePathGuard $guard): void
+    private function verifyTargetPreconditions(V3SourceRelativePlan $plan, LiveTreePathGuard $guard): void
+    {
+        foreach ($plan->actions() as $action) {
+            if (!in_array($action->action(), [V3SourceRelativeAction::DELIVER, V3SourceRelativeAction::REPLACE, V3SourceRelativeAction::RETAIN], true)) {
+                continue;
+            }
+            $state = $action->expectedTargetState();
+            if ($state === null) {
+                throw new \RuntimeException('Mutation action is missing expected target state evidence.');
+            }
+            $path = $this->relativePath($action->root(), $action->path());
+            $destination = $guard->verifyDestination($path, $state === 'PRESENT');
+            $exists = is_file($destination) && !is_link($destination);
+            if ($state === 'ABSENT' && $exists) {
+                throw new \RuntimeException('Mutation CREATE target is no longer absent.');
+            }
+            if ($state === 'PRESENT' && (!$exists || @filesize($destination) !== $action->expectedTargetByteSize() || @hash_file('sha256', $destination) !== $action->expectedTargetSha256())) {
+                throw new \RuntimeException('Mutation target original identity changed before activation.');
+            }
+        }
+    }
+
+    private function verifySourceState(V3SourceRelativePlan $plan, ?SourceInventoryArtifact $source, LiveTreePathGuard $guard, bool $allowTargetEvidence = false): void
     {
         if ($plan->sourceReference() !== null && (!$source instanceof SourceInventoryArtifact || $source->reference()->toArray() !== $plan->sourceReference()->toArray())) {
             throw new \RuntimeException('Committed source inventory reference does not match the plan.');
@@ -144,6 +190,7 @@ final class V3ExplicitApplyExecutor
         }
         foreach ($plan->actions() as $action) {
             if (!in_array($action->action(), [V3SourceRelativeAction::RETAIN, V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true)) { continue; }
+            if ($allowTargetEvidence && $source === null && $action->expectedTargetState() === 'PRESENT') { continue; }
             $key = strtolower($action->root() . "\0" . $action->path());
             $entry = $sourceIndex[$key] ?? null;
             if (!$entry instanceof CanonicalTargetInventoryEntry || $entry->byteSize() !== $action->byteSize() || $entry->sha256() !== $action->sha256()) { throw new \RuntimeException('Committed source identity is unavailable or stale.'); }
@@ -178,6 +225,16 @@ final class V3ExplicitApplyExecutor
     {
         $latest = $operations->read();
         if ($latest instanceof LifecycleOperationRecord) { $operations->save($latest->advance(LifecycleOperationRecord::APPLYING, $cursor, $path)); }
+    }
+
+    private function actionOrdinal(V3SourceRelativePlan $plan, string $relativePath): int
+    {
+        foreach (array_values($plan->actions()) as $index => $action) {
+            if ($this->relativePath($action->root(), $action->path()) === $relativePath) {
+                return $index + 1;
+            }
+        }
+        throw new \RuntimeException('Mutation progress path is not present in the immutable action plan.');
     }
 
     private function appliedPaths(V3SourceRelativePlan $plan): array
