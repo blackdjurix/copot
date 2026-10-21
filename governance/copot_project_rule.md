@@ -381,6 +381,8 @@ Workplan dan Concept adalah planning layer untuk sequencing, dependency, provena
 
 Activity Journal adalah historical index ringkas untuk meaningful events dan significant activities COPOT. Journal menggunakan `docs/devlog.md` sebagai working journal dan Git history sebagai historical recall. Journal tidak menggantikan Workplan, Concept, Contract, Authoritative Documentation, Repository state, atau evidence detail.
 
+Activity Journal wajib dicatat dan dipersist pada Git `main` sebagai canonical journal state. Entry yang hanya berada pada working branch belum dianggap logged secara durable sampai sudah masuk ke `main` dan state tersebut terverifikasi.
+
 Activity Journal dapat mencatat aktivitas lintas domain, termasuk Project, Workplan, Concept, Pre-contract, Contract, Implementation, Documentation, Governance, validation, acceptance, negative findings, dan perubahan pemahaman yang material. Pencatatan tidak menciptakan authority, authorization, acceptance, closure, NRP, promotion, atau implementation permission. Aktivitas yang sudah cukup tercatat pada artifact authoritative tidak perlu diduplikasi kecuali journal entry menambah nilai recall yang material.
 
 ### Authority dan bahasa Activity Journal
