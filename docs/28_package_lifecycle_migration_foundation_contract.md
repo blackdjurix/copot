@@ -803,6 +803,54 @@ algorithm includes that retained byte. Such a profile is not an implicit
 ownership transfer, a live-tree-only exception, or permission to bypass full
 coverage. Unreviewed preservation remains `BLOCKED`.
 
+## Committed lifecycle metadata reconciliation
+Date version: 2026-10-21
+
+The canonical lifecycle also supports a bounded
+`COMMITTED_LIFECYCLE_METADATA_RECONCILIATION` operation for a valid committed
+installation whose persisted schema or migration identity is proven stale or
+inconsistent with its authoritative Core migration ledger. This operation is
+separate from `COMMITTED_SOURCE_AUTHORITY_RECONCILIATION`, legacy adoption,
+bootstrap, ordinary package apply and migration execution. It may repair only
+the stale committed metadata fields; it must not publish a
+`SourceInventoryReference`, change installation or release identity, alter
+package identity, or mutate the database schema or migration ledger.
+
+Eligibility requires a valid installation identity and committed marker, a
+readable committed state, an authoritative ordered migration registry and
+ledger, a verified schema identity, no active lifecycle operation, and no
+unresolved recovery disposition. The derived schema-state and migration-state
+identities must be calculated from the canonical registry, verified ledger and
+schema evidence at operation time. Hard-coded target hashes, synthetic ledger
+records, direct JSON editing and identity spoofing are not valid authority.
+
+The operation uses the existing persisted lifecycle-operation machinery and
+existing phases; it does not introduce a new persisted phase. Its bounded
+ordering is: read-only preflight, `PREPARING` admission, operation-specific
+recovery capture and reread, installation mutex/Guard admission with verified
+drain, scoped database-consistency evidence, guarded committed-state write
+through `CommittedLifecycleStateStore`, reread and health/integrity
+verification, then terminal completion. No `APPLYING` or `MIGRATING` phase may
+be recorded because neither filesystem application nor migration execution
+occurred.
+
+The recovery set must preserve the original committed-state and installed
+marker bytes, operation identity, installation identity, ledger/schema
+evidence, and deterministic linkage. A changed target, changed ledger,
+changed schema evidence, concurrent operation, incomplete capture or failed
+health gate fails closed. Interruption is recovery-required until the persisted
+operation and original evidence are reconciled; retry is idempotent and may
+not blindly rewrite metadata. If restoration is required, Backup & Recovery
+remains the sole authority for restore and disposition.
+
+Completion is valid only after the written fields reread exactly, all
+untouched committed-state fields remain unchanged, installation identity and
+marker remain consistent, and the canonical migration planner is rerun. The
+planner result—not table count or an assumed version equality—determines
+whether the subsequent package operation is `NOOP` or requires a forward
+migration. This operation does not itself establish source authority or
+authorize source convergence.
+
 ## Accepted Legacy-to-V3 Bootstrap Amendment
 Date version: 2026-10-17 20:16:08 WIB
 

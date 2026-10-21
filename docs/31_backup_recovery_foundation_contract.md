@@ -630,3 +630,33 @@ This clarification changes no RecoveryManifest, immutable original-byte,
 interruption, recovery-required, v1/v2 compatibility or WU6 finalization
 guarantee. It creates no new recovery engine and grants no additional COPOT
 ownership or authority.
+
+## Committed lifecycle metadata reconciliation evidence
+Date version: 2026-10-21
+
+Backup & Recovery also governs the operation-specific evidence for
+`COMMITTED_LIFECYCLE_METADATA_RECONCILIATION`. Even though the operation does
+not apply package files or execute a database migration, it is not permitted
+to bypass recovery authority. Before the guarded metadata write, the recovery
+set must capture and immutably bind the original committed-state bytes,
+installed-marker bytes, installation identity, authoritative migration-ledger
+evidence, schema identity evidence, operation identity and recovery identity.
+
+The capture must be reread independently before the write and must prove the
+same target installation, database scope, physical tableset and ledger/schema
+state used by planning. A changed original byte, ledger, schema, operation or
+installation identity blocks the operation. The recovery evidence must record
+that the permitted mutation surface is limited to the explicitly stale
+committed metadata fields; it must not claim filesystem or database rollback
+coverage for domains that were not changed.
+
+Interruption between capture, metadata publication, reread and operation
+closure remains recovery-required. Retry is permitted only after deterministic
+reconciliation of the persisted operation, original evidence and current
+metadata. Restore, if required, must use the existing recovery coordinator and
+its applicable disposition rules; no retrospective capture, synthetic
+completion or direct-write restore path is introduced.
+
+This evidence does not publish `SourceInventoryReference`, establish source
+ownership, or authorize package convergence. Those remain governed by the
+separate source-authority and WU6 boundaries.

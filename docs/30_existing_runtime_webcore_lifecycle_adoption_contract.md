@@ -321,6 +321,40 @@ filesystem paths. If source convergence is required, the existing guarded
 package/recovery/migration machinery requires separate explicit mutation
 authorization.
 
+### Committed lifecycle metadata reconciliation prerequisite
+
+An existing committed installation may use the distinct
+`COMMITTED_LIFECYCLE_METADATA_RECONCILIATION` operation when its persisted
+schema-state or migration-state identity is proven stale relative to the
+authoritative migration ledger and schema evidence. This route is a metadata
+consistency prerequisite only; it is not adoption, bootstrap, source
+authority publication or an ordinary package update.
+
+The route is eligible only when installation identity, committed marker,
+committed state, ordered migration registry, applied ledger, and schema
+identity are all readable and mutually attributable; no lifecycle operation
+or recovery disposition is active; and the target database is verified without
+mutation. The operation may change only the proven stale schema/migration
+identity fields. It must preserve release/version identity, package identity,
+installation identity, source-authority reference, committed timestamp unless
+the canonical writer requires a new commit timestamp, and every unrelated
+field.
+
+The operation must use the existing lifecycle-operation, mutex, Guard,
+scoped-database-consistency, recovery and committed-state writer authorities.
+It must not use direct JSON editing, synthetic migration evidence, arbitrary
+live-table discovery or hard-coded identity values. `SourceInventoryReference`
+remains absent and unchanged. After reread and health verification, the
+canonical migration planner must be run again; only its result establishes a
+valid `NOOP` or an applicable forward migration plan for a later operation.
+
+Missing, conflicting, stale or unverified evidence remains `BLOCKED`. An
+interrupted or partially published metadata correction is recovery-required
+until deterministic operation/evidence reconciliation succeeds. Successful
+metadata reconciliation does not make source convergence eligible by itself;
+the separate source-authority eligibility, provenance, ownership, recovery,
+Guard, database-consistency and WU6 gates remain mandatory.
+
 The route has its own durable operation identity and must reach the existing
 WU6 health/integrity finalization boundary before publishing
 `SourceInventoryReference`. Failure, interruption, or changed evidence remains
