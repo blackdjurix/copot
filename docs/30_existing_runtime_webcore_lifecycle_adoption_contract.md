@@ -328,3 +328,39 @@ WU6 health/integrity finalization boundary before publishing
 legacy adoption, bootstrap eligibility, or successful authority publication by
 retry alone. This amendment does not alter IU2 classification, recovery or
 quiescence requirements, or WU6 ownership.
+
+### Mutation-required convergence profile
+
+When exact target convergence is not already satisfied, the route may use the
+existing guarded Package Lifecycle apply boundary only through an explicitly
+authorized `MUTATION_REQUIRED` plan. The plan must retain the same committed
+installation eligibility and must not broaden the legacy classifier or
+reinterpret a provisional bootstrap inventory as source authority.
+
+The mutation profile requires a durable `PREPARING` operation record, complete
+operation-specific canonical recovery capture before the first write,
+installation-scoped Guard admission and drain, independent scoped database
+consistency evidence, and an immutable ordered action plan. `CREATE` requires
+verified absence and no-clobber activation. `REPLACE` requires the exact
+reviewed original hash and original-byte recovery evidence. Any execution-time
+drift is `BLOCK + RECONCILE`, not an implicit action conversion.
+
+The existing Package Lifecycle, Backup & Recovery and WU6 coordinators remain
+the sole authorities for apply, recovery, migration, interruption/retry,
+health/integrity and committed-state finalization. No parallel convergence or
+recovery engine is introduced. A database migration is executed only when the
+canonical migration planner produces an applicable, checksum-verified forward
+plan; otherwise the verified result must be `NOOP` and the database remains
+unchanged.
+
+The route may retain an explicit runtime-owned routing exception, including a
+subdirectory `.htaccess`, only through a reviewed target-bound preservation
+profile that records current bytes, ownership, route behavior and effective
+fingerprint semantics. The exception must not be inferred from a live scan or
+used to hide an unresolved package-owned mismatch.
+
+After mutation, the operation still enters `AWAITING_WU6`; only the existing
+WU6 finalization boundary may publish `SourceInventoryReference` and complete
+the operation. Partial progress, interruption, stale recovery, or ambiguous
+ownership remains fail-closed and follows the existing recovery-required and
+retry rules.

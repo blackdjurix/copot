@@ -754,6 +754,55 @@ new recovery engine, restore authority, mutation authority, or cross-domain
 atomicity guarantee; `docs/31_backup_recovery_foundation_contract.md` remains
 the authority for recovery capture, restore, and disposition.
 
+### Mutation-capable source convergence
+
+The operation has two explicit plan modes under the same
+`COMMITTED_SOURCE_AUTHORITY_RECONCILIATION` operation type:
+
+- `AUTHORITY_ONLY` preserves the no-mutation behavior above and is valid only
+  when the verified target already satisfies the trusted package-owned
+  inventory.
+- `MUTATION_REQUIRED` is valid only when the same eligibility, provenance,
+  ownership, freshness, Guard, database-consistency and recovery gates pass,
+  but the immutable plan contains explicitly reviewed package-owned `CREATE`
+  or guarded `REPLACE` actions. It is not a legacy adoption, bootstrap, or
+  ordinary V3 update.
+
+The mutation plan has an immutable identity covering operation type and mode,
+installation identity, manifest/package provenance, source and target
+fingerprints, database scope/schema/migration identities, and the ordered
+action set. Every action binds its canonical root/path, file type, ownership,
+expected pre-state (absence or exact original hash), desired hash, action
+ordinal, operation identity, plan identity and recovery identity. A changed,
+missing, conflicting or unverified pre-state fails closed; no action may be
+silently changed from `CREATE` to `REPLACE`, or from `REPLACE` to `PRESERVE`.
+
+For `MUTATION_REQUIRED`, the canonical ordering is: persist `PREPARING`,
+capture and reread the complete Backup & Recovery set, acquire installation
+Guard and prove drain, persist operation-bound scoped database-consistency
+evidence, revalidate all identities and action preconditions, execute through
+the existing guarded package-owned apply machinery, persist and reread action
+progress, verify the resulting target, execute only an applicable canonical
+forward migration plan, and enter `AWAITING_WU6`. WU6 health/integrity
+finalization and committed source-reference publication remain unchanged.
+Database `NOOP` must remain a verified plan result; no schema or migration
+mutation is implied by source convergence.
+
+Failure after the first filesystem or database boundary remains
+`INDETERMINATE` or recovery-required. Retry must reconcile the persisted
+operation, immutable recovery set, actual bytes, action journal, plan and
+database evidence before continuing; blind replay, retrospective capture and
+speculative deletion are forbidden. `COMPLETED` remains impossible until WU6
+passes and the committed source reference and lifecycle identities are
+durably reread as consistent.
+
+An explicit target-bound preservation profile may retain a runtime-owned path
+such as a subdirectory routing file only when its current type, owner, hash and
+behavior are recorded in the reviewed plan and the effective fingerprint
+algorithm includes that retained byte. Such a profile is not an implicit
+ownership transfer, a live-tree-only exception, or permission to bypass full
+coverage. Unreviewed preservation remains `BLOCKED`.
+
 ## Accepted Legacy-to-V3 Bootstrap Amendment
 Date version: 2026-10-17 20:16:08 WIB
 

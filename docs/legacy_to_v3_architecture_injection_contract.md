@@ -148,3 +148,39 @@ readiness result. Unresolved `BLOCK` or `UNVERIFIED` collision evidence,
 missing provenance, stale identity, incomplete recovery linkage, or failed WU6
 verification remains fail-closed. `SourceInventoryReference` is published only
 by the existing successful WU6 finalization boundary.
+
+## 11. Mutation-capable committed-source convergence boundary
+
+The committed-source-authority route may have an explicit
+`MUTATION_REQUIRED` plan mode when trusted source convergence requires
+package-owned `CREATE` or guarded `REPLACE` actions. This mode remains
+separate from `LEGACY_TO_V3_BOOTSTRAP`, existing-runtime adoption and ordinary
+V3 update semantics. It does not broaden legacy eligibility, change committed
+installation identity, or authorize a synthetic source reference.
+
+The reviewed plan must bind exact action ownership, roots, types, expected
+absence or original hashes, desired hashes, action ordering, operation and
+recovery identities, and the effective target fingerprint. Current target
+drift, ambiguous ownership, missing provenance, or a changed `.htaccess`
+preservation condition blocks execution. `MUTATION_REQUIRED` reuses the
+canonical Package Lifecycle apply boundary, Backup & Recovery capture and
+action linkage, installation Guard, scoped database consistency, migration
+planner, interruption/retry and WU6 coordinators; it does not create a second
+engine.
+
+Subdirectory routing files may be retained only through an explicit reviewed
+target-bound preservation profile. The profile must state source ownership,
+deployment disposition, retained target bytes, route verification and the
+fingerprint treatment. It must not silently reclassify a package-owned path or
+waive full-coverage requirements. Failed DatabaseScope-operation residue is
+outside this package action set and requires a separately authorized,
+operation-bound cleanup disposition.
+
+Mutation ordering is `PREPARING` operation persistence, canonical recovery
+capture and reread, Guard/drain, scoped database evidence, freshness and
+action-precondition reread, guarded filesystem application, progress and final
+byte verification, applicable migration (`NOOP` when no verified migration is
+required), `AWAITING_WU6`, WU6 health/integrity, and only then committed source
+reference publication. Interruption or partial progress remains
+`BLOCKED`/`INDETERMINATE` or recovery-required; no blind retry, retrospective
+evidence, or premature authority publication is permitted.
