@@ -293,3 +293,38 @@ Technical IU2 WU1–WU6 and the separate Module Package Lifecycle WU7
 human/E2E acceptance are complete for their accepted scopes. Do not begin
 production reconciliation, Server-Empty Bootstrap, or Module legacy adoption
 under this preparation lock.
+
+## Committed Source Authority Reconciliation
+
+`COMMITTED_LIFECYCLE_STATE` remains valid and is not an IU2 legacy candidate.
+Existing exact-match adoption and Legacy Reconciliation retain their current
+eligibility and must not reclassify a committed installation as legacy.
+
+This contract additionally recognizes the distinct
+`COMMITTED_SOURCE_AUTHORITY_RECONCILIATION` route. It is eligible only when:
+
+- committed lifecycle state, `storage/installed.lock`, installation identity,
+  schema identity, and migration-state identity are mutually consistent;
+- `SourceInventoryReference` is absent, rather than conflicting, stale, or
+  unverifiable;
+- trusted manifest-v3 provenance and complete target inventory are available;
+- every package-owned path has exact path, type, root, ownership, collision,
+  and byte/hash evidence; unresolved `BLOCK` or `UNVERIFIED` evidence fails
+  closed; and
+- applicable Guard, scoped database-consistency, operation, and Backup &
+  Recovery evidence can be bound without changing committed lifecycle state.
+
+The route is authority-only when the verified target already satisfies the
+trusted package inventory. It may publish no source bytes and may not infer
+ownership from historical live inventory, version equality, or arbitrary
+filesystem paths. If source convergence is required, the existing guarded
+package/recovery/migration machinery requires separate explicit mutation
+authorization.
+
+The route has its own durable operation identity and must reach the existing
+WU6 health/integrity finalization boundary before publishing
+`SourceInventoryReference`. Failure, interruption, or changed evidence remains
+`BLOCKED`, `INDETERMINATE`, or recovery-required and cannot be converted into
+legacy adoption, bootstrap eligibility, or successful authority publication by
+retry alone. This amendment does not alter IU2 classification, recovery or
+quiescence requirements, or WU6 ownership.

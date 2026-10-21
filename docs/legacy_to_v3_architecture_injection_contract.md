@@ -127,3 +127,24 @@ original-byte evidence, operation/action-journal linkage, interruption,
 recovery-required, `AWAITING_WU6`, v1/v2 compatibility and WU6 finalization
 semantics. It does not expand COPOT ownership, select a server-wide mechanism
 automatically, or create a parallel recovery engine.
+
+## 10. Separation from committed source-authority reconciliation
+
+`COMMITTED_SOURCE_AUTHORITY_RECONCILIATION` is separate from
+`LEGACY_TO_V3_BOOTSTRAP` and applies only to a valid committed lifecycle
+installation whose `SourceInventoryReference` is absent. It must not use the
+legacy classifier, broaden `isLegacyCandidate()`, or treat provisional
+bootstrap evidence as committed source authority.
+
+Bootstrap remains governed by its existing legacy eligibility, provisional
+inventory, recovery, Guard, scoped database-consistency, and WU6 requirements.
+The committed-authority route has its own durable operation identity and exact
+manifest/target/ownership evidence while reusing canonical lifecycle,
+recovery, database, Guard, and WU6 authorities.
+
+Authority-only reconciliation may avoid package-owned filesystem mutation when
+the target already matches the trusted manifest, but it is not an implicit
+readiness result. Unresolved `BLOCK` or `UNVERIFIED` collision evidence,
+missing provenance, stale identity, incomplete recovery linkage, or failed WU6
+verification remains fail-closed. `SourceInventoryReference` is published only
+by the existing successful WU6 finalization boundary.

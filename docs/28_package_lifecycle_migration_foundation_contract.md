@@ -709,6 +709,51 @@ For manifest v3 only, Package Lifecycle may plan and coordinate expressly declar
 
 Package Lifecycle owns plan, confirmation-gated coordinated apply, serial operation, result-state fingerprint proof, release-state disposition and lifecycle operation identity; Backup & Recovery alone owns capture, restore, recovery-domain verification and cleanup. Rename is declared verified target addition followed by verified source removal, never implicit stale pruning. The lifecycle operation record must cross-reference the same immutable operation/plan/action ordinal/recovery identity as the recovery journal and persist scheme-versioned package evidence identity. A changed source/plan or unmatched record fails closed. Post-mutation inconsistency is INDETERMINATE and recovery-required; final release advancement requires complete target fingerprint equality and existing migration/health gates. No cross-domain atomic restoration promise or implementation authorization is implied.
 
+## Committed Source Authority Reconciliation
+Date version: 2026-10-21
+
+`COMMITTED_SOURCE_AUTHORITY_RECONCILIATION` is a distinct, bounded lifecycle
+operation for a valid committed installation whose committed
+`SourceInventoryReference` is absent. It is not
+`LEGACY_TO_V3_BOOTSTRAP`, `ADOPT`, `RECONCILE`, or an ordinary V3 update, and
+must not alter the eligibility semantics of those operations.
+
+The operation binds durable operation identity to installation identity,
+trusted manifest/provenance, exact target inventory, database
+scope/schema/migration identity, and applicable recovery identity. It may be
+authority-only when no package-owned filesystem or database mutation is
+required, but still requires independent target, ownership, collision, Guard,
+database-consistency, and recovery-evidence verification. It must not
+manufacture source ownership, migration, original-byte, or recovery evidence.
+
+The operation uses only the persisted `LifecycleOperationRecord` phases already
+defined by Package Lifecycle; it introduces no `VERIFIED` phase or other new
+phase. For an authority-only success path, the canonical phase progression is
+`PREPARING` -> `AWAITING_WU6` -> `COMPLETED`. An implementation may persist an
+intermediate existing phase only when the existing transition authority
+requires it. Authority-only reconciliation must not record `APPLYING` or
+`MIGRATING`, because no package-owned application or migration occurred.
+
+`COMPLETED` is valid only after WU6 passes, the committed
+`SourceInventoryReference` is durably published, and persisted operation,
+manifest, target, database, recovery, and installation identities are read
+back and consistent. Failure and interruption retain the existing
+`BLOCKED`/`INDETERMINATE` phases and recovery-required disposition where
+applicable. They must not publish source authority, change committed lifecycle
+state, rerun migration, or silently retry against changed evidence.
+
+If publication is interrupted, continuation must first perform deterministic
+canonical reconciliation of the persisted operation and evidence identities.
+Blind retry is not permitted; a new operation or recovery action is allowed
+only after the existing retry/recovery eligibility rules pass.
+
+Only successful WU6 health/integrity verification with exact source,
+package/provenance, database, operation, recovery, and installation linkage
+may publish the committed `SourceInventoryReference`. This amendment adds no
+new recovery engine, restore authority, mutation authority, or cross-domain
+atomicity guarantee; `docs/31_backup_recovery_foundation_contract.md` remains
+the authority for recovery capture, restore, and disposition.
+
 ## Accepted Legacy-to-V3 Bootstrap Amendment
 Date version: 2026-10-17 20:16:08 WIB
 
