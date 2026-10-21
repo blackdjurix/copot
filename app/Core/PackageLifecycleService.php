@@ -2,6 +2,11 @@
 
 namespace Copot\Core;
 
+use Copot\Core\BackupRecovery\ApplicationWriteProtectionEvidence;
+use Copot\Core\BackupRecovery\CommittedSourceAuthorityRecoveryBinding;
+use Copot\Core\BackupRecovery\RecoveryArtifactStore;
+use Copot\Core\BackupRecovery\RecoveryLifecycleCoordinator;
+use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
 use PDO;
 
 final class PackageLifecycleService
@@ -53,7 +58,8 @@ final class PackageLifecycleService
         private ?ProtectedWebcoreMutationBoundary $v3RecoveryBoundary = null,
         private ?LifecycleOperationStore $operationStore = null,
         private $v3MigrationRunner = null,
-        private ?LegacyToV3BootstrapEntry $legacyBootstrap = null
+        private ?LegacyToV3BootstrapEntry $legacyBootstrap = null,
+        private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -67,6 +73,36 @@ final class PackageLifecycleService
     private LegacyRuntimeClassifier $legacyClassifier;
     private LegacyReconciliationPlanner $reconciliationPlanner;
     private DatabaseLifecycleClassifier $databaseLifecycleClassifier;
+
+    /** Non-mutating canonical planning entrypoint. */
+    public function planCommittedSourceAuthority(
+        CommittedLifecycleState $committed,
+        InstallationIdentity $installation,
+        PackageManifest $manifest,
+        CanonicalTargetInventory $actualTarget,
+        \Copot\Core\BackupRecovery\DatabaseScope $databaseScope,
+        InstallerOwnershipProof $ownershipProof,
+        ?CoreMigrationPlan $migrationPlan = null,
+        ?CommittedSourceAuthorityPreservationPolicy $preservationPolicy = null
+    ): CommittedSourceAuthorityPlan {
+        if (!$this->sourceAuthorityPlanner instanceof CommittedSourceAuthorityPlanner) {
+            throw new \RuntimeException('Committed source-authority planning is unavailable.');
+        }
+        return $this->sourceAuthorityPlanner->plan($committed, $installation, $manifest, $actualTarget, $databaseScope, $ownershipProof, $migrationPlan, $preservationPolicy);
+    }
+
+    /** Routes a prepared plan through canonical, non-authorizing admission. */
+    public function admitCommittedSourceAuthority(
+        CommittedSourceAuthorityPlan $plan,
+        CommittedSourceAuthorityRecoveryBinding $binding,
+        RecoveryLifecycleCoordinator $recoveryCoordinator,
+        LifecycleOperationStore $operations,
+        RecoveryArtifactStore $artifacts,
+        ApplicationWriteProtectionEvidence $application,
+        ScopedDatabaseConsistencyEvidence $database
+    ): CommittedSourceAuthorityExecutionAdmission {
+        return CommittedSourceAuthorityExecutionAdmission::issue($plan, $binding, $recoveryCoordinator, $operations, $artifacts, $application, $database);
+    }
 
     /** Preparation only: no package apply, migration, recovery, or committed-state mutation. */
     public function prepareLegacyToV3Bootstrap(string $zip): LegacyBootstrapPreparation

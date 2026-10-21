@@ -232,7 +232,8 @@ final class PackageLifecycleFactory
             $normalRecoveryBoundary,
             $operationStore,
             $v3MigrationRunner,
-            $legacyBootstrap
+            $legacyBootstrap,
+            new CommittedSourceAuthorityPlanner()
         );
     }
 

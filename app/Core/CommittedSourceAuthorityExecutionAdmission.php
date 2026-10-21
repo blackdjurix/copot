@@ -48,6 +48,7 @@ final class CommittedSourceAuthorityExecutionAdmission
     public function binding(): CommittedSourceAuthorityRecoveryBinding { return $this->binding; }
     public function identity(): string { return $this->identity; }
     public function mutationAuthorized(): bool { return false; }
+    public function mutationRequired(): bool { return $this->plan->mutationRequired(); }
     public function wu6Required(): bool { return true; }
 
     /**
@@ -61,6 +62,9 @@ final class CommittedSourceAuthorityExecutionAdmission
         ApplicationWriteProtectionEvidence $application,
         ScopedDatabaseConsistencyEvidence $database
     ): LifecycleOperationRecord {
+        if ($this->plan->mutationRequired()) {
+            throw new \RuntimeException('Mutation-required source-authority plans require canonical mutation and recovery execution before WU6 handoff.');
+        }
         self::assertPrerequisites($this->plan, $this->binding, $recoveryCoordinator, $operations, $artifacts, $application, $database);
         $current = $operations->read();
         if (!$current instanceof LifecycleOperationRecord) {
@@ -97,6 +101,9 @@ final class CommittedSourceAuthorityExecutionAdmission
         ApplicationWriteProtectionEvidence $application,
         ScopedDatabaseConsistencyEvidence $database
     ): LifecycleOperationRecord {
+        if ($this->plan->mutationRequired()) {
+            throw new \RuntimeException('Mutation-required source-authority plans cannot enter WU6 continuation before canonical execution.');
+        }
         $current = $operations->read();
         if (!$current instanceof LifecycleOperationRecord
             || !in_array($current->phase(), [LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], true)) {
@@ -118,8 +125,7 @@ final class CommittedSourceAuthorityExecutionAdmission
         bool $requirePlanPhase = true
     ): void {
         $operation = $plan->operation();
-        if (!$plan->authorityOnly()
-            || $operation->classification() !== 'COMMITTED_SOURCE_AUTHORITY_RECONCILIATION'
+        if ($operation->classification() !== 'COMMITTED_SOURCE_AUTHORITY_RECONCILIATION'
             || ($requirePlanPhase && !in_array($operation->phase(), $allowedPhases, true))
             || $operation->fileCursor() !== 0
             || $operation->lastVerifiedPath() !== null
@@ -137,6 +143,7 @@ final class CommittedSourceAuthorityExecutionAdmission
             || $persisted->classification() !== $operation->classification()
             || !in_array($persisted->phase(), $allowedPhases, true)
             || $persisted->applyPlanIdentity() !== $plan->applyPlan()->identity()
+            || $persisted->migrationPlanIdentity() !== $plan->migrationPlanIdentity()
             || $persisted->recoveryIdentity() !== $binding->crossReference()->recoveryIdentity()->value()
             || $persisted->recoveryManifestIdentity() !== $binding->manifest()->identity()
             || $persisted->recoveryState() !== RecoveryLifecycleState::READY
