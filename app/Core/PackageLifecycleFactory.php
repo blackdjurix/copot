@@ -104,6 +104,33 @@ final class PackageLifecycleFactory
             new CoreMigrationHealthVerifier($ledger),
             static fn (): PDO => $database->connection()
         );
+        $metadataOrchestrator = null;
+        if ($recoveryComposition instanceof PackageLifecycleRecoveryComposition
+            && $recoveryComposition->maintenance instanceof InstallationScopedMaintenanceGuard) {
+            $metadataOrchestrator = new CommittedLifecycleMetadataReconciliationOrchestrator(
+                new InstallationIdentityStore($storage),
+                $installationState,
+                $committedStore,
+                $operationStore,
+                $registry,
+                $ledger,
+                new DatabaseHealthVerifier($database->tables()),
+                new CoreMigrationHealthVerifier($ledger),
+                DatabaseTableOwnershipCatalog::current(),
+                $recoveryComposition->maintenance,
+                $recoveryComposition->normalCaptureService(),
+                $recoveryComposition->coordinator,
+                $recoveryComposition->store,
+                $recoveryComposition->artifacts,
+                $metadataReconciliation,
+                static fn (): PDO => $database->connection(),
+                $recoveryComposition->databaseIdentity,
+                $database->tables()->namespace(),
+                hash('sha256', 'deployment:' . $deploymentContext->appRoot()),
+                new CanonicalSchemaBaselineVerifier($database->tables()),
+                $basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql'
+            );
+        }
 
         $legacyBootstrap = new LegacyToV3BootstrapEntry(
             $basePath,
@@ -245,7 +272,8 @@ final class PackageLifecycleFactory
             $v3MigrationRunner,
             $legacyBootstrap,
             $metadataReconciliation,
-            new CommittedSourceAuthorityPlanner()
+            new CommittedSourceAuthorityPlanner(),
+            $metadataOrchestrator
         );
     }
 

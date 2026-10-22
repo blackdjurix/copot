@@ -32,6 +32,16 @@ final class RecoveryLifecycleCoordinator
         $this->scopedEvidence[$identity->value()] = ['application' => $application, 'database' => $database];
     }
 
+    public function enterScopedMaintenanceFresh(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $application, ScopedDatabaseConsistencyEvidence $database): void
+    {
+        $this->assertScopedEvidence($identity, $application, $database);
+        if (!$this->maintenance instanceof InstallationScopedMaintenanceGuard
+            || !$this->maintenance->enterScopedFresh($identity, $application)) {
+            throw new RecoveryLifecycleException('Scoped application-write protection could not be established.');
+        }
+        $this->scopedEvidence[$identity->value()] = ['application' => $application, 'database' => $database];
+    }
+
     public function scopedProtectionMatches(RecoveryIdentity $identity, ScopedDatabaseConsistencyEvidence $database): bool
     {
         $evidence = $this->scopedEvidence[$identity->value()] ?? null;

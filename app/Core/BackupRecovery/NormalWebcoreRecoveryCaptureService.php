@@ -13,7 +13,8 @@ final class NormalWebcoreRecoveryCaptureService
         private DatabaseRecoveryProvider $database,
         private DatabaseQuiescenceCapability $quiescence,
         private $snapshotConnection,
-        private $lockConnection
+        private $lockConnection,
+        private $faultInjector = null
     ) {}
 
     public function capture(NormalWebcoreRecoveryCaptureRequest $request): NormalWebcoreRecoverySession
@@ -78,6 +79,105 @@ final class NormalWebcoreRecoveryCaptureService
                 if ($lease instanceof DatabaseQuiescenceLease && $lease->isActive()) $lease->release();
                 try { $this->coordinator->leaveMaintenance($recovery); } catch (\Throwable) {}
             }
+        }
+    }
+
+    /**
+     * Capture only the recovery domains touched by committed metadata
+     * reconciliation. This reuses the canonical coordinator, stores and
+     * database provider without manufacturing a Webcore package apply plan.
+     */
+    public function captureMetadata(MetadataRecoveryCaptureRequest $request): NormalWebcoreRecoverySession
+    {
+        return $this->captureMetadataRun($request, false);
+    }
+
+    public function resumeMetadata(MetadataRecoveryCaptureRequest $request): NormalWebcoreRecoverySession
+    {
+        return $this->captureMetadataRun($request, true);
+    }
+
+    private function captureMetadataRun(MetadataRecoveryCaptureRequest $request, bool $resume): NormalWebcoreRecoverySession
+    {
+        $recovery = self::forOperation($request->operationId(), $request->recoveryPlanIdentity());
+        $record = null;
+        try {
+            if (!$request->applicationWriteProtectionEvidence()->isValidAt()
+                || !$request->databaseConsistencyEvidence()->isValidAt()
+                || !$request->applicationWriteProtectionEvidence()->operationIdentity()->equals($recovery)
+                || !$request->databaseConsistencyEvidence()->operationIdentity()->equals($recovery)
+                || $request->databaseScope()->identity() !== $request->databaseConsistencyEvidence()->scope()->identity()) {
+                throw new RecoveryLifecycleException('Metadata recovery protection evidence is stale or mismatched.');
+            }
+            $this->coordinator->enterScopedMaintenanceFresh($recovery, $request->applicationWriteProtectionEvidence(), $request->databaseConsistencyEvidence());
+            $database = $this->database->capture(new DatabaseCaptureContext(
+                ($this->snapshotConnection)(),
+                ($this->lockConnection)(),
+                $request->databaseIdentity(),
+                67108864,
+                $request->databaseScope(),
+                $request->databaseConsistencyEvidence()
+            ));
+            $lifecycle = $this->lifecycle->capture();
+            $marker = $this->installedLock->capture();
+            $domains = [
+                new RecoveryDomainIdentity('database.webcore', 'database.webcore', $request->databaseScope()->identity(), $database->record()->artifactIdentity()),
+                new RecoveryDomainIdentity('filesystem.lifecycle.committed', 'filesystem.lifecycle.committed', $request->deploymentIdentity(), $lifecycle->record()->artifactIdentity()),
+                new RecoveryDomainIdentity('filesystem.lifecycle.installed-lock', 'filesystem.lifecycle.installed-lock', $request->installationIdentity(), $marker->record()->artifactIdentity()),
+            ];
+            $manifest = new RecoveryManifest(
+                $recovery,
+                $request->operationId(),
+                $request->targetPackageIdentity(),
+                $request->targetReleaseIdentity(),
+                $request->archiveIdentity(),
+                $request->recoveryPlanIdentity(),
+                $domains,
+                $request->preLifecycleIdentity(),
+                $request->migrationLedgerIdentity()
+            );
+            if ($resume) {
+                $record = $this->store->read($recovery);
+                if ($record->operationIdentity() !== $request->operationId()
+                    || $record->manifestIdentity() !== $manifest->identity()
+                    || $record->state() !== RecoveryLifecycleState::FAILED_BEFORE_MUTATION
+                    || $record->mutationStarted()) {
+                    throw new RecoveryLifecycleException('Metadata recovery evidence is not retry-eligible.');
+                }
+            } else {
+                $record = new RecoveryLifecycleRecord($recovery, $manifest->identity(), $request->operationId(), RecoveryLifecycleState::CREATED);
+                $this->coordinator->create($record);
+            }
+            $this->coordinator->transition($recovery, RecoveryLifecycleState::CAPTURING);
+            $this->injectFault('after_recovery_record_persisted');
+            $this->artifacts->publish($manifest, [
+                ['record' => $database->record(), 'bytes' => $database->bytes()],
+                ['record' => $lifecycle->record(), 'bytes' => $lifecycle->bytes()],
+                ['record' => $marker->record(), 'bytes' => $marker->bytes()],
+            ]);
+            $this->artifacts->readManifest($recovery);
+            $this->coordinator->transition($recovery, RecoveryLifecycleState::CAPTURED);
+            $this->coordinator->recordCaptureComplete($recovery);
+            $this->coordinator->transition($recovery, RecoveryLifecycleState::READY);
+            $this->coordinator->confirm($recovery, $manifest->identity(), $manifest->identity());
+            $ready = $this->store->read($recovery);
+            if ($ready->state() !== RecoveryLifecycleState::READY || !$ready->captureComplete()) {
+                throw new RecoveryLifecycleException('Metadata recovery capture did not reach READY.');
+            }
+            return new NormalWebcoreRecoverySession($this->coordinator, $recovery, $manifest->identity(), $ready, null, $request->databaseConsistencyEvidence());
+        } catch (\Throwable $exception) {
+            if ($record instanceof RecoveryLifecycleRecord) {
+                try { $this->coordinator->transition($recovery, RecoveryLifecycleState::FAILED_BEFORE_MUTATION, 'Metadata recovery capture failed.'); } catch (\Throwable) {}
+            }
+            try { $this->coordinator->leaveMaintenance($recovery); } catch (\Throwable) {}
+            throw $exception;
+        }
+    }
+
+    private function injectFault(string $stage): void
+    {
+        if ($this->faultInjector !== null) {
+            ($this->faultInjector)($stage);
         }
     }
 

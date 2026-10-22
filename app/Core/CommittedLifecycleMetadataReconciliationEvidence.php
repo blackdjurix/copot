@@ -20,7 +20,9 @@ final class CommittedLifecycleMetadataReconciliationEvidence
         private ApplicationWriteProtectionEvidence $guardEvidence,
         private ScopedDatabaseConsistencyEvidence $databaseEvidence,
         private int $capturedAt,
-        private int $validUntil
+        private int $validUntil,
+        private ?string $operationIdentity = null,
+        private ?string $recoveryPlanIdentity = null
     ) {
         foreach ([$committedStateIdentity, $installedMarkerIdentity, $recoveryManifestIdentity] as $identity) {
             if (preg_match('/^[a-f0-9]{64}$/D', strtolower($identity)) !== 1) {
@@ -29,6 +31,11 @@ final class CommittedLifecycleMetadataReconciliationEvidence
         }
         if ($capturedAt < 1 || $validUntil < $capturedAt) {
             throw new \InvalidArgumentException('Metadata reconciliation evidence validity is invalid.');
+        }
+        foreach ([$operationIdentity, $recoveryPlanIdentity] as $identity) {
+            if ($identity !== null && $identity === '') {
+                throw new \InvalidArgumentException('Metadata reconciliation preparation identity is invalid.');
+            }
         }
         if ($guardEvidence->scope()->identity() !== $databaseEvidence->scope()->identity()
             || !$guardEvidence->operationIdentity()->equals($recoveryIdentity)
@@ -50,6 +57,8 @@ final class CommittedLifecycleMetadataReconciliationEvidence
     public function databaseEvidence(): ScopedDatabaseConsistencyEvidence { return $this->databaseEvidence; }
     public function guardEvidenceIdentity(): string { return $this->guardEvidence->identity(); }
     public function databaseEvidenceIdentity(): string { return $this->databaseEvidence->identity(); }
+    public function operationIdentity(): ?string { return $this->operationIdentity; }
+    public function recoveryPlanIdentity(): ?string { return $this->recoveryPlanIdentity; }
     public function isValidAt(?int $at = null): bool
     {
         $at ??= time();
@@ -68,6 +77,8 @@ final class CommittedLifecycleMetadataReconciliationEvidence
             'database' => $this->databaseEvidence->identity(),
             'captured_at' => $this->capturedAt,
             'valid_until' => $this->validUntil,
+            'operation_identity' => $this->operationIdentity,
+            'recovery_plan_identity' => $this->recoveryPlanIdentity,
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 }

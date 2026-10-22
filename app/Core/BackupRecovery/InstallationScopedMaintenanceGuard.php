@@ -31,6 +31,42 @@ final class InstallationScopedMaintenanceGuard extends InstallationRecoveryMaint
     public function adopt(InstallationLock $lock): void { parent::adopt($lock); }
     public function detach(): void { parent::detach(); }
 
+    /**
+     * Produce fresh writer/drain evidence from the durable admission state.
+     * The evidence is only a precondition; enterScopedFresh() establishes the
+     * guard and revalidates the state before a recovery capture or write.
+     */
+    public function produceEvidence(RecoveryIdentity $identity, DatabaseScope $scope, int $ttlSeconds = 300): ApplicationWriteProtectionEvidence
+    {
+        if ($ttlSeconds < 1) {
+            throw new RecoveryLifecycleException('Application protection evidence lifetime is invalid.');
+        }
+        $now = time();
+        $evidence = null;
+        $this->withAdmissionLock(function () use ($identity, $scope, $now, $ttlSeconds, &$evidence): void {
+            $state = $this->readState();
+            if (($state['active'] ?? false) === true || ($state['draining'] ?? false) === true || (int) ($state['in_flight'] ?? 0) !== 0) {
+                throw new RecoveryLifecycleException('Application writers are not quiescent.');
+            }
+            [$stateIdentity, $drainIdentity] = $this->evidenceIdentities($identity, $scope, $state);
+            $evidence = new ApplicationWriteProtectionEvidence(
+                $scope,
+                $identity,
+                $stateIdentity,
+                $drainIdentity,
+                ['background', 'cli', 'http', 'scheduled'],
+                true,
+                true,
+                $now,
+                $now + $ttlSeconds
+            );
+        });
+        if (!$evidence instanceof ApplicationWriteProtectionEvidence) {
+            throw new RecoveryLifecycleException('Application protection evidence could not be produced.');
+        }
+        return $evidence;
+    }
+
     public function enterScoped(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $evidence): bool
     {
         if (!$evidence->isValidAt() || !$evidence->operationIdentity()->equals($identity)) { return false; }
@@ -52,6 +88,38 @@ final class InstallationScopedMaintenanceGuard extends InstallationRecoveryMaint
             });
             return true;
         } catch (\Throwable $exception) {
+            parent::leave($identity);
+            return false;
+        }
+    }
+
+    /** Atomically revalidate evidence and establish the scoped guard. */
+    public function enterScopedFresh(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $evidence): bool
+    {
+        if (!$evidence->isValidAt() || !$evidence->operationIdentity()->equals($identity)) { return false; }
+        if (!parent::enter($identity)) { return false; }
+        try {
+            $this->withAdmissionLock(function () use ($identity, $evidence): void {
+                $state = $this->readState();
+                if (($state['active'] ?? false) === true || (int) ($state['in_flight'] ?? 0) !== 0) {
+                    throw new RecoveryLifecycleException('Application writers are still in flight.');
+                }
+                [$stateIdentity, $drainIdentity] = $this->evidenceIdentities($identity, $evidence->scope(), $state);
+                if (!hash_equals($stateIdentity, $evidence->writerExclusionIdentity())
+                    || !hash_equals($drainIdentity, $evidence->drainIdentity())) {
+                    throw new RecoveryLifecycleException('Application protection evidence is stale.');
+                }
+                $this->writeState([
+                    'active' => true,
+                    'draining' => true,
+                    'identity' => $identity->value(),
+                    'evidence_identity' => $evidence->identity(),
+                    'in_flight' => 0,
+                    'updated_at' => gmdate('c'),
+                ]);
+            });
+            return true;
+        } catch (\Throwable) {
             parent::leave($identity);
             return false;
         }
@@ -94,6 +162,25 @@ final class InstallationScopedMaintenanceGuard extends InstallationRecoveryMaint
             $state['updated_at'] = gmdate('c');
             $this->writeState($state);
         });
+    }
+
+    /** @param array<string,mixed> $state @return array{0:string,1:string} */
+    private function evidenceIdentities(RecoveryIdentity $identity, DatabaseScope $scope, array $state): array
+    {
+        return [
+            hash('sha256', json_encode([
+                'scope' => $scope->identity(),
+                'operation' => $identity->value(),
+                'state' => $state,
+            ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
+            hash('sha256', json_encode([
+                'scope' => $scope->identity(),
+                'operation' => $identity->value(),
+                'in_flight' => (int) ($state['in_flight'] ?? 0),
+                'active' => (bool) ($state['active'] ?? false),
+                'draining' => (bool) ($state['draining'] ?? false),
+            ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
+        ];
     }
 
     private function clearState(RecoveryIdentity $identity): void

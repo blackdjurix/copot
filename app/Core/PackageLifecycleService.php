@@ -60,7 +60,8 @@ final class PackageLifecycleService
         private $v3MigrationRunner = null,
         private ?LegacyToV3BootstrapEntry $legacyBootstrap = null,
         private ?CommittedLifecycleMetadataReconciliationService $metadataReconciliation = null,
-        private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null
+        private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null,
+        private ?CommittedLifecycleMetadataReconciliationOrchestrator $metadataOrchestrator = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -127,6 +128,24 @@ final class PackageLifecycleService
             throw new \RuntimeException('Committed lifecycle metadata reconciliation is unavailable.');
         }
         return $this->metadataReconciliation->execute($plan, $recovery, $recoveryStore, $artifacts);
+    }
+
+    /** Canonical target-bound preparation; caller supplies no identities or evidence. */
+    public function prepareCommittedLifecycleMetadataReconciliation(): CommittedLifecycleMetadataReconciliationPreparation
+    {
+        if (!$this->metadataOrchestrator instanceof CommittedLifecycleMetadataReconciliationOrchestrator) {
+            throw new \RuntimeException('Committed lifecycle metadata orchestration is unavailable.');
+        }
+        return $this->metadataOrchestrator->prepare();
+    }
+
+    /** Execute only a recovery-ready preparation produced by the canonical orchestrator. */
+    public function executePreparedCommittedLifecycleMetadataReconciliation(CommittedLifecycleMetadataReconciliationPreparation $preparation): LifecycleOperationRecord
+    {
+        if (!$this->metadataOrchestrator instanceof CommittedLifecycleMetadataReconciliationOrchestrator) {
+            throw new \RuntimeException('Committed lifecycle metadata orchestration is unavailable.');
+        }
+        return $this->metadataOrchestrator->execute($preparation);
     }
 
     /** Preparation only: no package apply, migration, recovery, or committed-state mutation. */

@@ -53,11 +53,20 @@ final class CommittedLifecycleMetadataReconciliationService
             $current->manifestContractVersion(), $schema, $migrationIdentity, $current->committedAt(),
             $current->packageIntegrityIdentity(), $current->sourceInventoryReference()
         );
-        $operationId = 'metadata-reconciliation-sha256:' . hash('sha256', json_encode([
+        $operationId = $evidence->operationIdentity() ?? ('metadata-reconciliation-sha256:' . hash('sha256', json_encode([
             'installation' => $evidence->installation()->value(), 'before' => $currentIdentity,
             'after' => self::stateIdentity($after), 'scope' => $evidence->databaseScope()->identity(),
             'recovery' => $evidence->recoveryIdentity()->value(), 'manifest' => $evidence->recoveryManifestIdentity(),
-        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)));
+        if ($evidence->recoveryPlanIdentity() !== null) {
+            $expectedRecovery = \Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureService::forOperation(
+                $operationId,
+                $evidence->recoveryPlanIdentity()
+            );
+            if (!$expectedRecovery->equals($evidence->recoveryIdentity())) {
+                throw new \RuntimeException('Metadata recovery identity is not derived from the canonical operation preparation.');
+            }
+        }
         $planIdentity = hash('sha256', json_encode([
             'scheme' => 'committed-lifecycle-metadata-reconciliation-v1', 'operation' => $operationId,
             'before' => $currentIdentity, 'after' => self::stateIdentity($after),
@@ -93,7 +102,12 @@ final class CommittedLifecycleMetadataReconciliationService
             throw new \RuntimeException('Guard and scoped database evidence are not operation-bound.');
         }
         $artifacts->readManifest($evidence->recoveryIdentity());
-        $lock = $this->mutex->acquire();
+        $lock = $recovery->activeLifecycleLock();
+        $ownsLock = false;
+        if (!$lock instanceof InstallationLock) {
+            $lock = $this->mutex->acquire();
+            $ownsLock = true;
+        }
         if (!$lock instanceof InstallationLock) throw new \RuntimeException('Installation mutex is unavailable.');
         $permit = null;
         $journaled = false;
@@ -182,7 +196,7 @@ final class CommittedLifecycleMetadataReconciliationService
             throw $exception;
         } finally {
             $permit?->release();
-            $lock->release();
+            if ($ownsLock) $lock->release();
         }
     }
 
