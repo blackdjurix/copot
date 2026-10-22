@@ -142,9 +142,31 @@ final class CommittedLifecycleMetadataReconciliationService
             $this->injectFault('after_metadata_write');
             $written = $this->committedStore->read();
             if (!$written instanceof CommittedLifecycleState || self::stateIdentity($written) !== self::stateIdentity($plan->after())) throw new \RuntimeException('Committed lifecycle metadata reread failed.');
+            $writtenMarker = $this->installationState->readMarker();
+            $expectedMarker = [
+                'version' => $plan->after()->webcoreVersion(),
+                'installed_at' => $plan->after()->committedAt()->format(DATE_ATOM),
+            ];
+            if (!is_array($writtenMarker) || self::markerIdentity($writtenMarker) !== self::markerIdentity($expectedMarker)) {
+                throw new \RuntimeException('Installed marker reread failed after metadata reconciliation.');
+            }
             $postDatabase = $this->databaseHealth->verify($this->connection());
             $postMigration = $this->migrationHealth->verify($this->connection(), $this->registry, $plan->migrationIdentity());
             if (!$postDatabase->passed() || !$postMigration->passed()) throw new \RuntimeException('Post-write lifecycle health verification failed.');
+            $postManifest = $artifacts->readManifest($evidence->recoveryIdentity());
+            $manifest = $postManifest['manifest'] ?? null;
+            if (!$manifest instanceof \Copot\Core\BackupRecovery\RecoveryManifest
+                || !$manifest->recoveryIdentity()->equals($evidence->recoveryIdentity())
+                || $manifest->operationIdentity() !== $plan->operation()->operationId()) {
+                throw new \RuntimeException('Recovery manifest binding failed after metadata reconciliation.');
+            }
+            $persisted = $this->operations->read();
+            if (!$persisted instanceof LifecycleOperationRecord
+                || $persisted->operationId() !== $plan->operation()->operationId()
+                || $persisted->recoveryIdentity() !== $evidence->recoveryIdentity()->value()
+                || $persisted->recoveryManifestIdentity() !== $evidence->recoveryManifestIdentity()) {
+                throw new \RuntimeException('Metadata operation binding failed after metadata reconciliation.');
+            }
             $recovery->recordPostReconciliationVerification(
                 $evidence->recoveryIdentity(),
                 $evidence->recoveryManifestIdentity(),
