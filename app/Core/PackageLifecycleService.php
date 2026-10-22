@@ -139,6 +139,15 @@ final class PackageLifecycleService
         return $this->metadataOrchestrator->prepare();
     }
 
+    /** Rehydrates a persisted recovery-ready metadata preparation without recapture. */
+    public function resumeCommittedLifecycleMetadataReconciliation(string $operationIdentity): CommittedLifecycleMetadataReconciliationPreparation
+    {
+        if (!$this->metadataOrchestrator instanceof CommittedLifecycleMetadataReconciliationOrchestrator) {
+            throw new \RuntimeException('Committed lifecycle metadata orchestration is unavailable.');
+        }
+        return $this->metadataOrchestrator->resume($operationIdentity);
+    }
+
     /** Execute only a recovery-ready preparation produced by the canonical orchestrator. */
     public function executePreparedCommittedLifecycleMetadataReconciliation(CommittedLifecycleMetadataReconciliationPreparation $preparation): LifecycleOperationRecord
     {

@@ -42,6 +42,17 @@ final class RecoveryLifecycleCoordinator
         $this->scopedEvidence[$identity->value()] = ['application' => $application, 'database' => $database];
     }
 
+    /** Re-adopt durable scoped protection after process reconstruction. */
+    public function adoptScopedMaintenance(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $application, ScopedDatabaseConsistencyEvidence $database): void
+    {
+        $this->assertScopedEvidence($identity, $application, $database);
+        if (!$this->maintenance instanceof InstallationScopedMaintenanceGuard
+            || !$this->maintenance->scopedActive($identity, $application)) {
+            throw new RecoveryLifecycleException('Durable scoped application-write protection is unavailable for resume.');
+        }
+        $this->scopedEvidence[$identity->value()] = ['application' => $application, 'database' => $database];
+    }
+
     public function scopedProtectionMatches(RecoveryIdentity $identity, ScopedDatabaseConsistencyEvidence $database): bool
     {
         $evidence = $this->scopedEvidence[$identity->value()] ?? null;

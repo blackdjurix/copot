@@ -69,6 +69,30 @@ final class RecoveryArtifactStore
         return $decoded;
     }
 
+    /** Locate and integrity-read one manifest by its canonical operation identity. */
+    public function findManifestByOperationIdentity(string $operationIdentity): array
+    {
+        if ($operationIdentity === '' || preg_match('/[\x00-\x1F\x7F]/', $operationIdentity) === 1) {
+            throw new RecoveryStorageException('Recovery operation locator is invalid.');
+        }
+        $root = (new RecoveryStoragePathPolicy($this->root))->recoverySetsRoot();
+        if (!is_dir($root)) {
+            throw new RecoveryStorageException('Recovery set storage is unavailable.');
+        }
+        $matches = [];
+        foreach (glob($root . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'manifest' . DIRECTORY_SEPARATOR . 'recovery-manifest.json') ?: [] as $path) {
+            $decoded = $this->decodeManifestPath($path);
+            if ($decoded['manifest']->operationIdentity() === $operationIdentity) {
+                $matches[] = $decoded;
+            }
+        }
+        if (count($matches) !== 1) {
+            throw new RecoveryStorageException('Recovery operation locator is missing or ambiguous.');
+        }
+        $identity = $matches[0]['manifest']->recoveryIdentity();
+        return $this->readManifest($identity);
+    }
+
     public function readArtifact(RecoveryIdentity $identity, RecoveryArtifactRecord $artifact): string
     {
         $decoded = $this->readManifest($identity);
@@ -105,6 +129,15 @@ final class RecoveryArtifactStore
             return;
         }
         $this->writer?->write($path, $contents);
+    }
+
+    /** @return array{manifest: RecoveryManifest, artifacts: array<int, RecoveryArtifactRecord>, complete: bool, identity: string} */
+    private function decodeManifestPath(string $path): array
+    {
+        if (is_link($path) || !is_file($path) || !is_readable($path)) {
+            throw new RecoveryStorageException('Recovery manifest is unavailable.');
+        }
+        return $this->codec->decode((string) file_get_contents($path));
     }
 
     private function canonicalMetadata(RecoveryArtifactRecord $record): string

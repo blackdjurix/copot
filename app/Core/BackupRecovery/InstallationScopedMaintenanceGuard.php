@@ -67,6 +67,37 @@ final class InstallationScopedMaintenanceGuard extends InstallationRecoveryMaint
         return $evidence;
     }
 
+    /** Reconstitute fresh evidence for an already-active durable guard. */
+    public function revalidateActiveEvidence(RecoveryIdentity $identity, DatabaseScope $scope, int $ttlSeconds = 300): ApplicationWriteProtectionEvidence
+    {
+        if ($ttlSeconds < 1) {
+            throw new RecoveryLifecycleException('Application protection evidence lifetime is invalid.');
+        }
+        $now = time();
+        $evidence = null;
+        $this->withAdmissionLock(function () use ($identity, $scope, $now, $ttlSeconds, &$evidence): void {
+            $state = $this->readState();
+            if (($state['active'] ?? false) !== true
+                || ($state['draining'] ?? false) !== true
+                || ($state['identity'] ?? null) !== $identity->value()
+                || (int) ($state['in_flight'] ?? 0) !== 0) {
+                throw new RecoveryLifecycleException('Active writer protection is unavailable for resume.');
+            }
+            [$stateIdentity, $drainIdentity] = $this->evidenceIdentities($identity, $scope, $state);
+            $evidence = new ApplicationWriteProtectionEvidence(
+                $scope, $identity, $stateIdentity, $drainIdentity,
+                ['background', 'cli', 'http', 'scheduled'], true, true, $now, $now + $ttlSeconds
+            );
+            $state['evidence_identity'] = $evidence->identity();
+            $state['updated_at'] = gmdate('c');
+            $this->writeState($state);
+        });
+        if (!$evidence instanceof ApplicationWriteProtectionEvidence) {
+            throw new RecoveryLifecycleException('Active application protection evidence could not be revalidated.');
+        }
+        return $evidence;
+    }
+
     public function enterScoped(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $evidence): bool
     {
         if (!$evidence->isValidAt() || !$evidence->operationIdentity()->equals($identity)) { return false; }

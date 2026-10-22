@@ -70,7 +70,7 @@ final class CommittedLifecycleMetadataReconciliationService
         $planIdentity = hash('sha256', json_encode([
             'scheme' => 'committed-lifecycle-metadata-reconciliation-v1', 'operation' => $operationId,
             'before' => $currentIdentity, 'after' => self::stateIdentity($after),
-            'schema' => $schema, 'migration' => $migrationIdentity, 'evidence' => $evidence->identity(),
+            'schema' => $schema, 'migration' => $migrationIdentity, 'evidence' => $evidence->bindingIdentity(),
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
         $now = gmdate(DATE_ATOM);
         $operation = new LifecycleOperationRecord(

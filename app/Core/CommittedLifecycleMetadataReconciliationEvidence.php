@@ -81,4 +81,20 @@ final class CommittedLifecycleMetadataReconciliationEvidence
             'recovery_plan_identity' => $this->recoveryPlanIdentity,
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
+
+    /** Stable plan binding identity; freshness timestamps remain proof-only. */
+    public function bindingIdentity(): string
+    {
+        return hash('sha256', json_encode([
+            'installation' => $this->installation->value(),
+            'committed_state' => $this->committedStateIdentity,
+            'installed_marker' => $this->installedMarkerIdentity,
+            'database_scope' => $this->databaseScope->identity(),
+            'recovery' => $this->recoveryIdentity->value(),
+            'recovery_manifest' => $this->recoveryManifestIdentity,
+            'operation_identity' => $this->operationIdentity,
+            'recovery_plan_identity' => $this->recoveryPlanIdentity,
+            'schema_stability' => $this->databaseEvidence->schemaStabilityIdentity(),
+        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+    }
 }

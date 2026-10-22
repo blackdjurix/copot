@@ -126,6 +126,110 @@ final class CommittedLifecycleMetadataReconciliationOrchestrator
         }
     }
 
+    /** Rehydrate a persisted, recovery-ready preparation without recapturing. */
+    public function resume(string $operationIdentity): CommittedLifecycleMetadataReconciliationPreparation
+    {
+        if ($operationIdentity === '' || preg_match('/[\x00-\x1F\x7F]/', $operationIdentity) === 1) {
+            throw new \RuntimeException('Metadata reconciliation operation locator is invalid.');
+        }
+        if ($this->operations->read() !== null) {
+            throw new \RuntimeException('A lifecycle operation is already active.');
+        }
+        $decoded = $this->artifacts->findManifestByOperationIdentity($operationIdentity);
+        $manifest = $decoded['manifest'];
+        $recoveryIdentity = $manifest->recoveryIdentity();
+        $record = $this->recoveryStore->read($recoveryIdentity);
+        if ($record->operationIdentity() !== $operationIdentity
+            || $record->manifestIdentity() !== $manifest->identity()
+            || $record->state() !== \Copot\Core\BackupRecovery\RecoveryLifecycleState::READY
+            || !$record->captureComplete()
+            || $record->mutationStarted()
+            || !$record->confirmationMatches($recoveryIdentity, $manifest->identity(), $manifest->identity())) {
+            throw new \RuntimeException('Persisted metadata recovery is not resume-eligible.');
+        }
+
+        $installation = $this->installationIdentities->read();
+        if (!$installation instanceof InstallationIdentity) throw new \RuntimeException('Installation identity is unavailable.');
+        $committed = $this->committedStore->read();
+        if (!$committed instanceof CommittedLifecycleState) throw new \RuntimeException('A committed lifecycle state is required.');
+        if (CommittedLifecycleMetadataReconciliationService::stateIdentity($committed) !== $manifest->preOperationLifecycleIdentity()) {
+            throw new \RuntimeException('Committed lifecycle state drifted after recovery capture.');
+        }
+        $marker = $this->installationState->readMarker();
+        if (!is_array($marker)) throw new \RuntimeException('Installed marker is unavailable.');
+
+        $records = $decoded['artifacts'];
+        $databaseRecord = $this->artifactRecord($records, 'database.webcore');
+        $lifecycleRecord = $this->artifactRecord($records, 'filesystem.lifecycle.committed');
+        $markerRecord = $this->artifactRecord($records, 'filesystem.lifecycle.installed-lock');
+        $databaseBytes = $this->artifacts->readArtifact($recoveryIdentity, $databaseRecord);
+        $lifecycleBytes = $this->artifacts->readArtifact($recoveryIdentity, $lifecycleRecord);
+        $markerBytes = $this->artifacts->readArtifact($recoveryIdentity, $markerRecord);
+        $databaseBundle = (new \Copot\Core\BackupRecovery\MySqlDatabaseArtifactCodec())->decode($databaseBytes);
+        $lifecycleArtifact = (new \Copot\Core\BackupRecovery\LifecycleRecoveryArtifactCodec())->decode($lifecycleBytes);
+        $markerArtifact = (new \Copot\Core\BackupRecovery\InstalledLockRecoveryArtifactCodec())->decode($markerBytes);
+        if (!$lifecycleArtifact->state() instanceof CommittedLifecycleState
+            || CommittedLifecycleMetadataReconciliationService::stateIdentity($lifecycleArtifact->state()) !== $manifest->preOperationLifecycleIdentity()
+            || CommittedLifecycleMetadataReconciliationService::markerIdentity($markerArtifact->marker()) !== CommittedLifecycleMetadataReconciliationService::markerIdentity($marker)) {
+            throw new \RuntimeException('Persisted lifecycle recovery artifacts do not match the current target.');
+        }
+
+        $scope = DatabaseScope::fromOwnershipCatalog(
+            $installation->value(), $this->databaseIdentity, $this->namespaceIdentity, $this->ownershipCatalog
+        );
+        if (!isset($databaseBundle['scope']['scope_identity']) || $databaseBundle['scope']['scope_identity'] !== $scope->identity()) {
+            throw new \RuntimeException('Persisted database recovery scope does not match the current target.');
+        }
+        $connection = ($this->connection)();
+        if (!$connection instanceof PDO) throw new \RuntimeException('Canonical database connection is unavailable.');
+        $databaseGate = $this->databaseHealth->verify($connection);
+        $migrationGate = $this->migrationHealth->verify($connection, $this->registry, null);
+        if (!$databaseGate->passed() || !$migrationGate->passed()) throw new \RuntimeException('Current database evidence is not healthy for resume.');
+        $ledgerRecords = $this->ledger->records($connection);
+        if ($ledgerRecords === []) throw new \RuntimeException('Applied migration history is required for resume.');
+        $schema = $ledgerRecords[array_key_last($ledgerRecords)]->targetSchemaIdentity();
+        $migration = $this->migrationHealth->identity($connection);
+        $currentDatabaseIdentity = hash('sha256', json_encode([
+            'database_identity' => $databaseBundle['database_identity'],
+            'schema' => $databaseBundle['identities']['schema'],
+            'data' => $databaseBundle['identities']['data'],
+            'migration_ledger' => $databaseBundle['identities']['migration_ledger'],
+            'scope' => $scope->identity(),
+        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+        $provider = new \Copot\Core\BackupRecovery\MySqlRecoveryProvider();
+        if ($provider->stateIdentity($connection, $this->databaseIdentity, $scope) !== $currentDatabaseIdentity
+            || $databaseBundle['database_identity'] !== $this->databaseIdentity
+            || $manifest->preOperationMigrationLedgerIdentity() !== $migration) {
+            throw new \RuntimeException('Persisted database recovery evidence is stale.');
+        }
+
+        if (!$this->guard instanceof InstallationScopedMaintenanceGuard) throw new \RuntimeException('Scoped maintenance guard is unavailable.');
+        $application = $this->guard->revalidateActiveEvidence($recoveryIdentity, $scope);
+        $database = new ScopedDatabaseConsistencyEvidence(
+            $scope, $recoveryIdentity, $application->writerExclusionIdentity(),
+            hash('sha256', json_encode(['scope' => $scope->identity(), 'schema' => $schema, 'migration' => $migration, 'tables' => $scope->tablesetFingerprint()], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
+            $application->capturedAt(), $application->validUntil()
+        );
+        $lock = $this->recovery->mutex();
+        if (!$lock instanceof \Copot\Core\InstallationLock) throw new \RuntimeException('Lifecycle mutex is unavailable for recovery resume.');
+        $this->guard->adopt($lock);
+        if (!$this->guard->enter($recoveryIdentity)) {
+            $lock->release();
+            throw new \RuntimeException('Durable recovery Guard could not adopt the lifecycle mutex.');
+        }
+        $this->recovery->adoptScopedMaintenance($recoveryIdentity, $application, $database);
+        $evidence = new CommittedLifecycleMetadataReconciliationEvidence(
+            $installation, CommittedLifecycleMetadataReconciliationService::stateIdentity($committed), CommittedLifecycleMetadataReconciliationService::markerIdentity($marker), $scope,
+            $recoveryIdentity, $manifest->identity(), $application, $database,
+            $application->capturedAt(), $application->validUntil(), $operationIdentity, $manifest->applyPlanIdentity()
+        );
+        $plan = $this->metadata->plan($evidence);
+        if ($plan->operation()->operationId() !== $operationIdentity) throw new \RuntimeException('Resumed operation identity changed.');
+        return new CommittedLifecycleMetadataReconciliationPreparation(
+            $plan, new \Copot\Core\BackupRecovery\NormalWebcoreRecoverySession($this->recovery, $recoveryIdentity, $manifest->identity(), $record, null, $database)
+        );
+    }
+
     public function execute(CommittedLifecycleMetadataReconciliationPreparation $preparation): LifecycleOperationRecord
     {
         if (!$preparation->ready()) throw new \RuntimeException('Metadata reconciliation preparation is not recovery-ready.');
@@ -155,6 +259,13 @@ final class CommittedLifecycleMetadataReconciliationOrchestrator
     {
         $statement = $connection->query("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE'");
         $scope->assertPhysicalTables(array_map('strval', $statement->fetchAll(PDO::FETCH_COLUMN)));
+    }
+
+    /** @param array<int, \Copot\Core\BackupRecovery\RecoveryArtifactRecord> $records */
+    private function artifactRecord(array $records, string $domain): \Copot\Core\BackupRecovery\RecoveryArtifactRecord
+    {
+        foreach ($records as $record) if ($record->domainIdentifier() === $domain) return $record;
+        throw new \RuntimeException('Required persisted recovery artifact is missing: ' . $domain);
     }
 
     public static function operationIdentity(string $installation, string $committed, string $marker, string $scope, string $schema, string $migration): string
