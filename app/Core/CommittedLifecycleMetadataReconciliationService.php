@@ -112,6 +112,7 @@ final class CommittedLifecycleMetadataReconciliationService
         $permit = null;
         $journaled = false;
         $metadataWriteAttempted = false;
+        $postReconciliationVerified = false;
         $originalMarker = $this->installationState->readMarker();
         try {
             if ($this->operations->read() !== null) throw new \RuntimeException('A lifecycle operation is already active.');
@@ -144,14 +145,28 @@ final class CommittedLifecycleMetadataReconciliationService
             $postDatabase = $this->databaseHealth->verify($this->connection());
             $postMigration = $this->migrationHealth->verify($this->connection(), $this->registry, $plan->migrationIdentity());
             if (!$postDatabase->passed() || !$postMigration->passed()) throw new \RuntimeException('Post-write lifecycle health verification failed.');
+            $recovery->recordPostReconciliationVerification(
+                $evidence->recoveryIdentity(),
+                $evidence->recoveryManifestIdentity(),
+                $evidence->recoveryManifestIdentity()
+            );
+            $postReconciliationVerified = true;
+            $this->injectFault('after_recovery_post_verification');
+            $recovery->markReconciliationCleanupPending(
+                $evidence->recoveryIdentity(),
+                $evidence->recoveryManifestIdentity(),
+                $evidence->recoveryManifestIdentity()
+            );
+            $this->injectFault('after_recovery_cleanup_pending');
             $completed = $awaiting->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Committed lifecycle schema and migration identities reconciled.');
             $this->operations->save($completed);
+            $this->injectFault('before_operation_clear');
             $this->operations->clear($completed);
             return $completed;
         } catch (\Throwable $exception) {
-            $rollbackSucceeded = !$metadataWriteAttempted;
+            $rollbackSucceeded = !$metadataWriteAttempted || $postReconciliationVerified;
             $rollbackReason = '';
-            if ($metadataWriteAttempted) {
+            if ($metadataWriteAttempted && !$postReconciliationVerified) {
                 try {
                     $this->injectFault('before_metadata_rollback');
                     $this->committedStore->commit($this->installationState, $plan->before());
@@ -181,10 +196,14 @@ final class CommittedLifecycleMetadataReconciliationService
                     $persisted = $this->operations->read();
                     if ($persisted instanceof LifecycleOperationRecord
                         && $persisted->operationId() === $plan->operation()->operationId()) {
-                        $phase = $rollbackSucceeded ? LifecycleOperationRecord::BLOCKED : LifecycleOperationRecord::INDETERMINATE;
-                        $reason = $rollbackSucceeded
-                            ? 'Metadata reconciliation failed; original committed state was restored and requires explicit reconciliation retry.'
-                            : 'Metadata reconciliation outcome is indeterminate; rollback failed and recovery evidence must be reconciled before retry.';
+                        $phase = $postReconciliationVerified
+                            ? LifecycleOperationRecord::CLEANUP_PENDING
+                            : ($rollbackSucceeded ? LifecycleOperationRecord::BLOCKED : LifecycleOperationRecord::INDETERMINATE);
+                        $reason = $postReconciliationVerified
+                            ? 'Post-reconciliation evidence is durable; operation cleanup is pending and recovery evidence must be retained.'
+                            : ($rollbackSucceeded
+                                ? 'Metadata reconciliation failed; original committed state was restored and requires explicit reconciliation retry.'
+                                : 'Metadata reconciliation outcome is indeterminate; rollback failed and recovery evidence must be reconciled before retry.');
                         if ($rollbackReason !== '') $reason .= ' Rollback: ' . $rollbackReason;
                         $this->operations->save($persisted->advance($phase, $persisted->fileCursor(), $persisted->lastVerifiedPath(), null, $reason));
                     }
