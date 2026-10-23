@@ -79,6 +79,10 @@ final class RecoveryLifecycleCoordinator
     public function leaveMaintenance(RecoveryIdentity $identity): void
     { unset($this->scopedEvidence[$identity->value()]); if ($this->maintenance === null || !$this->maintenance->leave($identity)) throw new RecoveryLifecycleException('Recovery maintenance could not be released.'); }
 
+    /** Idempotent settlement probe; does not alter recovery or guard state. */
+    public function maintenanceActive(RecoveryIdentity $identity): bool
+    { return $this->maintenance !== null && $this->maintenance->isActive($identity); }
+
     public function transition(RecoveryIdentity $identity, string $state, string $reason = ''): RecoveryLifecycleRecord
     { return $this->store->transition($identity, $state, $reason); }
 

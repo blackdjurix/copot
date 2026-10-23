@@ -273,7 +273,16 @@ final class PackageLifecycleFactory
             $legacyBootstrap,
             $metadataReconciliation,
             new CommittedSourceAuthorityPlanner(),
-            $metadataOrchestrator
+            $metadataOrchestrator,
+            $recoveryComposition instanceof PackageLifecycleRecoveryComposition
+                ? new PreMutationSettlementService(
+                    $maintenance,
+                    $recoveryComposition->store,
+                    $recoveryComposition->artifacts,
+                    $recoveryComposition->coordinator,
+                    new PreMutationSettlementEvidenceStore($storage)
+                )
+                : null
         );
     }
 

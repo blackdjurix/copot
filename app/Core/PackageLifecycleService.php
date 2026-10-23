@@ -61,7 +61,8 @@ final class PackageLifecycleService
         private ?LegacyToV3BootstrapEntry $legacyBootstrap = null,
         private ?CommittedLifecycleMetadataReconciliationService $metadataReconciliation = null,
         private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null,
-        private ?CommittedLifecycleMetadataReconciliationOrchestrator $metadataOrchestrator = null
+        private ?CommittedLifecycleMetadataReconciliationOrchestrator $metadataOrchestrator = null,
+        private ?PreMutationSettlementService $preMutationSettlement = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -75,6 +76,15 @@ final class PackageLifecycleService
     private LegacyRuntimeClassifier $legacyClassifier;
     private LegacyReconciliationPlanner $reconciliationPlanner;
     private DatabaseLifecycleClassifier $databaseLifecycleClassifier;
+
+    /** Settles only a proven PREPARING operation before its mutation boundary. */
+    public function settlePreMutation(PreMutationSettlementRequest $request): LifecycleOperationRecord
+    {
+        if (!$this->preMutationSettlement instanceof PreMutationSettlementService) {
+            throw new \RuntimeException('Pre-mutation settlement is unavailable.');
+        }
+        return $this->preMutationSettlement->settle($request);
+    }
 
     /** Non-mutating canonical planning entrypoint. */
     public function planCommittedSourceAuthority(
