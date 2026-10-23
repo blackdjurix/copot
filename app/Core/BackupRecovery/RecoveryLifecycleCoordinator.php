@@ -53,6 +53,55 @@ final class RecoveryLifecycleCoordinator
         $this->scopedEvidence[$identity->value()] = ['application' => $application, 'database' => $database];
     }
 
+    /**
+     * Re-establish process-local ownership of a proven durable scoped Guard.
+     * The caller receives no synthetic recovery state: failure leaves the
+     * durable Guard intact and releases the newly acquired mutex.
+     *
+     * @return bool true only when ownership was reconstructed in this process
+     */
+    public function resumeDurableScopedMaintenance(RecoveryIdentity $identity): bool
+    {
+        if ($this->maintenance === null) {
+            throw new RecoveryLifecycleException('Recovery maintenance is unavailable for resume.');
+        }
+        if ($this->maintenance->isActive($identity)) {
+            return false;
+        }
+        if (!$this->maintenance instanceof InstallationScopedMaintenanceGuard) {
+            throw new RecoveryLifecycleException('Scoped maintenance Guard is unavailable for resume.');
+        }
+        $lock = $this->mutex->acquire();
+        if (!$lock instanceof InstallationLock) {
+            throw new RecoveryLifecycleException('Lifecycle mutex is unavailable for durable Guard resume.');
+        }
+        try {
+            $this->maintenance->resumeScoped($identity, $lock);
+            return true;
+        } catch (\Throwable $exception) {
+            $lock->release();
+            throw $exception;
+        }
+    }
+
+    /** Drop only a newly reconstructed owner; durable protection remains active. */
+    public function abandonResumedScopedMaintenance(RecoveryIdentity $identity): void
+    {
+        if (!$this->maintenance instanceof InstallationScopedMaintenanceGuard || !$this->maintenance->isActive($identity)) {
+            return;
+        }
+        $lock = $this->maintenance->activeLock();
+        $this->maintenance->detach();
+        $lock?->release();
+    }
+
+    /** Probe the durable Guard without treating it as process-local ownership. */
+    public function durableScopedMaintenanceActive(RecoveryIdentity $identity): bool
+    {
+        return $this->maintenance instanceof InstallationScopedMaintenanceGuard
+            && $this->maintenance->durableScopedActive($identity);
+    }
+
     public function scopedProtectionMatches(RecoveryIdentity $identity, ScopedDatabaseConsistencyEvidence $database): bool
     {
         $evidence = $this->scopedEvidence[$identity->value()] ?? null;

@@ -32,6 +32,54 @@ final class InstallationScopedMaintenanceGuard extends InstallationRecoveryMaint
     public function detach(): void { parent::detach(); }
 
     /**
+     * Rebind a freshly acquired lifecycle mutex to an already-durable scoped
+     * Guard. This is deliberately narrower than enterScoped(): it never
+     * creates or replaces protection state, and therefore cannot turn a stale
+     * or foreign Guard into a new admission.
+     */
+    public function resumeScoped(RecoveryIdentity $identity, InstallationLock $lock): void
+    {
+        if ($this->isActive($identity)) {
+            throw new RecoveryLifecycleException('Scoped application-write protection is already process-owned.');
+        }
+
+        try {
+            $this->withAdmissionLock(function () use ($identity, $lock): void {
+                $state = $this->readState();
+                if (($state['active'] ?? false) !== true
+                    || ($state['draining'] ?? false) !== true
+                    || ($state['identity'] ?? null) !== $identity->value()
+                    || (int) ($state['in_flight'] ?? 0) !== 0
+                    || !is_string($state['evidence_identity'] ?? null)
+                    || preg_match('/^[a-f0-9]{64}$/D', $state['evidence_identity']) !== 1) {
+                    throw new RecoveryLifecycleException('Durable scoped application-write protection is unavailable for resume.');
+                }
+                parent::adopt($lock);
+                if (!parent::enter($identity)) {
+                    throw new RecoveryLifecycleException('Durable scoped application-write protection could not adopt the lifecycle mutex.');
+                }
+            });
+        } catch (\Throwable $exception) {
+            if ($this->activeLock() === $lock) {
+                parent::detach();
+            }
+            throw $exception;
+        }
+    }
+
+    /** Probe durable protection without asserting process-local ownership. */
+    public function durableScopedActive(RecoveryIdentity $identity): bool
+    {
+        $state = $this->readState();
+        return ($state['active'] ?? false) === true
+            && ($state['draining'] ?? false) === true
+            && ($state['identity'] ?? null) === $identity->value()
+            && (int) ($state['in_flight'] ?? -1) === 0
+            && is_string($state['evidence_identity'] ?? null)
+            && preg_match('/^[a-f0-9]{64}$/D', $state['evidence_identity']) === 1;
+    }
+
+    /**
      * Produce fresh writer/drain evidence from the durable admission state.
      * The evidence is only a precondition; enterScopedFresh() establishes the
      * guard and revalidates the state before a recovery capture or write.
