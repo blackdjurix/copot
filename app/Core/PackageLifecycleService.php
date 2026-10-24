@@ -801,9 +801,12 @@ final class PackageLifecycleService
     public function continueAwaitingWu6(string $operationId): PackageLifecycleResult
     {
         $record = $this->maintenance->record();
+        $bootstrapCleanupPending = $record instanceof LifecycleOperationRecord
+            && $record->classification() === LegacyBootstrapPreparation::OPERATION_TYPE
+            && $record->phase() === LifecycleOperationRecord::CLEANUP_PENDING;
         if (!$record instanceof LifecycleOperationRecord
             || $record->operationId() !== $operationId
-            || $record->phase() !== LifecycleOperationRecord::AWAITING_WU6
+            || ($record->phase() !== LifecycleOperationRecord::AWAITING_WU6 && !$bootstrapCleanupPending)
             || $record->fileCursor() <= 0
             || $record->lastVerifiedPath() === null
             || !in_array($record->migrationOutcome(), [MigrationRunResult::COMPLETED, MigrationRunResult::NOOP], true)
@@ -853,14 +856,12 @@ final class PackageLifecycleService
                 $stagingPersisted = true;
             }
 
-            $final = $this->healthCoordinator->finalize(
+            $final = $this->finalizeAwaitingWu6(
+                $record,
                 $operationId,
-                $manifest->contract(),
+                $manifest,
                 $applyPlan,
-                $migration,
-                $this->liveGuard,
-                ($this->connection)(),
-                ($this->runtimeChecks)()
+                $migration
             );
             if ($final->status() === HealthIntegrityCommitResult::COMPLETED) {
                 if ($retainedStagingPath !== $payload->stagingPath()) {
@@ -878,6 +879,65 @@ final class PackageLifecycleService
                 try { $payload->cleanup(); } catch (\Throwable) {}
             }
         }
+    }
+
+    /**
+     * Route legacy bootstrap through the V3 WU6 boundary so the committed
+     * source inventory reference is published only after all health gates.
+     * Ordinary V3 and legacy lifecycle continuations retain their existing
+     * generic finalization behavior.
+     */
+    private function finalizeAwaitingWu6(
+        LifecycleOperationRecord $record,
+        string $operationId,
+        PackageManifest $manifest,
+        WebcoreApplyPlan $applyPlan,
+        CoreMigrationPlan $migration
+    ): HealthIntegrityCommitResult {
+        if ($record->classification() !== LegacyBootstrapPreparation::OPERATION_TYPE) {
+            return $this->healthCoordinator->finalize(
+                $operationId,
+                $manifest->contract(),
+                $applyPlan,
+                $migration,
+                $this->liveGuard,
+                ($this->connection)(),
+                ($this->runtimeChecks)()
+            );
+        }
+
+        if (!$this->v3Planner instanceof PackageV3SourceRelativePlanner
+            || !$this->sourceInventoryArtifacts instanceof SourceInventoryArtifactStore) {
+            throw new \RuntimeException('Legacy bootstrap WU6 finalization composition is unavailable.');
+        }
+
+        // Bootstrap has provisional source evidence only. The canonical V3
+        // planner must therefore receive no source artifact here; it will
+        // derive the complete target inventory from the package and publish
+        // the committed source artifact only after WU6 health gates pass.
+        $plan = $this->v3Planner->plan($manifest);
+        if ($plan->coverage() !== 'full'
+            || $plan->sourceReference() !== null
+            || $plan->removalActions() !== []) {
+            throw new \RuntimeException('Legacy bootstrap requires a full deliver-only V3 finalization plan.');
+        }
+        if ($plan->package()->releaseIdentity() !== $record->releaseIdentity()
+            || $plan->package()->targetWebcoreVersion() !== $record->targetWebcoreVersion()
+            || $plan->package()->targetInventory()?->fingerprint() !== $plan->targetFingerprint()) {
+            throw new \RuntimeException('Legacy bootstrap V3 finalization identity does not match the operation.');
+        }
+
+        return $this->healthCoordinator->finalizeV3(
+            $operationId,
+            $manifest->contract(),
+            $plan,
+            $applyPlan,
+            $migration,
+            $this->liveGuard,
+            ($this->connection)(),
+            $this->sourceInventoryArtifacts,
+            ($this->runtimeChecks)()
+        );
     }
 
     private function reconstructCompletedMigrationPlan(LifecycleOperationRecord $record, PackageManifest $manifest): CoreMigrationPlan

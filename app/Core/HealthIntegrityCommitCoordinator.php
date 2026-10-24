@@ -114,7 +114,30 @@ final class HealthIntegrityCommitCoordinator
         }
         try {
             $record = $this->maintenance->record();
-            if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId || $record->phase() !== LifecycleOperationRecord::AWAITING_WU6) {
+            if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId) {
+                return $this->failure('operation', 'Lifecycle operation is not awaiting WU6.', $operationId);
+            }
+            if ($record->phase() === LifecycleOperationRecord::CLEANUP_PENDING) {
+                $committed = $this->committedStore->read();
+                $reference = $committed?->sourceInventoryReference();
+                if (!$reference instanceof SourceInventoryReference
+                    || $reference->releaseIdentity() !== $package->releaseIdentity()
+                    || $reference->manifestContractVersion() !== PackageContract::V3_MANIFEST_CONTRACT_VERSION
+                    || $reference->sourceTreeIdentity() !== $package->sourceTreeIdentity()
+                    || !$package->targetInventory() instanceof CanonicalTargetInventory) {
+                    return $this->failure('source-inventory', 'Cleanup-pending V3 state has no valid committed source inventory reference.', $operationId);
+                }
+                try {
+                    $artifact = $sourceArtifacts->read($reference);
+                    if ($artifact->inventory()->fingerprint() !== $package->targetInventory()->fingerprint()) {
+                        return $this->failure('source-inventory', 'Cleanup-pending V3 source inventory does not match the package target.', $operationId);
+                    }
+                } catch (\Throwable $exception) {
+                    return $this->failure('source-inventory', $exception->getMessage(), $operationId);
+                }
+                return $this->retryCleanup($record, $package, $applyPlan, $migrationPlan, $connection, $operationId);
+            }
+            if ($record->phase() !== LifecycleOperationRecord::AWAITING_WU6) {
                 return $this->failure('operation', 'Lifecycle operation is not awaiting WU6.', $operationId);
             }
             $identity = $this->identityGates($record, $package, $applyPlan, $migrationPlan);
