@@ -84,6 +84,46 @@ final class RecoveryLifecycleCoordinator
         }
     }
 
+    /**
+     * Re-admit an existing READY recovery whose durable Guard was released
+     * before the process was reconstructed. This never creates or changes a
+     * recovery record; it only establishes fresh scoped protection while the
+     * caller holds the returned process-local ownership through the session.
+     */
+    public function resumeReadyScopedMaintenance(
+        RecoveryIdentity $identity,
+        ApplicationWriteProtectionEvidence $application,
+        ScopedDatabaseConsistencyEvidence $database
+    ): void {
+        $this->assertScopedEvidence($identity, $application, $database);
+        if (!$this->maintenance instanceof InstallationScopedMaintenanceGuard) {
+            throw new RecoveryLifecycleException('Scoped maintenance Guard is unavailable for READY recovery resume.');
+        }
+        if ($this->maintenance->durableScopedActive($identity)) {
+            throw new RecoveryLifecycleException('Durable scoped protection is already active; use durable ownership resume.');
+        }
+
+        $lock = $this->mutex->acquire();
+        if (!$lock instanceof InstallationLock) {
+            throw new RecoveryLifecycleException('Lifecycle mutex is unavailable for READY recovery resume.');
+        }
+
+        try {
+            $this->maintenance->adopt($lock);
+            if (!$this->maintenance->enterScopedFresh($identity, $application)) {
+                throw new RecoveryLifecycleException('READY recovery Guard admission could not be established.');
+            }
+            $this->scopedEvidence[$identity->value()] = ['application' => $application, 'database' => $database];
+        } catch (\Throwable $exception) {
+            $activeLock = $this->maintenance->activeLock();
+            if ($activeLock === $lock) {
+                $this->maintenance->detach();
+            }
+            $lock->release();
+            throw $exception;
+        }
+    }
+
     /** Drop only a newly reconstructed owner; durable protection remains active. */
     public function abandonResumedScopedMaintenance(RecoveryIdentity $identity): void
     {

@@ -204,30 +204,48 @@ final class CommittedLifecycleMetadataReconciliationOrchestrator
         }
 
         if (!$this->guard instanceof InstallationScopedMaintenanceGuard) throw new \RuntimeException('Scoped maintenance guard is unavailable.');
-        $application = $this->guard->revalidateActiveEvidence($recoveryIdentity, $scope);
+        $durableGuardActive = $this->recovery->durableScopedMaintenanceActive($recoveryIdentity);
+        $application = $durableGuardActive
+            ? $this->guard->revalidateActiveEvidence($recoveryIdentity, $scope)
+            : $this->guard->produceEvidence($recoveryIdentity, $scope);
         $database = new ScopedDatabaseConsistencyEvidence(
             $scope, $recoveryIdentity, $application->writerExclusionIdentity(),
             hash('sha256', json_encode(['scope' => $scope->identity(), 'schema' => $schema, 'migration' => $migration, 'tables' => $scope->tablesetFingerprint()], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
             $application->capturedAt(), $application->validUntil()
         );
-        $lock = $this->recovery->mutex();
-        if (!$lock instanceof \Copot\Core\InstallationLock) throw new \RuntimeException('Lifecycle mutex is unavailable for recovery resume.');
-        $this->guard->adopt($lock);
-        if (!$this->guard->enter($recoveryIdentity)) {
-            $lock->release();
-            throw new \RuntimeException('Durable recovery Guard could not adopt the lifecycle mutex.');
+        $scopedMaintenanceEstablished = false;
+        try {
+            if ($durableGuardActive) {
+                $lock = $this->recovery->mutex();
+                if (!$lock instanceof \Copot\Core\InstallationLock) throw new \RuntimeException('Lifecycle mutex is unavailable for recovery resume.');
+                $this->guard->adopt($lock);
+                if (!$this->guard->enter($recoveryIdentity)) {
+                    $this->guard->detach();
+                    $lock->release();
+                    throw new \RuntimeException('Durable recovery Guard could not adopt the lifecycle mutex.');
+                }
+                $scopedMaintenanceEstablished = true;
+                $this->recovery->adoptScopedMaintenance($recoveryIdentity, $application, $database);
+            } else {
+                $this->recovery->resumeReadyScopedMaintenance($recoveryIdentity, $application, $database);
+                $scopedMaintenanceEstablished = true;
+            }
+            $evidence = new CommittedLifecycleMetadataReconciliationEvidence(
+                $installation, CommittedLifecycleMetadataReconciliationService::stateIdentity($committed), CommittedLifecycleMetadataReconciliationService::markerIdentity($marker), $scope,
+                $recoveryIdentity, $manifest->identity(), $application, $database,
+                $application->capturedAt(), $application->validUntil(), $operationIdentity, $manifest->applyPlanIdentity()
+            );
+            $plan = $this->metadata->plan($evidence);
+            if ($plan->operation()->operationId() !== $operationIdentity) throw new \RuntimeException('Resumed operation identity changed.');
+            return new CommittedLifecycleMetadataReconciliationPreparation(
+                $plan, new \Copot\Core\BackupRecovery\NormalWebcoreRecoverySession($this->recovery, $recoveryIdentity, $manifest->identity(), $record, null, $database)
+            );
+        } catch (\Throwable $exception) {
+            if ($scopedMaintenanceEstablished) {
+                try { $this->recovery->leaveMaintenance($recoveryIdentity); } catch (\Throwable) {}
+            }
+            throw $exception;
         }
-        $this->recovery->adoptScopedMaintenance($recoveryIdentity, $application, $database);
-        $evidence = new CommittedLifecycleMetadataReconciliationEvidence(
-            $installation, CommittedLifecycleMetadataReconciliationService::stateIdentity($committed), CommittedLifecycleMetadataReconciliationService::markerIdentity($marker), $scope,
-            $recoveryIdentity, $manifest->identity(), $application, $database,
-            $application->capturedAt(), $application->validUntil(), $operationIdentity, $manifest->applyPlanIdentity()
-        );
-        $plan = $this->metadata->plan($evidence);
-        if ($plan->operation()->operationId() !== $operationIdentity) throw new \RuntimeException('Resumed operation identity changed.');
-        return new CommittedLifecycleMetadataReconciliationPreparation(
-            $plan, new \Copot\Core\BackupRecovery\NormalWebcoreRecoverySession($this->recovery, $recoveryIdentity, $manifest->identity(), $record, null, $database)
-        );
     }
 
     public function execute(CommittedLifecycleMetadataReconciliationPreparation $preparation): LifecycleOperationRecord
