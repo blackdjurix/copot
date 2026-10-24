@@ -7,6 +7,8 @@ use Copot\Core\BackupRecovery\MetadataRecoveryCaptureRequest;
 use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureService;
 use Copot\Core\BackupRecovery\RecoveryArtifactStore;
 use Copot\Core\BackupRecovery\RecoveryLifecycleCoordinator;
+use Copot\Core\BackupRecovery\RecoveryLifecycleRecord;
+use Copot\Core\BackupRecovery\RecoveryLifecycleState;
 use Copot\Core\BackupRecovery\RecoveryLifecycleStore;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
 use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
@@ -248,6 +250,72 @@ final class CommittedLifecycleMetadataReconciliationOrchestrator
         }
     }
 
+    /**
+     * Finish a post-mutation reconciliation whose durable cleanup boundary was
+     * reached but whose process died before the recovery/Guard session closed.
+     *
+     * This path never reconstructs a preparation and never invokes metadata
+     * execution. It only validates the immutable recovery binding, re-adopts
+     * the durable scoped Guard when necessary, and completes cleanup.
+     */
+    public function continueCleanup(string $operationIdentity): RecoveryLifecycleRecord
+    {
+        if ($operationIdentity === '' || preg_match('/[\x00-\x1F\x7F]/', $operationIdentity) === 1) {
+            throw new \RuntimeException('Metadata reconciliation cleanup operation locator is invalid.');
+        }
+        if ($this->operations->read() !== null) {
+            throw new \RuntimeException('A lifecycle operation is already active.');
+        }
+
+        $decoded = $this->artifacts->findManifestByOperationIdentity($operationIdentity);
+        $manifest = $decoded['manifest'];
+        $recoveryIdentity = $manifest->recoveryIdentity();
+        $record = $this->recoveryStore->read($recoveryIdentity);
+        $cleanupState = in_array($record->state(), [RecoveryLifecycleState::CLEANUP_PENDING, RecoveryLifecycleState::CLEANED], true);
+        if (!$cleanupState
+            || $record->operationIdentity() !== $operationIdentity
+            || $record->manifestIdentity() !== $manifest->identity()
+            || !$record->captureComplete()
+            || !$record->mutationStarted()
+            || !$record->postReconciliationVerified()
+            || !$record->confirmationMatches($recoveryIdentity, $manifest->identity(), $manifest->identity())) {
+            throw new \RuntimeException('Persisted metadata reconciliation cleanup is not eligible.');
+        }
+
+        $owned = false;
+        try {
+            if ($this->recovery->maintenanceActive($recoveryIdentity)) {
+                if (!($this->recovery->activeLifecycleLock() instanceof \Copot\Core\InstallationLock)) {
+                    throw new \RuntimeException('Process-local recovery cleanup ownership is unavailable.');
+                }
+                $owned = true;
+            } elseif ($this->recovery->durableScopedMaintenanceActive($recoveryIdentity)) {
+                if (!$this->recovery->resumeDurableScopedMaintenance($recoveryIdentity)) {
+                    throw new \RuntimeException('Durable recovery cleanup ownership could not be re-adopted.');
+                }
+                $owned = true;
+            } elseif ($record->state() === RecoveryLifecycleState::CLEANUP_PENDING) {
+                throw new \RuntimeException('Durable recovery cleanup Guard is unavailable.');
+            }
+
+            // A pending cleanup still has a live protection boundary. Acquire
+            // or re-adopt it before rereading committed metadata and the ledger.
+            // CLEANED is terminal; its idempotent no-Guard replay remains a
+            // read-only verification path.
+            $this->assertPostMutationTarget($manifest);
+
+            if ($record->state() === RecoveryLifecycleState::CLEANUP_PENDING) {
+                $record = $this->recovery->markCleaned($recoveryIdentity);
+            }
+
+            return $this->recoveryStore->read($recoveryIdentity);
+        } finally {
+            if ($owned && $this->recovery->maintenanceActive($recoveryIdentity)) {
+                $this->recovery->leaveMaintenance($recoveryIdentity);
+            }
+        }
+    }
+
     public function execute(CommittedLifecycleMetadataReconciliationPreparation $preparation): LifecycleOperationRecord
     {
         if (!$preparation->ready()) throw new \RuntimeException('Metadata reconciliation preparation is not recovery-ready.');
@@ -277,6 +345,42 @@ final class CommittedLifecycleMetadataReconciliationOrchestrator
     {
         $statement = $connection->query("SELECT table_name FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type = 'BASE TABLE'");
         $scope->assertPhysicalTables(array_map('strval', $statement->fetchAll(PDO::FETCH_COLUMN)));
+    }
+
+    private function assertPostMutationTarget(\Copot\Core\BackupRecovery\RecoveryManifest $manifest): void
+    {
+        $installation = $this->installationIdentities->read();
+        if (!$installation instanceof InstallationIdentity) {
+            throw new \RuntimeException('Installation identity is unavailable for metadata reconciliation cleanup.');
+        }
+
+        $connection = ($this->connection)();
+        if (!$connection instanceof PDO) {
+            throw new \RuntimeException('Canonical database connection is unavailable for metadata reconciliation cleanup.');
+        }
+
+        (new CommittedSourceAuthorityMetadataGate(
+            $this->committedStore,
+            $this->installationState,
+            $this->ledger,
+            $this->connection,
+            $this->canonicalSchema,
+            $this->canonicalSchemaPath,
+            $this->operations
+        ))->assert();
+
+        $records = $this->ledger->records($connection);
+        if ($records === []) {
+            throw new \RuntimeException('Applied migration history is required for metadata reconciliation cleanup.');
+        }
+        $current = $this->committedStore->read();
+        if (!$current instanceof CommittedLifecycleState
+            || $manifest->preOperationLifecycleIdentity() === CommittedLifecycleMetadataReconciliationService::stateIdentity($current)) {
+            throw new \RuntimeException('Post-reconciliation metadata transition is not proven.');
+        }
+        if ($installation->value() === '') {
+            throw new \RuntimeException('Installation identity is invalid for metadata reconciliation cleanup.');
+        }
     }
 
     /** @param array<int, \Copot\Core\BackupRecovery\RecoveryArtifactRecord> $records */

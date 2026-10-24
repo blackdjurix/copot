@@ -158,6 +158,15 @@ final class PackageLifecycleService
         return $this->metadataOrchestrator->resume($operationIdentity);
     }
 
+    /** Completes only an already-verified post-mutation reconciliation cleanup. */
+    public function continueCommittedLifecycleMetadataCleanup(string $operationIdentity): \Copot\Core\BackupRecovery\RecoveryLifecycleRecord
+    {
+        if (!$this->metadataOrchestrator instanceof CommittedLifecycleMetadataReconciliationOrchestrator) {
+            throw new \RuntimeException('Committed lifecycle metadata orchestration is unavailable.');
+        }
+        return $this->metadataOrchestrator->continueCleanup($operationIdentity);
+    }
+
     /** Execute only a recovery-ready preparation produced by the canonical orchestrator. */
     public function executePreparedCommittedLifecycleMetadataReconciliation(CommittedLifecycleMetadataReconciliationPreparation $preparation): LifecycleOperationRecord
     {
