@@ -34,6 +34,8 @@ final class InstallerInstallationCommitter
 
         $connection = null;
         $beforeTables = [];
+        $createdByInstaller = [];
+        $approvedCleanupTables = [];
         $lifecycleFiles = $this->filesUnder($this->basePath . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . '.copot-lifecycle');
 
         try {
@@ -50,6 +52,7 @@ final class InstallerInstallationCommitter
             }
             $configuration = (new InstallerDatabaseValidator())->validate($databaseInput);
             $configuration['namespace'] = (string) ($databaseConfiguration['namespace'] ?? '');
+            $approvedCleanupTables = $this->approvedCleanupTables($configuration);
             $inspection = $this->probe->inspect($configuration);
             $routing = (new InstallerRoutingPlanner())->plan($inspection['occupancy'], $intent, $configuration['namespace']);
             if ($routing->route() === InstallerRoutingPlanner::ADOPT) {
@@ -81,7 +84,15 @@ final class InstallerInstallationCommitter
             $connection = $this->connect($configuration);
             $beforeTables = $this->tables($connection);
             $this->environment->persist($configuration);
-            $statementCount = $this->schema->install($configuration);
+            $this->schema->setCreatedTableObserver(function (string $table) use (&$createdByInstaller): void {
+                $createdByInstaller[] = $table;
+            });
+            try {
+                $statementCount = $this->schema->install($configuration);
+            } finally {
+                $this->schema->setCreatedTableObserver(null);
+            }
+            $this->recordCoreSchemaGeneration($connection, $configuration, $beforeTables, $createdByInstaller);
 
             Env::load($environmentPath);
             $database = new Database(new Config($this->basePath . '/config'));
@@ -121,11 +132,43 @@ final class InstallerInstallationCommitter
                 'finalization' => $finalization,
             ];
         } catch (InstallerValidationException|InstallationException $exception) {
-            $this->rollback($connection, $beforeTables, $lifecycleFiles, $environmentPath, $environmentExisted, $previousEnvironment);
+            $rollbackComplete = $this->rollback(
+                $connection,
+                $beforeTables,
+                $createdByInstaller,
+                $approvedCleanupTables,
+                $lifecycleFiles,
+                $environmentPath,
+                $environmentExisted,
+                $previousEnvironment
+            );
+            if (!$rollbackComplete) {
+                throw new InstallationException(
+                    'Installation failed and canonical rollback is incomplete; recovery inspection is required.',
+                    0,
+                    $exception
+                );
+            }
             throw $exception;
         } catch (\Throwable $exception) {
-            $this->rollback($connection, $beforeTables, $lifecycleFiles, $environmentPath, $environmentExisted, $previousEnvironment);
-            throw new InstallationException('Installation could not be completed safely.');
+            $rollbackComplete = $this->rollback(
+                $connection,
+                $beforeTables,
+                $createdByInstaller,
+                $approvedCleanupTables,
+                $lifecycleFiles,
+                $environmentPath,
+                $environmentExisted,
+                $previousEnvironment
+            );
+            if (!$rollbackComplete) {
+                throw new InstallationException(
+                    'Installation failed and canonical rollback is incomplete; recovery inspection is required.',
+                    0,
+                    $exception
+                );
+            }
+            throw new InstallationException('Installation could not be completed safely.', 0, $exception);
         } finally {
             $lock->release();
         }
@@ -148,6 +191,45 @@ final class InstallerInstallationCommitter
         return is_array($result) ? array_values(array_filter($result, 'is_string')) : [];
     }
 
+    private function recordCoreSchemaGeneration(PDO $connection, array $configuration, array $beforeTables, array &$createdByInstaller): void
+    {
+        $tables = new DatabaseTableNames((string) ($configuration['namespace'] ?? ''));
+        $schemaPath = $this->basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql';
+        $generation = (new CoreSchemaMaterializer())->generationIdentity($schemaPath);
+        $store = new CoreSchemaGenerationStore($tables);
+        $store->ensure($connection);
+        $generationTable = $tables->table('core_schema_generation');
+        if (!in_array($generationTable, $beforeTables, true) && in_array($generationTable, $this->tables($connection), true)) {
+            $createdByInstaller[] = $generationTable;
+        }
+        $store->record($connection, $generation, 'compatible', $tables->namespace());
+    }
+
+    /** @return list<string> */
+    private function approvedCleanupTables(array $configuration): array
+    {
+        $schemaPath = $this->basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql';
+        $schema = @file_get_contents($schemaPath);
+        if (!is_string($schema)) {
+            throw new InstallationException('Database schema is unavailable.');
+        }
+
+        $namespace = new DatabaseTableNames((string) ($configuration['namespace'] ?? ''));
+        $statements = (new InstallerSchemaRunner($schemaPath))->statements($schema);
+        if ($namespace->namespace() !== '') {
+            $statements = (new DatabaseSchemaMaterializer())->namespaceStatements($statements, $namespace);
+        }
+
+        $approved = [$namespace->table('core_schema_generation')];
+        foreach ($statements as $statement) {
+            if (preg_match('/\ACREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+`?([a-z][a-z0-9_]*)`?/i', $statement, $match) === 1) {
+                $approved[] = strtolower($match[1]);
+            }
+        }
+
+        return array_values(array_unique($approved));
+    }
+
     /** @return list<string> */
     private function filesUnder(string $directory): array
     {
@@ -158,27 +240,80 @@ final class InstallerInstallationCommitter
         return $files;
     }
 
-    private function rollback(?PDO $connection, array $beforeTables, array $lifecycleFiles, string $environmentPath, bool $environmentExisted, string $previousEnvironment): void
+    private function rollback(
+        ?PDO $connection,
+        array $beforeTables,
+        array $createdByInstaller,
+        array $approvedCleanupTables,
+        array $lifecycleFiles,
+        string $environmentPath,
+        bool $environmentExisted,
+        string $previousEnvironment
+    ): bool
     {
+        $complete = true;
         if ($connection instanceof PDO) {
+            $foreignKeysDisabled = false;
             try {
                 $after = $this->tables($connection);
                 $created = array_values(array_diff($after, $beforeTables));
-                foreach (array_reverse($created) as $table) {
+                $observedNew = $created; // Snapshot difference is observation only, never ownership authority.
+                $provenCreated = array_values(array_unique(array_intersect($createdByInstaller, $approvedCleanupTables)));
+                $cleanupTables = array_values(array_intersect($observedNew, $provenCreated));
+                if (array_values(array_diff($observedNew, $cleanupTables)) !== []) {
+                    $complete = false;
+                }
+                try {
+                    $connection->exec('SET FOREIGN_KEY_CHECKS=0');
+                    $foreignKeysDisabled = true;
+                } catch (\Throwable) {
+                    $complete = false;
+                }
+                foreach (array_reverse($cleanupTables) as $table) {
                     if (preg_match('/\A[a-z][a-z0-9_]{0,63}\z/i', $table) === 1) {
-                        $connection->exec('DROP TABLE `' . str_replace('`', '``', $table) . '`');
+                        try {
+                            $connection->exec('DROP TABLE `' . str_replace('`', '``', $table) . '`');
+                        } catch (\Throwable) {
+                            $complete = false;
+                        }
+                    } else {
+                        $complete = false;
                     }
                 }
+                if ($foreignKeysDisabled) {
+                    try {
+                        $connection->exec('SET FOREIGN_KEY_CHECKS=1');
+                    } catch (\Throwable) {
+                        $complete = false;
+                    }
+                }
+                try {
+                    if (array_intersect($cleanupTables, $this->tables($connection)) !== []) {
+                        $complete = false;
+                    }
+                } catch (\Throwable) {
+                    $complete = false;
+                }
             } catch (\Throwable) {
-                // Preserve the original failure; recovery inspection must catch any incomplete cleanup.
+                $complete = false;
             }
         }
         if (!$environmentExisted && is_file($environmentPath)) {
-            @unlink($environmentPath);
+            if (!@unlink($environmentPath) && is_file($environmentPath)) {
+                $complete = false;
+            }
         } elseif ($environmentExisted && @file_get_contents($environmentPath) !== $previousEnvironment) {
-            @file_put_contents($environmentPath, $previousEnvironment, LOCK_EX);
+            if (@file_put_contents($environmentPath, $previousEnvironment, LOCK_EX) === false) {
+                $complete = false;
+            }
         }
         $currentFiles = $this->filesUnder(dirname($environmentPath) . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . '.copot-lifecycle');
-        foreach (array_diff($currentFiles, $lifecycleFiles) as $file) { @unlink($file); }
+        foreach (array_diff($currentFiles, $lifecycleFiles) as $file) {
+            if (!@unlink($file) && is_file($file)) {
+                $complete = false;
+            }
+        }
+
+        return $complete;
     }
 }

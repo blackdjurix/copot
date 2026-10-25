@@ -9,6 +9,9 @@ class InstallerSchemaRunner
 {
     private const MAX_SCHEMA_BYTES = 1048576;
 
+    /** @var callable|null */
+    private $createdTableObserver = null;
+
     public function __construct(private string $schemaPath, private int $timeoutSeconds = 5, private ?DatabaseTableOwnershipCatalog $ownershipCatalog = null)
     {
         if ($timeoutSeconds < 1 || $timeoutSeconds > 30) {
@@ -40,12 +43,29 @@ class InstallerSchemaRunner
 
             foreach ($statements as $statement) {
                 $connection->exec($statement);
+
+                if (
+                    $this->createdTableObserver !== null
+                    && preg_match('/\ACREATE\s+TABLE(?:\s+IF\s+NOT\s+EXISTS)?\s+`?([a-z][a-z0-9_]*)`?/i', $statement, $match) === 1
+                ) {
+                    ($this->createdTableObserver)(strtolower($match[1]));
+                }
             }
         } catch (PDOException) {
             throw new InstallationException('Database schema installation failed. Use a clean empty database before retrying.');
         }
 
         return count($statements);
+    }
+
+    /**
+     * Observe only CREATE TABLE statements that completed successfully during
+     * the next install call. The observer is deliberately process-local and is
+     * cleared by the caller in a finally block.
+     */
+    public function setCreatedTableObserver(?callable $observer): void
+    {
+        $this->createdTableObserver = $observer;
     }
 
     public function statements(string $schema): array
