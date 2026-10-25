@@ -1,9 +1,9 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-15 12:18:05 WIB
+Date version: 2026-10-25 22:45:37 WIB
 
 ## 1. Variabel
 
-Variabel adalah pointer project yang statis. Setiap Variable, termasuk child Variable, harus memiliki nama unik governance-wide, Description, dan Value. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel bukan tempat menyimpan state lifecycle yang dinamis.
+Variabel adalah pointer project yang statis. Setiap Variable memiliki scope artifact, Description, dan Value. Nama variable harus unik di dalam scope artifact, sedangkan qualified variable identity berbentuk `<Scope>::<Variable>` dan harus unik governance-wide. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel bukan tempat menyimpan state lifecycle yang dinamis.
 
 - `Project`
   Description: Nama canonical project yang digunakan oleh governance dan artifact project.
@@ -29,9 +29,6 @@ Variabel adalah pointer project yang statis. Setiap Variable, termasuk child Var
 - `Alternative Execution Environment`
   Description: Environment alternatif yang dapat digunakan bila route execution COPOT memerlukannya.
   Value: **Cloud**
-- `Primary Runtime`
-  Description: Runtime lokal utama untuk menjalankan atau memvalidasi COPOT bila runtime validation material.
-  Value: **XAMPP**
 - `Technical Executor`
   Description: Role atau identity yang menangani technical source inspection, implementation, technical validation, dan authorized repository execution. Variable ini tidak memberikan semantic, acceptance, promotion, NRP, atau publication authority.
   Value: **Codex**
@@ -50,11 +47,14 @@ Variabel adalah pointer project yang statis. Setiap Variable, termasuk child Var
   - `Rule`
     Description: Canonical project governance artifact yang mendefinisikan authority, scope, routing, loading, dan interaction boundaries COPOT.
     Value: **governance/copot_project_rule.md**
+  - `Registry`
+    Description: Canonical project registry untuk project variables dan applicable governance rules COPOT.
+    Value: **governance/copot_project_registry.md**
   - `Handoff`
     Description: Canonical template untuk delivery continuity GPT/session COPOT.
     Value: **governance/copot_handoff_template.md**
-  - `Agent Instruction`
-    Description: Canonical template untuk bounded technical execution contract COPOT.
+  - `Instruction`
+    Description: Canonical template untuk bounded technical execution instruction COPOT.
     Value: **governance/copot_agent_instruction.md**
 - `Active Applicable Governance`
   Description: Governance atau tool boundary tambahan yang aktif dan material untuk project COPOT.
@@ -67,6 +67,30 @@ Variabel adalah pointer project yang statis. Setiap Variable, termasuk child Var
     Value: **Figma**
 
 State dinamis seperti commit saat ini, branch aktif, Work Unit saat ini, target saat ini, state acceptance, state NRP, port runtime, dan state unresolved harus dicatat pada artifact project atau Handoff yang relevan, bukan pada Variabel.
+
+## Variable scope dan namespace resolution
+
+Setiap governance artifact memiliki variable scope lokal.
+
+Variable yang dideklarasikan di dalam sebuah artifact dapat digunakan tanpa qualified scope di dalam artifact tersebut.
+
+Variable dari artifact lain wajib direferensikan menggunakan format:
+
+`<Scope>::<Variable>`
+
+Qualified variable identity bersifat unik berdasarkan kombinasi `<Scope>::<Variable>`.
+
+Child variable di dalam `Governance` mendeklarasikan canonical governance artifact dan membentuk namespace artifact tersebut. Contoh:
+
+- `Rule::Instruction`
+- `Rule::Source Link`
+- `Registry::Primary Runtime`
+
+`Rule::Instruction` berarti variable `Instruction` yang dideklarasikan oleh governance scope milik artifact `Rule`.
+
+`Registry::Primary Runtime` berarti variable `Primary Runtime` yang dideklarasikan di dalam artifact `Registry`.
+
+Qualified reference harus di-resolve dari canonical governance path. Implicit global lookup, silent fallback, circular dependency, dan override lintas-scope tidak diperbolehkan.
 
 ## 2. Authority dan ruang lingkup
 
@@ -98,7 +122,7 @@ Identitas governance canonical harus di-resolve dari Variables berikut:
 
 - Variable `Rule`
 - Variable `Handoff`
-- Variable `Agent Instruction`
+- Variable `Instruction`
 
 Resolve exact canonical paths dari Variable tersebut. Jangan melakukan pencarian filename, fallback ke file serupa, atau menganggap generated copy sebagai pengganti authoritative.
 
@@ -110,7 +134,7 @@ Pada setiap interaction:
 
 1. resolve dan baca Rule sebelum feedback COPOT yang substantif;
 2. baca Handoff bila interaction menyangkut handoff, perpindahan session, pemulihan continuity, atau penanganan NRP-ke-session;
-3. baca Agent Instruction bila interaction menyangkut pembuatan, review, atau delivery instruction untuk Technical Executor;
+3. baca Instruction bila interaction menyangkut pembuatan, review, atau delivery instruction untuk Technical Executor;
 4. muat hanya project sources, Workplan, Concept, Applicable Governance, dan repository evidence yang material.
 
 Jangan mengklaim artifact telah dibaca jika exact content belum dibuka.
@@ -119,7 +143,7 @@ Jika Rule tidak tersedia, project routing, authorization, governed execution, go
 
 Jika Handoff tidak tersedia, handoff/perpindahan session yang membutuhkan Handoff diblok, tetapi pekerjaan teknis lifecycle-neutral yang telah diotorisasi secara independen dapat berlanjut bila aman.
 
-Jika Agent Instruction tidak tersedia, pembuatan atau delivery instruction executor yang governed diblok. Jangan membuat replacement tanpa otorisasi user yang eksplisit.
+Jika Instruction tidak tersedia, pembuatan atau delivery instruction executor yang governed diblok. Jangan membuat replacement tanpa otorisasi user yang eksplisit.
 
 ### Routing bahasa
 
@@ -158,7 +182,7 @@ Governance Report
 - Governance Source: `Source` — `Source Link` — AVAILABLE / UNAVAILABLE
 - Project Rule: `Rule` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
 - Handoff Template: `Handoff` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
-- Agent Instruction Template: `Agent Instruction` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
+- Instruction Template: `Instruction` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
 - Technical Executor: `<current effective executor>`
 - Platform: PC / Desktop / Mobile / Android / Other / Unknown
 - Manual-operation executor: User / `Technical Executor` / Other / Unknown
@@ -212,9 +236,7 @@ Jangan mengganti route yang locked dengan preferensi model secara diam-diam.
 - Mutasi Repository membutuhkan authorization yang sesuai.
 - Jangan reset, clean, stash, discard, overwrite, force-update, atau menormalkan state yang tidak terduga secara otomatis.
 
-XAMPP adalah environment runtime/validation lokal inti.
-
-`Primary Runtime` adalah default runtime environment untuk normal development, debugging, integration, dan validation bila pekerjaan dapat dilakukan dengan aman pada existing state.
+`Registry::Primary Runtime` adalah default runtime environment untuk normal development, debugging, integration, dan validation bila pekerjaan dapat dilakukan dengan aman pada existing state.
 
 `Main Runtime` adalah instance runtime existing yang mencerminkan current project state. Identity, endpoint, port, dan state aktualnya bersifat dinamis dan dicatat pada Handoff atau execution context yang relevan.
 
@@ -230,7 +252,7 @@ Patch, update, dan upgrade untuk development atau operational validation tidak m
 
 Repository source state, Main Runtime installed state, dan human-accepted state adalah state yang berbeda dan harus direkonsiliasi bila ketiganya material terhadap pekerjaan.
 
-- Mirror runtime XAMPP bukan authority Repository.
+- Runtime mirror bukan authority Repository.
 - Runtime copy dan disposable runtime bukan checkpoint durable.
 - Port atau endpoint runtime yang berubah tidak boleh dijadikan identitas project.
 - Perubahan terhadap runtime, data yang dipersist, shared environment, atau external access tetap membutuhkan authorization yang relevan.
