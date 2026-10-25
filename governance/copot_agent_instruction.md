@@ -1,5 +1,5 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-10-25 22:45:37 WIB
+Date version: 2026-10-25 23:34:28 WIB
 
 ## Purpose
 
@@ -89,7 +89,7 @@ Jangan menambahkan section report generik ke `Agent Instruction`. Tentukan techn
 - Repository/workspace: `<identity exact bila material>`
 - Integration target: `Integration Target`
 - Primary Runtime: `Primary Runtime` bila material
-- Runtime target: `Main Runtime / Disposable Runtime / None` bila material
+- Runtime target: `Main Runtime / SDR / IDR / None` bila material
 - Runtime purpose: `<development / integration / operational validation / isolated technical validation / human acceptance support / None>`
 - Applicable tool: resolve `Gateway` atau `Prototyping` bila material; selain itu None
 
@@ -199,17 +199,19 @@ Masukkan hanya module yang material terhadap execution slice. Urutan internalnya
 
 ### Conditional tools
 
-#### `Primary Runtime`, `Main Runtime`, dan `Disposable Runtime`
+#### `Primary Runtime`, `Main Runtime`, `SDR`, dan `IDR`
 
 Gunakan `Primary Runtime` sebagai default runtime environment. Dalam COPOT, `Primary Runtime` di-resolve dari `Registry::Primary Runtime` dan `Main Runtime` adalah instance existing yang dipakai untuk development, integration, debugging, validation normal, serta operational/human acceptance bila task dapat dijalankan dengan aman pada existing project state.
 
-Perubahan implementation/package-owned filesystem atau database state pada `Main Runtime` harus melalui Package Lifecycle yang berlaku. Jangan melakukan direct mutation bila task membutuhkan route lifecycle berbasis package.
+Jangan mengubah default setting `Primary Runtime` secara persistent tanpa authorization eksplisit. Bila task membutuhkan capability optional seperti `zip` pada `php.ini`, perlakukan sebagai task-scoped runtime configuration change: authorization, setting exact, before/after value, validation, dan restoration atau explicit persistent approval wajib dicatat.
 
-State `Main Runtime` adalah evidence eksekusi atau installed state. Jangan mengklaim human acceptance, closure, atau NRP hanya dari state tersebut.
+Layout `Main Runtime`, `SDR`, dan `IDR` di-resolve dari `Registry`. `SDR` digunakan untuk isolation directory/database namespace dengan service environment yang sama; `IDR` digunakan bila service instance, port, configuration root, atau process/service state juga harus terisolasi. Keduanya tetap berbasis `Registry::Primary Runtime` dan tidak boleh membuat root arbitrer di luar installation path primary runtime.
 
-Gunakan `Disposable Runtime` hanya bila dibutuhkan isolation material, termasuk clean-state validation, destructive mutation testing, failure injection, incompatible-version coexistence, unknown blast radius, atau isolated technical validation yang eksplisit.
+Perubahan implementation/package-owned filesystem atau database state pada `Main Runtime`, `SDR`, atau `IDR` harus melalui Package Lifecycle yang berlaku. Jangan melakukan direct mutation bila task membutuhkan route lifecycle berbasis package.
 
-`Disposable Runtime` bukan pengganti `Main Runtime` untuk operational atau human acceptance. Runtime bukan authority source Repository; rekonsiliasikan source state, installed state, package provenance, dan evidence bila material.
+State runtime adalah evidence eksekusi atau installed state. Jangan mengklaim human acceptance, closure, atau NRP hanya dari state tersebut.
+
+`SDR` atau `IDR` bukan pengganti `Main Runtime` untuk operational atau human acceptance kecuali target tersebut secara eksplisit ditetapkan. Runtime bukan authority source Repository; rekonsiliasikan source state, installed state, package provenance, dan evidence bila material.
 
 #### `Gateway`
 
