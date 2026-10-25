@@ -132,27 +132,6 @@ final class PackageLifecycleFactory
             );
         }
 
-        $legacyBootstrap = new LegacyToV3BootstrapEntry(
-            $basePath,
-            $publicRoot,
-            new InstallationIdentityStore($storage),
-            $installationState,
-            new InstalledStateInspector($committedStore),
-            static function () use ($database, $basePath): ExistingInstallEvidence {
-                $schema = false;
-                try { $schema = (new InstallerSchemaState($database))->isReady(); } catch (\Throwable) { }
-                return new ExistingInstallEvidence($schema, is_file($basePath . DIRECTORY_SEPARATOR . '.env'));
-            },
-            static function (InstalledStateInspection $installed, callable $connection, string $schemaPath, CoreMigrationRegistry $registry) use ($database, $baselineCatalog, $ledger): LegacyClassificationResult {
-                return (new LegacyRuntimeClassifier(new CanonicalSchemaBaselineVerifier($database->tables()), $baselineCatalog, $ledger))->classify($installed, $connection(), $schemaPath, $registry);
-            },
-            static fn (): PDO => $database->connection(),
-            $basePath . DIRECTORY_SEPARATOR . 'database' . DIRECTORY_SEPARATOR . 'schema.sql',
-            $registry,
-            new PackageV3SourceRelativePlanner(),
-            new LegacyBootstrapSourceArtifactStore($storage)
-        );
-
         [$reconciliationOperator, $reconciliationUnavailableReason] = self::reconciliationOperator(
             $basePath,
             $deploymentContext,
@@ -270,7 +249,6 @@ final class PackageLifecycleFactory
             $normalRecoveryBoundary,
             $operationStore,
             $v3MigrationRunner,
-            $legacyBootstrap,
             $metadataReconciliation,
             new CommittedSourceAuthorityPlanner(),
             $metadataOrchestrator,

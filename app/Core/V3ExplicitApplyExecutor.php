@@ -21,7 +21,7 @@ final class V3ExplicitApplyExecutor
         LiveTreePathGuard $guard,
         ?string $expectedOperationIdentity = null
     ): void {
-        $this->verifyOperation($plan, $operation, null, $expectedOperationIdentity);
+        $this->verifyOperation($plan, $operation, $expectedOperationIdentity);
         $this->verifySourceState($plan, $source, $guard, true);
         $this->verifyTargetPreconditions($plan, $guard);
         $this->verifyPayload($plan, $this->deliveredPayload($plan, $payload));
@@ -44,13 +44,12 @@ final class V3ExplicitApplyExecutor
         ?DestructivePlanConfirmation $confirmation = null,
         ?callable $journal = null,
         ?callable $beforeActivation = null,
-        ?LegacyBootstrapV3ExecutionContext $bootstrap = null,
         ?string $expectedOperationIdentity = null,
         bool $requireTargetPreconditions = false
     ): WebcoreApplyResult {
         $mutationStarted = false;
         try {
-            $this->verifyOperation($plan, $operation, $bootstrap, $expectedOperationIdentity);
+            $this->verifyOperation($plan, $operation, $expectedOperationIdentity);
             $this->verifySourceState($plan, $source, $guard, $requireTargetPreconditions);
             if ($requireTargetPreconditions) {
                 $this->verifyTargetPreconditions($plan, $guard);
@@ -116,19 +115,11 @@ final class V3ExplicitApplyExecutor
         }
     }
 
-    private function verifyOperation(V3SourceRelativePlan $plan, LifecycleOperationRecord $operation, ?LegacyBootstrapV3ExecutionContext $bootstrap = null, ?string $expectedOperationIdentity = null): void
+    private function verifyOperation(V3SourceRelativePlan $plan, LifecycleOperationRecord $operation, ?string $expectedOperationIdentity = null): void
     {
         if (!in_array($operation->phase(), [LifecycleOperationRecord::PREPARING, LifecycleOperationRecord::BLOCKED], true)
             || $operation->fileCursor() !== 0 || $operation->lastVerifiedPath() !== null) {
             throw new \RuntimeException('V3 operation is stale or already progressed.');
-        }
-        if ($bootstrap instanceof LegacyBootstrapV3ExecutionContext) {
-            if ($bootstrap->operation()->operationId() !== $operation->operationId()
-                || $bootstrap->plan()->identity() !== $plan->identity()
-                || !$bootstrap->recoveryBinding()->bound()) {
-                throw new \RuntimeException('Bootstrap operation, V3 plan, or recovery binding identity does not match.');
-            }
-            return;
         }
         if ($operation->operationId() !== ($expectedOperationIdentity ?? $plan->operationIdentity())) {
             throw new \RuntimeException('V3 operation identity does not match the prepared plan.');

@@ -58,7 +58,6 @@ final class PackageLifecycleService
         private ?ProtectedWebcoreMutationBoundary $v3RecoveryBoundary = null,
         private ?LifecycleOperationStore $operationStore = null,
         private $v3MigrationRunner = null,
-        private ?LegacyToV3BootstrapEntry $legacyBootstrap = null,
         private ?CommittedLifecycleMetadataReconciliationService $metadataReconciliation = null,
         private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null,
         private ?CommittedLifecycleMetadataReconciliationOrchestrator $metadataOrchestrator = null,
@@ -176,127 +175,6 @@ final class PackageLifecycleService
         return $this->metadataOrchestrator->execute($preparation);
     }
 
-    /** Preparation only: no package apply, migration, recovery, or committed-state mutation. */
-    public function prepareLegacyToV3Bootstrap(string $zip): LegacyBootstrapPreparation
-    {
-        if (!$this->legacyBootstrap instanceof LegacyToV3BootstrapEntry) {
-            return new LegacyBootstrapPreparation(
-                LegacyBootstrapPreparation::BLOCKED,
-                'LEGACY_TO_V3_BOOTSTRAP composition is unavailable.',
-                'legacy-to-v3-bootstrap-unavailable', hash('sha256', 'unavailable'), '',
-                LegacyClassificationResult::unknown('Bootstrap composition is unavailable.'), null,
-                [['action' => 'BLOCK', 'reason' => 'Bootstrap composition is unavailable.']], null
-            );
-        }
-        try {
-            $payload = $this->intake->intake($zip);
-            try {
-                $manifest = $this->manifestReader->read($payload);
-                $this->inventoryVerifier->verify($payload, $manifest->contract()->inventory(), [PackageManifestReader::PATH]);
-                return $this->legacyBootstrap->prepare($manifest);
-            }
-            finally { $payload->cleanup(); }
-        } catch (\Throwable $exception) {
-            return new LegacyBootstrapPreparation(
-                LegacyBootstrapPreparation::BLOCKED, $exception->getMessage(),
-                'legacy-to-v3-bootstrap-invalid-package', hash('sha256', $exception->getMessage()), '',
-                LegacyClassificationResult::unknown($exception->getMessage()), null,
-                [['action' => 'BLOCK', 'reason' => $exception->getMessage()]], null
-            );
-        }
-    }
-
-    /** Execute an already admitted bootstrap context through canonical V3, migration, and WU6 machinery. */
-    public function executeLegacyToV3Bootstrap(LegacyBootstrapLifecycleRequest $request): PackageLifecycleResult
-    {
-        if (!$this->v3Executor instanceof V3ExplicitApplyExecutor
-            || !$this->v3Applier instanceof PackageOwnedFileApplier
-            || !$this->operationStore instanceof LifecycleOperationStore
-            || !$this->sourceInventoryArtifacts instanceof SourceInventoryArtifactStore
-            || !is_callable($this->v3MigrationRunner)) {
-            return new PackageLifecycleResult(false, 'unavailable', 'LEGACY_TO_V3_BOOTSTRAP lifecycle composition is unavailable.', null, $request->context()->handoff()->migrationPlan(), $request->context()->operation()->operationId());
-        }
-
-        $context = $request->context();
-        $admission = $request->admission();
-        $migration = $context->handoff()->migrationPlan();
-        $bridge = new LegacyBootstrapV3ExecutionBridge($this->v3Executor);
-
-        try {
-            $apply = $bridge->execute(
-                $context,
-                $admission,
-                $request->payload(),
-                $this->operationStore,
-                $this->v3Applier,
-                $this->liveGuard,
-                $request->confirmationAuthority(),
-                $request->confirmation(),
-                $request->journal(),
-                $request->beforeActivation()
-            );
-            if ($apply->status() !== WebcoreApplyResult::AWAITING_WU6) {
-                return new PackageLifecycleResult(false, strtolower($apply->status()), $apply->reason(), null, $migration, $context->operation()->operationId());
-            }
-
-            $latest = $this->operationStore->read();
-            if (!$latest instanceof LifecycleOperationRecord || $latest->operationId() !== $context->operation()->operationId()) {
-                throw new \RuntimeException('Bootstrap lifecycle operation disappeared before migration.');
-            }
-            if ($latest->migrationPlanIdentity() !== $this->bootstrapMigrationPlanIdentity($migration)) {
-                throw new \RuntimeException('Bootstrap migration-plan identity does not match the persisted operation.');
-            }
-            $admission->revalidate($this->operationStore);
-            $this->operationStore->save($latest->advance(LifecycleOperationRecord::MIGRATING, $latest->fileCursor(), $latest->lastVerifiedPath()));
-
-            try {
-                $migrationResult = ($this->v3MigrationRunner)($migration, $context->operation()->operationId(), LegacyBootstrapPreparation::OPERATION_TYPE);
-            } catch (\Throwable $exception) {
-                $migrationResult = new MigrationRunResult(MigrationRunResult::INDETERMINATE, [], $exception->getMessage());
-            }
-
-            if (!$migrationResult instanceof MigrationRunResult || $migrationResult->status() === MigrationRunResult::INDETERMINATE) {
-                $reason = $migrationResult instanceof MigrationRunResult ? $migrationResult->reason() : 'Bootstrap migration outcome is indeterminate.';
-                $latest = $this->operationStore->read();
-                if ($latest instanceof LifecycleOperationRecord) {
-                    $this->operationStore->save($latest->advance(LifecycleOperationRecord::INDETERMINATE, $latest->fileCursor(), $latest->lastVerifiedPath(), MigrationRunResult::INDETERMINATE, $reason));
-                }
-                $admission->fail($reason);
-                return new PackageLifecycleResult(false, 'indeterminate', $reason, null, $migration, $context->operation()->operationId());
-            }
-            if (!in_array($migrationResult->status(), [MigrationRunResult::COMPLETED, MigrationRunResult::NOOP], true)) {
-                $reason = $migrationResult->reason();
-                $latest = $this->operationStore->read();
-                if ($latest instanceof LifecycleOperationRecord) {
-                    $this->operationStore->save($latest->advance(LifecycleOperationRecord::BLOCKED, $latest->fileCursor(), $latest->lastVerifiedPath(), $migrationResult->status(), $reason));
-                }
-                $admission->fail($reason);
-                return new PackageLifecycleResult(false, 'blocked', $reason, null, $migration, $context->operation()->operationId());
-            }
-
-            $latest = $this->operationStore->read();
-            if (!$latest instanceof LifecycleOperationRecord || $latest->operationId() !== $context->operation()->operationId()) {
-                throw new \RuntimeException('Bootstrap lifecycle operation disappeared before WU6 handoff.');
-            }
-            $this->operationStore->save($latest->advance(LifecycleOperationRecord::AWAITING_WU6, $latest->fileCursor(), $latest->lastVerifiedPath(), $migrationResult->status()));
-            // WU6 owns health verification, committed-source publication, and
-            // lifecycle completion. This slice only publishes the durable
-            // pre-finalization handoff and must leave the staging evidence and
-            // single-use admission available to that canonical boundary.
-            return new PackageLifecycleResult(false, 'awaiting_wu6', 'Bootstrap filesystem and migration execution completed; WU6 finalization is pending.', null, $migration, $context->operation()->operationId());
-        } catch (\Throwable $exception) {
-            try { $admission->fail($exception->getMessage()); } catch (\Throwable) {}
-            $latest = $this->operationStore->read();
-            if ($latest instanceof LifecycleOperationRecord
-                && !$latest->isTerminal()
-                && ($latest->fileCursor() > 0 || in_array($latest->phase(), [LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::MIGRATING], true))) {
-                try { $this->operationStore->save($latest->advance(LifecycleOperationRecord::INDETERMINATE, $latest->fileCursor(), $latest->lastVerifiedPath(), MigrationRunResult::INDETERMINATE, $exception->getMessage())); } catch (\Throwable) {}
-                return new PackageLifecycleResult(false, 'indeterminate', $exception->getMessage(), null, $migration, $context->operation()->operationId());
-            }
-            return new PackageLifecycleResult(false, 'blocked', $exception->getMessage(), null, $migration, $context->operation()->operationId());
-        }
-    }
-
     /**
      * Executes a mutation-required source-authority plan through the existing
      * V3 executor and recovery coordinator. This method does not publish
@@ -368,7 +246,6 @@ final class PackageLifecycleService
                 null,
                 $journal,
                 $beforeActivation,
-                null,
                 $plan->operation()->operationId(),
                 true
             );
@@ -395,14 +272,6 @@ final class PackageLifecycleService
             $this->canonicalSchemaPath,
             $this->operationStore
         );
-    }
-
-    private function bootstrapMigrationPlanIdentity(CoreMigrationPlan $migration): string
-    {
-        return hash('sha256', implode("\n", array_map(
-            static fn (CoreMigrationDescriptor $descriptor): string => $descriptor->id() . ':' . $descriptor->checksum(),
-            array_filter($migration->migrations(), static fn ($candidate): bool => $candidate instanceof CoreMigrationDescriptor)
-        )));
     }
 
     public function retireNetZero(string $operationId, WebcoreApplyPlan $plan, NetZeroRetirementContext $context): PackageLifecycleResult
@@ -695,10 +564,22 @@ final class PackageLifecycleService
         return $this->reconciliationOperator instanceof LegacyReconciliationOperator;
     }
 
+    private function supportsOrdinaryRetryClassification(LifecycleOperationRecord $record): bool
+    {
+        return in_array($record->classification(), [
+            TransitionPlan::PATCH,
+            TransitionPlan::UPDATE,
+            TransitionPlan::UPGRADE,
+            TransitionPlan::REPAIR,
+            TransitionPlan::DATABASE_UPDATE,
+        ], true);
+    }
+
     public function retryEvidence(string $operationId): bool
     {
         $record = $this->maintenance->record();
         if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId
+            || !$this->supportsOrdinaryRetryClassification($record)
             || !in_array($record->phase(), [LifecycleOperationRecord::BLOCKED, LifecycleOperationRecord::INDETERMINATE, LifecycleOperationRecord::APPLYING, LifecycleOperationRecord::MIGRATING], true)
             || !is_dir($record->stagingPath())
             || !is_file($record->stagingPath() . DIRECTORY_SEPARATOR . 'source.zip')
@@ -719,6 +600,7 @@ final class PackageLifecycleService
         $record = $this->maintenance->record();
         return $record instanceof LifecycleOperationRecord
             && $record->operationId() === $operationId
+            && $this->supportsOrdinaryRetryClassification($record)
             && $record->phase() === LifecycleOperationRecord::BLOCKED
             && $record->fileCursor() === 0
             && $record->lastVerifiedPath() === null
@@ -743,6 +625,11 @@ final class PackageLifecycleService
     public function retry(string $operationId): PackageLifecycleResult
     {
         $record = $this->maintenance->record();
+        if (!$record instanceof LifecycleOperationRecord
+            || $record->operationId() !== $operationId
+            || !$this->supportsOrdinaryRetryClassification($record)) {
+            return new PackageLifecycleResult(false, 'rejected', 'Retry is unavailable for this lifecycle classification.');
+        }
         $recoveryBacked = $record instanceof LifecycleOperationRecord && $this->retryEvidence($operationId);
         $preMutation = !$recoveryBacked && $this->preMutationRetryEligible($operationId);
         if (!$recoveryBacked && !$preMutation) return new PackageLifecycleResult(false, 'rejected', 'Retry evidence is unavailable or stale.');
@@ -801,12 +688,13 @@ final class PackageLifecycleService
     public function continueAwaitingWu6(string $operationId): PackageLifecycleResult
     {
         $record = $this->maintenance->record();
-        $bootstrapCleanupPending = $record instanceof LifecycleOperationRecord
-            && $record->classification() === LegacyBootstrapPreparation::OPERATION_TYPE
-            && $record->phase() === LifecycleOperationRecord::CLEANUP_PENDING;
-        if (!$record instanceof LifecycleOperationRecord
-            || $record->operationId() !== $operationId
-            || ($record->phase() !== LifecycleOperationRecord::AWAITING_WU6 && !$bootstrapCleanupPending)
+        if (!$record instanceof LifecycleOperationRecord || $record->operationId() !== $operationId) {
+            return new PackageLifecycleResult(false, 'rejected', 'Awaiting-WU6 continuation evidence is unavailable or stale.', null, null, $operationId);
+        }
+        if ($record->classification() === LegacyBootstrapPreparation::OPERATION_TYPE) {
+            return new PackageLifecycleResult(false, 'rejected', 'Legacy bootstrap WU6 continuation is retired.', null, null, $operationId);
+        }
+        if ($record->phase() !== LifecycleOperationRecord::AWAITING_WU6
             || $record->fileCursor() <= 0
             || $record->lastVerifiedPath() === null
             || !in_array($record->migrationOutcome(), [MigrationRunResult::COMPLETED, MigrationRunResult::NOOP], true)
@@ -856,13 +744,7 @@ final class PackageLifecycleService
                 $stagingPersisted = true;
             }
 
-            $final = $this->finalizeAwaitingWu6(
-                $record,
-                $operationId,
-                $manifest,
-                $applyPlan,
-                $migration
-            );
+            $final = $this->finalizeAwaitingWu6($operationId, $manifest, $applyPlan, $migration);
             if ($final->status() === HealthIntegrityCommitResult::COMPLETED) {
                 if ($retainedStagingPath !== $payload->stagingPath()) {
                     try { StagingSession::cleanupExisting($retainedStagingPath); } catch (\Throwable) {}
@@ -881,61 +763,20 @@ final class PackageLifecycleService
         }
     }
 
-    /**
-     * Route legacy bootstrap through the V3 WU6 boundary so the committed
-     * source inventory reference is published only after all health gates.
-     * Ordinary V3 and legacy lifecycle continuations retain their existing
-     * generic finalization behavior.
-     */
+    /** Finalize an ordinary V3 operation through the canonical WU6 boundary. */
     private function finalizeAwaitingWu6(
-        LifecycleOperationRecord $record,
         string $operationId,
         PackageManifest $manifest,
         WebcoreApplyPlan $applyPlan,
         CoreMigrationPlan $migration
     ): HealthIntegrityCommitResult {
-        if ($record->classification() !== LegacyBootstrapPreparation::OPERATION_TYPE) {
-            return $this->healthCoordinator->finalize(
-                $operationId,
-                $manifest->contract(),
-                $applyPlan,
-                $migration,
-                $this->liveGuard,
-                ($this->connection)(),
-                ($this->runtimeChecks)()
-            );
-        }
-
-        if (!$this->v3Planner instanceof PackageV3SourceRelativePlanner
-            || !$this->sourceInventoryArtifacts instanceof SourceInventoryArtifactStore) {
-            throw new \RuntimeException('Legacy bootstrap WU6 finalization composition is unavailable.');
-        }
-
-        // Bootstrap has provisional source evidence only. The canonical V3
-        // planner must therefore receive no source artifact here; it will
-        // derive the complete target inventory from the package and publish
-        // the committed source artifact only after WU6 health gates pass.
-        $plan = $this->v3Planner->plan($manifest);
-        if ($plan->coverage() !== 'full'
-            || $plan->sourceReference() !== null
-            || $plan->removalActions() !== []) {
-            throw new \RuntimeException('Legacy bootstrap requires a full deliver-only V3 finalization plan.');
-        }
-        if ($plan->package()->releaseIdentity() !== $record->releaseIdentity()
-            || $plan->package()->targetWebcoreVersion() !== $record->targetWebcoreVersion()
-            || $plan->package()->targetInventory()?->fingerprint() !== $plan->targetFingerprint()) {
-            throw new \RuntimeException('Legacy bootstrap V3 finalization identity does not match the operation.');
-        }
-
-        return $this->healthCoordinator->finalizeV3(
+        return $this->healthCoordinator->finalize(
             $operationId,
             $manifest->contract(),
-            $plan,
             $applyPlan,
             $migration,
             $this->liveGuard,
             ($this->connection)(),
-            $this->sourceInventoryArtifacts,
             ($this->runtimeChecks)()
         );
     }
