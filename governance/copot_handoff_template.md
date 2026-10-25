@@ -7,7 +7,7 @@ Handoff adalah artifact continuity GPT/session untuk `Project`. Handoff bukan Ag
 
 Identitas canonical: resolve dari `Rule::Handoff`.
 
-## Variables
+## 1. Variabel
 
 - `Project`
   Description: Local reference ke canonical project name dari Rule.
