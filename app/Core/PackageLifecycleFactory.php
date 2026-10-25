@@ -4,6 +4,7 @@ namespace Copot\Core;
 
 use Copot\Core\BackupRecovery\DatabaseQuiescenceCapability;
 use Copot\Core\BackupRecovery\ApplicationWriteProtectionEvidence;
+use Copot\Core\BackupRecovery\CommittedSourceAuthorityRecoveryAdapter;
 use Copot\Core\BackupRecovery\DatabaseScope;
 use Copot\Core\BackupRecovery\FilesystemRecoveryDomain;
 use Copot\Core\BackupRecovery\FilesystemRecoveryPathGuard;
@@ -57,6 +58,15 @@ final class PackageLifecycleFactory
         );
         $designatedMigrationConnection = $recoveryComposition?->databaseConnection();
         $normalRecoveryCapture = $recoveryComposition?->normalCaptureService();
+        $sourceAuthorityRecovery = $recoveryComposition instanceof PackageLifecycleRecoveryComposition
+            ? new CommittedSourceAuthorityRecoveryAdapter(
+                $normalRecoveryCapture ?? $recoveryComposition->normalCaptureService(),
+                $recoveryComposition->artifacts,
+                $operationStore,
+                $recoveryComposition->store,
+                $recoveryComposition->coordinator
+            )
+            : null;
         $normalRecoveryBoundary = $recoveryComposition?->normalProtectedMutationBoundary(
             $installationIdentity->value(),
             hash('sha256', 'deployment:' . $deploymentContext->appRoot()),
@@ -260,7 +270,8 @@ final class PackageLifecycleFactory
                     $recoveryComposition->coordinator,
                     new PreMutationSettlementEvidenceStore($storage)
                 )
-                : null
+                : null,
+            $sourceAuthorityRecovery
         );
     }
 

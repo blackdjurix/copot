@@ -46,6 +46,75 @@ final class CommittedSourceAuthorityExecutionAdmission
         return new self($plan, $binding, $identity);
     }
 
+    /**
+     * Rehydrates an already persisted authority-only handoff after process
+     * restart. This is deliberately separate from issue(): it never creates
+     * an admission, changes operation state, or grants a mutation permit.
+     */
+    public static function rehydrate(
+        CommittedSourceAuthorityPlan $plan,
+        CommittedSourceAuthorityRecoveryBinding $binding,
+        RecoveryLifecycleCoordinator $recoveryCoordinator,
+        LifecycleOperationStore $operations,
+        RecoveryArtifactStore $artifacts,
+        ApplicationWriteProtectionEvidence $application,
+        ScopedDatabaseConsistencyEvidence $database,
+        CommittedLifecycleState $committed
+    ): self {
+        if (!$plan->authorityOnly()) {
+            throw new \RuntimeException('Only AUTHORITY_ONLY source-authority operations may be rehydrated through this admission path.');
+        }
+        $current = $operations->read();
+        if (!$current instanceof LifecycleOperationRecord
+            || !in_array($current->phase(), [LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], true)) {
+            throw new \RuntimeException('Committed source-authority continuation is not in a rehydratable phase.');
+        }
+        self::assertPrerequisites(
+            $plan,
+            $binding,
+            $recoveryCoordinator,
+            $operations,
+            $artifacts,
+            $application,
+            $database,
+            [LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING],
+            false
+        );
+
+        $package = $plan->sourcePlan()->package();
+        if ($current->phase() === LifecycleOperationRecord::AWAITING_WU6) {
+            if ($committed->sourceInventoryReference() !== null
+                || CommittedLifecycleMetadataReconciliationService::stateIdentity($committed) !== $plan->committedLifecycleIdentity()) {
+                throw new \RuntimeException('AWAITING_WU6 committed lifecycle identity is stale or already published.');
+            }
+        } else {
+            $reference = $committed->sourceInventoryReference();
+            $target = $package->targetInventory();
+            if (!$reference instanceof SourceInventoryReference
+                || !$target instanceof CanonicalTargetInventory
+                || $reference->fingerprint() !== $target->fingerprint()
+                || $reference->releaseIdentity() !== $package->releaseIdentity()
+                || $reference->sourceTreeIdentity() !== $package->sourceTreeIdentity()
+                || $reference->manifestContractVersion() !== PackageContract::V3_MANIFEST_CONTRACT_VERSION
+                || $committed->webcoreVersion() !== $package->targetWebcoreVersion()
+                || $committed->releaseIdentity() !== $package->releaseIdentity()
+                || $committed->migrationStateIdentity() !== $plan->migrationStateIdentity()) {
+                throw new \RuntimeException('CLEANUP_PENDING committed source authority is not exactly linked to the plan.');
+            }
+        }
+
+        $identity = hash('sha256', json_encode([
+            'admission_scheme' => 'committed-source-authority-admission-v1',
+            'plan_identity' => $plan->identity(),
+            'binding_identity' => $binding->crossReference()->identity(),
+            'operation_identity' => $plan->operation()->operationId(),
+            'recovery_identity' => $binding->crossReference()->recoveryIdentity()->value(),
+            'manifest_identity' => $binding->manifest()->identity(),
+            'database_scope_identity' => $plan->databaseScope()->identity(),
+        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+        return new self($plan, $binding, $identity);
+    }
+
     public function plan(): CommittedSourceAuthorityPlan { return $this->plan; }
     public function binding(): CommittedSourceAuthorityRecoveryBinding { return $this->binding; }
     public function identity(): string { return $this->identity; }

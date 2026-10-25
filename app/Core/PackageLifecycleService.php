@@ -4,6 +4,8 @@ namespace Copot\Core;
 
 use Copot\Core\BackupRecovery\ApplicationWriteProtectionEvidence;
 use Copot\Core\BackupRecovery\CommittedSourceAuthorityRecoveryBinding;
+use Copot\Core\BackupRecovery\CommittedSourceAuthorityRecoveryAdapter;
+use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureRequest;
 use Copot\Core\BackupRecovery\RecoveryArtifactStore;
 use Copot\Core\BackupRecovery\RecoveryLifecycleCoordinator;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
@@ -61,7 +63,8 @@ final class PackageLifecycleService
         private ?CommittedLifecycleMetadataReconciliationService $metadataReconciliation = null,
         private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null,
         private ?CommittedLifecycleMetadataReconciliationOrchestrator $metadataOrchestrator = null,
-        private ?PreMutationSettlementService $preMutationSettlement = null
+        private ?PreMutationSettlementService $preMutationSettlement = null,
+        private ?CommittedSourceAuthorityRecoveryAdapter $sourceAuthorityRecovery = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -101,6 +104,146 @@ final class PackageLifecycleService
         }
         $current = $this->sourceAuthorityMetadataGate()->assert($committed);
         return $this->sourceAuthorityPlanner->plan($current, $installation, $manifest, $actualTarget, $databaseScope, $ownershipProof, $migrationPlan, $preservationPolicy);
+    }
+
+    /**
+     * Canonical AUTHORITY_ONLY preparation.  Operation creation is the
+     * durable exclusion boundary; recovery capture then establishes the
+     * scoped Guard/mutex owner through Backup & Recovery.
+     */
+    public function prepareCommittedSourceAuthority(
+        CommittedLifecycleState $committed,
+        InstallationIdentity $installation,
+        PackageManifest $manifest,
+        CanonicalTargetInventory $actualTarget,
+        \Copot\Core\BackupRecovery\DatabaseScope $databaseScope,
+        InstallerOwnershipProof $ownershipProof,
+        NormalWebcoreRecoveryCaptureRequest $recoveryRequest,
+        ?CoreMigrationPlan $migrationPlan = null,
+        ?CommittedSourceAuthorityPreservationPolicy $preservationPolicy = null
+    ): CommittedSourceAuthorityPreparation {
+        $plan = $this->planCommittedSourceAuthority($committed, $installation, $manifest, $actualTarget, $databaseScope, $ownershipProof, $migrationPlan, $preservationPolicy);
+        return $this->prepareSourceAuthorityPlan($plan, $recoveryRequest, true);
+    }
+
+    /** Rehydrates one exact immutable plan without creating a replacement operation. */
+    public function resumeCommittedSourceAuthority(
+        CommittedSourceAuthorityPlan $plan,
+        NormalWebcoreRecoveryCaptureRequest $recoveryRequest
+    ): CommittedSourceAuthorityPreparation {
+        return $this->prepareSourceAuthorityPlan($plan, $recoveryRequest, false);
+    }
+
+    /**
+     * Completes an authority-only handoff and WU6 finalization while the
+     * preparation-owned recovery session remains open.
+     */
+    public function executePreparedCommittedSourceAuthority(
+        CommittedSourceAuthorityPreparation $preparation
+    ): HealthIntegrityCommitResult {
+        if (!$preparation->plan()->authorityOnly()) {
+            throw new \RuntimeException('Mutation-required source-authority execution is outside R3-A.');
+        }
+        try {
+            $admission = $preparation->admission();
+            $current = $this->operationStore?->read();
+            if (!$current instanceof LifecycleOperationRecord || $current->operationId() !== $admission->plan()->operation()->operationId()) {
+                throw new \RuntimeException('Authority operation disappeared before canonical execution.');
+            }
+            if ($current->phase() === LifecycleOperationRecord::PREPARING) {
+                $admission->advanceToAwaitingWu6(
+                    $this->sourceAuthorityRecovery?->coordinator() ?? throw new \RuntimeException('Authority recovery composition is unavailable.'),
+                    $this->operationStore,
+                    $this->sourceAuthorityRecovery->artifacts(),
+                    $preparation->binding()->applicationProtection(),
+                    $preparation->binding()->databaseConsistency()
+                );
+            } elseif (!in_array($current->phase(), [LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], true)) {
+                throw new \RuntimeException('Authority operation is not in a canonical continuation phase.');
+            }
+            $result = $this->healthCoordinator->finalizeCommittedSourceAuthority(
+                $admission,
+                $this->sourceAuthorityRecovery?->coordinator() ?? throw new \RuntimeException('Authority recovery composition is unavailable.'),
+                $this->operationStore,
+                $this->sourceAuthorityRecovery->artifacts(),
+                $this->liveGuard,
+                ($this->connection)(),
+                $this->sourceInventoryArtifacts ?? throw new \RuntimeException('Source inventory composition is unavailable.'),
+                ($this->runtimeChecks)(),
+                $preparation->activeLock()
+            );
+            return $result;
+        } finally {
+            $preparation->close();
+        }
+    }
+
+    private function prepareSourceAuthorityPlan(
+        CommittedSourceAuthorityPlan $plan,
+        NormalWebcoreRecoveryCaptureRequest $recoveryRequest,
+        bool $allowFreshCapture
+    ): CommittedSourceAuthorityPreparation {
+        if (!$this->sourceAuthorityRecovery instanceof CommittedSourceAuthorityRecoveryAdapter
+            || !$this->operationStore instanceof LifecycleOperationStore) {
+            throw new \RuntimeException('Committed source-authority recovery composition is unavailable.');
+        }
+        $current = $this->operationStore->read();
+        $created = false;
+        if ($current === null) {
+            if (!$allowFreshCapture) {
+                throw new \RuntimeException('Cannot resume committed source authority without a persisted operation.');
+            }
+            $this->operationStore->create($plan->operation());
+            $current = $this->operationStore->read();
+            $created = true;
+        }
+        if (!$current instanceof LifecycleOperationRecord
+            || $current->operationId() !== $plan->operation()->operationId()
+            || $current->classification() !== $plan->operation()->classification()
+            || $current->applyPlanIdentity() !== $plan->applyPlan()->identity()
+            || $current->migrationPlanIdentity() !== $plan->migrationPlanIdentity()
+            || !in_array($current->phase(), [LifecycleOperationRecord::PREPARING, LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], true)) {
+            throw new \RuntimeException('Committed source-authority operation is conflicting or stale.');
+        }
+        $captured = $this->sourceAuthorityRecovery->captureOrRehydrate($plan, $recoveryRequest, $created);
+        $binding = $captured['binding'];
+        try {
+            $admission = $current->phase() === LifecycleOperationRecord::PREPARING
+                ? $this->admitCommittedSourceAuthority(
+                    $plan,
+                    $binding,
+                    $this->sourceAuthorityRecovery->coordinator(),
+                    $this->operationStore,
+                    $this->sourceAuthorityRecovery->artifacts(),
+                    $binding->applicationProtection(),
+                    $binding->databaseConsistency()
+                )
+                : CommittedSourceAuthorityExecutionAdmission::rehydrate(
+                    $plan,
+                    $binding,
+                    $this->sourceAuthorityRecovery->coordinator(),
+                    $this->operationStore,
+                    $this->sourceAuthorityRecovery->artifacts(),
+                    $binding->applicationProtection(),
+                    $binding->databaseConsistency(),
+                    $this->committedStore?->read() ?? throw new \RuntimeException('Committed lifecycle state is unavailable for authority continuation.')
+                );
+        } catch (\Throwable $exception) {
+            if ($captured['session'] instanceof \Copot\Core\BackupRecovery\NormalWebcoreRecoverySession) {
+                $captured['session']->close();
+            } elseif ($captured['owns']) {
+                $this->sourceAuthorityRecovery->coordinator()->leaveMaintenance($binding->crossReference()->recoveryIdentity());
+            }
+            throw $exception;
+        }
+        return new CommittedSourceAuthorityPreparation(
+            $plan,
+            $binding,
+            $admission,
+            $this->sourceAuthorityRecovery->coordinator(),
+            $captured['session'],
+            $captured['owns']
+        );
     }
 
     /** Routes a prepared plan through canonical, non-authorizing admission. */

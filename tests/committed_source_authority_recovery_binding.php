@@ -161,6 +161,16 @@ try {
     $committedStore->write($committed);
     $awaiting = $admission->advanceToAwaitingWu6($coordinator, $operations, $artifactStore, $application, $database);
     $assert($awaiting->phase() === \Copot\Core\LifecycleOperationRecord::AWAITING_WU6 && $awaiting->fileCursor() === 0 && $awaiting->migrationOutcome() === null, 'Authority-only handoff created mutation or migration evidence.');
+    $coordinator->leaveMaintenance($recovery);
+    $throws(static fn () => CommittedSourceAuthorityExecutionAdmission::rehydrate($plan, $binding, $coordinator, $operations, $artifactStore, $application, $database, $committed));
+    $resumedApplication = $guard->produceEvidence($recovery, $scope);
+    $resumedBinding = CommittedSourceAuthorityRecoveryBinding::fromCaptured($plan, $recoveryManifest, $record, $resumedApplication, $database);
+    $coordinator->resumeReadyScopedMaintenance($recovery, $resumedApplication, $database);
+    $rehydrated = CommittedSourceAuthorityExecutionAdmission::rehydrate($plan, $resumedBinding, $coordinator, $operations, $artifactStore, $resumedApplication, $database, $committed);
+    $assert($rehydrated->identity() === $admission->identity(), 'Restart rehydration changed the deterministic admission identity.');
+    $assert(!$rehydrated->mutationAuthorized(), 'Rehydrated AUTHORITY_ONLY admission granted mutation authority.');
+    $rehydratedAgain = CommittedSourceAuthorityExecutionAdmission::rehydrate($plan, $resumedBinding, $coordinator, $operations, $artifactStore, $resumedApplication, $database, $committed);
+    $assert($rehydratedAgain->identity() === $rehydrated->identity(), 'Duplicate continuation changed the admission identity.');
 
     mkdir($root . '/live/app', 0700, true);
     file_put_contents($root . '/live/app/target.txt', $content);
@@ -177,7 +187,7 @@ try {
     );
     $sourceArtifacts = new \Copot\Core\SourceInventoryArtifactStore($operationRoot, static fn ($resource): bool => true);
     $final = $healthCoordinator->finalizeCommittedSourceAuthority(
-        $admission,
+        $rehydrated,
         $coordinator,
         $operations,
         $artifactStore,
@@ -190,6 +200,31 @@ try {
     $assert($final->status() === HealthIntegrityCommitResult::COMPLETED, 'Canonical source-authority WU6 finalization did not complete: ' . $final->reason());
     $assert($committedStore->read()?->sourceInventoryReference() !== null, 'SourceInventoryReference was not durably committed.');
     $assert($operations->read() === null, 'Completed authority operation was not cleared through canonical lifecycle cleanup.');
+    $coordinator->leaveMaintenance($recovery);
+
+    $publishedReference = $committedStore->read()?->sourceInventoryReference();
+    $publishedArtifactHash = hash_file('sha256', $sourceArtifacts->pathFor($publishedReference));
+    $cleanupOperation = $plan->operation()->advance(\Copot\Core\LifecycleOperationRecord::CLEANUP_PENDING, 0, null, null, 'test cleanup continuation');
+    $operations->create($cleanupOperation->bindRecovery($recovery->value(), $recoveryManifest->identity(), RecoveryLifecycleState::READY));
+    $cleanupApplication = $guard->produceEvidence($recovery, $scope);
+    $cleanupBinding = CommittedSourceAuthorityRecoveryBinding::fromCaptured($plan, $recoveryManifest, $record, $cleanupApplication, $database);
+    $coordinator->resumeReadyScopedMaintenance($recovery, $cleanupApplication, $database);
+    $cleanupAdmission = CommittedSourceAuthorityExecutionAdmission::rehydrate($plan, $cleanupBinding, $coordinator, $operations, $artifactStore, $cleanupApplication, $database, $committedStore->read());
+    $cleanup = $healthCoordinator->finalizeCommittedSourceAuthority(
+        $cleanupAdmission,
+        $coordinator,
+        $operations,
+        $artifactStore,
+        new LiveTreePathGuard($root . '/live'),
+        new AuthorityFinalizationPdo(),
+        $sourceArtifacts,
+        [],
+        $coordinator->activeLifecycleLock()
+    );
+    $assert($cleanup->status() === HealthIntegrityCommitResult::COMPLETED, 'Cleanup-only authority continuation did not complete: ' . $cleanup->reason());
+    $assert($committedStore->read()?->sourceInventoryReference()?->toArray() === $publishedReference?->toArray(), 'Cleanup-only continuation changed the committed source reference.');
+    $assert(hash_file('sha256', $sourceArtifacts->pathFor($publishedReference)) === $publishedArtifactHash, 'Cleanup-only continuation republished or changed the source artifact.');
+    $assert($operations->read() === null, 'Cleanup-only continuation did not clear the operation.');
     $coordinator->leaveMaintenance($recovery);
 
     $badManifest = new RecoveryManifest($recovery, 'other-operation', $plan->sourcePlan()->packageEvidenceIdentity(), $plan->operation()->releaseIdentity(), $plan->operation()->archiveSha256(), $plan->applyPlan()->identity(), $domains, $plan->committedLifecycleIdentity(), $plan->migrationStateIdentity());

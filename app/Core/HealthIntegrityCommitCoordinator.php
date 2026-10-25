@@ -212,6 +212,9 @@ final class HealthIntegrityCommitCoordinator
             if (!$target instanceof CanonicalTargetInventory) {
                 return $this->failure('source-inventory', 'Canonical target inventory is unavailable.', $record->operationId());
             }
+            if ($record->phase() === LifecycleOperationRecord::CLEANUP_PENDING) {
+                return $this->continueCommittedSourceAuthorityCleanup($record, $package, $target, $operations, $sourceArtifacts);
+            }
 
             $committed = $this->committedStore->read();
             if (!$committed instanceof CommittedLifecycleState
@@ -285,6 +288,60 @@ final class HealthIntegrityCommitCoordinator
             if ($ownsLock) {
                 $lock->release();
             }
+        }
+    }
+
+    /**
+     * Cleanup-only continuation for an authority-only operation whose source
+     * reference was already committed.  This path never publishes or writes
+     * committed metadata again.
+     */
+    private function continueCommittedSourceAuthorityCleanup(
+        LifecycleOperationRecord $record,
+        PackageContract $package,
+        CanonicalTargetInventory $target,
+        LifecycleOperationStore $operations,
+        SourceInventoryArtifactStore $sourceArtifacts
+    ): HealthIntegrityCommitResult {
+        $operationId = $record->operationId();
+        try {
+            $committed = $this->committedStore->read();
+            $reference = $committed?->sourceInventoryReference();
+            if (!$committed instanceof CommittedLifecycleState
+                || !$reference instanceof SourceInventoryReference
+                || $reference->releaseIdentity() !== $package->releaseIdentity()
+                || $reference->sourceTreeIdentity() !== $package->sourceTreeIdentity()
+                || $reference->manifestContractVersion() !== PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
+                return $this->failure('cleanup', 'Authority cleanup requires an exact committed source reference.', $operationId);
+            }
+            $artifact = $sourceArtifacts->read($reference);
+            if ($artifact->inventory()->fingerprint() !== $target->fingerprint()) {
+                return $this->failure('cleanup', 'Authority cleanup source artifact does not match the target inventory.', $operationId);
+            }
+            $latest = $operations->read();
+            if (!$latest instanceof LifecycleOperationRecord
+                || $latest->operationId() !== $operationId
+                || $latest->phase() !== LifecycleOperationRecord::CLEANUP_PENDING
+                || $latest->fileCursor() !== 0
+                || $latest->lastVerifiedPath() !== null
+                || $latest->migrationOutcome() !== null) {
+                return $this->failure('cleanup', 'Authority cleanup operation is stale or contains mutation progress.', $operationId);
+            }
+            $gates = new HealthGateMatrix([
+                HealthGateResult::pass('committed-source-reference'),
+                HealthGateResult::pass('source-artifact-integrity'),
+                HealthGateResult::pass('authority-cleanup-only'),
+            ]);
+            $this->maintenance->clear($latest->advance(
+                LifecycleOperationRecord::COMPLETED,
+                0,
+                null,
+                null,
+                'Committed source authority was already published; cleanup completed without republish.'
+            ));
+            return new HealthIntegrityCommitResult(HealthIntegrityCommitResult::COMPLETED, $gates, '', $operationId);
+        } catch (\Throwable $exception) {
+            return $this->failure('cleanup', $exception->getMessage(), $operationId);
         }
     }
 
