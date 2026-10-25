@@ -23,6 +23,7 @@ final class LegacyToV3BootstrapPreparationComposer
 
     public static function forProject(DeploymentContext|string $deployment): self
     {
+        self::assertRetired();
         $deploymentContext = is_string($deployment)
             ? DeploymentContext::forApplicationRoot($deployment)
             : $deployment;
@@ -77,6 +78,7 @@ final class LegacyToV3BootstrapPreparationComposer
 
     public function prepare(string $zip): LegacyBootstrapPreparation
     {
+        self::assertRetired();
         try {
             $payload = $this->intake->intake($zip);
             try {
@@ -104,5 +106,10 @@ final class LegacyToV3BootstrapPreparationComposer
     public function deployment(): DeploymentContext
     {
         return $this->deployment;
+    }
+
+    private static function assertRetired(): never
+    {
+        throw new \RuntimeException('Legacy bootstrap preparation is retired.');
     }
 }

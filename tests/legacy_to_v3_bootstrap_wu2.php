@@ -3,332 +3,99 @@
 $base = dirname(__DIR__);
 require $base . '/bootstrap/autoload.php';
 
-use Copot\Core\CanonicalSchemaBaselineVerifier;
-use Copot\Core\CanonicalTargetInventory;
 use Copot\Core\CanonicalTargetInventoryEntry;
 use Copot\Core\CoreMigrationRegistry;
-use Copot\Core\ExistingInstallEvidence;
-use Copot\Core\InstallationIdentityStore;
-use Copot\Core\InstallationState;
-use Copot\Core\InstalledStateInspector;
-use Copot\Core\LegacyBootstrapSourceArtifactStore;
-use Copot\Core\LegacyBootstrapSourceArtifact;
-use Copot\Core\LegacyBootstrapIdentityComposer;
-use Copot\Core\LegacyBootstrapIdentityHandoff;
-use Copot\Core\LegacyBootstrapLiveInventoryProvider;
-use Copot\Core\LegacyBootstrapTargetFreshnessResult;
-use Copot\Core\LegacyBootstrapTargetFreshnessVerifier;
-use Copot\Core\LegacyBootstrapPostInjectionReconciliationResult;
-use Copot\Core\LegacyBootstrapProtectionCompositionResult;
-use Copot\Core\LegacyBootstrapScopedProtectionComposer;
-use Copot\Core\LegacyBootstrapSourceInventory;
+use Copot\Core\InstalledStateStatus;
 use Copot\Core\LegacyBootstrapPreparation;
+use Copot\Core\LegacyBootstrapSourceArtifactStore;
+use Copot\Core\LegacyBootstrapSourceEntry;
+use Copot\Core\LegacyBootstrapSourceInventory;
 use Copot\Core\LegacyClassificationResult;
-use Copot\Core\LegacyToV3BootstrapEntry;
-use Copot\Core\LegacyToV3BootstrapPreparationComposer;
-use Copot\Core\PackageCompatibility;
-use Copot\Core\PackageContract;
-use Copot\Core\PackageInventoryEntry;
-use Copot\Core\PackageManifest;
-use Copot\Core\PackageMigrationDeclaration;
-use Copot\Core\PackageOwnership;
-use Copot\Core\PackageRuntimeCompatibility;
-use Copot\Core\PackageTargetRequirements;
-use Copot\Core\PackageV3SourceRelativePlanner;
-use Copot\Core\StagedPayload;
-use Copot\Core\StagedFile;
-use Copot\Core\StagingSession;
-use Copot\Core\WebcoreApplyPlan;
-use Copot\Core\BackupRecovery\ApplicationWriteProtectionEvidence;
-use Copot\Core\BackupRecovery\DatabaseScope;
-use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
-use Copot\Core\BackupRecovery\RecoveryIdentity;
-use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
-use Copot\Core\BackupRecovery\RecoveryDomainIdentity;
-use Copot\Core\BackupRecovery\RecoveryManifest;
-use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureService;
 
 $assertions = 0;
 $assert = static function (bool $condition, string $message) use (&$assertions): void {
     $assertions++;
     if (!$condition) throw new RuntimeException($message);
 };
-$tmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-wu2-' . bin2hex(random_bytes(6));
-mkdir($tmp . '/app/storage', 0700, true);
-mkdir($tmp . '/public', 0700, true);
-file_put_contents($tmp . '/app/legacy.php', '<?php');
-file_put_contents($tmp . '/public/index.php', '<?php');
-
-$state = new InstallationState($tmp . '/app/storage');
-$state->createMarker('0.13.0');
-file_put_contents($tmp . '/app/storage/.env', "DB_DATABASE=test\n");
-$identityStore = new InstallationIdentityStore($tmp . '/app/storage');
-$identityStore->getOrCreate();
-$identity = new InstallationIdentityStore($tmp . '/app/storage');
-$artifactStore = new LegacyBootstrapSourceArtifactStore($tmp . '/app/storage', CoreMigrationRegistry::forProject($base));
-$target = new CanonicalTargetInventory([
-    new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'future.php', 5, hash('sha256', 'later')),
-]);
-$package = new PackageContract(
-    PackageContract::WEBCORE_PACKAGE_TYPE, 3, '0.13.0', 'release-test', 'tree-test',
-    new PackageCompatibility('0.13.0'), new PackageRuntimeCompatibility('8.1.0', ['mysql' => '8.0.0'], ['json']),
-    [new PackageInventoryEntry('future.php', 5, hash('sha256', 'later'), PackageOwnership::PACKAGE_OWNED)],
-    new PackageMigrationDeclaration(), new PackageTargetRequirements(), $target, 'full'
-);
-$session = StagingSession::create($tmp . '/app');
-mkdir($session->payloadPath(), 0700, true);
-file_put_contents($session->payloadPath() . '/future.php', 'later');
-$stagedFuture = new StagedFile('future.php', 5, hash('sha256', 'later'));
-$manifest = new PackageManifest($package, '.copot/package.json', new StagedPayload($session, str_repeat('a', 64), [$stagedFuture]));
-$classificationDrift = false;
-$classifier = static function (Copot\Core\InstalledStateInspection $installed) use (&$classificationDrift): LegacyClassificationResult {
-    return $classificationDrift ? LegacyClassificationResult::unknown('migration ledger drift') : LegacyClassificationResult::canonicalBaseline('schema-test', '0.13.0', $installed->snapshot());
-};
-$entry = new LegacyToV3BootstrapEntry(
-    $tmp . '/app', $tmp . '/public', $identity, $state, new InstalledStateInspector(),
-    static fn (): ExistingInstallEvidence => new ExistingInstallEvidence(true, true), $classifier,
-    static fn (): PDO => throw new RuntimeException('not called by test classifier'), $tmp . '/schema.sql',
-    CoreMigrationRegistry::forProject($base), new PackageV3SourceRelativePlanner(), $artifactStore
-);
-$eligible = $entry->prepare($manifest);
-$assert($eligible->status() === 'eligible', 'legacy baseline should be eligible when target destinations are absent');
-$assert($eligible->legacyClassification()->isLegacyCandidate(), 'legacy classification must remain explicit');
-$assert($eligible->sourceInventory() instanceof LegacyBootstrapSourceInventory, 'provisional source inventory must be captured');
-$assert($eligible->artifactPath() !== null && is_file($eligible->artifactPath()), 'provisional artifact must be durable and inspectable');
-$assert($eligible->collisions()[0]['action'] === 'ADD', 'absent target must classify as ADD');
-$rehydrated = $artifactStore->rehydrate($eligible->artifactPath(), [
-    'operation_identity' => $eligible->operationIdentity(),
-    'installation_identity' => $eligible->installationIdentity(),
-    'plan_identity' => $eligible->planIdentity(),
-    'package_identity' => PackageV3SourceRelativePlanner::packageIdentity($package),
-    'target_inventory_fingerprint' => $target->fingerprint(),
-    'archive_identity' => $manifest->payload()->archiveSha256(),
-    'payload_identity' => WebcoreApplyPlan::fromPayload($manifest->payload())->identity(),
-    'apply_plan_identity' => WebcoreApplyPlan::fromPayload($manifest->payload())->identity(),
-    'source_inventory_fingerprint' => $eligible->sourceInventory()->fingerprint(),
-]);
-$assert($rehydrated instanceof LegacyBootstrapSourceArtifact, 'valid artifact must rehydrate to a typed provisional result');
-$assert($rehydrated->sourceInventoryFingerprint() === $eligible->sourceInventory()->fingerprint(), 'rehydrated source fingerprint changed');
-$assert($rehydrated->targetInventoryFingerprint() === $target->fingerprint(), 'rehydrated target fingerprint changed');
-$assert($rehydrated->classification()->sourceWebcoreVersion() === '0.13.0' && $rehydrated->classification()->sourceSchemaIdentity() === 'schema-test', 'classification source identity did not round-trip');
-$assert($rehydrated->archiveIdentity() === $manifest->payload()->archiveSha256(), 'archive identity did not round-trip');
-$assert($rehydrated->payloadIdentity() === $rehydrated->applyPlanIdentity(), 'payload/apply-plan identity linkage changed');
-$assert($rehydrated->recoveryIdentity() === null, 'preparation artifact must not invent a recovery identity');
-$assert($rehydrated->provisional() && !$rehydrated->operationalReady() && !$rehydrated->targetFreshnessVerified(), 'rehydration must remain provisional and non-operational');
-$identityComposer = new LegacyBootstrapIdentityComposer($artifactStore, new Copot\Core\PackageInventoryVerifier(), CoreMigrationRegistry::forProject($base));
-$handoff = $identityComposer->compose($eligible->artifactPath(), $manifest, $eligible->installationIdentity());
-$assert($handoff instanceof LegacyBootstrapIdentityHandoff, 'eligible immutable evidence must produce a typed identity handoff');
-$assert(!$handoff->operationalReady() && !$handoff->targetFreshnessVerified() && !$handoff->recoveryBound(), 'identity handoff must remain non-operational');
-$assert($handoff->target()->archiveIdentity() === $rehydrated->archiveIdentity() && $handoff->applyPlan()->identity() === $rehydrated->applyPlanIdentity(), 'canonical target/apply identities changed during composition');
-$assert($handoff->migrationInput()->sourceMigrationStateIdentity() === Copot\Core\CoreMigrationStateIdentity::fromRecords($rehydrated->classification()->records()), 'migration input changed the classified prefix identity');
-$assert($handoff->migrationPlan()->isAccepted() && $handoff->toArray()['core_migration_plan_available'] === true && $handoff->toArray()['migration_execution_authorized'] === false, 'canonical migration plan must remain provisional and non-executable');
-$liveInventory = new LegacyBootstrapLiveInventoryProvider($tmp . '/app', $tmp . '/public');
-$freshness = new LegacyBootstrapTargetFreshnessVerifier($identity, $state, new InstalledStateInspector(), static fn (): ExistingInstallEvidence => new ExistingInstallEvidence(true, true), $classifier, static fn (): PDO => throw new RuntimeException('not used by fixture classifier'), $tmp . '/schema.sql', CoreMigrationRegistry::forProject($base), $liveInventory);
-$matched = $freshness->verify($handoff);
-$assert($matched->status() === LegacyBootstrapTargetFreshnessResult::MATCHED && !$matched->operationalReady() && $matched->requiresProtectedBoundaryRevalidation(), 'unchanged target must match without granting operational authority');
-$transitionEvidence = new LegacyBootstrapPostInjectionReconciliationResult(LegacyBootstrapPostInjectionReconciliationResult::MATCHED, $handoff->artifact()->installationIdentity(), $handoff->artifact()->operationIdentity(), $handoff->artifact()->planIdentity(), $handoff->artifact()->sourceInventoryFingerprint(), $liveInventory->capture()->fingerprint(), str_repeat('a', 64), str_repeat('b', 64), []);
-$assert($freshness->verify($handoff, $transitionEvidence)->status() === LegacyBootstrapTargetFreshnessResult::MATCHED, 'verified explained transition must integrate with target freshness without granting authority');
-$transitionOriginalBytes = file_get_contents($tmp . '/app/legacy.php');
-file_put_contents($tmp . '/app/legacy.php', '<?php // changed after reconciliation');
-$assert($freshness->verify($handoff, $transitionEvidence)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'protected freshness revalidation must catch drift after reconciliation');
-file_put_contents($tmp . '/app/legacy.php', $transitionOriginalBytes);
-$mismatchedTransition = new LegacyBootstrapPostInjectionReconciliationResult(LegacyBootstrapPostInjectionReconciliationResult::MATCHED, $handoff->artifact()->installationIdentity(), 'wrong-operation', $handoff->artifact()->planIdentity(), $handoff->artifact()->sourceInventoryFingerprint(), $liveInventory->capture()->fingerprint(), str_repeat('a', 64), str_repeat('b', 64), []);
-$assert($freshness->verify($handoff, $mismatchedTransition)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'transition identity mismatch must remain stale');
-$originalLegacyBytes = file_get_contents($tmp . '/app/legacy.php');
-file_put_contents($tmp . '/app/legacy.php', '<?php // changed');
-$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'changed live bytes must be stale');
-file_put_contents($tmp . '/app/legacy.php', $originalLegacyBytes);
-file_put_contents($tmp . '/app/future.php', 'later');
-$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'added target collision must be stale');
-unlink($tmp . '/app/future.php');
-$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::MATCHED, 'removed transient collision must restore the immutable evidence match');
-mkdir($tmp . '/app/future.php');
-$typeResult = $freshness->verify($handoff);
-$assert($typeResult->status() === LegacyBootstrapTargetFreshnessResult::STALE && str_contains(implode(' ', $typeResult->diagnostics()), 'Target path type changed'), 'target path/type mismatch must be stale');
-rmdir($tmp . '/app/future.php');
-$markerPath = $tmp . '/app/storage/installed.lock';
-$markerBytes = file_get_contents($markerPath);
-file_put_contents($markerPath, str_replace('0.13.0', '0.12.0', $markerBytes));
-$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'installed-state marker drift must be stale');
-file_put_contents($markerPath, $markerBytes);
-$classificationDrift = true;
-$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'migration-ledger/classification drift must be stale');
-$classificationDrift = false;
-$targetProperty = new ReflectionProperty(PackageContract::class, 'targetInventory');
-$targetProperty->setValue($package, new CanonicalTargetInventory([new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'other.php', 5, hash('sha256', 'later'))]));
-$assert($freshness->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::STALE, 'candidate target fingerprint drift must be stale');
-$targetProperty->setValue($package, $target);
-$unverified = new LegacyBootstrapTargetFreshnessVerifier($identity, $state, new InstalledStateInspector(), static fn (): ExistingInstallEvidence => new ExistingInstallEvidence(true, true), static fn (): LegacyClassificationResult => throw new RuntimeException('classification unavailable'), static fn (): PDO => throw new RuntimeException('connection unavailable'), $tmp . '/schema.sql', CoreMigrationRegistry::forProject($base), $liveInventory);
-$assert($unverified->verify($handoff)->status() === LegacyBootstrapTargetFreshnessResult::UNVERIFIED, 'incomplete classifier evidence must remain unverified');
-$scope = new DatabaseScope($eligible->installationIdentity(), 'test', 'site_a', ['site_a_core_migration_history', 'site_a_users']);
-$operation = new RecoveryIdentity($eligible->operationIdentity());
-$now = time();
-$applicationEvidence = new ApplicationWriteProtectionEvidence($scope, $operation, str_repeat('1', 64), str_repeat('2', 64), ['http', 'cli', 'scheduled', 'background'], true, true, $now - 1, $now + 300);
-$databaseEvidence = new ScopedDatabaseConsistencyEvidence($scope, $operation, str_repeat('3', 64), str_repeat('4', 64), $now - 1, $now + 300);
-$recoveryIdentity = NormalWebcoreRecoveryCaptureService::forOperation($eligible->operationIdentity(), $handoff->applyPlan()->identity());
-$operationRecord = new Copot\Core\LifecycleOperationRecord($eligible->operationIdentity(), Copot\Core\TransitionPlan::UPGRADE, $handoff->target()->contract()->targetWebcoreVersion(), $handoff->target()->contract()->releaseIdentity(), $handoff->target()->archiveIdentity(), $tmp . '/staging', $handoff->target()->payloadIdentity(), $handoff->applyPlan()->identity(), Copot\Core\LifecycleOperationRecord::PREPARING, 0, null, hash('sha256', ''), null, gmdate(DATE_ATOM), gmdate(DATE_ATOM), '', $recoveryIdentity->value(), null, null);
-$recoveryManifest = new RecoveryManifest($recoveryIdentity, $eligible->operationIdentity(), $handoff->target()->packageIdentity(), $handoff->target()->contract()->releaseIdentity(), $handoff->target()->archiveIdentity(), $handoff->applyPlan()->identity(), [
-    new RecoveryDomainIdentity('database.webcore', 'database.webcore', $scope->identity(), str_repeat('5', 64)),
-    new RecoveryDomainIdentity('filesystem.package-owned', 'filesystem.package-owned', $handoff->applyPlan()->identity(), str_repeat('6', 64)),
-    new RecoveryDomainIdentity('filesystem.lifecycle.committed', 'filesystem.lifecycle.committed', 'deployment-test', str_repeat('7', 64)),
-    new RecoveryDomainIdentity('filesystem.lifecycle.installed-lock', 'filesystem.lifecycle.installed-lock', $eligible->installationIdentity(), str_repeat('8', 64)),
-], 'pre-lifecycle-test', 'pre-migration-test');
-$derivedApplication = new ApplicationWriteProtectionEvidence($scope, $recoveryIdentity, str_repeat('1', 64), str_repeat('2', 64), ['http', 'cli', 'scheduled', 'background'], true, true, $now - 1, $now + 300);
-$derivedDatabase = new ScopedDatabaseConsistencyEvidence($scope, $recoveryIdentity, str_repeat('3', 64), str_repeat('4', 64), $now - 1, $now + 300);
-$crossReferenceComposer = new Copot\Core\LegacyBootstrapRecoveryIdentityCrossReferenceComposer();
-$crossReference = $crossReferenceComposer->compose($handoff, $operationRecord, $recoveryManifest, $scope, $derivedApplication, $derivedDatabase, 'deployment-test');
-$assert($crossReference->valid() && !$crossReference->operationalReady() && !$crossReference->mutationAuthorized(), 'canonical operation/recovery cross-reference must be valid but non-operational');
-$assert($crossReference->crossReference()?->recoveryIdentity()->equals($recoveryIdentity), 'cross-reference lost the derived recovery identity');
-$assert($crossReference->identity() === $crossReferenceComposer->compose($handoff, $operationRecord, $recoveryManifest, $scope, $derivedApplication, $derivedDatabase, 'deployment-test')->identity(), 'cross-reference reconstruction is not deterministic');
-$mismatchedOperation = new ReflectionProperty(Copot\Core\LifecycleOperationRecord::class, 'recoveryIdentity');
-$mismatchedOperation->setValue($operationRecord, 'wrong-recovery');
-$assert(!$crossReferenceComposer->compose($handoff, $operationRecord, $recoveryManifest, $scope, $derivedApplication, $derivedDatabase, 'deployment-test')->valid(), 'operation/recovery mismatch was accepted');
-$mismatchedOperation->setValue($operationRecord, $recoveryIdentity->value());
-$expiredDerivedDatabase = new ScopedDatabaseConsistencyEvidence($scope, $recoveryIdentity, str_repeat('3', 64), str_repeat('4', 64), $now - 10, $now - 2);
-$assert(!$crossReferenceComposer->compose($handoff, $operationRecord, $recoveryManifest, $scope, $derivedApplication, $expiredDerivedDatabase, 'deployment-test')->valid(), 'expired recovery-scoped evidence was accepted');
-$guard = new InstallationScopedMaintenanceGuard(new Copot\Core\InstallationMutex($tmp . '/app/storage'), $tmp . '/app/storage');
-$protectionComposer = new LegacyBootstrapScopedProtectionComposer($freshness, $guard, $scope);
-$inactive = $protectionComposer->compose($handoff, $applicationEvidence, $databaseEvidence);
-$assert($inactive->status() === LegacyBootstrapProtectionCompositionResult::INCOMPLETE, 'inactive Guard must fail closed before freshness revalidation');
-$assert($guard->enterScoped($operation, $applicationEvidence), 'isolated fixture could not establish canonical scoped application protection');
-$protected = $protectionComposer->compose($handoff, $applicationEvidence, $databaseEvidence);
-$assert($protected->valid() && !$protected->operationalReady() && !$protected->recoveryBound() && $protected->preMutationEvidence(), 'valid protection composition must remain pre-mutation and non-operational');
-$assert($protected->toArray()['freshness_verification_identity'] !== null && $protected->toArray()['mutation_authorized'] === false, 'protected-boundary freshness evidence must be bound without authorizing mutation');
-$wrongOperation = new RecoveryIdentity('legacy-to-v3-bootstrap-sha256:' . str_repeat('f', 64));
-$wrongOperationDatabase = new ScopedDatabaseConsistencyEvidence($scope, $wrongOperation, str_repeat('3', 64), str_repeat('4', 64), $now - 1, $now + 300);
-$assert($protectionComposer->compose($handoff, $applicationEvidence, $wrongOperationDatabase)->status() === LegacyBootstrapProtectionCompositionResult::INCOMPLETE, 'operation identity mismatch must fail closed');
-$wrongScope = new DatabaseScope($eligible->installationIdentity(), 'test', 'site_b', ['site_b_core_migration_history', 'site_b_users']);
-$wrongScopeDatabase = new ScopedDatabaseConsistencyEvidence($wrongScope, $operation, str_repeat('3', 64), str_repeat('4', 64), $now - 1, $now + 300);
-$assert($protectionComposer->compose($handoff, $applicationEvidence, $wrongScopeDatabase)->status() === LegacyBootstrapProtectionCompositionResult::INCOMPLETE, 'database namespace mismatch must fail closed');
-$expiredApplication = new ApplicationWriteProtectionEvidence($scope, $operation, str_repeat('1', 64), str_repeat('2', 64), ['http', 'cli', 'scheduled', 'background'], true, true, $now - 10, $now - 2);
-$assert($protectionComposer->compose($handoff, $expiredApplication, $databaseEvidence)->status() === LegacyBootstrapProtectionCompositionResult::STALE, 'expired application Guard evidence must be stale');
-$expiredDatabase = new ScopedDatabaseConsistencyEvidence($scope, $operation, str_repeat('3', 64), str_repeat('4', 64), $now - 10, $now - 2);
-$assert($protectionComposer->compose($handoff, $applicationEvidence, $expiredDatabase)->status() === LegacyBootstrapProtectionCompositionResult::STALE, 'expired database consistency evidence must be stale');
-file_put_contents($tmp . '/app/legacy.php', '<?php // drift after initial check');
-$assert($protectionComposer->compose($handoff, $applicationEvidence, $databaseEvidence)->status() === LegacyBootstrapProtectionCompositionResult::STALE, 'filesystem drift after initial freshness verification must be caught inside the active Guard');
-file_put_contents($tmp . '/app/legacy.php', $originalLegacyBytes);
-$unverifiedProtection = new LegacyBootstrapScopedProtectionComposer($unverified, $guard, $scope);
-$assert($unverifiedProtection->compose($handoff, $applicationEvidence, $databaseEvidence)->status() === LegacyBootstrapProtectionCompositionResult::UNVERIFIED, 'inconclusive protected-boundary freshness must remain unverified');
-$assert($guard->leave($operation), 'isolated fixture Guard cleanup failed');
-$assert($identityComposer->compose($eligible->artifactPath(), $manifest, $eligible->installationIdentity())->identity() === $handoff->identity(), 'bootstrap identity handoff reconstruction is not deterministic');
-$changedTarget = new CanonicalTargetInventory([new CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'future.php', 6, hash('sha256', 'stale'))]);
-$assert($artifactStore->rehydrate($eligible->artifactPath())->targetInventoryFingerprint() !== $changedTarget->fingerprint(), 'rehydration must not claim freshness against a changed target');
-$assert($artifactStore->rehydrate($eligible->artifactPath())->toArray() === $rehydrated->toArray(), 'identical artifact reread must be stable');
-$artifactContents = file_get_contents($eligible->artifactPath());
-$assert(is_string($artifactContents), 'artifact contents must be readable for fixture validation');
-$retryRecord = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
-$assert($artifactStore->publish($retryRecord) === $eligible->artifactPath(), 'identical artifact retry must reuse the immutable provisional artifact');
-$assert(file_get_contents($eligible->artifactPath()) === $artifactContents, 'identical artifact retry must not overwrite published bytes');
-$file = $eligible->artifactPath();
 $throws = static function (callable $callback, string $message) use ($assert): void {
-    try { $callback(); } catch (Throwable) { return; }
+    try { $callback(); }
+    catch (Throwable) { return; }
     $assert(false, $message);
 };
-file_put_contents($file, str_replace('legacy-live-tree-scan', 'corrupted-tree-scan', $artifactContents));
-$throws(static fn () => $artifactStore->rehydrate($file), 'corrupted artifact must be rejected');
-file_put_contents($file, $artifactContents);
-$throws(static fn () => $artifactStore->rehydrate($file, ['operation_identity' => 'legacy-to-v3-bootstrap-sha256:' . str_repeat('a', 64)]), 'identity-mismatched artifact must be rejected');
-$throws(static fn () => $identityComposer->compose($file, $manifest, 'wrong-installation'), 'installation identity drift must be rejected');
-$archiveDriftManifest = new PackageManifest($package, '.copot/package.json', new StagedPayload($session, str_repeat('b', 64), [$stagedFuture]));
-$throws(static fn () => $identityComposer->compose($file, $archiveDriftManifest, $eligible->installationIdentity()), 'archive drift must be rejected');
-$payloadDriftManifest = new PackageManifest($package, '.copot/package.json', new StagedPayload($session, str_repeat('a', 64), [new StagedFile('future.php', 5, hash('sha256', 'other'))]));
-$throws(static fn () => $identityComposer->compose($file, $payloadDriftManifest, $eligible->installationIdentity()), 'payload drift must be rejected');
-$throws(static fn () => $artifactStore->rehydrate($file, ['target_inventory_fingerprint' => str_repeat('a', 64)]), 'stale target evidence must fail identity binding');
+
+$tmp = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-wu2-retired-' . bin2hex(random_bytes(6));
+$storage = $tmp . DIRECTORY_SEPARATOR . 'storage';
+mkdir($storage, 0700, true);
+$artifactRoot = $storage . DIRECTORY_SEPARATOR . '.copot-lifecycle' . DIRECTORY_SEPARATOR . 'legacy-bootstrap-source';
+$store = new LegacyBootstrapSourceArtifactStore($storage);
+$assert(!is_dir($artifactRoot), 'Artifact-store construction must not create retired storage.');
+mkdir($artifactRoot, 0700, true);
+
 $registry = CoreMigrationRegistry::forProject($base);
-$descriptor = $registry->migrations()[0];
-$prefixRecord = [
-    'migration_id' => $descriptor->id(), 'sequence' => $descriptor->sequence(),
-    'target_webcore_version' => $descriptor->targetWebcoreVersion(), 'target_schema_identity' => $descriptor->targetSchemaIdentity(),
-    'checksum' => str_repeat('a', 64), 'applied_at' => gmdate(DATE_ATOM),
-];
-$prefixRecordArtifact = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
-$prefixRecordArtifact['legacy_classification']['classification'] = 'known_migration_prefix';
-$prefixRecordArtifact['legacy_classification']['source_webcore_version'] = '0.13.0';
-$prefixRecordArtifact['legacy_classification']['source_schema_identity'] = 'schema-test';
-$prefixRecordArtifact['legacy_classification']['records'] = [$prefixRecord];
-file_put_contents($file, json_encode($prefixRecordArtifact, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
-$throws(static fn () => $artifactStore->rehydrate($file), 'migration-prefix evidence with registry checksum drift must be rejected');
-$prefixRecordArtifact['legacy_classification']['records'][0]['checksum'] = $descriptor->checksum();
-file_put_contents($file, json_encode($prefixRecordArtifact, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
-$assert($artifactStore->rehydrate($file)->classification()->records()[0]->checksum() === $descriptor->checksum(), 'validated migration-prefix evidence did not rehydrate');
-file_put_contents($file, $artifactContents);
-$schemaDrift = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
-$schemaDrift['serialization_version'] = 2;
-file_put_contents($file, json_encode($schemaDrift, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
-$throws(static fn () => $artifactStore->rehydrate($file), 'legacy artifact schema version must be rejected');
-$missingPayload = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
-unset($missingPayload['archive_identity']);
-file_put_contents($file, json_encode($missingPayload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
-$throws(static fn () => $artifactStore->rehydrate($file), 'artifact without archive identity must be rejected');
-$missingPayload = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
-unset($missingPayload['payload_identity'], $missingPayload['apply_plan_identity']);
-file_put_contents($file, json_encode($missingPayload, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
-$throws(static fn () => $artifactStore->rehydrate($file), 'artifact without payload identity must be rejected');
-$missingFingerprint = json_decode($artifactContents, true, 32, JSON_THROW_ON_ERROR);
-unset($missingFingerprint['target_inventory_fingerprint']);
-file_put_contents($file, json_encode($missingFingerprint, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
-$throws(static fn () => $artifactStore->rehydrate($file), 'artifact without target fingerprint must be rejected');
-file_put_contents($file, $artifactContents);
-
-file_put_contents($tmp . '/app/future.php', 'old!!');
-$blocked = $entry->prepare($manifest);
-$assert($blocked->status() === 'blocked', 'existing legacy destination must fail closed');
-$assert($blocked->collisions()[0]['action'] === 'BLOCK', 'legacy live bytes must not receive package ownership');
-
-$unknownEntry = new LegacyToV3BootstrapEntry(
-    $tmp . '/app', $tmp . '/public', $identity, $state, new InstalledStateInspector(),
-    static fn (): ExistingInstallEvidence => new ExistingInstallEvidence(true, true),
-    static fn (): LegacyClassificationResult => LegacyClassificationResult::unknown('ambiguous baseline'),
-    static fn (): PDO => throw new RuntimeException('not called by unknown classifier'), $tmp . '/schema.sql',
-    CoreMigrationRegistry::forProject($base), new PackageV3SourceRelativePlanner(), $artifactStore
+$sourceEntry = new LegacyBootstrapSourceEntry(
+    CanonicalTargetInventoryEntry::APP_ROOT,
+    'legacy.php',
+    6,
+    hash('sha256', 'legacy'),
+    'legacy-live-tree-scan',
+    'unverified'
 );
-$unsupported = $unknownEntry->prepare($manifest);
-$assert($unsupported->status() === 'blocked', 'unsupported legacy evidence must be blocked');
-$assert($unsupported->reason() !== '', 'blocked preparation must retain diagnostic reason');
-
-unlink($tmp . '/app/future.php');
-
-$zipPath = $tmp . '/bootstrap-preparation.zip';
-$zip = new ZipArchive();
-$assert($zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true, 'preparation fixture ZIP could not be created');
-$manifestData = [
-    'package_type' => PackageContract::WEBCORE_PACKAGE_TYPE,
-    'manifest_contract_version' => 3,
-    'target_webcore_version' => '0.14.0',
-    'release_identity' => 'release-composer-test',
-    'source_tree_identity' => 'tree-composer-test',
-    'source_compatibility' => ['minimum_source_version' => '0.13.0', 'maximum_source_version' => null],
-    'runtime_compatibility' => ['minimum_php_version' => '8.1.0', 'minimum_database_versions' => ['mysql' => '8.0.0'], 'required_extensions' => ['json']],
-    'inventory' => [['path' => 'future.php', 'byte_size' => 5, 'sha256' => hash('sha256', 'later'), 'ownership' => 'package_owned']],
-    'migration_declaration' => ['declares_core_migrations' => false, 'declaration_identity' => null],
-    'target_requirements' => [],
-    'coverage' => 'full',
-    'target_inventory' => ['serialization_version' => 1, 'fingerprint' => $target->fingerprint(), 'entries' => [['root' => 'APP_ROOT', 'ownership' => 'package-owned', 'path' => 'future.php', 'byte_size' => 5, 'sha256' => hash('sha256', 'later')]]],
-    'source_state_requirements' => ['allowed_inventory_fingerprints' => []],
-    'removals' => [],
-    'renames' => [],
+$inventory = new LegacyBootstrapSourceInventory([$sourceEntry]);
+$operationIdentity = 'legacy-to-v3-bootstrap-sha256:' . str_repeat('a', 64);
+$planIdentity = hash('sha256', 'retired-plan');
+$packageIdentity = hash('sha256', 'retired-package');
+$targetIdentity = hash('sha256', 'retired-target');
+$archiveIdentity = hash('sha256', 'retired-archive');
+$payloadIdentity = hash('sha256', 'retired-payload');
+$classification = LegacyClassificationResult::canonicalBaseline('schema-test', '0.13.0');
+$record = [
+    'serialization_version' => 3,
+    'operation_type' => LegacyBootstrapPreparation::OPERATION_TYPE,
+    'operation_identity' => $operationIdentity,
+    'installation_identity' => 'installation-retired-fixture',
+    'plan_identity' => $planIdentity,
+    'package_identity' => $packageIdentity,
+    'target_inventory_fingerprint' => $targetIdentity,
+    'archive_identity' => $archiveIdentity,
+    'payload_identity' => $payloadIdentity,
+    'apply_plan_identity' => $payloadIdentity,
+    'recovery_identity' => null,
+    'captured_at' => gmdate(DATE_ATOM),
+    'provenance' => ['kind' => 'retained-historical-fixture'],
+    'legacy_package_evidence' => ['retained' => true],
+    'legacy_classification' => $classification->toEvidenceArray($registry->identity(), InstalledStateStatus::LEGACY),
+    'source_inventory' => ['fingerprint' => $inventory->fingerprint(), 'entries' => [$sourceEntry->toArray()]],
+    'collisions' => [['action' => 'ADD', 'root' => 'APP_ROOT', 'path' => 'future.php', 'reason' => 'historical target absence']],
+    'status' => LegacyBootstrapPreparation::ELIGIBLE,
 ];
-$zip->addFromString('.copot/package.json', json_encode($manifestData, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES));
-$zip->addFromString('future.php', 'later');
-$zip->close();
-$composer = new LegacyToV3BootstrapPreparationComposer(
-    Copot\Core\DeploymentContext::forLegacyApplication($tmp . '/app'),
-    new Copot\Core\ZipIntakeService($tmp . '/app', null, null, null, null, $identity->read()?->value()),
-    new Copot\Core\PackageManifestReader(),
-    new Copot\Core\PackageInventoryVerifier(),
-    $entry
-);
-$composed = $composer->prepare($zipPath);
-$assert($composed->eligible(), 'bounded preparation composer must reach the existing preparation entry: ' . $composed->reason());
-$assert($composed->toArray()['operational_ready'] === false, 'preparation eligibility must not claim operational readiness');
-$assert(!is_file($tmp . '/app/storage/.copot-lifecycle/committed-state.json'), 'preparation must not create committed lifecycle state');
+$path = $artifactRoot . DIRECTORY_SEPARATOR . hash('sha256', $operationIdentity) . '.json';
+$bytes = json_encode($record, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL;
+file_put_contents($path, $bytes);
+$beforeBytes = file_get_contents($path);
+$rehydrated = $store->rehydrate($path, [
+    'operation_identity' => $operationIdentity,
+    'installation_identity' => $record['installation_identity'],
+    'plan_identity' => $planIdentity,
+    'package_identity' => $packageIdentity,
+    'target_inventory_fingerprint' => $targetIdentity,
+    'archive_identity' => $archiveIdentity,
+    'payload_identity' => $payloadIdentity,
+    'apply_plan_identity' => $payloadIdentity,
+    'source_inventory_fingerprint' => $inventory->fingerprint(),
+]);
+$assert($rehydrated->provisional() && !$rehydrated->operationalReady(), 'Historical artifact rehydration granted authority.');
+$assert($rehydrated->operationIdentity() === $operationIdentity, 'Historical operation identity changed during rehydration.');
+$assert($rehydrated->classification()->classification() === $classification->classification(), 'Classification evidence changed during rehydration.');
+$assert($rehydrated->sourceInventoryFingerprint() === $inventory->fingerprint(), 'Source inventory fingerprint changed during rehydration.');
+$assert($rehydrated->collisions() === $record['collisions'], 'Historical collision evidence changed during rehydration.');
+$assert(file_get_contents($path) === $beforeBytes, 'Rehydration changed immutable artifact bytes.');
 
-$invalidZipPath = $tmp . '/invalid-bootstrap-preparation.zip';
-$invalidZip = new ZipArchive();
-$assert($invalidZip->open($invalidZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true, 'invalid fixture ZIP could not be created');
-$invalidZip->addFromString('.copot/package.json', '{}');
-$invalidZip->close();
-$invalid = $composer->prepare($invalidZipPath);
-$assert(!$invalid->eligible() && $invalid->status() === 'blocked', 'invalid bootstrap package must be blocked');
+$tampered = $record;
+$tampered['status'] = 'INVALID';
+file_put_contents($path, json_encode($tampered, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL);
+$throws(static fn () => $store->rehydrate($path), 'Malformed/status-invalid artifact was accepted.');
+file_put_contents($path, $beforeBytes);
+$throws(static fn () => $store->rehydrate($path, ['operation_identity' => 'legacy-to-v3-bootstrap-sha256:' . str_repeat('b', 64)]), 'Identity-mismatched artifact was accepted.');
+$assert(file_get_contents($path) === $beforeBytes, 'Identity rejection changed historical artifact bytes.');
 
-echo "WU2 legacy bootstrap assertions: {$assertions}\n";
+echo "Retired WU2 historical evidence assertions: {$assertions}" . PHP_EOL;

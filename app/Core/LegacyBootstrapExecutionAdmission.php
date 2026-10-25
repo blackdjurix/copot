@@ -40,6 +40,7 @@ final class LegacyBootstrapExecutionAdmission
         ApplicationWriteProtectionEvidence $application,
         ScopedDatabaseConsistencyEvidence $database
     ): self {
+        self::assertRetired();
         $protection = $protectionComposer->compose($context->handoff(), $application, $database);
         $protectionData = $protection->toArray();
         $bindingData = $binding->toArray();
@@ -166,6 +167,7 @@ final class LegacyBootstrapExecutionAdmission
 
     public function authorize(): void
     {
+        self::assertRetired();
         if ($this->authorized) throw new \RuntimeException('Bootstrap execution admission was already consumed.');
         $this->session->authorize();
         $this->authorized = true;
@@ -173,9 +175,19 @@ final class LegacyBootstrapExecutionAdmission
 
     public function complete(): void
     {
+        self::assertRetired();
         if (!$this->authorized) throw new \RuntimeException('Bootstrap execution admission was not authorized.');
         $this->session->complete();
     }
 
-    public function fail(string $reason): void { $this->session->fail($reason); }
+    public function fail(string $reason): void
+    {
+        self::assertRetired();
+        $this->session->fail($reason);
+    }
+
+    private static function assertRetired(): never
+    {
+        throw new \RuntimeException('Legacy bootstrap execution admission is retired.');
+    }
 }

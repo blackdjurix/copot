@@ -29,6 +29,7 @@ final class LegacyToV3BootstrapEntry
 
     public function prepare(PackageManifest $manifest): LegacyBootstrapPreparation
     {
+        self::assertRetired();
         $package = $manifest->contract();
         if ($package->manifestContractVersion() !== PackageContract::V3_MANIFEST_CONTRACT_VERSION || $package->coverage() !== 'full') {
             return $this->blocked('A full manifest-v3 package is required for legacy bootstrap.', 'invalid-package');
@@ -96,6 +97,11 @@ final class LegacyToV3BootstrapEntry
         $version = $data['manifest_contract_version'] ?? null;
         $valid = is_array($data) && is_int($version) && in_array($version, [1, 2], true);
         return new LegacyBootstrapPackageEvidence(true, $valid, $valid ? $version : null, hash('sha256', $raw), $valid ? '' : 'Legacy package metadata is not a recognized v1/v2 manifest.');
+    }
+
+    private static function assertRetired(): never
+    {
+        throw new \RuntimeException('Legacy bootstrap preparation is retired.');
     }
 
 }

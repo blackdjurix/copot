@@ -26,6 +26,7 @@ final class LegacyBootstrapPreparationRunner
         string $targetPublicRoot,
         string $basePath = '/'
     ): self {
+        self::assertRetired();
         $target = new DeploymentContext($targetAppRoot, $targetPublicRoot, $basePath);
 
         return new self(
@@ -37,6 +38,7 @@ final class LegacyBootstrapPreparationRunner
 
     public function prepare(string $zip): LegacyBootstrapPreparation
     {
+        self::assertRetired();
         return $this->composer->prepare($zip);
     }
 
@@ -45,6 +47,7 @@ final class LegacyBootstrapPreparationRunner
         string $reviewedInjectionManifestPath,
         string $reviewedInjectionManifestIdentity
     ): LegacyBootstrapPreparationHandoff {
+        self::assertRetired();
         if (!$preparation->eligible()) {
             throw new \InvalidArgumentException('Only eligible bootstrap preparation can be bound to an injection manifest.');
         }
@@ -80,6 +83,7 @@ final class LegacyBootstrapPreparationRunner
 
     public function prepareHandoff(string $zip, string $reviewedInjectionManifestPath, string $reviewedInjectionManifestIdentity): LegacyBootstrapPreparationHandoff
     {
+        self::assertRetired();
         $preparation = $this->prepare($zip);
         return $this->bindReviewedInjectionManifest(
             $preparation,
@@ -96,6 +100,11 @@ final class LegacyBootstrapPreparationRunner
     public function target(): DeploymentContext
     {
         return $this->target;
+    }
+
+    private static function assertRetired(): never
+    {
+        throw new \RuntimeException('Legacy bootstrap preparation runner is retired.');
     }
 
     private static function validateSourceRoot(string $sourceRoot): string

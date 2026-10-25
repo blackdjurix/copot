@@ -7,17 +7,16 @@ final class LegacyBootstrapSourceArtifactStore
     private string $root;
     public function __construct(string $storagePath, private ?CoreMigrationRegistry $registry = null)
     {
-        if (is_link($storagePath) || !is_dir($storagePath) || !is_writable($storagePath)) throw new \RuntimeException('Legacy bootstrap storage is unavailable.');
+        if (is_link($storagePath) || !is_dir($storagePath)) throw new \RuntimeException('Legacy bootstrap storage is unavailable.');
         $base = realpath($storagePath);
         if ($base === false) throw new \RuntimeException('Legacy bootstrap storage is unavailable.');
         $this->root = $base . DIRECTORY_SEPARATOR . '.copot-lifecycle' . DIRECTORY_SEPARATOR . 'legacy-bootstrap-source';
-        if (!is_dir($this->root) && !mkdir($this->root, 0700, true) && !is_dir($this->root)) throw new \RuntimeException('Legacy bootstrap storage could not be created.');
-        if (is_link($this->root) || !is_dir($this->root) || !is_writable($this->root)) throw new \RuntimeException('Legacy bootstrap storage is invalid.');
     }
 
     /** @param array<string,mixed> $record */
     public function publish(array $record): string
     {
+        throw new \RuntimeException('Legacy bootstrap artifact publication is retired.');
         $this->validateRecord($record);
         $path = $this->root . DIRECTORY_SEPARATOR . hash('sha256', $record['operation_identity']) . '.json';
         $contents = json_encode($record, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) . PHP_EOL;
