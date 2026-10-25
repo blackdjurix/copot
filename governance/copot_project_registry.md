@@ -3,8 +3,6 @@ Date version: 2026-10-25 22:45:37 WIB
 
 ## 1. Variabel
 
-Variabel adalah pointer governance yang statis. Setiap Variable memiliki scope artifact dan hanya berubah melalui pembaruan governance. Variable bukan tempat menyimpan state lifecycle yang dinamis.
-
 - `Primary Runtime`
   Description: Default runtime environment untuk development, debugging, integration, dan validation normal.
   Value: **XAMPP**
