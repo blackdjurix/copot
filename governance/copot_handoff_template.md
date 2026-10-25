@@ -1,11 +1,33 @@
 # copot <Batas Continuity> — <Judul>
-Date version: 2026-10-19 17:16:42 WIB
+Date version: 2026-10-25 22:45:37 WIB
 
 ## Batas penggunaan
 
 Handoff adalah artifact continuity GPT/session untuk `Project`. Handoff bukan Agent Instruction, bukan payload executor, bukan authorization baru, dan bukan pengganti Rule.
 
-Identitas canonical: resolve dari Rule variable `Handoff`.
+Identitas canonical: resolve dari `Rule::Handoff`.
+
+## Variables
+
+- `Project`
+  Description: Local reference ke canonical project name dari Rule.
+  Value: `Rule::Project`
+
+- `Source Link`
+  Description: Local reference ke canonical project source link dari Rule.
+  Value: `Rule::Source Link`
+
+- `Repository Link`
+  Description: Local reference ke canonical repository link dari Rule.
+  Value: `Rule::Repository Link`
+
+- `Integration Target`
+  Description: Local reference ke canonical integration target dari Rule.
+  Value: `Rule::Integration Target`
+
+- `Primary Runtime`
+  Description: Local reference ke canonical Primary Runtime dari Registry.
+  Value: `Registry::Primary Runtime`
 
 ## Semantik title Handoff
 
@@ -21,7 +43,7 @@ Contoh:
 
 `Project` WU2 Batch 1 — Security Platform Capability Baseline Closure
 
-Gunakan nilai dari Rule variable `Project` sebagai nama project canonical. Jangan menambahkan prefix `HANDOFF`, `PROJECT SESSION HANDOFF`, atau wrapper generik lain.
+Gunakan nilai local variable `Project` sebagai nama project canonical. Jangan menambahkan prefix `HANDOFF`, `PROJECT SESSION HANDOFF`, atau wrapper generik lain.
 
 `Batas Continuity` mengidentifikasi milestone, Work Unit, batch, slice, workstream, phase, atau boundary project lain yang relevan. `Judul` menjelaskan tujuan atau state continuity yang dicatat. External title/name field tidak menggantikan canonical title pada baris pertama.
 
@@ -46,10 +68,10 @@ GPT penerima tidak boleh mengandalkan implicit memory, summary session sebelumny
 
 Sebelum memulai, resolve, buka, baca, verifikasi, dan apply `Governance` berikut:
 
-- Governance Source: `Source Link`
+- Governance Source: `Rule::Source Link`
 - Project Rule: `Rule`
-- Handoff Template: `Handoff`
-- Agent Instruction Template: `Agent Instruction`
+- Handoff Template: `Rule::Handoff`
+- Instruction Template: `Rule::Instruction`
 
 Receiving GPT/session wajib memverifikasi nilai canonical Variable tersebut dari `Rule` sebelum menerapkannya. Jika source atau path tidak tersedia, berubah, atau tidak dapat diverifikasi, laporkan secara eksplisit dan terapkan fail-closed behavior.
 
@@ -157,11 +179,12 @@ State dependency adalah context, bukan authorization untuk memulai pekerjaan yan
 
 Cantumkan hanya bila material:
 
-- Repository: `Repository Link`
+- Repository: `Rule::Repository Link`
 - Integration target: `Integration Target`
 - Branch: `<branch>`
 - HEAD/revision: `<revision>`
 - Working tree: `<clean / listed changes / unknown>`
+- Primary Runtime: `Primary Runtime`
 - Runtime role: `MAIN / DISPOSABLE / NONE`
 - Runtime identity/endpoint/port: `<current value / None>`
 - Isolation reason: `<required when DISPOSABLE; otherwise None>`
