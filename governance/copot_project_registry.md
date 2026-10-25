@@ -31,8 +31,8 @@ Nilai ini tidak menentukan:
 
 Jika task membutuhkan isolated runtime berbasis `Primary Runtime`, gunakan naming convention berikut:
 
-- APP_ROOT: `C:\\xampp\\copot-sdr[RuntimeName]`
-- PUBLIC_ROOT: `C:\\xampp\\htdocs[RuntimeName]`
+- APP_ROOT: `C:\xampp\copot-sdr[RuntimeName]`
+- PUBLIC_ROOT: `C:\xampp\htdocs[RuntimeName]`
 - Database Name: `copot_sdr_[RuntimeName]`
 
 `[RuntimeName]` harus diganti dengan nama runtime yang konsisten, unik, dan dicatat bersama endpoint, port, serta state runtime yang relevan.
