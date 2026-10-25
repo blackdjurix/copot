@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-25 23:34:28 WIB
+Date version: 2026-10-26 00:21:38 WIB
 
 ## 1. Variabel
 
@@ -229,7 +229,8 @@ Jangan mengganti route yang locked dengan preferensi model secara diam-diam.
 - Feature branch harus short-lived ketika branch workflow digunakan.
 - Integration ke `main` menggunakan fast-forward-only bila applicable.
 - Commit, push, merge, branch deletion, release, tag, publication, dan deployment adalah action yang terpisah.
-- Mutasi Repository membutuhkan authorization yang sesuai.
+- Mutasi Repository membutuhkan authorization yang sesuai, kecuali mutasi
+  `docs/devlog.md` yang tercakup dalam `Activity Journal Mutation Gate`.
 - Jangan reset, clean, stash, discard, overwrite, force-update, atau menormalkan state yang tidak terduga secara otomatis.
 
 `Registry::Primary Runtime` adalah default runtime environment untuk normal development, debugging, integration, dan validation bila pekerjaan dapat dilakukan dengan aman pada existing state.
@@ -403,7 +404,7 @@ Activity Journal adalah historical index ringkas untuk meaningful events dan sig
 
 Activity Journal wajib dicatat dan dipersist pada Git `main` sebagai canonical journal state. Entry yang hanya berada pada working branch belum dianggap logged secara durable sampai sudah masuk ke `main` dan state tersebut terverifikasi.
 
-Activity Journal dapat mencatat aktivitas lintas domain, termasuk Project, Workplan, Concept, Pre-contract, Contract, Implementation, Documentation, Governance, validation, acceptance, negative findings, dan perubahan pemahaman yang material. Pencatatan tidak menciptakan authority, authorization, acceptance, closure, NRP, promotion, atau implementation permission. Aktivitas yang sudah cukup tercatat pada artifact authoritative tidak perlu diduplikasi kecuali journal entry menambah nilai recall yang material.
+Activity Journal dapat mencatat aktivitas lintas domain, termasuk Project, Workplan, Concept, Pre-contract, Contract, Implementation, Documentation, Governance, validation, acceptance, negative findings, dan perubahan pemahaman yang material. Isi journal tidak menciptakan project authority, acceptance, closure, NRP, promotion, atau implementation permission. Standing authorization untuk physical journal write berasal dari `Activity Journal Mutation Gate`, bukan dari isi journal atau event yang dicatat. Aktivitas yang sudah cukup tercatat pada artifact authoritative tidak perlu diduplikasi kecuali journal entry menambah nilai recall yang material.
 
 ### Authority dan bahasa Activity Journal
 
@@ -413,9 +414,26 @@ Technical Executor tidak boleh membuat, menulis, mengubah, atau menghapus journa
 
 Activity Journal wajib menggunakan Bahasa Indonesia untuk `EVENT_TYPE` dan Description. Path, SHA, command, filename, status token, API name, dan istilah teknis tetap literal bila terjemahan mengurangi precision.
 
-Ketentuan ini tidak memberi GPT standing authorization untuk melakukan Repository mutation. Setiap write tetap mengikuti authorization dan verification gate Repository yang berlaku.
+### Activity Journal Mutation Gate
 
-Rollover Activity Journal dievaluasi ketika retrieval atau usability burden menjadi material, atau ketika project memasuki Workstream yang memang didefinisikan. Trigger tidak menjadi authorization Git dan tidak memaksakan fixed-volume threshold. Checkpoint, NRP, Handoff, acceptance, dan closure tidak otomatis memicu atau membuktikan rollover.
+Rule ini memberikan GPT standing authorization untuk:
+
+- menambahkan meaningful journal entry ke exact canonical path `docs/devlog.md`;
+- melakukan commit yang hanya memuat `docs/devlog.md`;
+- melakukan non-force push langsung ke canonical `main`;
+- melakukan verifikasi remote tip dan memastikan perubahan hanya mencakup journal.
+
+Standing authorization ini:
+
+- tidak membutuhkan fresh user authorization untuk setiap journal entry;
+- hanya berlaku untuk persistence Activity Journal;
+- tidak berlaku untuk file lain, implementation, documentation selain `docs/devlog.md`, Workplan, Concept, Contract, runtime, external service, release, tag, publication, deployment, atau project-flow transition;
+- tidak mengizinkan delete, reset, rewrite history, force-push, merge, atau cleanup terhadap journal history;
+- tetap membutuhkan verifikasi current `main`, tidak adanya concurrent modification yang tidak terselesaikan, exact diff, dan remote result setelah push.
+
+Mutasi journal melalui gate ini bukan project integration dan tidak mengubah authorization boundary untuk mutasi Repository lainnya.
+
+Rollover Activity Journal dievaluasi ketika retrieval atau usability burden menjadi material, atau ketika project memasuki Workstream yang memang didefinisikan. Trigger tidak memperluas scope `Activity Journal Mutation Gate` dan tidak memberi authorization untuk tag, cleanup, reset, atau rewrite journal history. Checkpoint, NRP, Handoff, acceptance, dan closure tidak otomatis memicu atau membuktikan rollover.
 
 Rollover hanya boleh melanjutkan reset working journal setelah:
 
@@ -424,7 +442,7 @@ Rollover hanya boleh melanjutkan reset working journal setelah:
 3. tag identity, target, dan historical retrieval `docs/devlog.md` diverifikasi;
 4. tidak ada concurrent modification atau uncommitted journal content yang hilang.
 
-Jika tag creation atau historical retrieval gagal, hentikan proses sebelum working journal di-reset. Historical tag tidak boleh dipindahkan, dihapus, atau ditimpa. Tag creation, journal cleanup, commit, push, publication, dan release tetap mengikuti authorization serta gate masing-masing.
+Jika tag creation atau historical retrieval gagal, hentikan proses sebelum working journal di-reset. Historical tag tidak boleh dipindahkan, dihapus, atau ditimpa. Tag creation, journal cleanup, publication, dan release tetap mengikuti authorization serta gate masing-masing. Commit dan push untuk append journal biasa dapat menggunakan `Activity Journal Mutation Gate`; commit atau push untuk rollover tetap membutuhkan gate rollover yang relevan.
 
 Checkpoint dan Activity Journal adalah dua object Project Logging yang independen. Keduanya dapat berbagi Git timeline, tetapi memiliki tujuan, evidence, timing, retention, dan lifecycle yang berbeda.
 
