@@ -1,5 +1,5 @@
 # copot <Batas Continuity> — <Judul>
-Date version: 2026-10-25 22:45:37 WIB
+Date version: 2026-10-25 23:34:28 WIB
 
 ## Batas penggunaan
 
@@ -185,7 +185,7 @@ Cantumkan hanya bila material:
 - HEAD/revision: `<revision>`
 - Working tree: `<clean / listed changes / unknown>`
 - Primary Runtime: `Primary Runtime`
-- Runtime role: `MAIN / DISPOSABLE / NONE`
+- Runtime role: `MAIN / SDR / IDR / NONE`
 - Runtime identity/endpoint/port: `<current value / None>`
 - Isolation reason: `<required when DISPOSABLE; otherwise None>`
 - Runtime state relevant to continuity: `<state / None>`
