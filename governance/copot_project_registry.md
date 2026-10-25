@@ -38,7 +38,7 @@ Perubahan persistent terhadap default setting adalah action terpisah dan tidak b
 
 Layout canonical `Main Runtime`:
 
-- APP_ROOT: `[Primary Runtime Path]\copot`
+- APP_ROOT: `[Primary Runtime Path]\copot\dev`
 - PUBLIC_ROOT: `[Primary Runtime Path]\htdocs\dev`
 - Database Name: `copot_dev`
 
@@ -54,7 +54,7 @@ Layout canonical `Main Runtime`:
 
 Layout canonical `SDR`:
 
-- APP_ROOT: `[Primary Runtime Path]\copot-sdr\[RuntimeName]`
+- APP_ROOT: `[Primary Runtime Path]\copot\sdr\[RuntimeName]`
 - PUBLIC_ROOT: `[Primary Runtime Path]\htdocs\[RuntimeName]`
 - Database Name: `copot_sdr_[RuntimeName]`
 
@@ -68,7 +68,7 @@ Placeholder tersebut bukan bagian literal dari path atau nama database.
 
 `Isolated Disposable Runtime` (`IDR`) digunakan hanya bila isolation harus mencakup service atau runtime instance, bukan hanya directory dan database namespace. Contohnya adalah instance MariaDB/MySQL terpisah, port service terpisah, configuration root terpisah, atau process/service state terpisah.
 
-`IDR` tetap wajib berbasis `Registry::Primary Runtime` dan tetap menggunakan layout project di bawah installation path XAMPP, termasuk public root di bawah `[Primary Runtime Path]\htdocs\[RuntimeName]`. Detail app root, service root, port, configuration root, database name, dan endpoint wajib dicatat untuk setiap instance.
+`IDR` tetap wajib berbasis `Registry::Primary Runtime` dan menggunakan layout berikut: APP_ROOT di bawah `[Primary Runtime Path]\copot\idr\[RuntimeName]` dan PUBLIC_ROOT di bawah `[Primary Runtime Path]\htdocs\[RuntimeName]`. Service root, port, configuration root, database name, dan endpoint wajib dicatat untuk setiap instance.
 
 Gunakan `IDR` sebagai runtime role hanya bila service-level isolation tersebut benar-benar diperlukan. Bila isolation cukup dilakukan di directory dan database namespace dalam instance service yang sama, gunakan `SDR`.
 
