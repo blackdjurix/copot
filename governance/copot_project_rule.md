@@ -1,5 +1,5 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-25 22:45:37 WIB
+Date version: 2026-10-25 23:34:28 WIB
 
 ## 1. Variabel
 
@@ -238,9 +238,11 @@ Jangan mengganti route yang locked dengan preferensi model secara diam-diam.
 
 `Main Runtime` juga merupakan development mirror dan target operational/human acceptance bila workstream atau contract yang berlaku menetapkannya sebagai target acceptance. Installed state pada Main Runtime harus dapat direkonsiliasi terhadap Repository source state dan package provenance yang relevan. Installed state tidak dengan sendirinya membuktikan human acceptance, closure, atau NRP.
 
-`Disposable Runtime` adalah isolated runtime yang dibuat on-demand bila material isolation diperlukan. Disposable Runtime bukan default, bukan checkpoint durable, dan bukan replacement otomatis untuk Main Runtime.
+`Separated Disposable Runtime (SDR)` adalah runtime disposable yang mengisolasi app filesystem, public filesystem, dan database namespace dengan tetap menggunakan service environment `Registry::Primary Runtime`.
 
-Gunakan `Disposable Runtime` hanya bila task membutuhkan clean state, destructive isolation, failure injection, incompatible-version coexistence, unknown blast radius, atau isolated validation yang eksplisit. `Repository` tetap menjadi authority untuk durable implementation state.
+`Isolated Disposable Runtime (IDR)` adalah runtime disposable yang juga mengisolasi service atau runtime instance, misalnya dengan instance MariaDB/MySQL, port, configuration root, atau process/service state yang terpisah.
+
+Gunakan `SDR` bila directory dan database namespace isolation sudah cukup. Gunakan `IDR` hanya bila service-level isolation benar-benar diperlukan. Keduanya bukan default, bukan checkpoint durable, dan bukan replacement otomatis untuk `Main Runtime`. `Repository` tetap menjadi authority untuk durable implementation state.
 
 Perubahan implementation/package-owned filesystem dan database state pada Main Runtime dilakukan melalui Package Lifecycle yang berlaku, bukan direct mutation. Operator-owned data, runtime-owned data, dan external/shared state tetap mengikuti boundary serta authorization masing-masing.
 
@@ -249,7 +251,7 @@ Patch, update, dan upgrade untuk development atau operational validation tidak m
 Repository source state, Main Runtime installed state, dan human-accepted state adalah state yang berbeda dan harus direkonsiliasi bila ketiganya material terhadap pekerjaan.
 
 - Runtime mirror bukan authority Repository.
-- Runtime copy dan disposable runtime bukan checkpoint durable.
+- Runtime copy, SDR, dan IDR bukan checkpoint durable.
 - Port atau endpoint runtime yang berubah tidak boleh dijadikan identitas project.
 - Perubahan terhadap runtime, data yang dipersist, shared environment, atau external access tetap membutuhkan authorization yang relevan.
 
