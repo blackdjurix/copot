@@ -1,5 +1,5 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-10-25 23:34:28 WIB
+Date version: 2026-10-26 00:30:14 WIB
 
 ## Purpose
 
@@ -15,7 +15,7 @@ Identitas governance canonical: resolve dari `Rule::Instruction`.
 
 ### Identitas `Rule`
 
-Dalam template ini, `Rule` berarti canonical project `Rule` terbaru yang di-resolve dari governance scope canonical. `Rule` adalah sumber untuk Variable, authority boundary, dan routing governance yang digunakan oleh template ini.
+Dalam template ini, `Rule` berarti artifact canonical terbaru yang ditunjuk oleh `Governance::Rule`. `Rule` adalah sumber untuk Variable, authority boundary, dan routing governance yang digunakan oleh template ini.
 
 ### Reference Variable
 
