@@ -7,7 +7,7 @@ Ini adalah kontrak eksekusi yang ringkas, fokus, dan spesifik terhadap task untu
 
 Identitas governance canonical: resolve dari `Rule::Instruction`.
 
-## Variables
+## 1. Variabel
 
 - `Primary Runtime`
   Description: Local reference ke canonical Primary Runtime dari Registry.
