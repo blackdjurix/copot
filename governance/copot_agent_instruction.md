@@ -1,19 +1,25 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-10-12 13:48:00 WIB
+Date version: 2026-10-25 22:45:37 WIB
 
 ## Purpose
 
 Ini adalah kontrak eksekusi yang ringkas, fokus, dan spesifik terhadap task untuk `Project` `Technical Executor`.
 
-Identitas governance canonical: resolve dari Variable `Agent Instruction` pada `Rule`.
+Identitas governance canonical: resolve dari `Rule::Instruction`.
+
+## Variables
+
+- `Primary Runtime`
+  Description: Local reference ke canonical Primary Runtime dari Registry.
+  Value: `Registry::Primary Runtime`
 
 ### Identitas `Rule`
 
-Dalam template ini, `Rule` berarti canonical project `Rule` terbaru yang di-resolve dari Variable `Rule` pada governance `Project`. `Rule` adalah sumber untuk Variable, authority boundary, dan routing governance yang digunakan oleh template ini.
+Dalam template ini, `Rule` berarti canonical project `Rule` terbaru yang di-resolve dari governance scope canonical. `Rule` adalah sumber untuk Variable, authority boundary, dan routing governance yang digunakan oleh template ini.
 
 ### Reference Variable
 
-Setiap Variable canonical yang digunakan template ini wajib di-resolve dari Variables pada `Rule` terbaru. Jangan mendefinisikan ulang, menginfer, atau mengganti value Variable berdasarkan memory, `Handoff`, context session sebelumnya, atau isi `Agent Instruction` yang sudah digenerate.
+Setiap Variable canonical yang digunakan template ini wajib di-resolve dari qualified governance scope yang ditentukan oleh `Rule` terbaru. Jangan mendefinisikan ulang, menginfer, atau mengganti value Variable berdasarkan memory, `Handoff`, context session sebelumnya, atau isi `Agent Instruction` yang sudah digenerate.
 
 ## Semantik title Agent Instruction
 
@@ -195,7 +201,7 @@ Masukkan hanya module yang material terhadap execution slice. Urutan internalnya
 
 #### `Primary Runtime`, `Main Runtime`, dan `Disposable Runtime`
 
-Gunakan `Primary Runtime` sebagai default runtime environment. Dalam COPOT, `Primary Runtime` menunjuk ke `XAMPP` dan `Main Runtime` adalah instance existing yang dipakai untuk development, integration, debugging, validation normal, serta operational/human acceptance bila task dapat dijalankan dengan aman pada existing project state.
+Gunakan `Primary Runtime` sebagai default runtime environment. Dalam COPOT, `Primary Runtime` di-resolve dari `Registry::Primary Runtime` dan `Main Runtime` adalah instance existing yang dipakai untuk development, integration, debugging, validation normal, serta operational/human acceptance bila task dapat dijalankan dengan aman pada existing project state.
 
 Perubahan implementation/package-owned filesystem atau database state pada `Main Runtime` harus melalui Package Lifecycle yang berlaku. Jangan melakukan direct mutation bila task membutuhkan route lifecycle berbasis package.
 
