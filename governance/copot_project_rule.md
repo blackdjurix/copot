@@ -3,7 +3,7 @@ Date version: 2026-10-25 22:45:37 WIB
 
 ## 1. Variabel
 
-Variabel adalah pointer project yang statis. Setiap Variable memiliki scope artifact, Description, dan Value. Nama variable harus unik di dalam scope artifact, sedangkan qualified variable identity berbentuk `<Scope>::<Variable>` dan harus unik governance-wide. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel bukan tempat menyimpan state lifecycle yang dinamis.
+Variabel adalah pointer project yang statis. Setiap Variable memiliki scope artifact, Description, dan Value. Nama variable harus unik di dalam scope artifact, sedangkan qualified variable identity berbentuk `<Scope>::<Variable>` dan harus unik governance-wide. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel tidak menyimpan dynamic lifecycle state; dynamic state dicatat pada artifact project atau Handoff yang relevan.
 
 - `Project`
   Description: Nama canonical project yang digunakan oleh governance dan artifact project.
@@ -66,8 +66,6 @@ Variabel adalah pointer project yang statis. Setiap Variable memiliki scope arti
     Description: Tool prototyping yang digunakan bila visual atau prototype menjadi material terhadap project.
     Value: **Figma**
 
-State dinamis seperti commit saat ini, branch aktif, Work Unit saat ini, target saat ini, state acceptance, state NRP, port runtime, dan state unresolved harus dicatat pada artifact project atau Handoff yang relevan, bukan pada Variabel.
-
 ## Variable scope dan namespace resolution
 
 Setiap governance artifact memiliki variable scope lokal.
@@ -77,8 +75,6 @@ Variable yang dideklarasikan di dalam sebuah artifact dapat digunakan tanpa qual
 Variable dari artifact lain wajib direferensikan menggunakan format:
 
 `<Scope>::<Variable>`
-
-Qualified variable identity bersifat unik berdasarkan kombinasi `<Scope>::<Variable>`.
 
 Child variable di dalam `Governance` mendeklarasikan canonical governance artifact dan membentuk namespace artifact tersebut. Contoh:
 
