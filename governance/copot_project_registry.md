@@ -1,5 +1,5 @@
 # COPOT PROJECT REGISTRY
-Date version: 2026-10-25 23:34:28 WIB
+Date version: 2026-10-26 00:21:38 WIB
 
 ## 1. Variabel
 
@@ -68,7 +68,15 @@ Placeholder tersebut bukan bagian literal dari path atau nama database.
 
 `Isolated Disposable Runtime` (`IDR`) digunakan hanya bila isolation harus mencakup service atau runtime instance, bukan hanya directory dan database namespace. Contohnya adalah instance MariaDB/MySQL terpisah, port service terpisah, configuration root terpisah, atau process/service state terpisah.
 
-`IDR` tetap wajib berbasis `Registry::Primary Runtime` dan menggunakan layout berikut: APP_ROOT di bawah `[Primary Runtime Path]\copot\idr\[RuntimeName]` dan PUBLIC_ROOT di bawah `[Primary Runtime Path]\htdocs\[RuntimeName]`. Service root, port, configuration root, database name, dan endpoint wajib dicatat untuk setiap instance.
+`IDR` tetap wajib berbasis `Registry::Primary Runtime`.
+
+Layout canonical `IDR`:
+
+- APP_ROOT: `[Primary Runtime Path]\copot\idr\[RuntimeName]`
+- PUBLIC_ROOT: `[Primary Runtime Path]\htdocs\[RuntimeName]`
+- Database Name: `copot_idr_[RuntimeName]`
+
+Service root, port, configuration root, dan endpoint wajib dicatat untuk setiap instance.
 
 Gunakan `IDR` sebagai runtime role hanya bila service-level isolation tersebut benar-benar diperlukan. Bila isolation cukup dilakukan di directory dan database namespace dalam instance service yang sama, gunakan `SDR`.
 
