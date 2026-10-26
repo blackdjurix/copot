@@ -1368,13 +1368,13 @@ Authorized direction and affected invariants:
 
 Required reconciliation and closure:
 - Bounded technical contract delta must specify ownership/provisioning, minimum routing compatibility, full/partial behavior, legacy-artifact disposition, source-inventory authority, recovery isolation, and actual SDR acceptance consequences.
-- Reconcile and promote affected normative contracts through their applicable governance gate, then implement and test source/manifest/builder/installer/planner/recovery implications in the authorized workstream.
+- Implementation-first is explicitly authorized as a controlled, recorded deviation: implement and test the bounded source/manifest/builder/installer/planner/recovery implications before normative contract amendment. Contract reconciliation and promotion follow verified implementation evidence; do not treat implementation as contract authority.
 - Build a new independently identified package; verify fresh install, HTTP routing, full/partial integrity, recovery, and source-authority path before E4 eligibility is asserted.
 - Deviation closes only after authoritative contract reconciliation, implementation evidence, and verified acceptance. Until then `R3-A E4` remains BLOCKED and `SourceInventoryReference=null` is preserved; no rollback of old artifact history, no silent integrity bypass.
 
 Deferred boundary: `DI-PACKAGE-LIFECYCLE-HTACCESS-01` remains unscheduled only for advanced automatic directive-level merge, deployment configuration mutation, and cross-platform rewriting; baseline ownership/routing compatibility are not deferred.
 
-Planning action: CONTROLLED DEVIATION OPEN / CONTRACT RECONCILIATION REQUIRED / NO IMPLICIT E4 ADVANCEMENT
+Planning action: CONTROLLED DEVIATION OPEN / BOUNDED IMPLEMENTATION NEXT / CONTRACT RECONCILIATION AFTER VALIDATION / NO IMPLICIT E4 ADVANCEMENT
 
 ### Deployment-Aware `.htaccess` Package Update Reconciliation
 Class: DEFERRED ITEM / FUTURE PACKAGE LIFECYCLE DEVELOPMENT
@@ -1388,8 +1388,8 @@ Sources:
 - `docs/32_webcore_deployment_portability_foundation_contract.md` [SPLIT-ROOT DEPLOYMENT]
 
 Future evaluation scope:
-- support `.htaccess` updates under both manifest-v3 `full` and `partial` coverage;
-- reconcile package-owned directive additions, changes, and removals while preserving valid deployment-specific root/base-path values;
+- advanced managed `.htaccess` directive updates coordinated with manifest-v3 `full` and `partial` lifecycle, without classifying the physical deployment-owned file as package-owned;
+- reconcile Webcore-required routing directive additions, changes, and removals while preserving valid deployment-specific root/base-path values;
 - establish explicit component ownership, reviewed target-bound preservation evidence, effective installed-file identity/fingerprint, conflict and rollback/recovery semantics;
 - fail closed on ambiguous edits, unsupported reconciliation, or missing provenance; neither whole-file `RETAIN` nor `REPLACE` may silently bypass validated update intent.
 
