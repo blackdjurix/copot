@@ -13,7 +13,7 @@ Date version: 2026-10-26 00:21:38 WIB
 
 `Primary Runtime` adalah environment category/provider, bukan instance runtime tertentu dan bukan installation identity.
 
-Semua runtime project COPOT yang didefinisikan di registry ini harus berbasis `Registry::Primary Runtime`. Untuk XAMPP, path project dan public root harus berada di bawah installation path XAMPP yang sedang digunakan. Jangan membuat root arbitrer di luar environment tersebut, misalnya `C:\[folder baru]`.
+Semua runtime project COPOT yang didefinisikan di registry ini harus berbasis `Primary Runtime`. Untuk XAMPP, path project dan public root harus berada di bawah installation path XAMPP yang sedang digunakan. Jangan membuat root arbitrer di luar environment tersebut, misalnya `C:\[folder baru]`.
 
 ### Default configuration boundary
 
@@ -50,7 +50,7 @@ Layout canonical `Main Runtime`:
 
 `Separated Disposable Runtime` (`SDR`) digunakan bila isolation cukup dilakukan pada app filesystem, public filesystem, dan database namespace, sementara environment `Primary Runtime` tetap digunakan.
 
-`SDR` wajib tetap berbasis `Registry::Primary Runtime`. Gunakan path di bawah installation path XAMPP yang sama, terutama directory `htdocs`; jangan membuat root baru di luar environment tersebut.
+`SDR` wajib tetap berbasis `Primary Runtime`. Gunakan path di bawah installation path XAMPP yang sama, terutama directory `htdocs`; jangan membuat root baru di luar environment tersebut.
 
 Layout canonical `SDR`:
 
@@ -68,7 +68,7 @@ Placeholder tersebut bukan bagian literal dari path atau nama database.
 
 `Isolated Disposable Runtime` (`IDR`) digunakan hanya bila isolation harus mencakup service atau runtime instance, bukan hanya directory dan database namespace. Contohnya adalah instance MariaDB/MySQL terpisah, port service terpisah, configuration root terpisah, atau process/service state terpisah.
 
-`IDR` tetap wajib berbasis `Registry::Primary Runtime`.
+`IDR` tetap wajib berbasis `Primary Runtime`.
 
 Layout canonical `IDR`:
 
@@ -85,5 +85,15 @@ Untuk `SDR` maupun `IDR`, runtime name sebaiknya menggunakan short commit ID yan
 ## 6. Runtime authorization boundary
 
 Konvensi path, naming, dan runtime classification di registry ini hanya menentukan model dan layout runtime. Konvensi ini tidak memberikan authorization untuk membuat, mengubah, menghapus, menjalankan, mengaktifkan capability, atau mengubah database maupun service.
+
+Pembuatan atau aktivasi `SDR` maupun `IDR` wajib mendapat persetujuan eksplisit user sebelum dilakukan. Request persetujuan wajib melaporkan konfigurasi runtime yang akan digunakan, sekurang-kurangnya:
+
+- APP_ROOT;
+- PUBLIC_ROOT;
+- Database Name.
+
+Untuk `IDR`, request juga harus mencantumkan service root, port, configuration root, dan endpoint bila material.
+
+Registry hanya mendefinisikan layout dan classification runtime. Registry tidak dengan sendirinya memberikan persetujuan untuk membuat, mengaktifkan, mengubah, atau menghapus `SDR` maupun `IDR`.
 
 Perubahan implementation/package-owned filesystem dan database state tetap mengikuti Package Lifecycle dan authorization yang berlaku. Runtime copy maupun disposable runtime bukan authority durable untuk Repository state.
