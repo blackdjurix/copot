@@ -1351,6 +1351,30 @@ Sources:
 
 Planning action: KEEP SEPARATE / DO NOT AUTO-ADOPT INTO MR.2
 
+### Deployment-Aware `.htaccess` Package Update Reconciliation
+Class: DEFERRED ITEM / FUTURE PACKAGE LIFECYCLE DEVELOPMENT
+Status: KEEP DEFERRED / UNSCHEDULED / NOT ADOPTED
+
+Deferred ID: `DI-PACKAGE-LIFECYCLE-HTACCESS-01`.
+
+Sources:
+- `docs/canonical_target_inventory_fingerprint_contract.md` [CURRENT FILE-STATE AUTHORITY]
+- `docs/28_package_lifecycle_migration_foundation_contract.md` [PACKAGE LIFECYCLE]
+- `docs/32_webcore_deployment_portability_foundation_contract.md` [SPLIT-ROOT DEPLOYMENT]
+
+Future evaluation scope:
+- support `.htaccess` updates under both manifest-v3 `full` and `partial` coverage;
+- reconcile package-owned directive additions, changes, and removals while preserving valid deployment-specific root/base-path values;
+- establish explicit component ownership, reviewed target-bound preservation evidence, effective installed-file identity/fingerprint, conflict and rollback/recovery semantics;
+- fail closed on ambiguous edits, unsupported reconciliation, or missing provenance; neither whole-file `RETAIN` nor `REPLACE` may silently bypass validated update intent.
+
+Current boundary:
+- No implementation, contract amendment, work-unit adoption, or authorization follows from this entry.
+- Deferral does not waive actual-file integrity, source-inventory authority, or prerequisite checks for active R3-A E4 / Alternative C.
+- Current corrected SDR `.htaccess` mismatch remains an independent operational reconciliation blocker; do not mark it accepted or fixed through this registry entry.
+
+Planning action: KEEP DEFERRED / FUTURE CONCEPT-CONTRACT PREPARATION REQUIRED
+
 ### Stale Package-Owned File Reconciliation
 Class: LIFECYCLE REFINEMENT / AUDIT CANDIDATE
 Status: UNRESOLVED / SEPARATE
