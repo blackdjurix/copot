@@ -1,5 +1,5 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-10-26 00:30:14 WIB
+Date version: 2026-10-26 13:48:48 WIB
 
 ## Purpose
 
@@ -201,17 +201,17 @@ Masukkan hanya module yang material terhadap execution slice. Urutan internalnya
 
 #### `Primary Runtime`, `Main Runtime`, `SDR`, dan `IDR`
 
-Gunakan `Primary Runtime` sebagai default runtime environment. Dalam COPOT, `Primary Runtime` di-resolve dari `Registry::Primary Runtime` dan `Main Runtime` adalah instance existing yang dipakai untuk development, integration, debugging, validation normal, serta operational/human acceptance bila task dapat dijalankan dengan aman pada existing project state.
+Gunakan `Primary Runtime` sebagai default runtime environment. Resolve definisi, layout, naming, dan classification `Main Runtime`, `SDR`, dan `IDR` dari bagian terkait di `Registry`. Jangan mendefinisikan ulang atau menginfer detail runtime tersebut di dalam instruction.
 
 Jangan mengubah default setting `Primary Runtime` secara persistent tanpa authorization eksplisit. Bila task membutuhkan capability optional seperti `zip` pada `php.ini`, perlakukan sebagai task-scoped runtime configuration change: authorization, setting exact, before/after value, validation, dan restoration atau explicit persistent approval wajib dicatat.
 
-Layout `Main Runtime`, `SDR`, dan `IDR` di-resolve dari `Registry`. `SDR` digunakan untuk isolation directory/database namespace dengan service environment yang sama; `IDR` digunakan bila service instance, port, configuration root, atau process/service state juga harus terisolasi. Keduanya tetap berbasis `Registry::Primary Runtime` dan tidak boleh membuat root arbitrer di luar installation path primary runtime.
+Runtime target yang tercantum dalam instruction harus mengikuti definisi dan layout canonical pada `Registry`. Jangan membuat root arbitrer di luar installation path `Primary Runtime`.
 
 Perubahan implementation/package-owned filesystem atau database state pada `Main Runtime`, `SDR`, atau `IDR` harus melalui Package Lifecycle yang berlaku. Jangan melakukan direct mutation bila task membutuhkan route lifecycle berbasis package.
 
 State runtime adalah evidence eksekusi atau installed state. Jangan mengklaim human acceptance, closure, atau NRP hanya dari state tersebut.
 
-`SDR` atau `IDR` bukan pengganti `Main Runtime` untuk operational atau human acceptance kecuali target tersebut secara eksplisit ditetapkan. Runtime bukan authority source Repository; rekonsiliasikan source state, installed state, package provenance, dan evidence bila material.
+Runtime bukan authority source Repository. Rekonsiliasikan source state, installed state, package provenance, dan evidence bila material.
 
 #### `Gateway`
 
