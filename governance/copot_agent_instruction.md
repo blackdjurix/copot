@@ -9,17 +9,49 @@ Identitas governance canonical: resolve dari `Rule::Instruction`.
 
 ## 1. Variabel
 
+- `Rule`
+  Description: Canonical project Rule artifact yang menjadi sumber Variable, authority boundary, dan routing governance COPOT.
+  Value: `governance/copot_project_rule.md`
+
+- `Registry`
+  Description: Canonical project Registry untuk Variable dan runtime rule COPOT.
+  Value: `governance/copot_project_registry.md`
+
 - `Primary Runtime`
   Description: Local reference ke canonical Primary Runtime dari Registry.
   Value: `Registry::Primary Runtime`
 
+- `Project`
+  Description: Local reference ke nama canonical project dari Rule.
+  Value: `Rule::Project`
+
+- `Technical Executor`
+  Description: Local reference ke current Technical Executor dari Rule.
+  Value: `Rule::Technical Executor`
+
+- `Integration Target`
+  Description: Local reference ke target integration utama dari Rule.
+  Value: `Rule::Integration Target`
+
+- `Gateway`
+  Description: Local reference ke Gateway yang berlaku dari Rule.
+  Value: `Rule::Gateway`
+
+- `Prototyping`
+  Description: Local reference ke tool prototyping yang berlaku dari Rule.
+  Value: `Rule::Prototyping`
+
 ### Identitas `Rule`
 
-Dalam template ini, `Rule` berarti artifact canonical terbaru yang ditunjuk oleh `Governance::Rule`. `Rule` adalah sumber untuk Variable, authority boundary, dan routing governance yang digunakan oleh template ini.
+Dalam template ini, `Rule` berarti artifact canonical yang menjadi sumber Variable, authority boundary, dan routing governance untuk template ini.
 
 ### Reference Variable
 
-Setiap Variable canonical yang digunakan template ini wajib di-resolve dari qualified governance scope yang ditentukan oleh `Rule` terbaru. Jangan mendefinisikan ulang, menginfer, atau mengganti value Variable berdasarkan memory, `Handoff`, context session sebelumnya, atau isi `Agent Instruction` yang sudah digenerate.
+Setiap Variable yang digunakan template ini wajib di-resolve dari canonical Governance artifact dan qualified scope yang mendefinisikannya, sesuai routing yang ditetapkan oleh `Rule`.
+
+Variable dapat digunakan langsung melalui qualified reference `<Scope>::<Variable>`. Jika Variable dipakai berulang dalam content template, Variable tersebut dapat dideklarasikan sebagai local reference di bagian Variabel agar delivery lebih ringkas dan konsisten.
+
+Jangan mendefinisikan ulang, menginfer, atau mengganti value Variable berdasarkan memory, Handoff, context session sebelumnya, atau Agent Instruction yang sudah digenerate.
 
 ## Semantik title Agent Instruction
 
@@ -48,7 +80,7 @@ Sebelum delivery, lakukan leakage preflight: hapus wording governance yang tidak
 
 Jangan otomatis menyalin:
 
-- full `Handoff` atau riwayat lifecycle;
+- full Handoff atau riwayat lifecycle;
 - reasoning keputusan internal `Project`/session;
 - troubleshooting sebelumnya atau state `Git` lama;
 - planning library penuh atau riwayat `Repository`;
@@ -243,7 +275,7 @@ Gunakan source berdasarkan fungsinya:
 - implementation untuk behavior yang diamati;
 - test/evidence untuk behavior yang terbukti;
 - section planning yang disebut hanya bila diwajibkan instruction ini;
-- `Handoff` hanya melalui context minimum yang direproduksi di sini.
+- Handoff hanya melalui context minimum yang direproduksi di sini.
 
 Jangan meminta atau merekonstruksi artifact continuity atau planning secara penuh.
 
