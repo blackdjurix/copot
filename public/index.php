@@ -1,6 +1,7 @@
 <?php
 
 use Copot\Core\DeploymentContext;
+use Copot\Core\DeploymentCompatibilityVerifier;
 use Copot\Core\Diagnostics;
 use Copot\Core\InstallationState;
 use Copot\Core\InstallerGate;
