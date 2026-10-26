@@ -85,7 +85,7 @@ try {
     foreach (['.env', '.copot/package.json', 'storage/.install.lock', 'storage/installed.lock', 'storage/.copot-lifecycle/committed-state.json', 'storage/.copot-lifecycle/installation-identity.json'] as $forbidden) {
         $assert(!in_array($forbidden, $paths, true), 'Runtime-owned path leaked into package inventory: ' . $forbidden);
     }
-    $assert(in_array('public/.htaccess', $paths, true) && in_array('routes/site_settings.php', $paths, true), 'Required source policy paths were silently omitted.');
+    $assert(!in_array('public/.htaccess', $paths, true) && in_array('routes/site_settings.php', $paths, true), 'Deployment-owned .htaccess leaked into package inventory or required policy path was omitted.');
 
     $manifestDigest = PackageV3Identity::manifestDigest($raw);
     $packageIdentity = PackageV3Identity::identity($manifestDigest, $contract->integrityIdentity());

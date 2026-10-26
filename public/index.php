@@ -64,6 +64,7 @@ try {
 
     require_once $autoloadPath;
     $deploymentContext = DeploymentContext::fromEntrypoint(__FILE__);
+    DeploymentCompatibilityVerifier::verify($deploymentContext);
     $basePath = $deploymentContext->appRoot();
 
     $applicationBootstrap = $deploymentContext->path('bootstrap/app.php');

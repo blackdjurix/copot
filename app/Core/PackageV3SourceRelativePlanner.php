@@ -15,10 +15,12 @@ final class PackageV3SourceRelativePlanner
             throw new \InvalidArgumentException('Source-relative planning requires a v3 package contract.');
         }
         $target = $this->index($package->targetInventory()->entries());
+        if (isset($target[self::key(CanonicalTargetInventoryEntry::PUBLIC_ROOT, '.htaccess')])) { throw new \RuntimeException('V3 planning cannot mutate deployment-owned .htaccess.'); }
         $delivered = [];
         foreach ($package->inventory() as $entry) {
             if (!$entry instanceof PackageInventoryEntry || $entry->ownership() !== PackageOwnership::PACKAGE_OWNED) { throw new \RuntimeException('V3 delivered inventory ownership is invalid.'); }
             [$root, $path] = self::rootPath($entry->path());
+            if ($root === CanonicalTargetInventoryEntry::PUBLIC_ROOT && $path === '.htaccess') { throw new \RuntimeException('V3 planning cannot deliver deployment-owned .htaccess.'); }
             $key = self::key($root, $path);
             if (isset($delivered[$key])) { throw new \RuntimeException('V3 delivered inventory has a root/path collision.'); }
             $delivered[$key] = [$entry->byteSize(), $entry->sha256(), $entry->path()];

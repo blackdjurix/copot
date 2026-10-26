@@ -391,7 +391,7 @@ foreach ($files as $relative => $source) {
 }
 
 if ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
-    foreach (['public/.htaccess', 'routes/site_settings.php'] as $requiredPolicyPath) {
+    foreach (['routes/site_settings.php'] as $requiredPolicyPath) {
         if (!isset($files[$requiredPolicyPath])) {
             fail('v3 packaging policy cannot determine ownership for required path: ' . $requiredPolicyPath);
         }

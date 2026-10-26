@@ -373,7 +373,6 @@ foreach ([
     'modules/form-manager/release.json',
     'modules/users-access/module.json',
     'modules/media/routes.php',
-    'public/.htaccess',
     'public/index.php',
     'public/admin-assets/css/admin.css',
     'resources/views/installer/index.php',

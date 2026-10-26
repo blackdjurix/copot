@@ -32,7 +32,11 @@ final class CommittedSourceAuthorityPlanner
         if ($requiresMutation && ($migrationPlan->initialWebcoreVersion() !== $committed->webcoreVersion() || $migrationPlan->virtualFinalWebcoreVersion() !== $manifest->contract()->targetWebcoreVersion() || $migrationPlan->initialSchemaIdentity() !== $committed->schemaStateIdentity())) {
             throw new \RuntimeException('Canonical migration plan identity does not match committed source-authority state.');
         }
-        $basePlan = (new PackageV3SourceRelativePlanner())->plan($manifest);
+        // Mutation-mode authority reconciliation composes its own guarded
+        // source plan so an explicit reviewed preservation profile can retain
+        // deployment-owned routing bytes without turning them into V3 package
+        // actions. Authority-only mode still requires the complete V3 plan.
+        $basePlan = $requiresMutation ? null : (new PackageV3SourceRelativePlanner())->plan($manifest);
         $sourcePlan = $requiresMutation
             ? $this->mutationSourcePlan($manifest, $actualTarget, $preservationPolicy)
             : $basePlan;

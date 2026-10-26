@@ -32,6 +32,7 @@ final class PackageLifecycleFactory
         $deploymentContext = is_string($deployment)
             ? DeploymentContext::forApplicationRoot($deployment)
             : $deployment;
+        DeploymentCompatibilityVerifier::verify($deploymentContext, false);
         $basePath = $deploymentContext->appRoot();
         $publicRoot = $deploymentContext->publicRoot();
         $storage = $basePath . DIRECTORY_SEPARATOR . 'storage';

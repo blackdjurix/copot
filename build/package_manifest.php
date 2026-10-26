@@ -50,5 +50,6 @@ return [
         'tests',
         'Thumbs.db',
         '.DS_Store',
+        'public/.htaccess',
     ],
 ];
