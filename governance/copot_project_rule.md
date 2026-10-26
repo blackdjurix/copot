@@ -1,7 +1,11 @@
 # RULE PROJECT COPOT
-Date version: 2026-10-26 00:21:38 WIB
+Date version: 2026-10-26 13:48:48 WIB
 
 ## 1. Variabel
+
+- `Primary Runtime`
+  Description: Local reference ke canonical Primary Runtime pada Registry.
+  Value: `Registry::Primary Runtime`
 
 Variabel adalah pointer project yang statis. Setiap Variable memiliki scope artifact, Description, dan Value. Nama variable harus unik di dalam scope artifact, sedangkan qualified variable identity berbentuk `<Scope>::<Variable>` dan harus unik governance-wide. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel tidak menyimpan dynamic lifecycle state; dynamic state dicatat pada artifact project atau Handoff yang relevan.
 
@@ -233,15 +237,7 @@ Jangan mengganti route yang locked dengan preferensi model secara diam-diam.
   `docs/devlog.md` yang tercakup dalam `Activity Journal Mutation Gate`.
 - Jangan reset, clean, stash, discard, overwrite, force-update, atau menormalkan state yang tidak terduga secara otomatis.
 
-`Registry::Primary Runtime` adalah default runtime environment untuk normal development, debugging, integration, dan validation bila pekerjaan dapat dilakukan dengan aman pada existing state.
-
-`Main Runtime` adalah instance runtime existing yang mencerminkan current project state. Identity, endpoint, port, dan state aktualnya bersifat dinamis dan dicatat pada Handoff atau execution context yang relevan.
-
-`Main Runtime` juga merupakan development mirror dan target operational/human acceptance bila workstream atau contract yang berlaku menetapkannya sebagai target acceptance. Installed state pada Main Runtime harus dapat direkonsiliasi terhadap Repository source state dan package provenance yang relevan. Installed state tidak dengan sendirinya membuktikan human acceptance, closure, atau NRP.
-
-`Separated Disposable Runtime (SDR)` adalah runtime disposable yang mengisolasi app filesystem, public filesystem, dan database namespace dengan tetap menggunakan service environment `Registry::Primary Runtime`.
-
-`Isolated Disposable Runtime (IDR)` adalah runtime disposable yang juga mengisolasi service atau runtime instance, misalnya dengan instance MariaDB/MySQL, port, configuration root, atau process/service state yang terpisah.
+`Main Runtime`, `Separated Disposable Runtime (SDR)`, dan `Isolated Disposable Runtime (IDR)` dalam Rule ini merujuk pada definisi, layout, dan konvensi runtime pada bagian terkait di `Registry`.
 
 Gunakan `SDR` bila directory dan database namespace isolation sudah cukup. Gunakan `IDR` hanya bila service-level isolation benar-benar diperlukan. Keduanya bukan default, bukan checkpoint durable, dan bukan replacement otomatis untuk `Main Runtime`. `Repository` tetap menjadi authority untuk durable implementation state.
 
