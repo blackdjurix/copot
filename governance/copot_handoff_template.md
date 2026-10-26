@@ -9,6 +9,18 @@ Identitas canonical: resolve dari `Rule::Handoff`.
 
 ## 1. Variabel
 
+- `Rule`
+  Description: Canonical project governance artifact yang mendefinisikan authority, scope, routing, loading, dan interaction boundaries COPOT.
+  Value: **governance/copot_project_rule.md**
+
+- `Registry`
+  Description: Canonical project registry untuk project variables dan applicable governance rules COPOT.
+  Value: **governance/copot_project_registry.md**
+
+- `Instruction`
+  Description: Canonical template untuk bounded technical execution instruction COPOT.
+  Value: **governance/copot_agent_instruction.md**
+
 - `Project`
   Description: Local reference ke canonical project name dari Rule.
   Value: `Rule::Project`
@@ -17,8 +29,8 @@ Identitas canonical: resolve dari `Rule::Handoff`.
   Description: Local reference ke canonical project source link dari Rule.
   Value: `Rule::Source Link`
 
-- `Repository Link`
-  Description: Local reference ke canonical repository link dari Rule.
+- `Repository`
+  Description: Local reference ke canonical durable Repository link dari Rule.
   Value: `Rule::Repository Link`
 
 - `Integration Target`
@@ -68,10 +80,10 @@ GPT penerima tidak boleh mengandalkan implicit memory, summary session sebelumny
 
 Sebelum memulai, resolve, buka, baca, verifikasi, dan apply `Governance` berikut:
 
-- Governance Source: `Rule::Source Link`
+- Governance Source: `Source Link`
 - Project Rule: `Rule`
 - Handoff Template: `Rule::Handoff`
-- Instruction Template: `Rule::Instruction`
+- Instruction Template: `Instruction`
 
 Receiving GPT/session wajib memverifikasi nilai canonical Variable tersebut dari `Rule` sebelum menerapkannya. Jika source atau path tidak tersedia, berubah, atau tidak dapat diverifikasi, laporkan secara eksplisit dan terapkan fail-closed behavior.
 
@@ -179,7 +191,7 @@ State dependency adalah context, bukan authorization untuk memulai pekerjaan yan
 
 Cantumkan hanya bila material:
 
-- Repository: `Rule::Repository Link`
+- Repository: `Repository`
 - Integration target: `Integration Target`
 - Branch: `<branch>`
 - HEAD/revision: `<revision>`
