@@ -1351,6 +1351,31 @@ Sources:
 
 Planning action: KEEP SEPARATE / DO NOT AUTO-ADOPT INTO MR.2
 
+### Controlled V3 Contract Deviation — `.htaccess` Ownership Transition
+Class: ACTIVE CONTRACT DEVIATION REGISTER / BOUNDED TRANSITION
+Status: USER-AUTHORIZED DIRECTION / BREACH OPEN / IMPLEMENTATION NOT YET VERIFIED
+Deviation ID: `CD-V3-HTACCESS-20261026-01`
+Decision recorded: 2026-10-26 19:02:01 WIB
+
+Current governing contracts remain authoritative until formally reconciled; this entry records an explicit user-directed, narrowly bounded incompatibility to be resolved rather than treating old manifest-v3 artifacts as permanent compatibility obligations.
+
+Authorized direction and affected invariants:
+- Physical `PUBLIC_ROOT/.htaccess` becomes deployment-owned; Webcore retains ownership of required routing behavior, not the deployed file's local bytes.
+- V3 full and partial packages must exclude `.htaccess` from delivered package-owned inventory and resulting package-owned target inventory/fingerprint. Full coverage continues to mean all resulting package-owned bytes are delivered.
+- Fresh-install and package-update admission must verify compatible deployment routing/root/base-path behavior separately; invalid or unverified routing fails closed before mutation.
+- Explicitly supersede the old-V3 artifact compatibility expectation for this transition. Historical ZIPs/manifests, fingerprints, and executed installation evidence remain immutable historical records, not automatically eligible under revised semantics.
+- Known intentional breach until reconciliation: strict existing manifest-v3 grammar/payload inventory, builder's required `public/.htaccess`, package-owned target assumptions, and existing source-authority/package admission interpretation. Never silently reinterpret an old package as new or claim old/new identities interchangeable.
+
+Required reconciliation and closure:
+- Bounded technical contract delta must specify ownership/provisioning, minimum routing compatibility, full/partial behavior, legacy-artifact disposition, source-inventory authority, recovery isolation, and actual SDR acceptance consequences.
+- Reconcile and promote affected normative contracts through their applicable governance gate, then implement and test source/manifest/builder/installer/planner/recovery implications in the authorized workstream.
+- Build a new independently identified package; verify fresh install, HTTP routing, full/partial integrity, recovery, and source-authority path before E4 eligibility is asserted.
+- Deviation closes only after authoritative contract reconciliation, implementation evidence, and verified acceptance. Until then `R3-A E4` remains BLOCKED and `SourceInventoryReference=null` is preserved; no rollback of old artifact history, no silent integrity bypass.
+
+Deferred boundary: `DI-PACKAGE-LIFECYCLE-HTACCESS-01` remains unscheduled only for advanced automatic directive-level merge, deployment configuration mutation, and cross-platform rewriting; baseline ownership/routing compatibility are not deferred.
+
+Planning action: CONTROLLED DEVIATION OPEN / CONTRACT RECONCILIATION REQUIRED / NO IMPLICIT E4 ADVANCEMENT
+
 ### Deployment-Aware `.htaccess` Package Update Reconciliation
 Class: DEFERRED ITEM / FUTURE PACKAGE LIFECYCLE DEVELOPMENT
 Status: KEEP DEFERRED / UNSCHEDULED / NOT ADOPTED
