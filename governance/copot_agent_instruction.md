@@ -10,7 +10,7 @@ Identitas governance canonical: resolve dari `Rule::Instruction`.
 ## 1. Variabel
 
 - `Rule`
-  Description: Canonical project Rule artifact yang menjadi sumber Variable, authority boundary, dan routing governance COPOT.
+  Description: Canonical project `Rule` artifact yang menjadi sumber Variable, authority boundary, dan routing governance COPOT.
   Value: `governance/copot_project_rule.md`
 
 - `Registry`
@@ -22,15 +22,15 @@ Identitas governance canonical: resolve dari `Rule::Instruction`.
   Value: `Registry::Primary Runtime`
 
 - `Project`
-  Description: Local reference ke nama canonical project dari Rule.
+  Description: Local reference ke nama canonical project dari `Rule`.
   Value: `Rule::Project`
 
 - `Technical Executor`
-  Description: Local reference ke current Technical Executor dari Rule.
+  Description: Local reference ke current `Technical Executor` dari `Rule`.
   Value: `Rule::Technical Executor`
 
 - `Integration Target`
-  Description: Local reference ke target integration utama dari Rule.
+  Description: Local reference ke target integration utama dari `Rule`.
   Value: `Rule::Integration Target`
 
 - `Gateway`
@@ -118,7 +118,7 @@ Jangan menambahkan section report generik ke `Agent Instruction`. Tentukan techn
 - `Project`: `Project`
 - Continuity Boundary: `<Work Unit / batch / workstream / phase>`
 - Objective: `<objective konkret tunggal>`
-- Repository/workspace: `<identity exact bila material>`
+- `Repository`/workspace: `<identity exact bila material>`
 - Integration target: `Integration Target`
 - Primary Runtime: `Primary Runtime` bila material
 - Runtime target: `Main Runtime / SDR / IDR / None` bila material
@@ -243,7 +243,7 @@ Perubahan implementation/package-owned filesystem atau database state pada `Main
 
 State runtime adalah evidence eksekusi atau installed state. Jangan mengklaim human acceptance, closure, atau NRP hanya dari state tersebut.
 
-Runtime bukan authority source Repository. Rekonsiliasikan source state, installed state, package provenance, dan evidence bila material.
+Runtime bukan authority source `Repository`. Rekonsiliasikan source state, installed state, package provenance, dan evidence bila material.
 
 #### `Gateway`
 

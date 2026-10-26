@@ -22,19 +22,19 @@ Identitas canonical: resolve dari `Rule::Handoff`.
   Value: **governance/copot_agent_instruction.md**
 
 - `Project`
-  Description: Local reference ke canonical project name dari Rule.
+  Description: Local reference ke canonical project name dari `Rule`.
   Value: `Rule::Project`
 
 - `Source Link`
-  Description: Local reference ke canonical project source link dari Rule.
+  Description: Local reference ke canonical project source link dari `Rule`.
   Value: `Rule::Source Link`
 
 - `Repository`
-  Description: Local reference ke canonical durable Repository link dari Rule.
+  Description: Local reference ke canonical durable `Repository` link dari `Rule`.
   Value: `Rule::Repository Link`
 
 - `Integration Target`
-  Description: Local reference ke canonical integration target dari Rule.
+  Description: Local reference ke canonical integration target dari `Rule`.
   Value: `Rule::Integration Target`
 
 - `Primary Runtime`
@@ -74,7 +74,7 @@ Section conditional hanya dimasukkan bila material terhadap continuity transitio
 
 ## Isolasi session baru dan bahasa
 
-GPT penerima tidak boleh mengandalkan implicit memory, summary session sebelumnya, chat history, atau model context sebagai pengganti Handoff ini dan sumber authoritative saat ini. Lakukan rekonstruksi hanya dari governance saat ini, Handoff ini, project instructions, state Repository yang diverifikasi, dan source material yang diidentifikasi secara eksplisit.
+GPT penerima tidak boleh mengandalkan implicit memory, summary session sebelumnya, chat history, atau model context sebagai pengganti Handoff ini dan sumber authoritative saat ini. Lakukan rekonstruksi hanya dari governance saat ini, Handoff ini, project instructions, state `Repository` yang diverifikasi, dan source material yang diidentifikasi secara eksplisit.
 
 ## Governance Canonical Paths
 
@@ -143,7 +143,7 @@ Cantumkan bila berlaku:
 - keputusan user yang belum disimpan;
 - kesimpulan atau keputusan turunan GPT yang belum disimpan;
 - Agent Instruction yang belum dikirim;
-- perubahan Repository yang belum di-commit;
+- perubahan `Repository` yang belum di-commit;
 - perubahan Workplan/Concept yang belum dipersist;
 - state runtime sementara;
 - artifact yang dihasilkan tetapi belum diterima atau dipersist.
@@ -236,11 +236,11 @@ Handoff tidak boleh menyatakan NRP confirmed hanya karena technical work selesai
 - Material `Gateway` state: `<only if remote access is relevant>`
 - Material `Prototyping` state: `<only if visual/prototype context is relevant>`
 
-Urutan bootstrap: governance saat ini, Handoff ini, project instructions, state project/Repository yang diverifikasi, lalu hanya Workplan, Concept, documentation, runtime, atau tool sources yang material dan diidentifikasi secara eksplisit.
+Urutan bootstrap: governance saat ini, Handoff ini, project instructions, state project/`Repository` yang diverifikasi, lalu hanya Workplan, Concept, documentation, runtime, atau tool sources yang material dan diidentifikasi secara eksplisit.
 
 ## Boundary direct transfer
 
-Jangan mentransfer full Handoff ke Technical Executor.
+Jangan mentransfer full Handoff ke `Rule::Technical Executor`.
 
 Jika user meminta direct transfer, turunkan Agent Instruction terpisah yang hanya membawa minimum execution context yang material. Handoff tidak memperluas authorization.
 

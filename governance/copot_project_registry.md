@@ -104,4 +104,4 @@ Untuk `IDR`, request juga harus mencantumkan service root, port, configuration r
 
 Registry hanya mendefinisikan layout dan classification runtime. Registry tidak dengan sendirinya memberikan persetujuan untuk membuat, mengaktifkan, mengubah, atau menghapus `SDR` maupun `IDR`.
 
-Perubahan implementation/package-owned filesystem dan database state tetap mengikuti Package Lifecycle dan authorization yang berlaku. Runtime copy maupun disposable runtime bukan authority durable untuk Repository state.
+Perubahan implementation/package-owned filesystem dan database state tetap mengikuti Package Lifecycle dan authorization yang berlaku. Runtime copy maupun disposable runtime bukan authority durable untuk `Repository` state.
