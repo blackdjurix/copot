@@ -34,12 +34,12 @@ Identitas governance canonical: resolve dari `Rule::Instruction`.
   Value: `Rule::Integration Target`
 
 - `Gateway`
-  Description: Local reference ke Gateway yang berlaku dari Rule.
-  Value: `Rule::Gateway`
+  Description: Local reference ke Gateway yang berlaku dari Registry.
+  Value: `Registry::Gateway`
 
 - `Prototyping`
-  Description: Local reference ke tool prototyping yang berlaku dari Rule.
-  Value: `Rule::Prototyping`
+  Description: Local reference ke tool prototyping yang berlaku dari Registry.
+  Value: `Registry::Prototyping`
 
 ### Identitas `Rule`
 

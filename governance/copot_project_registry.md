@@ -7,6 +7,14 @@ Date version: 2026-10-26 00:21:38 WIB
   Description: Default runtime environment untuk development, debugging, integration, dan validation normal.
   Value: **XAMPP**
 
+- `Gateway`
+  Description: Tool atau route gateway yang digunakan bila remote access terhadap environment project material.
+  Value: **Tailscale**
+
+- `Prototyping`
+  Description: Tool prototyping yang digunakan bila visual atau prototype menjadi material terhadap project.
+  Value: **Figma**
+
 ## 2. Runtime model
 
 `Primary Runtime` menunjuk ke environment XAMPP.

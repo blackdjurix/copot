@@ -60,15 +60,14 @@ Variabel adalah pointer project yang statis. Setiap Variable memiliki scope arti
   - `Instruction`
     Description: Canonical template untuk bounded technical execution instruction COPOT.
     Value: **governance/copot_agent_instruction.md**
-- `Active Applicable Governance`
-  Description: Governance atau tool boundary tambahan yang aktif dan material untuk project COPOT.
-  Value:
-  - `Gateway`
-    Description: Tool atau route gateway yang digunakan bila remote access terhadap environment project material.
-    Value: **Tailscale**
-  - `Prototyping`
-    Description: Tool prototyping yang digunakan bila visual atau prototype menjadi material terhadap project.
-    Value: **Figma**
+
+- `Gateway`
+  Description: Local reference ke Gateway yang berlaku dari Registry.
+  Value: `Registry::Gateway`
+
+- `Prototyping`
+  Description: Local reference ke tool prototyping yang berlaku dari Registry.
+  Value: `Registry::Prototyping`
 
 ## Variable scope dan namespace resolution
 
@@ -121,6 +120,7 @@ Project truth, state Repository, state runtime, state planning, dan state contin
 Identitas governance canonical harus di-resolve dari Variables berikut:
 
 - Variable `Rule`
+- Variable `Registry`
 - Variable `Handoff`
 - Variable `Instruction`
 
@@ -525,7 +525,7 @@ Emergency Handoff bukan klaim completion dan bukan authorization executor.
 
 Applicable Governance hanya berlaku ketika trigger-nya aktif. Ia bukan mandate untuk setiap interaction.
 
-### Tailscale
+### Gateway
 
 - Peran: gateway dari local PC ke Mobile/device lain.
 - Trigger: remote access atau workflow AFK diperlukan.
@@ -533,7 +533,7 @@ Applicable Governance hanya berlaku ketika trigger-nya aktif. Ia bukan mandate u
 - Tidak mengatur: scope project, NRP, implementation authorization, atau release.
 - Konfigurasi external/network membutuhkan authorization terpisah.
 
-### Figma
+### Prototyping
 
 - Peran: visual prototyping dan intent alignment.
 - Trigger: visual requirement, layout, atau product intent membutuhkan prototype/reference.
