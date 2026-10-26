@@ -132,18 +132,19 @@ Setiap artifact memiliki lineage versi yang independen dan wajib memakai:
 
 Pada setiap interaction:
 
-1. resolve dan baca Rule sebelum feedback COPOT yang substantif;
-2. baca Handoff bila interaction menyangkut handoff, perpindahan session, pemulihan continuity, atau penanganan NRP-ke-session;
-3. baca Instruction bila interaction menyangkut pembuatan, review, atau delivery instruction untuk Technical Executor;
-4. muat hanya project sources, Workplan, Concept, Applicable Governance, dan repository evidence yang material.
+1. resolve, buka, baca, dan apply `Rule`;
+2. resolve, buka, baca, dan apply `Registry`;
+3. resolve, buka, baca, dan apply `Handoff`;
+4. resolve, buka, baca, dan apply `Instruction`;
+5. muat hanya project sources, Workplan, Concept, Applicable Governance, dan repository evidence yang material terhadap interaction.
+
+Relevansi artifact tidak menghapus kewajiban untuk membaca artifact tersebut. Jika setelah dibaca tidak ada requirement yang material terhadap interaction, artifact tetap dianggap telah dibaca dan tidak menghasilkan routing atau boundary tambahan.
 
 Jangan mengklaim artifact telah dibaca jika exact content belum dibuka.
 
-Jika Rule tidak tersedia, project routing, authorization, governed execution, governance update, dan high-risk action diblok. Diskusi faktual yang aman dan retrieval recovery tetap boleh.
+Jika salah satu canonical Governance artifact tidak tersedia atau tidak dapat dibaca dan diverifikasi, substantive COPOT feedback diblok setelah retry retrieval yang diwajibkan. Safe factual discussion dan retrieval recovery tetap boleh.
 
-Jika Handoff tidak tersedia, handoff/perpindahan session yang membutuhkan Handoff diblok, tetapi pekerjaan teknis lifecycle-neutral yang telah diotorisasi secara independen dapat berlanjut bila aman.
-
-Jika Instruction tidak tersedia, pembuatan atau delivery instruction executor yang governed diblok. Jangan membuat replacement tanpa otorisasi user yang eksplisit.
+Jangan memberikan substantive feedback atau membuat replacement governance berdasarkan memory, summary, prior-session context, atau generated copy.
 
 ### Routing bahasa
 
@@ -203,6 +204,8 @@ Resolve `Manual-operation executor` dari platform saat interaction berlangsung, 
 `Technical Executor` menampilkan current effective executor untuk interaction atau bounded execution route. Jika tidak ada explicit bounded override, nilainya berasal dari Variable `Technical Executor`. Bounded override menampilkan effective executor tetapi tidak mengubah Variable canonical. Field ini bukan authorization signal.
 
 Jangan mengklaim `READ THIS INTERACTION` atau `READ AND APPLIED` jika exact artifact belum dibuka, dibaca, dan diterapkan pada interaction tersebut.
+
+Status `NOT REQUIRED` berarti artifact tetap telah dibuka, dibaca, dan diterapkan, tetapi tidak menghasilkan requirement material terhadap interaction. Status tersebut tidak boleh digunakan untuk melewati pembacaan artifact.
 
 Format ini adalah presentation contract. Ia tidak menambah authority, authorization, project scope, atau execution permission.
 
@@ -369,7 +372,7 @@ Jika direct transfer diminta:
 
 Jika direct transfer tidak diminta, instruction disampaikan melalui delivery yang dimediasi user.
 
-## 8A. Minimalisasi agent-hop
+## 9. Minimalisasi agent-hop
 
 - Jangan invoke Technical Executor jika GPT dapat menyelesaikan task dengan aman dan lengkap tanpa capability tambahan.
 - Utamakan thread Technical Executor yang sama ketika context dan execution state masih valid.
@@ -379,7 +382,7 @@ Jika direct transfer tidak diminta, instruction disampaikan melalui delivery yan
 
 Panjang instruction harus proporsional terhadap task dan risk. Minimalisasi tidak boleh mengurangi correctness, safety, authorization, atau auditability.
 
-## 8B. Boundary formatting artifact
+## 10. Boundary formatting artifact
 
 - Untuk interaksi COPOT, gunakan Markdown, tabel, blockquote, fenced code block, dan editable Writing Block sebagai format penyajian.
 - Pilih format paling sederhana yang cukup untuk menyampaikan informasi secara jelas dan efektif.
@@ -390,7 +393,7 @@ Panjang instruction harus proporsional terhadap task dan risk. Minimalisasi tida
 - Format presentasi tidak mengubah scope, authorization, validation, stop condition, atau lifecycle boundary.
 - Permintaan eksplisit user untuk output visual atau desain tetap ditangani sesuai kebutuhan output tersebut.
 
-## 9. Governance Workplan dan Concept
+## 11. Governance Workplan dan Concept
 
 Workplan dan Concept adalah planning layer untuk sequencing, dependency, provenance, pre-contract, dan pekerjaan deferred.
 
@@ -470,7 +473,7 @@ Concept memiliki semantic identity dan provenance. Concept tetap provisional sam
 
 Revision Concept, source identity, consolidation, promotion, supersession, dan rejection harus tetap dapat ditelusuri. Consolidated Concept tidak menghapus provenance dari source yang digabung.
 
-## 10. Thread-Level Saved Concept Continuity
+## 12. Thread-Level Saved Concept Continuity
 
 Thread-Level Saved Concept, assumptions, keputusan unresolved, dan dependency payload tidak hilang karena session/thread berubah.
 
@@ -478,7 +481,7 @@ Handoff harus membawa minimum context continuity yang material dan reference ke 
 
 Unresolved payload adalah salah satu bentuk unsaved/unpersisted payload. Keduanya mengikuti aturan persistence dan authority yang sama; perbedaannya hanya pada output status: unresolved berarti hasil atau keputusan belum terselesaikan, sedangkan unsaved berarti hasil atau keputusan belum dipersist sebagai artifact authoritative.
 
-## 11. Acceptance, closure, dan NRP
+## 13. Acceptance, closure, dan NRP
 
 Commit Repository, test yang lulus, atau draft Handoff tidak otomatis berarti closure project atau konfirmasi NRP.
 
@@ -521,7 +524,7 @@ Emergency Handoff harus menyatakan:
 
 Emergency Handoff bukan klaim completion dan bukan authorization executor.
 
-## 12. Applicable Governance aktif
+## 14. Applicable Governance aktif
 
 Applicable Governance hanya berlaku ketika trigger-nya aktif. Ia bukan mandate untuk setiap interaction.
 
@@ -543,7 +546,7 @@ Applicable Governance hanya berlaku ketika trigger-nya aktif. Ia bukan mandate u
 
 Jika Applicable Governance tidak trigger, jangan load atau apply segment tersebut.
 
-## 12A. Evaluasi dan promosi governance
+## 15. Evaluasi dan promosi governance
 
 Segment ini hanya aktif untuk pembuatan, migrasi, perbandingan, pembaruan, atau promosi governance. Ia bukan runtime mandate dan tidak perlu dijalankan pada setiap interaction.
 
@@ -572,7 +575,7 @@ Evaluasi wajib menghasilkan Governance Evaluation Report yang terpisah dari tiga
 
 Report dapat disimpan sebagai artifact project, misalnya `docs/governance_evaluation_<date>.md`, dan ringkasannya wajib terlihat dalam response. Report adalah evidence dan rekomendasi; report tidak dengan sendirinya mengubah governance aktif. Hanya keputusan user yang eksplisit yang dapat mempromosikan candidate atau mengganti governance aktif.
 
-## 13. Reporting dan kondisi stop
+## 16. Reporting dan kondisi stop
 
 Report minimal harus menyatakan source/governance read status, routing material, scope, result, evidence, blocker, dan final affected state.
 
