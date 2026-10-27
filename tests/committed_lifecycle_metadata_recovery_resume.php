@@ -125,10 +125,27 @@ try {
         throw new RuntimeException('Missing operation locator was accepted.');
     } catch (Throwable $exception) { $assert(str_contains($exception->getMessage(), 'missing or ambiguous'), 'Missing locator did not fail closed.'); }
     $guardPath = $storage . DIRECTORY_SEPARATOR . '.copot-lifecycle' . DIRECTORY_SEPARATOR . 'application-write-guard.json';
+    $resumed->close();
+    $inactiveGuard = json_decode((string) file_get_contents($guardPath), true, 16, JSON_THROW_ON_ERROR);
+    $assert(($inactiveGuard['active'] ?? true) === false && ($inactiveGuard['draining'] ?? true) === false, 'Preparation close did not release the scoped Guard.');
+    $readmitted = $service->resumeCommittedLifecycleMetadataReconciliation($operation);
+    $assert($readmitted->ready(), 'Inactive Guard did not support canonical scoped re-admission.');
+    $assert($readmitted->plan()->operation()->operationId() === $operation, 'Scoped re-admission changed operation identity.');
+    $readmitted->close();
+
     $guardBytes = file_get_contents($guardPath);
-    file_put_contents($guardPath, json_encode(['active' => false, 'draining' => false, 'identity' => null, 'evidence_identity' => null, 'in_flight' => 0, 'updated_at' => gmdate('c')]));
-    try { $service->resumeCommittedLifecycleMetadataReconciliation($operation); throw new RuntimeException('Missing active Guard was accepted.'); }
-    catch (Throwable $exception) { $assert(str_contains($exception->getMessage(), 'protection'), 'Missing Guard evidence did not fail closed.'); }
+    file_put_contents($guardPath, json_encode([
+        'active' => true,
+        'draining' => true,
+        'identity' => 'conflicting-recovery',
+        'evidence_identity' => str_repeat('f', 64),
+        'in_flight' => 1,
+        'updated_at' => gmdate('c'),
+    ], JSON_THROW_ON_ERROR));
+    try { $service->resumeCommittedLifecycleMetadataReconciliation($operation); throw new RuntimeException('Conflicting Guard evidence was accepted.'); }
+    catch (Throwable $exception) { $assert(preg_match('/writer|protection|mutex/i', $exception->getMessage()) === 1, 'Conflicting Guard evidence failed for an unexpected reason.'); }
+    $guardAfterFailure = json_decode((string) file_get_contents($guardPath), true, 16, JSON_THROW_ON_ERROR);
+    $assert(($guardAfterFailure['identity'] ?? null) === 'conflicting-recovery', 'Failed Guard re-admission rewrote conflicting protection state.');
     file_put_contents($guardPath, $guardBytes);
     $manifestPath = (glob($sandbox . DIRECTORY_SEPARATOR . 'recovery' . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'recovery-sets' . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'manifest' . DIRECTORY_SEPARATOR . 'recovery-manifest.json') ?: [])[0] ?? '';
     $assert($manifestPath !== '' && is_file($manifestPath), 'Persisted recovery manifest path was not found.');

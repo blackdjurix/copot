@@ -8,7 +8,11 @@ use Copot\Core\BackupRecovery\CommittedSourceAuthorityRecoveryAdapter;
 use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureRequest;
 use Copot\Core\BackupRecovery\RecoveryArtifactStore;
 use Copot\Core\BackupRecovery\RecoveryLifecycleCoordinator;
+use Copot\Core\BackupRecovery\DatabaseScope;
+use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
+use Copot\Core\BackupRecovery\MySqlRecoveryProvider;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
+use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureService;
 use PDO;
 
 final class PackageLifecycleService
@@ -64,7 +68,13 @@ final class PackageLifecycleService
         private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null,
         private ?CommittedLifecycleMetadataReconciliationOrchestrator $metadataOrchestrator = null,
         private ?PreMutationSettlementService $preMutationSettlement = null,
-        private ?CommittedSourceAuthorityRecoveryAdapter $sourceAuthorityRecovery = null
+        private ?CommittedSourceAuthorityRecoveryAdapter $sourceAuthorityRecovery = null,
+        private ?InstallationScopedMaintenanceGuard $scopedMaintenanceGuard = null,
+        private ?DatabaseTableOwnershipCatalog $databaseOwnershipCatalog = null,
+        private ?string $authorityStoragePath = null,
+        private ?string $authorityDatabaseIdentity = null,
+        private ?string $authorityNamespaceIdentity = null,
+        private ?string $authorityDeploymentIdentity = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -78,6 +88,83 @@ final class PackageLifecycleService
     private LegacyRuntimeClassifier $legacyClassifier;
     private LegacyReconciliationPlanner $reconciliationPlanner;
     private DatabaseLifecycleClassifier $databaseLifecycleClassifier;
+
+    /**
+     * Production preparation entrypoint for source authority. It creates no
+     * execution authority: WU6/finalization remains a separate caller action.
+     */
+    public function prepareCommittedSourceAuthorityFromRuntime(
+        PackageManifest $manifest,
+        CanonicalTargetInventory $actualTarget,
+        InstallerOwnershipProof $ownershipProof,
+        ?CoreMigrationPlan $migrationPlan = null,
+        ?CommittedSourceAuthorityPreservationPolicy $preservationPolicy = null
+    ): CommittedSourceAuthorityPreparation {
+        if (!$this->scopedMaintenanceGuard instanceof InstallationScopedMaintenanceGuard
+            || !$this->databaseOwnershipCatalog instanceof DatabaseTableOwnershipCatalog
+            || !is_string($this->authorityDatabaseIdentity)
+            || !is_string($this->authorityNamespaceIdentity)
+            || !is_string($this->authorityDeploymentIdentity)) {
+            throw new \RuntimeException('Committed source-authority runtime composition is unavailable.');
+        }
+        if (!is_string($this->authorityStoragePath)) {
+            throw new \RuntimeException('Committed source-authority storage composition is unavailable.');
+        }
+        $installation = (new InstallationIdentityStore($this->authorityStoragePath))->read();
+        $committed = $this->committedStore?->read();
+        if (!$installation instanceof InstallationIdentity || !$committed instanceof CommittedLifecycleState) {
+            throw new \RuntimeException('Installation or committed lifecycle state is unavailable.');
+        }
+        if ($ownershipProof->installationId() !== $installation->value() || !$ownershipProof->isVerified()) {
+            throw new \RuntimeException('Installer ownership proof is invalid for the current installation.');
+        }
+        $scope = DatabaseScope::fromOwnershipCatalog(
+            $installation->value(),
+            $this->authorityDatabaseIdentity,
+            $this->authorityNamespaceIdentity,
+            $this->databaseOwnershipCatalog
+        );
+        $plan = $this->planCommittedSourceAuthority($committed, $installation, $manifest, $actualTarget, $scope, $ownershipProof, $migrationPlan, $preservationPolicy);
+        $recovery = NormalWebcoreRecoveryCaptureService::forOperation($plan->operation()->operationId(), $plan->applyPlan()->identity());
+        $guardEvidence = $this->scopedMaintenanceGuard->produceEvidence($recovery, $scope);
+        $provider = new MySqlRecoveryProvider();
+        $before = $provider->stateIdentity(($this->connection)(), $scope->databaseIdentity(), $scope);
+        $databaseEvidence = new ScopedDatabaseConsistencyEvidence(
+            $scope,
+            $recovery,
+            $guardEvidence->writerExclusionIdentity(),
+            hash('sha256', json_encode([
+                'scope' => $scope->identity(),
+                'state_identity' => $before,
+                'tables' => $scope->tablesetFingerprint(),
+            ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
+            $guardEvidence->capturedAt(),
+            $guardEvidence->validUntil()
+        );
+        $after = $provider->stateIdentity(($this->connection)(), $scope->databaseIdentity(), $scope);
+        if (!hash_equals($before, $after)) {
+            throw new \RuntimeException('Scoped database state changed while composing source-authority evidence.');
+        }
+        $request = new NormalWebcoreRecoveryCaptureRequest(
+            $plan->operation()->operationId(),
+            $installation->value(),
+            $scope->namespaceIdentity(),
+            $this->authorityDeploymentIdentity,
+            $plan->sourcePlan()->packageEvidenceIdentity(),
+            $plan->operation()->releaseIdentity(),
+            $plan->operation()->archiveSha256(),
+            $plan->applyPlan(),
+            $plan->committedLifecycleIdentity(),
+            $plan->migrationStateIdentity(),
+            $scope->databaseIdentity(),
+            null,
+            $scope,
+            $databaseEvidence,
+            $guardEvidence,
+            $plan->sourcePlan()
+        );
+        return $this->prepareCommittedSourceAuthority($committed, $installation, $manifest, $actualTarget, $scope, $ownershipProof, $request, $migrationPlan, $preservationPolicy);
+    }
 
     /** Settles only a proven PREPARING operation before its mutation boundary. */
     public function settlePreMutation(PreMutationSettlementRequest $request): LifecycleOperationRecord

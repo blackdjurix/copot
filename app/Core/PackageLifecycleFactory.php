@@ -272,7 +272,13 @@ final class PackageLifecycleFactory
                     new PreMutationSettlementEvidenceStore($storage)
                 )
                 : null,
-            $sourceAuthorityRecovery
+            $sourceAuthorityRecovery,
+            $recoveryComposition?->maintenance instanceof InstallationScopedMaintenanceGuard ? $recoveryComposition->maintenance : null,
+            DatabaseTableOwnershipCatalog::current(),
+            $storage,
+            $recoveryComposition?->databaseIdentity,
+            $database->tables()->namespace(),
+            hash('sha256', 'deployment:' . $deploymentContext->appRoot())
         );
     }
 
