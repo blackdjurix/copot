@@ -1351,6 +1351,29 @@ Sources:
 
 Planning action: KEEP SEPARATE / DO NOT AUTO-ADOPT INTO MR.2
 
+### Centralized Resource Protection — Layered Resource Policy
+Class: FUTURE ARCHITECTURE CONCEPT / PARTIAL FIRST APPLICATION
+Status: CONCEPT MATERIALIZED / FRAMEWORK DEFERRED / HTACCESS-FIRST WITHIN EXISTING CONTROLLED DEVIATION
+
+Sources:
+- `concepts/copot_centralized_resource_protection_layered_resource_policy_concept.md` [PRIMARY CONCEPT]
+
+Architecture direction:
+- Two policy layers: `Global Resource Policy` (COPOT runtime-level non-overridable restriction) and `Scoped Resource Policy` (module/feature/capability/subsystem-level rules); compose into `Effective Resource Policy`.
+- `Policy Scope` and `Resource Target` are independent: the target may be a specific file, folder, or other resource.
+- Only policy is layered; layered ownership is NOT adopted. Historical `PACKAGE_OWNED` evidence never creates competing active ownership or overrides current mutation restrictions.
+- Selective/partial capability consumption is supported, but no capability can bypass mandatory global prohibitions. Nonmutating declaration conflicts should be diagnosable without globally blocking runtime; prohibited mutation is rejected before side effects.
+- First resource is exact `PUBLIC_ROOT/.htaccess`: effective owner `DEPLOYMENT_ENVIRONMENT`, COPOT-scope `ABSOLUTE_IMMUTABILITY`; read/inspect/validate/report remain allowed. Scope excludes external server administration and OS filesystem locks.
+- In `CD-V3-HTACCESS-20261026-01`, only bounded shared-protection enforcement and corresponding manifest/planner/apply/recovery/installer admission integration are in current direction. Full generic framework, extra owners/policies, policy UI, and broad provenance/ownership refactor remain deferred.
+
+Relations:
+- `CD-V3-HTACCESS-20261026-01` [ACTIVE BOUNDED FIRST APPLICATION]
+- `docs/28_package_lifecycle_migration_foundation_contract.md` [PACKAGE LIFECYCLE]
+- `docs/31_backup_recovery_foundation_contract.md` [RECOVERY]
+- `docs/32_webcore_deployment_portability_foundation_contract.md` [DEPLOYMENT]
+
+Planning action: RETAIN FUTURE ARCHITECTURE CONCEPT / PARTIAL HTACCESS ENFORCEMENT THROUGH EXISTING DEVIATION ONLY / NO IMPLICIT IMPLEMENTATION OR CONTRACT AUTHORITY
+
 ### Controlled V3 Contract Deviation — `.htaccess` Ownership Transition
 Class: ACTIVE CONTRACT DEVIATION REGISTER / BOUNDED TRANSITION
 Status: USER-AUTHORIZED DIRECTION / BREACH OPEN / IMPLEMENTATION NOT YET VERIFIED
@@ -1372,13 +1395,13 @@ Required reconciliation and closure:
 - Build a new independently identified package; verify fresh install, HTTP routing, full/partial integrity, recovery, and source-authority path before E4 eligibility is asserted.
 - Deviation closes only after authoritative contract reconciliation, implementation evidence, and verified acceptance. Until then `R3-A E4` remains BLOCKED and `SourceInventoryReference=null` is preserved; no rollback of old artifact history, no silent integrity bypass.
 
-Deferred boundary: `DI-PACKAGE-LIFECYCLE-HTACCESS-01` remains unscheduled only for advanced automatic directive-level merge, deployment configuration mutation, and cross-platform rewriting; baseline ownership/routing compatibility are not deferred.
+Deferred boundary: historical `DI-PACKAGE-LIFECYCLE-HTACCESS-01` wording about COPOT-managed `.htaccess` directive edits/merge is superseded by COPOT-scope absolute immutability and must not be interpreted as deferred mutation permission. Independent external deployment administration remains outside COPOT authority. Baseline ownership/routing compatibility verification is not deferred.
 
 Planning action: CONTROLLED DEVIATION OPEN / BOUNDED IMPLEMENTATION NEXT / CONTRACT RECONCILIATION AFTER VALIDATION / NO IMPLICIT E4 ADVANCEMENT
 
 ### Deployment-Aware `.htaccess` Package Update Reconciliation
-Class: DEFERRED ITEM / FUTURE PACKAGE LIFECYCLE DEVELOPMENT
-Status: KEEP DEFERRED / UNSCHEDULED / NOT ADOPTED
+Class: HISTORICAL DEFERRED ITEM / SUPERSEDED MUTATION PROPOSAL
+Status: HISTORICAL IDENTITY RETAINED / COPOT-MANAGED HTACCESS MUTATION PROHIBITED
 
 Deferred ID: `DI-PACKAGE-LIFECYCLE-HTACCESS-01`.
 
@@ -1387,18 +1410,17 @@ Sources:
 - `docs/28_package_lifecycle_migration_foundation_contract.md` [PACKAGE LIFECYCLE]
 - `docs/32_webcore_deployment_portability_foundation_contract.md` [SPLIT-ROOT DEPLOYMENT]
 
-Future evaluation scope:
-- advanced managed `.htaccess` directive updates coordinated with manifest-v3 `full` and `partial` lifecycle, without classifying the physical deployment-owned file as package-owned;
-- reconcile Webcore-required routing directive additions, changes, and removals while preserving valid deployment-specific root/base-path values;
-- establish explicit component ownership, reviewed target-bound preservation evidence, effective installed-file identity/fingerprint, conflict and rollback/recovery semantics;
-- fail closed on ambiguous edits, unsupported reconciliation, or missing provenance; neither whole-file `RETAIN` nor `REPLACE` may silently bypass validated update intent.
+Historical proposal (retained for provenance, NOT actionable under current direction):
+- The original deferred entry proposed COPOT-managed `.htaccess` directive additions/changes/removals, directive-level merge, and in-place reconciliation. Those mutation proposals are SUPERSEDED by the current absolute immutability decision.
+- Future compatible scope may evaluate read-only routing verification, diagnostics, evidence boundaries, and handoff to independently authorized external deployment administrators. COPOT must not rewrite, rename, remove, restore, or merge physical `PUBLIC_ROOT/.htaccess` content.
+- Preserve the identity of this Deferred Item until its final historical disposition is formally reconciled; do not reactivate it as implementation authorization.
 
 Current boundary:
 - No implementation, contract amendment, work-unit adoption, or authorization follows from this entry.
 - Deferral does not waive actual-file integrity, source-inventory authority, or prerequisite checks for active R3-A E4 / Alternative C.
 - Current corrected SDR `.htaccess` mismatch remains an independent operational reconciliation blocker; do not mark it accepted or fixed through this registry entry.
 
-Planning action: KEEP DEFERRED / FUTURE CONCEPT-CONTRACT PREPARATION REQUIRED
+Planning action: RETAIN AS HISTORICAL DEFERRED ID / SUPERSEDED COPOT MUTATION PROPOSALS / ROUTING VERIFICATION REMAINS APPLICABLE
 
 ### Stale Package-Owned File Reconciliation
 Class: LIFECYCLE REFINEMENT / AUDIT CANDIDATE
