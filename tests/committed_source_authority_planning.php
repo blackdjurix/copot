@@ -99,7 +99,6 @@ try {
     $mutationDesired = new CanonicalTargetInventory([
         new CanonicalTargetInventoryEntry('APP_ROOT', CanonicalTargetInventoryEntry::PACKAGE_OWNED, 'app/target.txt', strlen($content), $sha),
         new CanonicalTargetInventoryEntry('APP_ROOT', CanonicalTargetInventoryEntry::PACKAGE_OWNED, 'app/new.php', strlen($newContent), hash('sha256', $newContent)),
-        new CanonicalTargetInventoryEntry('PUBLIC_ROOT', CanonicalTargetInventoryEntry::PACKAGE_OWNED, '.htaccess', strlen($newRoute), hash('sha256', $newRoute)),
     ]);
     $mutationActual = new CanonicalTargetInventory([
         new CanonicalTargetInventoryEntry('APP_ROOT', CanonicalTargetInventoryEntry::PACKAGE_OWNED, 'app/target.txt', strlen($oldContent), hash('sha256', $oldContent)),
@@ -108,7 +107,6 @@ try {
     $mutationPayload = new StagedPayload($session, str_repeat('f', 64), [
         new StagedFile('app/target.txt', strlen($content), $sha),
         new StagedFile('app/new.php', strlen($newContent), hash('sha256', $newContent)),
-        new StagedFile('public/.htaccess', strlen($newRoute), hash('sha256', $newRoute)),
     ]);
     $mutationPackage = new PackageContract(
         PackageContract::WEBCORE_PACKAGE_TYPE,
@@ -121,7 +119,6 @@ try {
         [
             new PackageInventoryEntry('app/target.txt', strlen($content), $sha, \Copot\Core\PackageOwnership::PACKAGE_OWNED),
             new PackageInventoryEntry('app/new.php', strlen($newContent), hash('sha256', $newContent), \Copot\Core\PackageOwnership::PACKAGE_OWNED),
-            new PackageInventoryEntry('public/.htaccess', strlen($newRoute), hash('sha256', $newRoute), \Copot\Core\PackageOwnership::PACKAGE_OWNED),
         ],
         new PackageMigrationDeclaration(false),
         null,
@@ -152,7 +149,6 @@ try {
     $throws(static fn () => $mutationPlan->assertTargetFingerprint(new CanonicalTargetInventory([
         new CanonicalTargetInventoryEntry('APP_ROOT', CanonicalTargetInventoryEntry::PACKAGE_OWNED, 'app/target.txt', strlen($content), $sha),
     ])));
-    $throws(static fn () => (new CommittedSourceAuthorityPlanner())->plan($committed, $installation, $mutationManifest, $mutationActual, $scope, $proof, $noOpMigration));
     $collision = new CanonicalTargetInventory([
         ...$mutationActual->entries(),
         new CanonicalTargetInventoryEntry('APP_ROOT', CanonicalTargetInventoryEntry::PACKAGE_OWNED, 'app/foreign.php', 1, hash('sha256', 'x')),

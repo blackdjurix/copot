@@ -118,7 +118,14 @@ final class CommittedSourceAuthorityPlanner
                 $actions[] = new V3SourceRelativeAction(V3SourceRelativeAction::REPLACE, $root, $path, $entry->byteSize(), $entry->sha256(), $root, $path, 'replaced', 'PRESENT', $current->byteSize(), $current->sha256());
             }
         }
+        if ($policy !== null && ProtectedResourcePolicy::isProtected($policy->root(), $policy->path())) {
+            $protected = $actualIndex[strtolower($policy->root() . "\0" . $policy->path())] ?? null;
+            if ($protected instanceof CanonicalTargetInventoryEntry) {
+                $actions[] = new V3SourceRelativeAction(V3SourceRelativeAction::RETAIN, $policy->root(), $policy->path(), $protected->byteSize(), $protected->sha256(), null, null, null, 'PRESENT', $protected->byteSize(), $protected->sha256());
+            }
+        }
         foreach ($actualIndex as $key => $_entry) {
+            if (ProtectedResourcePolicy::isProtected($_entry->root(), $_entry->path())) { continue; }
             if (!isset($desiredIndex[$key])) { throw new \RuntimeException('Target contains an unplanned package-owned collision.'); }
         }
         usort($actions, static fn (V3SourceRelativeAction $left, V3SourceRelativeAction $right): int => strcmp(json_encode($left->toArray(), JSON_UNESCAPED_SLASHES), json_encode($right->toArray(), JSON_UNESCAPED_SLASHES)));

@@ -21,6 +21,7 @@ final class V3ExplicitApplyExecutor
         LiveTreePathGuard $guard,
         ?string $expectedOperationIdentity = null
     ): void {
+        $this->assertProtectedMutationFree($plan);
         $this->verifyOperation($plan, $operation, $expectedOperationIdentity);
         $this->verifySourceState($plan, $source, $guard, true);
         $this->verifyTargetPreconditions($plan, $guard);
@@ -49,6 +50,7 @@ final class V3ExplicitApplyExecutor
     ): WebcoreApplyResult {
         $mutationStarted = false;
         try {
+            $this->assertProtectedMutationFree($plan);
             $this->verifyOperation($plan, $operation, $expectedOperationIdentity);
             $this->verifySourceState($plan, $source, $guard, $requireTargetPreconditions);
             if ($requireTargetPreconditions) {
@@ -126,6 +128,28 @@ final class V3ExplicitApplyExecutor
         }
     }
 
+    private function assertProtectedMutationFree(V3SourceRelativePlan $plan): void
+    {
+        foreach ($plan->actions() as $action) {
+            if (!$action instanceof V3SourceRelativeAction) { throw new \RuntimeException('V3 action is invalid.'); }
+            if ($action->action() === V3SourceRelativeAction::RETAIN) { continue; }
+            $root = in_array($action->action(), [V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true) ? $action->sourceRoot() : $action->root();
+            $path = in_array($action->action(), [V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true) ? $action->sourcePath() : $action->path();
+            if (!is_string($root) || !is_string($path)) { throw new \RuntimeException('V3 mutation action identity is unavailable.'); }
+            ProtectedResourcePolicy::assertMutable($root, $path);
+            if (in_array($action->action(), [V3SourceRelativeAction::RENAME, V3SourceRelativeAction::REPLACE], true)) {
+                ProtectedResourcePolicy::assertMutable($action->root(), $action->path());
+            }
+        }
+        foreach ($plan->removalActions() as $action) {
+            if (!is_array($action) || !isset($action['source_root'], $action['source_path'])) { throw new \RuntimeException('V3 removal action identity is unavailable.'); }
+            ProtectedResourcePolicy::assertMutable($action['source_root'], $action['source_path']);
+            if (($action['target_root'] ?? '') !== '' || ($action['target_path'] ?? '') !== '') {
+                ProtectedResourcePolicy::assertMutable($action['target_root'], $action['target_path']);
+            }
+        }
+    }
+
     private function verifyPayload(V3SourceRelativePlan $plan, StagedPayload $payload): void
     {
         $expected = [];
@@ -196,6 +220,7 @@ final class V3ExplicitApplyExecutor
     private function removeOne(array $action, LiveTreePathGuard $guard): void
     {
         if (array_keys($action) !== ['kind', 'reason', 'source_root', 'source_path', 'target_root', 'target_path', 'expected_source_byte_size', 'expected_source_sha256']) { throw new \RuntimeException('Removal action shape is invalid.'); }
+        ProtectedResourcePolicy::assertMutable($action['source_root'], $action['source_path']);
         $path = $this->relativePath($action['source_root'], $action['source_path']);
         $destination = $guard->destination($path);
         if (!is_file($destination) || is_link($destination) || @filesize($destination) !== $action['expected_source_byte_size'] || @hash_file('sha256', $destination) !== $action['expected_source_sha256']) { throw new \RuntimeException('Removal source changed before mutation.'); }

@@ -53,6 +53,18 @@ file_put_contents($session->payloadPath() . DIRECTORY_SEPARATOR . '.copot' . DIR
 $files = [new StagedFile('.copot/package.json', strlen($raw), hash('sha256', $raw)), new StagedFile('app/a.txt', 3, hash('sha256', $payloadBytes))];
 $read = (new PackageManifestReader())->read(new StagedPayload($session, str_repeat('0', 64), $files));
 $assert($read->contract()->manifestContractVersion() === 3 && $read->packageEvidenceIdentity() === PackageV3Identity::identity($read->rawManifestSha256(), $read->contract()->integrityIdentity()), 'Valid V3 manifest was not accepted or bound.');
+$protectedCases = [
+    'HTA-N02 removal' => ['removals' => [['root' => 'PUBLIC_ROOT', 'path' => '.htaccess', 'ownership' => 'package-owned', 'expected_source_byte_size' => 7, 'expected_source_sha256' => hash('sha256', 'routing'), 'reason' => 'obsolete']], 'renames' => []],
+    'HTA-N03 rename source' => ['removals' => [], 'renames' => [['source_root' => 'PUBLIC_ROOT', 'source_path' => '.htaccess', 'target_root' => 'APP_ROOT', 'target_path' => 'app/a.txt']]],
+    'HTA-N04 rename destination' => ['removals' => [], 'renames' => [['source_root' => 'APP_ROOT', 'source_path' => 'app/a.txt', 'target_root' => 'PUBLIC_ROOT', 'target_path' => '.htaccess']]],
+];
+foreach ($protectedCases as $label => $case) {
+    $negativeManifest = [...$manifest, 'removals' => $case['removals'], 'renames' => $case['renames']];
+    $negativeRaw = json_encode($negativeManifest, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    file_put_contents($session->payloadPath() . DIRECTORY_SEPARATOR . '.copot' . DIRECTORY_SEPARATOR . 'package.json', $negativeRaw);
+    $negativeFiles = [new StagedFile('.copot/package.json', strlen($negativeRaw), hash('sha256', $negativeRaw)), ...array_slice($files, 1)];
+    $throws(static function () use ($session, $negativeFiles): void { (new PackageManifestReader())->read(new StagedPayload($session, str_repeat('0', 64), $negativeFiles)); }, $label . ' parser admission');
+}
 $duplicateRaw = str_replace('"release_identity":"release-1"', '"release_identity":"release-1","release_identity":"release-1"', $raw);
 file_put_contents($session->payloadPath() . DIRECTORY_SEPARATOR . '.copot' . DIRECTORY_SEPARATOR . 'package.json', $duplicateRaw);
 $duplicateFiles = [new StagedFile('.copot/package.json', strlen($duplicateRaw), hash('sha256', $duplicateRaw)), ...array_slice($files, 1)];

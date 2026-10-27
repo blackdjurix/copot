@@ -91,7 +91,6 @@ try {
     $desired = new CanonicalTargetInventory([
         new CanonicalTargetInventoryEntry('APP_ROOT', CanonicalTargetInventoryEntry::PACKAGE_OWNED, 'app/target.txt', strlen($newTarget), $hash($newTarget)),
         new CanonicalTargetInventoryEntry('APP_ROOT', CanonicalTargetInventoryEntry::PACKAGE_OWNED, 'app/new.txt', strlen($newFile), $hash($newFile)),
-        new CanonicalTargetInventoryEntry('PUBLIC_ROOT', CanonicalTargetInventoryEntry::PACKAGE_OWNED, '.htaccess', strlen($desiredRouting), $hash($desiredRouting)),
     ]);
 
     $session = StagingSession::create($live, $stagingRoot);
@@ -103,7 +102,6 @@ try {
     $payload = new StagedPayload($session, str_repeat('a', 64), [
         new StagedFile('app/target.txt', strlen($newTarget), $hash($newTarget)),
         new StagedFile('app/new.txt', strlen($newFile), $hash($newFile)),
-        new StagedFile('public/.htaccess', strlen($desiredRouting), $hash($desiredRouting)),
     ]);
     $package = new PackageContract(
         PackageContract::WEBCORE_PACKAGE_TYPE,
@@ -116,7 +114,6 @@ try {
         [
             new PackageInventoryEntry('app/target.txt', strlen($newTarget), $hash($newTarget)),
             new PackageInventoryEntry('app/new.txt', strlen($newFile), $hash($newFile)),
-            new PackageInventoryEntry('public/.htaccess', strlen($desiredRouting), $hash($desiredRouting)),
         ],
         new PackageMigrationDeclaration(false),
         null,

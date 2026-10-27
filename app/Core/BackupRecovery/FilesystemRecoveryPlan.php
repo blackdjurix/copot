@@ -3,6 +3,7 @@
 namespace Copot\Core\BackupRecovery;
 
 use Copot\Core\PackageOwnership;
+use Copot\Core\ProtectedResourcePolicy;
 use Copot\Core\StagedFile;
 use Copot\Core\WebcoreApplyPlan;
 use Copot\Core\V3SourceRelativeAction;
@@ -37,6 +38,7 @@ final class FilesystemRecoveryPlan
             if (!$file instanceof StagedFile || PackageOwnership::classify($file->path()) !== PackageOwnership::PACKAGE_OWNED) {
                 throw new FilesystemRecoveryException('Apply plan contains a non-package-owned or invalid filesystem path.');
             }
+            ProtectedResourcePolicy::assertMutableRelativePath($file->path());
             $entries[] = new FilesystemRecoveryEntry($file->path(), $file->byteSize(), $file->sha256());
         }
         return new self($plan->identity(), $entries);
@@ -57,6 +59,12 @@ final class FilesystemRecoveryPlan
             $root = in_array($action->action(), [V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true) ? $action->sourceRoot() : $action->root();
             $path = in_array($action->action(), [V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true) ? $action->sourcePath() : $action->path();
             if (!is_string($root) || !is_string($path)) throw new FilesystemRecoveryException('V3 recovery action source identity is unavailable.');
+            if (ProtectedResourcePolicy::isProtected($root, $path)) {
+                if ($action->action() !== V3SourceRelativeAction::RETAIN) {
+                    throw new FilesystemRecoveryException('V3 recovery cannot mutate deployment-owned .htaccess.');
+                }
+                continue;
+            }
             $relative = $root === \Copot\Core\CanonicalTargetInventoryEntry::PUBLIC_ROOT ? 'public/' . $path : $path;
             if (isset($seen[$relative])) continue;
             $seen[$relative] = true;

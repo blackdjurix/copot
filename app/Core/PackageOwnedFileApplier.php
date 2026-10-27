@@ -43,6 +43,7 @@ final class PackageOwnedFileApplier
             if (!$file instanceof StagedFile) {
                 return new WebcoreApplyResult(WebcoreApplyResult::FAILED, [], 'Apply plan contains an invalid staged file.');
             }
+            ProtectedResourcePolicy::assertMutableRelativePath($file->path());
             $destination = $this->guard->destination($file->path());
             $exists = file_exists($destination) || is_link($destination);
             $this->guard->verifyDestination($file->path(), false);

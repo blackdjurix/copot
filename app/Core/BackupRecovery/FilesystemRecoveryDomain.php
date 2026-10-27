@@ -2,6 +2,8 @@
 
 namespace Copot\Core\BackupRecovery;
 
+use Copot\Core\ProtectedResourcePolicy;
+
 final class FilesystemRecoveryDomain
 {
     private const DOMAIN = 'filesystem.package-owned';
@@ -54,6 +56,7 @@ final class FilesystemRecoveryDomain
                 if (!isset($expected[$entry->path()]) || $expected[$entry->path()]->targetSize() !== $entry->targetSize() || $expected[$entry->path()]->targetHash() !== $entry->targetHash()) {
                     throw new FilesystemRecoveryException('Filesystem recovery target identity changed.');
                 }
+                ProtectedResourcePolicy::assertMutableRelativePath($entry->path());
                 $path = $this->guard->resolve($entry->path());
                 if ($entry->preOperationState() === FilesystemRecoveryEntry::ABSENT_BEFORE_OPERATION) {
                     $this->restoreAbsent($path, $entry);
