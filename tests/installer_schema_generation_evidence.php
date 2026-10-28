@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Copot\Core\CommittedLifecycleStateStore;
+use Copot\Core\CanonicalSchemaBaselineVerifier;
 use Copot\Core\Config;
 use Copot\Core\CoreMigrationRegistry;
 use Copot\Core\CoreSchemaGenerationStore;
@@ -204,6 +205,12 @@ try {
         }
         $assert($throws, $label . ' invalid schema-generation identity was accepted.');
         $assert((new CoreSchemaGenerationStore($tables))->read($connection, $namespace)['schema_generation'] === $generation, $label . ' invalid generation attempt altered authoritative evidence.');
+
+        if ($label === 'empty') {
+            $connection->exec('ALTER TABLE core_schema_generation DROP COLUMN compatibility_state');
+            $invalidMetadata = (new CanonicalSchemaBaselineVerifier())->verify($connection, $schemaPath, true);
+            $assert(!$invalidMetadata->passed(), 'Invalid core_schema_generation metadata columns were accepted.');
+        }
     }
 
     [$failedRoot, $failedSchemaPath] = $makeRoot('failed');
