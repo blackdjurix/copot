@@ -76,7 +76,14 @@ final class CanonicalSchemaBaselineVerifier
             throw new \RuntimeException('Canonical schema is unavailable.');
         }
 
-        $statements = (new InstallerSchemaRunner($schemaPath))->statements($schema);
+        // CoreSchemaMaterializer is the authority for the complete Core shape:
+        // it adds the lifecycle-owned core_schema_generation table to the
+        // application schema. Keep the verifier strict, but include that
+        // authorized metadata table in the expected set.
+        $statements = array_merge(
+            (new InstallerSchemaRunner($schemaPath))->statements($schema),
+            (new CoreSchemaMaterializer())->statements($schemaPath, new DatabaseTableNames())
+        );
         $tables = [];
         foreach ($statements as $statement) {
             if (preg_match('/\ACREATE\s+TABLE\s+`?([A-Za-z0-9_]+)`?\s*\((.*)\)\s*(?:ENGINE|$)/is', $statement, $match) !== 1) {
@@ -84,7 +91,7 @@ final class CanonicalSchemaBaselineVerifier
             }
 
             $columns = [];
-            foreach (preg_split('/\R/', $match[2]) ?: [] as $line) {
+            foreach ($this->columnDefinitions($match[2]) as $line) {
                 $line = trim($line, " \t,\r\n");
                 if ($line === '' || preg_match('/\A(?:PRIMARY|UNIQUE|INDEX|KEY|CONSTRAINT|FOREIGN|CHECK|ON)\b/i', $line) === 1) {
                     continue;
@@ -105,6 +112,38 @@ final class CanonicalSchemaBaselineVerifier
         }
 
         return $tables;
+    }
+
+    /** @return list<string> */
+    private function columnDefinitions(string $body): array
+    {
+        $definitions = [];
+        $current = '';
+        $depth = 0;
+        $length = strlen($body);
+
+        for ($index = 0; $index < $length; $index++) {
+            $character = $body[$index];
+            if ($character === '(') {
+                $depth++;
+            } elseif ($character === ')') {
+                $depth--;
+            }
+
+            if ($character === ',' && $depth === 0) {
+                $definitions[] = $current;
+                $current = '';
+                continue;
+            }
+
+            $current .= $character;
+        }
+
+        if (trim($current) !== '') {
+            $definitions[] = $current;
+        }
+
+        return $definitions;
     }
 
     /** @return array<string, list<string>> */
