@@ -34,8 +34,10 @@ final class RecoveryManifestCodec
         if (!is_array($record)) {
             throw new RecoveryStorageException('Recovery manifest is invalid.');
         }
-        $required = ['recovery_identity', 'operation_identity', 'target_package_identity', 'target_release_identity', 'archive_identity', 'apply_plan_identity', 'domain_identities', 'pre_operation_lifecycle_identity', 'pre_operation_migration_ledger_identity', 'artifacts', 'capture_publication_complete', 'manifest_identity'];
-        $this->assertKeys($record, $required);
+        $legacyRequired = ['recovery_identity', 'operation_identity', 'target_package_identity', 'target_release_identity', 'archive_identity', 'apply_plan_identity', 'domain_identities', 'pre_operation_lifecycle_identity', 'pre_operation_migration_ledger_identity', 'artifacts', 'capture_publication_complete', 'manifest_identity'];
+        $attemptRequired = ['recovery_identity', 'execution_attempt_identity', 'operation_identity', 'target_package_identity', 'target_release_identity', 'archive_identity', 'apply_plan_identity', 'domain_identities', 'pre_operation_lifecycle_identity', 'pre_operation_migration_ledger_identity', 'artifacts', 'capture_publication_complete', 'manifest_identity'];
+        $attemptAware = array_keys($record) === $attemptRequired;
+        if (!$attemptAware) { $this->assertKeys($record, $legacyRequired); }
         if (!is_string($record['manifest_identity']) || preg_match('/^[a-f0-9]{64}$/D', $record['manifest_identity']) !== 1) {
             throw new RecoveryStorageException('Recovery manifest identity is invalid.');
         }
@@ -61,7 +63,7 @@ final class RecoveryManifestCodec
                 $this->assertKeys($artifact, ['domain_identifier', 'artifact_identity', 'byte_size', 'metadata_identity']);
                 $artifacts[] = new RecoveryArtifactRecord($artifact['domain_identifier'], $artifact['artifact_identity'], $artifact['byte_size'], $artifact['metadata_identity']);
             }
-            $manifest = new RecoveryManifest(new RecoveryIdentity($record['recovery_identity']), $record['operation_identity'], $record['target_package_identity'], $record['target_release_identity'], $record['archive_identity'], $record['apply_plan_identity'], $domains, $record['pre_operation_lifecycle_identity'], $record['pre_operation_migration_ledger_identity']);
+            $manifest = new RecoveryManifest(new RecoveryIdentity($record['recovery_identity']), $record['operation_identity'], $record['target_package_identity'], $record['target_release_identity'], $record['archive_identity'], $record['apply_plan_identity'], $domains, $record['pre_operation_lifecycle_identity'], $record['pre_operation_migration_ledger_identity'], $attemptAware ? $record['execution_attempt_identity'] : null);
         } catch (\Throwable $exception) {
             throw new RecoveryStorageException('Recovery manifest contains invalid required state.', 0, $exception);
         }
@@ -79,7 +81,9 @@ final class RecoveryManifestCodec
         }
         usort($artifactRows, static fn (array $a, array $b): int => [$a['domain_identifier'], $a['artifact_identity']] <=> [$b['domain_identifier'], $b['artifact_identity']]);
         $domainRows = array_map(static fn (RecoveryDomainIdentity $domain): array => ['identifier' => $domain->identifier(), 'ownership_key' => $domain->ownershipKey(), 'scope_identity' => $domain->scopeIdentity(), 'artifact_identity' => $domain->artifactIdentity()], $manifest->domainIdentities());
-        return ['recovery_identity' => $manifest->recoveryIdentity()->value(), 'operation_identity' => $manifest->operationIdentity(), 'target_package_identity' => $manifest->targetPackageIdentity(), 'target_release_identity' => $manifest->targetReleaseIdentity(), 'archive_identity' => $manifest->archiveIdentity(), 'apply_plan_identity' => $manifest->applyPlanIdentity(), 'domain_identities' => $domainRows, 'pre_operation_lifecycle_identity' => $manifest->preOperationLifecycleIdentity(), 'pre_operation_migration_ledger_identity' => $manifest->preOperationMigrationLedgerIdentity(), 'artifacts' => $artifactRows, 'capture_publication_complete' => $complete];
+        $body = ['recovery_identity' => $manifest->recoveryIdentity()->value(), 'operation_identity' => $manifest->operationIdentity(), 'target_package_identity' => $manifest->targetPackageIdentity(), 'target_release_identity' => $manifest->targetReleaseIdentity(), 'archive_identity' => $manifest->archiveIdentity(), 'apply_plan_identity' => $manifest->applyPlanIdentity(), 'domain_identities' => $domainRows, 'pre_operation_lifecycle_identity' => $manifest->preOperationLifecycleIdentity(), 'pre_operation_migration_ledger_identity' => $manifest->preOperationMigrationLedgerIdentity(), 'artifacts' => $artifactRows, 'capture_publication_complete' => $complete];
+        if ($manifest->executionAttemptIdentity() !== null) { $body = ['recovery_identity' => $manifest->recoveryIdentity()->value(), 'execution_attempt_identity' => $manifest->executionAttemptIdentity(), ...array_slice($body, 1)]; }
+        return $body;
     }
 
     private function canonicalJson(array $value): string

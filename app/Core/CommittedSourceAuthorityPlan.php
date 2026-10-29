@@ -27,7 +27,7 @@ final class CommittedSourceAuthorityPlan
     ) {
         if (preg_match('/^[a-f0-9]{64}$/D', $identity) !== 1
             || $operation->classification() !== 'COMMITTED_SOURCE_AUTHORITY_RECONCILIATION'
-            || $operation->phase() !== LifecycleOperationRecord::PREPARING
+            || !in_array($operation->phase(), [LifecycleOperationRecord::PREPARING, LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], true)
             || $operation->applyPlanIdentity() !== $applyPlan->identity()
             || preg_match('/^[a-f0-9]{64}$/D', $committedLifecycleIdentity) !== 1
             || preg_match('/^[a-f0-9]{64}$/D', $migrationStateIdentity) !== 1
@@ -55,6 +55,17 @@ final class CommittedSourceAuthorityPlan
     public function desiredTargetInventoryFingerprint(): string { return $this->desiredTargetInventoryFingerprint ?? $this->sourcePlan->targetFingerprint(); }
     public function migrationPlanIdentity(): ?string { return $this->migrationPlanIdentity; }
     public function preservationPolicy(): ?CommittedSourceAuthorityPreservationPolicy { return $this->preservationPolicy; }
+
+    public function withOperation(LifecycleOperationRecord $operation): self
+    {
+        if ($operation->operationId() !== $this->operation->operationId()
+            || $operation->classification() !== $this->operation->classification()
+            || $operation->applyPlanIdentity() !== $this->applyPlan->identity()
+            || !in_array($operation->phase(), [LifecycleOperationRecord::PREPARING, LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], true)) {
+            throw new \InvalidArgumentException('Committed source-authority operation does not match the plan.');
+        }
+        return new self($this->identity, $operation, $this->sourcePlan, $this->applyPlan, $this->databaseScope, $this->authorityOnly, $this->committedLifecycleIdentity, $this->migrationStateIdentity, $this->mode, $this->currentTargetInventoryFingerprint, $this->desiredTargetInventoryFingerprint, $this->migrationPlanIdentity, $this->preservationPolicy);
+    }
 
     public function assertTargetFingerprint(CanonicalTargetInventory $actual): void
     {

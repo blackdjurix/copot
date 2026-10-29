@@ -68,6 +68,7 @@ final class PackageLifecycleService
         private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null,
         private ?CommittedLifecycleMetadataReconciliationOrchestrator $metadataOrchestrator = null,
         private ?PreMutationSettlementService $preMutationSettlement = null,
+        private ?PreCaptureAbandonmentService $preCaptureAbandonment = null,
         private ?CommittedSourceAuthorityRecoveryAdapter $sourceAuthorityRecovery = null,
         private ?InstallationScopedMaintenanceGuard $scopedMaintenanceGuard = null,
         private ?DatabaseTableOwnershipCatalog $databaseOwnershipCatalog = null,
@@ -137,7 +138,14 @@ final class PackageLifecycleService
             $generationEvidence
         );
         $plan = $this->planCommittedSourceAuthority($committed, $installation, $manifest, $actualTarget, $scope, $ownershipProof, $migrationPlan, $preservationPolicy);
-        $recovery = NormalWebcoreRecoveryCaptureService::forOperation($plan->operation()->operationId(), $plan->applyPlan()->identity());
+        $existingOperation = $this->operationStore?->read();
+        if ($existingOperation instanceof LifecycleOperationRecord
+            && $existingOperation->operationId() === $plan->operation()->operationId()) {
+            $plan = $plan->withOperation($existingOperation);
+        } elseif ($existingOperation === null) {
+            $plan = $plan->withOperation($plan->operation()->withExecutionAttemptIdentity(LifecycleExecutionAttemptIdentity::create()));
+        }
+        $recovery = NormalWebcoreRecoveryCaptureService::forOperation($plan->operation()->operationId(), $plan->applyPlan()->identity(), $plan->operation()->executionAttemptIdentity());
         $guardEvidence = $this->scopedMaintenanceGuard->produceEvidence($recovery, $scope);
         $provider = new MySqlRecoveryProvider();
         $before = $provider->stateIdentity($connection, $scope->databaseIdentity(), $scope);
@@ -173,7 +181,9 @@ final class PackageLifecycleService
             $scope,
             $databaseEvidence,
             $guardEvidence,
-            $plan->sourcePlan()
+            $plan->sourcePlan(),
+            false,
+            $plan->operation()->executionAttemptIdentity()
         );
         return $this->prepareCommittedSourceAuthority($committed, $installation, $manifest, $actualTarget, $scope, $ownershipProof, $request, $migrationPlan, $preservationPolicy);
     }
@@ -185,6 +195,13 @@ final class PackageLifecycleService
             throw new \RuntimeException('Pre-mutation settlement is unavailable.');
         }
         return $this->preMutationSettlement->settle($request);
+    }
+
+    /** Terminalizes an eligible operation before any recovery capture or mutation. */
+    public function abandonPreCapture(PreCaptureAbandonmentRequest $request): LifecycleOperationRecord
+    {
+        if (!$this->preCaptureAbandonment instanceof PreCaptureAbandonmentService) throw new \RuntimeException('Pre-capture abandonment is unavailable.');
+        return $this->preCaptureAbandonment->abandon($request);
     }
 
     /** Non-mutating canonical planning entrypoint. */
@@ -222,6 +239,11 @@ final class PackageLifecycleService
         ?CommittedSourceAuthorityPreservationPolicy $preservationPolicy = null
     ): CommittedSourceAuthorityPreparation {
         $plan = $this->planCommittedSourceAuthority($committed, $installation, $manifest, $actualTarget, $databaseScope, $ownershipProof, $migrationPlan, $preservationPolicy);
+        if ($recoveryRequest->executionAttemptIdentity() !== null) {
+            // Low-level callers must compose their Guard/DB evidence for the
+            // same attempt before entering this execution boundary.
+            $plan = $plan->withOperation($plan->operation()->withExecutionAttemptIdentity($recoveryRequest->executionAttemptIdentity()));
+        }
         return $this->prepareSourceAuthorityPlan($plan, $recoveryRequest, true);
     }
 
@@ -246,7 +268,7 @@ final class PackageLifecycleService
         try {
             $admission = $preparation->admission();
             $current = $this->operationStore?->read();
-            if (!$current instanceof LifecycleOperationRecord || $current->operationId() !== $admission->plan()->operation()->operationId()) {
+            if (!$current instanceof LifecycleOperationRecord || $current->operationId() !== $admission->plan()->operation()->operationId() || $current->executionAttemptIdentity() !== $admission->plan()->operation()->executionAttemptIdentity()) {
                 throw new \RuntimeException('Authority operation disappeared before canonical execution.');
             }
             if ($current->phase() === LifecycleOperationRecord::PREPARING) {
@@ -292,7 +314,10 @@ final class PackageLifecycleService
             if (!$allowFreshCapture) {
                 throw new \RuntimeException('Cannot resume committed source authority without a persisted operation.');
             }
-            $this->operationStore->create($plan->operation());
+            $operation = $plan->operation();
+            if (!$operation->isAttemptAware()) { $operation = $operation->withExecutionAttemptIdentity(LifecycleExecutionAttemptIdentity::create()); }
+            $plan = $plan->withOperation($operation);
+            $this->operationStore->create($operation);
             $current = $this->operationStore->read();
             $created = true;
         }
@@ -304,6 +329,11 @@ final class PackageLifecycleService
             || !in_array($current->phase(), [LifecycleOperationRecord::PREPARING, LifecycleOperationRecord::AWAITING_WU6, LifecycleOperationRecord::CLEANUP_PENDING], true)) {
             throw new \RuntimeException('Committed source-authority operation is conflicting or stale.');
         }
+        if ($plan->operation()->isAttemptAware() && $current->executionAttemptIdentity() !== $plan->operation()->executionAttemptIdentity()) {
+            throw new \RuntimeException('Committed source-authority execution attempt changed during continuation.');
+        }
+        $plan = $plan->withOperation($current);
+        $recoveryRequest = $recoveryRequest->withExecutionAttemptIdentity($current->executionAttemptIdentity());
         $captured = $this->sourceAuthorityRecovery->captureOrRehydrate($plan, $recoveryRequest, $created);
         $binding = $captured['binding'];
         try {

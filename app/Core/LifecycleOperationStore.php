@@ -41,15 +41,19 @@ final class LifecycleOperationStore
     public function save(LifecycleOperationRecord $record): void
     {
         $current = $this->read();
-        if ($current === null || $current->operationId() !== $record->operationId()) { throw new \RuntimeException('Lifecycle operation identity changed.'); }
+        if ($current === null || $current->operationId() !== $record->operationId() || $current->executionAttemptIdentity() !== $record->executionAttemptIdentity()) { throw new \RuntimeException('Lifecycle operation identity changed.'); }
         $this->activate($record, true);
     }
 
     public function clear(LifecycleOperationRecord $record): void
     {
         $current = $this->read();
-        if ($current === null || $current->operationId() !== $record->operationId() || !$record->isTerminal()) { throw new \RuntimeException('Lifecycle operation cannot be cleared.'); }
+        if ($current === null || $current->operationId() !== $record->operationId() || $current->executionAttemptIdentity() !== $record->executionAttemptIdentity() || !$record->isTerminal()) { throw new \RuntimeException('Lifecycle operation cannot be cleared.'); }
+        $this->activate($record, true);
+        $persisted = $this->read();
+        if ($persisted === null || $persisted->operationId() !== $record->operationId() || $persisted->executionAttemptIdentity() !== $record->executionAttemptIdentity() || !$persisted->isTerminal()) { throw new \RuntimeException('Terminal lifecycle operation could not be verified.'); }
         if (is_link($this->path) || !@unlink($this->path)) { throw new \RuntimeException('Lifecycle operation record could not be cleared.'); }
+        if (file_exists($this->path)) { throw new \RuntimeException('Lifecycle operation record could not be cleared.'); }
     }
 
     public function classify(bool $currentExecutorOwnsMutex): string

@@ -3,6 +3,7 @@ namespace Copot\Core\BackupRecovery;
 
 use Copot\Core\WebcoreApplyPlan;
 use Copot\Core\V3SourceRelativePlan;
+use Copot\Core\LifecycleExecutionAttemptIdentity;
 
 final class NormalWebcoreRecoveryCaptureRequest
 {
@@ -23,8 +24,11 @@ final class NormalWebcoreRecoveryCaptureRequest
         private ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null,
         private ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null,
         private ?V3SourceRelativePlan $orderedV3Plan = null,
-        private bool $metadataOnly = false
-    ) {}
+        private bool $metadataOnly = false,
+        private ?string $executionAttemptIdentity = null
+    ) {
+        if ($executionAttemptIdentity !== null) { LifecycleExecutionAttemptIdentity::assert($executionAttemptIdentity); }
+    }
     public function operationId(): string { return $this->operationId; }
     public function installationIdentity(): string { return $this->installationIdentity; }
     public function namespaceIdentity(): string { return $this->namespaceIdentity; }
@@ -42,4 +46,9 @@ final class NormalWebcoreRecoveryCaptureRequest
     public function applicationWriteProtectionEvidence(): ?ApplicationWriteProtectionEvidence { return $this->applicationWriteProtectionEvidence; }
     public function orderedV3Plan(): ?V3SourceRelativePlan { return $this->orderedV3Plan; }
     public function metadataOnly(): bool { return $this->metadataOnly; }
+    public function executionAttemptIdentity(): ?string { return $this->executionAttemptIdentity; }
+    public function withExecutionAttemptIdentity(?string $executionAttemptIdentity): self
+    {
+        return new self($this->operationId, $this->installationIdentity, $this->namespaceIdentity, $this->deploymentIdentity, $this->targetPackageIdentity, $this->targetReleaseIdentity, $this->archiveIdentity, $this->applyPlan, $this->preLifecycleIdentity, $this->migrationLedgerIdentity, $this->databaseIdentity, $this->filesystemPlan, $this->databaseScope, $this->databaseConsistencyEvidence, $this->applicationWriteProtectionEvidence, $this->orderedV3Plan, $this->metadataOnly, $executionAttemptIdentity);
+    }
 }

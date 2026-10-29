@@ -54,6 +54,7 @@ final class CommittedSourceAuthorityRecoveryAdapter
         $operation = $this->operations->read();
         if (!$operation instanceof LifecycleOperationRecord
             || $operation->operationId() !== $plan->operation()->operationId()
+            || $operation->executionAttemptIdentity() !== $plan->operation()->executionAttemptIdentity()
             || $operation->classification() !== 'COMMITTED_SOURCE_AUTHORITY_RECONCILIATION'
             || !in_array($operation->phase(), [
                 LifecycleOperationRecord::PREPARING,
@@ -87,7 +88,7 @@ final class CommittedSourceAuthorityRecoveryAdapter
             } else {
                 $decoded = null;
                 if ($allowFreshCapture) {
-                    $expectedRecovery = NormalWebcoreRecoveryCaptureService::forOperation($operation->operationId(), $plan->applyPlan()->identity());
+                    $expectedRecovery = NormalWebcoreRecoveryCaptureService::forOperation($operation->operationId(), $plan->applyPlan()->identity(), $operation->executionAttemptIdentity());
                     try {
                         $decoded = $this->artifacts->readManifest($expectedRecovery);
                     } catch (RecoveryStorageException $exception) {
@@ -98,7 +99,7 @@ final class CommittedSourceAuthorityRecoveryAdapter
                     }
                 } else {
                     try {
-                        $decoded = $this->artifacts->findManifestByOperationIdentity($operation->operationId());
+                        $decoded = $this->artifacts->findManifestByOperationIdentity($operation->operationId(), $operation->executionAttemptIdentity());
                     } catch (RecoveryStorageException $exception) {
                         throw new RecoveryLifecycleException('Authority recovery is absent or ambiguous; canonical continuation is blocked.', 0, $exception);
                     }
@@ -165,6 +166,7 @@ final class CommittedSourceAuthorityRecoveryAdapter
         $reread = $this->operations->read();
         if (!$reread instanceof LifecycleOperationRecord
             || $reread->operationId() !== $operation->operationId()
+            || $reread->executionAttemptIdentity() !== $operation->executionAttemptIdentity()
             || $reread->recoveryIdentity() !== $recovery->value()
             || $reread->recoveryManifestIdentity() !== $manifestIdentity
             || $reread->recoveryState() !== RecoveryLifecycleState::READY) {
@@ -175,8 +177,9 @@ final class CommittedSourceAuthorityRecoveryAdapter
 
     public static function assertRequest(CommittedSourceAuthorityPlan $plan, NormalWebcoreRecoveryCaptureRequest $request): void
     {
-        $recovery = NormalWebcoreRecoveryCaptureService::forOperation($plan->operation()->operationId(), $plan->applyPlan()->identity());
+        $recovery = NormalWebcoreRecoveryCaptureService::forOperation($plan->operation()->operationId(), $plan->applyPlan()->identity(), $plan->operation()->executionAttemptIdentity());
         if ($request->operationId() !== $plan->operation()->operationId()
+            || $request->executionAttemptIdentity() !== $plan->operation()->executionAttemptIdentity()
             || $request->installationIdentity() !== $plan->databaseScope()->installationIdentity()
             || $request->namespaceIdentity() !== $plan->databaseScope()->namespaceIdentity()
             || $request->targetPackageIdentity() !== $plan->sourcePlan()->packageEvidenceIdentity()

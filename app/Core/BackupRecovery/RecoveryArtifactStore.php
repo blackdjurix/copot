@@ -70,7 +70,7 @@ final class RecoveryArtifactStore
     }
 
     /** Locate and integrity-read one manifest by its canonical operation identity. */
-    public function findManifestByOperationIdentity(string $operationIdentity): array
+    public function findManifestByOperationIdentity(string $operationIdentity, ?string $executionAttemptIdentity = null): array
     {
         if ($operationIdentity === '' || preg_match('/[\x00-\x1F\x7F]/', $operationIdentity) === 1) {
             throw new RecoveryStorageException('Recovery operation locator is invalid.');
@@ -82,7 +82,10 @@ final class RecoveryArtifactStore
         $matches = [];
         foreach (glob($root . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . 'manifest' . DIRECTORY_SEPARATOR . 'recovery-manifest.json') ?: [] as $path) {
             $decoded = $this->decodeManifestPath($path);
-            if ($decoded['manifest']->operationIdentity() === $operationIdentity) {
+            if ($decoded['manifest']->operationIdentity() === $operationIdentity
+                && ($executionAttemptIdentity === null
+                    ? $decoded['manifest']->executionAttemptIdentity() === null
+                    : $decoded['manifest']->executionAttemptIdentity() === $executionAttemptIdentity)) {
                 $matches[] = $decoded;
             }
         }

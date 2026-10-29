@@ -2,6 +2,8 @@
 
 namespace Copot\Core\BackupRecovery;
 
+use Copot\Core\LifecycleExecutionAttemptIdentity;
+
 /** Immutable bridge between lifecycle-operation and recovery-set identities. */
 final class RecoveryIdentityCrossReference
 {
@@ -14,17 +16,19 @@ final class RecoveryIdentityCrossReference
         private string $packageIdentity,
         private string $applyPlanIdentity,
         private DatabaseScope $databaseScope,
-        private string $targetIdentity
+        private string $targetIdentity,
+        private ?string $executionAttemptIdentity = null
     ) {
         self::opaque($operationIdentity, 'Lifecycle operation identity');
         self::opaque($installationIdentity, 'Installation identity');
         self::opaque($packageIdentity, 'Package identity');
         self::hash($applyPlanIdentity, 'Apply-plan identity');
         self::opaque($targetIdentity, 'Target identity');
+        if ($executionAttemptIdentity !== null) { LifecycleExecutionAttemptIdentity::assert($executionAttemptIdentity); }
         if ($databaseScope->installationIdentity() !== $installationIdentity) {
             throw new RecoveryLifecycleException('Recovery identity cross-reference scope is bound to another installation.');
         }
-        $this->identity = hash('sha256', json_encode([
+        $data = [
             'operation_identity' => $operationIdentity,
             'recovery_identity' => $recoveryIdentity->value(),
             'installation_identity' => $installationIdentity,
@@ -32,7 +36,9 @@ final class RecoveryIdentityCrossReference
             'apply_plan_identity' => $applyPlanIdentity,
             'database_scope_identity' => $databaseScope->identity(),
             'target_identity' => $targetIdentity,
-        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+        ];
+        if ($executionAttemptIdentity !== null) { $data['execution_attempt_identity'] = $executionAttemptIdentity; }
+        $this->identity = hash('sha256', json_encode($data, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 
     public function identity(): string { return $this->identity; }
@@ -43,6 +49,7 @@ final class RecoveryIdentityCrossReference
     public function applyPlanIdentity(): string { return $this->applyPlanIdentity; }
     public function databaseScope(): DatabaseScope { return $this->databaseScope; }
     public function targetIdentity(): string { return $this->targetIdentity; }
+    public function executionAttemptIdentity(): ?string { return $this->executionAttemptIdentity; }
 
     public function matchesEvidence(ApplicationWriteProtectionEvidence $application, ScopedDatabaseConsistencyEvidence $database): bool
     {
@@ -67,6 +74,7 @@ final class RecoveryIdentityCrossReference
             'database_identity' => $this->databaseScope->databaseIdentity(),
             'namespace_identity' => $this->databaseScope->namespaceIdentity(),
             'target_identity' => $this->targetIdentity,
+            ...($this->executionAttemptIdentity === null ? [] : ['execution_attempt_identity' => $this->executionAttemptIdentity]),
         ];
     }
 

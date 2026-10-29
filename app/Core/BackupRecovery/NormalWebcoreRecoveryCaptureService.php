@@ -19,7 +19,7 @@ final class NormalWebcoreRecoveryCaptureService
 
     public function capture(NormalWebcoreRecoveryCaptureRequest $request): NormalWebcoreRecoverySession
     {
-        $recovery = self::forOperation($request->operationId(), $request->applyPlan()->identity());
+        $recovery = self::forOperation($request->operationId(), $request->applyPlan()->identity(), $request->executionAttemptIdentity());
         $lease = null; $record = null; $hasScopedEvidence = $request->databaseScope() !== null
             || $request->databaseConsistencyEvidence() !== null
             || $request->applicationWriteProtectionEvidence() !== null;
@@ -47,8 +47,8 @@ final class NormalWebcoreRecoveryCaptureService
             ];
             if ($filesystem !== null) $domains[] = new RecoveryDomainIdentity('filesystem.package-owned', 'filesystem.package-owned', $request->applyPlan()->identity(), $filesystem->artifact()->artifactIdentity());
             if ($actionLinkage !== null) $domains[] = new RecoveryDomainIdentity('filesystem.action-linkage', 'filesystem.action-linkage', $actionLinkage->applyPlanIdentity(), $actionLinkage->artifact()->artifactIdentity());
-            $manifest = new RecoveryManifest($recovery, $request->operationId(), $request->targetPackageIdentity(), $request->targetReleaseIdentity(), $request->archiveIdentity(), $request->applyPlan()->identity(), $domains, $request->preLifecycleIdentity(), $request->migrationLedgerIdentity());
-            $record = new RecoveryLifecycleRecord($recovery, $manifest->identity(), $request->operationId(), RecoveryLifecycleState::CREATED);
+            $manifest = new RecoveryManifest($recovery, $request->operationId(), $request->targetPackageIdentity(), $request->targetReleaseIdentity(), $request->archiveIdentity(), $request->applyPlan()->identity(), $domains, $request->preLifecycleIdentity(), $request->migrationLedgerIdentity(), $request->executionAttemptIdentity());
+            $record = new RecoveryLifecycleRecord($recovery, $manifest->identity(), $request->operationId(), RecoveryLifecycleState::CREATED, false, false, null, null, null, null, null, '', '', null, null, false, $request->executionAttemptIdentity());
             $this->coordinator->create($record);
             if (!$scoped) { $this->coordinator->enterMaintenance($recovery); }
             $this->coordinator->transition($recovery, RecoveryLifecycleState::CAPTURING);
@@ -181,9 +181,11 @@ final class NormalWebcoreRecoveryCaptureService
         }
     }
 
-    public static function forOperation(string $operationIdentity, string $applyPlanIdentity): RecoveryIdentity
+    public static function forOperation(string $operationIdentity, string $applyPlanIdentity, ?string $executionAttemptIdentity = null): RecoveryIdentity
     {
-        return new RecoveryIdentity('webcore-' . hash('sha256', $operationIdentity . ':' . $applyPlanIdentity));
+        $seed = $operationIdentity . ':' . $applyPlanIdentity;
+        if ($executionAttemptIdentity !== null) { $seed .= ':execution-attempt:' . $executionAttemptIdentity; }
+        return new RecoveryIdentity('webcore-' . hash('sha256', $seed));
     }
 
     public function resume(NormalWebcoreRecoveryCaptureRequest $request, RecoveryIdentity $identity, string $manifest): NormalWebcoreRecoverySession
@@ -202,8 +204,10 @@ final class NormalWebcoreRecoveryCaptureService
                 $lease = $this->quiescence->acquire();
                 if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable.');
             }
+            $expected = self::forOperation($request->operationId(), $request->applyPlan()->identity(), $request->executionAttemptIdentity());
+            if ($expected->value() !== $identity->value()) throw new RecoveryLifecycleException('Recovery identity does not match the execution attempt.');
             $record = $this->store->read($identity);
-            if ($record->operationIdentity() !== $request->operationId() || $record->manifestIdentity() !== $manifest || $record->state() !== RecoveryLifecycleState::READY || !$record->captureComplete() || $record->mutationStarted()) throw new RecoveryLifecycleException('Persisted recovery evidence is not retry-eligible.');
+            if ($record->operationIdentity() !== $request->operationId() || $record->executionAttemptIdentity() !== $request->executionAttemptIdentity() || $record->state() !== RecoveryLifecycleState::READY || !$record->captureComplete() || $record->mutationStarted()) throw new RecoveryLifecycleException('Persisted recovery evidence is not retry-eligible.');
             if ($scoped) { $this->coordinator->enterScopedMaintenance($identity, $request->applicationWriteProtectionEvidence(), $request->databaseConsistencyEvidence()); }
             else { $this->coordinator->enterMaintenance($identity); }
             return new NormalWebcoreRecoverySession($this->coordinator, $identity, $manifest, $record, $lease, $scoped ? $request->databaseConsistencyEvidence() : null);

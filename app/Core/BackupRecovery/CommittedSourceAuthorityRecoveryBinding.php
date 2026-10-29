@@ -27,7 +27,7 @@ final class CommittedSourceAuthorityRecoveryBinding
         ApplicationWriteProtectionEvidence $applicationProtection,
         ScopedDatabaseConsistencyEvidence $databaseConsistency
     ): self {
-        $recovery = NormalWebcoreRecoveryCaptureService::forOperation($plan->operation()->operationId(), $plan->applyPlan()->identity());
+        $recovery = NormalWebcoreRecoveryCaptureService::forOperation($plan->operation()->operationId(), $plan->applyPlan()->identity(), $plan->operation()->executionAttemptIdentity());
         $expectedPackage = $plan->sourcePlan()->packageEvidenceIdentity();
         if (!$manifest->recoveryIdentity()->equals($recovery)
             || $manifest->operationIdentity() !== $plan->operation()->operationId()
@@ -39,6 +39,9 @@ final class CommittedSourceAuthorityRecoveryBinding
             || $manifest->preOperationMigrationLedgerIdentity() !== $plan->migrationStateIdentity()) {
             throw new RecoveryLifecycleException('Authority recovery manifest is not bound to the exact plan identities.');
         }
+        if ($manifest->executionAttemptIdentity() !== $plan->operation()->executionAttemptIdentity()) {
+            throw new RecoveryLifecycleException('Authority recovery manifest is bound to a different execution attempt.');
+        }
         if (!$record->recoveryIdentity()->equals($recovery)
             || $record->operationIdentity() !== $plan->operation()->operationId()
             || $record->manifestIdentity() !== $manifest->identity()
@@ -46,6 +49,9 @@ final class CommittedSourceAuthorityRecoveryBinding
             || !$record->captureComplete()
             || $record->mutationStarted()) {
             throw new RecoveryLifecycleException('Authority recovery lifecycle record is not capture-complete and mutation-free.');
+        }
+        if ($record->executionAttemptIdentity() !== $plan->operation()->executionAttemptIdentity()) {
+            throw new RecoveryLifecycleException('Authority recovery lifecycle record is bound to a different execution attempt.');
         }
         if (!$applicationProtection->isValidAt()
             || !$databaseConsistency->isValidAt()

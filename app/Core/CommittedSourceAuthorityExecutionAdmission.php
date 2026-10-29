@@ -39,6 +39,7 @@ final class CommittedSourceAuthorityExecutionAdmission
             'plan_identity' => $plan->identity(),
             'binding_identity' => $binding->crossReference()->identity(),
             'operation_identity' => $plan->operation()->operationId(),
+            'execution_attempt_identity' => $plan->operation()->executionAttemptIdentity(),
             'recovery_identity' => $binding->crossReference()->recoveryIdentity()->value(),
             'manifest_identity' => $binding->manifest()->identity(),
             'database_scope_identity' => $plan->databaseScope()->identity(),
@@ -108,6 +109,7 @@ final class CommittedSourceAuthorityExecutionAdmission
             'plan_identity' => $plan->identity(),
             'binding_identity' => $binding->crossReference()->identity(),
             'operation_identity' => $plan->operation()->operationId(),
+            'execution_attempt_identity' => $plan->operation()->executionAttemptIdentity(),
             'recovery_identity' => $binding->crossReference()->recoveryIdentity()->value(),
             'manifest_identity' => $binding->manifest()->identity(),
             'database_scope_identity' => $plan->databaseScope()->identity(),
@@ -152,6 +154,7 @@ final class CommittedSourceAuthorityExecutionAdmission
         $reread = $operations->read();
         if (!$reread instanceof LifecycleOperationRecord
             || $reread->operationId() !== $this->plan->operation()->operationId()
+            || $reread->executionAttemptIdentity() !== $this->plan->operation()->executionAttemptIdentity()
             || $reread->phase() !== LifecycleOperationRecord::AWAITING_WU6
             || $reread->fileCursor() !== 0
             || $reread->lastVerifiedPath() !== null
@@ -211,6 +214,7 @@ final class CommittedSourceAuthorityExecutionAdmission
         $persisted = $operations->read();
         if (!$persisted instanceof LifecycleOperationRecord
             || $persisted->operationId() !== $operation->operationId()
+            || $persisted->executionAttemptIdentity() !== $operation->executionAttemptIdentity()
             || $persisted->classification() !== $operation->classification()
             || !in_array($persisted->phase(), $allowedPhases, true)
             || $persisted->applyPlanIdentity() !== $plan->applyPlan()->identity()
@@ -227,6 +231,7 @@ final class CommittedSourceAuthorityExecutionAdmission
         $manifest = $decoded['manifest'];
         if ($manifest->identity() !== $binding->manifest()->identity()
             || $manifest->operationIdentity() !== $operation->operationId()
+            || $manifest->executionAttemptIdentity() !== $operation->executionAttemptIdentity()
             || $manifest->applyPlanIdentity() !== $plan->applyPlan()->identity()
             || $manifest->preOperationLifecycleIdentity() !== $plan->committedLifecycleIdentity()
             || $manifest->preOperationMigrationLedgerIdentity() !== $plan->migrationStateIdentity()) {

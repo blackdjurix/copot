@@ -272,6 +272,9 @@ final class PackageLifecycleFactory
                     new PreMutationSettlementEvidenceStore($storage)
                 )
                 : null,
+            $recoveryComposition instanceof PackageLifecycleRecoveryComposition
+                ? new PreCaptureAbandonmentService($maintenance, $mutex, new PreCaptureAbandonmentEvidenceStore($storage))
+                : null,
             $sourceAuthorityRecovery,
             $recoveryComposition?->maintenance instanceof InstallationScopedMaintenanceGuard ? $recoveryComposition->maintenance : null,
             DatabaseTableOwnershipCatalog::current(),

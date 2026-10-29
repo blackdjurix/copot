@@ -2,6 +2,8 @@
 
 namespace Copot\Core\BackupRecovery;
 
+use Copot\Core\LifecycleExecutionAttemptIdentity;
+
 final class RecoveryManifest
 {
     /** @var array<int, RecoveryDomainIdentity> */
@@ -19,7 +21,8 @@ final class RecoveryManifest
         private string $applyPlanIdentity,
         array $domainIdentities,
         private string $preOperationLifecycleIdentity,
-        private string $preOperationMigrationLedgerIdentity
+        private string $preOperationMigrationLedgerIdentity,
+        private ?string $executionAttemptIdentity = null
     ) {
         self::assertOpaque($operationIdentity, 'Lifecycle operation identity');
         self::assertOpaque($targetPackageIdentity, 'Target package identity');
@@ -28,6 +31,7 @@ final class RecoveryManifest
         self::assertHash($applyPlanIdentity, 'Apply-plan identity');
         self::assertOpaque($preOperationLifecycleIdentity, 'Pre-operation lifecycle identity');
         self::assertOpaque($preOperationMigrationLedgerIdentity, 'Pre-operation migration-ledger identity');
+        if ($executionAttemptIdentity !== null) { LifecycleExecutionAttemptIdentity::assert($executionAttemptIdentity); }
 
         $byIdentifier = [];
         $byOwnership = [];
@@ -99,10 +103,16 @@ final class RecoveryManifest
         return $this->preOperationMigrationLedgerIdentity;
     }
 
+    public function executionAttemptIdentity(): ?string
+    {
+        return $this->executionAttemptIdentity;
+    }
+
     public function identity(): string
     {
-        return hash('sha256', json_encode([
+        $data = [
             'recovery_identity' => $this->recoveryIdentity->value(),
+            ...($this->executionAttemptIdentity === null ? [] : ['execution_attempt_identity' => $this->executionAttemptIdentity]),
             'operation_identity' => $this->operationIdentity,
             'target_package_identity' => $this->targetPackageIdentity,
             'target_release_identity' => $this->targetReleaseIdentity,
@@ -116,7 +126,8 @@ final class RecoveryManifest
             ], $this->domainIdentities),
             'pre_operation_lifecycle_identity' => $this->preOperationLifecycleIdentity,
             'pre_operation_migration_ledger_identity' => $this->preOperationMigrationLedgerIdentity,
-        ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+        ];
+        return hash('sha256', json_encode($data, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 
     private static function assertOpaque(string $value, string $label): void
