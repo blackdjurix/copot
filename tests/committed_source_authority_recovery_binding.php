@@ -14,6 +14,7 @@ use Copot\Core\BackupRecovery\RecoveryManifest;
 use Copot\Core\BackupRecovery\RecoveryStorageRoot;
 use Copot\Core\BackupRecovery\RecoveryArtifactStore;
 use Copot\Core\BackupRecovery\RecoveryLifecycleCoordinator;
+use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureService;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
 use Copot\Core\BackupRecovery\UnavailableDatabaseQuiescence;
 use Copot\Core\CanonicalTargetInventory;
@@ -32,6 +33,7 @@ use Copot\Core\HealthIntegrityCommitCoordinator;
 use Copot\Core\MaintenanceCoordinator;
 use Copot\Core\RuntimeHealthVerifier;
 use Copot\Core\TargetPackageIntegrityVerifier;
+use Copot\Core\WebcoreApplyPlan;
 use Copot\Core\DatabaseHealthVerifier;
 use Copot\Core\CoreMigrationHealthVerifier;
 use Copot\Core\CoreMigrationRegistry;
@@ -135,6 +137,47 @@ try {
     CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $request);
     $assert(true, 'Canonical capture request binding passed.');
 
+    $alternateLiveRoot = $root . '/alternate-live';
+    mkdir($alternateLiveRoot, 0700, true);
+    $alternateSession = StagingSession::create($alternateLiveRoot, $root . '/alternate-staging');
+    $alternatePayload = new StagedPayload($alternateSession, str_repeat('f', 64), [new StagedFile('app/target.txt', strlen($content), $sha)]);
+    $alternateApplyPlan = WebcoreApplyPlan::fromPayload($alternatePayload);
+    $requestWith = static function (array $overrides = []) use ($plan, $installation, $scope, $database, $application): \Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureRequest {
+        $values = array_replace([
+            'operationId' => $plan->operation()->operationId(),
+            'installationIdentity' => $installation->value(),
+            'namespaceIdentity' => $scope->namespaceIdentity(),
+            'deploymentIdentity' => $plan->committedLifecycleIdentity(),
+            'targetPackageIdentity' => $plan->sourcePlan()->packageEvidenceIdentity(),
+            'targetReleaseIdentity' => $plan->operation()->releaseIdentity(),
+            'archiveIdentity' => $plan->operation()->archiveSha256(),
+            'applyPlan' => $plan->applyPlan(),
+            'preLifecycleIdentity' => $plan->committedLifecycleIdentity(),
+            'migrationLedgerIdentity' => $plan->migrationStateIdentity(),
+            'databaseIdentity' => $scope->databaseIdentity(),
+            'databaseScope' => $scope,
+            'databaseEvidence' => $database,
+            'applicationEvidence' => $application,
+            'orderedV3Plan' => $plan->sourcePlan(),
+        ], $overrides);
+        return new \Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureRequest(
+            $values['operationId'], $values['installationIdentity'], $values['namespaceIdentity'], $values['deploymentIdentity'],
+            $values['targetPackageIdentity'], $values['targetReleaseIdentity'], $values['archiveIdentity'], $values['applyPlan'],
+            $values['preLifecycleIdentity'], $values['migrationLedgerIdentity'], $values['databaseIdentity'], null,
+            $values['databaseScope'], $values['databaseEvidence'], $values['applicationEvidence'], $values['orderedV3Plan']
+        );
+    };
+    $throws(static fn () => CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $requestWith(['deploymentIdentity' => str_repeat('c', 64)])));
+    $throws(static fn () => CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $requestWith(['operationId' => 'other-operation'])));
+    $throws(static fn () => CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $requestWith(['targetPackageIdentity' => str_repeat('d', 64)])));
+    $throws(static fn () => CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $requestWith(['archiveIdentity' => str_repeat('b', 64)])));
+    $throws(static fn () => CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $requestWith(['applyPlan' => $alternateApplyPlan])));
+    $throws(static fn () => CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $requestWith(['migrationLedgerIdentity' => str_repeat('a', 64)])));
+    $throws(static fn () => CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $requestWith(['databaseIdentity' => 'other-database'])));
+    $wrongRecovery = NormalWebcoreRecoveryCaptureService::forOperation('other-operation', $plan->applyPlan()->identity());
+    $wrongApplication = new ApplicationWriteProtectionEvidence($scope, $wrongRecovery, str_repeat('9', 64), str_repeat('0', 64), ['background', 'cli', 'http', 'scheduled'], true, true, $now - 1, $now + 100);
+    $throws(static fn () => CommittedSourceAuthorityRecoveryAdapter::assertRequest($plan, $requestWith(['applicationEvidence' => $wrongApplication])));
+
     $operations = new LifecycleOperationStore($operationRoot); $operations->create($plan->operation());
     $bound = $plan->operation()->bindRecovery($recovery->value(), $recoveryManifest->identity(), RecoveryLifecycleState::READY); $operations->save($bound);
     $assert($operations->read()?->recoveryManifestIdentity() === $recoveryManifest->identity(), 'Persisted operation recovery binding did not reread exactly.');
@@ -233,5 +276,5 @@ try {
     $throws(static fn () => CommittedSourceAuthorityRecoveryBinding::fromCaptured($plan, $recoveryManifest, $record, $application, $stale));
     $mutated = new RecoveryLifecycleRecord($recovery, $recoveryManifest->identity(), $plan->operation()->operationId(), RecoveryLifecycleState::READY, true, true, $recovery->value(), $recoveryManifest->identity(), $recoveryManifest->identity());
     $throws(static fn () => CommittedSourceAuthorityRecoveryBinding::fromCaptured($plan, $recoveryManifest, $mutated, $application, $database));
-} finally { $session->cleanup(); @rmdir($root . '/staging'); @rmdir($root . '/live'); @rmdir($root . '/storage/.copot-lifecycle'); @rmdir($root . '/storage'); @rmdir($root); }
+} finally { $session->cleanup(); if (isset($alternateSession)) $alternateSession->cleanup(); @rmdir($root . '/staging'); @rmdir($root . '/alternate-staging'); @rmdir($root . '/live'); @rmdir($root . '/alternate-live'); @rmdir($root . '/storage/.copot-lifecycle'); @rmdir($root . '/storage'); @rmdir($root); }
 echo "Committed source-authority recovery binding tests passed ({$assertions} assertions)." . PHP_EOL;

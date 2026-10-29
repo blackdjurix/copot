@@ -161,7 +161,7 @@ final class PackageLifecycleService
             $plan->operation()->operationId(),
             $installation->value(),
             $scope->namespaceIdentity(),
-            $this->authorityDeploymentIdentity,
+            $plan->committedLifecycleIdentity(),
             $plan->sourcePlan()->packageEvidenceIdentity(),
             $plan->operation()->releaseIdentity(),
             $plan->operation()->archiveSha256(),

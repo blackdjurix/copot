@@ -22,6 +22,11 @@ $assert(str_contains($service, 'new ScopedDatabaseConsistencyEvidence'), 'Orches
 $assert(str_contains($service, 'stateIdentity($connection, $scope->databaseIdentity(), $scope)'), 'Orchestration does not perform bounded database state revalidation.');
 $assert(str_contains($service, 'prepareCommittedSourceAuthority($committed'), 'Orchestration does not delegate to the canonical preparation path.');
 $assert(str_contains($service, 'NormalWebcoreRecoveryCaptureService::forOperation'), 'Recovery identity is not derived through the canonical source-authority identity algorithm.');
+$requestStart = strpos($service, '$request = new NormalWebcoreRecoveryCaptureRequest(');
+$requestEnd = $requestStart === false ? false : strpos($service, '        );', $requestStart);
+$requestSource = $requestStart === false || $requestEnd === false ? '' : substr($service, $requestStart, $requestEnd - $requestStart);
+$assert(str_contains($requestSource, '$plan->committedLifecycleIdentity(),'), 'Source-authority recovery request does not bind its committed lifecycle identity to the canonical plan.');
+$assert(!str_contains($requestSource, '$this->authorityDeploymentIdentity,'), 'Source-authority recovery request still uses the unrelated deployment identity.');
 $assert(str_contains($factory, '$storage,') && str_contains($factory, '$recoveryComposition?->databaseIdentity'), 'Factory does not bind the runtime composition to the installation storage/database.');
 $assert(str_contains($factory, '$recoveryComposition?->maintenance instanceof InstallationScopedMaintenanceGuard'), 'Factory does not pass the scoped Guard composition.');
 $assert(!str_contains($service, 'MariaDbReadOnlyQuiescence'), 'Source-authority orchestration directly introduced global MariaDB quiescence.');
