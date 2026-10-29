@@ -118,17 +118,29 @@ final class PackageLifecycleService
         if ($ownershipProof->installationId() !== $installation->value() || !$ownershipProof->isVerified()) {
             throw new \RuntimeException('Installer ownership proof is invalid for the current installation.');
         }
+        $connection = ($this->connection)();
+        $tables = new DatabaseTableNames($this->authorityNamespaceIdentity);
+        $generationEvidence = (new CoreSchemaGenerationStore($tables))->readIfPresent($connection, $this->authorityNamespaceIdentity);
+        $expectedGeneration = (new CoreSchemaMaterializer())->generationIdentity($this->canonicalSchemaPath);
+        if (!is_array($generationEvidence)
+            || ($generationEvidence['namespace'] ?? null) !== $this->authorityNamespaceIdentity
+            || ($generationEvidence['compatibility_state'] ?? null) !== 'compatible'
+            || ($generationEvidence['schema_generation'] ?? null) !== $expectedGeneration) {
+            throw new \RuntimeException('Verified canonical schema-generation evidence is unavailable or mismatched.');
+        }
         $scope = DatabaseScope::fromOwnershipCatalog(
             $installation->value(),
             $this->authorityDatabaseIdentity,
             $this->authorityNamespaceIdentity,
-            $this->databaseOwnershipCatalog
+            $this->databaseOwnershipCatalog,
+            [],
+            $generationEvidence
         );
         $plan = $this->planCommittedSourceAuthority($committed, $installation, $manifest, $actualTarget, $scope, $ownershipProof, $migrationPlan, $preservationPolicy);
         $recovery = NormalWebcoreRecoveryCaptureService::forOperation($plan->operation()->operationId(), $plan->applyPlan()->identity());
         $guardEvidence = $this->scopedMaintenanceGuard->produceEvidence($recovery, $scope);
         $provider = new MySqlRecoveryProvider();
-        $before = $provider->stateIdentity(($this->connection)(), $scope->databaseIdentity(), $scope);
+        $before = $provider->stateIdentity($connection, $scope->databaseIdentity(), $scope);
         $databaseEvidence = new ScopedDatabaseConsistencyEvidence(
             $scope,
             $recovery,
@@ -141,7 +153,7 @@ final class PackageLifecycleService
             $guardEvidence->capturedAt(),
             $guardEvidence->validUntil()
         );
-        $after = $provider->stateIdentity(($this->connection)(), $scope->databaseIdentity(), $scope);
+        $after = $provider->stateIdentity($connection, $scope->databaseIdentity(), $scope);
         if (!hash_equals($before, $after)) {
             throw new \RuntimeException('Scoped database state changed while composing source-authority evidence.');
         }
