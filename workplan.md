@@ -1399,6 +1399,43 @@ Deferred boundary: historical `DI-PACKAGE-LIFECYCLE-HTACCESS-01` wording about C
 
 Planning action: CONTROLLED DEVIATION OPEN / BOUNDED IMPLEMENTATION NEXT / CONTRACT RECONCILIATION AFTER VALIDATION / NO IMPLICIT E4 ADVANCEMENT
 
+### R3-A E4 D1–D2 — Attempt-Aware Recovery Continuation
+Class: ACTIVE BOUNDED EXECUTION CONTINUITY UNIT / ALTERNATIVE C
+Status: IMPLEMENTATION PLAN RECORDED / NEW SESSION HANDOFF PENDING / E4 BLOCKED
+Planning recorded: 2026-10-29 18:55:43 WIB
+Continuity identity: `E4-D1-D2-ATTEMPT-RECOVERY-20261029`
+
+This is ONE closure-tracked execution group spanning D1 and D2 slices, treated *like* a workstream for session continuity, ordering, evidence, and grouped closure only. It is NOT a new formal project workstream, Work Unit, or accepted canonical contract. Alternative C remains the parent objective. Controlled contract drift is recorded now; formal reconciliation/materialization of docs/28 and docs/31 is deferred until Alternative C completes. Source/test implementation, source publication, runtime disposition, recovery retry, contract amendment, and closure each retain their respective authorization gates.
+
+Objective: correct the source-authority recovery request committed-lifecycle binding (D1), then safely dispose of the existing pre-capture orphan and permit a fresh attempt through a strictly attempt-aware source-authority recovery path (D2). Preserve all other lifecycle behaviors and immutable historical evidence.
+
+Source anchor and D1 dependency:
+- Repository `blackdjurix/copot`, existing feature branch `codex/e4-unified-source-authority` published HEAD `98ac7288696e18fe31cb6a6fdf8aa113a17a13bd`.
+- D1 is an UNPUBLISHED local three-file diff in `C:\Git\copot-e4-unified-htaccess`: `app/Core/PackageLifecycleService.php`, `tests/committed_source_authority_recovery_binding.php`, `tests/committed_source_authority_runtime_orchestration.php`. Exact adjustment: source-authority capture request uses `$plan->committedLifecycleIdentity()` rather than `$this->authorityDeploymentIdentity`; unrelated deployment identity semantics unchanged.
+- D1 focused suites reported PASS by Codex; old routing-test failure is NOT proven equivalent pre/post D1. Do not claim complete baseline regression or overwrite these three local files. Review/publish D1 separately before implementing D2 on a source that depends on it. A separate D2 branch/worktree may be created from the last verified published Correction C commit while D1 remains local; branch creation does not transfer uncommitted D1 changes.
+- SDR `473e8df9_htaccess`: orphan `source-authority-reconciliation-sha256:4b9b75f51455ecd5bcf2d56f943c2e865be0a1471c9d52ac1458a16525867ab4`, phase PREPARING, cursor 0, no recovery identity/manifest/state, Guard inactive, staging missing. Leave untouched until a canonical disposition route is implemented and separately authorized.
+- Trusted historical candidate ZIP `C:\Git\copot-e4-artifacts\copot-v0.13.0-v3-correction-c.zip`, SHA-256 `c77a031ca6cf4f1b861089538f825d7f1c3f09a1c2c321f455fd3c095c25daf0`; inventory 857/857 match only against pre-D1 source. Rebuild and verify a new candidate after accepted source changes before fresh E4 eligibility; do not reinterpret this ZIP as current D2 package evidence.
+
+Bounded technical direction (Model B candidate, NOT formal contract acceptance):
+- Canonical operation and plan identities remain deterministic for identical eligibility inputs; create cryptographically unique immutable `execution_attempt_identity` only at execution-attempt creation, NEVER inside read-only planning. Persist before recovery capture; resume reuses the persisted attempt. Source-authority new operations require attempt identity; historical records without it remain strictly readable and never silently upgraded.
+- Attempt identity must bind active-operation save/clear, recovery derivation, manifest/lookup, scoped Guard/database evidence, admission, resume, and finalization. Current persisted record must be reread and verified terminal before clear; cross-attempt reuse must fail closed. Legacy non-source-authority recovery behavior is unchanged.
+- Distinct terminal `PRE_CAPTURE_ABANDONED` belongs to Package Lifecycle, not Backup & Recovery, and never implies captured recovery, mutation permit, or WU6 readiness. A single service supports both attempt-aware and historical orphan eligibility. Legacy missing attempt is an observed absence, not a synthetic attempt identity. Immutable durable abandonment evidence, read-back, installation exclusivity, crash-idempotent terminalization, and canonical clearance are mandatory; no manual removal of active operation or retrospective RecoveryManifest.
+- Existing `PreMutationSettlementService` recovery-READY invariant remains unchanged. `PUBLIC_ROOT/.htaccess` is deployment-owned and absolutely immutable within COPOT authority.
+
+Grouped execution slices and gate evidence:
+- D1 prerequisite: verify original three-file diff and old routing-test baseline equivalence; publish D1 only after separate authorization; preserve published source anchor.
+- Slice 1 (attempt persistence): `LifecycleOperationRecord`, `LifecycleOperationStore`, execution boundary/planner. Test strict legacy/new serialization, deterministic plan stability, unique fresh attempts, immutable persisted attempt, attempt-aware save and terminal clear.
+- Slice 2 (attempt-aware recovery): request, capture service, recovery identity/manifest/codec/artifact lookup, adapter, admission/resume/finalization. Test distinct recovery identities for repeated canonical plan, fail-closed cross-attempt Guard/DB/manifest bindings, explicit legacy compatibility, no ambiguous operation-only lookup.
+- Slice 3 (pre-capture disposition, including historical orphan): dedicated request/evidence store/service, canonical lifecycle integration. Verify PREPARING/cursor-zero/no mutation/no recovery/no Guard/scoped-owner and unchanged installation/source/database/committed state under installation mutex; record actual staging availability; durable immutable evidence before terminal transition/clear, crash-idempotent retry; no synthetic history. The historical orphan is an eligible CANDIDATE only, not yet authorized for settlement.
+- Slice 4 (verification and fault injection): focused positive/negative safety tests, evidence-publication, terminal-save, terminal-reread and clear-interruption windows, independent legacy normal recovery and `PreMutationSettlementService` regression. Isolated/source-only validation first; do not modify SDR in a source-validation slice.
+- Slice 5 (E4 operational release gate): separately authorize targeted source advancement, preserve orphan and evidence until verified canonical abandonment, create fresh retained staging and fresh attempt, independently rebuild/verify V3 artifact and Gate-1 AUTHORITY_ONLY eligibility, authorize recovery preparation/capture, and only later separately authorize WU6/finalization/publication. Never infer that source test PASS authorizes runtime actions.
+
+Grouped closure requirements: D1 source correction published and differential baseline accounted for; D2 attempt-aware identity and pre-capture abandonment implemented/published and regressions/fault-injection independently verified; old orphan canonically disposed with preserved immutable evidence; new attempt demonstrates isolated recovery capture and no cross-attempt reuse; applicable Alternative C E4 source-authority flow validated through separately authorized gates; runtime/source/DB/Guard and branch states reconciled; all intentional drift enumerated for post-Alternative-C contract reconciliation. Group status remains OPEN until each relevant gate has explicit accepted evidence; it cannot self-declare parent Alternative C, package lifecycle, checkpoint, NRP, or project workstream closure.
+
+Deferred: global operation-ID redesign, unrelated Module/normal lifecycle attempt adoption, mass legacy manifest migration, broad retention UI/cleanup, public CLI terminology, and normative contract materialization before Alternative C closure.
+
+Planning action: RETAIN ONE EXECUTION CONTINUITY UNIT / PRESERVE D1 LOCAL DIFF / D2 SLICES BOUNDED / CONTROLLED DRIFT OPEN / FORMAL WORKSTREAM NOT CREATED / E4 BLOCKED.
+
 ### Deployment-Aware `.htaccess` Package Update Reconciliation
 Class: HISTORICAL DEFERRED ITEM / SUPERSEDED MUTATION PROPOSAL
 Status: HISTORICAL IDENTITY RETAINED / COPOT-MANAGED HTACCESS MUTATION PROHIBITED
