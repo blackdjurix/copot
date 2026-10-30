@@ -152,6 +152,14 @@ Authority:
 
 Planning action: NONE / PROVENANCE
 
+#### One-owner module package boundary — future reconciliation note
+Class: MODULE PACKAGE LIFECYCLE FOLLOW-ON PLANNING / CONTRACT PRESERVATION
+Status: FUTURE / NO RETROACTIVE CONTRACT CHANGE
+
+- The closed docs/29 contract already establishes one package -> one technical module and defers multi-module packages. Record future proposal to reject mixed independent Webcore/Module and multi-module artifacts, with Webcore-owned internal components remaining under Webcore ownership.
+- Preserve existing complete/closed WU1-WU7 status and shared lifecycle engine; future strictness requires explicit contract/gap evaluation, not amendment by this workplan entry.
+
+
 ### Existing-Runtime Webcore Lifecycle Adoption
 Class: PROMOTED
 Status: TECHNICAL TRACK COMPLETE / CLOSED
@@ -521,6 +529,17 @@ Relations:
 
 Planning action: KEEP DEFERRED / SEPARATE FUTURE CONTRACT AND WORKSTREAM ACCEPTANCE REQUIRED
 
+#### Patch delivery, capability-state and removal semantics — future lifecycle gap inventory
+Class: ADAPTIVE PACKAGE LIFECYCLE / BACKUP & RECOVERY FOLLOW-ON
+Status: FUTURE / OPEN DESIGN / NOT IMPLEMENTATION-AUTHORIZED
+
+- Treat patch artifact as immutable delivery/application unit that may contain multiple changes to capabilities owned by its declared package target. Do not infer a separate lifecycle engine for corrective, feature, retirement, security or structural intents.
+- Distinguish dependency on a package revision from dependency on a capability/contract/provider revision; installed/discovered is not necessarily active/selected. Explicitly evaluate conflicts, supersession, target inventory and committed state per runtime.
+- Separate full-runtime checkpoint restore, selective patch uninstall, capability deactivation and corrective/compensating transitions. Selective removal is fail-closed unless dependency closure, shared-file ownership, migrations, durable state and reversibility are proven. Never retain arbitrary files as an implicit orphaned capability provider.
+- Retirement separates deprecation/replacement, execution-path retirement and physical removal; downstream consumers, persisted data, recovery and provider transfer must be checked before destructive cleanup.
+- Open: patch dependency graph/ledger, incremental vs cumulative delivery, safe older prerequisite application on newer runtime, transactional sequencing, forward compatibility, migration reversibility, cross-owner constraints and release labeling. No patch engine, schema extension, or new authorization follows from this inventory.
+
+
 ### Installer Distribution, Automatic Root Deployment & Retained Sources
 Class: DEFERRED CONCEPT
 Status: MATERIALIZED / DEFERRED / NOT PROMOTED
@@ -546,6 +565,23 @@ Relations:
 - Accepted checkpoints remain distinct and continue to exist.
 
 Planning action: KEEP DEFERRED / NO RELEASE, TAG OR IMPLEMENTATION AUTHORITY
+
+#### Patch-based development and version semantics — future reconciliation
+Class: VERSIONING MANAGEMENT SUBSCOPE / PLANNING-ONLY
+Status: INVENTORIED / SEMANTICS OPEN / NOT IMPLEMENTATION-AUTHORIZED
+
+- Preserve immutable accepted checkpoint/release baselines while exploring independently developed, validated and published patch artifacts; a workstream, patch artifact, capability revision, release sequence and installed runtime state are distinct identities. No mandatory development patch number is adopted.
+- A published patch artifact is immutable; later fixes to earlier behavior are new corrective/superseding transitions, never silent replacement of a published artifact.
+- Runtime labels such as v0.13.7 must not imply that every numbered patch is installed unless that is explicitly guaranteed by the eventual release-version contract; separately track effective installed/active capabilities and committed patch evidence.
+- Candidate delivery forms are incremental, cumulative and dependency-resolving transitions. A later-numbered patch with a missing prerequisite requires compatibility proof and dependency satisfaction, not automatic downgrade or retroactive runtime-version change.
+- Patch change intents (corrective, introduction, evolution, retirement, structural, compatibility and security) may coexist within one owner-bounded artifact; intents are descriptions, not separate mutation engines.
+- Open: numbering/publication semantics, cumulative target-state definition, historical patch supersession, patch dependency admission and ledger, atomic application, compatibility at newer target states, and release acceptance. Distinguish minimum engineering patch workflow from advanced runtime patch management.
+- Timing: revisit once current Package Lifecycle foundation is accepted, as a candidate workflow supporting later pre-v0.14.0 development; no automatic expansion of Seven-Tab scope, no new workstream and no change to the five-stage dependency sequence.
+
+Relations: Adaptive Package Lifecycle; Package Lifecycle & Migration Foundation; Project Logging checkpoints; Backup & Recovery.
+
+
+
 
 ### Project Logging — Project State Checkpoint & Activity Journal Rollover
 Class: PROJECT GOVERNANCE CAPABILITY / GOVERNANCE-PROMOTED ACTIVITY JOURNAL POLICY
@@ -1057,6 +1093,15 @@ Relations:
 
 Planning action: KEEP DEFERRED
 
+#### Bundled Module installer orchestration boundary — future clarification
+Class: EXISTING INSTALLER REFINEMENT II SUBSCOPE / PLANNING-ONLY
+Status: INVENTORIED / CONTRACT RECONCILIATION REQUIRED
+
+- Installer may orchestrate multiple separately identified Module package operations and dependency sequencing; orchestration does not turn them into a mixed or multi-module artifact.
+- Per-package admission, ownership, migration, failure/retry, recovery and commit remain governed by their owning lifecycle. Cross-package atomicity is unresolved, not assumed.
+- Must preserve Installer Refinement II's hard dependency on Bundled Module Refinement and accepted Webcore/Adoption boundaries.
+
+
 ### Module Permission Dependency & Base Access
 Class: CONCEPT / FUTURE CAPABILITY
 Status: FUTURE / PREPARATION CANDIDATE
@@ -1102,6 +1147,17 @@ Relations:
   guidance remains planning-only.
 
 Planning action: KEEP REGISTERED / FUTURE
+
+#### Module package ownership and UI routing — future reconciliation
+Class: MODULE PACKAGE IDENTITY & CAPABILITY PROVIDER SUBSCOPE / PLANNING-ONLY
+Status: INVENTORIED / EXISTING CONTRACT RECONCILIATION REQUIRED
+
+- Existing docs/29 baseline is one package -> one technical module. Proposed forward strict boundary: one package has one effective lifecycle owner; Webcore-owned internal components may travel inside Webcore packages, while Bundled and Custom Modules each require their own Module package. Reject a package containing Webcore plus independently owned Module, or multiple separately owned Modules.
+- Cross-module and Module-to-Webcore capability dependencies are permitted without bundling another owner's mutable source. Package containment, capability dependency, and operational effect are separate.
+- Shared Package Lifecycle infrastructure remains common; Webcore- and Module-specific target policies/admission enforce ownership without a second mutation/recovery engine.
+- System UI is proposed primary for Webcore packages; Modules UI primary for Bundled/Custom Module packages. Wrong-surface intake should be classified and rejected/redirected or use accepted fallback, never silently run under the wrong owner. MR.2 WU3 remains closed; future UX routing is to be reconciled, not retroactively rewritten.
+- Further work: reconcile against docs/29 and docs/28, including historical multi-module deferral and provider selection, and retain Installer Refinement II's distinct multi-package orchestration boundary. No existing contract amendment or implementation authority is conferred.
+
 
 ### Future Widget Layout
 Class: CONCEPT / FUTURE ARCHITECTURE
@@ -1173,6 +1229,16 @@ Relations:
 - widget architecture remains separate.
 
 Planning action: KEEP REGISTERED FOR LINEAGE / DO NOT PROMOTE AS ONE EXECUTION WORKSTREAM
+
+#### Structural codebase consolidation and technical debt — lineage reconciliation
+Class: HISTORICAL REFINEMENT LINEAGE / FUTURE AUDIT CANDIDATE
+Status: INVENTORIED / EXECUTION OWNER UNRESOLVED / NOT IMPLEMENTATION-AUTHORIZED
+
+- Preserve previously discussed structural consolidation scope: unused methods, dead/unreachable code, obsolete adapters/classes, duplicate implementations, file/class merge-or-split decisions, folder organization, stale references, tests/tooling/documentation residue and architecture-aligned physical module relocation/retirement.
+- Core Modules & Dashboard Refinement is DECOMPOSED / PROVENANCE and explicitly must not be promoted as one execution workstream. Map future candidate cleanup to actual owning subsystems and dedicated refinement entries; do not use lineage alone to authorize cross-subsystem cleanup.
+- Module-specific physical residue belongs to Bundled Module Refinement Preparation; broader Webcore/lifecycle/installer cleanup requires separate owner and dependency audit. Preserve source authority, package/recovery safety, behavior and regression equivalence.
+- Historical August structural consolidation direction is retained as planning lineage, not proof that an active dedicated cleanup workstream already exists. Do not create a duplicate workstream before coverage reconciliation.
+
 
 ### Refinement Milestone Governance
 Class: GOVERNANCE CONCEPT / PROVENANCE
@@ -1878,6 +1944,15 @@ Shared sources for this family:
 - `copot_core_module_refinement_concept_260810_184600.md` [PRIMARY DETAILED HISTORICAL INPUT]
 - `copot_consolidated_refinement_concepts_260816_194432.md` [SUPPORTING]
 - `concept_webcore_extension_architecture_reconciliation_260820_234300.md` [CURRENT ARCHITECTURE INPUT]
+
+#### Post-ownership physical module cleanup — preparation inventory
+Class: BUNDLED MODULE REFINEMENT PREPARATION SUBSCOPE / PLANNING-ONLY
+Status: INVENTORIED / READ-ONLY AUDIT BEFORE MUTATION
+
+- Inventory legacy APP_ROOT/modules entries whose ownership evolved to Webcore, Bundled, or retired disposition. Re-homing responsibility does not automatically prove filesystem relocation or deletion safety.
+- Audit routes, autoload/bootstrap, module manifests/registry, DB ownership, published inventory, recovery authority, historical compatibility and live references before proposing moves/removals. Retired files and Webcore-owned legacy directory residues are candidate cleanup targets, not automatic deletions.
+- Keep physical cleanup separate from capability/contract retirement and module feature refinement; use bounded changes with behavior and recovery regressions after ownership is proven.
+
 
 ### Media Manager Refinement
 Class: FUTURE DEDICATED WORKSTREAM
