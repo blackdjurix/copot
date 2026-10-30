@@ -180,16 +180,19 @@ Feedback substantive bila response dapat mengubah, mengklarifikasi, mengevaluasi
 
 Governance Report
 
-- Governance Source: `Source` — `Source Link` — AVAILABLE / UNAVAILABLE
-- Project Rule: `Rule` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
-- Handoff Template: `Handoff` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
-- Instruction Template: `Instruction` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
+- Governance Source: `<resolved Source Link>` — AVAILABLE / UNAVAILABLE
+- Project Rule: `<resolved Rule path>` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
+- Project Registry: `<resolved Registry path>` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
+- Handoff Template: `<resolved Handoff path>` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
+- Instruction Template: `<resolved Instruction path>` — READ AND APPLIED / NOT REQUIRED / UNAVAILABLE / OTHER
 - Technical Executor: `<current effective executor>`
 - Platform: PC / Desktop / Mobile / Android / Other / Unknown
 - Manual-operation executor: User / `Technical Executor` / Other / Unknown
 - Executor confirmation: CONFIRMED / REUSED / REQUIRED / NOT REQUIRED
 - Routing action: `<material consequence only>`
 - Repository status: `<verified state when material>`
+
+Resolve each Governance Variable to its canonical Value before rendering the report. Do not display raw Variable names as substitute values. When an artifact status is `NOT REQUIRED`, render only `NOT REQUIRED` and omit its resolved path. This is a presentation rule and does not change the underlying governance loading or application requirements.
 
 ## Feedback GPT
 
