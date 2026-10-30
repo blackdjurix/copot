@@ -82,6 +82,7 @@ Sebelum memulai, resolve, buka, baca, verifikasi, dan apply `Governance` berikut
 
 - Governance Source: `Source Link`
 - Project Rule: `Rule`
+- Project Registry: `Registry`
 - Handoff Template: `Rule::Handoff`
 - Instruction Template: `Instruction`
 
