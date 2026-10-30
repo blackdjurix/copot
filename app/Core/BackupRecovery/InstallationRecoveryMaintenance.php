@@ -37,6 +37,12 @@ class InstallationRecoveryMaintenance implements RecoveryMaintenanceBoundary
         return $this->lock;
     }
 
+    /** True when a caller transferred an existing lock before recovery admission. */
+    public function hasAdoptedIdleLock(): bool
+    {
+        return $this->lock instanceof InstallationLock && $this->identity === null;
+    }
+
     public function enter(RecoveryIdentity $identity): bool
     {
         if ($this->lock instanceof InstallationLock && $this->identity === null) {

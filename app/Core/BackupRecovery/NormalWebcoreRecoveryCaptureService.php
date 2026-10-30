@@ -36,7 +36,20 @@ final class NormalWebcoreRecoveryCaptureService
                 if (!$lease instanceof DatabaseQuiescenceLease || !$lease->isActive()) throw new RecoveryLifecycleException('Database quiescence is unavailable.');
             }
             $filesystem = $request->metadataOnly() ? null : $this->filesystem->capture($request->filesystemPlan() ?? FilesystemRecoveryPlan::fromApplyPlan($request->applyPlan()));
-            $actionLinkage = $request->metadataOnly() || $request->orderedV3Plan() === null ? null : FilesystemRecoveryActionLinkageBuilder::build($request->orderedV3Plan(), $filesystem->entries(), $request->operationId(), $recovery, $filesystem->artifact()->artifactIdentity());
+            $actionLinkage = null;
+            if (!$request->metadataOnly() && $request->orderedV3Plan() !== null) {
+                $hasDestructiveAction = array_filter(
+                    $request->orderedV3Plan()->actions(),
+                    static fn (\Copot\Core\V3SourceRelativeAction $action): bool => in_array($action->action(), [
+                        \Copot\Core\V3SourceRelativeAction::REPLACE,
+                        \Copot\Core\V3SourceRelativeAction::REMOVE,
+                        \Copot\Core\V3SourceRelativeAction::RENAME,
+                    ], true)
+                ) !== [];
+                if ($hasDestructiveAction) {
+                    $actionLinkage = FilesystemRecoveryActionLinkageBuilder::build($request->orderedV3Plan(), $filesystem->entries(), $request->operationId(), $recovery, $filesystem->artifact()->artifactIdentity());
+                }
+            }
             $database = $this->database->capture(new DatabaseCaptureContext(($this->snapshotConnection)(), ($this->lockConnection)(), $request->databaseIdentity(), 67108864, $request->databaseScope(), $request->databaseConsistencyEvidence()));
             $lifecycle = $this->lifecycle->capture();
             $marker = $this->installedLock->capture();

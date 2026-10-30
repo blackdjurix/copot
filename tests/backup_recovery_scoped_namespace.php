@@ -67,15 +67,32 @@ try {
     }
     $db->exec("INSERT INTO `alpha_users` (label) VALUES ('alpha-before')");
     $db->exec("INSERT INTO `beta_users` (label) VALUES ('beta-stable')");
+    $provider = new MySqlRecoveryProvider();
     $operationA = new RecoveryIdentity('scoped-recovery-alpha');
     $operationB = new RecoveryIdentity('scoped-recovery-beta');
     $now = time();
-    $evidenceA = new ScopedDatabaseConsistencyEvidence($alpha, $operationA, hash('sha256', 'alpha-writer-drain'), hash('sha256', 'alpha-schema-stable'), $now, $now + 300);
-    $evidenceB = new ScopedDatabaseConsistencyEvidence($beta, $operationB, hash('sha256', 'beta-writer-drain'), hash('sha256', 'beta-schema-stable'), $now, $now + 300);
-    $provider = new MySqlRecoveryProvider();
+    // The producer commitment is the exact scoped stateIdentity(), not a
+    // second scope/schema/table hash domain.
+    $evidenceA = new ScopedDatabaseConsistencyEvidence($alpha, $operationA, hash('sha256', 'alpha-writer-drain'), $provider->stateIdentity($db, $database, $alpha), $now, $now + 300);
+    $evidenceB = new ScopedDatabaseConsistencyEvidence($beta, $operationB, hash('sha256', 'beta-writer-drain'), $provider->stateIdentity($db, $database, $beta), $now, $now + 300);
     $capture = static function (DatabaseScope $scope, ScopedDatabaseConsistencyEvidence $evidence) use ($provider, $make, $database): \Copot\Core\BackupRecovery\DatabaseRecoveryArtifact {
         return $provider->capture(new DatabaseCaptureContext($make(), $make(), $database, 67108864, $scope, $evidence));
     };
+    $rejects = static function (DatabaseScope $scope, ScopedDatabaseConsistencyEvidence $evidence) use ($capture): bool {
+        try { $capture($scope, $evidence); } catch (Throwable) { return true; }
+        return false;
+    };
+    $assert($rejects($alpha, new ScopedDatabaseConsistencyEvidence($alpha, $operationA, $evidenceA->writerExclusionIdentity(), str_repeat('a', 64), $now, $now + 300)), 'Incorrect scoped state commitment was accepted.');
+    $assert($rejects($alpha, $evidenceB), 'Database scope mismatch was accepted.');
+    $db->exec("UPDATE `alpha_users` SET label='alpha-drift' WHERE id=1");
+    $assert($rejects($alpha, $evidenceA), 'Data mismatch was accepted against the captured commitment.');
+    $db->exec("UPDATE `alpha_users` SET label='alpha-before' WHERE id=1");
+    $db->exec("ALTER TABLE `alpha_users` ADD COLUMN drift_marker VARCHAR(16) NULL");
+    $assert($rejects($alpha, $evidenceA), 'Schema mismatch was accepted against the captured commitment.');
+    $db->exec("ALTER TABLE `alpha_users` DROP COLUMN drift_marker");
+    $db->exec("INSERT INTO `alpha_core_migration_history` (migration_id, sequence_number, target_webcore_version, target_schema_identity, migration_checksum, applied_at) VALUES ('fixture-drift', 999, '0.13.0', 'fixture-schema', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', NOW())");
+    $assert($rejects($alpha, $evidenceA), 'Migration-ledger mismatch was accepted against the captured commitment.');
+    $db->exec("DELETE FROM `alpha_core_migration_history` WHERE migration_id='fixture-drift'");
     $artifactA = $capture($alpha, $evidenceA);
     $artifactB = $capture($beta, $evidenceB);
     $assert($artifactA->scope()?->identity() === $alpha->identity(), 'Alpha artifact did not retain scoped evidence.');

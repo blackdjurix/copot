@@ -20,6 +20,8 @@ $assert(str_contains($service, '$generationEvidence'), 'Orchestration does not b
 $assert(str_contains($service, 'produceEvidence($recovery, $scope)'), 'Orchestration does not obtain Guard evidence from the canonical producer.');
 $assert(str_contains($service, 'new ScopedDatabaseConsistencyEvidence'), 'Orchestration does not compose scoped database evidence.');
 $assert(str_contains($service, 'stateIdentity($connection, $scope->databaseIdentity(), $scope)'), 'Orchestration does not perform bounded database state revalidation.');
+$assert(str_contains($service, '$guardEvidence->writerExclusionIdentity(),') && str_contains($service, '                $' . 'before,'), 'Orchestration does not bind schema stability to the provider state commitment.');
+$assert(!str_contains($service, "'state_identity' => " . '$before'), 'Orchestration still uses a second database commitment hash domain.');
 $assert(str_contains($service, 'prepareCommittedSourceAuthority($committed'), 'Orchestration does not delegate to the canonical preparation path.');
 $assert(str_contains($service, 'NormalWebcoreRecoveryCaptureService::forOperation'), 'Recovery identity is not derived through the canonical source-authority identity algorithm.');
 $requestStart = strpos($service, '$request = new NormalWebcoreRecoveryCaptureRequest(');

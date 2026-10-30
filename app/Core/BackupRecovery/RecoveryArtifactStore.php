@@ -52,7 +52,10 @@ final class RecoveryArtifactStore
     {
         $path = (new RecoveryStoragePathPolicy($this->root))->manifestPath($identity);
         if (is_link($path) || !is_file($path) || !is_readable($path)) { throw new RecoveryStorageException('Recovery manifest is unavailable.'); }
-        $decoded = $this->codec->decode((string) file_get_contents($path));
+        $decoded = $this->decodeManifestPath($path);
+        if ($decoded['manifest']->recoveryIdentity()->value() !== $identity->value()) {
+            throw new RecoveryStorageException('Recovery manifest identity does not match the requested recovery set.');
+        }
         if (!$decoded['complete']) { throw new RecoveryStorageException('Recovery manifest is incomplete.'); }
         $policy = new RecoveryStoragePathPolicy($this->root);
         foreach ($decoded['artifacts'] as $artifact) {
@@ -94,6 +97,69 @@ final class RecoveryArtifactStore
         }
         $identity = $matches[0]['manifest']->recoveryIdentity();
         return $this->readManifest($identity);
+    }
+
+    /**
+     * Discover every manifest candidate for one operation without collapsing
+     * execution attempts. The physical recovery-set boundary is inspected as
+     * well, so an artifact-only or otherwise unclassified residue cannot be
+     * mistaken for an empty recovery store.
+     *
+     * @return array<int, array{manifest: RecoveryManifest, artifacts: array<int, RecoveryArtifactRecord>, complete: bool, identity: string}>
+     */
+    public function findManifestCandidatesByOperationIdentity(string $operationIdentity): array
+    {
+        $this->assertOperationIdentity($operationIdentity);
+        $policy = new RecoveryStoragePathPolicy($this->root);
+        $root = $policy->recoverySetsRoot();
+        if (is_link($root)) {
+            throw new RecoveryStorageException('Recovery set storage is unsafe.');
+        }
+        if (!is_dir($root)) {
+            if (file_exists($root)) {
+                throw new RecoveryStorageException('Recovery set storage is unavailable.');
+            }
+            return [];
+        }
+
+        $entries = @scandir($root);
+        if ($entries === false) {
+            throw new RecoveryStorageException('Recovery set storage could not be enumerated.');
+        }
+
+        $matches = [];
+        foreach ($entries as $entry) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+            $setRoot = $root . DIRECTORY_SEPARATOR . $entry;
+            if (is_link($setRoot) || !is_dir($setRoot) || preg_match('/^[a-f0-9]{64}$/D', $entry) !== 1) {
+                throw new RecoveryStorageException('Recovery set residue is unsafe or ambiguous.');
+            }
+
+            $manifestPath = $setRoot . DIRECTORY_SEPARATOR . 'manifest' . DIRECTORY_SEPARATOR . 'recovery-manifest.json';
+            $lifecyclePath = $setRoot . DIRECTORY_SEPARATOR . 'state' . DIRECTORY_SEPARATOR . 'recovery-lifecycle.json';
+            $manifestPresent = $this->assertOptionalFile($manifestPath, 'Recovery manifest');
+            $lifecyclePresent = $this->assertOptionalFile($lifecyclePath, 'Recovery lifecycle record');
+            if (!$manifestPresent && !$lifecyclePresent) {
+                throw new RecoveryStorageException('Recovery set residue has no authoritative manifest or lifecycle record.');
+            }
+
+            $decoded = null;
+            if ($manifestPresent) {
+                $decoded = $this->decodeManifestPath($manifestPath);
+                if ($decoded['complete']) {
+                    $this->readManifest($decoded['manifest']->recoveryIdentity());
+                }
+                if ($decoded['manifest']->operationIdentity() === $operationIdentity) {
+                    $matches[] = $decoded;
+                }
+            }
+
+            $this->assertSetResidue($setRoot, $decoded, $manifestPresent, $lifecyclePresent);
+        }
+
+        return $matches;
     }
 
     public function readArtifact(RecoveryIdentity $identity, RecoveryArtifactRecord $artifact): string
@@ -140,12 +206,126 @@ final class RecoveryArtifactStore
         if (is_link($path) || !is_file($path) || !is_readable($path)) {
             throw new RecoveryStorageException('Recovery manifest is unavailable.');
         }
-        return $this->codec->decode((string) file_get_contents($path));
+        $decoded = $this->codec->decode((string) file_get_contents($path));
+        $expectedPath = (new RecoveryStoragePathPolicy($this->root))->manifestPath($decoded['manifest']->recoveryIdentity());
+        if ($this->normalizePath($expectedPath) !== $this->normalizePath($path)) {
+            throw new RecoveryStorageException('Recovery manifest identity does not match its storage namespace.');
+        }
+        return $decoded;
+    }
+
+    private function assertOperationIdentity(string $operationIdentity): void
+    {
+        if ($operationIdentity === '' || preg_match('/[\x00-\x1F\x7F]/', $operationIdentity) === 1) {
+            throw new RecoveryStorageException('Recovery operation locator is invalid.');
+        }
+    }
+
+    private function assertOptionalFile(string $path, string $label): bool
+    {
+        if (is_link($path) || (file_exists($path) && !is_file($path))) {
+            throw new RecoveryStorageException($label . ' is unsafe or ambiguous.');
+        }
+        if (!file_exists($path)) {
+            return false;
+        }
+        if (!is_readable($path)) {
+            throw new RecoveryStorageException($label . ' is unreadable.');
+        }
+        return true;
+    }
+
+    /**
+     * @param array{manifest: RecoveryManifest, artifacts: array<int, RecoveryArtifactRecord>, complete: bool, identity: string}|null $decoded
+     */
+    private function assertSetResidue(string $setRoot, ?array $decoded, bool $manifestPresent, bool $lifecyclePresent): void
+    {
+        $topLevel = @scandir($setRoot);
+        if ($topLevel === false) {
+            throw new RecoveryStorageException('Recovery set could not be enumerated.');
+        }
+        foreach ($topLevel as $entry) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+            $path = $setRoot . DIRECTORY_SEPARATOR . $entry;
+            if (is_link($path) || !is_dir($path) || !in_array($entry, ['manifest', 'artifacts', 'state'], true)) {
+                throw new RecoveryStorageException('Recovery set contains unclassified physical residue.');
+            }
+        }
+
+        $allowedDirectories = ['manifest', 'artifacts', 'state'];
+        $allowedFiles = [];
+        if ($manifestPresent) {
+            $allowedFiles['manifest/recovery-manifest.json'] = true;
+        }
+        if ($lifecyclePresent) {
+            $allowedFiles['state/recovery-lifecycle.json'] = true;
+        }
+        if ($decoded !== null) {
+            foreach ($decoded['artifacts'] as $artifact) {
+                $domain = $artifact->domainIdentifier();
+                $allowedDirectories[] = 'artifacts/' . $domain;
+                $allowedFiles['artifacts/' . $domain . '/' . $artifact->artifactIdentity() . '.bin'] = true;
+                $allowedFiles['artifacts/' . $domain . '/' . $artifact->artifactIdentity() . '.json'] = true;
+            }
+        }
+
+        $tree = $this->collectTreeEntries($setRoot);
+        foreach ($tree['directories'] as $directory) {
+            if (!in_array($directory, $allowedDirectories, true)) {
+                throw new RecoveryStorageException('Recovery set contains unclassified directory residue.');
+            }
+        }
+        foreach ($tree['files'] as $file) {
+            if (!isset($allowedFiles[$file])) {
+                throw new RecoveryStorageException('Recovery set contains unclassified artifact residue.');
+            }
+        }
+    }
+
+    /** @return array{files: array<int, string>, directories: array<int, string>} */
+    private function collectTreeEntries(string $directory, string $relative = ''): array
+    {
+        $entries = @scandir($directory);
+        if ($entries === false) {
+            throw new RecoveryStorageException('Recovery set residue could not be enumerated.');
+        }
+        $files = [];
+        $directories = [];
+        foreach ($entries as $entry) {
+            if ($entry === '.' || $entry === '..') {
+                continue;
+            }
+            $path = $directory . DIRECTORY_SEPARATOR . $entry;
+            $child = $relative === '' ? $entry : $relative . '/' . $entry;
+            if (is_link($path)) {
+                throw new RecoveryStorageException('Recovery set contains a symlink residue.');
+            }
+            if (is_dir($path)) {
+                $directories[] = $child;
+                $nested = $this->collectTreeEntries($path, $child);
+                $files = [...$files, ...$nested['files']];
+                $directories = [...$directories, ...$nested['directories']];
+                continue;
+            }
+            if (!is_file($path) || !is_readable($path)) {
+                throw new RecoveryStorageException('Recovery set contains unreadable physical residue.');
+            }
+            $files[] = $child;
+        }
+        return ['files' => $files, 'directories' => $directories];
     }
 
     private function canonicalMetadata(RecoveryArtifactRecord $record): string
     {
         return json_encode($record->toArray(), JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+    }
+
+    private function normalizePath(string $path): string
+    {
+        $normalized = rtrim(str_replace('/', DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
+        return DIRECTORY_SEPARATOR === '\\' ? strtolower($normalized) : $normalized;
     }
 
     private function makeDirectory(string $path): void

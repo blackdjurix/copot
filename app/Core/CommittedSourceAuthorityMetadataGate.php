@@ -19,15 +19,7 @@ final class CommittedSourceAuthorityMetadataGate
 
     public function assert(?CommittedLifecycleState $planned = null, ?CommittedSourceAuthorityPlan $plan = null): CommittedLifecycleState
     {
-        if (!$this->committedStore instanceof CommittedLifecycleStateStore
-            || !$this->installationState instanceof InstallationState
-            || !$this->ledger instanceof CoreMigrationLedger
-            || !is_callable($this->connection)
-            || !$this->canonicalSchema instanceof CanonicalSchemaBaselineVerifier
-            || !is_string($this->canonicalSchemaPath)
-            || !$this->operationStore instanceof LifecycleOperationStore) {
-            throw new \RuntimeException('Committed source-authority metadata gate is unavailable.');
-        }
+        $this->assertConfigured();
 
         $activeOperation = $this->operationStore->read();
         if ($plan === null && $activeOperation instanceof LifecycleOperationRecord) {
@@ -45,6 +37,69 @@ final class CommittedSourceAuthorityMetadataGate
             throw new \RuntimeException('Source-authority operation is not in a fresh recovery-ready phase; retry requires canonical reconciliation.');
         }
 
+        return $this->assertPersistedMetadata($planned, $plan);
+    }
+
+    /**
+     * Narrow gate for the only state allowed to create the first recovery
+     * binding for an already-persisted attempt.  This does not relax the
+     * general planning/admission gate: it requires the exact operation and
+     * an otherwise untouched PREPARING journal before capture.
+     */
+    public function assertFirstCapture(
+        ?CommittedLifecycleState $planned,
+        CommittedSourceAuthorityPlan $plan,
+        LifecycleOperationRecord $activeOperation
+    ): CommittedLifecycleState {
+        $this->assertConfigured();
+
+        $persistedOperation = $this->operationStore->read();
+        if (!$persistedOperation instanceof LifecycleOperationRecord
+            || $persistedOperation->toArray() !== $activeOperation->toArray()) {
+            throw new \RuntimeException('Persisted operation changed while entering first recovery capture.');
+        }
+
+        $expected = $plan->operation();
+        if ($activeOperation->operationId() !== $expected->operationId()
+            || $activeOperation->classification() !== $expected->classification()
+            || $activeOperation->targetWebcoreVersion() !== $expected->targetWebcoreVersion()
+            || $activeOperation->releaseIdentity() !== $expected->releaseIdentity()
+            || $activeOperation->archiveSha256() !== $expected->archiveSha256()
+            || $activeOperation->stagingPath() !== $expected->stagingPath()
+            || $activeOperation->payloadIdentity() !== $expected->payloadIdentity()
+            || $activeOperation->applyPlanIdentity() !== $plan->applyPlan()->identity()
+            || $activeOperation->phase() !== LifecycleOperationRecord::PREPARING
+            || $activeOperation->fileCursor() !== 0
+            || $activeOperation->lastVerifiedPath() !== null
+            || $activeOperation->migrationPlanIdentity() !== $plan->migrationPlanIdentity()
+            || $activeOperation->migrationOutcome() !== null
+            || !$activeOperation->isAttemptAware()
+            || $expected->executionAttemptIdentity() === null
+            || $activeOperation->executionAttemptIdentity() !== $expected->executionAttemptIdentity()
+            || $activeOperation->recoveryIdentity() !== null
+            || $activeOperation->recoveryManifestIdentity() !== null
+            || $activeOperation->recoveryState() !== null) {
+            throw new \RuntimeException('Persisted operation is not eligible for canonical first recovery capture.');
+        }
+
+        return $this->assertPersistedMetadata($planned, $plan);
+    }
+
+    private function assertConfigured(): void
+    {
+        if (!$this->committedStore instanceof CommittedLifecycleStateStore
+            || !$this->installationState instanceof InstallationState
+            || !$this->ledger instanceof CoreMigrationLedger
+            || !is_callable($this->connection)
+            || !$this->canonicalSchema instanceof CanonicalSchemaBaselineVerifier
+            || !is_string($this->canonicalSchemaPath)
+            || !$this->operationStore instanceof LifecycleOperationStore) {
+            throw new \RuntimeException('Committed source-authority metadata gate is unavailable.');
+        }
+    }
+
+    private function assertPersistedMetadata(?CommittedLifecycleState $planned, ?CommittedSourceAuthorityPlan $plan): CommittedLifecycleState
+    {
         $current = $this->committedStore->read();
         if (!$current instanceof CommittedLifecycleState || $current->sourceInventoryReference() !== null) {
             throw new \RuntimeException('Committed source-authority metadata is unavailable or source authority is already published.');

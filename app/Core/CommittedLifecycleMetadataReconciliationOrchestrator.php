@@ -77,17 +77,20 @@ final class CommittedLifecycleMetadataReconciliationOrchestrator
         $recoveryPlanIdentity = self::recoveryPlanIdentity($operationId, $scope->identity(), $beforeIdentity, $markerIdentity);
         $recovery = NormalWebcoreRecoveryCaptureService::forOperation($operationId, $recoveryPlanIdentity);
         $application = $this->guard->produceEvidence($recovery, $scope);
+        $provider = new \Copot\Core\BackupRecovery\MySqlRecoveryProvider();
+        $beforeDatabaseIdentity = $provider->stateIdentity($connection, $this->databaseIdentity, $scope);
         $database = new ScopedDatabaseConsistencyEvidence(
             $scope,
             $recovery,
             $application->writerExclusionIdentity(),
-            hash('sha256', json_encode([
-                'scope' => $scope->identity(), 'schema' => $observedSchema,
-                'migration' => $observedMigration, 'tables' => $scope->tablesetFingerprint(),
-            ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
+            $beforeDatabaseIdentity,
             $application->capturedAt(),
             $application->validUntil()
         );
+        $afterDatabaseIdentity = $provider->stateIdentity($connection, $this->databaseIdentity, $scope);
+        if (!hash_equals($beforeDatabaseIdentity, $afterDatabaseIdentity)) {
+            throw new \RuntimeException('Scoped database state changed while composing metadata recovery evidence.');
+        }
         $request = new MetadataRecoveryCaptureRequest(
             $operationId,
             $installation->value(),
@@ -212,7 +215,7 @@ final class CommittedLifecycleMetadataReconciliationOrchestrator
             : $this->guard->produceEvidence($recoveryIdentity, $scope);
         $database = new ScopedDatabaseConsistencyEvidence(
             $scope, $recoveryIdentity, $application->writerExclusionIdentity(),
-            hash('sha256', json_encode(['scope' => $scope->identity(), 'schema' => $schema, 'migration' => $migration, 'tables' => $scope->tablesetFingerprint()], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
+            $provider->stateIdentity($connection, $this->databaseIdentity, $scope),
             $application->capturedAt(), $application->validUntil()
         );
         $scopedMaintenanceEstablished = false;

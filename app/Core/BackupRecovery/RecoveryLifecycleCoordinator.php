@@ -103,23 +103,26 @@ final class RecoveryLifecycleCoordinator
             throw new RecoveryLifecycleException('Durable scoped protection is already active; use durable ownership resume.');
         }
 
-        $lock = $this->mutex->acquire();
+        $reuseAdoptedLock = $this->maintenance->hasAdoptedIdleLock();
+        $lock = $reuseAdoptedLock ? $this->maintenance->activeLock() : $this->mutex->acquire();
         if (!$lock instanceof InstallationLock) {
             throw new RecoveryLifecycleException('Lifecycle mutex is unavailable for READY recovery resume.');
         }
 
         try {
-            $this->maintenance->adopt($lock);
+            if (!$reuseAdoptedLock) {
+                $this->maintenance->adopt($lock);
+            }
             if (!$this->maintenance->enterScopedFresh($identity, $application)) {
                 throw new RecoveryLifecycleException('READY recovery Guard admission could not be established.');
             }
             $this->scopedEvidence[$identity->value()] = ['application' => $application, 'database' => $database];
         } catch (\Throwable $exception) {
             $activeLock = $this->maintenance->activeLock();
-            if ($activeLock === $lock) {
+            if (!$reuseAdoptedLock && $activeLock === $lock) {
                 $this->maintenance->detach();
+                $lock->release();
             }
-            $lock->release();
             throw $exception;
         }
     }

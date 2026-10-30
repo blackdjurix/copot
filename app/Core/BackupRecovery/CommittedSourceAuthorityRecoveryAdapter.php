@@ -55,6 +55,7 @@ final class CommittedSourceAuthorityRecoveryAdapter
         if (!$operation instanceof LifecycleOperationRecord
             || $operation->operationId() !== $plan->operation()->operationId()
             || $operation->executionAttemptIdentity() !== $plan->operation()->executionAttemptIdentity()
+            || $operation->executionAttemptIdentity() === null
             || $operation->classification() !== 'COMMITTED_SOURCE_AUTHORITY_RECONCILIATION'
             || !in_array($operation->phase(), [
                 LifecycleOperationRecord::PREPARING,
@@ -88,15 +89,7 @@ final class CommittedSourceAuthorityRecoveryAdapter
             } else {
                 $decoded = null;
                 if ($allowFreshCapture) {
-                    $expectedRecovery = NormalWebcoreRecoveryCaptureService::forOperation($operation->operationId(), $plan->applyPlan()->identity(), $operation->executionAttemptIdentity());
-                    try {
-                        $decoded = $this->artifacts->readManifest($expectedRecovery);
-                    } catch (RecoveryStorageException $exception) {
-                        if ($exception->getMessage() !== 'Recovery manifest is unavailable.') {
-                            throw new RecoveryLifecycleException('Authority recovery is present but invalid or ambiguous; fresh capture is blocked.', 0, $exception);
-                        }
-                        $decoded = null;
-                    }
+                    $decoded = $this->findFirstCaptureRecoveryEvidence($operation, $plan);
                 } else {
                     try {
                         $decoded = $this->artifacts->findManifestByOperationIdentity($operation->operationId(), $operation->executionAttemptIdentity());
@@ -157,6 +150,119 @@ final class CommittedSourceAuthorityRecoveryAdapter
             }
             throw $exception;
         }
+    }
+
+    /**
+     * Inspect the complete operation-scoped recovery boundary before allowing
+     * fresh capture. The caller already holds the canonical InstallationLock;
+     * this method is read-only and never acquires or releases a mutex.
+     *
+     * @return array{manifest: RecoveryManifest, artifacts: array<int, RecoveryArtifactRecord>, complete: bool, identity: string}|null
+     */
+    private function findFirstCaptureRecoveryEvidence(LifecycleOperationRecord $operation, CommittedSourceAuthorityPlan $plan): ?array
+    {
+        try {
+            $manifests = $this->artifacts->findManifestCandidatesByOperationIdentity($operation->operationId());
+            $records = $this->recoveryStore->findByOperationIdentity($operation->operationId());
+        } catch (\Throwable $exception) {
+            throw new RecoveryLifecycleException('Authority recovery evidence is unavailable or ambiguous; fresh capture is blocked.', 0, $exception);
+        }
+
+        $expected = NormalWebcoreRecoveryCaptureService::forOperation(
+            $operation->operationId(),
+            $plan->applyPlan()->identity(),
+            $operation->executionAttemptIdentity()
+        );
+        $manifestsByRecovery = [];
+        foreach ($manifests as $decoded) {
+            $key = $decoded['manifest']->recoveryIdentity()->value();
+            if (isset($manifestsByRecovery[$key])) {
+                throw new RecoveryLifecycleException('Authority recovery contains duplicate manifest identities.');
+            }
+            $manifestsByRecovery[$key] = $decoded;
+        }
+
+        $recordsByRecovery = [];
+        foreach ($records as $record) {
+            $key = $record->recoveryIdentity()->value();
+            if (isset($recordsByRecovery[$key])) {
+                throw new RecoveryLifecycleException('Authority recovery contains duplicate lifecycle identities.');
+            }
+            $recordsByRecovery[$key] = $record;
+        }
+
+        $ready = null;
+        foreach ($recordsByRecovery as $key => $record) {
+            $decoded = $manifestsByRecovery[$key] ?? null;
+            if ($record->state() === RecoveryLifecycleState::CLEANED) {
+                if ($decoded !== null) {
+                    $this->assertManifestLifecycleMatch($decoded['manifest'], $record);
+                }
+                continue;
+            }
+            if ($decoded === null) {
+                throw new RecoveryLifecycleException('Authority recovery contains unresolved lifecycle-only evidence.');
+            }
+            $this->assertManifestLifecycleMatch($decoded['manifest'], $record);
+            if (!$this->isExactReadyFirstCaptureEvidence($decoded, $record, $operation, $plan, $expected)) {
+                throw new RecoveryLifecycleException('Authority recovery contains conflicting or unresolved evidence.');
+            }
+            if ($ready !== null) {
+                throw new RecoveryLifecycleException('Authority recovery contains multiple READY candidates.');
+            }
+            $ready = $decoded;
+        }
+
+        foreach ($manifestsByRecovery as $key => $decoded) {
+            $record = $recordsByRecovery[$key] ?? null;
+            if (!$record instanceof RecoveryLifecycleRecord) {
+                throw new RecoveryLifecycleException('Authority recovery manifest has no matching lifecycle record.');
+            }
+            if ($record->state() === RecoveryLifecycleState::CLEANED) {
+                continue;
+            }
+            if (!$this->isExactReadyFirstCaptureEvidence($decoded, $record, $operation, $plan, $expected)) {
+                throw new RecoveryLifecycleException('Authority recovery contains conflicting or unresolved manifest evidence.');
+            }
+            if ($ready !== null && $ready['manifest']->recoveryIdentity()->value() !== $key) {
+                throw new RecoveryLifecycleException('Authority recovery contains multiple READY candidates.');
+            }
+            $ready = $decoded;
+        }
+
+        return $ready;
+    }
+
+    private function assertManifestLifecycleMatch(RecoveryManifest $manifest, RecoveryLifecycleRecord $record): void
+    {
+        if ($manifest->recoveryIdentity()->value() !== $record->recoveryIdentity()->value()
+            || $manifest->identity() !== $record->manifestIdentity()
+            || $manifest->operationIdentity() !== $record->operationIdentity()
+            || $manifest->executionAttemptIdentity() !== $record->executionAttemptIdentity()) {
+            throw new RecoveryLifecycleException('Authority recovery manifest and lifecycle identities conflict.');
+        }
+    }
+
+    /** @param array{manifest: RecoveryManifest, artifacts: array<int, RecoveryArtifactRecord>, complete: bool, identity: string} $decoded */
+    private function isExactReadyFirstCaptureEvidence(
+        array $decoded,
+        RecoveryLifecycleRecord $record,
+        LifecycleOperationRecord $operation,
+        CommittedSourceAuthorityPlan $plan,
+        RecoveryIdentity $expected
+    ): bool {
+        $manifest = $decoded['manifest'];
+        return $decoded['complete'] === true
+            && $manifest->recoveryIdentity()->value() === $expected->value()
+            && $manifest->operationIdentity() === $operation->operationId()
+            && $manifest->executionAttemptIdentity() === $operation->executionAttemptIdentity()
+            && $manifest->applyPlanIdentity() === $plan->applyPlan()->identity()
+            && $record->recoveryIdentity()->value() === $expected->value()
+            && $record->operationIdentity() === $operation->operationId()
+            && $record->executionAttemptIdentity() === $operation->executionAttemptIdentity()
+            && $record->state() === RecoveryLifecycleState::READY
+            && $record->captureComplete()
+            && !$record->mutationStarted();
     }
 
     private function bindOperation(LifecycleOperationRecord $operation, RecoveryIdentity $recovery, string $manifestIdentity): LifecycleOperationRecord

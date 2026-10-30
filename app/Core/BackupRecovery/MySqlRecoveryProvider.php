@@ -41,6 +41,7 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
             if (!$this->verifyCaptured($artifact)->isValid()) {
                 throw new DatabaseRecoveryException('Database recovery artifact failed self-verification.');
             }
+            $this->assertScopedConsistencyEvidence($context, $bundle, $artifact);
             return $artifact;
         } catch (DatabaseRecoveryException $exception) {
             throw $exception;
@@ -249,6 +250,32 @@ final class MySqlRecoveryProvider implements DatabaseRecoveryProvider
         ];
         if ($artifact->scope() !== null) { $identity['scope'] = $artifact->scope()->identity(); }
         return hash('sha256', json_encode($identity, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+    }
+
+    /** @param array<string, mixed> $bundle */
+    private function assertScopedConsistencyEvidence(DatabaseCaptureContext $context, array $bundle, DatabaseRecoveryArtifact $artifact): void
+    {
+        $scope = $context->scope();
+        if (!$scope instanceof DatabaseScope) {
+            return;
+        }
+        $evidence = $context->consistencyEvidence();
+        if (!$evidence instanceof ScopedDatabaseConsistencyEvidence
+            || !$evidence->isValidAt()
+            || $evidence->scope()->identity() !== $scope->identity()
+            || $artifact->databaseIdentity() !== $context->databaseIdentity()
+            || !$artifact->scope() instanceof DatabaseScope
+            || $artifact->scope()->identity() !== $scope->identity()) {
+            throw new DatabaseRecoveryException('Scoped database consistency evidence is missing, stale, or mismatched.');
+        }
+
+        // This is intentionally the exact producer commitment used by
+        // stateIdentity(): database identity + scope + schema + data + ledger.
+        // No second schema/data/table hash domain is accepted here.
+        $capturedStateIdentity = $this->stateIdentityFromBundle($bundle);
+        if (!hash_equals($evidence->schemaStabilityIdentity(), $capturedStateIdentity)) {
+            throw new DatabaseRecoveryException('Scoped database state commitment changed before capture completion.');
+        }
     }
 
     /** @param array<int, string> $names */

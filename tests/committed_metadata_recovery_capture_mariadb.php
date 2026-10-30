@@ -15,6 +15,7 @@ use Copot\Core\BackupRecovery\RecoveryArtifactStore;
 use Copot\Core\BackupRecovery\RecoveryLifecycleCoordinator;
 use Copot\Core\BackupRecovery\RecoveryLifecycleStore;
 use Copot\Core\BackupRecovery\RecoveryRootResolver;
+use Copot\Core\BackupRecovery\RecoveryStoragePathPolicy;
 use Copot\Core\BackupRecovery\RecoveryStorageRoot;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
 use Copot\Core\BackupRecovery\UnavailableDatabaseQuiescence;
@@ -78,6 +79,7 @@ try {
     $scope = DatabaseScope::fromOwnershipCatalog($installation->value(), $database, '', DatabaseTableOwnershipCatalog::current());
     $storageRoot = (new RecoveryRootResolver($root, $recovery, [$storage], [$public]))->resolve();
     $rootPath = $storageRoot->path();
+    $pathPolicy = new RecoveryStoragePathPolicy($storageRoot);
     $recoveryStore = new RecoveryLifecycleStore($storageRoot);
     $artifacts = new RecoveryArtifactStore($storageRoot);
     $mutex = new InstallationMutex($storage);
@@ -85,12 +87,13 @@ try {
     $coordinator = new RecoveryLifecycleCoordinator($recoveryStore, $mutex, new UnavailableDatabaseQuiescence(), $guard);
     $pathGuard = new FilesystemRecoveryPathGuard(new LiveTreePathGuard($root));
     $connection = static fn (): PDO => new PDO("mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4", $username, $password, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, PDO::ATTR_EMULATE_PREPARES => false]);
-    $capture = new NormalWebcoreRecoveryCaptureService($coordinator, $recoveryStore, $artifacts, new FilesystemRecoveryDomain($pathGuard, $artifacts), new LifecycleRecoveryDomain($committedStore, $pathGuard), new InstalledLockRecoveryDomain($installationState, $pathGuard), new MySqlRecoveryProvider(), new UnavailableDatabaseQuiescence(), $connection, $connection);
+    $provider = new MySqlRecoveryProvider();
+    $capture = new NormalWebcoreRecoveryCaptureService($coordinator, $recoveryStore, $artifacts, new FilesystemRecoveryDomain($pathGuard, $artifacts), new LifecycleRecoveryDomain($committedStore, $pathGuard), new InstalledLockRecoveryDomain($installationState, $pathGuard), $provider, new UnavailableDatabaseQuiescence(), $connection, $connection);
     $operationId = 'metadata-reconciliation-mariadb-' . bin2hex(random_bytes(8));
     $recoveryPlanIdentity = hash('sha256', 'mariadb-recovery-plan:' . $operationId);
     $recoveryIdentity = NormalWebcoreRecoveryCaptureService::forOperation($operationId, $recoveryPlanIdentity);
     $application = $guard->produceEvidence($recoveryIdentity, $scope, 300);
-    $databaseEvidence = new ScopedDatabaseConsistencyEvidence($scope, $recoveryIdentity, $application->writerExclusionIdentity(), hash('sha256', 'schema-stability:' . $scope->identity()), $application->capturedAt(), $application->validUntil());
+    $databaseEvidence = new ScopedDatabaseConsistencyEvidence($scope, $recoveryIdentity, $application->writerExclusionIdentity(), $provider->stateIdentity($pdo, $database, $scope), $application->capturedAt(), $application->validUntil());
     $ledgerIdentity = CoreMigrationStateIdentity::fromRecords((new CoreMigrationLedger())->records($pdo));
     $request = new MetadataRecoveryCaptureRequest($operationId, $installation->value(), '', hash('sha256', 'deployment:' . $root), hash('sha256', 'target-package:' . $operationId), 'copot-v0.13.0', hash('sha256', 'archive:' . $operationId), $recoveryPlanIdentity, CommittedLifecycleMetadataReconciliationService::stateIdentity($committedStore->read()), $ledgerIdentity, $database, $scope, $databaseEvidence, $application);
     $session = $capture->captureMetadata($request);
@@ -111,7 +114,7 @@ try {
     $interruptedPlan = hash('sha256', 'interrupted-plan:' . $interruptedOperation);
     $interruptedRecovery = NormalWebcoreRecoveryCaptureService::forOperation($interruptedOperation, $interruptedPlan);
     $interruptedApplication = $guard->produceEvidence($interruptedRecovery, $scope, 300);
-    $interruptedDatabase = new ScopedDatabaseConsistencyEvidence($scope, $interruptedRecovery, $interruptedApplication->writerExclusionIdentity(), hash('sha256', 'schema-stability:' . $scope->identity()), $interruptedApplication->capturedAt(), $interruptedApplication->validUntil());
+    $interruptedDatabase = new ScopedDatabaseConsistencyEvidence($scope, $interruptedRecovery, $interruptedApplication->writerExclusionIdentity(), $provider->stateIdentity($pdo, $database, $scope), $interruptedApplication->capturedAt(), $interruptedApplication->validUntil());
     $interruptedRequest = new MetadataRecoveryCaptureRequest($interruptedOperation, $request->installationIdentity(), $request->namespaceIdentity(), $request->deploymentIdentity(), hash('sha256', 'target-package:' . $interruptedOperation), $request->targetReleaseIdentity(), hash('sha256', 'archive:' . $interruptedOperation), $interruptedPlan, $request->preLifecycleIdentity(), $request->migrationLedgerIdentity(), $request->databaseIdentity(), $scope, $interruptedDatabase, $interruptedApplication);
     $beforeInterruptedStateIdentity = CommittedLifecycleMetadataReconciliationService::stateIdentity($committedStore->read());
     $beforeInterruptedMarkerIdentity = CommittedLifecycleMetadataReconciliationService::markerIdentity($installationState->readMarker());
@@ -125,9 +128,9 @@ try {
     $assert(CommittedLifecycleMetadataReconciliationService::stateIdentity($committedStore->read()) === $beforeInterruptedStateIdentity, 'Interrupted capture changed committed metadata.');
     $assert(CommittedLifecycleMetadataReconciliationService::markerIdentity($installationState->readMarker()) === $beforeInterruptedMarkerIdentity, 'Interrupted capture changed installed marker.');
     $assert(!$guard->isActive($interruptedRecovery), 'Guard was not released after pre-mutation capture interruption.');
-    $assert(!is_dir($rootPath . DIRECTORY_SEPARATOR . 'recovery-sets' . DIRECTORY_SEPARATOR . $interruptedRecovery->value() . DIRECTORY_SEPARATOR . 'artifacts'), 'Interrupted capture left a false artifact publication.');
+    $assert(!is_dir($pathPolicy->recoverySetRoot($interruptedRecovery) . DIRECTORY_SEPARATOR . 'artifacts'), 'Interrupted capture left a false artifact publication.');
     $resumeApplication = $guard->produceEvidence($interruptedRecovery, $scope, 300);
-    $resumeDatabase = new ScopedDatabaseConsistencyEvidence($scope, $interruptedRecovery, $resumeApplication->writerExclusionIdentity(), hash('sha256', 'schema-stability:' . $scope->identity()), $resumeApplication->capturedAt(), $resumeApplication->validUntil());
+    $resumeDatabase = new ScopedDatabaseConsistencyEvidence($scope, $interruptedRecovery, $resumeApplication->writerExclusionIdentity(), $provider->stateIdentity($pdo, $database, $scope), $resumeApplication->capturedAt(), $resumeApplication->validUntil());
     $resumeRequest = new MetadataRecoveryCaptureRequest($interruptedOperation, $request->installationIdentity(), $request->namespaceIdentity(), $request->deploymentIdentity(), hash('sha256', 'target-package:' . $interruptedOperation), $request->targetReleaseIdentity(), hash('sha256', 'archive:' . $interruptedOperation), $interruptedPlan, $request->preLifecycleIdentity(), $request->migrationLedgerIdentity(), $request->databaseIdentity(), $scope, $resumeDatabase, $resumeApplication);
     $resume = $capture->resumeMetadata($resumeRequest);
     $resumedRecord = $recoveryStore->read($interruptedRecovery);
@@ -143,13 +146,13 @@ try {
     $failedPlan = hash('sha256', 'failure-plan:' . $failedOperation);
     $failedRecovery = NormalWebcoreRecoveryCaptureService::forOperation($failedOperation, $failedPlan);
     $failedApplication = $guard->produceEvidence($failedRecovery, $scope, 300);
-    $failedDatabase = new ScopedDatabaseConsistencyEvidence($scope, $failedRecovery, $failedApplication->writerExclusionIdentity(), hash('sha256', 'schema-stability:' . $scope->identity()), $failedApplication->capturedAt(), $failedApplication->validUntil());
+    $failedDatabase = new ScopedDatabaseConsistencyEvidence($scope, $failedRecovery, $failedApplication->writerExclusionIdentity(), $provider->stateIdentity($pdo, $database, $scope), $failedApplication->capturedAt(), $failedApplication->validUntil());
     $failedRequest = new MetadataRecoveryCaptureRequest($failedOperation, $request->installationIdentity(), $request->namespaceIdentity(), $request->deploymentIdentity(), hash('sha256', 'target-package:' . $failedOperation), $request->targetReleaseIdentity(), hash('sha256', 'archive:' . $failedOperation), $failedPlan, $request->preLifecycleIdentity(), $request->migrationLedgerIdentity(), $request->databaseIdentity(), $scope, $failedDatabase, $failedApplication);
     $pdo->exec('DROP TABLE core_migration_history');
     $captureFailed = false;
     try { $capture->captureMetadata($failedRequest); } catch (Throwable) { $captureFailed = true; }
     $assert($captureFailed && !$guard->isActive($failedRecovery), 'Actual database capture failure did not release writer exclusion.');
-    $assert(!is_dir($rootPath . DIRECTORY_SEPARATOR . 'recovery-sets' . DIRECTORY_SEPARATOR . $failedRecovery->value()), 'Failed capture left recovery artifacts behind without a lifecycle record.');
+    $assert(!is_dir($pathPolicy->recoverySetRoot($failedRecovery)), 'Failed capture left recovery artifacts behind without a lifecycle record.');
     $missing = $root . DIRECTORY_SEPARATOR . 'missing-recovery';
     $threw = false; try { (new RecoveryRootResolver($root, $missing, [$storage], [$public]))->resolve(); } catch (Throwable) { $threw = true; }
     $assert($threw, 'Missing recovery root was accepted.');

@@ -153,11 +153,7 @@ final class PackageLifecycleService
             $scope,
             $recovery,
             $guardEvidence->writerExclusionIdentity(),
-            hash('sha256', json_encode([
-                'scope' => $scope->identity(),
-                'state_identity' => $before,
-                'tables' => $scope->tablesetFingerprint(),
-            ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
+            $before,
             $guardEvidence->capturedAt(),
             $guardEvidence->validUntil()
         );
@@ -186,6 +182,146 @@ final class PackageLifecycleService
             $plan->operation()->executionAttemptIdentity()
         );
         return $this->prepareCommittedSourceAuthority($committed, $installation, $manifest, $actualTarget, $scope, $ownershipProof, $request, $migrationPlan, $preservationPolicy);
+    }
+
+    /**
+     * Canonical first-capture continuation for one already-persisted attempt.
+     * This route never creates an operation or execution attempt.  It only
+     * accepts an untouched PREPARING journal and lets the recovery adapter
+     * establish the first exact recovery binding.
+     */
+    public function continueCommittedSourceAuthorityFirstCaptureFromRuntime(
+        PackageManifest $manifest,
+        CanonicalTargetInventory $actualTarget,
+        InstallerOwnershipProof $ownershipProof,
+        ?CoreMigrationPlan $migrationPlan = null,
+        ?CommittedSourceAuthorityPreservationPolicy $preservationPolicy = null
+    ): CommittedSourceAuthorityPreparation {
+        if (!$this->scopedMaintenanceGuard instanceof InstallationScopedMaintenanceGuard
+            || !$this->databaseOwnershipCatalog instanceof DatabaseTableOwnershipCatalog
+            || !is_string($this->authorityDatabaseIdentity)
+            || !is_string($this->authorityNamespaceIdentity)
+            || !is_string($this->authorityDeploymentIdentity)
+            || !is_string($this->authorityStoragePath)
+            || !$this->operationStore instanceof LifecycleOperationStore) {
+            throw new \RuntimeException('Committed source-authority first-capture composition is unavailable.');
+        }
+
+        $preflightLock = $this->mutex->acquire();
+        if (!$preflightLock instanceof InstallationLock) {
+            throw new \RuntimeException('Installation mutex is unavailable for first-capture continuation.');
+        }
+        $adopted = false;
+        try {
+            // Transfer the exact preflight lock before any recovery admission.
+            // The Guard/session now owns the same InstallationLock object; no
+            // recovery path may acquire a nested lifecycle mutex.
+            $this->scopedMaintenanceGuard->adopt($preflightLock);
+            $adopted = true;
+            $installation = (new InstallationIdentityStore($this->authorityStoragePath))->read();
+            $committed = $this->committedStore?->read();
+            $existingOperation = $this->operationStore->read();
+            if (!$installation instanceof InstallationIdentity
+                || !$committed instanceof CommittedLifecycleState
+                || !$existingOperation instanceof LifecycleOperationRecord) {
+                throw new \RuntimeException('An existing lifecycle operation is required for first-capture continuation.');
+            }
+            if ($ownershipProof->installationId() !== $installation->value() || !$ownershipProof->isVerified()) {
+                throw new \RuntimeException('Installer ownership proof is invalid for the current installation.');
+            }
+
+            $connection = ($this->connection)();
+            $tables = new DatabaseTableNames($this->authorityNamespaceIdentity);
+            $generationEvidence = (new CoreSchemaGenerationStore($tables))->readIfPresent($connection, $this->authorityNamespaceIdentity);
+            $expectedGeneration = (new CoreSchemaMaterializer())->generationIdentity($this->canonicalSchemaPath);
+            if (!is_array($generationEvidence)
+                || ($generationEvidence['namespace'] ?? null) !== $this->authorityNamespaceIdentity
+                || ($generationEvidence['compatibility_state'] ?? null) !== 'compatible'
+                || ($generationEvidence['schema_generation'] ?? null) !== $expectedGeneration) {
+                throw new \RuntimeException('Verified canonical schema-generation evidence is unavailable or mismatched.');
+            }
+
+            $scope = DatabaseScope::fromOwnershipCatalog(
+                $installation->value(),
+                $this->authorityDatabaseIdentity,
+                $this->authorityNamespaceIdentity,
+                $this->databaseOwnershipCatalog,
+                [],
+                $generationEvidence
+            );
+            $candidate = $this->planCommittedSourceAuthorityCandidate(
+                $committed,
+                $installation,
+                $manifest,
+                $actualTarget,
+                $scope,
+                $ownershipProof,
+                $migrationPlan,
+                $preservationPolicy
+            );
+            // Bind the deterministic candidate to the exact persisted
+            // operation before the first-capture gate and recovery identity
+            // are evaluated. This makes the persisted execution attempt
+            // authoritative instead of allowing a historical/null attempt.
+            $plan = $candidate->withOperation($existingOperation);
+            $this->sourceAuthorityMetadataGate()->assertFirstCapture($committed, $plan, $existingOperation);
+
+            $recovery = NormalWebcoreRecoveryCaptureService::forOperation(
+                $plan->operation()->operationId(),
+                $plan->applyPlan()->identity(),
+                $plan->operation()->executionAttemptIdentity()
+            );
+            $guardEvidence = $this->scopedMaintenanceGuard->produceEvidence($recovery, $scope);
+            $provider = new MySqlRecoveryProvider();
+            $before = $provider->stateIdentity($connection, $scope->databaseIdentity(), $scope);
+            $databaseEvidence = new ScopedDatabaseConsistencyEvidence(
+                $scope,
+                $recovery,
+                $guardEvidence->writerExclusionIdentity(),
+                $before,
+                $guardEvidence->capturedAt(),
+                $guardEvidence->validUntil()
+            );
+            $after = $provider->stateIdentity($connection, $scope->databaseIdentity(), $scope);
+            if (!hash_equals($before, $after)) {
+                throw new \RuntimeException('Scoped database state changed while composing first-capture evidence.');
+            }
+
+            $request = new NormalWebcoreRecoveryCaptureRequest(
+                $plan->operation()->operationId(),
+                $installation->value(),
+                $scope->namespaceIdentity(),
+                $plan->committedLifecycleIdentity(),
+                $plan->sourcePlan()->packageEvidenceIdentity(),
+                $plan->operation()->releaseIdentity(),
+                $plan->operation()->archiveSha256(),
+                $plan->applyPlan(),
+                $plan->committedLifecycleIdentity(),
+                $plan->migrationStateIdentity(),
+                $scope->databaseIdentity(),
+                null,
+                $scope,
+                $databaseEvidence,
+                $guardEvidence,
+                $plan->sourcePlan(),
+                false,
+                $existingOperation->executionAttemptIdentity()
+            );
+            $preparation = $this->prepareSourceAuthorityPlan($plan, $request, true, false);
+            // The returned preparation/session owns the adopted lock until
+            // canonical closure. Do not release it here.
+            $adopted = false;
+            return $preparation;
+        } catch (\Throwable $exception) {
+            // If admission/session cleanup did not consume the adopted lock,
+            // detach and release exactly that lock. InstallationLock::release
+            // is idempotent, which also covers Guard-side failure cleanup.
+            if ($adopted && $this->scopedMaintenanceGuard->activeLock() === $preflightLock) {
+                $this->scopedMaintenanceGuard->detach();
+            }
+            $preflightLock->release();
+            throw $exception;
+        }
     }
 
     /** Settles only a proven PREPARING operation before its mutation boundary. */
@@ -219,7 +355,23 @@ final class PackageLifecycleService
             throw new \RuntimeException('Committed source-authority planning is unavailable.');
         }
         $current = $this->sourceAuthorityMetadataGate()->assert($committed);
-        return $this->sourceAuthorityPlanner->plan($current, $installation, $manifest, $actualTarget, $databaseScope, $ownershipProof, $migrationPlan, $preservationPolicy);
+        return $this->planCommittedSourceAuthorityCandidate($current, $installation, $manifest, $actualTarget, $databaseScope, $ownershipProof, $migrationPlan, $preservationPolicy);
+    }
+
+    private function planCommittedSourceAuthorityCandidate(
+        CommittedLifecycleState $committed,
+        InstallationIdentity $installation,
+        PackageManifest $manifest,
+        CanonicalTargetInventory $actualTarget,
+        DatabaseScope $databaseScope,
+        InstallerOwnershipProof $ownershipProof,
+        ?CoreMigrationPlan $migrationPlan = null,
+        ?CommittedSourceAuthorityPreservationPolicy $preservationPolicy = null
+    ): CommittedSourceAuthorityPlan {
+        if (!$this->sourceAuthorityPlanner instanceof CommittedSourceAuthorityPlanner) {
+            throw new \RuntimeException('Committed source-authority planning is unavailable.');
+        }
+        return $this->sourceAuthorityPlanner->plan($committed, $installation, $manifest, $actualTarget, $databaseScope, $ownershipProof, $migrationPlan, $preservationPolicy);
     }
 
     /**
@@ -302,7 +454,8 @@ final class PackageLifecycleService
     private function prepareSourceAuthorityPlan(
         CommittedSourceAuthorityPlan $plan,
         NormalWebcoreRecoveryCaptureRequest $recoveryRequest,
-        bool $allowFreshCapture
+        bool $allowFreshCapture,
+        bool $allowOperationCreation = true
     ): CommittedSourceAuthorityPreparation {
         if (!$this->sourceAuthorityRecovery instanceof CommittedSourceAuthorityRecoveryAdapter
             || !$this->operationStore instanceof LifecycleOperationStore) {
@@ -311,7 +464,7 @@ final class PackageLifecycleService
         $current = $this->operationStore->read();
         $created = false;
         if ($current === null) {
-            if (!$allowFreshCapture) {
+            if (!$allowFreshCapture || !$allowOperationCreation) {
                 throw new \RuntimeException('Cannot resume committed source authority without a persisted operation.');
             }
             $operation = $plan->operation();
@@ -334,7 +487,21 @@ final class PackageLifecycleService
         }
         $plan = $plan->withOperation($current);
         $recoveryRequest = $recoveryRequest->withExecutionAttemptIdentity($current->executionAttemptIdentity());
-        $captured = $this->sourceAuthorityRecovery->captureOrRehydrate($plan, $recoveryRequest, $created);
+        $existingFirstCapture = !$created
+            && $allowFreshCapture
+            && $current->phase() === LifecycleOperationRecord::PREPARING
+            && $current->fileCursor() === 0
+            && $current->lastVerifiedPath() === null
+            && $current->migrationOutcome() === null
+            && $current->recoveryIdentity() === null
+            && $current->recoveryManifestIdentity() === null
+            && $current->recoveryState() === null
+            && $current->isAttemptAware()
+            && $plan->operation()->executionAttemptIdentity() === $current->executionAttemptIdentity();
+        if ($allowFreshCapture && !$created && !$existingFirstCapture) {
+            throw new \RuntimeException('Existing operation is not eligible for first recovery capture.');
+        }
+        $captured = $this->sourceAuthorityRecovery->captureOrRehydrate($plan, $recoveryRequest, $created || $existingFirstCapture);
         $binding = $captured['binding'];
         try {
             $admission = $current->phase() === LifecycleOperationRecord::PREPARING
