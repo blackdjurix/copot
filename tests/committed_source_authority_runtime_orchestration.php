@@ -13,6 +13,12 @@ $assert = static function (bool $condition, string $message) use (&$assertions):
 };
 
 $assert(str_contains($service, 'prepareCommittedSourceAuthorityFromRuntime'), 'Production source-authority orchestration entrypoint is missing.');
+$assert(str_contains($service, 'resumeCommittedSourceAuthorityFromRuntime'), 'Explicit runtime READY-resume entrypoint is missing.');
+$assert(str_contains($service, 'Persisted operation is not an exact PREPARING/READY source-authority continuation.'), 'Runtime READY resume does not enforce exact persisted PREPARING/READY state.');
+$assert(str_contains($service, '$boundPlan = $candidate->withOperation($existingOperation);'), 'Runtime READY resume does not bind the deterministic candidate to the exact persisted operation.');
+$assert(str_contains($service, '$this->sourceAuthorityMetadataGate()->assert($committed, $boundPlan);'), 'Runtime READY resume does not use the plan-aware metadata gate.');
+$assert(str_contains($service, 'return $this->resumeCommittedSourceAuthority($boundPlan, $request);'), 'Runtime READY resume does not delegate to the canonical resume path.');
+$assert(str_contains($service, '$existingOperation->executionAttemptIdentity()'), 'Runtime READY resume does not carry the persisted execution attempt identity.');
 $assert(str_contains($service, 'DatabaseScope::fromOwnershipCatalog'), 'Orchestration does not resolve the canonical database scope.');
 $assert(str_contains($service, 'CoreSchemaGenerationStore'), 'Orchestration does not read canonical schema-generation evidence.');
 $assert(str_contains($service, 'CoreSchemaMaterializer())->generationIdentity'), 'Orchestration does not verify the authoritative schema-generation identity.');

@@ -8,6 +8,7 @@ use Copot\Core\BackupRecovery\CommittedSourceAuthorityRecoveryAdapter;
 use Copot\Core\BackupRecovery\NormalWebcoreRecoveryCaptureRequest;
 use Copot\Core\BackupRecovery\RecoveryArtifactStore;
 use Copot\Core\BackupRecovery\RecoveryLifecycleCoordinator;
+use Copot\Core\BackupRecovery\RecoveryLifecycleState;
 use Copot\Core\BackupRecovery\DatabaseScope;
 use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
 use Copot\Core\BackupRecovery\MySqlRecoveryProvider;
@@ -182,6 +183,147 @@ final class PackageLifecycleService
             $plan->operation()->executionAttemptIdentity()
         );
         return $this->prepareCommittedSourceAuthority($committed, $installation, $manifest, $actualTarget, $scope, $ownershipProof, $request, $migrationPlan, $preservationPolicy);
+    }
+
+    /**
+     * Rehydrates one exact persisted PREPARING/READY authority operation from
+     * runtime evidence. Fresh planning remains rejected while an operation is
+     * active; this route binds the deterministic candidate to that operation
+     * before entering the plan-aware metadata gate.
+     */
+    public function resumeCommittedSourceAuthorityFromRuntime(
+        PackageManifest $manifest,
+        CanonicalTargetInventory $actualTarget,
+        InstallerOwnershipProof $ownershipProof,
+        ?CoreMigrationPlan $migrationPlan = null,
+        ?CommittedSourceAuthorityPreservationPolicy $preservationPolicy = null
+    ): CommittedSourceAuthorityPreparation {
+        if (!$this->sourceAuthorityPlanner instanceof CommittedSourceAuthorityPlanner
+            || !$this->sourceAuthorityRecovery instanceof CommittedSourceAuthorityRecoveryAdapter
+            || !$this->operationStore instanceof LifecycleOperationStore
+            || !$this->scopedMaintenanceGuard instanceof InstallationScopedMaintenanceGuard
+            || !$this->databaseOwnershipCatalog instanceof DatabaseTableOwnershipCatalog
+            || !is_string($this->authorityStoragePath)
+            || !is_string($this->authorityDatabaseIdentity)
+            || !is_string($this->authorityNamespaceIdentity)) {
+            throw new \RuntimeException('Committed source-authority runtime resume composition is unavailable.');
+        }
+
+        $installation = (new InstallationIdentityStore($this->authorityStoragePath))->read();
+        $committed = $this->committedStore?->read();
+        $existingOperation = $this->operationStore->read();
+        if (!$installation instanceof InstallationIdentity
+            || !$committed instanceof CommittedLifecycleState
+            || !$existingOperation instanceof LifecycleOperationRecord) {
+            throw new \RuntimeException('An existing committed source-authority operation is required for runtime resume.');
+        }
+        if ($ownershipProof->installationId() !== $installation->value() || !$ownershipProof->isVerified()) {
+            throw new \RuntimeException('Installer ownership proof is invalid for the current installation.');
+        }
+
+        $connection = ($this->connection)();
+        $tables = new DatabaseTableNames($this->authorityNamespaceIdentity);
+        $generationEvidence = (new CoreSchemaGenerationStore($tables))->readIfPresent($connection, $this->authorityNamespaceIdentity);
+        $expectedGeneration = (new CoreSchemaMaterializer())->generationIdentity($this->canonicalSchemaPath);
+        if (!is_array($generationEvidence)
+            || ($generationEvidence['namespace'] ?? null) !== $this->authorityNamespaceIdentity
+            || ($generationEvidence['compatibility_state'] ?? null) !== 'compatible'
+            || ($generationEvidence['schema_generation'] ?? null) !== $expectedGeneration) {
+            throw new \RuntimeException('Verified canonical schema-generation evidence is unavailable or mismatched.');
+        }
+
+        $scope = DatabaseScope::fromOwnershipCatalog(
+            $installation->value(),
+            $this->authorityDatabaseIdentity,
+            $this->authorityNamespaceIdentity,
+            $this->databaseOwnershipCatalog,
+            [],
+            $generationEvidence
+        );
+        $candidate = $this->planCommittedSourceAuthorityCandidate(
+            $committed,
+            $installation,
+            $manifest,
+            $actualTarget,
+            $scope,
+            $ownershipProof,
+            $migrationPlan,
+            $preservationPolicy
+        );
+        if (!$candidate->authorityOnly() || $candidate->migrationPlanIdentity() !== null) {
+            throw new \RuntimeException('Runtime READY resume requires an AUTHORITY_ONLY plan without a migration plan.');
+        }
+
+        $expectedOperation = $candidate->operation();
+        if ($existingOperation->operationId() !== $expectedOperation->operationId()
+            || $existingOperation->classification() !== $expectedOperation->classification()
+            || $existingOperation->targetWebcoreVersion() !== $expectedOperation->targetWebcoreVersion()
+            || $existingOperation->releaseIdentity() !== $expectedOperation->releaseIdentity()
+            || $existingOperation->archiveSha256() !== $expectedOperation->archiveSha256()
+            || $existingOperation->stagingPath() !== $expectedOperation->stagingPath()
+            || $existingOperation->payloadIdentity() !== $expectedOperation->payloadIdentity()
+            || $existingOperation->applyPlanIdentity() !== $candidate->applyPlan()->identity()
+            || $existingOperation->migrationPlanIdentity() !== $candidate->migrationPlanIdentity()
+            || $existingOperation->phase() !== LifecycleOperationRecord::PREPARING
+            || $existingOperation->fileCursor() !== 0
+            || $existingOperation->lastVerifiedPath() !== null
+            || $existingOperation->migrationOutcome() !== null
+            || !$existingOperation->isAttemptAware()
+            || $existingOperation->recoveryIdentity() === null
+            || $existingOperation->recoveryManifestIdentity() === null
+            || $existingOperation->recoveryState() !== RecoveryLifecycleState::READY) {
+            throw new \RuntimeException('Persisted operation is not an exact PREPARING/READY source-authority continuation.');
+        }
+
+        $boundPlan = $candidate->withOperation($existingOperation);
+        $this->sourceAuthorityMetadataGate()->assert($committed, $boundPlan);
+        $recovery = NormalWebcoreRecoveryCaptureService::forOperation(
+            $existingOperation->operationId(),
+            $boundPlan->applyPlan()->identity(),
+            $existingOperation->executionAttemptIdentity()
+        );
+        if ($existingOperation->recoveryIdentity() !== $recovery->value()) {
+            throw new \RuntimeException('Persisted recovery identity does not match the reconstructed operation and attempt.');
+        }
+
+        $guardEvidence = $this->scopedMaintenanceGuard->produceEvidence($recovery, $scope);
+        $provider = new MySqlRecoveryProvider();
+        $before = $provider->stateIdentity($connection, $scope->databaseIdentity(), $scope);
+        $databaseEvidence = new ScopedDatabaseConsistencyEvidence(
+            $scope,
+            $recovery,
+            $guardEvidence->writerExclusionIdentity(),
+            $before,
+            $guardEvidence->capturedAt(),
+            $guardEvidence->validUntil()
+        );
+        $after = $provider->stateIdentity($connection, $scope->databaseIdentity(), $scope);
+        if (!hash_equals($before, $after)) {
+            throw new \RuntimeException('Scoped database state changed while composing source-authority resume evidence.');
+        }
+
+        $request = new NormalWebcoreRecoveryCaptureRequest(
+            $existingOperation->operationId(),
+            $installation->value(),
+            $scope->namespaceIdentity(),
+            $boundPlan->committedLifecycleIdentity(),
+            $boundPlan->sourcePlan()->packageEvidenceIdentity(),
+            $existingOperation->releaseIdentity(),
+            $existingOperation->archiveSha256(),
+            $boundPlan->applyPlan(),
+            $boundPlan->committedLifecycleIdentity(),
+            $boundPlan->migrationStateIdentity(),
+            $scope->databaseIdentity(),
+            null,
+            $scope,
+            $databaseEvidence,
+            $guardEvidence,
+            $boundPlan->sourcePlan(),
+            false,
+            $existingOperation->executionAttemptIdentity()
+        );
+
+        return $this->resumeCommittedSourceAuthority($boundPlan, $request);
     }
 
     /**
