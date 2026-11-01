@@ -97,3 +97,11 @@ Implementation-validation obligations remain separately pending for partial pack
 ## 14. Explicit exclusions
 
 No second Guard, recovery engine, universal routing engine, automatic `.htaccess` correction, implicit stale deletion, generic downgrade, fabricated historical source or recovery authority, synthetic completion, Server-Empty Bootstrap, runtime/deployment mutation, Alternative C continuation, or contract promotion. These require separate authority and gates.
+
+## 15. Historical supersession and coordinated promotion (pre-promotion clarification)
+
+For **new independently identified V3 packages**, the revised package-owned inventory/target/source fingerprints exclude exact physical `PUBLIC_ROOT/.htaccess` after verified canonical path mapping. This supersedes only the incompatible prior package-owned protected-file assumption within the explicitly recorded `CD-V3-HTACCESS-20261026-01` transition. Historical v1/v2 and old-V3 manifests, ZIPs, fingerprints, installation evidence and accepted WU statuses retain their original identities and provenance, without being silently eligible for new-V3 mutation or rehashed into current packages.
+
+Package Lifecycle consumes, rather than owns, three independently authoritative results: Guard admission/release eligibility, Recovery-owned negative proof and applicable settlement, and provider-neutral deployment routing readiness. These must be adopted as a **coordinated normative set**, with corresponding standalone Guard authority and docs/31/docs/32 amendments, not through unilateral docs/28 promotion. Accepted Legacy-to-V3 Injection remains a bounded consumer and no second engine is introduced.
+
+The Workplan's recorded controlled deviation explicitly requires verified implementation evidence before normative amendment promotion. Record exact evidence and a separately authorized disposition of that prerequisite; this candidate does not silently waive it. New package identity, SDR verification, operational E4 eligibility and deviation closure retain their separate conditions. Promotion is not implementation acceptance, and implementation acceptance is not implied by this text.
