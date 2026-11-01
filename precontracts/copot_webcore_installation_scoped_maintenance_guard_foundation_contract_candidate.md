@@ -65,3 +65,7 @@ No full Maintenance Management UI, delegated permission/role product, scheduler/
 ## 14. Promotion and continuity
 
 Promotion requires distinct GPT/user review and approval and normative interface/invariant compatibility across docs/28, docs/31, docs/30 and accepted Legacy-to-V3 Injection contract. End-to-end runtime acceptance remains a separate implementation gate and is not represented as already passed. Promotion does not authorize deployment or advance Alternative C.
+
+## 15. Coordinated authority adoption (pre-promotion clarification)
+
+This candidate is the proposed **standalone Webcore-owned Guard foundation authority**, not a replacement for existing Backup & Recovery or Existing-Runtime Webcore Lifecycle Adoption contracts. Existing docs/31 Guard and database-quiescence clarifications remain in force until an accepted coordinated amendment explicitly reconciles them. The Guard does not inherit Recovery-owned terminal proof, Package Lifecycle WU6 authority, or deployment routing ownership. docs/28 and docs/31 consume its shared interfaces only once these interfaces are adopted together through a separately approved coordinated normative set. An earlier historical acceptance is not retroactively void merely because new lease/release requirements are proposed. Do not promote a unilateral Guard contract that leaves consumer release/admission interfaces unspecified or contradictory.
