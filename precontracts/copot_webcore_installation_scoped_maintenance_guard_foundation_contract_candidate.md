@@ -1,21 +1,22 @@
 # COPOT — Webcore Installation-Scoped Maintenance Guard Foundation Contract Candidate
 
-Status: REVIEWED CANDIDATE / NON-NORMATIVE / PROMOTION PENDING
+Status: REFINED REVIEWED CANDIDATE / NON-NORMATIVE / PROMOTION PENDING
+Technical disposition: CR-1 SLICE 1 SEMANTICALLY RECONCILED / MATERIALIZED; IMPLEMENTATION VALIDATION PENDING
 Workstream: CR-1 — Platform Contract Reconciliation
-Source provenance: S2 pre-contract and S3 source/technical reconciliation. This is the active candidate revision; the pre-contract is retained for provenance.
+Source provenance: S2 pre-contract, S3 source/technical reconciliation, and CR-1 Slice 1 Codex technical proposal with GPT semantic refinements. This is the active candidate revision; the pre-contract is retained for provenance.
 Authority boundary: This candidate is not an authoritative contract and grants no implementation, repository/runtime mutation, release, or Alternative C closure authority.
 
 ## 1. Purpose and capability ownership
 
 Maintenance Guard Foundation is one reusable Webcore-owned capability protecting a verified COPOT installation against conflicting COPOT-controlled writes during separately authorized operations. Package Lifecycle, Backup & Recovery, Legacy-to-V3 Injection and future authorized consumers reuse this boundary. Guard ownership does not confer package apply, restoration, lifecycle finalization, operator approval, or release authority; no independently competing Guard may be established.
 
-## 2. Identity and isolation
+## 2. Canonical identity and isolation
 
-Protection binds verified installation identity and applicable operation context. Database-affecting operations also bind canonical database namespace and verified owned physical tableset. Shared MariaDB instance or database does not imply shared maintenance ownership. Ambiguous installation/namespace/operation binding blocks mutation. Other installations remain unaffected.
+Protection binds verified installation identity, operation identity/type, execution-attempt identity when applicable, durable protection-session and current evidence identities. Database-affecting operations also bind canonical database identity, namespace, and verified owned physical tableset. A derived opaque identity is acceptable only when the canonical scope can be independently reconstructed and verified. Admission, resume, consumer settlement and release must revalidate the same applicable scope. Shared MariaDB instance or database does not imply shared maintenance ownership; ambiguous, stale or cross-installation binding blocks mutation and release. Other installations remain unaffected.
 
 ## 3. Writer registration and admission
 
-All relevant COPOT-controlled conflicting write entrypoints, including HTTP, Admin, API, installer, CLI, scheduled, background, and worker surfaces, must participate in one backend-enforced admission boundary. Every writer classification maps to actual entrypoints, target installation, permitted operation type, and mechanism. Unregistered or unguarded conflicting writers prevent readiness. UI disablement and declared writer-class strings alone are not coverage proof.
+All relevant COPOT-controlled conflicting write entrypoints, including HTTP, Admin, API, installer, CLI, scheduled, background, and worker surfaces, must participate in one backend-enforced admission boundary. An auditable inventory, registry, generated map or technically equivalent completeness proof must map implemented entrypoints to classification, admission mechanism, target installation, operation and applicable attempt. Absent or deferred surfaces must be explicitly distinguished from implemented ones. Unknown, unregistered, stale or bypassed conflicting writer paths fail closed. UI disablement, declared writer-class strings and method existence alone are not coverage proof.
 
 ## 4. Semantic protection states
 
@@ -23,11 +24,11 @@ Required distinguishable semantic conditions: NORMAL (no obligation), REQUESTED,
 
 ## 5. Drain, accounting and evidence
 
-Admission and drain transitions are synchronized through one installation-scoped exclusion mechanism. Evidence accounts for queued, executing, and in-flight COPOT writers; an empty queue cannot prove drain. Evidence must be fresh, identity-bound, and replay-safe. Unknown or stale evidence fails closed.
+Admission and drain transitions are synchronized through one installation-scoped exclusion mechanism. Evidence accounts for queued, executing, and in-flight COPOT conflicting writers; an empty queue or zero aggregate counter cannot alone prove drain. Each COPOT-controlled writer admitted into the protected conflicting-write domain must carry durable, independently reconcilable in-flight lease evidence, including its writer identity/class, canonical installation, relevant operation/attempt and protection session, acquisition and settlement. Abnormal termination does not silently discharge a lease; independently verified reconciliation must establish a safe terminal no-write condition before READY. Counter reset or decrement without such proof is prohibited. Read-only and non-conflicting activities do not automatically require these leases. Evidence must be fresh, identity-bound, and replay-safe. Unknown or stale evidence fails closed.
 
-**MGF-R01 — Writer coverage.** Maintain an auditable complete entrypoint inventory and applicable bypass-rejection tests.
+**MGF-R01 — Writer coverage.** Maintain an auditable complete entrypoint or equivalent coverage proof, installation/operation binding, and positive/negative admission and bypass-rejection tests.
 
-**MGF-R02 — Crash-safe drain.** Abnormal termination must not silently discharge outstanding leases. Durable counters and ownership are reconciled with independent execution evidence before returning to READY; no unsafe counter normalization.
+**MGF-R02 — Crash-safe drain.** Abnormal termination must not silently discharge outstanding leases. Durable lease identity, ownership and settlement are reconciled with independent execution evidence before READY or release; no unsafe counter normalization. Storage format and process-tracking mechanism remain implementation choices.
 
 ## 6. Scoped executor exceptions
 
@@ -35,11 +36,11 @@ A consumer exception requires separately authorized installation, actor/executio
 
 ## 7. Durable interruption and resumption
 
-Durable protection obligations remain verifiable across crashes and restarts. Resume checks persisted operation identity, exclusive process ownership, evidence freshness, and outstanding recovery linkage. New sessions cannot silently supersede stale or foreign protection. Unknown, missing, ambiguous or contradictory evidence blocks unsafe continuation; recovered process-local ownership never fabricates a recovery lifecycle record.
+Durable protection obligations remain verifiable across crashes and restarts. Resume and READY readmission revalidate canonical installation/database scope, operation and attempt, durable protection session, current evidence/freshness, unsettled leases, exclusive lock ownership or explicit adoption, and applicable consumer recovery linkage. New sessions cannot silently supersede stale or foreign protection. Unknown, missing, ambiguous or contradictory evidence blocks unsafe continuation; recovered process-local ownership never fabricates a recovery lifecycle record.
 
 ## 8. Recovery-bound release
 
-**MGF-R03 — Safe release.** Release eligibility requires verified discharge of applicable operation, recovery, and terminal cleanup obligations. Ordinary session closure, maintenance leave, or manual unlock cannot by themselves prove recovery closure. Backup & Recovery continues owning capture, restore, verification and authorized cleanup. Failed/interrupted mutation cannot be disguised as safe normal state.
+**MGF-R03 — Safe release.** Guard owns a shared, consumer-neutral release eligibility policy, not consumer-specific settlement authority. Release requires matching canonical scope/session/evidence, reconciled applicable writer leases, fresh protection evidence, and settlement evidence from **each consumer with an outstanding obligation for the protected operation**, never unrelated consumers. Applicable mutation, lifecycle, recovery, verification and cleanup ambiguity blocks release. Each consumer owns its relevant terminal proof: Package Lifecycle retains apply/migration/WU6 settlement; Backup & Recovery retains capture/restore/verification/cleanup settlement; Injection consumes established authorities. Release decisions must be independently verifiable. RecoveryLifecycleCoordinator is not the universal Guard release owner. Ordinary session closure, maintenance leave, process exit, manual unlock or zero counter cannot prove safe release. Failed/interrupted mutation cannot be disguised as safe NORMAL state.
 
 ## 9. Independent protection mechanisms
 
@@ -55,7 +56,7 @@ Observed in E4 source: InstallationScopedMaintenanceGuard scoped state and admis
 
 ## 12. Acceptance criteria
 
-Focused evidence must prove complete writer entrypoints, denial of bypass, proper drain and scoped exceptions, abnormal termination/restart/retry, recovery-bound release, independent quiescence, target installation isolation, truthful status, and no regression of applicable Package Lifecycle v1/v2/v3, Backup & Recovery and Injection invariants. Presence of methods or source-only review is not operational acceptance.
+Contract compatibility review must establish consistent authority, interfaces and invariants across Guard, Package Lifecycle, Backup & Recovery and Injection. Subsequent implementation acceptance must separately prove writer coverage/bypass denial, scoped drain and exceptions, durable lease crash/restart reconciliation, canonical-scope isolation, consumer-relevant release proofs, independent quiescence, truthful status and no regression of v1/v2/v3 or recovery invariants. Outstanding tests remain implementation validation obligations, not assumed successes. Presence of methods or source-only review is not operational acceptance.
 
 ## 13. Explicit exclusions
 
@@ -63,4 +64,4 @@ No full Maintenance Management UI, delegated permission/role product, scheduler/
 
 ## 14. Promotion and continuity
 
-Promotion requires distinct GPT/user review and approval, reconciliation of consumers docs/28, docs/31, docs/30 and accepted Legacy-to-V3 Injection contract, plus technical compatibility evidence. Promotion does not authorize deployment or advance Alternative C.
+Promotion requires distinct GPT/user review and approval and normative interface/invariant compatibility across docs/28, docs/31, docs/30 and accepted Legacy-to-V3 Injection contract. End-to-end runtime acceptance remains a separate implementation gate and is not represented as already passed. Promotion does not authorize deployment or advance Alternative C.
