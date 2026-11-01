@@ -1,32 +1,99 @@
 # CR-1 — docs/28 Package Lifecycle V3 Coordinated Amendment Candidate
 
-Status: CANDIDATE / NON-NORMATIVE / NOT PROMOTED
+Status: REFINED CANDIDATE / NON-NORMATIVE / NOT PROMOTED
+Technical disposition: CR-1 SLICE 4 SEMANTICALLY RECONCILED / MATERIALIZED; IMPLEMENTATION VALIDATION PENDING
 Target authority: docs/28_package_lifecycle_migration_foundation_contract.md
-Basis: controlled deviation CD-V3-HTACCESS-20261026-01 and LCR-01/02/04/05/08/09.
-Historical WU acceptance is not rewritten. No runtime, implementation or promotion authority.
+Basis: CD-V3-HTACCESS-20261026-01, LCR-01/02/04/05/08/09, Codex Slice 4 proposal, GPT semantic refinements and refined CR-1 Slice 1–3 candidates.
+Authority boundary: No implementation, repository/runtime mutation, deployment, Alternative C continuation, release, or contract-promotion authority is conferred by this candidate.
 
-## Proposed addendum A — Deployment-owned protected routing resource
+Historical WU1–WU7 acceptance stays historically accurate and is not rewritten.
 
-The exact physical PUBLIC_ROOT/.htaccess has effective owner DEPLOYMENT_ENVIRONMENT, subject to COPOT-wide ABSOLUTE_IMMUTABILITY. Webcore owns routing requirements but cannot mutate the deployed file. All COPOT-controlled add, replace, remove, rename-source/target, restore and rollback attempts against the exact protected resource fail closed before mutation. Admission, manifest grammar, inventory, planner, execution and recovery interfaces must agree; prohibited entries cannot be silently skipped.
+## 1. Ownership and cross-contract boundaries
 
-A revised V3 package, whether full or partial, excludes this physical file from package-owned delivered and resulting target inventories and package-owned fingerprints. Full coverage means all resulting package-owned bytes, not deployment-owned bytes. Routing compatibility is a separately verified fresh-install/update admission prerequisite; failure does not authorize COPOT to repair physical .htaccess.
+Package Lifecycle owns package intake, manifest, package-owned inventory, source-relative plan and apply, lifecycle operation/disposition, typed destructive confirmation, migration coordination, WU6 and applicable Package Lifecycle settlement proof. Backup & Recovery owns recovery identity, immutable evidence, capture, restore, verification, cleanup and recovery-specific settlement. Maintenance Guard owns shared COPOT writer protection and consumer-neutral release eligibility. Deployment owns physical routing resources and supplies routing-readiness evidence. Injection consumes existing authorities without creating another engine.
 
-Historical manifest/ZIP, package fingerprint, and committed installed-state evidence remain immutable historical records. Historical PACKAGE_OWNED classification cannot override current protected-resource restrictions; no silent re-identity or reinterpretation. New packages require independent identities and verified source/inventory migration disposition. Existing controlled deviation closes only through technical evidence, acceptance and separately authorized coordinated promotion.
+No consumer acquires another's recovery, Guard, deployment or lifecycle authority.
 
-## Proposed addendum B — Attempt-aware source-authority operations
+## 2. Absolutely protected deployment-owned resource
 
-For new attempt-aware source-authority operations, execution attempt identity is immutable, durable and bound to operation, plan and corresponding recovery capture. Retry/resume cannot borrow capture or manifest from a different attempt. Legacy nullable attempt evidence is historical and must not be silently normalized.
+The exact physical `PUBLIC_ROOT/.htaccess` is deployment-owned and absolutely immutable to COPOT. The package-relative `public/.htaccess` designation maps to that resource **only through verified canonical deployment root/path resolution**; string matching alone is not sufficient. All builder, manifest, planner, inventory, add/replace/remove/rename, restore, rollback, cleanup and finalization paths must reject a mutation that resolves to the protected physical resource before side effects. Prohibited work cannot be skipped silently or counted as successful.
 
-PRE_CAPTURE_ABANDONED is a bounded terminal lifecycle disposition only for verified PREPARING operations with cursor zero, no verified mutation path, no migration outcome and no recovery identity/manifest/state; require exclusive ownership, durable evidence, idempotent continuation and negative proof of any capture/recovery obligation. It cannot dispose of an actual post-capture or uncertain mutation.
+Exclude the protected physical resource from delivered package-owned inventory, complete resulting target inventory, committed source inventory and all package-owned fingerprints, actions/removal/rename declarations. A generic runtime-owned preservation policy never overrides absolute immutability or grants package authority over this resource.
 
-First-capture continuation must use persisted canonical operation and attempt identity, preserve one installation mutex ownership session across preflight and Guard/capture handoff, and independently validate scoped database consistency. Inconsistency before mutation fails closed; uncertainty after mutation enters the existing INDETERMINATE/recovery-required route.
+Historical ZIPs/manifests and installed, source and recovery evidence remain immutable historical records. Historical package ownership claims cannot confer present authority to mutate physical `.htaccess`; no silent migration/re-identification.
 
-A READY recovery rehydration does not by itself authorize mutation; prior package/plan/attempt bindings, recovery capture completeness, current protection and consistency evidence and existing confirmation rules remain mandatory. Committed SourceInventoryReference and lifecycle state advance only after genuine WU6 fingerprint, database/migration, health and integrity gates. Existing v1/v2 history and WU completion statements remain historically accurate.
+## 3. Full and partial V3 inventory semantics
 
-## Required contract coordination
+Canonical V3 `target_inventory` describes **all resulting package-owned files**, with canonical root, owner, relative path, size and SHA-256. Its fingerprint differs from raw manifest digest, delivered payload identity, package evidence identity, committed source inventory fingerprint and deployment routing evidence.
 
-docs/31 must implement matching attempt-bound recovery capture/manifest and protected-resource restrictions. The standalone Guard candidate governs cross-consumer writer admission but is not yet normative. Injection retains its accepted bounded authority without a parallel engine.
+`full` coverage declares and delivers every resulting package-owned target byte; it does not include deployment-owned, operator-owned, runtime-generated, recovery-owned, or other non-package resources. Full coverage does not authorize implicit stale deletion. Explicit removals/renames require independently verified source evidence and destructive/recovery authorization.
 
-## Verification gates
+`partial` coverage may deliver only a subset, but omitted resulting target files must be proven retained from the committed immutable `SourceInventoryReference` with exact ownership, size and hash. The source inventory fingerprint must meet `source_state_requirements`. Removals and rename-source actions require explicit matching committed source evidence. Unknown/colliding/legacy resources are not removal authority. Without a compatible committed source inventory, partial mutation admission fails closed.
 
-Negative protected-resource tests; revised package full/partial builder, identity and source inventory checks; cross-attempt capture prohibition; pre-capture abandonment with orphan-artifact probes; first-capture interruption, lock ownership and scoped consistency; READY resume/WU6; old v1/v2 and recovery regressions. NO TEST EXECUTION CLAIMED.
+The V3 contract can support partial semantics even if the current builder produces only full packages; partial producer implementation/validation stays separately pending, not implicitly accepted.
+
+## 4. Identity hierarchy and verifiable sequencing
+
+Keep independently verifiable, distinct identities for raw manifest, delivered payload, package evidence, target inventory, committed source inventory and its immutable artifact, lifecycle operation, execution attempt, apply plan, applicable ordered actions, and recovery/manifest.
+
+Package evidence identity binds the exact raw manifest and delivered payload under existing package contract semantics, **not future recovery or lifecycle identities**. Each downstream operation, attempt, plan, action and recovery cross-reference must be verifiable using identities available at its creation stage. No circular dependency and no synthetic recovery identity to complete an inapplicable field. Opaque digests without reconstructable canonical inputs are insufficient for applicable authority decisions.
+
+## 5. Source-relative planning and action obligations
+
+The immutable plan reconciles verified source inventory, canonical resulting target inventory, delivered inventory, and current target pre-state. Semantic actions include DELIVER, RETAIN, REPLACE, REMOVE and RENAME; they require exact applicable root/path, pre-state identity, authorized desired postcondition, operation/plan and recovery bindings when applicable.
+
+RETAIN means exact package-owned source bytes are preserved when omitted from a partial payload. REMOVE requires explicit source ownership and matching pre-state size/hash; no implicit stale-file pruning. RENAME requires an explicitly authorized source removal plus verified target identity and enforceable recovery/atomicity obligations, **not a prescribed low-level executor ordering** if another implementation proves equivalent safety and postconditions. Reject target collisions, duplicate/conflicting actions, changed/missing pre-state, unsafe action substitutions and protected-resource claims.
+
+## 6. Attempt-aware lifecycle authority
+
+Every current operation using attempt-aware recovery, READY resume, source-relative destructive apply or attempt-bound lifecycle evidence must durably persist an immutable attempt identity before its first applicable capture or mutation. Bind exact operation/type, package evidence, applicable archive/payload, source/target inventories, immutable apply plan, installation/database scope, and recovery/action/Guard evidence when these subsequently exist.
+
+Resume of the same attempt rehydrates its persisted identity; a new attempt requires a distinct identity and fresh applicable evidence. Missing, stale, null, foreign, contradictory or cross-attempt identity blocks current attempt-aware mutation. Historical nullable attempts remain historical evidence and require verified bounded compatibility, never silent normalization.
+
+## 7. PRE_CAPTURE_ABANDONED
+
+This bounded terminal disposition requires verified persisted PREPARING state, cursor zero, no verified mutation or migration outcome, unchanged applicable operation/package/plan/attempt/installation identities, exclusive installation ownership, and durable idempotent terminal evidence read back **before** clearing the active operation.
+
+Package Lifecycle must consume an authoritative **Recovery-owned negative-proof result** covering exact operation/attempt and a complete verified applicable recovery boundary. Backup & Recovery classifies evidence as target-bound, independently foreign/irrelevant, or unresolved ambiguous. Independently proven foreign recovery sets do not automatically block; target-bound obligations or relevant ambiguous residue block. Package Lifecycle may not enumerate or reinterpret recovery-store artifacts itself.
+
+If the mutation boundary was crossed or cannot be ruled out, this disposition is unavailable and existing recovery-required/indeterminate handling applies.
+
+## 8. First-capture coordination
+
+Persist and reread the exact operation/attempt, package/plan and applicable installation/database scope before first capture. Use **one already-held InstallationLock object** across preflight and Guard/capture handoff, with explicit adoption, never a competing nested mutex. Establish scoped COPOT write protection; separately verify database identity/namespace/owned tableset and independent pre/post evidence-composition database consistency. Capture and read back verified recovery evidence before mutation authorization.
+
+Guard exclusion does not establish database quiescence. Pre-mutation conflicts fail closed; post-mutation uncertainty retains the existing recovery-required/indeterminate route, never artificial abandonment.
+
+## 9. READY resume, WU6 and committed source authority
+
+READY recovery means verified capture readiness, not mutation permission or a committed lifecycle state. Resumption requires matching applicable installation, operation/attempt, package/archive, source/target fingerprints, plan, recovery identity/manifest, Guard and lock ownership, database consistency and existing confirmation/mutation permit. It must not invent recovery state, borrow cross-attempt evidence, overwrite uncertain capture or bypass deployment/recovery gates.
+
+For a successful committed V3 operation, WU6 retains exclusive terminal authority for target fingerprint, database/migration settlement, health/integrity, installed-state advancement and committed `SourceInventoryReference`. Publish that reference only after actual successful WU6 and independently verified applicable package/target/source/operation/attempt/installation/database evidence **plus recovery linkage only when recovery evidence applies**. No synthetic recovery proof and no READY-to-commit shortcut.
+
+## 10. Deployment routing coordination
+
+Before mutation-bearing fresh installation or existing-runtime package update, Package Lifecycle consumes the scope-bound, fresh, provider-neutral routing-readiness result defined by docs/32; it does not implement server configuration or repair `.htaccess`. The result verifies applicable target/existing installation binding, roots, entrypoint, base path, routes, Admin/login routing, assets and observed provider/server behavior. Missing, stale, ambiguous, incompatible or foreign proof blocks pre-mutation admission. Routing failure is deployment-readiness failure, not automatically package corruption or recovery completion.
+
+Historical deployments lacking the newest evidence format are not invalid solely for that reason, but current mutation requires valid current or bounded-equivalent routing proof.
+
+## 11. Historical package and injection compatibility
+
+Historical v1/v2 ZIPs, manifests, identities, source, installed and recovery evidence remain immutable and interpreted according to their original contracts. Do not normalize them into V3, fabricate `SourceInventoryReference` or invent source ownership. V1/v2 implicit stale deletion remains prohibited.
+
+Without a committed `SourceInventoryReference`, ordinary V3 update authority cannot be inferred: use the separately authorized bounded legacy bootstrap or `COMMITTED_SOURCE_AUTHORITY_RECONCILIATION` route as applicable. Injection reuses existing Package Lifecycle, Recovery, Guard, database consistency and WU6 authority, not a parallel engine or synthetic historical migration/capture.
+
+## 12. Consumer-specific settlement and Guard release
+
+Package Lifecycle supplies terminal settlement evidence for **all obligations applicable to the operation's actual terminal disposition**. Successful committed operations require WU6 health/integrity/metadata and source authority settlement. Valid pre-mutation terminal dispositions, including eligible `PRE_CAPTURE_ABANDONED`, require their own authoritative durable terminal evidence **without fabricated WU6 or recovery completion**. Unsettled apply/migration/staging/cleanup obligations remain blockers as applicable.
+
+Backup & Recovery supplies its own recovery-specific settlement when recovery obligations exist. Guard evaluates consumer-neutral release eligibility using only the relevant consumer proofs and reconciled writer leases. Neither Package Lifecycle nor RecoveryLifecycleCoordinator is universal Guard release owner. Failed/uncertain operations cannot masquerade as safe NORMAL merely by closing a process/session.
+
+## 13. Contract and implementation acceptance
+
+Normative candidate requirements: physical protected-resource resolution/immutability; full/partial target/source/delivered inventories; sequenced verifiable identities; source-relative authorized postconditions; attempt-bound capture and resume; Recovery-owned abandonment negative proof; single adopted installation lock; independent database consistency; READY vs WU6 separation; routing readiness consumption; historical v1/v2/Injection compatibility; per-disposition settlement.
+
+Implementation-validation obligations remain separately pending for partial package builder or bounded producer; all current attempt-aware apply entrypoints; Recovery-owned negative-proof interface and ambiguous/foreign residue cases; first-capture interruption/lock adoption; READY/WU6; protected `.htaccess` negatives; historical fixtures; deployment routing admission; settlement and Guard release. No source inspection here constitutes an operational test result.
+
+## 14. Explicit exclusions
+
+No second Guard, recovery engine, universal routing engine, automatic `.htaccess` correction, implicit stale deletion, generic downgrade, fabricated historical source or recovery authority, synthetic completion, Server-Empty Bootstrap, runtime/deployment mutation, Alternative C continuation, or contract promotion. These require separate authority and gates.
