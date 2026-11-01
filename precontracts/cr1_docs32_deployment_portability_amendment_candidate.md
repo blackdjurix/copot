@@ -64,3 +64,11 @@ Implementation validation remains outstanding for provider-specific verifier/pro
 ## 9. Explicit exclusions
 
 No universal web-server configuration engine, automatic `.htaccess` generation/repair, COPOT-owned server configuration, new migration/portability framework, parallel recovery or lifecycle authority, Server-Empty Bootstrap, hosting-panel automation, or byte-identical provider directives. Contract promotion and implementation/deployment remain separate approval gates.
+
+## 10. Controlled-deviation promotion prerequisite (pre-promotion clarification)
+
+The documented `CD-V3-HTACCESS-20261026-01` remains **OPEN**. Its accepted direction overrides incompatible old-V3 expectations only within that recorded bounded deviation, not by silent reinterpretation of historical WU1–WU6 acceptance, package identities, or deployment evidence. The canonical Workplan states that normative contract reconciliation/promotion follows **verified implementation evidence** for this deviation. This candidate does not waive or replace that prerequisite.
+
+Before any coordinated normative promotion, record a traceable disposition identifying the exact applicable evidence and whether that prerequisite is satisfied. If evidence is insufficient, promotion remains gated unless the user separately approves a legitimate change to that prerequisite and the authoritative planning/decision record is reconciled. Neither contract drafting nor source-only review is evidence of operational acceptance. Full deviation closure still requires its distinct implementation, SDR and acceptance conditions; promotion alone does not close it.
+
+This amendment defines routing **requirements and admission evidence**, not a COPOT-owned server configuration authority. docs/28 consumes its scoped routing-readiness result and docs/31 retains recovery-specific status; neither old portability acceptance nor this proposal gives permission to mutate physical `PUBLIC_ROOT/.htaccess`.
