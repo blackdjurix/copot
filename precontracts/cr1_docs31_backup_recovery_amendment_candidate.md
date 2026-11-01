@@ -72,3 +72,9 @@ Separate implementation validation must cover cross-attempt/foreign evidence, or
 ## 10. Exclusions and continuity
 
 No parallel recovery engine, second Guard, new lifecycle authority, mandatory serialization format, full-site or scheduled backups, retention product, cloud backup, Admin backup UI, Server-Empty Bootstrap, Module legacy adoption, or operational reconciliation authorization. Promotion requires separate GPT/user approval; this candidate does not authorize deployment, Alternative C continuation, or Slice 3.
+
+## 11. Coordinated authority and historical transition (pre-promotion clarification)
+
+Recovery-owned negative proof is an authoritative **result supplied to** docs/28 for exact operation/attempt disposition; docs/28 never independently enumerates or reclassifies recovery residue. Independently verified foreign/irrelevant records do not prohibit abandonment, while relevant ambiguous evidence fails closed. Historical records remain governed by their original verified evidence contracts, and any current attempt-aware use requires explicit compatible binding; neither silent migration nor wholesale invalidation is permitted.
+
+The shared Guard candidate defines generic lease/release eligibility while this recovery amendment defines recovery-specific settlement only for operations carrying recovery obligations. Existing docs/31 accepted historical recovery/Guard and quiescence boundaries stay authoritative until separately approved coordinated adoption, with no retroactive change to WU acceptance. Coordinated normative promotion must verify that docs/28 consumption and Guard release interfaces match, and separately dispose of the applicable controlled-deviation implementation-evidence prerequisite. Candidate agreement alone is not operational proof or deviation closure.
