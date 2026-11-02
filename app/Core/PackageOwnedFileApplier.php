@@ -16,7 +16,12 @@ final class PackageOwnedFileApplier
         $liveRoot = $guard->liveRoot();
         $temporaryCandidate = realpath($this->temporaryRoot);
         $temporaryParent = realpath(dirname($this->temporaryRoot));
-        $temporaryCandidate ??= ($temporaryParent === false ? $this->temporaryRoot : $temporaryParent . DIRECTORY_SEPARATOR . basename($this->temporaryRoot));
+        if ($temporaryCandidate === false) {
+            if ($temporaryParent === false) {
+                throw new \InvalidArgumentException('Apply temporary root must be separate from the live Webcore root.');
+            }
+            $temporaryCandidate = $temporaryParent . DIRECTORY_SEPARATOR . basename($this->temporaryRoot);
+        }
         if ($temporaryParent === false || self::overlaps($temporaryCandidate, $liveRoot) || self::overlaps($liveRoot, $temporaryCandidate)) {
             throw new \InvalidArgumentException('Apply temporary root must be separate from the live Webcore root.');
         }
