@@ -210,6 +210,8 @@ Jangan mengklaim `READ THIS INTERACTION` atau `READ AND APPLIED` jika exact arti
 
 Status `NOT REQUIRED` berarti artifact tetap telah dibuka, dibaca, dan diterapkan, tetapi tidak menghasilkan requirement material terhadap interaction. Status tersebut tidak boleh digunakan untuk melewati pembacaan artifact.
 
+Status `READ AND APPLIED` digunakan bila ketentuan artifact secara material menentukan, membatasi, atau mengarahkan isi, keputusan, routing, atau tindakan dalam interaction. Status `NOT REQUIRED` digunakan bila artifact sudah dibaca dan dievaluasi, tetapi tidak ada ketentuannya yang material terhadap interaction tersebut. Relevansi topik saja tidak cukup untuk menetapkan `READ AND APPLIED`.
+
 Format ini adalah presentation contract. Ia tidak menambah authority, authorization, project scope, atau execution permission.
 
 Format ini tidak berlaku untuk casual conversation, clarification non-substantif, Handoff, atau `Technical Executor` report. Jika response memuat artifact yang dikecualikan beserta prose yang menyimpulkan atau mengarahkan authorization, scope, validity, acceptance, project state, planning, atau next action, response tersebut adalah mixed response dan wajib menggunakan `GPT Interaction Format`.
