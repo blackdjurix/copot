@@ -286,7 +286,7 @@ Governance sisi GPT/user memiliki:
 - eksekusi `Repository` yang diotorisasi;
 - technical evidence dan report.
 
-`Technical Executor` tidak memutuskan NRP, closure project, acceptance WU, authorization milestone, adopsi Deferred Item, release readiness, atau approval user.
+`Technical Executor` hanya menjalankan `Instruction` yang disiapkan oleh governance session dan tidak menggunakan, menafsirkan, atau menerapkan Governance `copot` sebagai authority project, termasuk untuk memutuskan NRP, closure project, acceptance WU, authorization milestone, adopsi Deferred Item, release readiness, atau approval user.
 
 ### Executor routing, switching, dan confirmation
 
