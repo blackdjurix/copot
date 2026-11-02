@@ -1440,6 +1440,27 @@ Relations:
 
 Planning action: RETAIN FUTURE ARCHITECTURE CONCEPT / PARTIAL HTACCESS ENFORCEMENT THROUGH EXISTING DEVIATION ONLY / NO IMPLICIT IMPLEMENTATION OR CONTRACT AUTHORITY
 
+### Alternative C — Controlled Contract Breach Execution Strategy
+Class: ACCEPTED EXECUTION STRATEGY / NON-NORMATIVE PLANNING CONTINUITY
+Status: ACTIVE / ALTERNATIVE C OPEN / NOT INDEPENDENT WORKSTREAM
+
+Objective: establish a fully operational canonical V3 Package Lifecycle and installation-scoped Maintenance Guard through bounded, validated execution. Historical legacy bootstrap retirement is a separately evidenced strategy within this objective, not a retrospective change to the original objective or automatic proof of repository-wide zero-legacy dependency.
+
+Definition — Controlled Contract Breach:
+A deliberate, explicitly user-authorized, narrowly bounded execution deviation from one or more provisions of currently accepted project contracts to accomplish a defined Alternative C objective. An authorized breach remains a breach until it is reconciled; it does not repeal, silently amend, replace, or promote the affected normative contracts, and it is not blanket authorization for adjacent actions.
+
+Execution and evidence boundaries:
+- Identify the exact deviated provision, affected operation/runtime/resource, purpose, authorization, safety constraints, and historical provenance. Record deviations and their consequences without inventing retroactive evidence or authority.
+- Preserve installation/source/package/operation/attempt/recovery identity, protected resources, committed state, recoverability, and applicable Guard/InstallationMutex/isolation boundaries. Failure to establish the safety prerequisites blocks that specific action, not by default the whole execution strategy.
+- Implementation and operational validation proceed under separately authorized bounded gates. Source acceptance, publication, deployment, operational readiness, user acceptance, and Alternative C closure are distinct.
+- Cumulative reconciliation of intentionally breached contracts and necessary normative amendments occurs after Alternative C closure, per accepted user sequencing. A technical finding that a normative amendment is required does not by itself convert contract promotion into a prerequisite for bounded implementation; any independently applicable safety/authorization gate still applies.
+- Existing deviation entries, including `CD-V3-HTACCESS-20261026-01`, remain separately traceable; this entry does not close, supersede, or broaden them.
+- Multi-runtime operational testing and residual legacy-dependency classification remain closure considerations. Completion of a bounded correction or initial V3 operation is not automatic Alternative C closure.
+
+Historical decision anchors: `docs/devlog.md` (2026-10-22 11:50:48 WIB; 2026-10-25 13:55:27, 14:14:06, 16:25:33 WIB; 2026-10-26 19:02:01 and 19:13:57 WIB; 2026-10-29 14:54:06 WIB). This is continuity documentation of accepted user decisions, not a new contract, Concept, technical execution instruction, or authorization.
+
+Planning action: PRESERVE ACCEPTED STRATEGY / TRACK BOUNDED DEVIATIONS / IMPLEMENTATION-FIRST / POST-CLOSURE CUMULATIVE CONTRACT RECONCILIATION / NO IMPLICIT MUTATION AUTHORITY
+
 ### Controlled V3 Contract Deviation — `.htaccess` Ownership Transition
 Class: ACTIVE CONTRACT DEVIATION REGISTER / BOUNDED TRANSITION
 Status: USER-AUTHORIZED DIRECTION / BREACH OPEN / IMPLEMENTATION NOT YET VERIFIED
