@@ -529,6 +529,24 @@ Relations:
 
 Planning action: KEEP DEFERRED / SEPARATE FUTURE CONTRACT AND WORKSTREAM ACCEPTANCE REQUIRED
 
+### Post-Alternative C — Maintenance Guard Protection Ownership Consolidation
+Class: FUTURE ARCHITECTURE RECONCILIATION / DEFERRED
+Status: USER-DIRECTED PLANNING DECISION / DEFERRED UNTIL ALTERNATIVE C CLOSURE / NOT IMPLEMENTATION-AUTHORIZED
+
+Sources:
+- `concepts/copot_installation_scoped_maintenance_management_concept.md` [MAINTENANCE FOUNDATION]
+- `concepts/copot_centralized_resource_protection_layered_resource_policy_concept.md` [RESOURCE POLICY]
+- `workplan.md` [ALTERNATIVE C AND HTACCESS DEVIATION REGISTRY]
+
+Architecture direction:
+- Maintenance Guard is the intended platform-level coordination authority for installation protection: admission, exclusive session/lock ownership, and lifecycle-safe release. Keep underlying mechanisms independently defined; central coordination does not make Guard the owner of backup/restore implementation.
+- Candidate consolidation includes `InstallationMutex`, application write protection, future database locking/quiescence coordination, and fresh-installation protection. Existing consumer wiring remains as implemented until separately reviewed and authorized.
+- Backup & Recovery remains an independent functional domain. Its potential future organizational integration into Maintenance Guard is explicitly NOT adopted by this decision.
+- Evaluate placing resource-mutation admission for exact `PUBLIC_ROOT/.htaccess` under Maintenance Guard after Alternative C, coordinated with the centralized resource-protection concept. This is a future policy-ownership review ONLY: current deployment-environment ownership and COPOT-scope `ABSOLUTE_IMMUTABILITY` remain fully binding. Any relaxation requires a separate explicit security, contract, and implementation decision; no existing COPOT operation gains permission to mutate the file.
+- Earliest review is after accepted Alternative C closure. This item does not modify C0-3 mutex-correction scope, current recovery ownership, source/contract authority, ongoing operational gates, or the existing `CD-V3-HTACCESS-20261026-01` deviation. No automatic adoption at closure.
+
+Planning action: KEEP DEFERRED / POST-ALTERNATIVE-C REVIEW ONLY / SEPARATE DESIGN, CONTRACT, AND EXECUTION AUTHORIZATION REQUIRED
+
 #### Patch delivery, capability-state and removal semantics — future lifecycle gap inventory
 Class: ADAPTIVE PACKAGE LIFECYCLE / BACKUP & RECOVERY FOLLOW-ON
 Status: FUTURE / OPEN DESIGN / NOT IMPLEMENTATION-AUTHORIZED
