@@ -58,5 +58,17 @@ try {
     $collisionSource = $sourceStore->publish(new Copot\Core\CanonicalTargetInventory([$old, $new]), 'release-1', 3, 'tree-1');
     $throws(static fn (): Copot\Core\V3SourceRelativePlan => (new Copot\Core\PackageV3SourceRelativePlanner())->plan($renamePackage, $collisionSource), 'Rename collision with an unrelated existing target was accepted.');
 
+    $protected = new Copot\Core\CanonicalTargetInventoryEntry('PUBLIC_ROOT', 'package-owned', '.htaccess', 7, $hash('routing'));
+    $protectedTarget = new Copot\Core\CanonicalTargetInventory([$protected]);
+    $protectedDelivered = $contract([['public/.htaccess', 7, $hash('routing')]], $protectedTarget, 'full');
+    $throws(static fn (): Copot\Core\V3SourceRelativePlan => (new Copot\Core\PackageV3SourceRelativePlanner())->plan($protectedDelivered), 'Protected ADD/REPLACE target reached the planner.');
+    $protectedSource = $sourceStore->publish(new Copot\Core\CanonicalTargetInventory([$protected, $new]), 'release-1', 3, 'tree-1');
+    $protectedRemoval = $contract([['app/new.txt', 3, $hash('new')]], new Copot\Core\CanonicalTargetInventory([$new]), 'partial', [$protectedSource->reference()->fingerprint()], [['root' => 'PUBLIC_ROOT', 'path' => '.htaccess', 'ownership' => 'package-owned', 'expected_source_byte_size' => 7, 'expected_source_sha256' => $hash('routing'), 'reason' => 'obsolete']]);
+    $throws(static fn (): Copot\Core\V3SourceRelativePlan => (new Copot\Core\PackageV3SourceRelativePlanner())->plan($protectedRemoval, $protectedSource), 'Protected REMOVE source reached the planner.');
+    $protectedRenameSource = $contract([['app/new.txt', 3, $hash('new')]], new Copot\Core\CanonicalTargetInventory([$new]), 'partial', [$protectedSource->reference()->fingerprint()], [['root' => 'PUBLIC_ROOT', 'path' => '.htaccess', 'ownership' => 'package-owned', 'expected_source_byte_size' => 7, 'expected_source_sha256' => $hash('routing'), 'reason' => 'renamed']], [['source_root' => 'PUBLIC_ROOT', 'source_path' => '.htaccess', 'target_root' => 'APP_ROOT', 'target_path' => 'app/new.txt']]);
+    $throws(static fn (): Copot\Core\V3SourceRelativePlan => (new Copot\Core\PackageV3SourceRelativePlanner())->plan($protectedRenameSource, $protectedSource), 'Protected RENAME source reached the planner.');
+    $protectedRenameTarget = $contract([['public/.htaccess', 7, $hash('routing')]], $protectedTarget, 'partial', [$source->reference()->fingerprint()], [], [['source_root' => 'APP_ROOT', 'source_path' => 'app/old.txt', 'target_root' => 'PUBLIC_ROOT', 'target_path' => '.htaccess']]);
+    $throws(static fn (): Copot\Core\V3SourceRelativePlan => (new Copot\Core\PackageV3SourceRelativePlanner())->plan($protectedRenameTarget, $source), 'Protected RENAME destination reached the planner.');
+
     echo "WU3 source-relative assertions passed.\n";
 } finally { $remove($root); }

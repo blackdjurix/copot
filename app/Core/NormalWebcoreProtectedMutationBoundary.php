@@ -86,7 +86,8 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
             $context->filesystemRecoveryPlan(),
             $this->databaseScope,
             $this->databaseConsistencyEvidence,
-            $this->applicationWriteProtectionEvidence
+            $this->applicationWriteProtectionEvidence,
+            $context->orderedV3Plan()
         );
     }
 

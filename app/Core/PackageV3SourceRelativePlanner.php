@@ -15,12 +15,12 @@ final class PackageV3SourceRelativePlanner
             throw new \InvalidArgumentException('Source-relative planning requires a v3 package contract.');
         }
         $target = $this->index($package->targetInventory()->entries());
-        if (isset($target[self::key(CanonicalTargetInventoryEntry::PUBLIC_ROOT, '.htaccess')])) { throw new \RuntimeException('V3 planning cannot mutate deployment-owned .htaccess.'); }
+        if (isset($target[self::key(CanonicalTargetInventoryEntry::PUBLIC_ROOT, '.htaccess')]) && ProtectedResourcePolicy::isProtected(CanonicalTargetInventoryEntry::PUBLIC_ROOT, '.htaccess')) { throw new \RuntimeException('V3 planning cannot mutate deployment-owned .htaccess.'); }
         $delivered = [];
         foreach ($package->inventory() as $entry) {
             if (!$entry instanceof PackageInventoryEntry || $entry->ownership() !== PackageOwnership::PACKAGE_OWNED) { throw new \RuntimeException('V3 delivered inventory ownership is invalid.'); }
             [$root, $path] = self::rootPath($entry->path());
-            if ($root === CanonicalTargetInventoryEntry::PUBLIC_ROOT && $path === '.htaccess') { throw new \RuntimeException('V3 planning cannot deliver deployment-owned .htaccess.'); }
+            ProtectedResourcePolicy::assertMutable($root, $path);
             $key = self::key($root, $path);
             if (isset($delivered[$key])) { throw new \RuntimeException('V3 delivered inventory has a root/path collision.'); }
             $delivered[$key] = [$entry->byteSize(), $entry->sha256(), $entry->path()];
@@ -75,6 +75,8 @@ final class PackageV3SourceRelativePlanner
         $renames = []; $actions = [];
         foreach ($package->renames() as $rename) {
             if (!is_array($rename) || array_keys($rename) !== ['source_root', 'source_path', 'target_root', 'target_path']) { throw new \RuntimeException('V3 rename declaration shape is invalid.'); }
+            ProtectedResourcePolicy::assertMutable($rename['source_root'], $rename['source_path']);
+            ProtectedResourcePolicy::assertMutable($rename['target_root'], $rename['target_path']);
             $sourceKey = self::key($rename['source_root'], $rename['source_path']); $targetKey = self::key($rename['target_root'], $rename['target_path']);
             if (isset($renames[$sourceKey]) || !isset($source[$sourceKey]) || !isset($delivered[$targetKey]) || !isset($target[$targetKey]) || ($sourceKey !== $targetKey && isset($source[$targetKey]))) { throw new \RuntimeException('V3 rename source, target, or collision proof is invalid.'); }
             $renames[$sourceKey] = true;
@@ -82,6 +84,7 @@ final class PackageV3SourceRelativePlanner
         foreach ($package->removals() as $removal) {
             if (!is_array($removal) || array_keys($removal) !== ['root', 'path', 'ownership', 'expected_source_byte_size', 'expected_source_sha256', 'reason']) { throw new \RuntimeException('V3 removal declaration shape is invalid.'); }
             $key = self::key($removal['root'], $removal['path']); $sourceEntry = $source[$key] ?? null;
+            ProtectedResourcePolicy::assertMutable($removal['root'], $removal['path']);
             if (!$sourceEntry instanceof CanonicalTargetInventoryEntry || $removal['ownership'] !== CanonicalTargetInventoryEntry::PACKAGE_OWNED || $sourceEntry->byteSize() !== $removal['expected_source_byte_size'] || $sourceEntry->sha256() !== $removal['expected_source_sha256']) { throw new \RuntimeException('V3 removal source evidence is stale or untrusted.'); }
             $matchingRename = null;
             foreach ($package->renames() as $rename) { if (self::key($rename['source_root'], $rename['source_path']) === $key) { $matchingRename = $rename; break; } }

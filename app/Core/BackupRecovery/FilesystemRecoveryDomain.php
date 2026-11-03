@@ -2,6 +2,8 @@
 
 namespace Copot\Core\BackupRecovery;
 
+use Copot\Core\ProtectedResourcePolicy;
+
 final class FilesystemRecoveryDomain
 {
     private const DOMAIN = 'filesystem.package-owned';
@@ -50,15 +52,30 @@ final class FilesystemRecoveryDomain
             $expected = [];
             foreach ($plan->entries() as $planned) { $expected[$planned->path()] = $planned; }
             if (count($decoded['entries']) !== count($expected)) { throw new FilesystemRecoveryException('Filesystem recovery scope changed.'); }
+            $captured = [];
             foreach ($decoded['entries'] as $entry) {
                 if (!isset($expected[$entry->path()]) || $expected[$entry->path()]->targetSize() !== $entry->targetSize() || $expected[$entry->path()]->targetHash() !== $entry->targetHash()) {
                     throw new FilesystemRecoveryException('Filesystem recovery target identity changed.');
                 }
+                $captured[$entry->path()] = $entry;
+            }
+            foreach ($decoded['entries'] as $entry) {
+                ProtectedResourcePolicy::assertMutableRelativePath($entry->path());
                 $path = $this->guard->resolve($entry->path());
                 if ($entry->preOperationState() === FilesystemRecoveryEntry::ABSENT_BEFORE_OPERATION) {
                     $this->restoreAbsent($path, $entry);
                 } else {
-                    $this->restoreExisting($path, $entry);
+                    $renameDestination = !file_exists($path) ? $plan->renameDestination($entry->path()) : null;
+                    if ($renameDestination !== null) {
+                        $destinationEntry = $captured[$renameDestination] ?? null;
+                        if (!$destinationEntry instanceof FilesystemRecoveryEntry || $destinationEntry->preOperationState() !== FilesystemRecoveryEntry::ABSENT_BEFORE_OPERATION) {
+                            throw new FilesystemRecoveryException('RENAME destination recovery evidence is invalid.');
+                        }
+                        $destination = $this->guard->resolve($renameDestination);
+                        $this->restoreRenamedSource($path, $entry, $destination, $destinationEntry);
+                    } else {
+                        $this->restoreExisting($path, $entry);
+                    }
                 }
                 $completed[] = $entry->path();
                 if ($progress !== null) { $progress(count($completed), $entry->path()); }
@@ -87,6 +104,40 @@ final class FilesystemRecoveryDomain
         if ($currentSize === $entry->preOperationSize() && $currentHash === $entry->preOperationHash()) { return; }
         if ($currentSize !== $entry->targetSize() || $currentHash !== $entry->targetHash()) { throw new FilesystemRecoveryException('Unexpected filesystem drift detected.'); }
 
+        $temporary = $this->createRestoreTemporary($entry);
+        try {
+            $this->assertCurrentIdentity($path, $entry->targetSize(), $entry->targetHash());
+            if (!@rename($temporary, $path)) { throw new FilesystemRecoveryException('Filesystem restore activation failed.'); }
+            $this->assertRestoredIdentity($path, $entry);
+        } finally { if (file_exists($temporary)) { @unlink($temporary); } }
+    }
+
+    private function restoreRenamedSource(string $sourcePath, FilesystemRecoveryEntry $source, string $destinationPath, FilesystemRecoveryEntry $destination): void
+    {
+        if ($sourcePath === $destinationPath) { throw new FilesystemRecoveryException('RENAME source and destination are identical.'); }
+        ProtectedResourcePolicy::assertMutableRelativePath($destination->path());
+        if (file_exists($destinationPath)) {
+            $this->assertRegular($destinationPath);
+            $this->assertCurrentIdentity($destinationPath, $destination->targetSize(), $destination->targetHash());
+            if (!@unlink($destinationPath) || file_exists($destinationPath) || is_link($destinationPath)) {
+                throw new FilesystemRecoveryException('RENAME destination could not be removed safely.');
+            }
+        } elseif (is_link($destinationPath)) {
+            throw new FilesystemRecoveryException('RENAME destination has an ambiguous link state.');
+        }
+        $temporary = $this->createRestoreTemporary($source);
+        try {
+            if (file_exists($sourcePath) || is_link($sourcePath)) {
+                throw new FilesystemRecoveryException('RENAME source changed during restore.');
+            }
+            if (!@rename($temporary, $sourcePath)) { throw new FilesystemRecoveryException('RENAME source restoration failed.'); }
+            $this->assertRestoredIdentity($sourcePath, $source);
+        } finally { if (file_exists($temporary)) { @unlink($temporary); } }
+    }
+
+    private function createRestoreTemporary(FilesystemRecoveryEntry $entry): string
+    {
+        $path = $this->guard->resolve($entry->path());
         $this->guard->ensureParent($entry->path());
         $temporary = dirname($path) . DIRECTORY_SEPARATOR . '.recovery-restore-' . bin2hex(random_bytes(16)) . '.tmp';
         $handle = @fopen($temporary, 'xb');
@@ -107,18 +158,18 @@ final class FilesystemRecoveryDomain
             @unlink($temporary);
             throw $exception;
         } finally { fclose($handle); }
+        return $temporary;
+    }
 
-        try {
-            $this->assertCurrentIdentity($path, $entry->targetSize(), $entry->targetHash());
-            if (!@rename($temporary, $path)) { throw new FilesystemRecoveryException('Filesystem restore activation failed.'); }
-            if (!is_file($path) || @filesize($path) !== $entry->preOperationSize() || @hash_file('sha256', $path) !== $entry->preOperationHash()) {
-                throw new FilesystemRecoveryException('Filesystem restore identity verification failed.');
-            }
-            if ($entry->preOperationMode() !== null && DIRECTORY_SEPARATOR === '/') {
-                @chmod($path, $entry->preOperationMode());
-                if ((((int) @fileperms($path)) & 0777) !== $entry->preOperationMode()) { throw new FilesystemRecoveryException('Filesystem restore mode verification failed.'); }
-            }
-        } finally { if (file_exists($temporary)) { @unlink($temporary); } }
+    private function assertRestoredIdentity(string $path, FilesystemRecoveryEntry $entry): void
+    {
+        if (!is_file($path) || @filesize($path) !== $entry->preOperationSize() || @hash_file('sha256', $path) !== $entry->preOperationHash()) {
+            throw new FilesystemRecoveryException('Filesystem restore identity verification failed.');
+        }
+        if ($entry->preOperationMode() !== null && DIRECTORY_SEPARATOR === '/') {
+            @chmod($path, $entry->preOperationMode());
+            if ((((int) @fileperms($path)) & 0777) !== $entry->preOperationMode()) { throw new FilesystemRecoveryException('Filesystem restore mode verification failed.'); }
+        }
     }
 
     private function assertRegular(string $path): void

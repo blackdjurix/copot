@@ -539,7 +539,7 @@ final class PackageLifecycleService
                 );
             }
 
-            $context = new WebcoreMutationContext($operation, $applyPlan, $transition, $migration, $lock, \Copot\Core\BackupRecovery\FilesystemRecoveryPlan::fromV3Plan($plan));
+            $context = new WebcoreMutationContext($operation, $applyPlan, $transition, $migration, $lock, \Copot\Core\BackupRecovery\FilesystemRecoveryPlan::fromV3Plan($plan), $plan);
             $session = $this->v3RecoveryBoundary->enter($context);
             $evidence = $session->evidence();
             if (!isset($evidence['identity'], $evidence['manifest'], $evidence['state'])) throw new \RuntimeException('V3 recovery evidence is incomplete.');

@@ -97,7 +97,7 @@ final class LegacyBootstrapExecutionAdmission
         $linkageRecord = null;
         $requiresLinkage = false;
         foreach ($context->plan()->actions() as $action) {
-            if (in_array($action->action(), [V3SourceRelativeAction::REPLACE, V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true)) {
+            if (in_array($action->action(), [V3SourceRelativeAction::DELIVER, V3SourceRelativeAction::REPLACE, V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true)) {
                 $requiresLinkage = true;
                 break;
             }

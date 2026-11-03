@@ -32,7 +32,7 @@ final class PackageRemovalSet
     public static function digest(string $planIdentity, array $actions): string { return hash('sha256', self::serialize($planIdentity, $actions)); }
 
     private static function rootPath(mixed $root, mixed $path): void
-    { if (!is_string($root) || !in_array($root, [CanonicalTargetInventoryEntry::APP_ROOT, CanonicalTargetInventoryEntry::PUBLIC_ROOT], true) || !is_string($path)) { throw new \InvalidArgumentException('Removal path is invalid.'); } CanonicalTargetInventoryEntry::assertPath($path); }
+    { if (!is_string($root) || !in_array($root, [CanonicalTargetInventoryEntry::APP_ROOT, CanonicalTargetInventoryEntry::PUBLIC_ROOT], true) || !is_string($path)) { throw new \InvalidArgumentException('Removal path is invalid.'); } CanonicalTargetInventoryEntry::assertPath($path); ProtectedResourcePolicy::assertMutable($root, $path); }
     private static function text(mixed $value, string $label): void { if (!is_string($value) || $value === '' || trim($value) !== $value) { throw new \InvalidArgumentException($label . ' is invalid.'); } CanonicalText::assert($value, $label); }
     private static function frame(string $value): string { CanonicalText::assert($value); return pack('N', strlen($value)) . $value; }
     private static function u64(int $value): string { if ($value < 0 || $value > PHP_INT_MAX) { throw new \InvalidArgumentException('Integer is outside serialization bounds.'); } return pack('N2', intdiv($value, 4294967296), $value % 4294967296); }
