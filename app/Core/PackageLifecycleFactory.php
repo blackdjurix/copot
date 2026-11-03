@@ -485,7 +485,9 @@ final class PackageLifecycleRecoveryComposition
             $this->database,
             $this->quiescence,
             $this->databaseConnection,
-            $this->databaseConnection
+            $this->databaseConnection,
+            null,
+            new RecoveryOrchestrator($this->store, $this->mutex, $this->quiescence, $this->maintenance)
         );
     }
 

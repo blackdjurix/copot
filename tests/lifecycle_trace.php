@@ -15,12 +15,31 @@ final class LifecycleTraceRecoverySessionFixture implements Copot\Core\Protected
     public function evidence(): array { return []; }
     public function authorize(): void {}
     public function complete(): void {}
-    public function fail(string $reason): void
+    public function fail(string $reason): Copot\Core\BackupRecovery\RecoveryLifecycleRecord
     {
         if ($this->throwOnFail) {
             throw new RuntimeException('simulated recovery persistence failure');
         }
         $this->failed = true;
+        return $this->record(Copot\Core\BackupRecovery\RecoveryLifecycleState::RESTORE_REQUIRED);
+    }
+    public function restore(): Copot\Core\BackupRecovery\RecoveryLifecycleRecord
+    {
+        return $this->record(Copot\Core\BackupRecovery\RecoveryLifecycleState::RESTORED);
+    }
+    private function record(string $state): Copot\Core\BackupRecovery\RecoveryLifecycleRecord
+    {
+        return new Copot\Core\BackupRecovery\RecoveryLifecycleRecord(
+            new Copot\Core\BackupRecovery\RecoveryIdentity('trace-recovery'),
+            hash('sha256', 'trace-manifest'),
+            'operation-recovery',
+            $state,
+            true,
+            true,
+            'trace-recovery',
+            hash('sha256', 'trace-manifest'),
+            hash('sha256', 'trace-target')
+        );
     }
 }
 
@@ -107,8 +126,9 @@ $recoveryDecoded = array_map(static fn (string $line): array => json_decode($lin
 $recoveryStatuses = array_column($recoveryDecoded, 'status');
 $assert(in_array('RECOVERY_RECORDED', $recoveryStatuses, true), 'Successful RESTORE_REQUIRED recording was not traced.');
 $assert(in_array('RECOVERY_RECORD_FAILED', $recoveryStatuses, true), 'Failed RESTORE_REQUIRED recording was not traced.');
-$assert($recoveryDecoded[1]['recovery_state'] === 'RESTORE_REQUIRED', 'Successful recovery recording did not identify RESTORE_REQUIRED.');
-$assert($recoveryDecoded[3]['recovery_state'] === 'UNKNOWN', 'Failed recovery recording did not remain conservative.');
+$assert(count(array_filter($recoveryDecoded, static fn (array $event): bool => $event['status'] === 'RECOVERY_RECORDED' && $event['recovery_state'] === 'RESTORE_REQUIRED')) === 1, 'Successful recovery recording did not identify RESTORE_REQUIRED.');
+$assert(count(array_filter($recoveryDecoded, static fn (array $event): bool => $event['status'] === 'RECOVERY_RECORD_FAILED' && $event['recovery_state'] === 'UNKNOWN')) === 1, 'Failed recovery recording did not remain conservative.');
+$assert(count(array_filter($recoveryDecoded, static fn (array $event): bool => $event['stage'] === 'recovery' && $event['action'] === 'restore' && $event['status'] === 'SUCCESS')) === 1, 'Automatic recovery success was not traced.');
 
 $traceDir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-lifecycle-trace-' . bin2hex(random_bytes(5));
 mkdir($traceDir, 0700, true);

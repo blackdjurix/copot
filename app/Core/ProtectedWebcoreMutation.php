@@ -2,6 +2,7 @@
 namespace Copot\Core;
 
 use Copot\Core\BackupRecovery\FilesystemRecoveryPlan;
+use Copot\Core\BackupRecovery\RecoveryLifecycleRecord;
 
 final class WebcoreMutationContext
 {
@@ -19,7 +20,8 @@ interface ProtectedWebcoreMutationSession
     public function evidence(): array;
     public function authorize(): void;
     public function complete(): void;
-    public function fail(string $reason): void;
+    public function fail(string $reason): RecoveryLifecycleRecord;
+    public function restore(): RecoveryLifecycleRecord;
 }
 interface ProtectedWebcoreMutationBoundary
 {

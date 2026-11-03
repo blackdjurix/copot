@@ -11,6 +11,7 @@ use Copot\Core\BackupRecovery\NormalWebcoreRecoverySession;
 use Copot\Core\BackupRecovery\ApplicationWriteProtectionEvidence;
 use Copot\Core\BackupRecovery\DatabaseScope;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
+use Copot\Core\BackupRecovery\RecoveryLifecycleRecord;
 
 final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMutationBoundary
 {
@@ -155,15 +156,14 @@ final class NormalWebcoreProtectedMutationSession implements ProtectedWebcoreMut
         }
     }
 
-    public function fail(string $reason): void
+    public function fail(string $reason): RecoveryLifecycleRecord
     {
-        if ($this->closed) {
-            return;
-        }
-        try {
-            $this->session->failMutation($reason);
-        } finally {
-            $this->closed = true;
-        }
+        try { return $this->session->failMutation($reason); }
+        finally { $this->closed = true; }
+    }
+
+    public function restore(): RecoveryLifecycleRecord
+    {
+        return $this->session->restoreMutation();
     }
 }

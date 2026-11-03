@@ -446,7 +446,12 @@ final class PackageLifecycleService
         $traceStage = 'preflight';
         $this->traceRecord($runId, null, 'preflight', 'prepare', 'START');
         try {
-            [$payload, $manifest, $transition, $migration] = $this->prepare($zip);
+            try {
+                [$payload, $manifest, $transition, $migration] = $this->prepare($zip);
+            } catch (\Throwable $exception) {
+                $this->traceRecord($runId, null, 'preflight', 'prepare', 'FAILED', $exception->getMessage());
+                throw $exception;
+            }
             $this->traceRecord($runId, null, 'preflight', 'prepare', 'SUCCESS', null, [
                 'manifest_contract_version' => $manifest->contract()->manifestContractVersion(),
             ]);
@@ -512,18 +517,23 @@ final class PackageLifecycleService
             $payload->cleanup();
             return new PackageLifecycleResult(false, 'unavailable', 'Manifest-v3 lifecycle composition is unavailable.', $transition, $migration);
         }
+        $this->traceRecord($runId, null, 'preflight', 'admission', 'START');
         if (!$transition->accepted() || !$migration->isAccepted()) {
             $reason = $transition->reason() !== '' ? $transition->reason() : $migration->reason();
             $this->traceRecord($runId, null, 'preflight', 'admission', 'FAILED', $reason, ['lifecycle_status' => 'rejected']);
             $payload->cleanup();
             return new PackageLifecycleResult(false, 'rejected', $reason, $transition, $migration);
         }
+        $this->traceRecord($runId, null, 'preflight', 'admission', 'SUCCESS');
+        $this->traceRecord($runId, null, 'preflight', 'migration', 'START');
         if ($migration->migrations() !== [] && !is_callable($this->v3MigrationRunner)) {
             $this->traceRecord($runId, null, 'preflight', 'migration', 'FAILED', 'Manifest-v3 migration runner is unavailable.', ['lifecycle_status' => 'unavailable']);
             $payload->cleanup();
             return new PackageLifecycleResult(false, 'unavailable', 'Manifest-v3 migration runner is unavailable.', $transition, $migration);
         }
+        $this->traceRecord($runId, null, 'preflight', 'migration', 'SUCCESS');
 
+        $this->traceRecord($runId, null, 'preflight', 'source_inventory', 'START');
         $committed = $this->committedStore->read();
         $reference = $committed?->sourceInventoryReference();
         if (!$committed instanceof CommittedLifecycleState || !$reference instanceof SourceInventoryReference) {
@@ -532,7 +542,6 @@ final class PackageLifecycleService
             return new PackageLifecycleResult(false, 'blocked', 'Committed manifest-v3 source inventory evidence is unavailable.', $transition, $migration);
         }
 
-        $this->traceRecord($runId, null, 'preflight', 'source_inventory', 'START');
         try {
             $source = $this->sourceInventoryArtifacts->read($reference);
         } catch (\Throwable $exception) {
@@ -570,27 +579,48 @@ final class PackageLifecycleService
         $session = null;
         try {
             $this->traceRecord($runId, $operationId, 'preflight', 'maintenance_guard', 'START');
-            $this->maintenance->enter($operation);
+            try {
+                $this->maintenance->enter($operation);
+            } catch (\Throwable $exception) {
+                $this->traceRecord($runId, $operationId, 'preflight', 'maintenance_guard', 'FAILED', $exception->getMessage());
+                throw $exception;
+            }
             $this->traceRecord($runId, $operationId, 'preflight', 'maintenance_guard', 'SUCCESS');
             if ($plan->removalActions() !== []) {
-                if (is_array($confirmation)) $confirmation = DestructivePlanConfirmation::fromArray($confirmation);
+                $this->traceRecord($runId, $operationId, 'preflight', 'confirmation', 'START');
+                try {
+                    if (is_array($confirmation)) $confirmation = DestructivePlanConfirmation::fromArray($confirmation);
+                } catch (\Throwable $exception) {
+                    $this->traceRecord($runId, $operationId, 'preflight', 'confirmation', 'FAILED', $exception->getMessage());
+                    throw $exception;
+                }
                 if (!$confirmation instanceof DestructivePlanConfirmation) {
                     $this->traceRecord($runId, $operationId, 'preflight', 'confirmation', 'FAILED', 'Typed destructive confirmation is required.', ['lifecycle_status' => 'rejected']);
                     $this->maintenance->clear($operation->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Typed destructive confirmation is required.'));
                     return new PackageLifecycleResult(false, 'rejected', 'Typed destructive confirmation is required.', $transition, $migration, $plan->operationIdentity());
                 }
-                if ($authorizedActorIdentity !== null && $confirmation->actorAuthorizationEvidence()->actorIdentity() !== $authorizedActorIdentity) {
-                    $this->traceRecord($runId, $operationId, 'preflight', 'actor_authorization', 'FAILED', 'Destructive actor identity is not authorized for this request.', ['lifecycle_status' => 'rejected']);
-                    $this->maintenance->clear($operation->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Destructive actor identity is not the current authorized actor.'));
-                    return new PackageLifecycleResult(false, 'rejected', 'Destructive actor identity is not authorized for this request.', $transition, $migration, $plan->operationIdentity());
+                if ($authorizedActorIdentity !== null) {
+                    $this->traceRecord($runId, $operationId, 'preflight', 'actor_authorization', 'START');
+                    if ($confirmation->actorAuthorizationEvidence()->actorIdentity() !== $authorizedActorIdentity) {
+                        $this->traceRecord($runId, $operationId, 'preflight', 'actor_authorization', 'FAILED', 'Destructive actor identity is not authorized for this request.', ['lifecycle_status' => 'rejected']);
+                        $this->maintenance->clear($operation->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Destructive actor identity is not the current authorized actor.'));
+                        return new PackageLifecycleResult(false, 'rejected', 'Destructive actor identity is not authorized for this request.', $transition, $migration, $plan->operationIdentity());
+                    }
+                    $this->traceRecord($runId, $operationId, 'preflight', 'actor_authorization', 'SUCCESS');
                 }
-                $receipt = $this->v3ConfirmationAuthority->accept($confirmation, $plan);
+                try {
+                    $receipt = $this->v3ConfirmationAuthority->accept($confirmation, $plan);
+                } catch (\Throwable $exception) {
+                    $this->traceRecord($runId, $operationId, 'preflight', 'confirmation', 'FAILED', $exception->getMessage());
+                    throw $exception;
+                }
                 $operation = $operation->withDestructiveConfirmation(
                     $receipt->bindingIdentity(),
                     $confirmation->actorAuthorizationEvidence()->actorIdentity(),
                     $confirmation->removalSetDigest(),
                     $receipt->acceptedAt()
                 );
+                $this->traceRecord($runId, $operationId, 'preflight', 'confirmation', 'SUCCESS');
             }
 
             $context = new WebcoreMutationContext($operation, $applyPlan, $transition, $migration, $lock, \Copot\Core\BackupRecovery\FilesystemRecoveryPlan::fromV3Plan($plan), $plan);
@@ -686,6 +716,7 @@ final class PackageLifecycleService
                 $payload->cleanup();
                 return new PackageLifecycleResult(true, 'completed', '', $transition, $migration, $plan->operationIdentity());
             }
+            $this->recordRecoveryFailure($runId, $operationId, $session, $final->reason(), true);
             return new PackageLifecycleResult(false, strtolower($final->status()), $final->reason(), $transition, $migration, $plan->operationIdentity());
         } catch (\Throwable $exception) {
             if ($session instanceof ProtectedWebcoreMutationSession) {
@@ -703,7 +734,10 @@ final class PackageLifecycleService
     {
         $this->traceRecord($runId, $operationIdentity, 'recovery', 'rollback', 'START', $reason);
         try {
-            $session->fail($reason);
+            $required = $session->fail($reason);
+            if ($required->state() !== \Copot\Core\BackupRecovery\RecoveryLifecycleState::RESTORE_REQUIRED) {
+                throw new \RuntimeException('Recovery failure was not durably recorded as RESTORE_REQUIRED.');
+            }
             $this->traceRecord($runId, $operationIdentity, 'recovery', 'rollback', 'RECOVERY_RECORDED', null, [
                 'recovery_state' => 'RESTORE_REQUIRED',
             ]);
@@ -714,6 +748,44 @@ final class PackageLifecycleService
             if (!$swallowFailure) {
                 throw $exception;
             }
+            return;
+        }
+        try {
+            $this->prepareOperationForRecovery($operationIdentity, $required, $reason);
+            $this->traceRecord($runId, $operationIdentity, 'recovery', 'restore', 'START', $reason);
+            $restored = $session->restore();
+            if ($restored->state() !== \Copot\Core\BackupRecovery\RecoveryLifecycleState::RESTORED) {
+                throw new \RuntimeException('Automatic recovery did not reach RESTORED.');
+            }
+            $this->traceRecord($runId, $operationIdentity, 'recovery', 'restore', 'SUCCESS', null, [
+                'recovery_state' => $restored->state(),
+            ]);
+        } catch (\Throwable $exception) {
+            $this->traceRecord($runId, $operationIdentity, 'recovery', 'restore', 'FAILED', $exception->getMessage(), [
+                'recovery_state' => 'RESTORE_REQUIRED',
+            ]);
+        }
+    }
+
+    private function prepareOperationForRecovery(?string $operationIdentity, \Copot\Core\BackupRecovery\RecoveryLifecycleRecord $required, string $reason): void
+    {
+        if ($operationIdentity === null || !isset($this->operationStore) || !$this->operationStore instanceof LifecycleOperationStore) return;
+        $operation = $this->operationStore->read();
+        if (!$operation instanceof LifecycleOperationRecord
+            || $operation->operationId() !== $operationIdentity
+            || $operation->recoveryIdentity() !== $required->recoveryIdentity()->value()
+            || $operation->recoveryManifestIdentity() !== $required->manifestIdentity()) {
+            throw new \RuntimeException('Lifecycle operation and recovery identity binding changed before restore.');
+        }
+        if (!in_array($operation->phase(), [LifecycleOperationRecord::BLOCKED, LifecycleOperationRecord::INDETERMINATE], true)) {
+            $operation = $operation->advance(LifecycleOperationRecord::INDETERMINATE, $operation->fileCursor(), $operation->lastVerifiedPath(), $operation->migrationOutcome(), 'Recovery required: ' . $reason);
+            $this->operationStore->save($operation);
+        }
+        $verified = $this->operationStore->read();
+        if (!$verified instanceof LifecycleOperationRecord
+            || $verified->operationId() !== $operationIdentity
+            || !in_array($verified->phase(), [LifecycleOperationRecord::BLOCKED, LifecycleOperationRecord::INDETERMINATE], true)) {
+            throw new \RuntimeException('Lifecycle operation was not durably bounded before restore.');
         }
     }
 
