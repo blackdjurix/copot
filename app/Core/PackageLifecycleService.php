@@ -64,7 +64,8 @@ final class PackageLifecycleService
         private ?CommittedSourceAuthorityPlanner $sourceAuthorityPlanner = null,
         private ?CommittedLifecycleMetadataReconciliationOrchestrator $metadataOrchestrator = null,
         private ?PreMutationSettlementService $preMutationSettlement = null,
-        private ?CommittedSourceAuthorityRecoveryAdapter $sourceAuthorityRecovery = null
+        private ?CommittedSourceAuthorityRecoveryAdapter $sourceAuthorityRecovery = null,
+        private ?LifecycleTrace $lifecycleTrace = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -441,41 +442,65 @@ final class PackageLifecycleService
 
     public function apply(string $zip, bool $repairOnly = false, mixed $confirmation = null, ?string $authorizedActorIdentity = null): PackageLifecycleResult
     {
+        $runId = $this->lifecycleTrace?->beginRun();
+        $traceStage = 'preflight';
+        $this->traceRecord($runId, null, 'preflight', 'prepare', 'START');
         try {
             [$payload, $manifest, $transition, $migration] = $this->prepare($zip);
+            $this->traceRecord($runId, null, 'preflight', 'prepare', 'SUCCESS', null, [
+                'manifest_contract_version' => $manifest->contract()->manifestContractVersion(),
+            ]);
             if ($manifest->contract()->manifestContractVersion() === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
-                return $this->applyV3($payload, $manifest, $transition, $migration, $confirmation, $authorizedActorIdentity);
+                return $this->traceResult($runId, $this->applyV3($payload, $manifest, $transition, $migration, $confirmation, $authorizedActorIdentity, $runId));
             }
             if ($repairOnly && $transition->classification() !== TransitionPlan::REPAIR) {
                 $payload->cleanup();
-                return new PackageLifecycleResult(false, 'rejected', 'Repair requires a same-version target.', $transition, $migration);
+                return $this->traceResult($runId, new PackageLifecycleResult(false, 'rejected', 'Repair requires a same-version target.', $transition, $migration));
             }
             if (!$transition->accepted() || !$migration->isAccepted()) {
                 $reason = $transition->reason() !== '' ? $transition->reason() : $migration->reason();
                 $payload->cleanup();
-                return new PackageLifecycleResult(false, 'rejected', $reason, $transition, $migration);
+                return $this->traceResult($runId, new PackageLifecycleResult(false, 'rejected', $reason, $transition, $migration));
             }
 
             $applyPlan = WebcoreApplyPlan::fromPayload($manifest->payload());
-            $apply = $this->applyCoordinator->execute($applyPlan, $transition, $migration);
+            $traceStage = 'mutation';
+            $this->traceRecord($runId, null, 'mutation', 'apply', 'START');
+            try {
+                $apply = $this->applyCoordinator->execute($applyPlan, $transition, $migration);
+            } catch (\Throwable $exception) {
+                $this->traceRecord($runId, null, 'mutation', 'apply', 'FAILED', $exception->getMessage());
+                throw $exception;
+            }
+            $this->traceRecord($runId, $apply->operationId(), 'mutation', 'apply', $apply->status() === WebcoreApplyResult::AWAITING_WU6 ? 'SUCCESS' : 'FAILED', $apply->reason());
             if ($apply->status() !== WebcoreApplyResult::AWAITING_WU6) {
                 if ($apply->status() === WebcoreApplyResult::FAILED) { $payload->cleanup(); }
-                return new PackageLifecycleResult(false, strtolower($apply->status()), $apply->reason(), $transition, $migration, $apply->operationId());
+                return $this->traceResult($runId, new PackageLifecycleResult(false, strtolower($apply->status()), $apply->reason(), $transition, $migration, $apply->operationId()));
             }
-            $connection = ($this->connection)();
-            $final = $this->healthCoordinator->finalize($apply->operationId(), $manifest->contract(), $applyPlan, $migration, $this->liveGuard, $connection, ($this->runtimeChecks)());
+            $traceStage = 'finalization';
+            $this->traceRecord($runId, $apply->operationId(), 'finalization', 'health_commit', 'START');
+            try {
+                $connection = ($this->connection)();
+                $final = $this->healthCoordinator->finalize($apply->operationId(), $manifest->contract(), $applyPlan, $migration, $this->liveGuard, $connection, ($this->runtimeChecks)());
+            } catch (\Throwable $exception) {
+                $this->traceRecord($runId, $apply->operationId(), 'finalization', 'health_commit', 'FAILED', $exception->getMessage());
+                throw $exception;
+            }
+            $this->traceRecord($runId, $apply->operationId(), 'finalization', 'health_commit', $final->status() === HealthIntegrityCommitResult::COMPLETED ? 'SUCCESS' : 'FAILED', $final->reason());
             if ($final->status() === HealthIntegrityCommitResult::COMPLETED) {
                 $payload->cleanup();
-                return new PackageLifecycleResult(true, 'completed', '', $transition, $migration, $apply->operationId());
+                return $this->traceResult($runId, new PackageLifecycleResult(true, 'completed', '', $transition, $migration, $apply->operationId()));
             }
-            return new PackageLifecycleResult(false, $final->status(), $final->reason(), $transition, $migration, $apply->operationId());
+            return $this->traceResult($runId, new PackageLifecycleResult(false, $final->status(), $final->reason(), $transition, $migration, $apply->operationId()));
         } catch (\Throwable $exception) {
-            return new PackageLifecycleResult(false, $this->isCapabilityFailure($exception) ? 'unavailable' : 'invalid_package', $exception->getMessage());
+            $this->traceRecord($runId, null, $traceStage, 'apply', 'FAILED', $exception->getMessage());
+            return $this->traceResult($runId, new PackageLifecycleResult(false, $this->isCapabilityFailure($exception) ? 'unavailable' : 'invalid_package', $exception->getMessage()));
         }
     }
 
-    private function applyV3(StagedPayload $payload, PackageManifest $manifest, TransitionPlan $transition, CoreMigrationPlan $migration, mixed $confirmation, ?string $authorizedActorIdentity): PackageLifecycleResult
+    private function applyV3(StagedPayload $payload, PackageManifest $manifest, TransitionPlan $transition, CoreMigrationPlan $migration, mixed $confirmation, ?string $authorizedActorIdentity, ?string $runId = null): PackageLifecycleResult
     {
+        $this->traceRecord($runId, null, 'preflight', 'v3_route', 'START');
         if (!$this->committedStore instanceof CommittedLifecycleStateStore
             || !$this->sourceInventoryArtifacts instanceof SourceInventoryArtifactStore
             || !$this->v3Planner instanceof PackageV3SourceRelativePlanner
@@ -483,15 +508,18 @@ final class PackageLifecycleService
             || !$this->v3Applier instanceof PackageOwnedFileApplier
             || !$this->v3ConfirmationAuthority instanceof DestructivePlanConfirmationAuthority
             || !$this->v3RecoveryBoundary instanceof ProtectedWebcoreMutationBoundary) {
+            $this->traceRecord($runId, null, 'preflight', 'v3_route', 'FAILED', 'Manifest-v3 lifecycle composition is unavailable.', ['lifecycle_status' => 'unavailable']);
             $payload->cleanup();
             return new PackageLifecycleResult(false, 'unavailable', 'Manifest-v3 lifecycle composition is unavailable.', $transition, $migration);
         }
         if (!$transition->accepted() || !$migration->isAccepted()) {
             $reason = $transition->reason() !== '' ? $transition->reason() : $migration->reason();
+            $this->traceRecord($runId, null, 'preflight', 'admission', 'FAILED', $reason, ['lifecycle_status' => 'rejected']);
             $payload->cleanup();
             return new PackageLifecycleResult(false, 'rejected', $reason, $transition, $migration);
         }
         if ($migration->migrations() !== [] && !is_callable($this->v3MigrationRunner)) {
+            $this->traceRecord($runId, null, 'preflight', 'migration', 'FAILED', 'Manifest-v3 migration runner is unavailable.', ['lifecycle_status' => 'unavailable']);
             $payload->cleanup();
             return new PackageLifecycleResult(false, 'unavailable', 'Manifest-v3 migration runner is unavailable.', $transition, $migration);
         }
@@ -499,34 +527,60 @@ final class PackageLifecycleService
         $committed = $this->committedStore->read();
         $reference = $committed?->sourceInventoryReference();
         if (!$committed instanceof CommittedLifecycleState || !$reference instanceof SourceInventoryReference) {
+            $this->traceRecord($runId, null, 'preflight', 'source_inventory', 'FAILED', 'Committed manifest-v3 source inventory evidence is unavailable.', ['lifecycle_status' => 'blocked']);
             $payload->cleanup();
             return new PackageLifecycleResult(false, 'blocked', 'Committed manifest-v3 source inventory evidence is unavailable.', $transition, $migration);
         }
 
-        $source = $this->sourceInventoryArtifacts->read($reference);
-        $plan = $this->v3Planner->plan($manifest, $source);
-        $applyPlan = WebcoreApplyPlan::fromPayload($payload);
-        $migrationIdentity = $this->migrationPlanIdentity($migration);
-        $now = gmdate(DATE_ATOM);
-        $operation = new LifecycleOperationRecord(
-            $plan->operationIdentity(), $transition->classification(), $manifest->contract()->targetWebcoreVersion(),
-            $manifest->contract()->releaseIdentity(), $payload->archiveSha256(), $payload->stagingPath(),
-            hash('sha256', implode(':', array_map(static fn (StagedFile $file): string => $file->path() . ':' . $file->sha256(), $payload->files()))),
-            $applyPlan->identity(), LifecycleOperationRecord::PREPARING, 0, null, $migrationIdentity, null, $now, $now
-        );
+        $this->traceRecord($runId, null, 'preflight', 'source_inventory', 'START');
+        try {
+            $source = $this->sourceInventoryArtifacts->read($reference);
+        } catch (\Throwable $exception) {
+            $this->traceRecord($runId, null, 'preflight', 'source_inventory', 'FAILED', $exception->getMessage());
+            throw $exception;
+        }
+        $this->traceRecord($runId, null, 'preflight', 'source_inventory', 'SUCCESS');
+        $this->traceRecord($runId, null, 'preflight', 'v3_route', 'SUCCESS');
+        $this->traceRecord($runId, null, 'operation', 'bind', 'START');
+        try {
+            $plan = $this->v3Planner->plan($manifest, $source);
+            $applyPlan = WebcoreApplyPlan::fromPayload($payload);
+            $migrationIdentity = $this->migrationPlanIdentity($migration);
+            $now = gmdate(DATE_ATOM);
+            $operation = new LifecycleOperationRecord(
+                $plan->operationIdentity(), $transition->classification(), $manifest->contract()->targetWebcoreVersion(),
+                $manifest->contract()->releaseIdentity(), $payload->archiveSha256(), $payload->stagingPath(),
+                hash('sha256', implode(':', array_map(static fn (StagedFile $file): string => $file->path() . ':' . $file->sha256(), $payload->files()))),
+                $applyPlan->identity(), LifecycleOperationRecord::PREPARING, 0, null, $migrationIdentity, null, $now, $now
+            );
+        } catch (\Throwable $exception) {
+            $this->traceRecord($runId, null, 'operation', 'bind', 'FAILED', $exception->getMessage());
+            throw $exception;
+        }
+        $operationId = $plan->operationIdentity();
+        $this->traceRecord($runId, $operationId, 'operation', 'bind', 'SUCCESS');
 
+        $this->traceRecord($runId, $operationId, 'preflight', 'installation_mutex', 'START');
         $lock = $this->mutex->acquire();
-        if (!$lock instanceof InstallationLock) { $payload->cleanup(); return new PackageLifecycleResult(false, 'blocked', 'Another lifecycle operation is already running.', $transition, $migration); }
+        if (!$lock instanceof InstallationLock) {
+            $this->traceRecord($runId, $operationId, 'preflight', 'installation_mutex', 'FAILED', 'Another lifecycle operation is already running.', ['lifecycle_status' => 'blocked']);
+            $payload->cleanup(); return new PackageLifecycleResult(false, 'blocked', 'Another lifecycle operation is already running.', $transition, $migration);
+        }
+        $this->traceRecord($runId, $operationId, 'preflight', 'installation_mutex', 'SUCCESS');
         $session = null;
         try {
+            $this->traceRecord($runId, $operationId, 'preflight', 'maintenance_guard', 'START');
             $this->maintenance->enter($operation);
+            $this->traceRecord($runId, $operationId, 'preflight', 'maintenance_guard', 'SUCCESS');
             if ($plan->removalActions() !== []) {
                 if (is_array($confirmation)) $confirmation = DestructivePlanConfirmation::fromArray($confirmation);
                 if (!$confirmation instanceof DestructivePlanConfirmation) {
+                    $this->traceRecord($runId, $operationId, 'preflight', 'confirmation', 'FAILED', 'Typed destructive confirmation is required.', ['lifecycle_status' => 'rejected']);
                     $this->maintenance->clear($operation->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Typed destructive confirmation is required.'));
                     return new PackageLifecycleResult(false, 'rejected', 'Typed destructive confirmation is required.', $transition, $migration, $plan->operationIdentity());
                 }
                 if ($authorizedActorIdentity !== null && $confirmation->actorAuthorizationEvidence()->actorIdentity() !== $authorizedActorIdentity) {
+                    $this->traceRecord($runId, $operationId, 'preflight', 'actor_authorization', 'FAILED', 'Destructive actor identity is not authorized for this request.', ['lifecycle_status' => 'rejected']);
                     $this->maintenance->clear($operation->advance(LifecycleOperationRecord::COMPLETED, 0, null, null, 'Destructive actor identity is not the current authorized actor.'));
                     return new PackageLifecycleResult(false, 'rejected', 'Destructive actor identity is not authorized for this request.', $transition, $migration, $plan->operationIdentity());
                 }
@@ -540,64 +594,146 @@ final class PackageLifecycleService
             }
 
             $context = new WebcoreMutationContext($operation, $applyPlan, $transition, $migration, $lock, \Copot\Core\BackupRecovery\FilesystemRecoveryPlan::fromV3Plan($plan), $plan);
-            $session = $this->v3RecoveryBoundary->enter($context);
-            $evidence = $session->evidence();
-            if (!isset($evidence['identity'], $evidence['manifest'], $evidence['state'])) throw new \RuntimeException('V3 recovery evidence is incomplete.');
+            $this->traceRecord($runId, $operationId, 'recovery_capture', 'capture', 'START');
+            try {
+                $session = $this->v3RecoveryBoundary->enter($context);
+                $evidence = $session->evidence();
+                if (!isset($evidence['identity'], $evidence['manifest'], $evidence['state'])) throw new \RuntimeException('V3 recovery evidence is incomplete.');
+            } catch (\Throwable $exception) {
+                $this->traceRecord($runId, $operationId, 'recovery_capture', 'capture', 'FAILED', $exception->getMessage());
+                throw $exception;
+            }
             $operation = $operation->bindRecovery((string) $evidence['identity'], (string) $evidence['manifest'], (string) $evidence['state']);
+            $this->traceRecord($runId, $operationId, 'recovery_capture', 'capture', 'SUCCESS', null, [
+                'recovery_identity' => (string) $evidence['identity'],
+                'manifest_identity' => (string) $evidence['manifest'],
+                'recovery_state' => (string) $evidence['state'],
+            ]);
             $this->maintenance->update($operation);
             $session->authorize();
 
             $captured = false;
-            $result = $this->v3Executor->execute(
-                $plan, $payload->withoutPaths([PackageManifestReader::PATH]), $source, $operation, $this->operationStore ?? throw new \RuntimeException('Lifecycle operation store is unavailable.'), $this->v3Applier,
-                $this->liveGuard,
-                static function () use (&$captured): bool { $captured = true; return $captured; },
-                $plan->removalActions() === [] ? null : $this->v3ConfirmationAuthority,
-                $plan->removalActions() === [] ? null : $confirmation
-            );
+            $this->traceRecord($runId, $operationId, 'mutation', 'apply', 'START');
+            try {
+                $result = $this->v3Executor->execute(
+                    $plan, $payload->withoutPaths([PackageManifestReader::PATH]), $source, $operation, $this->operationStore ?? throw new \RuntimeException('Lifecycle operation store is unavailable.'), $this->v3Applier,
+                    $this->liveGuard,
+                    static function () use (&$captured): bool { $captured = true; return $captured; },
+                    $plan->removalActions() === [] ? null : $this->v3ConfirmationAuthority,
+                    $plan->removalActions() === [] ? null : $confirmation
+                );
+            } catch (\Throwable $exception) {
+                $this->traceRecord($runId, $operationId, 'mutation', 'apply', 'FAILED', $exception->getMessage());
+                throw $exception;
+            }
+            $this->traceRecord($runId, $operationId, 'mutation', 'apply', $result->status() === WebcoreApplyResult::AWAITING_WU6 ? 'SUCCESS' : 'FAILED', $result->reason(), [
+                'applied_count' => count($result->appliedPaths()),
+            ]);
             if ($result->status() !== WebcoreApplyResult::AWAITING_WU6) {
-                $session->fail($result->reason());
+                $this->recordRecoveryFailure($runId, $operationId, $session, $result->reason());
                 return new PackageLifecycleResult(false, strtolower($result->status()), $result->reason(), $transition, $migration, $plan->operationIdentity());
             }
             $latest = $this->maintenance->record();
             if (!$latest instanceof LifecycleOperationRecord) throw new \RuntimeException('V3 lifecycle operation disappeared before migration.');
+            $this->traceRecord($runId, $operationId, 'finalization', 'migration', 'START');
             $latest = $latest->advance(LifecycleOperationRecord::MIGRATING, $latest->fileCursor(), $latest->lastVerifiedPath());
             $this->maintenance->update($latest);
-            $migrationResult = $migration->migrations() === []
-                ? new MigrationRunResult(MigrationRunResult::NOOP, [])
-                : ($this->v3MigrationRunner)($migration, $plan->operationIdentity(), $transition->classification());
+            try {
+                $migrationResult = $migration->migrations() === []
+                    ? new MigrationRunResult(MigrationRunResult::NOOP, [])
+                    : ($this->v3MigrationRunner)($migration, $plan->operationIdentity(), $transition->classification());
+            } catch (\Throwable $exception) {
+                $this->traceRecord($runId, $operationId, 'finalization', 'migration', 'FAILED', $exception->getMessage());
+                throw $exception;
+            }
             if (!$migrationResult instanceof MigrationRunResult || $migrationResult->status() === MigrationRunResult::INDETERMINATE) {
                 $reason = $migrationResult instanceof MigrationRunResult ? $migrationResult->reason() : 'V3 migration outcome is indeterminate.';
                 $latest = $this->maintenance->record();
                 if ($latest instanceof LifecycleOperationRecord) $this->maintenance->update($latest->advance(LifecycleOperationRecord::INDETERMINATE, $latest->fileCursor(), $latest->lastVerifiedPath(), MigrationRunResult::INDETERMINATE, $reason));
-                $session->fail($reason);
+                $this->traceRecord($runId, $operationId, 'finalization', 'migration', 'FAILED', $reason, ['lifecycle_status' => 'indeterminate']);
+                $this->recordRecoveryFailure($runId, $operationId, $session, $reason);
                 return new PackageLifecycleResult(false, 'indeterminate', $reason, $transition, $migration, $plan->operationIdentity());
             }
             if (!in_array($migrationResult->status(), [MigrationRunResult::COMPLETED, MigrationRunResult::NOOP], true)) {
                 $reason = $migrationResult->reason();
                 $latest = $this->maintenance->record();
                 if ($latest instanceof LifecycleOperationRecord) $this->maintenance->update($latest->advance(LifecycleOperationRecord::BLOCKED, $latest->fileCursor(), $latest->lastVerifiedPath(), $migrationResult->status(), $reason));
-                $session->fail($reason);
+                $this->traceRecord($runId, $operationId, 'finalization', 'migration', 'FAILED', $reason, ['lifecycle_status' => 'blocked']);
+                $this->recordRecoveryFailure($runId, $operationId, $session, $reason);
                 return new PackageLifecycleResult(false, 'blocked', $reason, $transition, $migration, $plan->operationIdentity());
             }
+            $this->traceRecord($runId, $operationId, 'finalization', 'migration', 'SUCCESS');
             $latest = $this->maintenance->record();
             if (!$latest instanceof LifecycleOperationRecord) throw new \RuntimeException('V3 lifecycle operation disappeared before finalization.');
             $this->maintenance->update($latest->advance(LifecycleOperationRecord::AWAITING_WU6, $latest->fileCursor(), $latest->lastVerifiedPath(), $migrationResult->status()));
-            $session->complete();
-            $final = $this->healthCoordinator->finalizeV3($plan->operationIdentity(), $manifest->contract(), $plan, $applyPlan, $migration, $this->liveGuard, ($this->connection)(), $this->sourceInventoryArtifacts, ($this->runtimeChecks)());
+            $this->traceRecord($runId, $operationId, 'finalization', 'recovery_finalize', 'START');
+            try {
+                $session->complete();
+            } catch (\Throwable $exception) {
+                $this->traceRecord($runId, $operationId, 'finalization', 'recovery_finalize', 'FAILED', $exception->getMessage());
+                throw $exception;
+            }
+            $this->traceRecord($runId, $operationId, 'finalization', 'recovery_finalize', 'SUCCESS');
+            $this->traceRecord($runId, $operationId, 'finalization', 'health_commit', 'START');
+            try {
+                $final = $this->healthCoordinator->finalizeV3($plan->operationIdentity(), $manifest->contract(), $plan, $applyPlan, $migration, $this->liveGuard, ($this->connection)(), $this->sourceInventoryArtifacts, ($this->runtimeChecks)());
+            } catch (\Throwable $exception) {
+                $this->traceRecord($runId, $operationId, 'finalization', 'health_commit', 'FAILED', $exception->getMessage());
+                throw $exception;
+            }
+            $this->traceRecord($runId, $operationId, 'finalization', 'health_commit', $final->status() === HealthIntegrityCommitResult::COMPLETED ? 'SUCCESS' : 'FAILED', $final->reason());
             if ($final->status() === HealthIntegrityCommitResult::COMPLETED) {
                 $payload->cleanup();
                 return new PackageLifecycleResult(true, 'completed', '', $transition, $migration, $plan->operationIdentity());
             }
             return new PackageLifecycleResult(false, strtolower($final->status()), $final->reason(), $transition, $migration, $plan->operationIdentity());
         } catch (\Throwable $exception) {
-            if ($session instanceof ProtectedWebcoreMutationSession) { try { $session->fail($exception->getMessage()); } catch (\Throwable) {} }
+            if ($session instanceof ProtectedWebcoreMutationSession) {
+                $this->recordRecoveryFailure($runId, $operationId ?? null, $session, $exception->getMessage(), true);
+            }
             try { if (($this->maintenance->record()?->phase() ?? null) !== LifecycleOperationRecord::INDETERMINATE) $this->maintenance->update(($this->maintenance->record() ?? $operation)->advance(LifecycleOperationRecord::BLOCKED, 0, null, null, $exception->getMessage())); } catch (\Throwable) {}
             return new PackageLifecycleResult(false, 'blocked', $exception->getMessage(), $transition, $migration, $plan->operationIdentity());
         } finally {
             try { if ($payload instanceof StagedPayload && $this->maintenance->record() === null) $payload->cleanup(); } catch (\Throwable) {}
             $lock->release();
         }
+    }
+
+    private function recordRecoveryFailure(?string $runId, ?string $operationIdentity, ProtectedWebcoreMutationSession $session, string $reason, bool $swallowFailure = false): void
+    {
+        $this->traceRecord($runId, $operationIdentity, 'recovery', 'rollback', 'START', $reason);
+        try {
+            $session->fail($reason);
+            $this->traceRecord($runId, $operationIdentity, 'recovery', 'rollback', 'RECOVERY_RECORDED', null, [
+                'recovery_state' => 'RESTORE_REQUIRED',
+            ]);
+        } catch (\Throwable $exception) {
+            $this->traceRecord($runId, $operationIdentity, 'recovery', 'rollback', 'RECOVERY_RECORD_FAILED', $exception->getMessage(), [
+                'recovery_state' => 'UNKNOWN',
+            ]);
+            if (!$swallowFailure) {
+                throw $exception;
+            }
+        }
+    }
+
+    private function traceRecord(?string $runId, ?string $operationIdentity, string $stage, string $action, string $status, ?string $summary = null, array $extra = []): void
+    {
+        if ($runId === null || !$this->lifecycleTrace instanceof LifecycleTrace) {
+            return;
+        }
+        $this->lifecycleTrace->record($runId, $operationIdentity, $stage, $action, $status, $summary, $extra);
+    }
+
+    private function traceResult(?string $runId, PackageLifecycleResult $result): PackageLifecycleResult
+    {
+        if ($runId !== null) {
+            $this->traceRecord($runId, $result->toArray()['operation_id'] ?? null, 'terminal', 'lifecycle', $result->accepted() ? 'SUCCESS' : 'FAILED', $result->accepted() ? 'SUCCESS' : $result->reason(), [
+                'accepted' => $result->accepted(),
+                'lifecycle_status' => $result->status(),
+            ]);
+        }
+        return $result;
     }
 
     private function migrationPlanIdentity(CoreMigrationPlan $migration): string

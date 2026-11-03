@@ -27,7 +27,7 @@ use PDO;
 
 final class PackageLifecycleFactory
 {
-    public static function forProject(DeploymentContext|string $deployment): PackageLifecycleService
+    public static function forProject(DeploymentContext|string $deployment, ?LifecycleTrace $lifecycleTrace = null): PackageLifecycleService
     {
         $deploymentContext = is_string($deployment)
             ? DeploymentContext::forApplicationRoot($deployment)
@@ -272,7 +272,8 @@ final class PackageLifecycleFactory
                     new PreMutationSettlementEvidenceStore($storage)
                 )
                 : null,
-            $sourceAuthorityRecovery
+            $sourceAuthorityRecovery,
+            $lifecycleTrace
         );
     }
 
