@@ -26,7 +26,7 @@ use PDO;
 
 final class PackageLifecycleFactory
 {
-    public static function forProject(DeploymentContext|string $deployment): PackageLifecycleService
+    public static function forProject(DeploymentContext|string $deployment, ?LifecycleTrace $lifecycleTrace = null): PackageLifecycleService
     {
         $deploymentContext = is_string($deployment)
             ? DeploymentContext::forApplicationRoot($deployment)
@@ -57,10 +57,17 @@ final class PackageLifecycleFactory
         );
         $designatedMigrationConnection = $recoveryComposition?->databaseConnection();
         $normalRecoveryCapture = $recoveryComposition?->normalCaptureService();
+        $applicationEvidenceScope = null;
         $normalRecoveryBoundary = $recoveryComposition?->normalProtectedMutationBoundary(
             $installationIdentity->value(),
             hash('sha256', 'deployment:' . $deploymentContext->appRoot()),
-            $normalRecoveryCapture
+            $normalRecoveryCapture,
+            null,
+            null,
+            null,
+            true,
+            $recoveryComposition?->maintenance instanceof InstallationScopedMaintenanceGuard ? $recoveryComposition->maintenance : null,
+            $applicationEvidenceScope
         );
 
         $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath, $installationIdentity->value());
@@ -232,7 +239,27 @@ final class PackageLifecycleFactory
             $normalRecoveryBoundary,
             $operationStore,
             $v3MigrationRunner,
-            $legacyBootstrap
+            $legacyBootstrap,
+            $lifecycleTrace,
+            static function (LifecycleOperationRecord $operation) use ($recoveryComposition): bool {
+                if (!$recoveryComposition instanceof PackageLifecycleRecoveryComposition
+                    || $operation->recoveryIdentity() === null
+                    || $operation->recoveryManifestIdentity() === null) {
+                    return false;
+                }
+                try {
+                    $decoded = $recoveryComposition->artifacts->readManifest(new \Copot\Core\BackupRecovery\RecoveryIdentity($operation->recoveryIdentity()));
+                    $manifest = $decoded['manifest'] ?? null;
+                    $domains = array_values(array_filter($decoded['artifacts'] ?? [], static fn ($artifact): bool => $artifact instanceof \Copot\Core\BackupRecovery\RecoveryArtifactRecord));
+                    $domainIds = array_map(static fn (\Copot\Core\BackupRecovery\RecoveryArtifactRecord $artifact): string => $artifact->domainIdentifier(), $domains);
+                    return $manifest instanceof \Copot\Core\BackupRecovery\RecoveryManifest
+                        && $manifest->operationIdentity() === $operation->operationId()
+                        && in_array('filesystem.action-linkage', $domainIds, true)
+                        && !in_array('database.webcore', $domainIds, true);
+                } catch (\Throwable) {
+                    return false;
+                }
+            }
         );
     }
 
@@ -448,7 +475,7 @@ final class PackageLifecycleRecoveryComposition
         );
     }
 
-    public function normalProtectedMutationBoundary(string $installationIdentity, string $deploymentIdentity, ?NormalWebcoreRecoveryCaptureService $capture = null, ?DatabaseScope $databaseScope = null, ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null, ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null): ProtectedWebcoreMutationBoundary
+    public function normalProtectedMutationBoundary(string $installationIdentity, string $deploymentIdentity, ?NormalWebcoreRecoveryCaptureService $capture = null, ?DatabaseScope $databaseScope = null, ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null, ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null, bool $filesystemOnly = false, ?InstallationScopedMaintenanceGuard $filesystemGuard = null, ?DatabaseScope $applicationEvidenceScope = null): ProtectedWebcoreMutationBoundary
     {
         return new NormalWebcoreProtectedMutationBoundary(
             $capture ?? $this->normalCaptureService(),
@@ -459,7 +486,10 @@ final class PackageLifecycleRecoveryComposition
             $this->databaseIdentity,
             $databaseScope,
             $databaseConsistencyEvidence,
-            $applicationWriteProtectionEvidence
+            $applicationWriteProtectionEvidence,
+            $filesystemOnly,
+            $filesystemGuard,
+            $applicationEvidenceScope
         );
     }
 }

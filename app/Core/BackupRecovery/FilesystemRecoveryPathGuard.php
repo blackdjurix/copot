@@ -4,6 +4,7 @@ namespace Copot\Core\BackupRecovery;
 
 use Copot\Core\ArchiveEntryPath;
 use Copot\Core\LiveTreePathGuard;
+use Copot\Core\ProtectedResourcePolicy;
 
 final class FilesystemRecoveryPathGuard
 {
@@ -17,6 +18,11 @@ final class FilesystemRecoveryPathGuard
     public function resolve(string $relativePath): string
     {
         $normalized = ArchiveEntryPath::normalize($relativePath);
+        try {
+            ProtectedResourcePolicy::assertMutableRelativePath($normalized);
+        } catch (\Throwable $exception) {
+            throw new FilesystemRecoveryException('Deployment-owned filesystem path is immutable.', 0, $exception);
+        }
         $candidate = $this->liveGuard->destination($normalized);
         $this->assertParents($candidate);
         if (is_link($candidate)) {
@@ -34,6 +40,11 @@ final class FilesystemRecoveryPathGuard
     public function ensureParent(string $relativePath): string
     {
         $normalized = ArchiveEntryPath::normalize($relativePath);
+        try {
+            ProtectedResourcePolicy::assertMutableRelativePath($normalized);
+        } catch (\Throwable $exception) {
+            throw new FilesystemRecoveryException('Deployment-owned filesystem path is immutable.', 0, $exception);
+        }
         $segments = ArchiveEntryPath::segments($normalized);
         array_pop($segments);
         $current = $this->liveRoot();

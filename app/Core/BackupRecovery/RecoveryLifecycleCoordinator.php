@@ -9,6 +9,8 @@ final class RecoveryLifecycleCoordinator
 {
     /** @var array<string, array{application: ApplicationWriteProtectionEvidence, database: ScopedDatabaseConsistencyEvidence}> */
     private array $scopedEvidence = [];
+    /** @var array<string, ApplicationWriteProtectionEvidence> */
+    private array $filesystemEvidence = [];
     public function __construct(
         private RecoveryLifecycleStore $store,
         private InstallationMutex $mutex,
@@ -18,6 +20,12 @@ final class RecoveryLifecycleCoordinator
 
     public function create(RecoveryLifecycleRecord $record): RecoveryLifecycleRecord
     { $this->store->create($record); return $record; }
+
+    public function read(RecoveryIdentity $identity): RecoveryLifecycleRecord
+    { return $this->store->read($identity); }
+
+    public function maintenanceActive(RecoveryIdentity $identity): bool
+    { return $this->maintenance instanceof RecoveryMaintenanceBoundary && $this->maintenance->isActive($identity); }
 
     public function enterMaintenance(RecoveryIdentity $identity): void
     { if ($this->maintenance === null || !$this->maintenance->enter($identity)) throw new RecoveryLifecycleException('Recovery maintenance could not be established.'); }
@@ -32,6 +40,31 @@ final class RecoveryLifecycleCoordinator
         $this->scopedEvidence[$identity->value()] = ['application' => $application, 'database' => $database];
     }
 
+    /** Establish application-writer protection for a filesystem-only cycle. */
+    public function enterFilesystemOnlyMaintenance(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $application): void
+    {
+        if (!$application->isValidAt() || !$application->operationIdentity()->equals($identity)) {
+            throw new RecoveryLifecycleException('Filesystem-only application protection evidence is stale or mismatched.');
+        }
+        if (!$this->maintenance instanceof InstallationScopedMaintenanceGuard
+            || !$this->maintenance->enterScoped($identity, $application)) {
+            throw new RecoveryLifecycleException('Filesystem-only application-write protection could not be established.');
+        }
+        $this->filesystemEvidence[$identity->value()] = $application;
+    }
+
+    /** Re-adopt a durable application Guard after process reconstruction. */
+    public function resumeFilesystemOnlyMaintenance(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $application): void
+    {
+        if (!$application->isValidAt() || !$application->operationIdentity()->equals($identity)
+            || !$this->maintenance instanceof InstallationScopedMaintenanceGuard
+            || !$this->maintenance->scopedActive($identity, $application)
+            || !$this->maintenance->enter($identity)) {
+            throw new RecoveryLifecycleException('Durable filesystem-only application protection is unavailable for resume.');
+        }
+        $this->filesystemEvidence[$identity->value()] = $application;
+    }
+
     public function scopedProtectionMatches(RecoveryIdentity $identity, ScopedDatabaseConsistencyEvidence $database): bool
     {
         $evidence = $this->scopedEvidence[$identity->value()] ?? null;
@@ -40,6 +73,7 @@ final class RecoveryLifecycleCoordinator
             && $database->isValidAt()
             && $evidence['application']->operationIdentity()->equals($identity)
             && $database->operationIdentity()->equals($identity)
+            && $evidence['application']->scope() instanceof DatabaseScope
             && $evidence['application']->scope()->identity() === $database->scope()->identity()
             && $evidence['database']->identity() === $database->identity()
             && $this->maintenance instanceof InstallationScopedMaintenanceGuard
@@ -47,7 +81,7 @@ final class RecoveryLifecycleCoordinator
     }
 
     public function leaveMaintenance(RecoveryIdentity $identity): void
-    { unset($this->scopedEvidence[$identity->value()]); if ($this->maintenance === null || !$this->maintenance->leave($identity)) throw new RecoveryLifecycleException('Recovery maintenance could not be released.'); }
+    { unset($this->scopedEvidence[$identity->value()], $this->filesystemEvidence[$identity->value()]); if ($this->maintenance === null || !$this->maintenance->leave($identity)) throw new RecoveryLifecycleException('Recovery maintenance could not be released.'); }
 
     public function transition(RecoveryIdentity $identity, string $state, string $reason = ''): RecoveryLifecycleRecord
     { return $this->store->transition($identity, $state, $reason); }
@@ -59,11 +93,19 @@ final class RecoveryLifecycleCoordinator
     { $record = $this->store->read($identity); if (!in_array($record->state(), [RecoveryLifecycleState::CAPTURED, RecoveryLifecycleState::READY], true)) throw new RecoveryLifecycleException('Recovery confirmation is not allowed in the current state.'); $next = $record->withConfirmation($identity, $manifestIdentity, $targetIdentity); $this->store->save($next); return $next; }
 
     /** The returned permit must be held for the complete caller-controlled mutation interval. */
-    public function authorizeMutation(RecoveryIdentity $identity, string $manifestIdentity, string $targetIdentity, ?DatabaseQuiescenceLease $existingLease = null, ?ScopedDatabaseConsistencyEvidence $scopedDatabase = null): RecoveryMutationPermit
+    public function authorizeMutation(RecoveryIdentity $identity, string $manifestIdentity, string $targetIdentity, ?DatabaseQuiescenceLease $existingLease = null, ?ScopedDatabaseConsistencyEvidence $scopedDatabase = null, ?ApplicationWriteProtectionEvidence $filesystemApplication = null, bool $filesystemOnly = false): RecoveryMutationPermit
     {
         $record = $this->store->read($identity);
         if ($record->state() !== RecoveryLifecycleState::READY || !$record->captureComplete() || !$record->confirmationMatches($identity, $manifestIdentity, $targetIdentity)) throw new RecoveryLifecycleException('Recovery mutation prerequisites are not satisfied.');
         if ($this->maintenance === null || !$this->maintenance->isActive($identity)) throw new RecoveryLifecycleException('Recovery maintenance is unavailable; mutation is blocked.');
+        if ($filesystemOnly) {
+            if ($existingLease !== null || $scopedDatabase !== null || !$filesystemApplication instanceof ApplicationWriteProtectionEvidence
+                || !$this->filesystemProtectionMatches($identity, $filesystemApplication)) {
+                throw new RecoveryLifecycleException('Filesystem-only recovery protection is stale or incomplete.');
+            }
+            try { $this->store->markMutationStarting($identity); } catch (\Throwable $e) { throw $e; }
+            return new RecoveryMutationPermit(null);
+        }
         if ($existingLease === null && $scopedDatabase instanceof ScopedDatabaseConsistencyEvidence && !$this->scopedProtectionMatches($identity, $scopedDatabase)) {
             throw new RecoveryLifecycleException('Scoped protection or database consistency evidence is stale or mismatched.');
         }
@@ -103,12 +145,23 @@ final class RecoveryLifecycleCoordinator
     }
     public function mutex(): ?InstallationLock { return $this->mutex->acquire(); }
 
+    private function filesystemProtectionMatches(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $application): bool
+    {
+        return isset($this->filesystemEvidence[$identity->value()])
+            && $this->filesystemEvidence[$identity->value()]->identity() === $application->identity()
+            && $application->isValidAt()
+            && $application->operationIdentity()->equals($identity)
+            && $this->maintenance instanceof InstallationScopedMaintenanceGuard
+            && $this->maintenance->scopedActive($identity, $application);
+    }
+
     private function assertScopedEvidence(RecoveryIdentity $identity, ApplicationWriteProtectionEvidence $application, ScopedDatabaseConsistencyEvidence $database): void
     {
         if (!$application->isValidAt()
             || !$database->isValidAt()
             || !$application->operationIdentity()->equals($identity)
             || !$database->operationIdentity()->equals($identity)
+            || !($application->scope() instanceof DatabaseScope)
             || $application->scope()->identity() !== $database->scope()->identity()) {
             throw new RecoveryLifecycleException('Scoped protection or database consistency evidence is stale or mismatched.');
         }

@@ -2,6 +2,7 @@
 namespace Copot\Core\BackupRecovery;
 
 use Copot\Core\WebcoreApplyPlan;
+use Copot\Core\V3SourceRelativePlan;
 
 final class NormalWebcoreRecoveryCaptureRequest
 {
@@ -20,7 +21,10 @@ final class NormalWebcoreRecoveryCaptureRequest
         private ?FilesystemRecoveryPlan $filesystemPlan = null,
         private ?DatabaseScope $databaseScope = null,
         private ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null,
-        private ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null
+        private ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null,
+        private ?V3SourceRelativePlan $orderedV3Plan = null,
+        private bool $filesystemOnly = false,
+        private ?string $recoveryAttemptIdentity = null
     ) {}
     public function operationId(): string { return $this->operationId; }
     public function installationIdentity(): string { return $this->installationIdentity; }
@@ -37,4 +41,7 @@ final class NormalWebcoreRecoveryCaptureRequest
     public function databaseScope(): ?DatabaseScope { return $this->databaseScope; }
     public function databaseConsistencyEvidence(): ?ScopedDatabaseConsistencyEvidence { return $this->databaseConsistencyEvidence; }
     public function applicationWriteProtectionEvidence(): ?ApplicationWriteProtectionEvidence { return $this->applicationWriteProtectionEvidence; }
+    public function orderedV3Plan(): ?V3SourceRelativePlan { return $this->orderedV3Plan; }
+    public function filesystemOnly(): bool { return $this->filesystemOnly; }
+    public function recoveryAttemptIdentity(): ?string { return $this->recoveryAttemptIdentity; }
 }

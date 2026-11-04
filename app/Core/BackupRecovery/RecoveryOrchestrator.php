@@ -86,6 +86,7 @@ final class RecoveryOrchestrator
             || !$database->isValidAt()
             || !$application->operationIdentity()->equals($identity)
             || !$database->operationIdentity()->equals($identity)
+            || !($application->scope() instanceof DatabaseScope)
             || $application->scope()->identity() !== $database->scope()->identity()) {
             throw new RecoveryLifecycleException('Scoped protection or database consistency evidence is stale or mismatched.');
         }

@@ -160,7 +160,8 @@ $loadAdministratorSetup = function () use ($basePath, $installationState): array
         ),
         $installationState,
         new CommittedLifecycleStateStore($basePath . '/storage'),
-        new InstallationMutex($basePath . '/storage')
+        new InstallationMutex($basePath . '/storage'),
+        $deploymentContext
     );
 
     return [true, $setup->administratorExists(), $setup, $finalizer];
@@ -286,7 +287,9 @@ if ($installationStateError) {
                         new InstallerDatabaseProbe(5, new InstallerOwnershipProofAssembler($basePath . '/storage', new CoreMigrationRegistry('copot-core-current', []))),
                         new InstallerSchemaRunner($basePath . '/database/schema.sql'),
                         new InstallerEnvironmentWriter($basePath . '/.env'),
-                        new InstallationMutex($basePath . '/storage')
+                        new InstallationMutex($basePath . '/storage'),
+                        null,
+                        $deploymentContext
                     );
                     $result = $committer->commit([
                         'host' => (string) ($stagedDatabase['host'] ?? ''),

@@ -93,6 +93,11 @@ class InstallationState
         return is_dir($this->storagePath) && is_writable($this->storagePath);
     }
 
+    public function storagePath(): string
+    {
+        return $this->storagePath;
+    }
+
     public function createMarker(string $version): void
     {
         if (!preg_match(self::VERSION_PATTERN, $version)) {

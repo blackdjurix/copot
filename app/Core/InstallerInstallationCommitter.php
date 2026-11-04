@@ -14,7 +14,8 @@ final class InstallerInstallationCommitter
         private InstallerSchemaRunner $schema,
         private InstallerEnvironmentWriter $environment,
         private InstallationMutex $mutex,
-        private ?InstallerAdoptionIntegration $adoptionIntegration = null
+        private ?InstallerAdoptionIntegration $adoptionIntegration = null,
+        private ?DeploymentContext $deploymentContext = null
     ) {
     }
 
@@ -108,7 +109,8 @@ final class InstallerInstallationCommitter
                 new ModuleManager(new ModuleDiscovery($this->basePath . '/modules'), new ModuleRepository($database)),
                 $this->installationState,
                 new CommittedLifecycleStateStore($this->basePath . '/storage'),
-                $this->mutex
+                $this->mutex,
+                $this->deploymentContext
             );
             (new InstallationIdentityStore($this->basePath . '/storage'))->getOrCreate();
             $finalization = $finalizer->finalizePrepared();

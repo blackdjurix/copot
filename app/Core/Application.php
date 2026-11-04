@@ -55,9 +55,11 @@ class Application
     private SystemHealthReportProvider $systemHealthReports;
     private ?PackageLifecycleService $packageLifecycle = null;
     private InstallationScopedMaintenanceGuard $writeProtection;
+    private ?LifecycleTrace $lifecycleTrace;
 
-    public function __construct(DeploymentContext|string $deployment, ?callable $systemHealthReportResolver = null)
+    public function __construct(DeploymentContext|string $deployment, ?callable $systemHealthReportResolver = null, ?LifecycleTrace $lifecycleTrace = null)
     {
+        $this->lifecycleTrace = $lifecycleTrace;
         $this->deployment = is_string($deployment)
             ? DeploymentContext::forLegacyApplication($deployment)
             : $deployment;
@@ -270,7 +272,7 @@ class Application
 
     public function packageLifecycle(): PackageLifecycleService
     {
-        return $this->packageLifecycle ??= PackageLifecycleFactory::forProject($this->deployment);
+        return $this->packageLifecycle ??= PackageLifecycleFactory::forProject($this->deployment, $this->lifecycleTrace);
     }
 
     public function runtimeRegistry(): RuntimeRegistry

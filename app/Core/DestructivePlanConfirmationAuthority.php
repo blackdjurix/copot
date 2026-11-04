@@ -48,6 +48,25 @@ final class DestructivePlanConfirmationAuthority
         return $saved instanceof LifecycleOperationRecord && $saved->destructiveConfirmationConsumedAt() !== null;
     }
 
+    /**
+     * Validate the persisted proof for a same-operation recovery continuation.
+     * This does not create or re-authorize a new destructive request; it only
+     * permits replay after the already-authorized mutation was restored.
+     */
+    public function verifyConsumedContinuation(LifecycleOperationRecord $record, V3SourceRelativePlan $plan): bool
+    {
+        if ($plan->removalActions() === []
+            || $record->operationId() !== $plan->operationIdentity()
+            || $record->destructiveConfirmationIdentity() === null
+            || $record->destructiveConfirmationActorIdentity() === null
+            || $record->destructiveConfirmationRemovalSetDigest() !== $plan->removalSetDigest()
+            || $record->destructiveConfirmationConsumedAt() === null) {
+            return false;
+        }
+        if ($this->planVerifier !== null && !(($this->planVerifier)($plan))) { return false; }
+        return true;
+    }
+
     private function eligibleRecord(DestructivePlanConfirmation $confirmation, V3SourceRelativePlan $plan): LifecycleOperationRecord
     {
         if ($plan->removalActions() === []) { throw new \RuntimeException('Destructive confirmation requires a non-empty removal set.'); }

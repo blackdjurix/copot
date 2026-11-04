@@ -23,11 +23,12 @@ function fail(string $message): void
     exit(1);
 }
 
-/** @return array{manifest_version:int, output:?string} */
+/** @return array{manifest_version:int, output:?string, filesystem_only:bool} */
 function parseOptions(array $arguments): array
 {
-    $manifestVersion = PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION;
+    $manifestVersion = PackageContract::V3_MANIFEST_CONTRACT_VERSION;
     $output = null;
+    $filesystemOnly = false;
 
     for ($index = 1, $count = count($arguments); $index < $count; $index++) {
         $argument = $arguments[$index];
@@ -53,14 +54,21 @@ function parseOptions(array $arguments): array
             $output = $arguments[++$index];
             continue;
         }
+        if ($argument === '--filesystem-only') {
+            $filesystemOnly = true;
+            continue;
+        }
         fail('unsupported option: ' . $argument);
     }
 
     if ($output === '') {
         fail('output path cannot be empty.');
     }
+    if ($filesystemOnly && $manifestVersion !== PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
+        fail('--filesystem-only requires manifest version 3.');
+    }
 
-    return ['manifest_version' => $manifestVersion, 'output' => $output];
+    return ['manifest_version' => $manifestVersion, 'output' => $output, 'filesystem_only' => $filesystemOnly];
 }
 
 /**
@@ -338,9 +346,13 @@ if (PHP_SAPI !== 'cli') {
 
 $options = parseOptions($argv);
 $manifestVersion = $options['manifest_version'];
+$filesystemOnly = $options['filesystem_only'];
 
 $manifest = loadManifest(__DIR__ . '/package_manifest.php');
 $files = collectPackageFiles($basePath, $manifest['include'], $manifest['exclude']);
+if ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
+    unset($files['public/.htaccess']);
+}
 
 if ($files === []) {
     fail('manifest did not select any files.');
@@ -362,7 +374,7 @@ $targetInventory = null;
 
 $distPath = $basePath . DIRECTORY_SEPARATOR . 'dist';
 
-$packageName = 'copot-v' . $version . ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION ? '-v3' : '') . '.zip';
+$packageName = 'copot-v' . $version . '.zip';
 $targetPath = $options['output'] ?? ($distPath . DIRECTORY_SEPARATOR . $packageName);
 $targetDirectory = dirname($targetPath);
 if (!is_dir($targetDirectory) && !mkdir($targetDirectory, 0775, true)) {
@@ -391,7 +403,7 @@ foreach ($files as $relative => $source) {
 }
 
 if ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
-    foreach (['public/.htaccess', 'routes/site_settings.php'] as $requiredPolicyPath) {
+    foreach (['routes/site_settings.php'] as $requiredPolicyPath) {
         if (!isset($files[$requiredPolicyPath])) {
             fail('v3 packaging policy cannot determine ownership for required path: ' . $requiredPolicyPath);
         }
@@ -413,12 +425,14 @@ $manifestData = [
     'source_compatibility' => ['minimum_source_version' => '0.0.0', 'maximum_source_version' => null],
     'runtime_compatibility' => [
         'minimum_php_version' => '8.2.0',
-        'minimum_database_versions' => ['mysql' => '8.0.0'],
+        'minimum_database_versions' => $filesystemOnly ? [] : ['mysql' => '8.0.0'],
         'required_extensions' => ['json', 'pdo', 'pdo_mysql', 'session', 'filter', 'zip'],
     ],
     'inventory' => $inventory,
-    'migration_declaration' => ['declares_core_migrations' => true, 'declaration_identity' => Copot\Core\CoreMigrationRegistry::IDENTITY],
-    'target_requirements' => (new Copot\Core\PackageTargetRequirements([
+    'migration_declaration' => $filesystemOnly
+        ? ['declares_core_migrations' => false, 'declaration_identity' => null]
+        : ['declares_core_migrations' => true, 'declaration_identity' => Copot\Core\CoreMigrationRegistry::IDENTITY],
+    'target_requirements' => $filesystemOnly ? [] : (new Copot\Core\PackageTargetRequirements([
         new Copot\Core\PackageTargetRequirement(
             Copot\Core\PackageTargetRequirement::SCHEMA,
             'webcore',
@@ -478,7 +492,7 @@ try {
     @unlink($manifestPath);
 }
 
-if ($manifestVersion === PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION && $options['output'] === null) {
+if ($options['output'] === null) {
     echo 'Built dist/' . $packageName . ' with ' . count($files) . ' files.' . PHP_EOL;
 } else {
     echo 'Built ' . $targetPath . ' with ' . count($files) . ' files.' . PHP_EOL;
@@ -492,10 +506,10 @@ if ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
         'copot-v' . $version,
         $sourceTreeIdentity !== '' ? $sourceTreeIdentity : null,
         new Copot\Core\PackageCompatibility('0.0.0'),
-        new Copot\Core\PackageRuntimeCompatibility('8.2.0', ['mysql' => '8.0.0'], ['json', 'pdo', 'pdo_mysql', 'session', 'filter', 'zip']),
+        new Copot\Core\PackageRuntimeCompatibility('8.2.0', $filesystemOnly ? [] : ['mysql' => '8.0.0'], ['json', 'pdo', 'pdo_mysql', 'session', 'filter', 'zip']),
         array_map(static fn (array $entry): Copot\Core\PackageInventoryEntry => new Copot\Core\PackageInventoryEntry($entry['path'], $entry['byte_size'], $entry['sha256'], $entry['ownership']),
             $inventory),
-        new Copot\Core\PackageMigrationDeclaration(true, Copot\Core\CoreMigrationRegistry::IDENTITY),
+        new Copot\Core\PackageMigrationDeclaration($filesystemOnly ? false : true, $filesystemOnly ? null : Copot\Core\CoreMigrationRegistry::IDENTITY),
         Copot\Core\PackageTargetRequirements::fromArray($manifestData['target_requirements']),
         $targetInventory,
         'full', [], [], []

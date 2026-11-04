@@ -28,7 +28,8 @@ final class FilesystemRecoveryBundleCodec
             'domain_identifier' => self::DOMAIN,
             'apply_plan_identity' => $plan->applyPlanIdentity(),
             'entries' => $rows,
-            'version' => 1,
+            'post_operation_absent_paths' => $plan->postOperationAbsentPaths(),
+            'version' => 2,
         ];
         try {
             $encoded = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
@@ -52,7 +53,9 @@ final class FilesystemRecoveryBundleCodec
         } catch (\Throwable $exception) {
             throw new FilesystemRecoveryException('Filesystem recovery bundle is malformed.', 0, $exception);
         }
-        if (!is_array($payload) || array_keys($payload) !== ['domain_identifier', 'apply_plan_identity', 'entries', 'version'] || $payload['domain_identifier'] !== self::DOMAIN || $payload['version'] !== 1 || !is_string($payload['apply_plan_identity']) || !is_array($payload['entries']) || count($payload['entries']) > self::MAX_ENTRIES) {
+        $isLegacy = is_array($payload) && array_keys($payload) === ['domain_identifier', 'apply_plan_identity', 'entries', 'version'] && $payload['version'] === 1;
+        $isCurrent = is_array($payload) && array_keys($payload) === ['domain_identifier', 'apply_plan_identity', 'entries', 'post_operation_absent_paths', 'version'] && $payload['version'] === 2;
+        if ((!$isLegacy && !$isCurrent) || $payload['domain_identifier'] !== self::DOMAIN || !is_string($payload['apply_plan_identity']) || !is_array($payload['entries']) || count($payload['entries']) > self::MAX_ENTRIES) {
             throw new FilesystemRecoveryException('Filesystem recovery bundle structure is invalid.');
         }
         $entries = [];
@@ -74,6 +77,10 @@ final class FilesystemRecoveryBundleCodec
             $entries[] = $entry;
         }
         if ($entries === []) { throw new FilesystemRecoveryException('Filesystem recovery bundle contains no entries.'); }
-        return ['plan_identity' => $payload['apply_plan_identity'], 'entries' => $entries];
+        $absent = $isCurrent ? $payload['post_operation_absent_paths'] : [];
+        if (!is_array($absent) || array_filter($absent, static fn ($path): bool => !is_string($path)) !== []) {
+            throw new FilesystemRecoveryException('Filesystem recovery post-operation absence binding is invalid.');
+        }
+        return ['plan_identity' => $payload['apply_plan_identity'], 'entries' => $entries, 'post_operation_absent_paths' => array_values($absent)];
     }
 }

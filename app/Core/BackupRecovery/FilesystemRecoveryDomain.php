@@ -35,7 +35,7 @@ final class FilesystemRecoveryDomain
             if ($exception instanceof FilesystemRecoveryException) { throw $exception; }
             throw new FilesystemRecoveryException('Filesystem recovery capture failed.', 0, $exception);
         }
-        $capturedPlan = FilesystemRecoveryPlan::fromCapturedEntries($plan->applyPlanIdentity(), $captured);
+        $capturedPlan = FilesystemRecoveryPlan::fromCapturedEntries($plan->applyPlanIdentity(), $captured, $plan->postOperationAbsentPaths());
         $bytes = (new FilesystemRecoveryBundleCodec())->encode($capturedPlan, $captured);
         $artifactIdentity = hash('sha256', $bytes);
         return new FilesystemRecoveryCapture($capturedPlan, $captured, $bytes, new RecoveryArtifactRecord(self::DOMAIN, $artifactIdentity, strlen($bytes)), new RecoveryDomainIdentity(self::DOMAIN, self::DOMAIN, $plan->applyPlanIdentity(), $artifactIdentity));
@@ -47,6 +47,11 @@ final class FilesystemRecoveryDomain
         try {
             $decoded = (new FilesystemRecoveryBundleCodec())->decode($this->artifactStore->readArtifact($recoveryIdentity, $artifact));
             if ($decoded['plan_identity'] !== $plan->applyPlanIdentity()) { throw new FilesystemRecoveryException('Filesystem recovery apply-plan identity changed.'); }
+            $expectedAbsent = $plan->postOperationAbsentPaths();
+            sort($expectedAbsent, SORT_STRING);
+            $actualAbsent = $decoded['post_operation_absent_paths'];
+            sort($actualAbsent, SORT_STRING);
+            if ($actualAbsent !== $expectedAbsent) { throw new FilesystemRecoveryException('Filesystem recovery post-operation state changed.'); }
             $expected = [];
             foreach ($plan->entries() as $planned) { $expected[$planned->path()] = $planned; }
             if (count($decoded['entries']) !== count($expected)) { throw new FilesystemRecoveryException('Filesystem recovery scope changed.'); }
@@ -58,7 +63,7 @@ final class FilesystemRecoveryDomain
                 if ($entry->preOperationState() === FilesystemRecoveryEntry::ABSENT_BEFORE_OPERATION) {
                     $this->restoreAbsent($path, $entry);
                 } else {
-                    $this->restoreExisting($path, $entry);
+                    $this->restoreExisting($path, $entry, in_array($entry->path(), $expectedAbsent, true));
                 }
                 $completed[] = $entry->path();
                 if ($progress !== null) { $progress(count($completed), $entry->path()); }
@@ -78,15 +83,25 @@ final class FilesystemRecoveryDomain
         if (file_exists($path) || is_link($path)) { throw new FilesystemRecoveryException('Operation-created filesystem path remained after removal.'); }
     }
 
-    private function restoreExisting(string $path, FilesystemRecoveryEntry $entry): void
+    private function restoreExisting(string $path, FilesystemRecoveryEntry $entry, bool $postOperationAbsent = false): void
     {
-        if (!file_exists($path)) { throw new FilesystemRecoveryException('Expected existing filesystem path disappeared.'); }
+        if (!file_exists($path)) {
+            if (!$postOperationAbsent) { throw new FilesystemRecoveryException('Expected existing filesystem path disappeared.'); }
+            $this->writePreImage($path, $entry, false);
+            return;
+        }
         $this->assertRegular($path);
         $currentSize = @filesize($path);
         $currentHash = @hash_file('sha256', $path);
         if ($currentSize === $entry->preOperationSize() && $currentHash === $entry->preOperationHash()) { return; }
+        if ($postOperationAbsent) { throw new FilesystemRecoveryException('Unexpected filesystem drift detected.'); }
         if ($currentSize !== $entry->targetSize() || $currentHash !== $entry->targetHash()) { throw new FilesystemRecoveryException('Unexpected filesystem drift detected.'); }
 
+        $this->writePreImage($path, $entry, true);
+    }
+
+    private function writePreImage(string $path, FilesystemRecoveryEntry $entry, bool $replaceExisting): void
+    {
         $this->guard->ensureParent($entry->path());
         $temporary = dirname($path) . DIRECTORY_SEPARATOR . '.recovery-restore-' . bin2hex(random_bytes(16)) . '.tmp';
         $handle = @fopen($temporary, 'xb');
@@ -109,7 +124,11 @@ final class FilesystemRecoveryDomain
         } finally { fclose($handle); }
 
         try {
-            $this->assertCurrentIdentity($path, $entry->targetSize(), $entry->targetHash());
+            if ($replaceExisting) {
+                $this->assertCurrentIdentity($path, $entry->targetSize(), $entry->targetHash());
+            } elseif (file_exists($path)) {
+                throw new FilesystemRecoveryException('Filesystem restore destination changed before activation.');
+            }
             if (!@rename($temporary, $path)) { throw new FilesystemRecoveryException('Filesystem restore activation failed.'); }
             if (!is_file($path) || @filesize($path) !== $entry->preOperationSize() || @hash_file('sha256', $path) !== $entry->preOperationHash()) {
                 throw new FilesystemRecoveryException('Filesystem restore identity verification failed.');

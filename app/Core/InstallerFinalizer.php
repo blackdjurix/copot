@@ -21,7 +21,8 @@ class InstallerFinalizer
         private ModuleManager $modules,
         private InstallationState $installationState,
         private CommittedLifecycleStateStore $committedLifecycleState,
-        private InstallationMutex $mutex
+        private InstallationMutex $mutex,
+        private ?DeploymentContext $deploymentContext = null
     ) {
     }
 
@@ -51,19 +52,44 @@ class InstallerFinalizer
         }
         $this->validateFirstAdministrator();
         $this->validateInitialSettings();
-        $this->committedLifecycleState->commit(
+        $inventoryRoots = $this->inventoryRoots();
+        $inventory = (new CanonicalSourceInventoryBuilder(...$inventoryRoots))->capture();
+        $artifacts = new SourceInventoryArtifactStore($this->installationState->storagePath());
+        $source = $artifacts->publish(
+            $inventory,
+            'copot-v' . Version::CURRENT,
+            PackageContract::V3_MANIFEST_CONTRACT_VERSION
+        );
+        $state = new CommittedLifecycleState(
+            Version::CURRENT,
+            'copot-v' . Version::CURRENT,
+            null,
+            PackageContract::V3_MANIFEST_CONTRACT_VERSION,
+            'canonical-current',
+            CoreMigrationStateIdentity::fromRecords([]),
+            new \DateTimeImmutable('now'),
+            null,
+            $source->reference()
+        );
+        $this->committedLifecycleState->commitWithSourceInventory(
             $this->installationState,
-            new CommittedLifecycleState(
-                Version::CURRENT,
-                'copot-v' . Version::CURRENT,
-                null,
-                PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION,
-                'canonical-current',
-                CoreMigrationStateIdentity::fromRecords([]),
-                new \DateTimeImmutable('now')
-            )
+            $state,
+            $artifacts,
+            $source
         );
         return ['version' => Version::CURRENT, 'theme' => null, 'modules' => []];
+    }
+
+    /** @return array{0:string,1:?string} */
+    private function inventoryRoots(): array
+    {
+        if ($this->deploymentContext instanceof DeploymentContext) {
+            return [$this->deploymentContext->appRoot(), $this->deploymentContext->publicRoot()];
+        }
+
+        $appRoot = dirname($this->installationState->storagePath());
+        $publicRoot = $appRoot . DIRECTORY_SEPARATOR . 'public';
+        return [$appRoot, is_dir($publicRoot) ? $publicRoot : null];
     }
 
     private function validateFirstAdministrator(): void

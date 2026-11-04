@@ -28,16 +28,18 @@ final class V3ExplicitApplyExecutor
         ?DestructivePlanConfirmationAuthority $confirmationAuthority = null,
         ?DestructivePlanConfirmation $confirmation = null,
         ?callable $journal = null,
-        ?callable $beforeActivation = null
+        ?callable $beforeActivation = null,
+        bool $allowConsumedContinuation = false
     ): WebcoreApplyResult {
         $mutationStarted = false;
         try {
+            $this->assertProtectedMutationFree($plan);
             $this->verifyOperation($plan, $operation);
             $this->verifyPayload($plan, $payload);
             $this->verifySourceState($plan, $source, $guard);
 
             $hasRemovals = $plan->removalActions() !== [];
-            if ($hasRemovals && (!$confirmationAuthority instanceof DestructivePlanConfirmationAuthority || !$confirmation instanceof DestructivePlanConfirmation)) {
+            if ($hasRemovals && !$confirmationAuthority instanceof DestructivePlanConfirmationAuthority) {
                 return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Typed destructive confirmation is required.');
             }
             if (!$captureBeforeMutation($plan, $operation)) {
@@ -47,14 +49,26 @@ final class V3ExplicitApplyExecutor
             // Consume the typed proof while the operation is still at its
             // pre-mutation boundary. The receipt is single-use even when a
             // later add or verification fails and a new retry is required.
-            if ($hasRemovals && !$confirmationAuthority->consume($confirmation, $plan)) {
-                return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Destructive confirmation is stale or already consumed.');
+            if ($hasRemovals) {
+                if ($confirmation instanceof DestructivePlanConfirmation) {
+                    if (!$confirmationAuthority->consume($confirmation, $plan)) {
+                        return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Destructive confirmation is stale or already consumed.');
+                    }
+                } elseif (!$allowConsumedContinuation || !$confirmationAuthority->verifyConsumedContinuation($operation, $plan)) {
+                    return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, [], 'Destructive confirmation is required.');
+                }
             }
 
             $delivered = $this->deliveredPayload($plan, $payload);
             if ($delivered->files() !== []) {
                 $mutationStarted = true;
-                $delivery = $deliverer->apply(WebcoreApplyPlan::fromPayload($delivered), null, $beforeActivation);
+                $delivery = $deliverer->apply(
+                    WebcoreApplyPlan::fromPayload($delivered),
+                    function (int $cursor, string $path) use ($operations, $operation): void {
+                        $this->recordProgress($operations, $operation, $cursor, $path);
+                    },
+                    $beforeActivation
+                );
                 if ($delivery->status() !== WebcoreApplyResult::COMPLETED) {
                     $status = $delivery->appliedPaths() === [] ? WebcoreApplyResult::BLOCKED : WebcoreApplyResult::INDETERMINATE;
                     return new WebcoreApplyResult($status, $delivery->appliedPaths(), $delivery->reason());
@@ -90,6 +104,36 @@ final class V3ExplicitApplyExecutor
                 try { $operations->save($latest->advance($phase, $latest->fileCursor(), $latest->lastVerifiedPath(), null, $exception->getMessage())); } catch (\Throwable) { }
             }
             return new WebcoreApplyResult($mutationStarted || ($latest instanceof LifecycleOperationRecord && $latest->fileCursor() > 0) ? WebcoreApplyResult::INDETERMINATE : WebcoreApplyResult::BLOCKED, [], $exception->getMessage(), $operation->operationId());
+        }
+    }
+
+    /** Validate the immutable deployment-owned boundary before any mutation. */
+    private function assertProtectedMutationFree(V3SourceRelativePlan $plan): void
+    {
+        foreach ($plan->actions() as $action) {
+            if (!$action instanceof V3SourceRelativeAction) {
+                throw new \RuntimeException('V3 action is invalid.');
+            }
+            if ($action->action() === V3SourceRelativeAction::RETAIN) {
+                continue;
+            }
+            $sourceAction = in_array($action->action(), [V3SourceRelativeAction::REMOVE, V3SourceRelativeAction::RENAME], true);
+            ProtectedResourcePolicy::assertMutable(
+                $sourceAction ? $action->sourceRoot() : $action->root(),
+                $sourceAction ? $action->sourcePath() : $action->path()
+            );
+            if (in_array($action->action(), [V3SourceRelativeAction::RENAME, V3SourceRelativeAction::REPLACE], true)) {
+                ProtectedResourcePolicy::assertMutable($action->root(), $action->path());
+            }
+        }
+        foreach ($plan->removalActions() as $action) {
+            if (!is_array($action) || !isset($action['source_root'], $action['source_path'])) {
+                throw new \RuntimeException('V3 removal action identity is unavailable.');
+            }
+            ProtectedResourcePolicy::assertMutable($action['source_root'], $action['source_path']);
+            if (($action['target_root'] ?? '') !== '' || ($action['target_path'] ?? '') !== '') {
+                ProtectedResourcePolicy::assertMutable($action['target_root'], $action['target_path']);
+            }
         }
     }
 
@@ -147,6 +191,7 @@ final class V3ExplicitApplyExecutor
     private function removeOne(array $action, LiveTreePathGuard $guard): void
     {
         if (array_keys($action) !== ['kind', 'reason', 'source_root', 'source_path', 'target_root', 'target_path', 'expected_source_byte_size', 'expected_source_sha256']) { throw new \RuntimeException('Removal action shape is invalid.'); }
+        ProtectedResourcePolicy::assertMutable($action['source_root'], $action['source_path']);
         $path = $this->relativePath($action['source_root'], $action['source_path']);
         $destination = $guard->destination($path);
         if (!is_file($destination) || is_link($destination) || @filesize($destination) !== $action['expected_source_byte_size'] || @hash_file('sha256', $destination) !== $action['expected_source_sha256']) { throw new \RuntimeException('Removal source changed before mutation.'); }

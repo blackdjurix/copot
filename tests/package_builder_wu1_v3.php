@@ -28,10 +28,13 @@ if (!extension_loaded('zip')) {
 
 $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-builder-wu1-' . bin2hex(random_bytes(6));
 mkdir($root, 0700, true);
-$run = static function (string $output, ?int $version = null) use ($base): string {
+$run = static function (string $output, ?int $version = null, bool $filesystemOnly = false) use ($base): string {
     $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($base . DIRECTORY_SEPARATOR . 'build' . DIRECTORY_SEPARATOR . 'package.php');
     if ($version !== null) {
         $command .= ' --manifest-version=' . $version;
+    }
+    if ($filesystemOnly) {
+        $command .= ' --filesystem-only';
     }
     $command .= ' --output=' . escapeshellarg($output);
     $pipes = [];
@@ -52,11 +55,13 @@ $run = static function (string $output, ?int $version = null) use ($base): strin
 
 $v3 = $root . DIRECTORY_SEPARATOR . 'v3.zip';
 $v3Second = $root . DIRECTORY_SEPARATOR . 'v3-second.zip';
+$v3Filesystem = $root . DIRECTORY_SEPARATOR . 'v3-filesystem-only.zip';
 $v2 = $root . DIRECTORY_SEPARATOR . 'v2.zip';
 $payload = null;
 try {
-    $firstOutput = $run($v3, 3);
-    $secondOutput = $run($v3Second, 3);
+    $firstOutput = $run($v3);
+    $secondOutput = $run($v3Second);
+    $run($v3Filesystem, null, true);
     $assert(hash_file('sha256', $v3) === hash_file('sha256', $v3Second), 'V3 package output is not deterministic.');
 
     $staging = $root . DIRECTORY_SEPARATOR . 'staging';
@@ -85,7 +90,7 @@ try {
     foreach (['.env', '.copot/package.json', 'storage/.install.lock', 'storage/installed.lock', 'storage/.copot-lifecycle/committed-state.json', 'storage/.copot-lifecycle/installation-identity.json'] as $forbidden) {
         $assert(!in_array($forbidden, $paths, true), 'Runtime-owned path leaked into package inventory: ' . $forbidden);
     }
-    $assert(in_array('public/.htaccess', $paths, true) && in_array('routes/site_settings.php', $paths, true), 'Required source policy paths were silently omitted.');
+    $assert(!in_array('public/.htaccess', $paths, true) && in_array('routes/site_settings.php', $paths, true), 'Deployment-owned .htaccess leaked into V3 package inventory or required policy path was omitted.');
 
     $manifestDigest = PackageV3Identity::manifestDigest($raw);
     $packageIdentity = PackageV3Identity::identity($manifestDigest, $contract->integrityIdentity());
@@ -102,7 +107,7 @@ try {
         }
     }
 
-    $v2Output = $run($v2);
+    $v2Output = $run($v2, 2);
     $payload->cleanup();
     $payload = null;
     $v2Zip = new ZipArchive();
@@ -110,9 +115,18 @@ try {
     $v2Raw = $v2Zip->getFromName(PackageManifestReader::PATH);
     $v2Zip->close();
     $v2Data = json_decode((string) $v2Raw, true, 64, JSON_THROW_ON_ERROR);
-    $assert($v2Data['manifest_contract_version'] === PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION, 'Default builder behavior did not remain V2.');
-    $assert(!array_key_exists('target_inventory', $v2Data), 'Default V2 builder emitted V3 fields.');
+    $assert($v2Data['manifest_contract_version'] === PackageContract::CURRENT_MANIFEST_CONTRACT_VERSION, 'Explicit V2 compatibility builder did not emit V2.');
+    $assert(!array_key_exists('target_inventory', $v2Data), 'Explicit V2 builder emitted V3 fields.');
     $assert(str_contains($v2Output, 'Built ' . $v2), 'V2 output diagnostic changed unexpectedly.');
+
+    $filesystemZip = new ZipArchive();
+    $assert($filesystemZip->open($v3Filesystem) === true, 'Filesystem-only V3 ZIP could not be opened.');
+    $filesystemRaw = $filesystemZip->getFromName(PackageManifestReader::PATH);
+    $filesystemZip->close();
+    $filesystemData = json_decode((string) $filesystemRaw, true, 64, JSON_THROW_ON_ERROR);
+    $assert($filesystemData['runtime_compatibility']['minimum_database_versions'] === [], 'Filesystem-only builder emitted an unconditional database requirement.');
+    $assert($filesystemData['migration_declaration'] === ['declares_core_migrations' => false, 'declaration_identity' => null], 'Filesystem-only builder emitted migration dependency.');
+    $assert($filesystemData['target_requirements'] === [], 'Filesystem-only builder emitted database/schema target requirements.');
 } finally {
     if ($payload !== null) {
         $payload->cleanup();
