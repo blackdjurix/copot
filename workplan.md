@@ -1460,9 +1460,9 @@ Planning action: RETAIN FUTURE ARCHITECTURE CONCEPT / PARTIAL HTACCESS ENFORCEME
 
 ### Alternative C — V3 Simplification C0–C7 Roadmap (Planning Candidate)
 Class: NON-NORMATIVE PLANNING CONTINUITY / ALTERNATIVE C; NOT A NEW WORKSTREAM
-Status: ROADMAP CANDIDATE DURABLY RECORDED / FOUNDATION CONCEPT USER-ACCEPTED DIRECTION / DETAIL C0–C7 NON-NORMATIVE PROPOSAL / C0 ACCEPTED AND CLOSED / C1 PAUSED / C2–C7 PROPOSED, NOT ACCEPTED
+Status: ROADMAP CANDIDATE DURABLY RECORDED / FOUNDATION CONCEPT USER-ACCEPTED DIRECTION / DETAIL C0–C7 NON-NORMATIVE PROPOSAL / C0 ACCEPTED AND CLOSED / C1 V3-NATIVE DIRECTION ACCEPTED / C1 APPLY BLOCKED / C2–C7 PROPOSED, NOT ACCEPTED
 Concept index: `concepts/copot_v3_simplification_foundation_concept.md` [FOUNDATION + DETAILED C0–C7; accepted foundation direction, proposed technical stage detail; non-normative; not a substitute for accepted contracts or an implementation authorization].
-Concept source commit: `5e4fb9a6979a8ba573df25374f097e3ac65f9a1d`.
+Concept source commit (initial): `5e4fb9a6979a8ba573df25374f097e3ac65f9a1d`; C1 V3-native decision revision: `be99a00b4e4f21701081c5a96ffaf1423f5e9d94`.
 Recorded: 2026-11-05 WIB
 
 Purpose: retain the proposed progressive capability sequence for V3-only simplification without granting implementation, operational, promotion, or closure authority. This mapping is a proposed planning label set, not a retrospective renaming of historical C1, not acceptance of seven new Work Units, and not a requirement to execute redundant phases. Original Alternative C objective and controlled-contract-breach sequence remain defined below.
@@ -1470,7 +1470,7 @@ Purpose: retain the proposed progressive capability sequence for V3-only simplif
 | Planning label | Intended capability proof | State and decision gate |
 | --- | --- | --- |
 | C0 — File Cycle preparation | Bounded four-action ADD/REPLACE/REMOVE/RENAME normal and negative-path source/fixture readiness, with Guard, BnR and temporary LifecycleTrace | COMPLETE / ACCEPTED / FORMALLY CLOSED, source `codex/alternative-c-slice-1a@01ba0f033d779d589a3d26da2ff31e6c863c23aa`; not operational acceptance |
-| C1 — First operational File Cycle | Reconcile historical C1 source preparation/advancement with current C0 source authority, then prove actual SDR filesystem-only lifecycle and operation-bound recovery | PREPARATION PARTIAL / SUBSTANTIVE ADVANCEMENT PAUSED; baseline SDR `v3simp_01ba0f03` established; no package apply authorized |
+| C1 — First operational File Cycle | Preserve historical C1 source-preparation identity while proving first operational V3-native filesystem-only lifecycle on a separately authorized new SDR, with verified V3 committed inventory and operation-bound recovery | V3-NATIVE PLANNING DIRECTION ACCEPTED / IMPLEMENTATION READINESS UNVERIFIED / APPLY BLOCKED; existing V2 SDR `v3simp_01ba0f03` preserved, NOT C1 apply target |
 | C2 — Multi-File Cycle | Multiple filesystem actions under one operation, coordinated pre-state capture and full-operation rollback | PROPOSED; classify already-covered C0/C1 evidence before adding tests |
 | C3 — Feature/Capability Cycle | Coherent package-owned capability with multiple files/dependencies, resulting-state verification and safe completion | PROPOSED; only distinct unproven capability delta; no generic ownership refactor |
 | C4 — Database Cycle | Conditional DB requirements, target/scoped identity, migration, consistent capture, rollback and safe finalization | PROPOSED; separate safety and authorization; Guard alone does not prove database consistency |
@@ -1481,16 +1481,17 @@ Purpose: retain the proposed progressive capability sequence for V3-only simplif
 Sequencing rules and boundary:
 - This is a dependency-oriented candidate map, not mandatory rigid seven-slice implementation. Do not repeat accepted proof or reopen C0 without concrete contradictory evidence.
 - The historical `C1` of 2026-10-23 concerned source preparation/advancement. The current C1 planning objective retains this identity and adds the proposed operational File Cycle proof; this mapping does not rewrite historical authorization or status.
-- C1 blockers reported 2026-11-05: absent committed V3 source-inventory authority on v2-installed Checkpoint C baseline; filesystem-only package eligibility/database requirement proof; inferred `.copot/package.json` removal without declared V3 action; operation-bound original-byte recovery/rollback readiness. Current C1 operational outcome is NOT ACCEPTED.
+- Historical C1 read-only audit on 2026-11-05 confirmed the V2-baseline circular dependency and candidate observed fingerprint; that is evidence about the preserved old SDR, NOT a requirement to build new V2→V3 bootstrap compatibility. User subsequently accepted V3-native C1 direction: establish a genuinely V3-native baseline in a distinct, separately authorized SDR. Readiness blockers now include native installer/committed source-inventory capability, actual filesystem-only eligibility and declared actions, Guard/BnR bound recovery, and authorization for provisioning/deployment/apply. C1 operational outcome is NOT ACCEPTED; apply remains BLOCKED.
 - Maintenance Guard, Package Lifecycle, and Backup & Recovery remain three candidate peer Webcore-owned services; implementation owner versus candidate capability owner must be distinguished. Address ownership overlaps incrementally only when verified blocker/dependency/risk requires it. T-C01–T-C08 and the temporary capability inventory are NON-NORMATIVE, not mandatory gates.
 - `PUBLIC_ROOT/.htaccess` remains COPOT-scope absolutely immutable. File Cycle must not implicitly call database migration/capture, global quiescence, or DB health when no actual requirement applies; real database requirements still require independent evidence.
-- Preserve C0 source/evidence, historical branch/state identities, existing accepted milestones, current SDR provenance, and explicit per-operation authorization. Source acceptance, publication, deployment, operational readiness, human acceptance and Alternative C closure are distinct.
+- V3-only is the forward execution direction; legacy V2 execution is to be unused in C1–C6, with physical legacy-source removal deferred until proven replacement and separately authorized bounded cleanup (or earlier per-slice retirement where individually proven safe). Non-use remains a target requiring technical verification, not a presently verified blanket claim. Existing V2/existing-install normative obligations require explicit Controlled Contract Breach treatment where applicable; no silent contract repeal.
+- Preserve C0 source/evidence, historical branch/state identities, existing accepted milestones, old V2 SDR provenance, and explicit per-operation authorization. Source acceptance, publication, deployment, operational readiness, human acceptance and Alternative C closure are distinct.
 - Alternative C Controlled Contract Breach remains ACTIVE / OPEN. Deviations are tracked and cumulative normative amendment is sequenced after Alternative C closure. Do not silently promote roadmap candidates to contracts or permanently accepted architecture.
 - C2–C7 order, names, decomposition, scope and dependencies are REVISABLE and require explicit GPT/user acceptance before authoritative planning lock. Any newly verified overlap may be collapsed, not mechanically repeated.
 
 Evidence references: `docs/devlog.md` 2026-10-23 07:04:38 WIB (historical C1), 2026-11-02 23:36:14 WIB (First File Cycle scope), 2026-11-04 23:04:23 WIB (C0/C1 distinction), 2026-11-05 08:42:13 WIB (C1 baseline), 08:55:06 WIB (C0 closure), 11:19:36 and 11:21:38 WIB (peer-service model and incremental ownership).
 
-Planning action: PERSIST CANDIDATE ROADMAP ONLY / PRESERVE ACCEPTED C0 / KEEP C1 PAUSED / DO NOT AUTHORIZE C2–C7 OR RUNTIME MUTATION
+Planning action: V3-ONLY FORWARD DIRECTION ACCEPTED / PRESERVE OLD V2 SDR / REQUIRE NEW V3-NATIVE BASELINE AND SEPARATE OPERATIONAL AUTHORIZATIONS / C0 CLOSED / C1 APPLY BLOCKED / C2–C7 PROPOSED
 
 ### Alternative C — Controlled Contract Breach Execution Strategy
 Class: ACCEPTED EXECUTION STRATEGY / NON-NORMATIVE PLANNING CONTINUITY
