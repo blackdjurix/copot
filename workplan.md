@@ -1458,6 +1458,38 @@ Relations:
 
 Planning action: RETAIN FUTURE ARCHITECTURE CONCEPT / PARTIAL HTACCESS ENFORCEMENT THROUGH EXISTING DEVIATION ONLY / NO IMPLICIT IMPLEMENTATION OR CONTRACT AUTHORITY
 
+### Alternative C — V3 Simplification C0–C7 Roadmap (Planning Candidate)
+Class: NON-NORMATIVE PLANNING CONTINUITY / ALTERNATIVE C; NOT A NEW WORKSTREAM
+Status: ROADMAP CANDIDATE DURABLY RECORDED / C0 ACCEPTED AND CLOSED / C1 PAUSED / C2–C7 PROPOSED, NOT ACCEPTED
+Recorded: 2026-11-05 WIB
+
+Purpose: retain the proposed progressive capability sequence for V3-only simplification without granting implementation, operational, promotion, or closure authority. This mapping is a proposed planning label set, not a retrospective renaming of historical C1, not acceptance of seven new Work Units, and not a requirement to execute redundant phases. Original Alternative C objective and controlled-contract-breach sequence remain defined below.
+
+| Planning label | Intended capability proof | State and decision gate |
+| --- | --- | --- |
+| C0 — File Cycle preparation | Bounded four-action ADD/REPLACE/REMOVE/RENAME normal and negative-path source/fixture readiness, with Guard, BnR and temporary LifecycleTrace | COMPLETE / ACCEPTED / FORMALLY CLOSED, source `codex/alternative-c-slice-1a@01ba0f033d779d589a3d26da2ff31e6c863c23aa`; not operational acceptance |
+| C1 — First operational File Cycle | Reconcile historical C1 source preparation/advancement with current C0 source authority, then prove actual SDR filesystem-only lifecycle and operation-bound recovery | PREPARATION PARTIAL / SUBSTANTIVE ADVANCEMENT PAUSED; baseline SDR `v3simp_01ba0f03` established; no package apply authorized |
+| C2 — Multi-File Cycle | Multiple filesystem actions under one operation, coordinated pre-state capture and full-operation rollback | PROPOSED; classify already-covered C0/C1 evidence before adding tests |
+| C3 — Feature/Capability Cycle | Coherent package-owned capability with multiple files/dependencies, resulting-state verification and safe completion | PROPOSED; only distinct unproven capability delta; no generic ownership refactor |
+| C4 — Database Cycle | Conditional DB requirements, target/scoped identity, migration, consistent capture, rollback and safe finalization | PROPOSED; separate safety and authorization; Guard alone does not prove database consistency |
+| C5 — Combined File + Database Cycle | Cross-domain operation, interruption/recovery, order and consistency under no assumed cross-domain atomic transaction | PROPOSED; depends on actual separate filesystem/database evidence |
+| C6 — Operational hardening | Interruption, retry, concurrency, crash/disposition, multi-runtime isolation and applicable installer/existing-install behavior | PROPOSED; evaluate coverage continuously rather than defer all safety until C6 |
+| C7 — Alternative C closure evaluation | Evidence-based acceptance, residual legacy dependency disposition, runtime/source reconciliation and recognized closure conditions | PROPOSED LABEL ONLY; closure authority governed by canonical Rule and applicable contracts, never automatically attained |
+
+Sequencing rules and boundary:
+- This is a dependency-oriented candidate map, not mandatory rigid seven-slice implementation. Do not repeat accepted proof or reopen C0 without concrete contradictory evidence.
+- The historical `C1` of 2026-10-23 concerned source preparation/advancement. The current C1 planning objective retains this identity and adds the proposed operational File Cycle proof; this mapping does not rewrite historical authorization or status.
+- C1 blockers reported 2026-11-05: absent committed V3 source-inventory authority on v2-installed Checkpoint C baseline; filesystem-only package eligibility/database requirement proof; inferred `.copot/package.json` removal without declared V3 action; operation-bound original-byte recovery/rollback readiness. Current C1 operational outcome is NOT ACCEPTED.
+- Maintenance Guard, Package Lifecycle, and Backup & Recovery remain three candidate peer Webcore-owned services; implementation owner versus candidate capability owner must be distinguished. Address ownership overlaps incrementally only when verified blocker/dependency/risk requires it. T-C01–T-C08 and the temporary capability inventory are NON-NORMATIVE, not mandatory gates.
+- `PUBLIC_ROOT/.htaccess` remains COPOT-scope absolutely immutable. File Cycle must not implicitly call database migration/capture, global quiescence, or DB health when no actual requirement applies; real database requirements still require independent evidence.
+- Preserve C0 source/evidence, historical branch/state identities, existing accepted milestones, current SDR provenance, and explicit per-operation authorization. Source acceptance, publication, deployment, operational readiness, human acceptance and Alternative C closure are distinct.
+- Alternative C Controlled Contract Breach remains ACTIVE / OPEN. Deviations are tracked and cumulative normative amendment is sequenced after Alternative C closure. Do not silently promote roadmap candidates to contracts or permanently accepted architecture.
+- C2–C7 order, names, decomposition, scope and dependencies are REVISABLE and require explicit GPT/user acceptance before authoritative planning lock. Any newly verified overlap may be collapsed, not mechanically repeated.
+
+Evidence references: `docs/devlog.md` 2026-10-23 07:04:38 WIB (historical C1), 2026-11-02 23:36:14 WIB (First File Cycle scope), 2026-11-04 23:04:23 WIB (C0/C1 distinction), 2026-11-05 08:42:13 WIB (C1 baseline), 08:55:06 WIB (C0 closure), 11:19:36 and 11:21:38 WIB (peer-service model and incremental ownership).
+
+Planning action: PERSIST CANDIDATE ROADMAP ONLY / PRESERVE ACCEPTED C0 / KEEP C1 PAUSED / DO NOT AUTHORIZE C2–C7 OR RUNTIME MUTATION
+
 ### Alternative C — Controlled Contract Breach Execution Strategy
 Class: ACCEPTED EXECUTION STRATEGY / NON-NORMATIVE PLANNING CONTINUITY
 Status: ACTIVE / ALTERNATIVE C OPEN / NOT INDEPENDENT WORKSTREAM
