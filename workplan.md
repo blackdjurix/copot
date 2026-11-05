@@ -1460,7 +1460,9 @@ Planning action: RETAIN FUTURE ARCHITECTURE CONCEPT / PARTIAL HTACCESS ENFORCEME
 
 ### Alternative C — V3 Simplification C0–C7 Roadmap (Planning Candidate)
 Class: NON-NORMATIVE PLANNING CONTINUITY / ALTERNATIVE C; NOT A NEW WORKSTREAM
-Status: ROADMAP CANDIDATE DURABLY RECORDED / C0 ACCEPTED AND CLOSED / C1 PAUSED / C2–C7 PROPOSED, NOT ACCEPTED
+Status: ROADMAP CANDIDATE DURABLY RECORDED / FOUNDATION CONCEPT USER-ACCEPTED DIRECTION / DETAIL C0–C7 NON-NORMATIVE PROPOSAL / C0 ACCEPTED AND CLOSED / C1 PAUSED / C2–C7 PROPOSED, NOT ACCEPTED
+Concept index: `concepts/copot_v3_simplification_foundation_concept.md` [FOUNDATION + DETAILED C0–C7; accepted foundation direction, proposed technical stage detail; non-normative; not a substitute for accepted contracts or an implementation authorization].
+Concept source commit: `5e4fb9a6979a8ba573df25374f097e3ac65f9a1d`.
 Recorded: 2026-11-05 WIB
 
 Purpose: retain the proposed progressive capability sequence for V3-only simplification without granting implementation, operational, promotion, or closure authority. This mapping is a proposed planning label set, not a retrospective renaming of historical C1, not acceptance of seven new Work Units, and not a requirement to execute redundant phases. Original Alternative C objective and controlled-contract-breach sequence remain defined below.
