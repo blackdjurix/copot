@@ -1,6 +1,6 @@
 # COPOT — V3 Simplification Foundation & C0–C7 Capability Roadmap Concept
-Date version: 2026-11-05 15:38:42 WIB
-Status: USER-ACCEPTED FOUNDATION DIRECTION / DETAIL CONCEPT MATERIALIZED / NON-NORMATIVE / C2–C7 EXECUTION TOPOLOGY PROPOSED
+Date version: 2026-11-05 19:12:55 WIB
+Status: USER-ACCEPTED FOUNDATION DIRECTION / C1 V3-NATIVE PLANNING DIRECTION ACCEPTED / DETAIL C2–C7 PROPOSED / NON-NORMATIVE
 Parent objective: Alternative C — Fully Operational Canonical V3 Package Lifecycle and Installation-Scoped Maintenance Guard
 Repository planning index: `workplan.md`, “Alternative C — V3 Simplification C0–C7 Roadmap (Planning Candidate)”
 Implementation anchor: `codex/alternative-c-slice-1a@01ba0f033d779d589a3d26da2ff31e6c863c23aa`
@@ -10,13 +10,13 @@ Source baseline: Ghost Update Checkpoint C `a0b801c81ab15945a708137cea2007a01878
 
 This Concept consolidates the user-accepted V3 Simplification foundation direction and records a detailed, **proposed** progressive C0–C7 capability map. It is a planning and semantic technical-design reference during Alternative C's accepted Controlled Contract Breach strategy. It does **not** become a normative Contract, waive applicable safety gates, grant execution authority, reclassify evidence, or convert C2–C7 into accepted Work Units. The original Alternative C objective remains unchanged; V3 Simplification is not a new parent workstream.
 
-Distinguish: (a) previously accepted decisions, (b) verified or executor-reported behavior, (c) candidate technical architecture, and (d) future acceptance gates. C0 is formally CLOSED within its preparation scope. C1 substantive advancement is PAUSED; C2–C7 are PROPOSED/REVISABLE. A detail proposal here is not authorization to implement it.
+Distinguish: (a) previously accepted decisions, (b) verified or executor-reported behavior, (c) candidate technical architecture, and (d) future acceptance gates. C0 is formally CLOSED within its preparation scope. C1 substantive advancement remains PAUSED pending verified V3-native operational readiness and separately authorized actions; its V3-native planning direction is accepted. C2–C7 are PROPOSED/REVISABLE. A detail proposal here is not authorization to implement it.
 
 ## 2. Fundamental design principles
 
 ### 2.1 V3-forward, historical evidence preserved
 
-V3 is the intended forward package/lifecycle architecture. Legacy v1/v2 engines are not presumed permanent V3 runtime dependencies, but older installed-state records, executed artifacts, provenance, and independently applicable compatibility obligations remain immutable historical evidence. Existing-install V2→V3 authority must be established from verifiable current state, not fabricated committed inventory. “V3-only” does not mean an unproven legacy-retirement claim, automatic deletion, or retroactive conversion of old packages.
+V3 is the intended forward package/lifecycle architecture. Legacy v1/v2 engines are not presumed permanent V3 runtime dependencies, but older installed-state records, executed artifacts, provenance, and independently applicable compatibility obligations remain immutable historical evidence. V3 Simplification now explicitly excludes implementing a new V2-to-V3 transitional bootstrap or permanent V2 compatibility path merely to enable C1. First operational V3 File Cycle instead targets a separately authorized, genuinely V3-native installation/committed inventory. The currently installed V2 SDR is preserved as historical operational evidence, not silently upgraded or overwritten. This planning decision does not prove V2 retirement, delete legacy code, or erase existing-install compatibility obligations in accepted Contracts; conflicting normative provisions require exact bounded Controlled Contract Breach tracking.
 
 ### 2.2 Capability-driven simplification
 
@@ -82,17 +82,19 @@ Each execution slice requires its own authorization (target/source, operation an
 
 **Exit:** COMPLETE / ACCEPTED / FORMALLY CLOSED. No new C0 execution authorized by this Concept.
 
-### C1 — Historical source advancement reconciliation + first operational File Cycle
+### C1 — First operational V3-native File Cycle (revised and accepted planning direction)
 
-**Objective:** maintain original C1 historical source preparation/advancement identity while establishing first real target-bound V3 filesystem-only operation on an authorized SDR.
+**Objective:** prove the first actual SDR filesystem-only V3 lifecycle using a **native V3 installed baseline**, without introducing a new V2→V3 bootstrap or V2-specific planner compatibility code. This is a changed *forward operational target*, not a retrospective renaming/erasure of historical C1 source preparation and advancement recorded on 2026-10-23.
 
-**Entry:** frozen C0 source; exact baseline target; verified Checkpoint C original-state/installation identity; authenticated package eligibility and source-relative plan; approval for any actual package mutation. Canonical SDR role `v3simp_01ba0f03`, APP_ROOT `C:\xampp\copot\sdr\v3simp_01ba0f03`, PUBLIC_ROOT `C:\xampp\htdocs\v3simp_01ba0f03`, DB `copot_sdr_v3simp_01ba0f03`; baseline reported version 0.13.0, V2 committed manifest, 19 DB tables, HTTP 200. These are executor-reported pre-state, not authorization for apply.
+**Historical boundary:** existing SDR `v3simp_01ba0f03` (`C:\xampp\copot\sdr\v3simp_01ba0f03`, `C:\xampp\htdocs\v3simp_01ba0f03`, DB `copot_sdr_v3simp_01ba0f03`) has a verified/reported installed V2 committed-state baseline: version `0.13.0`, 807-entry V2 package inventory and absent committed V3 source reference. Keep this installed state and evidence **unchanged**; its V2 source fingerprint is observational, not a trusted V3 reference. This SDR is no longer the proposed C1 apply target. No implicit deletion, reprovision, repurposing, or historical-state rewriting is authorized.
 
-**Blocking questions to resolve, without synthetic evidence:** (1) V2-installed committed source-inventory establishment under trusted current-state authority; (2) real filesystem-only eligibility, including declared MySQL/migration requirements when applicable; (3) explicit ownership/plan disposition for inferred `.copot/package.json` removal, not inferred deletion authorization; (4) operation-bound original bytes/absence capture, recovery linkage and rollback readiness.
+**Target decision:** select and explicitly authorize a distinct SDR identity and provisioning plan for a clean V3-native installation. Reuse published C0 source evidence as an anchor, but a fresh V3-native installer/package, trustworthy installed `SourceInventoryArtifact`+`SourceInventoryReference`, `installed.lock` and committed state, correct source-inventory ownership/exclusions, protected `PUBLIC_ROOT/.htaccess` compatibility, and required runtime behavior must be genuinely established and verified. Do **not** assume a V3-native installer is operational merely because source classes exist. Do not treat a new SDR or package declaration as automatic installed-state evidence.
 
-**Candidate proof:** target-bound preflight with protected `.htaccess`; Guard protection and BnR capture; actual declared applicable filesystem action(s), original-state recovery after controlled failure, resulting-state verification, truthful finalization and safe release; no DB mutation under a proven DB-free operation. Test only actual C1 coverage gap relative to C0, without fabricating a success for an unexecuted action.
+**Candidate technical readiness gates:** (1) independently reconcile availability/readiness of fresh-install V3 inventory builder, installer finalization and current V3 filesystem-only source slices; (2) prove exact package source/target fingerprint and identity compatibility, explicit `ADD/REPLACE/REMOVE/RENAME` actions including any removal disposition, and absence of applicable DB dependency; (3) confirm Guard authority, operation-bound BnR original-bytes/absence capture and recovery, safe protected resources, resulting-state proof and release; (4) require separate authorization for SDR provisioning, package publication/deployment, and first `applyV3()`.
 
-**Exit candidate:** operational File Cycle and recovery evidence on exact SDR, consistent installed/committed state, no unhandled recovery debt, user acceptance. **Current status: SOURCE/TARGET PREPARATION PARTIAL; SUBSTANTIVE ADVANCEMENT PAUSED / NOT AUTHORIZED FOR APPLY.**
+**Candidate operational proof:** read-only preflight on the newly authorized V3-native SDR, relevant scoped protection and capture before mutation, actual authorized filesystem-only V3 apply, successful resulting-state/committed-state finalization, and bounded controlled-failure recovery with operation-bound evidence. No database mutation/compatibility fabricated for a genuinely DB-free plan.
+
+**Exit candidate:** source/runtime identities and accepted package compatibility verified; first real V3 File Cycle and required recovery paths operationally evidenced; user acceptance; no unresolved recovery state. **Current C1: PLANNING DIRECTION ACCEPTED / OPERATIONAL READINESS NOT ESTABLISHED / APPLY BLOCKED.**
 
 ### C2 — Multi-File Cycle (proposed)
 
@@ -156,6 +158,14 @@ Each execution slice requires its own authorization (target/source, operation an
 
 **Exit candidate:** explicit evidence-based acceptance/closure decision, or OPEN/BLOCKED with clear unresolved criteria and next target. Status: PROPOSED / NO CLOSURE AUTHORITY.
 
+## 6A. Legacy disposition policy (accepted planning direction, not implementation claim)
+
+- **Now:** V3-only is the exclusive intended forward execution design for C1–C6. No new V2 support, V2 transitional bootstrap, or legacy compatibility adapter is to be developed solely to unlock first V3 File Cycle.
+- **Until replacement proof:** legacy implementation may remain physically present but must not be selected by the authorized new V3 execution route. *DORMANT* is the desired behavior, **not an already verified state**; technical review must identify actual legacy entrypoints/dependencies before claiming non-use.
+- **After verified replacement:** retire/remove individual obsolete legacy components under separate authorized, bounded cleanup, instead of mandatory wholesale deletion before first V3 operational proof. Preserve Git history, historical package/installed evidence and affected contract-deviation tracking.
+- **Historical SDR:** do not mutate or repurpose the existing V2-based `v3simp_01ba0f03` as the new C1 V3-native baseline.
+- **Normative compatibility:** existing V2/existing-install contract scope is not silently revoked by this non-normative Concept. Identify exact conflicting obligation and explicit accepted deviation before any non-conforming execution. Post-Alternative C cumulative normative reconciliation remains in force.
+
 ## 7. Acceptance and status discipline
 
 Use separate states for (1) proposal, (2) technical readiness, (3) source publication, (4) deployment/operation, (5) validation evidence, (6) user acceptance, (7) cycle closure, and (8) parent Alternative C closure. Evidence statuses must distinguish VERIFIED, executor REPORTED, INFERRED and UNVERIFIED; an accepted preparation suite does not prove actual SDR execution. No reopening of accepted C0 merely because implementation ancestry is historical. Do not assert complete Guard writer-path coverage, canonical existing V3 inventory, or DB consistency until independently evidenced.
@@ -178,8 +188,8 @@ Authoritative normative sources include `docs/28_package_lifecycle_migration_fou
 
 ## 10. Unresolved/deferred and document lifecycle
 
-Unresolved: exact trusted V2→V3 installed-source authority; explicit current C1 package database requirements and inferred removal disposition; operation-bound backup/restore evidence on SDR; complete registered writer coverage; exact Guard/BnR/Package Lifecycle interface/owner mapping; database external-writer consistency; combined-domain sequencing; C2–C7 scoping/acceptance; residual v1/v2 dependencies; exact Controlled Contract Breach reconciliation and required post-closure normative updates.
+Unresolved: actual V3-native installer/initial inventory readiness, separately authorized target SDR identity/provisioning, exact C1 filesystem-only package eligibility and explicit removal disposition, operation-bound backup/restore evidence on the new SDR; complete registered writer coverage; exact Guard/BnR/Package Lifecycle interface/owner mapping; database external-writer consistency; combined-domain sequencing; C2–C7 scoping/acceptance; residual v1/v2 dependencies; exact Controlled Contract Breach reconciliation and required post-closure normative updates.
 
-Deferred: generalized Resource Policy architecture, broad ownership refactoring, universal recovery/historical provenance reconstruction, non-required UI/productization, unaccepted schema exceptions, unrelated cleanup and optional deployment complexity.
+Deferred: physical legacy v1/v2 source removal until relevant V3 replacement paths are proven and a separate destructive cleanup gate is authorized; any already-independent safely removable legacy slice may be assessed earlier with exact evidence and authorization. No V2 execution/compatibility layer is a new target in C1–C6. Existing authoritative compatibility commitments remain subject to specifically recorded Controlled Contract Breach where they conflict. Other deferred work: generalized Resource Policy architecture, broad ownership refactoring, universal recovery/historical provenance reconstruction, non-required UI/productization, unaccepted schema exceptions, unrelated cleanup and optional deployment complexity.
 
 **Disposition:** this one Concept records the accepted foundation direction together with **proposed** detailed C0–C7 definitions. It is not a pre-contract, authoritative contract, implementation authorization, lifecycle operation plan, deployment instruction, or promise that the proposed sequence will be executed. A future substantive revision must preserve provenance and be accepted through the relevant user/project decision gate.
