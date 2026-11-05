@@ -23,12 +23,13 @@ function fail(string $message): void
     exit(1);
 }
 
-/** @return array{manifest_version:int, output:?string, filesystem_only:bool} */
+/** @return array{manifest_version:int, output:?string, filesystem_only:bool, source_inventory_fingerprint:?string} */
 function parseOptions(array $arguments): array
 {
     $manifestVersion = PackageContract::V3_MANIFEST_CONTRACT_VERSION;
     $output = null;
     $filesystemOnly = false;
+    $sourceInventoryFingerprint = null;
 
     for ($index = 1, $count = count($arguments); $index < $count; $index++) {
         $argument = $arguments[$index];
@@ -58,6 +59,16 @@ function parseOptions(array $arguments): array
             $filesystemOnly = true;
             continue;
         }
+        if (str_starts_with($argument, '--source-inventory-fingerprint=')) {
+            if ($sourceInventoryFingerprint !== null) {
+                fail('source inventory fingerprint option cannot be repeated.');
+            }
+            $sourceInventoryFingerprint = substr($argument, strlen('--source-inventory-fingerprint='));
+            if (preg_match('/\A[a-f0-9]{64}\z/D', $sourceInventoryFingerprint) !== 1) {
+                fail('source inventory fingerprint must be exactly 64 lowercase hexadecimal characters.');
+            }
+            continue;
+        }
         fail('unsupported option: ' . $argument);
     }
 
@@ -67,8 +78,16 @@ function parseOptions(array $arguments): array
     if ($filesystemOnly && $manifestVersion !== PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
         fail('--filesystem-only requires manifest version 3.');
     }
+    if ($sourceInventoryFingerprint !== null && $manifestVersion !== PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
+        fail('--source-inventory-fingerprint requires manifest version 3.');
+    }
 
-    return ['manifest_version' => $manifestVersion, 'output' => $output, 'filesystem_only' => $filesystemOnly];
+    return [
+        'manifest_version' => $manifestVersion,
+        'output' => $output,
+        'filesystem_only' => $filesystemOnly,
+        'source_inventory_fingerprint' => $sourceInventoryFingerprint,
+    ];
 }
 
 /**
@@ -347,6 +366,7 @@ if (PHP_SAPI !== 'cli') {
 $options = parseOptions($argv);
 $manifestVersion = $options['manifest_version'];
 $filesystemOnly = $options['filesystem_only'];
+$sourceInventoryFingerprint = $options['source_inventory_fingerprint'];
 
 $manifest = loadManifest(__DIR__ . '/package_manifest.php');
 $files = collectPackageFiles($basePath, $manifest['include'], $manifest['exclude']);
@@ -456,7 +476,7 @@ if ($manifestVersion === PackageContract::V3_MANIFEST_CONTRACT_VERSION) {
             'fingerprint' => $targetInventory->fingerprint(),
             'entries' => array_map(static fn (CanonicalTargetInventoryEntry $entry): array => $entry->toArray(), $targetEntries),
         ],
-        'source_state_requirements' => ['allowed_inventory_fingerprints' => []],
+        'source_state_requirements' => ['allowed_inventory_fingerprints' => $sourceInventoryFingerprint === null ? [] : [$sourceInventoryFingerprint]],
         'removals' => [],
         'renames' => [],
     ];

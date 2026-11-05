@@ -28,15 +28,11 @@ if (!extension_loaded('zip')) {
 
 $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-builder-wu1-' . bin2hex(random_bytes(6));
 mkdir($root, 0700, true);
-$run = static function (string $output, ?int $version = null, bool $filesystemOnly = false) use ($base): string {
+$runRaw = static function (array $arguments) use ($base): array {
     $command = escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($base . DIRECTORY_SEPARATOR . 'build' . DIRECTORY_SEPARATOR . 'package.php');
-    if ($version !== null) {
-        $command .= ' --manifest-version=' . $version;
+    foreach ($arguments as $argument) {
+        $command .= ' ' . escapeshellarg($argument);
     }
-    if ($filesystemOnly) {
-        $command .= ' --filesystem-only';
-    }
-    $command .= ' --output=' . escapeshellarg($output);
     $pipes = [];
     $process = proc_open($command, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, $base);
     if (!is_resource($process)) {
@@ -47,22 +43,61 @@ $run = static function (string $output, ?int $version = null, bool $filesystemOn
     fclose($pipes[1]);
     fclose($pipes[2]);
     $code = proc_close($process);
+    return [$code, $stdout, $stderr];
+};
+$run = static function (string $output, ?int $version = null, bool $filesystemOnly = false, ?string $sourceInventoryFingerprint = null) use ($runRaw): string {
+    $arguments = [];
+    if ($version !== null) {
+        $arguments[] = '--manifest-version=' . $version;
+    }
+    if ($filesystemOnly) {
+        $arguments[] = '--filesystem-only';
+    }
+    if ($sourceInventoryFingerprint !== null) {
+        $arguments[] = '--source-inventory-fingerprint=' . $sourceInventoryFingerprint;
+    }
+    $arguments[] = '--output=' . $output;
+    [$code, $stdout, $stderr] = $runRaw($arguments);
     if ($code !== 0) {
         throw new RuntimeException("Builder failed: {$stderr}\n{$stdout}");
     }
     return $stdout;
 };
+$readManifest = static function (string $path): array {
+    $zip = new ZipArchive();
+    if ($zip->open($path) !== true) {
+        throw new RuntimeException('Generated package could not be opened.');
+    }
+    $raw = $zip->getFromName(PackageManifestReader::PATH);
+    $zip->close();
+    if (!is_string($raw)) {
+        throw new RuntimeException('Generated package manifest is missing.');
+    }
+    return [$raw, json_decode($raw, true, 64, JSON_THROW_ON_ERROR)];
+};
+$expectFailure = static function (array $arguments, string $label, string $expectedDiagnostic) use ($runRaw, $assert): void {
+    [$code, $stdout, $stderr] = $runRaw($arguments);
+    $assert($code !== 0, $label . ' input was accepted unexpectedly. Output: ' . $stdout . $stderr);
+    $expectedError = 'Package build failed: ' . $expectedDiagnostic . PHP_EOL;
+    $assert($stderr === $expectedError, $label . ' failed with an unexpected diagnostic: ' . $stderr);
+};
 
 $v3 = $root . DIRECTORY_SEPARATOR . 'v3.zip';
 $v3Second = $root . DIRECTORY_SEPARATOR . 'v3-second.zip';
 $v3Filesystem = $root . DIRECTORY_SEPARATOR . 'v3-filesystem-only.zip';
+$v3Allowlisted = $root . DIRECTORY_SEPARATOR . 'v3-allowlisted.zip';
+$v3AllowlistedSecond = $root . DIRECTORY_SEPARATOR . 'v3-allowlisted-second.zip';
 $v2 = $root . DIRECTORY_SEPARATOR . 'v2.zip';
 $payload = null;
 try {
     $firstOutput = $run($v3);
     $secondOutput = $run($v3Second);
     $run($v3Filesystem, null, true);
+    $sourceInventoryFingerprint = str_repeat('a', 64);
+    $run($v3Allowlisted, null, true, $sourceInventoryFingerprint);
+    $run($v3AllowlistedSecond, null, true, $sourceInventoryFingerprint);
     $assert(hash_file('sha256', $v3) === hash_file('sha256', $v3Second), 'V3 package output is not deterministic.');
+    $assert(hash_file('sha256', $v3Allowlisted) === hash_file('sha256', $v3AllowlistedSecond), 'Allowlisted V3 package output is not deterministic.');
 
     $staging = $root . DIRECTORY_SEPARATOR . 'staging';
     mkdir($staging, 0700, true);
@@ -72,16 +107,24 @@ try {
     $assert($contract->manifestContractVersion() === PackageContract::V3_MANIFEST_CONTRACT_VERSION, 'Generated package is not V3.');
     $assert($contract->coverage() === 'full', 'Generated V3 package is not full coverage.');
 
-    $zip = new ZipArchive();
-    $assert($zip->open($v3) === true, 'Generated V3 ZIP could not be opened.');
-    $raw = $zip->getFromName(PackageManifestReader::PATH);
-    $zip->close();
-    $assert(is_string($raw), 'Generated V3 manifest is missing.');
-    $data = json_decode($raw, true, 64, JSON_THROW_ON_ERROR);
+    [$raw, $data] = $readManifest($v3);
     $assert(array_keys($data) === ['package_type', 'manifest_contract_version', 'target_webcore_version', 'release_identity', 'source_tree_identity', 'source_compatibility', 'runtime_compatibility', 'inventory', 'migration_declaration', 'target_requirements', 'coverage', 'target_inventory', 'source_state_requirements', 'removals', 'renames'], 'V3 manifest key ordering is incorrect.');
     $assert(count($data['inventory']) === count($data['target_inventory']['entries']), 'Target inventory is incomplete.');
     $assert($data['source_state_requirements']['allowed_inventory_fingerprints'] === [], 'Initial V3 source allowlist is not empty.');
     $assert($data['removals'] === [] && $data['renames'] === [], 'Initial V3 package declares destructive changes.');
+
+    [, $allowlistedData] = $readManifest($v3Allowlisted);
+    $assert($allowlistedData['source_state_requirements']['allowed_inventory_fingerprints'] === [$sourceInventoryFingerprint], 'Explicit V3 source inventory fingerprint was not preserved exactly.');
+
+    $invalidOutput = $root . DIRECTORY_SEPARATOR . 'invalid.zip';
+    $builderArguments = static fn (string ...$extra): array => [...$extra, '--output=' . $invalidOutput];
+    $invalidFingerprintDiagnostic = 'source inventory fingerprint must be exactly 64 lowercase hexadecimal characters.';
+    $expectFailure($builderArguments('--source-inventory-fingerprint=' . str_repeat('A', 64)), 'Uppercase fingerprint', $invalidFingerprintDiagnostic);
+    $expectFailure($builderArguments('--source-inventory-fingerprint=' . str_repeat('a', 63)), 'Short fingerprint', $invalidFingerprintDiagnostic);
+    $expectFailure($builderArguments('--source-inventory-fingerprint=' . str_repeat('g', 64)), 'Non-hex fingerprint', $invalidFingerprintDiagnostic);
+    $expectFailure($builderArguments('--source-inventory-fingerprint='), 'Empty fingerprint', $invalidFingerprintDiagnostic);
+    $expectFailure($builderArguments('--source-inventory-fingerprint=' . $sourceInventoryFingerprint, '--source-inventory-fingerprint=' . $sourceInventoryFingerprint), 'Duplicate fingerprint option', 'source inventory fingerprint option cannot be repeated.');
+    $expectFailure($builderArguments('--manifest-version=2', '--source-inventory-fingerprint=' . $sourceInventoryFingerprint), 'V2 fingerprint option', '--source-inventory-fingerprint requires manifest version 3.');
 
     $targetEntries = array_map(static fn (array $entry): CanonicalTargetInventoryEntry => new CanonicalTargetInventoryEntry($entry['root'], $entry['ownership'], $entry['path'], $entry['byte_size'], $entry['sha256']), $data['target_inventory']['entries']);
     $targetInventory = new CanonicalTargetInventory($targetEntries);
