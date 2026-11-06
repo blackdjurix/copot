@@ -10,6 +10,13 @@ $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-v3-fresh-inventory-' .
 $app = $root . DIRECTORY_SEPARATOR . 'app-root';
 $public = $root . DIRECTORY_SEPARATOR . 'public-root';
 $storage = $app . DIRECTORY_SEPARATOR . 'storage';
+$assertions = 0;
+$assert = static function (bool $condition, string $message) use (&$assertions): void {
+    $assertions++;
+    if (!$condition) {
+        throw new RuntimeException($message);
+    }
+};
 $remove = static function (string $path) use (&$remove): void {
     if (is_file($path) || is_link($path)) { @unlink($path); return; }
     if (!is_dir($path)) { return; }
@@ -20,8 +27,10 @@ $remove = static function (string $path) use (&$remove): void {
 };
 
 mkdir($app . DIRECTORY_SEPARATOR . 'config', 0700, true);
+mkdir($app . DIRECTORY_SEPARATOR . '.copot', 0700, true);
 mkdir($storage . DIRECTORY_SEPARATOR . '.copot-lifecycle', 0700, true);
 mkdir($public, 0700, true);
+file_put_contents($app . DIRECTORY_SEPARATOR . '.copot' . DIRECTORY_SEPARATOR . 'package.json', 'metadata');
 file_put_contents($app . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'database.php', 'config');
 file_put_contents($app . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'installed.lock', 'runtime');
 file_put_contents($app . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . '.copot-lifecycle' . DIRECTORY_SEPARATOR . 'committed-state.json', 'runtime');
@@ -33,9 +42,10 @@ try {
     $inventory = (new Copot\Core\CanonicalSourceInventoryBuilder($app, $public))->capture();
     $keys = array_map(static fn (Copot\Core\CanonicalTargetInventoryEntry $entry): string => $entry->root() . ':' . $entry->path(), $inventory->entries());
     sort($keys, SORT_STRING);
-    if ($keys !== ['APP_ROOT:app.php', 'APP_ROOT:config/database.php', 'PUBLIC_ROOT:index.php']) {
-        throw new RuntimeException('Fresh inventory did not reflect actual package-owned roots: ' . implode(',', $keys));
-    }
+    $assert(Copot\Core\PackageOwnership::isPackageMetadata('.copot/package.json'), 'Package manifest metadata was not recognized.');
+    $assert(Copot\Core\PackageOwnership::classify('.copot/package.json') === Copot\Core\PackageOwnership::PACKAGE_OWNED, 'Package manifest transport ownership changed unexpectedly.');
+    $assert(!in_array('APP_ROOT:.copot/package.json', $keys, true), 'Package manifest metadata leaked into committed source inventory.');
+    $assert($keys === ['APP_ROOT:app.php', 'APP_ROOT:config/database.php', 'PUBLIC_ROOT:index.php'], 'Fresh inventory did not reflect actual package-owned roots: ' . implode(',', $keys));
 
     @unlink($app . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . 'installed.lock');
     @unlink($app . DIRECTORY_SEPARATOR . 'storage' . DIRECTORY_SEPARATOR . '.copot-lifecycle' . DIRECTORY_SEPARATOR . 'committed-state.json');
@@ -56,14 +66,12 @@ try {
     );
     (new Copot\Core\CommittedLifecycleStateStore($storage))->commitWithSourceInventory($storageState, $state, $artifacts, $artifact);
     $read = (new Copot\Core\CommittedLifecycleStateStore($storage))->read();
-    if (!$read instanceof Copot\Core\CommittedLifecycleState
-        || $read->manifestContractVersion() !== Copot\Core\PackageContract::V3_MANIFEST_CONTRACT_VERSION
-        || $read->sourceInventoryReference()?->fingerprint() !== $inventory->fingerprint()
-        || $artifacts->read($read->sourceInventoryReference())->inventory()->fingerprint() !== $inventory->fingerprint()) {
-        throw new RuntimeException('Fresh V3 committed source inventory did not round-trip exactly.');
-    }
+    $assert($read instanceof Copot\Core\CommittedLifecycleState
+        && $read->manifestContractVersion() === Copot\Core\PackageContract::V3_MANIFEST_CONTRACT_VERSION
+        && $read->sourceInventoryReference()?->fingerprint() === $inventory->fingerprint()
+        && $artifacts->read($read->sourceInventoryReference())->inventory()->fingerprint() === $inventory->fingerprint(), 'Fresh V3 committed source inventory did not round-trip exactly.');
 
-    echo "Fresh V3 source inventory assertions passed.\n";
+    echo 'Fresh V3 source inventory assertions passed: ' . $assertions . " assertions.\n";
 } finally {
     $remove($root);
 }

@@ -61,6 +61,9 @@ final class CanonicalSourceInventoryBuilder
             $ownershipPath = $root === CanonicalTargetInventoryEntry::PUBLIC_ROOT
                 ? 'public/' . $relative
                 : $relative;
+            if (PackageOwnership::isPackageMetadata($ownershipPath)) {
+                continue;
+            }
             if (PackageOwnership::classify($ownershipPath) !== PackageOwnership::PACKAGE_OWNED
                 || self::isLifecycleOwned($relative, $root)) {
                 continue;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Copot\Core\CanonicalTargetInventory;
 use Copot\Core\CanonicalTargetInventoryEntry;
+use Copot\Core\CanonicalSourceInventoryBuilder;
 use Copot\Core\CommittedLifecycleState;
 use Copot\Core\CommittedLifecycleStateStore;
 use Copot\Core\CoreMigrationStateIdentity;
@@ -90,6 +91,29 @@ $readManifest = static function (string $zipPath, string $stagingPath) use ($bas
     }
 };
 
+$materializeSplitRoots = static function (object $payload, string $appRoot, string $publicRoot): void {
+    mkdir($appRoot, 0700, true);
+    mkdir($publicRoot, 0700, true);
+
+    foreach ($payload->files() as $file) {
+        $relative = $file->path();
+        $targetRoot = str_starts_with($relative, 'public/') ? $publicRoot : $appRoot;
+        $targetRelative = str_starts_with($relative, 'public/') ? substr($relative, 7) : $relative;
+        $source = $payload->payloadPath() . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $relative);
+        $target = $targetRoot . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $targetRelative);
+        $directory = dirname($target);
+
+        if (!is_dir($directory) && !mkdir($directory, 0700, true) && !is_dir($directory)) {
+            throw new RuntimeException('Split-root fixture directory could not be created.');
+        }
+        if (!copy($source, $target)) {
+            throw new RuntimeException('Split-root fixture file could not be materialized: ' . $relative);
+        }
+    }
+
+    file_put_contents($publicRoot . DIRECTORY_SEPARATOR . '.htaccess', 'deployment-owned');
+};
+
 $expectPlannerFailure = static function (callable $operation, string $label, string $expectedDiagnostic) use ($assert): void {
     try {
         $operation();
@@ -113,6 +137,25 @@ try {
             $initialManifest->contract()->targetInventory()?->entries() ?? []
         );
         $targetInventory = new CanonicalTargetInventory($targetEntries);
+
+        $deployedAppRoot = $root . DIRECTORY_SEPARATOR . 'deployed-app-root';
+        $deployedPublicRoot = $root . DIRECTORY_SEPARATOR . 'deployed-public-root';
+        $materializeSplitRoots($initialPayload, $deployedAppRoot, $deployedPublicRoot);
+        $sourceInventory = (new CanonicalSourceInventoryBuilder($deployedAppRoot, $deployedPublicRoot))->capture();
+        $sourceKeys = array_map(
+            static fn (CanonicalTargetInventoryEntry $entry): string => $entry->root() . ':' . $entry->path(),
+            $sourceInventory->entries()
+        );
+        $targetKeys = array_map(
+            static fn (CanonicalTargetInventoryEntry $entry): string => $entry->root() . ':' . $entry->path(),
+            $targetInventory->entries()
+        );
+        sort($sourceKeys, SORT_STRING);
+        sort($targetKeys, SORT_STRING);
+        $assert(is_file($deployedAppRoot . DIRECTORY_SEPARATOR . '.copot' . DIRECTORY_SEPARATOR . 'package.json'), 'Package manifest metadata was not materialized in the deployed fixture.');
+        $assert(!in_array('APP_ROOT:.copot/package.json', $sourceKeys, true), 'Package manifest metadata leaked into source inventory.');
+        $assert($sourceKeys === $targetKeys, 'Captured source inventory did not match the builder target inventory.');
+        $assert($sourceInventory->fingerprint() === $targetInventory->fingerprint(), 'Captured source inventory fingerprint did not match the builder target inventory.');
     } finally {
         $initialPayload->cleanup();
     }
@@ -121,7 +164,7 @@ try {
     mkdir($storage, 0700, true);
     $artifacts = new SourceInventoryArtifactStore($storage, static fn ($resource): bool => true);
     $sourceArtifact = $artifacts->publish(
-        $targetInventory,
+        $sourceInventory,
         'copot-v' . Version::CURRENT,
         PackageContract::V3_MANIFEST_CONTRACT_VERSION
     );
@@ -198,6 +241,29 @@ try {
             'Complete target inventory entry is neither delivered nor provably retained.'
         );
 
+        $extraSourceContract = new PackageContract(
+            $contract->packageType(),
+            $contract->manifestContractVersion(),
+            $contract->targetWebcoreVersion(),
+            $contract->releaseIdentity(),
+            $contract->sourceTreeIdentity(),
+            $contract->sourceCompatibility(),
+            $contract->runtimeCompatibility(),
+            $contract->inventory(),
+            $contract->migrationDeclaration(),
+            $contract->targetRequirements(),
+            $contract->targetInventory(),
+            $contract->coverage(),
+            [$mismatchedSource->reference()->fingerprint()],
+            $contract->removals(),
+            $contract->renames()
+        );
+        $expectPlannerFailure(
+            static fn (): V3SourceRelativePlan => (new PackageV3SourceRelativePlanner())->plan($extraSourceContract, $mismatchedSource),
+            'Undeclared source-owned extra finding',
+            'Source-owned file outside the target requires an explicit removal declaration.'
+        );
+
         $removalContract = new PackageContract(
             $contract->packageType(),
             $contract->manifestContractVersion(),
@@ -232,7 +298,7 @@ try {
     }
 
     echo 'V3 source inventory builder integration passed: ' . $assertions . " assertions.\n";
-    echo "Planner findings: source-mismatch=detected; target-inventory-mismatch=detected; explicit-removal-evidence-mismatch=detected.\n";
+    echo "Planner findings: source-mismatch=detected; target-inventory-mismatch=detected; undeclared-source-extra=detected; explicit-removal-evidence-mismatch=detected.\n";
 } finally {
     $remove($root);
 }

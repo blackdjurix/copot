@@ -28,6 +28,11 @@ final class PackageOwnership
         ];
     }
 
+    public static function isPackageMetadata(string $path): bool
+    {
+        return PackageInventoryEntry::normalizePath($path) === PackageManifestReader::PATH;
+    }
+
     public static function classify(string $path): string
     {
         $normalized = PackageInventoryEntry::normalizePath($path);

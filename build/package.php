@@ -340,7 +340,7 @@ function buildTargetInventory(array $inventory): CanonicalTargetInventory
     $entries = [];
     foreach ($inventory as $item) {
         $path = $item['path'];
-        if (in_array($path, $runtimeOwned, true) || $item['ownership'] !== PackageOwnership::PACKAGE_OWNED) {
+        if (PackageOwnership::isPackageMetadata($path) || in_array($path, $runtimeOwned, true) || $item['ownership'] !== PackageOwnership::PACKAGE_OWNED) {
             fail('v3 target inventory encountered runtime-owned or non-package-owned path: ' . $path);
         }
         $isPublic = $path === 'public' || str_starts_with($path, 'public/');
