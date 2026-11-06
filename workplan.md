@@ -566,8 +566,12 @@ Sources:
 - `concepts/copot_installer_automatic_root_deployment_retained_sources_concept.md` [PRIMARY]
 
 Relations:
-- Future installer auto-deploys private APP_ROOT and public document root from a distributable installer package; retained sources and later repair support are subordinate parts of this installer architecture.
-- Related to MR.1 Installation Refinement, Webcore Deployment & Portability, Backup & Recovery and System Health; distinct from Seven-Tab WU5.
+- Future installer auto-deploys private APP_ROOT and public document root from a distributable installer package; deployment-aware routing and initial `PUBLIC_ROOT/.htaccess` provisioning need separately defined authority and compatibility verification.
+- Future installer automatically provisions and configures an isolated private, writable Recovery Root, without mandatory manual directory creation or `COPOT_RECOVERY_ROOT` entry in normal supported hosting. If directory creation is denied, guided manual folder setup with revalidation is required; an unsafe or unavailable private location fails closed.
+- Preserve the byte-identical original installation ZIP with immutable identity/integrity evidence as a future repair source; distinguish retained installation/update packages from BnR recovery sets, runtime snapshots, and database backups. Repair remains separately authorized and dependent on current lifecycle/ownership evidence.
+- Two initial `.htaccess` deployment authority alternatives remain OPEN: explicit pre-install deployment-phase exception versus strict Maintenance Guard-mediated scoped authority. Neither overrides current deployment-environment ownership or COPOT-scope `ABSOLUTE_IMMUTABILITY` for present COPOT operations.
+- Current C1 manual recovery configuration and existing SDR provisioning/operational acceptance gates remain unchanged; these refinements are planning-only, with separate architecture, contract, and implementation authorization required.
+- Related to MR.1 Installation Refinement, Webcore Deployment & Portability, Backup & Recovery, Maintenance Guard and System Health; distinct from Seven-Tab WU5.
 
 Planning action: KEEP DEFERRED / NO ADOPTION OR IMPLEMENTATION AUTHORITY
 
