@@ -1,5 +1,5 @@
 # COPOT PROJECT REGISTRY
-Date version: 2026-10-26 00:21:38 WIB
+Date version: 2026-11-10 18:20:32 WIB
 
 ## 1. Variabel
 
@@ -110,7 +110,7 @@ Perubahan implementation/package-owned filesystem dan database state tetap mengi
 
 - `Material Store`
   Description: Root durable location untuk menyimpan material artifact COPOT.
-  Value: `My Drive/Project/cop​​ot`
+  Value: `My Drive/Project/copot`
 
 Setiap material artifact disimpan sebagai artifact set:
 

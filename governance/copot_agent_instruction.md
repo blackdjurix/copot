@@ -1,5 +1,5 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-10-26 13:48:48 WIB
+Date version: 2026-11-10 18:20:32 WIB
 
 ## Purpose
 
