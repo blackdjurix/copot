@@ -105,3 +105,29 @@ Untuk `IDR`, request juga harus mencantumkan service root, port, configuration r
 Registry hanya mendefinisikan layout dan classification runtime. Registry tidak dengan sendirinya memberikan persetujuan untuk membuat, mengaktifkan, mengubah, atau menghapus `SDR` maupun `IDR`.
 
 Perubahan implementation/package-owned filesystem dan database state tetap mengikuti Package Lifecycle dan authorization yang berlaku. Runtime copy maupun disposable runtime bukan authority durable untuk `Repository` state.
+
+## 7. Material Artifact
+
+- `Material Store`
+  Description: Root durable location untuk menyimpan material artifact COPOT.
+  Value: `My Drive/Project/cop​​ot`
+
+Setiap material artifact disimpan sebagai artifact set:
+
+<Material Store>/
+└── <type-group>/
+    └── <artifact-set-id>/
+        ├── manifest.json
+        └── payload/
+            ├── <payload ZIP atau folder>
+            └── <payload manifest bila ada>
+
+`manifest.json` pada root artifact set adalah continuity manifest.
+
+`payload/` adalah container payload. Payload dapat berupa ZIP atau folder. Manifest internal payload tetap dipertahankan dan tidak menggantikan continuity manifest.
+
+`type-group` menggunakan grouping satu level seperti `package`, `recovery`, `baseline`, `validation`, `continuity`, atau `manifest`.
+
+`artifact-set-id` harus stabil. Logical path menunjuk ke root artifact set, bukan ke drive letter atau resolved local path.
+
+Identity artifact ditentukan oleh artifact identity, ukuran, dan SHA-256.

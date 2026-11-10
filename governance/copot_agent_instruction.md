@@ -17,6 +17,10 @@ Identitas governance canonical: resolve dari `Rule::Instruction`.
   Description: Canonical project Registry untuk Variable dan runtime rule COPOT.
   Value: `governance/copot_project_registry.md`
 
+- `Material Store`
+  Description: Local reference ke Material Store yang berlaku dari `Rule`.
+  Value: `Rule::Material Store`
+
 - `Primary Runtime`
   Description: Local reference ke canonical Primary Runtime dari Registry.
   Value: `Registry::Primary Runtime`
@@ -252,6 +256,16 @@ Gunakan hanya bila remote access masuk scope. Verifikasi target runtime dan rout
 #### `Prototyping`
 
 Gunakan hanya bila pekerjaan visual/prototype masuk scope. Perlakukan output prototype sebagai reference sampai diterima. Jangan menginfer implementation authorization dari design artifact.
+
+### Material Artifact Resolution
+
+Jika execution slice membutuhkan material artifact, resolve artifact set dari Variable `Material Store` menggunakan Artifact Set ID, logical path, dan set identity.
+
+Verifikasi `manifest.json`, payload path, ukuran, dan SHA-256 sebelum artifact digunakan.
+
+Jika artifact set `UNAVAILABLE`, `INVALID`, atau `AMBIGUOUS`, stop dan laporkan technical blocker. Jangan rebuild, recapture, replace, atau memilih candidate secara otomatis.
+
+Resolved local path hanya digunakan sebagai execution path pada PC saat ini dan bukan artifact identity.
 
 ### Git
 

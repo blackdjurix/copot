@@ -3,11 +3,15 @@ Date version: 2026-10-26 13:48:48 WIB
 
 ## 1. Variabel
 
+Variabel adalah pointer project yang statis. Setiap Variable memiliki scope artifact, Description, dan Value. Nama variable harus unik di dalam scope artifact, sedangkan qualified variable identity berbentuk `<Scope>::<Variable>` dan harus unik governance-wide. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel tidak menyimpan dynamic lifecycle state; dynamic state dicatat pada artifact project atau Handoff yang relevan.
+
 - `Primary Runtime`
   Description: Local reference ke canonical Primary Runtime pada Registry.
   Value: `Registry::Primary Runtime`
 
-Variabel adalah pointer project yang statis. Setiap Variable memiliki scope artifact, Description, dan Value. Nama variable harus unik di dalam scope artifact, sedangkan qualified variable identity berbentuk `<Scope>::<Variable>` dan harus unik governance-wide. Nilainya ditetapkan saat governance project dibentuk dan hanya berubah melalui pembaruan governance. Variabel tidak menyimpan dynamic lifecycle state; dynamic state dicatat pada artifact project atau Handoff yang relevan.
+- `Material Store`
+  Description: Local reference ke canonical Material Store pada Registry.
+  Value: `Registry::Material Store`
 
 - `Project`
   Description: Nama canonical project yang digunakan oleh governance dan artifact project.
@@ -397,6 +401,12 @@ Panjang instruction harus proporsional terhadap task dan risk. Minimalisasi tida
 - Agent Instruction mengikuti template Agent Instruction dan tetap menjadi execution contract.
 - Format presentasi tidak mengubah scope, authorization, validation, stop condition, atau lifecycle boundary.
 - Permintaan eksplisit user untuk output visual atau desain tetap ditangani sesuai kebutuhan output tersebut.
+
+## Material Artifact Continuity
+
+Material artifact yang diperlukan untuk continuity, validation, recovery, atau operational action harus disimpan pada designated durable artifact store yang ditentukan oleh Variable `Material Store` pada `Registry`.
+
+Jika artifact tidak ditemukan, berubah, atau memiliki lebih dari satu candidate yang valid, laporkan status yang sesuai dan jangan melakukan rebuild, recapture, replacement, atau pemilihan otomatis.
 
 ## 11. Governance Workplan dan Concept
 

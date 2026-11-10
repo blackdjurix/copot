@@ -92,7 +92,7 @@ Selalu resolve, buka, baca, dan apply `Governance` dimulai dari `Rule` pada cano
 
 Nilai setiap event sesuai policy Activity Journal pada `Rule`. Lakukan logging ke `devlog.md` bila event tersebut meaningful atau material terhadap project.
 
-Gunakan bahasa utama conversation untuk prosa Handoff. Pertahankan identifier, path, command, filename, dan technical token secara literal bila precision memerlukannya.
+Gunakan bahasa yang ditetapkan oleh routing bahasa pada `Rule` untuk prosa Handoff. Pertahankan identifier, path, command, filename, dan technical token secara literal bila precision memerlukannya.
 
 ## Perpindahan
 
@@ -148,6 +148,14 @@ Cantumkan bila berlaku:
 - perubahan Workplan/Concept yang belum dipersist;
 - state runtime sementara;
 - artifact yang dihasilkan tetapi belum diterima atau dipersist.
+
+## Material Artifact Sets
+
+Section ini hanya dimasukkan bila material artifact diperlukan untuk continuity, validation, recovery, atau next action.
+
+| Artifact Set ID | Logical Path | Set Identity |
+|---|---|---|
+| `<artifact-set-id>` | `<type-group>/<artifact-set-id>/` | `<set identity>` |
 
 ## Target berikutnya
 
