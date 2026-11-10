@@ -1,5 +1,5 @@
 # AGENT INSTRUCTION TEMPLATE
-Date version: 2026-11-10 18:20:32 WIB
+Date version: 2026-11-10 18:46:59 WIB
 
 ## Purpose
 
@@ -260,6 +260,8 @@ Gunakan hanya bila pekerjaan visual/prototype masuk scope. Perlakukan output pro
 ### Material Artifact Resolution
 
 Jika execution slice membutuhkan material artifact, resolve artifact set dari Variable `Material Store` menggunakan Artifact Set ID, logical path, dan set identity.
+
+Prioritaskan akses melalui local filesystem, termasuk Google Drive yang mounted menggunakan DriveFS. Jika artifact tidak ditemukan atau tidak dapat diakses secara lokal, gunakan Google Drive plugin sebagai fallback bila tersedia. Jika kedua route tidak berhasil, laporkan `UNAVAILABLE`; jika artifact identity `INVALID` atau `AMBIGUOUS`, berhenti tanpa memilih candidate atau melakukan replacement. Akses melalui route berbeda tidak mengubah logical artifact identity.
 
 Verifikasi `manifest.json`, payload path, ukuran, dan SHA-256 sebelum artifact digunakan.
 
