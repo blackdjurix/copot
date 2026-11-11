@@ -152,7 +152,7 @@ Jangan memberikan substantive feedback atau membuat replacement governance berda
 
 ### Routing bahasa
 
-`Rule`, Handoff, dan Agent Instruction menggunakan bahasa utama user/conversation, yaitu Bahasa Indonesia santai untuk penggunaan COPOT ini. Identifier, path, command, API name, filename, status token, dan technical vocabulary tetap literal bila terjemahan mengurangi precision.
+Seluruh interaksi dan artifact COPOT mengikuti bahasa serta gaya komunikasi yang ditetapkan dalam GPT Custom Instructions atau Global `AGENTS.md` Codex, sesuai agent yang menghasilkan konten. Identifier, path, command, API name, filename, status token, dan technical vocabulary tetap literal bila terjemahan mengurangi precision.
 
 ### Fail-closed versi terbaru dan retry retrieval
 
