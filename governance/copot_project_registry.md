@@ -7,6 +7,10 @@ Date version: 2026-11-10 18:20:32 WIB
   Description: Default runtime environment untuk development, debugging, integration, dan validation normal.
   Value: **XAMPP**
 
+- `Material Store`
+  Description: Canonical durable storage untuk development dan continuity artifacts.
+  Value: `My Drive/Project/copot`
+
 - `Gateway`
   Description: Tool atau route gateway yang digunakan bila remote access terhadap environment project material.
   Value: **Tailscale**
@@ -48,6 +52,7 @@ Layout canonical `Main Runtime`:
 
 - APP_ROOT: `[Primary Runtime Path]\copot\dev`
 - PUBLIC_ROOT: `[Primary Runtime Path]\htdocs\dev`
+- RECOVERY_ROOT: `[Primary Runtime Path]\copot\recovery\dev`
 - Database Name: `copot_dev`
 
 `[Primary Runtime Path]` adalah installation path XAMPP yang actual, misalnya `C:\xampp` bila itu installation yang sedang digunakan. Placeholder tersebut bukan bagian literal dari path.
@@ -64,6 +69,7 @@ Layout canonical `SDR`:
 
 - APP_ROOT: `[Primary Runtime Path]\copot\sdr\[RuntimeName]`
 - PUBLIC_ROOT: `[Primary Runtime Path]\htdocs\[RuntimeName]`
+- RECOVERY_ROOT: `[Primary Runtime Path]\copot\recovery\sdr\[RuntimeName]`
 - Database Name: `copot_sdr_[RuntimeName]`
 
 `[RuntimeName]` harus diganti dengan nama runtime yang konsisten dan unik. Short commit ID adalah nilai yang disarankan, misalnya `85eb6a4c`. Jika satu commit membutuhkan lebih dari satu runtime, tambahkan suffix yang membedakan instance secara deterministic.
@@ -82,6 +88,7 @@ Layout canonical `IDR`:
 
 - APP_ROOT: `[Primary Runtime Path]\copot\idr\[RuntimeName]`
 - PUBLIC_ROOT: `[Primary Runtime Path]\htdocs\[RuntimeName]`
+- RECOVERY_ROOT: `[Primary Runtime Path]\copot\recovery\idr\[RuntimeName]`
 - Database Name: `copot_idr_[RuntimeName]`
 
 Service root, port, configuration root, dan endpoint wajib dicatat untuk setiap instance.
@@ -108,9 +115,9 @@ Perubahan implementation/package-owned filesystem dan database state tetap mengi
 
 ## 7. Material Artifact
 
-- `Material Store`
-  Description: Root durable location untuk menyimpan material artifact COPOT.
-  Value: `My Drive/Project/copot`
+`type-group` adalah classification canonical material artifact. Setiap artifact set wajib ditempatkan dalam satu `type-group` sesuai jenis dan tujuan artifact.
+
+Setelah initial adoption, artifact development baru langsung disimpan menggunakan canonical path dan classification tersebut.
 
 Setiap material artifact disimpan sebagai artifact set:
 
@@ -126,7 +133,19 @@ Setiap material artifact disimpan sebagai artifact set:
 
 `payload/` adalah container payload. Payload dapat berupa ZIP atau folder. Manifest internal payload tetap dipertahankan dan tidak menggantikan continuity manifest.
 
-`type-group` menggunakan grouping satu level seperti `package`, `recovery`, `baseline`, `validation`, `continuity`, atau `manifest`.
+`type-group` adalah classification canonical artifact:
+
+| type-group | Scope |
+| --- | --- |
+| `workspace` | Workspace backup dan source snapshot |
+| `recovery` | Development backup, snapshot, dan archived recovery evidence |
+| `package` | Package development dan testing |
+| `baseline` | Test baseline dan baseline evidence |
+| `validation` | Validation report dan test evidence |
+| `continuity` | Project/session continuity artifacts |
+| `manifest` | Standalone development manifest |
+
+Artifact baru wajib menggunakan classification yang ditetapkan. Classification tambahan memerlukan penetapan eksplisit.
 
 `artifact-set-id` harus stabil. Logical path menunjuk ke root artifact set, bukan ke drive letter atau resolved local path.
 

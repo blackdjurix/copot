@@ -404,7 +404,7 @@ Panjang instruction harus proporsional terhadap task dan risk. Minimalisasi tida
 
 ## Material Artifact Continuity
 
-Material artifact yang diperlukan untuk continuity, validation, recovery, atau operational action harus disimpan pada designated durable artifact store yang ditentukan oleh Variable `Material Store` pada `Registry`.
+Material Store pada `Registry` menyimpan artifact development dan project continuity sesuai `type-group` yang ditetapkan. Setelah initial adoption, artifact baru langsung menggunakan canonical Material Store path. Runtime-managed artifacts tetap berada dalam storage domain capability pemiliknya.
 
 Jika artifact tidak ditemukan, berubah, atau memiliki lebih dari satu candidate yang valid, laporkan status yang sesuai dan jangan melakukan rebuild, recapture, replacement, atau pemilihan otomatis.
 
