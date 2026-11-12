@@ -22,6 +22,11 @@ final class FilesystemRecoveryEntry
         } catch (\Throwable $exception) {
             throw new FilesystemRecoveryException('Filesystem recovery path is invalid.', 0, $exception);
         }
+        try {
+            \Copot\Core\ProtectedResourcePolicy::assertMutableRelativePath($this->path);
+        } catch (\Throwable $exception) {
+            throw new FilesystemRecoveryException('Deployment-owned filesystem path is immutable.', 0, $exception);
+        }
         if (\Copot\Core\PackageOwnership::classify($this->path) !== \Copot\Core\PackageOwnership::PACKAGE_OWNED
             || $targetSize < 0 || preg_match('/^[a-f0-9]{64}$/D', strtolower($targetHash)) !== 1) {
             throw new FilesystemRecoveryException('Filesystem recovery target identity is invalid.');

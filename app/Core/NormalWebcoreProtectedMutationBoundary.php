@@ -11,6 +11,7 @@ use Copot\Core\BackupRecovery\NormalWebcoreRecoverySession;
 use Copot\Core\BackupRecovery\ApplicationWriteProtectionEvidence;
 use Copot\Core\BackupRecovery\DatabaseScope;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
+use Copot\Core\BackupRecovery\InstallationScopedMaintenanceGuard;
 
 final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMutationBoundary
 {
@@ -23,7 +24,10 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
         private string $databaseIdentity,
         private ?DatabaseScope $databaseScope = null,
         private ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null,
-        private ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null
+        private ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null,
+        private bool $filesystemOnly = false,
+        private ?InstallationScopedMaintenanceGuard $filesystemGuard = null,
+        private ?DatabaseScope $applicationEvidenceScope = null
     ) {}
 
     public function enter(WebcoreMutationContext $context): ProtectedWebcoreMutationSession
@@ -71,6 +75,18 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
         $package = $context->transition()->package();
         $installed = $context->transition()->installedState();
 
+        $filesystemCycle = $this->filesystemOnly && $context->orderedV3Plan() instanceof V3SourceRelativePlan;
+        $applicationEvidence = $this->applicationWriteProtectionEvidence;
+        if ($filesystemCycle) {
+            if (!$this->filesystemGuard instanceof InstallationScopedMaintenanceGuard) {
+                throw new \RuntimeException('Filesystem-only V3 Guard composition is unavailable.');
+            }
+            $recovery = NormalWebcoreRecoveryCaptureService::forOperation($operation->operationId(), $context->applyPlan()->identity(), $context->recoveryAttemptIdentity());
+            $applicationEvidence = $this->filesystemGuard->durableScopedActive($recovery)
+                ? $this->filesystemGuard->revalidateFilesystemEvidence($recovery)
+                : $this->filesystemGuard->produceFilesystemEvidence($recovery);
+        }
+
         return new NormalWebcoreRecoveryCaptureRequest(
             $operation->operationId(),
             $this->installationIdentity,
@@ -86,7 +102,10 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
             $context->filesystemRecoveryPlan(),
             $this->databaseScope,
             $this->databaseConsistencyEvidence,
-            $this->applicationWriteProtectionEvidence
+            $applicationEvidence,
+            $context->orderedV3Plan(),
+            $filesystemCycle,
+            $context->recoveryAttemptIdentity()
         );
     }
 
@@ -115,7 +134,6 @@ final class NormalWebcoreProtectedMutationBoundary implements ProtectedWebcoreMu
         ], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
     }
 }
-
 final class NormalWebcoreProtectedMutationSession implements ProtectedWebcoreMutationSession
 {
     private bool $closed = false;
@@ -154,13 +172,44 @@ final class NormalWebcoreProtectedMutationSession implements ProtectedWebcoreMut
         }
     }
 
-    public function fail(string $reason): void
+    public function settle(): void
     {
         if ($this->closed) {
             return;
         }
+        $this->session->settleMutation();
+    }
+
+    public function close(): void
+    {
+        if ($this->closed) {
+            return;
+        }
+        try { $this->session->close(); } finally { $this->closed = true; }
+    }
+
+    public function fail(string $reason): \Copot\Core\BackupRecovery\RecoveryLifecycleRecord
+    {
+        if ($this->closed) {
+            throw new \RuntimeException('Recovery session is already closed.');
+        }
         try {
-            $this->session->failMutation($reason);
+            $record = $this->session->failMutation($reason);
+            $this->closed = $record->state() !== \Copot\Core\BackupRecovery\RecoveryLifecycleState::RESTORE_REQUIRED;
+            return $record;
+        } finally {
+            // RESTORE_REQUIRED deliberately keeps the recovery session open
+            // so the caller can execute the verified filesystem restore.
+        }
+    }
+
+    public function restore(): \Copot\Core\BackupRecovery\RecoveryLifecycleRecord
+    {
+        if ($this->closed) {
+            throw new \RuntimeException('Recovery session is already closed.');
+        }
+        try {
+            return $this->session->restoreMutation();
         } finally {
             $this->closed = true;
         }

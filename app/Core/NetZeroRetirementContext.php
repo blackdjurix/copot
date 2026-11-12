@@ -13,7 +13,8 @@ final class NetZeroRetirementContext
         private array $expectedState,
         private $currentState,
         private string $migrationPlanIdentity,
-        private string $reason = 'forensic net-zero effective mutation'
+        private string $reason = 'forensic net-zero effective mutation',
+        private bool $preMutation = false
     ) {
         if ($operationId === '' || trim($operationId) !== $operationId) throw new \InvalidArgumentException('Net-zero operation identity is invalid.');
         foreach ([$runtimeRoot, $acceptedTargetRoot] as $root) if ($root === '' || str_contains($root, "\0")) throw new \InvalidArgumentException('Net-zero target root is invalid.');
@@ -35,6 +36,7 @@ final class NetZeroRetirementContext
     public function expectedState(): array { return $this->expectedState; }
     public function currentState(): array { $state = ($this->currentState)(); return is_array($state) ? $state : []; }
     public function reason(): string { return $this->reason; }
+    public function preMutation(): bool { return $this->preMutation; }
 
     private static function hash(string $value, string $label): void
     {

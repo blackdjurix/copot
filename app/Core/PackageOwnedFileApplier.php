@@ -22,7 +22,7 @@ final class PackageOwnedFileApplier
         }
     }
 
-    public function apply(WebcoreApplyPlan $plan, ?callable $progress = null, ?callable $beforeActivation = null): WebcoreApplyResult
+    public function apply(WebcoreApplyPlan $plan, ?callable $progress = null, ?callable $beforeActivation = null, ?callable $afterActivation = null): WebcoreApplyResult
     {
         $files = $plan->files();
         $hasReplacement = false;
@@ -43,6 +43,7 @@ final class PackageOwnedFileApplier
             if (!$file instanceof StagedFile) {
                 return new WebcoreApplyResult(WebcoreApplyResult::FAILED, [], 'Apply plan contains an invalid staged file.');
             }
+            ProtectedResourcePolicy::assertMutableRelativePath($file->path());
             $destination = $this->guard->destination($file->path());
             $exists = file_exists($destination) || is_link($destination);
             $this->guard->verifyDestination($file->path(), false);
@@ -154,6 +155,9 @@ final class PackageOwnedFileApplier
                 if ($progress !== null) {
                     $progress(count($applied), $file->path());
                 }
+                if ($afterActivation !== null) {
+                    $afterActivation($file->path());
+                }
             }
         } catch (\Throwable $exception) {
             return new WebcoreApplyResult(WebcoreApplyResult::BLOCKED, $applied, $exception->getMessage());
@@ -201,6 +205,20 @@ final class PackageOwnedFileApplier
             return 'Existing live-file identity could not be verified.';
         }
 
+        // Keep the test-only fault boundary before any Windows-specific
+        // destination preparation.  Windows needs to move an existing target
+        // aside before activation, but the hook semantically means
+        // "before activation" and must not leave that target missing when it
+        // fails synchronously.
+        if ($beforeActivation !== null) {
+            try {
+                $beforeActivation($relativePath);
+            } catch (\Throwable $exception) {
+                @unlink($temporary);
+                return $exception->getMessage();
+            }
+        }
+
         $backup = $workspace . DIRECTORY_SEPARATOR . 'backup-' . bin2hex(random_bytes(16));
         if ($existing && !@rename($destination, $backup)) {
             @unlink($temporary);
@@ -209,10 +227,6 @@ final class PackageOwnedFileApplier
 
         $activationTemporary = null;
         try {
-            if ($beforeActivation !== null) {
-                $beforeActivation($relativePath);
-            }
-
             // Windows renames preserve the source security descriptor. Stage
             // the activation sibling inside the guarded destination directory
             // so it inherits that directory's normal access semantics instead

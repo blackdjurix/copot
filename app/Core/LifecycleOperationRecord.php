@@ -12,13 +12,17 @@ final class LifecycleOperationRecord
     public const AWAITING_WU6 = 'awaiting_wu6';
     public const BLOCKED = 'blocked';
     public const INDETERMINATE = 'indeterminate';
+    /** Internal active phase retaining authority across a retry handoff. */
+    public const RETRY_HANDOFF = 'retry_handoff';
     public const CLEANUP_PENDING = 'cleanup_pending';
     public const COMPLETED = 'completed';
     public const RETIRED_NET_ZERO = 'retired_net_zero';
+    /** Internal terminal disposition for a filesystem mutation rolled back by recovery. */
+    public const ROLLED_BACK = 'rolled_back';
 
     private const ACTIVE_STATUSES = [
         self::PREPARING, self::APPLYING, self::MIGRATING,
-        self::AWAITING_WU6, self::BLOCKED, self::INDETERMINATE, self::CLEANUP_PENDING,
+        self::AWAITING_WU6, self::BLOCKED, self::INDETERMINATE, self::RETRY_HANDOFF, self::CLEANUP_PENDING,
     ];
 
     public function __construct(
@@ -45,7 +49,8 @@ final class LifecycleOperationRecord
         private ?string $destructiveConfirmationActorIdentity = null,
         private ?string $destructiveConfirmationRemovalSetDigest = null,
         private ?string $destructiveConfirmationAcceptedAt = null,
-        private ?string $destructiveConfirmationConsumedAt = null
+        private ?string $destructiveConfirmationConsumedAt = null,
+        private ?string $retryAttemptIdentity = null
     ) {
         self::assertOpaque($operationId, 'Operation identity');
         self::assertOpaque($classification, 'Classification');
@@ -55,7 +60,7 @@ final class LifecycleOperationRecord
         self::assertOpaque($stagingPath, 'Staging path');
         self::assertHash($payloadIdentity, 'Payload identity');
         self::assertHash($applyPlanIdentity, 'Apply plan identity');
-        if (!in_array($phase, self::ACTIVE_STATUSES, true) && !in_array($phase, [self::COMPLETED, self::RETIRED_NET_ZERO], true)) {
+        if (!in_array($phase, self::ACTIVE_STATUSES, true) && !in_array($phase, [self::COMPLETED, self::RETIRED_NET_ZERO, self::ROLLED_BACK], true)) {
             throw new \InvalidArgumentException('Lifecycle operation phase is invalid.');
         }
         if ($fileCursor < 0 || ($lastVerifiedPath !== null && $lastVerifiedPath === '')) {
@@ -81,6 +86,9 @@ final class LifecycleOperationRecord
 
     public static function fromArray(array $data): self
     {
+        $retryAttemptIdentity = $data['retry_attempt_identity'] ?? null;
+        if (array_key_exists('retry_attempt_identity', $data)) unset($data['retry_attempt_identity']);
+        if ($retryAttemptIdentity !== null) self::assertOpaque($retryAttemptIdentity, 'Retry attempt identity');
         $legacy = ['operation_id','classification','target_webcore_version','release_identity','archive_sha256','staging_path','payload_identity','apply_plan_identity','phase','file_cursor','last_verified_path','migration_plan_identity','migration_outcome','created_at','updated_at','reason'];
         $current = [...$legacy, 'recovery_identity','recovery_manifest_identity','recovery_state'];
         $confirmed = [...$current, 'destructive_confirmation_identity','destructive_confirmation_actor_identity','destructive_confirmation_removal_set_digest','destructive_confirmation_accepted_at','destructive_confirmation_consumed_at'];
@@ -89,7 +97,9 @@ final class LifecycleOperationRecord
         if (array_keys($data) === $current) { $data['destructive_confirmation_identity'] = null; $data['destructive_confirmation_actor_identity'] = null; $data['destructive_confirmation_removal_set_digest'] = null; $data['destructive_confirmation_accepted_at'] = null; $data['destructive_confirmation_consumed_at'] = null; }
         if (!is_int($data['file_cursor'])) { throw new \InvalidArgumentException('Lifecycle operation cursor is invalid.'); }
 
-        return new self(...array_values($data));
+        $values = array_values($data);
+        $values[] = $retryAttemptIdentity;
+        return new self(...$values);
     }
 
     public function toArray(): array
@@ -121,6 +131,9 @@ final class LifecycleOperationRecord
                 'destructive_confirmation_accepted_at' => $this->destructiveConfirmationAcceptedAt,
                 'destructive_confirmation_consumed_at' => $this->destructiveConfirmationConsumedAt,
             ]),
+            ...($this->retryAttemptIdentity === null ? [] : [
+                'retry_attempt_identity' => $this->retryAttemptIdentity,
+            ]),
         ];
     }
 
@@ -137,10 +150,11 @@ final class LifecycleOperationRecord
     public function lastVerifiedPath(): ?string { return $this->lastVerifiedPath; }
     public function migrationPlanIdentity(): ?string { return $this->migrationPlanIdentity; }
     public function migrationOutcome(): ?string { return $this->migrationOutcome; }
-    public function isTerminal(): bool { return in_array($this->phase, [self::COMPLETED, self::RETIRED_NET_ZERO], true); }
+    public function isTerminal(): bool { return in_array($this->phase, [self::COMPLETED, self::RETIRED_NET_ZERO, self::ROLLED_BACK], true); }
     public function recoveryIdentity(): ?string { return $this->recoveryIdentity; }
     public function recoveryManifestIdentity(): ?string { return $this->recoveryManifestIdentity; }
     public function recoveryState(): ?string { return $this->recoveryState; }
+    public function retryAttemptIdentity(): ?string { return $this->retryAttemptIdentity; }
     public function destructiveConfirmationIdentity(): ?string { return $this->destructiveConfirmationIdentity; }
     public function destructiveConfirmationActorIdentity(): ?string { return $this->destructiveConfirmationActorIdentity; }
     public function destructiveConfirmationRemovalSetDigest(): ?string { return $this->destructiveConfirmationRemovalSetDigest; }
@@ -151,18 +165,58 @@ final class LifecycleOperationRecord
     public function bindRecovery(string $identity, string $manifest, string $state): self
     { return $this->copy($this->stagingPath, $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationOutcome, $this->reason, $identity, $manifest, $state); }
 
+    /** Update only the persisted recovery observation; binding identity is a separate operation. */
+    public function withRecoveryState(string $state): self
+    {
+        \Copot\Core\BackupRecovery\RecoveryLifecycleState::assert($state);
+        if ($this->recoveryIdentity === null || $this->recoveryManifestIdentity === null) {
+            throw new \RuntimeException('Cannot update recovery state without recovery identity binding.');
+        }
+        return new self(
+            $this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity,
+            $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity,
+            $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationPlanIdentity,
+            $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $this->reason,
+            $this->recoveryIdentity, $this->recoveryManifestIdentity, $state,
+            $this->destructiveConfirmationIdentity, $this->destructiveConfirmationActorIdentity,
+            $this->destructiveConfirmationRemovalSetDigest, $this->destructiveConfirmationAcceptedAt,
+            $this->destructiveConfirmationConsumedAt,
+            $this->retryAttemptIdentity
+        );
+    }
+
+    public function withRetryAttemptIdentity(string $identity): self
+    {
+        self::assertOpaque($identity, 'Retry attempt identity');
+        return new self(
+            $this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity,
+            $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity,
+            $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationPlanIdentity,
+            $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $this->reason,
+            $this->recoveryIdentity, $this->recoveryManifestIdentity, $this->recoveryState,
+            $this->destructiveConfirmationIdentity, $this->destructiveConfirmationActorIdentity,
+            $this->destructiveConfirmationRemovalSetDigest, $this->destructiveConfirmationAcceptedAt,
+            $this->destructiveConfirmationConsumedAt, $identity
+        );
+    }
+
     public function advance(string $phase, int $cursor, ?string $lastPath = null, ?string $migrationOutcome = null, string $reason = ''): self
     {
         return $this->copy($this->stagingPath, $phase, $cursor, $lastPath ?? $this->lastVerifiedPath, $migrationOutcome ?? $this->migrationOutcome, $reason);
     }
 
+    public function resetForRetry(string $reason): self
+    {
+        return $this->copy($this->stagingPath, self::PREPARING, 0, null, null, $reason);
+    }
+
     public function withDestructiveConfirmation(string $identity, string $actorIdentity, string $removalSetDigest, string $acceptedAt): self
-    { return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationPlanIdentity, $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $this->reason, $this->recoveryIdentity, $this->recoveryManifestIdentity, $this->recoveryState, $identity, $actorIdentity, $removalSetDigest, $acceptedAt, null); }
+    { return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationPlanIdentity, $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $this->reason, $this->recoveryIdentity, $this->recoveryManifestIdentity, $this->recoveryState, $identity, $actorIdentity, $removalSetDigest, $acceptedAt, null, $this->retryAttemptIdentity); }
     public function withDestructiveConfirmationConsumed(string $consumedAt): self
-    { if ($this->destructiveConfirmationIdentity === null) { throw new \RuntimeException('No destructive confirmation is accepted.'); } return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationPlanIdentity, $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $this->reason, $this->recoveryIdentity, $this->recoveryManifestIdentity, $this->recoveryState, $this->destructiveConfirmationIdentity, $this->destructiveConfirmationActorIdentity, $this->destructiveConfirmationRemovalSetDigest, $this->destructiveConfirmationAcceptedAt, $consumedAt); }
+    { if ($this->destructiveConfirmationIdentity === null) { throw new \RuntimeException('No destructive confirmation is accepted.'); } return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $this->stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $this->phase, $this->fileCursor, $this->lastVerifiedPath, $this->migrationPlanIdentity, $this->migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $this->reason, $this->recoveryIdentity, $this->recoveryManifestIdentity, $this->recoveryState, $this->destructiveConfirmationIdentity, $this->destructiveConfirmationActorIdentity, $this->destructiveConfirmationRemovalSetDigest, $this->destructiveConfirmationAcceptedAt, $consumedAt, $this->retryAttemptIdentity); }
 
     private function copy(string $stagingPath, string $phase, int $cursor, ?string $lastPath, ?string $migrationOutcome, string $reason, ?string $recoveryIdentity = null, ?string $recoveryManifest = null, ?string $recoveryState = null): self
-    { return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $phase, $cursor, $lastPath, $this->migrationPlanIdentity, $migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $reason, $recoveryIdentity ?? $this->recoveryIdentity, $recoveryManifest ?? $this->recoveryManifestIdentity, $recoveryState ?? $this->recoveryState, $this->destructiveConfirmationIdentity, $this->destructiveConfirmationActorIdentity, $this->destructiveConfirmationRemovalSetDigest, $this->destructiveConfirmationAcceptedAt, $this->destructiveConfirmationConsumedAt); }
+    { return new self($this->operationId, $this->classification, $this->targetWebcoreVersion, $this->releaseIdentity, $this->archiveSha256, $stagingPath, $this->payloadIdentity, $this->applyPlanIdentity, $phase, $cursor, $lastPath, $this->migrationPlanIdentity, $migrationOutcome, $this->createdAt, gmdate(DATE_ATOM), $reason, $recoveryIdentity ?? $this->recoveryIdentity, $recoveryManifest ?? $this->recoveryManifestIdentity, $recoveryState ?? $this->recoveryState, $this->destructiveConfirmationIdentity, $this->destructiveConfirmationActorIdentity, $this->destructiveConfirmationRemovalSetDigest, $this->destructiveConfirmationAcceptedAt, $this->destructiveConfirmationConsumedAt, $this->retryAttemptIdentity); }
 
     private static function assertOpaque(string $value, string $label): void
     {

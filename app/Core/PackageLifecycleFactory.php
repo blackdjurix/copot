@@ -20,13 +20,28 @@ use Copot\Core\BackupRecovery\RecoveryLifecycleStore;
 use Copot\Core\BackupRecovery\RecoveryOrchestrator;
 use Copot\Core\BackupRecovery\RecoveryRootResolver;
 use Copot\Core\BackupRecovery\RecoveryStorageRoot;
+use Copot\Core\BackupRecovery\ReusableFilesystemRecoveryPointService;
 use Copot\Core\BackupRecovery\ScopedDatabaseConsistencyEvidence;
 use Copot\Core\BackupRecovery\UnavailableDatabaseQuiescence;
 use PDO;
 
 final class PackageLifecycleFactory
 {
-    public static function forProject(DeploymentContext|string $deployment): PackageLifecycleService
+    public static function reusableFilesystemRecoveryPointService(DeploymentContext|string $deployment, bool $requireExistingInstallation = true): ReusableFilesystemRecoveryPointService
+    {
+        $deploymentContext = is_string($deployment) ? DeploymentContext::forApplicationRoot($deployment) : $deployment;
+        $basePath = $deploymentContext->appRoot();
+        $storage = $basePath . DIRECTORY_SEPARATOR . 'storage';
+        $identityStore = new InstallationIdentityStore($storage);
+        if ($requireExistingInstallation && !($identityStore->read() instanceof InstallationIdentity)) throw new \RuntimeException('Existing installation identity is required for reusable recovery-point access.');
+        $installation = new InstallationState($storage);
+        $committedStore = new CommittedLifecycleStateStore($storage);
+        [$composition, $reason] = self::recoveryComposition($basePath, $deploymentContext->publicRoot(), $storage, $installation, $committedStore, new LiveTreePathGuard($deploymentContext));
+        if (!$composition instanceof PackageLifecycleRecoveryComposition) throw new \RuntimeException($reason ?? 'Recovery composition is unavailable.');
+        return $composition->reusableFilesystemRecoveryPointService();
+    }
+
+    public static function forProject(DeploymentContext|string $deployment, ?LifecycleTrace $lifecycleTrace = null, bool $requireExistingInstallation = false): PackageLifecycleService
     {
         $deploymentContext = is_string($deployment)
             ? DeploymentContext::forApplicationRoot($deployment)
@@ -34,7 +49,10 @@ final class PackageLifecycleFactory
         $basePath = $deploymentContext->appRoot();
         $publicRoot = $deploymentContext->publicRoot();
         $storage = $basePath . DIRECTORY_SEPARATOR . 'storage';
-        $installationIdentity = (new InstallationIdentityStore($storage))->getOrCreate();
+        $identityStore = new InstallationIdentityStore($storage);
+        $installationIdentity = $requireExistingInstallation
+            ? ($identityStore->read() ?? throw new \RuntimeException('Existing installation identity is required for external lifecycle continuation.'))
+            : $identityStore->getOrCreate();
         $database = new Database(new Config($basePath . DIRECTORY_SEPARATOR . 'config'));
         $baselineCatalog = CanonicalSchemaBaselineCatalog::forProject($basePath);
         $registry = CoreMigrationRegistry::forProject($basePath);
@@ -42,7 +60,7 @@ final class PackageLifecycleFactory
         $mutex = new InstallationMutex($storage);
         $operationStore = new LifecycleOperationStore($storage);
         $maintenance = new MaintenanceCoordinator($operationStore);
-        $liveGuard = new LiveTreePathGuard($basePath);
+        $liveGuard = new LiveTreePathGuard($deploymentContext);
         $intake = new ZipIntakeService($basePath, null, null, null, null, $installationIdentity->value());
         $installationState = new InstallationState($storage);
         $committedStore = new CommittedLifecycleStateStore($storage);
@@ -57,10 +75,17 @@ final class PackageLifecycleFactory
         );
         $designatedMigrationConnection = $recoveryComposition?->databaseConnection();
         $normalRecoveryCapture = $recoveryComposition?->normalCaptureService();
+        $applicationEvidenceScope = null;
         $normalRecoveryBoundary = $recoveryComposition?->normalProtectedMutationBoundary(
             $installationIdentity->value(),
             hash('sha256', 'deployment:' . $deploymentContext->appRoot()),
-            $normalRecoveryCapture
+            $normalRecoveryCapture,
+            null,
+            null,
+            null,
+            true,
+            $recoveryComposition?->maintenance instanceof InstallationScopedMaintenanceGuard ? $recoveryComposition->maintenance : null,
+            $applicationEvidenceScope
         );
 
         $applyTemporaryRoot = PackageApplyTemporaryRoot::forProject($basePath, $installationIdentity->value());
@@ -232,7 +257,45 @@ final class PackageLifecycleFactory
             $normalRecoveryBoundary,
             $operationStore,
             $v3MigrationRunner,
-            $legacyBootstrap
+            $legacyBootstrap,
+            $lifecycleTrace,
+            static function (LifecycleOperationRecord $operation) use ($recoveryComposition): bool {
+                if (!$recoveryComposition instanceof PackageLifecycleRecoveryComposition
+                    || $operation->recoveryIdentity() === null
+                    || $operation->recoveryManifestIdentity() === null) {
+                    return false;
+                }
+                try {
+                    $decoded = $recoveryComposition->artifacts->readManifest(new \Copot\Core\BackupRecovery\RecoveryIdentity($operation->recoveryIdentity()));
+                    $manifest = $decoded['manifest'] ?? null;
+                    $domains = array_values(array_filter($decoded['artifacts'] ?? [], static fn ($artifact): bool => $artifact instanceof \Copot\Core\BackupRecovery\RecoveryArtifactRecord));
+                    $domainIds = array_map(static fn (\Copot\Core\BackupRecovery\RecoveryArtifactRecord $artifact): string => $artifact->domainIdentifier(), $domains);
+                    return $manifest instanceof \Copot\Core\BackupRecovery\RecoveryManifest
+                        && $manifest->operationIdentity() === $operation->operationId()
+                        && in_array('filesystem.action-linkage', $domainIds, true)
+                        && !in_array('database.webcore', $domainIds, true);
+                } catch (\Throwable) {
+                    return false;
+                }
+            },
+            null,
+            static function (LifecycleOperationRecord $operation) use ($recoveryComposition): ?\Copot\Core\BackupRecovery\RecoveryLifecycleRecord {
+                if (!$recoveryComposition instanceof PackageLifecycleRecoveryComposition
+                    || $operation->recoveryIdentity() === null
+                    || $operation->recoveryManifestIdentity() === null) {
+                    return null;
+                }
+                return $recoveryComposition->store->read(new \Copot\Core\BackupRecovery\RecoveryIdentity($operation->recoveryIdentity()));
+            },
+            static function (string $identity) use ($recoveryComposition): ?\Copot\Core\BackupRecovery\RecoveryLifecycleRecord {
+                if (!$recoveryComposition instanceof PackageLifecycleRecoveryComposition) return null;
+                try {
+                    return $recoveryComposition->store->read(new \Copot\Core\BackupRecovery\RecoveryIdentity($identity));
+                } catch (\Copot\Core\BackupRecovery\RecoveryLifecycleException $exception) {
+                    if ($exception->getMessage() === 'Recovery lifecycle record is unavailable.') return null;
+                    throw $exception;
+                }
+            }
         );
     }
 
@@ -385,6 +448,7 @@ final class PackageLifecycleFactory
             return [new PackageLifecycleRecoveryComposition(
                 $root,
                 $rootResolver,
+                $publicRoot,
                 $store,
                 $artifacts,
                 $maintenance,
@@ -411,6 +475,7 @@ final class PackageLifecycleRecoveryComposition
     public function __construct(
         public readonly RecoveryStorageRoot $root,
         public readonly RecoveryRootResolver $rootResolver,
+        public readonly string $publicRoot,
         public readonly RecoveryLifecycleStore $store,
         public readonly RecoveryArtifactStore $artifacts,
         public readonly InstallationRecoveryMaintenance $maintenance,
@@ -448,7 +513,23 @@ final class PackageLifecycleRecoveryComposition
         );
     }
 
-    public function normalProtectedMutationBoundary(string $installationIdentity, string $deploymentIdentity, ?NormalWebcoreRecoveryCaptureService $capture = null, ?DatabaseScope $databaseScope = null, ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null, ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null): ProtectedWebcoreMutationBoundary
+    public function reusableFilesystemRecoveryPointService(): ReusableFilesystemRecoveryPointService
+    {
+        if (!$this->maintenance instanceof InstallationScopedMaintenanceGuard) throw new \RuntimeException('Reusable recovery-point service requires scoped installation maintenance.');
+        $sourceInventories = new SourceInventoryArtifactStore($this->root->projectRoot() . DIRECTORY_SEPARATOR . 'storage');
+        return new ReusableFilesystemRecoveryPointService(
+            $this->root,
+            $this->artifacts,
+            $this->maintenance,
+            $this->filesystem,
+            $this->lifecycle,
+            $this->installedLock,
+            $sourceInventories,
+            new CanonicalSourceInventoryBuilder($this->root->projectRoot(), $this->publicRoot)
+        );
+    }
+
+    public function normalProtectedMutationBoundary(string $installationIdentity, string $deploymentIdentity, ?NormalWebcoreRecoveryCaptureService $capture = null, ?DatabaseScope $databaseScope = null, ?ScopedDatabaseConsistencyEvidence $databaseConsistencyEvidence = null, ?ApplicationWriteProtectionEvidence $applicationWriteProtectionEvidence = null, bool $filesystemOnly = false, ?InstallationScopedMaintenanceGuard $filesystemGuard = null, ?DatabaseScope $applicationEvidenceScope = null): ProtectedWebcoreMutationBoundary
     {
         return new NormalWebcoreProtectedMutationBoundary(
             $capture ?? $this->normalCaptureService(),
@@ -459,7 +540,10 @@ final class PackageLifecycleRecoveryComposition
             $this->databaseIdentity,
             $databaseScope,
             $databaseConsistencyEvidence,
-            $applicationWriteProtectionEvidence
+            $applicationWriteProtectionEvidence,
+            $filesystemOnly,
+            $filesystemGuard,
+            $applicationEvidenceScope
         );
     }
 }

@@ -114,7 +114,13 @@ final class PackageManifestReader
             if (!is_string($data['coverage']) || !in_array($data['coverage'], ['full', 'partial'], true)) { throw new \RuntimeException('V3 coverage is invalid.'); }
             $source = $data['source_compatibility']; $this->assertKeys($source, ['minimum_source_version', 'maximum_source_version'], 'V3 source compatibility');
             $runtime = $data['runtime_compatibility']; $this->assertKeys($runtime, ['minimum_php_version', 'minimum_database_versions', 'required_extensions'], 'V3 runtime compatibility');
-            if (!is_array($runtime['minimum_database_versions']) || array_keys($runtime['minimum_database_versions']) === array_keys(array_values($runtime['minimum_database_versions'])) || $runtime['minimum_database_versions'] === []) { throw new \RuntimeException('V3 database requirements must be a nonempty object.'); }
+            if (!is_array($runtime['minimum_database_versions']
+                ?? null)
+                || ($runtime['minimum_database_versions'] !== []
+                    && array_keys($runtime['minimum_database_versions']) === array_keys(array_values($runtime['minimum_database_versions'])))
+            ) {
+                throw new \RuntimeException('V3 database requirements must be an object, including when explicitly empty.');
+            }
             foreach ($runtime['minimum_database_versions'] as $vendor => $version) { if (!is_string($vendor) || trim($vendor) === '' || !is_string($version)) { throw new \RuntimeException('V3 database requirement type is invalid.'); } }
             $this->assertList($runtime['required_extensions'], 'V3 extensions'); if ($runtime['required_extensions'] === []) { throw new \RuntimeException('V3 extensions cannot be empty.'); }
             $migration = $data['migration_declaration']; $this->assertKeys($migration, ['declares_core_migrations', 'declaration_identity'], 'V3 migration declaration');

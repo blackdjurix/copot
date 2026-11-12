@@ -21,8 +21,12 @@ final class NetZeroRetirementVerifier
 
         $files = $plan->files();
         $cursor = $operation->fileCursor();
-        if ($cursor < 1 || $cursor > count($files)) $fail('persisted cursor is incoherent.');
-        if ($operation->lastVerifiedPath() !== $files[$cursor - 1]->path()) $fail('last verified path does not match apply order.');
+        if ($context->preMutation()) {
+            if ($cursor !== 0 || $operation->lastVerifiedPath() !== null) $fail('pre-mutation cursor is incoherent.');
+        } else {
+            if ($cursor < 1 || $cursor > count($files)) $fail('persisted cursor is incoherent.');
+            if ($operation->lastVerifiedPath() !== $files[$cursor - 1]->path()) $fail('last verified path does not match apply order.');
+        }
 
         $liveRoot = realpath($context->runtimeRoot());
         $acceptedRoot = realpath($context->acceptedTargetRoot());

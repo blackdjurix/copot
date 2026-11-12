@@ -4,10 +4,11 @@ namespace Copot\Core\BackupRecovery;
 
 final class RecoveryArtifactStore
 {
-    public function __construct(private RecoveryStorageRoot $root, private ?RecoveryAtomicFileWriter $writer = null, private ?RecoveryManifestCodec $codec = null)
+    public function __construct(private RecoveryStorageRoot $root, private ?RecoveryAtomicFileWriter $writer = null, private ?RecoveryManifestCodec $codec = null, private ?ReusableRecoveryPointManifestCodec $reusableCodec = null)
     {
         $this->writer ??= new RecoveryAtomicFileWriter();
         $this->codec ??= new RecoveryManifestCodec();
+        $this->reusableCodec ??= new ReusableRecoveryPointManifestCodec();
     }
 
     /** @param array<int, array{record: RecoveryArtifactRecord, bytes: string}> $artifacts */
@@ -93,6 +94,73 @@ final class RecoveryArtifactStore
         if (!is_string($contents) || strlen($contents) !== $artifact->byteSize() || hash('sha256', $contents) !== $artifact->artifactIdentity()) {
             throw new RecoveryStorageException('Recovery artifact failed integrity verification.');
         }
+        return $contents;
+    }
+
+    /** @param array<int, array{record: RecoveryArtifactRecord, bytes: string}> $artifacts */
+    public function publishReusablePoint(ReusableRecoveryPointManifest $manifest, array $artifacts): void
+    {
+        $policy = new RecoveryStoragePathPolicy($this->root);
+        $pointRoot = $policy->reusableRecoveryPointRoot($manifest->pointIdentity());
+        $manifestPath = $policy->reusableRecoveryPointManifestPath($manifest->pointIdentity());
+        $this->makeDirectory($policy->reusableRecoveryPointsRoot());
+        $this->makeDirectory($pointRoot . DIRECTORY_SEPARATOR . 'manifest');
+        $this->makeDirectory($pointRoot . DIRECTORY_SEPARATOR . 'artifacts');
+        try {
+            $expected = [];
+            foreach ($manifest->artifactRecords() as $record) $expected[$record->domainIdentifier()] = $record;
+            $seen = [];
+            foreach ($artifacts as $entry) {
+                if (!is_array($entry) || !isset($entry['record'], $entry['bytes']) || !$entry['record'] instanceof RecoveryArtifactRecord || !is_string($entry['bytes'])) throw new RecoveryStorageException('Reusable recovery-point artifact input is invalid.');
+                $record = $entry['record']; $bytes = $entry['bytes'];
+                if (isset($seen[$record->domainIdentifier()]) || !isset($expected[$record->domainIdentifier()]) || $expected[$record->domainIdentifier()]->toArray() !== $record->toArray() || strlen($bytes) !== $record->byteSize() || hash('sha256', $bytes) !== $record->artifactIdentity()) throw new RecoveryStorageException('Reusable recovery-point artifact binding is invalid.');
+                $seen[$record->domainIdentifier()] = true;
+                $directory = dirname($policy->reusableRecoveryPointArtifactPath($manifest->pointIdentity(), $record));
+                $this->makeDirectory($directory);
+                $this->writeOrReuse($policy->reusableRecoveryPointArtifactPath($manifest->pointIdentity(), $record), $bytes);
+                $this->writeOrReuse($policy->reusableRecoveryPointArtifactMetadataPath($manifest->pointIdentity(), $record), $this->canonicalMetadata($record));
+            }
+            if (count($seen) !== count($expected)) throw new RecoveryStorageException('Reusable recovery-point artifact set is incomplete.');
+            $encoded = $this->reusableCodec->encode($manifest);
+            $this->writeOrReuse($manifestPath, $encoded);
+            $decoded = $this->reusableCodec->decode((string) file_get_contents($manifestPath));
+            if ($decoded['identity'] !== $manifest->identity()) throw new RecoveryStorageException('Reusable recovery-point manifest identity changed during publication.');
+        } catch (\Throwable $exception) {
+            if (!file_exists($manifestPath)) $this->removeTree($pointRoot);
+            if ($exception instanceof RecoveryStorageException) throw $exception;
+            throw new RecoveryStorageException('Reusable recovery-point publication failed.', 0, $exception);
+        }
+    }
+
+    /** @return array{manifest: ReusableRecoveryPointManifest, identity: string} */
+    public function readReusablePointManifest(ReusableRecoveryPointIdentity $identity): array
+    {
+        $policy = new RecoveryStoragePathPolicy($this->root);
+        $path = $policy->reusableRecoveryPointManifestPath($identity);
+        if (is_link($path) || !is_file($path) || !is_readable($path)) throw new RecoveryStorageException('Reusable recovery-point manifest is unavailable.');
+        $decoded = $this->reusableCodec->decode((string) file_get_contents($path));
+        if (!$decoded['manifest']->pointIdentity()->equals($identity)) throw new RecoveryStorageException('Reusable recovery-point namespace identity changed.');
+        foreach ($decoded['manifest']->artifactRecords() as $artifact) {
+            $bytesPath = $policy->reusableRecoveryPointArtifactPath($identity, $artifact);
+            $metadataPath = $policy->reusableRecoveryPointArtifactMetadataPath($identity, $artifact);
+            $metadata = $this->canonicalMetadata($artifact);
+            if (is_link($bytesPath) || !is_file($bytesPath) || !is_readable($bytesPath) || @filesize($bytesPath) !== $artifact->byteSize() || @hash_file('sha256', $bytesPath) !== $artifact->artifactIdentity()) throw new RecoveryStorageException('Reusable recovery-point artifact failed integrity verification.');
+            if (is_link($metadataPath) || !is_file($metadataPath) || !is_readable($metadataPath) || @filesize($metadataPath) !== strlen($metadata) || @hash_file('sha256', $metadataPath) !== hash('sha256', $metadata)) throw new RecoveryStorageException('Reusable recovery-point artifact metadata failed integrity verification.');
+        }
+        return $decoded;
+    }
+
+    public function readReusablePointArtifact(ReusableRecoveryPointIdentity $identity, RecoveryArtifactRecord $artifact): string
+    {
+        $decoded = $this->readReusablePointManifest($identity);
+        $referenced = false;
+        foreach ($decoded['manifest']->artifactRecords() as $candidate) {
+            if ($candidate->toArray() === $artifact->toArray()) { $referenced = true; break; }
+        }
+        if (!$referenced) throw new RecoveryStorageException('Requested reusable recovery-point artifact is not referenced by the immutable manifest.');
+        $path = (new RecoveryStoragePathPolicy($this->root))->reusableRecoveryPointArtifactPath($identity, $artifact);
+        $contents = @file_get_contents($path);
+        if (!is_string($contents) || strlen($contents) !== $artifact->byteSize() || hash('sha256', $contents) !== $artifact->artifactIdentity()) throw new RecoveryStorageException('Reusable recovery-point artifact failed integrity verification.');
         return $contents;
     }
 

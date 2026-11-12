@@ -66,6 +66,103 @@ final class InstallationScopedMaintenanceGuard extends InstallationRecoveryMaint
             && (int) ($state['in_flight'] ?? -1) === 0;
     }
 
+    /**
+     * Produce application-writer evidence without asserting database
+     * consistency. The DatabaseScope is an installation namespace used to
+     * bind the Guard evidence; it is not a database snapshot or lock.
+     */
+    public function produceEvidence(RecoveryIdentity $identity, DatabaseScope $scope, int $ttlSeconds = 300): ApplicationWriteProtectionEvidence
+    {
+        if ($ttlSeconds < 1) {
+            throw new RecoveryLifecycleException('Application protection evidence lifetime is invalid.');
+        }
+        $now = time();
+        $evidence = null;
+        $this->withAdmissionLock(function () use ($identity, $scope, $now, $ttlSeconds, &$evidence): void {
+            $state = $this->readState();
+            if (($state['active'] ?? false) === true || ($state['draining'] ?? false) === true || (int) ($state['in_flight'] ?? 0) !== 0) {
+                throw new RecoveryLifecycleException('Application writers are not quiescent.');
+            }
+            [$writerIdentity, $drainIdentity] = $this->evidenceIdentities($identity, $scope, $state);
+            $evidence = new ApplicationWriteProtectionEvidence(
+                $scope,
+                $identity,
+                $writerIdentity,
+                $drainIdentity,
+                ['background', 'cli', 'http', 'scheduled'],
+                true,
+                true,
+                $now,
+                $now + $ttlSeconds
+            );
+        });
+        if (!$evidence instanceof ApplicationWriteProtectionEvidence) {
+            throw new RecoveryLifecycleException('Application protection evidence could not be produced.');
+        }
+        return $evidence;
+    }
+
+    /** Produce Guard evidence for a filesystem-only cycle with no DB scope. */
+    public function produceFilesystemEvidence(RecoveryIdentity $identity, int $ttlSeconds = 300): ApplicationWriteProtectionEvidence
+    {
+        return $this->produceApplicationEvidence($identity, null, $ttlSeconds, false);
+    }
+
+    /** Reconstitute evidence for a durable Guard that survived a process exit. */
+    public function revalidateActiveEvidence(RecoveryIdentity $identity, DatabaseScope $scope, int $ttlSeconds = 300): ApplicationWriteProtectionEvidence
+    {
+        if ($ttlSeconds < 1) {
+            throw new RecoveryLifecycleException('Application protection evidence lifetime is invalid.');
+        }
+        $now = time();
+        $evidence = null;
+        $this->withAdmissionLock(function () use ($identity, $scope, $now, $ttlSeconds, &$evidence): void {
+            $state = $this->readState();
+            if (($state['active'] ?? false) !== true
+                || ($state['draining'] ?? false) !== true
+                || ($state['identity'] ?? null) !== $identity->value()
+                || (int) ($state['in_flight'] ?? 0) !== 0) {
+                throw new RecoveryLifecycleException('Active application-write protection is unavailable for resume.');
+            }
+            [$writerIdentity, $drainIdentity] = $this->evidenceIdentities($identity, $scope, $state);
+            $evidence = new ApplicationWriteProtectionEvidence(
+                $scope,
+                $identity,
+                $writerIdentity,
+                $drainIdentity,
+                ['background', 'cli', 'http', 'scheduled'],
+                true,
+                true,
+                $now,
+                $now + $ttlSeconds
+            );
+            $state['evidence_identity'] = $evidence->identity();
+            $state['updated_at'] = gmdate('c');
+            $this->writeState($state);
+        });
+        if (!$evidence instanceof ApplicationWriteProtectionEvidence) {
+            throw new RecoveryLifecycleException('Application protection evidence could not be revalidated.');
+        }
+        return $evidence;
+    }
+
+    /** Reconstitute filesystem-only Guard evidence after process reconstruction. */
+    public function revalidateFilesystemEvidence(RecoveryIdentity $identity, int $ttlSeconds = 300): ApplicationWriteProtectionEvidence
+    {
+        return $this->produceApplicationEvidence($identity, null, $ttlSeconds, true);
+    }
+
+    public function durableScopedActive(RecoveryIdentity $identity): bool
+    {
+        $state = $this->readState();
+        return ($state['active'] ?? false) === true
+            && ($state['draining'] ?? false) === true
+            && ($state['identity'] ?? null) === $identity->value()
+            && (int) ($state['in_flight'] ?? -1) === 0
+            && is_string($state['evidence_identity'] ?? null)
+            && preg_match('/^[a-f0-9]{64}$/D', $state['evidence_identity']) === 1;
+    }
+
     public function admit(string $writerClass): ?ApplicationWriteAdmissionLease
     {
         if (!in_array($writerClass, ['http', 'cli', 'scheduled', 'background'], true)) { return null; }
@@ -96,37 +193,65 @@ final class InstallationScopedMaintenanceGuard extends InstallationRecoveryMaint
         });
     }
 
+    /** @return array{0:string,1:string} */
+    private function evidenceIdentities(RecoveryIdentity $identity, DatabaseScope $scope, array $state): array
+    {
+        return [
+            hash('sha256', json_encode(['scope' => $scope->identity(), 'operation' => $identity->value(), 'state' => $state], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
+            hash('sha256', json_encode(['scope' => $scope->identity(), 'operation' => $identity->value(), 'in_flight' => (int) ($state['in_flight'] ?? 0), 'active' => (bool) ($state['active'] ?? false), 'draining' => (bool) ($state['draining'] ?? false)], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR)),
+        ];
+    }
+
+    private function produceApplicationEvidence(RecoveryIdentity $identity, ?DatabaseScope $scope, int $ttlSeconds, bool $active): ApplicationWriteProtectionEvidence
+    {
+        if ($ttlSeconds < 1) throw new RecoveryLifecycleException('Application protection evidence lifetime is invalid.');
+        $now = time(); $evidence = null;
+        $this->withAdmissionLock(function () use ($identity, $scope, $now, $ttlSeconds, $active, &$evidence): void {
+            $state = $this->readState();
+            if ($active) {
+                if (($state['active'] ?? false) !== true || ($state['draining'] ?? false) !== true || ($state['identity'] ?? null) !== $identity->value() || (int) ($state['in_flight'] ?? 0) !== 0) throw new RecoveryLifecycleException('Active application-write protection is unavailable for resume.');
+            } elseif (($state['active'] ?? false) === true || ($state['draining'] ?? false) === true || (int) ($state['in_flight'] ?? 0) !== 0) {
+                throw new RecoveryLifecycleException('Application writers are not quiescent.');
+            }
+            $scopeIdentity = $scope?->identity() ?? 'filesystem-only';
+            $writerIdentity = hash('sha256', json_encode(['scope' => $scopeIdentity, 'operation' => $identity->value(), 'state' => $state], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+            $drainIdentity = hash('sha256', json_encode(['scope' => $scopeIdentity, 'operation' => $identity->value(), 'in_flight' => (int) ($state['in_flight'] ?? 0), 'active' => (bool) ($state['active'] ?? false), 'draining' => (bool) ($state['draining'] ?? false)], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR));
+            $evidence = new ApplicationWriteProtectionEvidence($scope, $identity, $writerIdentity, $drainIdentity, ['background', 'cli', 'http', 'scheduled'], true, true, $now, $now + $ttlSeconds);
+            if ($active) { $state['evidence_identity'] = $evidence->identity(); $state['updated_at'] = gmdate('c'); $this->writeState($state); }
+        });
+        if (!$evidence instanceof ApplicationWriteProtectionEvidence) throw new RecoveryLifecycleException('Application protection evidence could not be produced.');
+        return $evidence;
+    }
+
     private function clearState(RecoveryIdentity $identity): void
     {
         $this->withAdmissionLock(function () use ($identity): void {
             $state = $this->readState();
-            if (($state['identity'] ?? null) === $identity->value()) {
-                $this->writeState(['active' => false, 'draining' => false, 'identity' => null, 'evidence_identity' => null, 'in_flight' => 0, 'updated_at' => gmdate('c')]);
-            }
+            if (($state['identity'] ?? null) === $identity->value()) $this->writeState(['active' => false, 'draining' => false, 'identity' => null, 'evidence_identity' => null, 'in_flight' => 0, 'updated_at' => gmdate('c')]);
         });
     }
 
     private function openAdmissionLock()
     {
         $directory = dirname($this->admissionLockPath);
-        if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) { throw new RecoveryLifecycleException('Application admission storage is unavailable.'); }
+        if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) throw new RecoveryLifecycleException('Application admission storage is unavailable.');
         $handle = fopen($this->admissionLockPath, 'c');
-        if (!is_resource($handle)) { throw new RecoveryLifecycleException('Application admission lock is unavailable.'); }
+        if (!is_resource($handle)) throw new RecoveryLifecycleException('Application admission lock is unavailable.');
         return $handle;
     }
 
     private function withAdmissionLock(\Closure $callback): void
     {
         $handle = $this->openAdmissionLock();
-        try { if (!flock($handle, LOCK_EX)) { throw new RecoveryLifecycleException('Application admission lock could not be acquired.'); } $callback(); flock($handle, LOCK_UN); } finally { fclose($handle); }
+        try { if (!flock($handle, LOCK_EX)) throw new RecoveryLifecycleException('Application admission lock could not be acquired.'); $callback(); flock($handle, LOCK_UN); } finally { fclose($handle); }
     }
 
     /** @return array<string,mixed> */
     private function readState(): array
     {
-        if (!is_file($this->statePath)) { return ['active' => false, 'draining' => false, 'in_flight' => 0]; }
+        if (!is_file($this->statePath)) return ['active' => false, 'draining' => false, 'in_flight' => 0];
         $decoded = json_decode((string) file_get_contents($this->statePath), true);
-        if (!is_array($decoded)) { throw new RecoveryLifecycleException('Application write guard state is unreadable.'); }
+        if (!is_array($decoded)) throw new RecoveryLifecycleException('Application write guard state is unreadable.');
         return $decoded;
     }
 
@@ -134,7 +259,7 @@ final class InstallationScopedMaintenanceGuard extends InstallationRecoveryMaint
     private function writeState(array $state): void
     {
         $directory = dirname($this->statePath);
-        if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) { throw new RecoveryLifecycleException('Application write guard storage is unavailable.'); }
+        if (!is_dir($directory) && !mkdir($directory, 0770, true) && !is_dir($directory)) throw new RecoveryLifecycleException('Application write guard storage is unavailable.');
         $temporary = $this->statePath . '.tmp-' . bin2hex(random_bytes(4));
         if (file_put_contents($temporary, json_encode($state, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR), LOCK_EX) === false || !rename($temporary, $this->statePath)) { @unlink($temporary); throw new RecoveryLifecycleException('Application write guard state could not be persisted.'); }
     }

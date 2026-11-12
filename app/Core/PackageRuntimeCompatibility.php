@@ -11,10 +11,6 @@ final class PackageRuntimeCompatibility
     ) {
         PackageVersion::assertValid($this->normalizePhpVersion($minimumPhpVersion));
 
-        if ($minimumDatabaseVersions === []) {
-            throw new \InvalidArgumentException('Package runtime database requirements cannot be empty.');
-        }
-
         foreach ($minimumDatabaseVersions as $vendor => $version) {
             if (!is_string($vendor) || trim($vendor) === '' || !is_string($version)) {
                 throw new \InvalidArgumentException('Package runtime database requirement is invalid.');

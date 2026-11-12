@@ -35,5 +35,5 @@ final class NetZeroRetirementEvidenceStore
         if ($read !== $bytes) throw new \RuntimeException('Net-zero evidence read-back failed.');
     }
 
-    public function path(string $operationId): string { return $this->root . DIRECTORY_SEPARATOR . $operationId . '.json'; }
+    public function path(string $operationId): string { return $this->root . DIRECTORY_SEPARATOR . hash('sha256', $operationId) . '.json'; }
 }

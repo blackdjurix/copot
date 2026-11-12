@@ -9,7 +9,7 @@ final class ApplicationWriteProtectionEvidence
 
     /** @param list<string> $coveredWriterClasses */
     public function __construct(
-        private DatabaseScope $scope,
+        private ?DatabaseScope $scope,
         private RecoveryIdentity $operationIdentity,
         private string $writerExclusionIdentity,
         private string $drainIdentity,
@@ -34,7 +34,7 @@ final class ApplicationWriteProtectionEvidence
         $this->coveredWriterClasses = $classes;
     }
 
-    public function scope(): DatabaseScope { return $this->scope; }
+    public function scope(): ?DatabaseScope { return $this->scope; }
     public function operationIdentity(): RecoveryIdentity { return $this->operationIdentity; }
     public function writerExclusionIdentity(): string { return $this->writerExclusionIdentity; }
     public function drainIdentity(): string { return $this->drainIdentity; }
@@ -52,7 +52,7 @@ final class ApplicationWriteProtectionEvidence
     public function identity(): string
     {
         return hash('sha256', json_encode([
-            'scope_identity' => $this->scope->identity(),
+            'scope_identity' => $this->scope?->identity(),
             'operation_identity' => $this->operationIdentity->value(),
             'writer_exclusion_identity' => $this->writerExclusionIdentity,
             'drain_identity' => $this->drainIdentity,

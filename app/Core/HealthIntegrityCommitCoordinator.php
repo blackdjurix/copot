@@ -15,7 +15,8 @@ final class HealthIntegrityCommitCoordinator
         private DatabaseHealthVerifier $databaseHealth,
         private CoreMigrationHealthVerifier $migrationHealth,
         private RuntimeHealthVerifier $runtimeHealth,
-        private CoreMigrationRegistry $migrationRegistry
+        private CoreMigrationRegistry $migrationRegistry,
+        private $filesystemOnlyFinalizationHook = null
     ) {
     }
 
@@ -102,9 +103,10 @@ final class HealthIntegrityCommitCoordinator
         WebcoreApplyPlan $applyPlan,
         CoreMigrationPlan $migrationPlan,
         LiveTreePathGuard $liveGuard,
-        PDO $connection,
+        ?PDO $connection,
         SourceInventoryArtifactStore $sourceArtifacts,
-        array $runtimeChecks = []
+        array $runtimeChecks = [],
+        bool $filesystemOnly = false
     ): HealthIntegrityCommitResult {
         $lock = $this->mutex->acquire();
         if (!$lock instanceof InstallationLock) {
@@ -120,24 +122,42 @@ final class HealthIntegrityCommitCoordinator
             if (!$target instanceof CanonicalTargetInventory || $target->fingerprint() !== $plan->targetFingerprint()) {
                 return $this->failure('target-inventory', 'V3 target inventory identity is unavailable.', $operationId, $identity);
             }
-            $gates = new HealthGateMatrix(array_merge(
-                $identity->gates(),
-                $this->integrity->verify($package, $liveGuard, $target)->gates(),
-                $this->databaseHealth->verify($connection)->gates(),
-                $this->migrationHealth->verify($connection, $this->migrationRegistry, null)->gates(),
-                $this->runtimeHealth->verify($runtimeChecks)->gates()
-            ));
+            if (!$filesystemOnly && !$connection instanceof PDO) {
+                return $this->failure('database', 'Database connection is required for the database-backed finalization path.', $operationId, $identity);
+            }
+            $gates = $filesystemOnly
+                ? new HealthGateMatrix(array_merge(
+                    $identity->gates(),
+                    $this->integrity->verify($package, $liveGuard, $target)->gates()
+                ))
+                : new HealthGateMatrix(array_merge(
+                    $identity->gates(),
+                    $this->integrity->verify($package, $liveGuard, $target)->gates(),
+                    $this->databaseHealth->verify($connection)->gates(),
+                    $this->migrationHealth->verify($connection, $this->migrationRegistry, null)->gates(),
+                    $this->runtimeHealth->verify($runtimeChecks)->gates()
+                ));
             if (!$gates->passed()) return $this->failure('health', $gates->failureReason(), $operationId, $gates);
+
+            if ($filesystemOnly && is_callable($this->filesystemOnlyFinalizationHook)) {
+                ($this->filesystemOnlyFinalizationHook)($operationId, $record);
+            }
 
             $latest = $this->maintenance->record();
             if (!$latest instanceof LifecycleOperationRecord || $latest->operationId() !== $operationId || $latest->phase() !== LifecycleOperationRecord::AWAITING_WU6) {
                 return $this->failure('operation', 'Lifecycle operation changed before commit.', $operationId, $gates);
             }
             $source = $sourceArtifacts->publish($target, $package->releaseIdentity(), PackageContract::V3_MANIFEST_CONTRACT_VERSION, $package->sourceTreeIdentity());
-            $migrationIdentity = $this->migrationHealth->identity($connection);
+            $prior = $filesystemOnly ? $this->committedStore->read() : null;
+            if ($filesystemOnly && !$prior instanceof CommittedLifecycleState) {
+                return $this->failure('committed-state', 'Filesystem-only finalization requires an existing committed lifecycle state.', $operationId, $gates);
+            }
+            $migrationIdentity = $filesystemOnly
+                ? $prior->migrationStateIdentity()
+                : $this->migrationHealth->identity($connection);
             $state = new CommittedLifecycleState(
                 $package->targetWebcoreVersion(), $package->releaseIdentity(), $package->sourceTreeIdentity(),
-                $package->manifestContractVersion(), $migrationPlan->virtualFinalSchemaIdentity() ?? 'canonical-current',
+                $package->manifestContractVersion(), $filesystemOnly ? $prior->schemaStateIdentity() : ($migrationPlan->virtualFinalSchemaIdentity() ?? 'canonical-current'),
                 $migrationIdentity, new \DateTimeImmutable('now'), $package->integrityIdentity(), $source->reference()
             );
             $this->committedStore->commitWithSourceInventory($this->installationState, $state, $sourceArtifacts, $source);
