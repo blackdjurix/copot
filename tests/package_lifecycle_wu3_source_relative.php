@@ -6,8 +6,9 @@ $base = dirname(__DIR__);
 chdir($base);
 require $base . '/bootstrap/autoload.php';
 
-$assert = static function (bool $condition, string $message): void { if (!$condition) { throw new RuntimeException($message); } };
-$throws = static function (callable $callback, string $message) use ($assert): void { try { $callback(); } catch (Throwable) { return; } $assert(false, $message); };
+$assertions = 0;
+$assert = static function (bool $condition, string $message) use (&$assertions): void { $assertions++; if (!$condition) { throw new RuntimeException($message); } };
+$throws = static function (callable $callback, string $message) use ($assert, &$assertions): void { try { $callback(); } catch (Throwable) { $assertions++; return; } $assert(false, $message); };
 $hash = static fn (string $bytes): string => hash('sha256', $bytes);
 $root = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'copot-wu3-source-' . bin2hex(random_bytes(5));
 mkdir($root, 0700, true);
@@ -58,5 +59,55 @@ try {
     $collisionSource = $sourceStore->publish(new Copot\Core\CanonicalTargetInventory([$old, $new]), 'release-1', 3, 'tree-1');
     $throws(static fn (): Copot\Core\V3SourceRelativePlan => (new Copot\Core\PackageV3SourceRelativePlanner())->plan($renamePackage, $collisionSource), 'Rename collision with an unrelated existing target was accepted.');
 
-    echo "WU3 source-relative assertions passed.\n";
+    $oldA = new Copot\Core\CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'app/old-a.txt', 5, $hash('old-a'));
+    $oldB = new Copot\Core\CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'app/old-b.txt', 5, $hash('old-b'));
+    $newA = new Copot\Core\CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'app/new-a.txt', 5, $hash('new-a'));
+    $newB = new Copot\Core\CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'app/new-b.txt', 5, $hash('new-b'));
+    $multiSource = $sourceStore->publish(new Copot\Core\CanonicalTargetInventory([$oldA, $oldB]), 'release-1', 3, 'tree-1');
+    $multiTarget = new Copot\Core\CanonicalTargetInventory([$newA, $newB]);
+    $multiRemovals = [
+        ['root' => 'APP_ROOT', 'path' => 'app/old-a.txt', 'ownership' => 'package-owned', 'expected_source_byte_size' => 5, 'expected_source_sha256' => $hash('old-a'), 'reason' => 'renamed'],
+        ['root' => 'APP_ROOT', 'path' => 'app/old-b.txt', 'ownership' => 'package-owned', 'expected_source_byte_size' => 5, 'expected_source_sha256' => $hash('old-b'), 'reason' => 'renamed'],
+    ];
+    $distinctRenames = [
+        ['source_root' => 'APP_ROOT', 'source_path' => 'app/old-a.txt', 'target_root' => 'APP_ROOT', 'target_path' => 'app/new-a.txt'],
+        ['source_root' => 'APP_ROOT', 'source_path' => 'app/old-b.txt', 'target_root' => 'APP_ROOT', 'target_path' => 'app/new-b.txt'],
+    ];
+    $distinctPackage = $contract([['app/new-a.txt', 5, $hash('new-a')], ['app/new-b.txt', 5, $hash('new-b')]], $multiTarget, 'partial', [$multiSource->reference()->fingerprint()], $multiRemovals, $distinctRenames);
+    $distinctPlan = (new Copot\Core\PackageV3SourceRelativePlanner())->plan($distinctPackage, $multiSource);
+    $assert(count($distinctPlan->removalActions()) === 2, 'Distinct rename destinations were not both accepted.');
+
+    $duplicateTargetRenames = [
+        ['source_root' => 'APP_ROOT', 'source_path' => 'app/old-a.txt', 'target_root' => 'APP_ROOT', 'target_path' => 'app/new.txt'],
+        ['source_root' => 'APP_ROOT', 'source_path' => 'app/old-b.txt', 'target_root' => 'APP_ROOT', 'target_path' => 'app/new.txt'],
+    ];
+    $duplicateTarget = new Copot\Core\CanonicalTargetInventory([new Copot\Core\CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'app/new.txt', 3, $hash('new'))]);
+    $duplicateTargetPackage = $contract([['app/new.txt', 3, $hash('new')]], $duplicateTarget, 'partial', [$multiSource->reference()->fingerprint()], $multiRemovals, $duplicateTargetRenames);
+    $throws(static fn (): Copot\Core\V3SourceRelativePlan => (new Copot\Core\PackageV3SourceRelativePlanner())->plan($duplicateTargetPackage, $multiSource), 'Duplicate rename destination was accepted.');
+
+    $duplicateSourceRenames = [
+        ['source_root' => 'APP_ROOT', 'source_path' => 'app/old-a.txt', 'target_root' => 'APP_ROOT', 'target_path' => 'app/new-a.txt'],
+        ['source_root' => 'APP_ROOT', 'source_path' => 'app/old-a.txt', 'target_root' => 'APP_ROOT', 'target_path' => 'app/new-b.txt'],
+    ];
+    $duplicateSourcePackage = $contract([['app/new-a.txt', 5, $hash('new-a')], ['app/new-b.txt', 5, $hash('new-b')]], $multiTarget, 'partial', [$multiSource->reference()->fingerprint()], $multiRemovals, $duplicateSourceRenames);
+    $throws(static fn (): Copot\Core\V3SourceRelativePlan => (new Copot\Core\PackageV3SourceRelativePlanner())->plan($duplicateSourcePackage, $multiSource), 'Duplicate rename source was accepted.');
+
+    $appOld = new Copot\Core\CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'same/old.txt', 7, $hash('app-old'));
+    $publicOld = new Copot\Core\CanonicalTargetInventoryEntry('PUBLIC_ROOT', 'package-owned', 'same/old.txt', 10, $hash('public-old'));
+    $appNew = new Copot\Core\CanonicalTargetInventoryEntry('APP_ROOT', 'package-owned', 'same/new.txt', 7, $hash('app-new'));
+    $publicNew = new Copot\Core\CanonicalTargetInventoryEntry('PUBLIC_ROOT', 'package-owned', 'same/new.txt', 10, $hash('public-new'));
+    $rootSource = $sourceStore->publish(new Copot\Core\CanonicalTargetInventory([$appOld, $publicOld]), 'release-1', 3, 'tree-1');
+    $rootRemovals = [
+        ['root' => 'APP_ROOT', 'path' => 'same/old.txt', 'ownership' => 'package-owned', 'expected_source_byte_size' => 7, 'expected_source_sha256' => $hash('app-old'), 'reason' => 'renamed'],
+        ['root' => 'PUBLIC_ROOT', 'path' => 'same/old.txt', 'ownership' => 'package-owned', 'expected_source_byte_size' => 10, 'expected_source_sha256' => $hash('public-old'), 'reason' => 'renamed'],
+    ];
+    $rootRenames = [
+        ['source_root' => 'APP_ROOT', 'source_path' => 'same/old.txt', 'target_root' => 'APP_ROOT', 'target_path' => 'same/new.txt'],
+        ['source_root' => 'PUBLIC_ROOT', 'source_path' => 'same/old.txt', 'target_root' => 'PUBLIC_ROOT', 'target_path' => 'same/new.txt'],
+    ];
+    $rootPackage = $contract([['same/new.txt', 7, $hash('app-new')], ['public/same/new.txt', 10, $hash('public-new')]], new Copot\Core\CanonicalTargetInventory([$appNew, $publicNew]), 'partial', [$rootSource->reference()->fingerprint()], $rootRemovals, $rootRenames);
+    $rootPlan = (new Copot\Core\PackageV3SourceRelativePlanner())->plan($rootPackage, $rootSource);
+    $assert(count($rootPlan->removalActions()) === 2, 'APP_ROOT and PUBLIC_ROOT rename identities falsely collided.');
+
+    echo "WU3 source-relative assertions passed: {$assertions}.\n";
 } finally { $remove($root); }

@@ -70,12 +70,13 @@ final class PackageV3SourceRelativePlanner
 
     private function removalActions(PackageContract $package, array $source, array $target, array $delivered): array
     {
-        $renames = []; $actions = [];
+        $renames = []; $renameTargets = []; $actions = [];
         foreach ($package->renames() as $rename) {
             if (!is_array($rename) || array_keys($rename) !== ['source_root', 'source_path', 'target_root', 'target_path']) { throw new \RuntimeException('V3 rename declaration shape is invalid.'); }
             $sourceKey = self::key($rename['source_root'], $rename['source_path']); $targetKey = self::key($rename['target_root'], $rename['target_path']);
-            if (isset($renames[$sourceKey]) || !isset($source[$sourceKey]) || !isset($delivered[$targetKey]) || !isset($target[$targetKey]) || ($sourceKey !== $targetKey && isset($source[$targetKey]))) { throw new \RuntimeException('V3 rename source, target, or collision proof is invalid.'); }
+            if (isset($renames[$sourceKey]) || isset($renameTargets[$targetKey]) || !isset($source[$sourceKey]) || !isset($delivered[$targetKey]) || !isset($target[$targetKey]) || ($sourceKey !== $targetKey && isset($source[$targetKey]))) { throw new \RuntimeException('V3 rename source, target, or collision proof is invalid.'); }
             $renames[$sourceKey] = true;
+            $renameTargets[$targetKey] = true;
         }
         foreach ($package->removals() as $removal) {
             if (!is_array($removal) || array_keys($removal) !== ['root', 'path', 'ownership', 'expected_source_byte_size', 'expected_source_sha256', 'reason']) { throw new \RuntimeException('V3 removal declaration shape is invalid.'); }
