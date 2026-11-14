@@ -64,7 +64,9 @@ final class PackageLifecycleService
         private $v3RetryHandoffHook = null,
         private $v3RecoveryIdentityProbe = null,
         /** Test-only isolated fault seam; production composition leaves this null. */
-        private $v3AfterActivation = null
+        private $v3AfterActivation = null,
+        /** Test-only journal seam; production composition leaves this null. */
+        private $v3Journal = null
     ) {
         $this->evidence = $evidence;
         $this->connection = $connection;
@@ -333,7 +335,7 @@ final class PackageLifecycleService
                 static function () use (&$captured): bool { $captured = true; return $captured; },
                 $plan->removalActions() === [] ? null : $this->v3ConfirmationAuthority,
                 $plan->removalActions() === [] || $consumedContinuation ? null : $confirmation,
-                null,
+                $this->v3Journal,
                 $this->v3BeforeActivation,
                 $this->v3AfterActivation,
                 $consumedContinuation

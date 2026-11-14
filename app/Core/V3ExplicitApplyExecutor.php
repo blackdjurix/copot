@@ -209,6 +209,8 @@ final class V3ExplicitApplyExecutor
         foreach ($payload->files() as $file) {
             $actual[$file->path()] = [$file->byteSize(), $file->sha256()];
         }
+        ksort($expected, SORT_STRING);
+        ksort($actual, SORT_STRING);
         if ($actual !== $expected) { throw new \RuntimeException('Delivered payload does not exactly match the v3 plan.'); }
     }
 
