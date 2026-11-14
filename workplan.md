@@ -1489,6 +1489,23 @@ Sequencing rules and boundary:
 - Alternative C Controlled Contract Breach remains ACTIVE / OPEN. Deviations are tracked and cumulative normative amendment is sequenced after Alternative C closure. Do not silently promote roadmap candidates to contracts or permanently accepted architecture.
 - C3–C7 order, names, decomposition, scope and dependencies remain REVISABLE and require explicit GPT/user acceptance before authoritative planning lock. C2 accepted technical evidence and formal closure decision are tracked below; any newly verified overlap may be collapsed, not mechanically repeated.
 
+#### C3–C5 and Module Handler durable planning reconciliation (2026-11-14)
+
+Class: USER-AUTHORIZED NON-NORMATIVE PLANNING PERSISTENCE / NO IMPLEMENTATION AUTHORITY
+
+Eight user-authorized durability subjects, with scope and acceptance distinguished:
+
+1. **C3–C7 scope refinement:** preserve C3 feature-level proof, optionally DB-aware read-only compatibility without DB mutation; C4 separate database proof; C5 combined File+DB proof; C6 and C7 objectives unchanged. C3 → C4 → C5 remains recommended, not yet formal stage acceptance.
+2. **C4 preliminary technical gap findings:** normal V3 `PackageLifecycleService::applyV3()` currently rejects migrations/DB-target requirements; existing migration runner and scoped BnR database capture/restore are reuse candidates. Database-only V3 wiring, scoped writer exclusion, consistency, failure/retry and finalization require deeper operational proof; these are NOT COMPLETE.
+3. **Module Lifecycle current-state finding:** `ModulePackageOperator` calls separate `ModuleApplyCoordinator`, using some shared primitives but not normal canonical V3 execution as its coordinator.
+4. **Unified V3 future direction:** Module Package Handler is a proposed domain admission/policy/validated-request consumer model for canonical V3 shared execution, with Module-owned compatibility, migrations, permissions and committed-state requirements preserved. Plugin or other extension types receive architecture guidance only, not implementation.
+5. **Validated evidence reuse:** Handler's verified package facts should be reusable by V3 without redundant full validation when exact immutable package, target, installation, policy and scope binding remains valid; active session/state delta and execution-scope enforcement remain applicable. Existing generic Handler-to-V3 interface NOT VERIFIED/NOT IMPLEMENTED.
+6. **C5 scope protection:** module compatibility is an architectural acceptance consideration only; full Module Lifecycle/Handler migration, replacement of `ModuleApplyCoordinator`, and generic Handler framework are not automatically authorized or required by C5.
+7. **Placement:** three timing options were evaluated: within Alternative C; outside Alternative C but within Seven-Tab; or after Seven-Tab. User-selected preferred workstream placement is **WS4 Bundled Module Refinement**, conditional on explicit WS4 scope/dependency review. This is not acceptance of WS4 implementation or migration under Alternative C.
+8. **Patch-number timing:** evaluate possible `v0.13.(x+1)` after Alternative C closure, before subsequent work or together with post-Alternative C normative consolidation. This is evaluation only, not application, release, tag or publication. User distinguishes actual application as eligible no earlier than Seven-Tab closure, subject to release policy; do not conflate with Handler refinement timing.
+
+Provenance: source audit and GPT/user discussion on 2026-11-14 WIB; detailed non-normative continuity in `concepts/copot_v3_simplification_foundation_concept.md`, section 6B. Authoritative contracts remain unchanged and Alternative C Controlled Contract Breach stays ACTIVE/OPEN. C3–C7 implementation remains NOT AUTHORIZED.
+
 Evidence references: `docs/devlog.md` 2026-10-23 07:04:38 WIB (historical C1), 2026-11-02 23:36:14 WIB (First File Cycle scope), 2026-11-04 23:04:23 WIB (C0/C1 distinction), 2026-11-05 08:42:13 WIB (C1 baseline), 08:55:06 WIB (C0 closure), 11:19:36 and 11:21:38 WIB (peer-service model and incremental ownership).
 
 Planning action: V3-ONLY FORWARD DIRECTION ACCEPTED / PRESERVE OLD V2 SDR / C0 CLOSED / C1 FORMALLY CLOSED / C2-M1-A SOURCE PUBLISHED / C2-M1-B ACCEPTED WITH EVIDENCE QUALIFICATIONS / C2 ACCEPTED WITH EVIDENCE QUALIFICATIONS / C2 FORMALLY CLOSED (2026-11-14) / C3–C7 PROPOSED NOT AUTHORIZED
@@ -2008,6 +2025,10 @@ Planning action: NONE / PROVENANCE / NO NEW IMPLEMENTATION TARGET
 ## 7. Dedicated Future Bundled Module Refinement Workstreams
 
 Historical per-module refinement intent survives as separate future workstream identities rather than MR.2 WUs.
+
+#### Module Package Handler follow-on placement (2026-11-14; planning)
+
+User preference: evaluate Module Package Handler / transition from separate Module execution coordination to canonical V3 as a candidate within **WS4 Bundled Module Refinement**, ahead of WS5 Installer Refinement II where relevant. The Module-specific admission, ownership, dependency, migration and committed-state policies must remain explicit. This is a cross-cutting Module concern, not automatic adoption by all six Bundled Module sub-workstreams; exact owner, prerequisite, compatibility and regression scope need separate WS4 preparation. Alternative C C5 remains bounded combined File+DB proof and does not implicitly adopt full Module coordinator replacement. No implementation authority or automatic new release/version is conferred.
 
 ### Bundled Module Refinement Preparation & Reconciliation
 Class: FUTURE PREPARATION WORKSTREAM
