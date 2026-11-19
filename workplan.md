@@ -398,6 +398,18 @@ Planning action: NONE / PROVENANCE
 
 ## 5. Active / Future / Deferred / Operational Registry
 
+### Package-Owned Lifecycle Execution & Zero-Trust Package Security
+Class: EXPLORATORY ARCHITECTURE CONCEPT / FUTURE RECONCILIATION
+Status: PLANNING ONLY / NOT ADOPTED / NO IMPLEMENTATION AUTHORIZATION
+
+Sources:
+- `concepts/copot_package_owned_lifecycle_execution_security_concept.md` [PRIMARY]
+
+Relations: Package Lifecycle & Migration Foundation; Module Package Lifecycle; Backup & Recovery Foundation; Adaptive Package Lifecycle; Alternative C C3-A F1 (unchanged operational scope).
+
+Planning action: KEEP EXPLORATORY. Retain Webcore-owned Handler admission, Guard, BnR and committed-state authority as proposed invariants; examine package-owned executable direct file/database mutation, protocol-compatible handler update, universal Webcore/Module/Theme support, advanced code/artifact/runtime security, zero-trust no-override rejection, and enforced containment before any adoption. Publisher ecosystem DEFERRED. Current C3-A F1 and accepted contracts remain unchanged.
+
+
 ### Adaptive Package Lifecycle & Independent Domain Compatibility
 Class: ACTIVE CONCEPT / BOUNDED CONTRACT-PROMOTED CAPABILITY
 Status: FOUR-SURFACE NORMATIVE CONTRACTS PROMOTED / SIX-WU TOPOLOGY LOCKED / WU1–WU6 ACCEPTED / PUBLIC V3 OPERATIONAL COVERAGE CLOSED (BOUNDED)
