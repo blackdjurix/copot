@@ -274,6 +274,11 @@ Resolved local path hanya digunakan sebagai execution path pada PC saat ini dan 
 Terapkan hanya bila Git material dan diotorisasi:
 
 - verifikasi repository, branch, HEAD, upstream, dan state tidak terduga;
+- verifikasi current working branch, workspace, serta direct parent dan fork anchor bila material;
+- pertahankan working branch yang telah ditetapkan selama execution scope tidak berubah;
+- jangan membuat, mengganti, atau memindahkan branch tanpa authorization yang mencakup tindakan tersebut;
+- gunakan current working branch sebagai default remote verification target bila remote branch tersedia;
+- laporkan branch lifecycle issue dan reconciliation yang diperlukan tanpa melakukan corrective Git operation secara otomatis;
 - gunakan feature branch berumur pendek bila diperlukan;
 - pertahankan perbedaan local/remote;
 - lakukan commit/push/integrate/delete branch hanya bila diotorisasi secara eksplisit;
@@ -410,7 +415,15 @@ Berhenti dan laporkan bila:
 
 Untuk continuation dalam thread yang sama, bawa hanya target, anchor, authorization, scope, validation, stop condition, dan technical issue unresolved yang berubah. Jangan mengulang governance, environment, atau history yang tidak berubah. Ini adalah routing rule internal GPT; continuation yang digenerate hanya boleh memuat technical delta yang material.
 
-Untuk continuation dalam thread yang sama dengan state yang sudah accepted, gunakan `CHECK-AND-RUN`: verifikasi hanya drift material pada target, authorization, anchor repository/branch, dependency, workspace, dan external state yang relevan. Jangan mengulang verification continuity yang setara. Jika ada drift material, evidence baru, conflict authority, atau boundary berubah, kembali ke full verification dan berhenti bila issue tidak dapat diselesaikan dengan aman.
+`CHECK-AND-RUN` adalah metode internal GPT untuk menyusun Agent Instruction continuation, bukan execution mode atau instruksi yang diteruskan kepada `Technical Executor`.
+
+Dalam thread `Technical Executor` yang sama, GPT menggunakan satu konteks instruksi sebelumnya sebagai basis komposisi. Informasi yang tetap berlaku tidak diulang. Hanya informasi baru, berubah, atau material terhadap eksekusi yang dikirim sebagai execution delta.
+
+GPT tetap memverifikasi authority, authorization, dependency, source anchor, dan drift material yang relevan sebelum menghasilkan instruction. Batas satu konteks berlaku untuk komposisi delta, bukan pembatasan verifikasi authoritative.
+
+Jangan meneruskan istilah `CHECK-AND-RUN` kepada `Technical Executor` kecuali istilah tersebut merupakan input teknis yang secara eksplisit diperlukan oleh pekerjaan.
+
+Jika continuation context tidak tersedia atau tidak lagi valid, lakukan rekonstruksi execution context yang diperlukan sebelum menghasilkan instruction.
 
 Gunakan continuation token yang ringkas seperti:
 
