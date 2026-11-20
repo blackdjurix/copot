@@ -243,6 +243,11 @@ Jangan mengganti route yang locked dengan preferensi model secara diam-diam.
 - Remote Git repository adalah `Repository` durable yang authoritative.
 - `main` adalah target integration yang dikonfigurasi.
 - Feature branch harus short-lived ketika branch workflow digunakan.
+- Working branch mengikuti work decomposition dan dependency yang telah ditetapkan untuk scope pekerjaan. Child branch dibuat dari direct parent branch yang sesuai dengan scope dan source dependency yang diterima; direct parent branch dan exact fork commit harus dapat diverifikasi.
+- Work decomposition, semantic dependency, dan Git ancestry adalah identitas berbeda yang harus tetap konsisten. Struktur planning tidak otomatis mewajibkan pembuatan branch.
+- Branch creation, switching, dan Git repository operations hanya boleh dilakukan melalui authorization dan repository gate yang berlaku. Kebutuhan atau rekomendasi GPT tidak memberikan authorization.
+- Current working branch dan workspace dipertahankan selama scope pekerjaan masih berlaku. Perubahan execution branch harus memiliki alasan material, authorization yang berlaku, dan diketahui user sebelum tindakan dilakukan.
+- Remote verification untuk execution memprioritaskan current working branch dan exact source anchor yang relevan. Parent branch atau `main` diverifikasi ketika dependency, reconciliation, atau integration memang memerlukannya.
 - Integration ke `main` menggunakan fast-forward-only bila applicable.
 - Commit, push, merge, branch deletion, release, tag, publication, dan deployment adalah action yang terpisah.
 - Mutasi `Repository` membutuhkan authorization yang sesuai, kecuali mutasi
@@ -265,6 +270,16 @@ Patch, update, dan upgrade untuk development atau operational validation tidak m
 - Perubahan terhadap runtime, data yang dipersist, shared environment, atau external access tetap membutuhkan authorization yang relevan.
 
 ### Audit branch dan closure
+
+Branch lifecycle dievaluasi secara proaktif ketika terdapat perubahan scope, dependency, working branch, workspace state, atau integration readiness yang material.
+
+GPT wajib menyampaikan kebutuhan operasi Git, risiko drift, dan reconciliation yang diperlukan kepada user sebelum tindakan yang terdampak dilaksanakan.
+
+Dirty workspace, retained changes, unresolved dependency, dan branch divergence harus memiliki disposition yang jelas ketika material terhadap kelanjutan pekerjaan.
+
+Reconciliation tidak otomatis memberikan authorization untuk commit, merge, rebase, reset, cleanup, branch deletion, atau repository mutation lainnya.
+
+Ketidaksesuaian antara intended parent branch, source dependency, dan actual Git ancestry harus dilaporkan sebagai finding, bukan diperbaiki secara otomatis.
 
 Sebelum branch dianggap closed, verifikasi accepted tip, expected base, state containment/zero-ahead, state workspace yang clean atau dicatat secara eksplisit, verifikasi remote bila applicable, dan tidak adanya perubahan yang tidak terkait. Branch deletion atau publication tetap merupakan gate terpisah.
 
