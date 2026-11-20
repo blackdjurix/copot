@@ -192,7 +192,12 @@ Jika material, catat:
 
 - cross-boundary dependency: `<dependency and satisfied/unsatisfied state>`;
 - stacked branch relation: `<base, dependent branch, containment, or None>`;
+- current working branch dan scope: `<branch, scope, or None>`;
+- direct parent branch dan fork anchor: `<parent branch, exact commit, or None>`;
+- branch lifecycle disposition: `<active / retained / reconciliation required / ready for integration / blocked / None>`;
 - dependency evidence: `<exact source or None>`.
+
+Catat unresolved ancestry mismatch, retained changes, atau pending Git reconciliation hanya bila material terhadap continuity.
 
 State dependency adalah context, bukan authorization untuk memulai pekerjaan yang bergantung padanya.
 
