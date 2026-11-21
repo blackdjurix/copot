@@ -1501,6 +1501,20 @@ Sequencing rules and boundary:
 - Alternative C Controlled Contract Breach remains ACTIVE / OPEN. Deviations are tracked and cumulative normative amendment is sequenced after Alternative C closure. Do not silently promote roadmap candidates to contracts or permanently accepted architecture.
 - C3–C7 order, names, decomposition, scope and dependencies remain REVISABLE and require explicit GPT/user acceptance before authoritative planning lock. C2 accepted technical evidence and formal closure decision are tracked below; any newly verified overlap may be collapsed, not mechanically repeated.
 
+#### C3-B — Lifecycle Continuity & Handoff (Planning Concept)
+
+Class: USER-DIRECTED NON-NORMATIVE CONCEPT / ALTERNATIVE C C3-B; NOT A NEW WORKSTREAM
+Status: CONCEPT RECORDED / OWNERSHIP & FENCING STANDALONE CONTRACT DRAFT SUPERSEDED / IMPLEMENTATION NOT READY / NO CONTRACT PROMOTION
+Sources:
+- `concepts/copot_lifecycle_continuity_handoff_concept.md` [PRIMARY C3-B CONTINUITY CONCEPT]
+- `concepts/copot_v3_simplification_foundation_concept.md` [EXISTING ALTERNATIVE C FOUNDATION]
+
+Scope: self-update continuity across Package Lifecycle Core, Maintenance Guard, BnR, Handler/Executor and their actual execution-critical dependencies. Ownership & Fencing is a constituent I1 mechanism alongside executor handoff, protection continuity, recovery continuity, state and finalization continuity; it is not the parent C3-B mechanism or an independently promoted contract. Previous I1 technical proposals and accepted architectural directions remain historical/technical evidence, not discarded validation.
+
+Portability: platform-neutral capability requirements with shared-hosting support as a product target; Windows/XAMPP evidence is environment-specific. Guard controls application-writer admission/drain, not MariaDB freeze. Existing legacy database-quiescence call paths require separate disposition and are not adopted as self-update prerequisites.
+
+Execution boundary: existing isolated Codex atomicity validation and other authorized work continue unchanged; no automatic source/branch/runtime/DB/recovery/Material Store mutation or architecture scope expansion. Normative contract amendment/reconciliation stays sequenced after Alternative C closure, while applicable existing obligations remain. Next gate: evaluate the complete continuity/handoff concept against incoming technical evidence and portability qualifications.
+
 #### C3 — Cumulative Patch Resulting-State Design (2026-11-15)
 
 Class: USER-AUTHORIZED PLANNING DIRECTION / NON-NORMATIVE / NOT IMPLEMENTATION AUTHORITY
