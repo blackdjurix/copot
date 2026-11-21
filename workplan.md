@@ -1515,6 +1515,20 @@ Portability: platform-neutral capability requirements with shared-hosting suppor
 
 Execution boundary: existing isolated Codex atomicity validation and other authorized work continue unchanged; no automatic source/branch/runtime/DB/recovery/Material Store mutation or architecture scope expansion. Normative contract amendment/reconciliation stays sequenced after Alternative C closure, while applicable existing obligations remain. Accepted detailed planning: P0 evidence/scope reconciliation → P1 portability capability reconciliation → P2 parent continuity architecture → P3 Ownership & Fencing readiness (existing I1) and P4 Maintenance Guard/BnR continuity (parallel where proven interfaces permit) → P5 adaptive handoff/execution integration → P6 integrated readiness. Full task, deliverable, dependency and exit criteria are in the PRIMARY C3-B CONTINUITY CONCEPT, section 9. Next recommended gate: P0 evidence/scope reconciliation, with separately gated exact proof-file durability. Planning acceptance is not implementation authorization.
 
+##### C3-B — Px Completion Gate (P0–P6)
+
+Status: USER-AUTHORIZED DURABLE PLANNING CONTROL / NON-NORMATIVE. Berlaku untuk evaluasi penyelesaian setiap Px; tidak mengubah objective/dependency/exit criteria P0–P6 di Concept section 9 dan tidak memberikan authorization implementasi, mutation, promotion, atau transisi otomatis.
+
+Pada akhir masing-masing P0, P1, P2, P3, P4, P5, dan P6, lakukan pemeriksaan berurutan:
+1. **Completion:** cocokkan actual deliverables dan exit criteria Px dengan evidence; tandai COMPLETE, PARTIAL, atau BLOCKED tanpa inferensi.
+2. **Evidence reconciliation:** validasi source, provenance, artifact identity, prototype-versus-production qualification, regression dependency, dan unresolved blockers; jangan mengulang accepted proof tanpa alasan konkret.
+3. **Acceptance:** pisahkan technical executor PASS dari keputusan GPT/user; catat hasil ACCEPTED, PENDING USER ACCEPTANCE, atau REJECTED sesuai evidence dan authority.
+4. **Closure:** rekonsiliasikan Workplan, Concept, documentation, Repository/runtime state bila material, retained/deferred issues, dan dependency; closure Px bukan closure otomatis C3-B/Alternative C.
+5. **NRP evaluation:** pada setiap penyelesaian Px, evaluasi readiness next target, acceptance/closure, unresolved state, durability, dependencies, dan authorization. Catat NRP CONFIRMED hanya jika semua syarat berlaku terpenuhi; selain itu NOT CONFIRMED beserta blocker.
+6. **Next routing:** lanjutkan hanya ke target yang dependency dan authorization-nya sudah terpenuhi; bila tidak, lakukan targeted reconciliation atau HOLD. P3 dan P4 boleh dievaluasi/ditutup independen; P5 menunggu interface/dependency keduanya yang relevan.
+
+Setiap Px completion report menyatakan verdict, supporting evidence, remaining qualifications, acceptance, closure, NRP, dan next authorized gate. Tidak ada automatic implementation, publication, branch, runtime, database, recovery, Material Store, atau Contract mutation. Session-specific implementation restriction harus dibedakan dari technical readiness dan authorization tindakan exact.
+
 #### C3 — Cumulative Patch Resulting-State Design (2026-11-15)
 
 Class: USER-AUTHORIZED PLANNING DIRECTION / NON-NORMATIVE / NOT IMPLEMENTATION AUTHORITY
