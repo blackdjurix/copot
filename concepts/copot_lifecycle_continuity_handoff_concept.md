@@ -72,3 +72,98 @@ No question is declared resolved merely by listing a design candidate.
 Status: `CONCEPT RECORDED / NON-NORMATIVE / HANDOFF DESIGN INCOMPLETE / IMPLEMENTATION READY NO`.
 
 Alternative C Controlled Contract Breach remains `ACTIVE / OPEN`. Normative Contract amendment/promotion is **not** performed here. User retains semantic acceptance and separately authorizes future production source, runtime, branch, publishing and materialization actions. Next design review should incorporate ongoing Codex evidence and evaluate the complete Lifecycle Continuity & Handoff boundary, without discarding already valid Ownership & Fencing work.
+
+## 9. Accepted Detailed Workplan — P0–P6 (2026-11-21 10:04:51 WIB)
+
+Status: **USER-ACCEPTED PLANNING / NON-NORMATIVE / NOT AN IMPLEMENTATION AUTHORIZATION**. Tahap P0–P6 adalah work packages yang direkonsiliasi ke satu C3-B, bukan tujuh Work Units baru dan bukan syarat mengulang evidence yang sudah diterima. `OWNERSHIP & FENCING` adalah P3/I1 di bawah Lifecycle Continuity & Handoff, bukan standalone authoritative Contract.
+
+### P0 — Evidence & Scope Reconciliation
+
+**Objective:** membangun baseline evidence dan exact execution-critical dependency graph tanpa mengulang proof yang sudah diterima.
+
+- **P0.1 Evidence inventory:** inventaris multi-handoff P1–P4 dan qualifications; P5–P8; V-I1; ownership crash-safety T1–T8/L1–L9; A1–A10/B1–B7/C1–C8/D1–D8 (33 isolated prototype cases); L10 yang masih unresolved; regression Guard, BnR, dan Package Lifecycle. Catat source SHA, runtime, provenance, PASS/qualification dan immutable artifact identity.
+- **P0.2 New fixture verification:** pastikan exact local bytes/size/SHA-256 `atomicity_feasibility.php` (34,158 byte; `BFE1BBDAAE146CB0F2E09D5B532EDBD5D686475A70B89A8C34A13F6E325839B3`) dan `evidence.json` (6,674 byte; `31D7BFFEDD98545A01614E52F0E2EAD89E70269D282C54B0DCA6F1516A6FEB6C`) yang saat ini hanya executor-reported / TEMP_LOCAL_ONLY. Reconcile perbedaan A4 stale older replay versus historical result-idempotency. Canonical Material Store materialization membutuhkan keputusan yang sesuai; jangan otomatis menulisnya.
+- **P0.3 Execution-critical inventory:** petakan actual call/boot/replace graph Package Lifecycle Core, Guard, BnR, Handler/Executor, persistence, applier, bootstrap, health/commit/finalization; bedakan mutation target, runtime dependency, recovery dependency, dan trusted-until-terminal.
+- **P0.4 Scope reconciliation:** C3-B tidak otomatis mengadopsi C4, C5, Module coordinator migration, generic ownership refactor, product UI, atau legacy removal.
+
+**Deliverables:** evidence/provenance matrix, qualified prototype assessment, execution-critical component graph, scope/gap matrix. **Exit:** source/evidence provenance dan unresolved material boundaries cukup jelas untuk desain P1/P2; no implicit rerun.
+
+### P1 — Portability Reconciliation
+
+**Objective:** menetapkan portable locking, publication, persistence dan recovery capability sebelum memilih primitive production.
+
+- **P1.1 Hosting:** reconcile class A configurable document root, class B fixed PUBLIC_ROOT + private APP_ROOT (primary shared-host target), class C public-only unsupported unless separately proven safe; preserve existing deployment-root/base-path contract.
+- **P1.2 Locking:** cross-process exclusion, identity, replacement/ABA, lock ordering, crash release, filesystem backend/local/network qualification. `flock()` alone never proves universal cross-host semantics.
+- **P1.3 Persistence:** create-only immutable transition, temp/rename/fsync behavior, snapshot reconciliation, torn metadata, recovery, process-crash vs power-loss claims.
+- **P1.4 Execution:** PHP request/eligible CLI compatibility without required native Windows mutex, persistent daemon, PID/process inspection, privileged host configuration or MariaDB freeze.
+- **P1.5 Disposition:** RETAIN/QUALIFY existing `InstallationMutex`, `LifecycleOperationStore`, Maintenance Guard; RETAIN CONCEPT/ADAPT owner generation, AuthorityGate, immutable journal, Guard leases/epoch, terminal fence, ABA detection; EXCLUDE Windows-native/PID/daemon/DB-freeze as core dependency. Explicit fail-closed when capabilities cannot be proven.
+
+**Deliverables:** hosting compatibility matrix, authority locking/storage/execution capability specification, mechanism disposition and unsupported-host policy. **Exit:** each required primitive has qualification requirement, threat model, supported/unsupported bounds and fail-closed behavior. Windows-only PASS not shared-host proof.
+
+### P2 — Lifecycle Continuity Architecture
+
+**Objective:** define cross-component parent continuity model before locking I1/P4 integration.
+
+- **P2.1 Responsibility/authority map:** Package Lifecycle owns orchestration/plan/commit, Guard owns admission/drain/protection/reopening, BnR owns capture/restore/evidence, Continuity binds one authorized operation over executor changes without becoming peer-service owner.
+- **P2.2 State model:** operation, protected execution, handoff prepared/transferred/resumed, recovery, terminal/cleanup; conceptual states do not automatically create production phases.
+- **P2.3 Adaptive handoff:** durable state, monotonic valid executor authority, multi-handoff in same operation, no parallel mutating owners or accidental committed-state advancement.
+- **P2.4 Self-replacement trust:** bootstrap and reentry when Package Lifecycle, Guard, BnR, Handler/Executor or direct dependencies are mutation targets; independent recovery path.
+- **P2.5 Failure matrix:** crash before/during/after takeover, partial apply, corrupted Guard state, failed new-version bootstrap, missing BnR evidence, repeated retries, terminal interruption.
+
+**Deliverables:** responsibility/interface matrix, continuity state and handoff protocol, critical-replacement strategy and failure/recovery matrix. **Exit:** every critical transition has verified authority prerequisite, durable evidence, postcondition, and safe failure disposition; do not mistake proposed sequence for implemented behavior.
+
+### P3 — Ownership & Fencing Readiness (existing I1 continuation)
+
+**Objective:** complete I1 technical readiness using already reported 33 prototype PASS, not start a new standalone Contract or duplicate validation.
+
+- **P3.1 Credentials:** operationId, ownerIdentity, ownerGeneration, expected state identity and scope binding; never PID/lock handle as owner authority.
+- **P3.2 Atomic transitions:** CAS, monotonic generation, immutable journal publication, previous-state chain, request identity, older historical retries, snapshot replay/corruption reconciliation; inspect A1–A10 limitations.
+- **P3.3 Authority Gate/lock graph:** actual mutation interval exclusion, InstallationMutex vs owner transition/admission locks, ABA/object identity, interrupted processes; inspect B1–B7 and real source lock graph; global deadlock freedom remains unproven.
+- **P3.4 Terminal fencing:** committed/verified recovery disposition, exact terminal evidence, fenced idempotent cleanup, UNSETTLED vs INDETERMINATE as classifications, not new phases; reconcile D1–D8.
+- **P3.5 I1 minimal integration map:** LifecycleOperationStore/Record, MaintenanceCoordinator, lock and credential surfaces, Guard/BnR authorization/finalization interfaces; distinguish I1 state authority from I2 activation-time and I3 finalization coupling.
+- **P3.6 Readiness:** explicit exclusion, takeover, crash recovery, persistent transition semantics and portability qualification. I1 ready is only constituent technical-design readiness and not parent readiness or source mutation authority.
+
+**Deliverables:** I1 credential, transition/recovery, AuthorityGate/lock graph, terminal protocol, minimal integration delta and qualification matrix. **Exit:** `I1 TECHNICAL DESIGN READY` only on resolved blockers; otherwise `PARTIAL/BLOCKED`.
+
+### P4 — Maintenance Guard & BnR Continuity
+
+**Objective:** preserve independent application protection and recovery when execution-critical implementations change.
+
+- **P4.1 Guard admission:** durable writer identity/leases, Guard-owned epoch OPEN→DRAINING→CLOSED→OPEN+1, interrupted register/release reconciliation, positive no-live-writer evidence, fenced reopening.
+- **P4.2 Guard replacement:** new implementation resumes durable protected state, never opens unguarded admission, stale generation cannot release; failed replacement remains recoverable.
+- **P4.3 BnR continuity:** retained operation-bound capture, schema/version-compatible evidence, independent revalidation/restore/verification postconditions.
+- **P4.4 BnR replacement:** restoration remains possible when BnR itself is a mutation target; no reliance on broken newly installed code as sole recovery provider.
+- **P4.5 Cross-component coordination:** Guard owns writer admission; owner fencing owns executor mutation authorization; BnR owns recovery. Guard-issued application-writer quiescence evidence is not MariaDB freeze or DB consistency evidence. Legacy DB-quiescence paths need separate impact review, not silent removal.
+
+**Deliverables:** Guard admission and replacement protocols, BnR recovery/replacement protocols, cross-component authority matrix. **Exit:** protected state and verifiable recovery persist across relevant handoffs and component replacements.
+
+### P5 — Adaptive Handoff & Execution Integration
+
+**Objective:** define independently authorizable minimum source implementation slices after P2/P3/P4 boundaries are consistent.
+
+- **P5.1 Source map:** actual operation persistence, Guard/BnR integration, file activation, committed finalization, bootstrap and terminal cleanup targets.
+- **P5.2 Activation:** generation-aware validation must be coupled with actual protected file mutation; eliminate check-to-write race, not just precheck operation identity.
+- **P5.3 Runtime handoff:** request-scoped PHP/eligible CLI where feasible, durable reconstruction, Guard continuity, stale executor rejection, failed-version bootstrap recovery; no mandatory daemon.
+- **P5.4 Finalization:** after mutex reacquisition, revalidate owner generation, evidence/Guard state, target postconditions; terminal publication and idempotent cleanup.
+- **P5.5 Candidate slices:** preserve historical `I1` for Ownership & Fencing; `I2` protected mutation/handoff; `I3` recovery/finalization continuity; `I4` execution-critical component replacement integration. I2–I4 labels are provisional and do not create authorized Work Units.
+
+**Deliverables:** exact source integration map, mutation/handoff/finalization enforcement designs, dependency-ordered minimum implementation slices with tests, rollback and stop criteria. **Exit:** each slice has bounded payload, actor, authorized action gate, validation and rollback strategy; no implementation automatically begins.
+
+### P6 — Integrated Readiness Assessment
+
+**Objective:** determine evidence-backed readiness of the **whole** continuity concept, not only I1.
+
+- **P6.1 Scenarios:** normal operation, 1+ handoffs, crash around every critical transition, concurrent takeover, stale mutation/finalization, Guard/BnR/Core self-replacement, interrupted apply, failed bootstrap, recovery, terminal cleanup, unsupported hosting; reuse applicable existing tests.
+- **P6.2 Portability:** distinct Windows/XAMPP feasibility, Linux/PHP, shared-host capability and optional private-server qualification; no automatic cross-platform support claim.
+- **P6.3 Failure assurance:** process crash, durable replay, lock identity, BnR recovery, power-loss limitations and unsupported environments explicitly classified.
+- **P6.4 Final gate:** full architecture, technical feasibility, Guard/BnR protection, implementation delta, evidence durability, regression/recovery plan, authority and unresolved blockers.
+
+**Deliverables:** integrated test/portability matrix, failure assurance and readiness assessment. **Exit:** `READY FOR IMPLEMENTATION REVIEW`, `PARTIAL — BLOCKERS REMAIN`, atau `BLOCKED`; no full self-update operational acceptance inferred from design readiness.
+
+### P0–P6 Dependencies, Preservation and Authorization
+
+`P0 → P1 → P2 → (P3 and P4 when stable interfaces permit parallel work) → P5 → P6`. Portability P1 criteria carry through every subsequent gate. Work may be reconciled concurrently where dependencies are satisfied; no automatic seven new Work Units.
+
+The existing `33` latest feasibility PASS are executor-reported isolated prototype results, not verified production semantics. Keep the existing three durable C3-B evidence sets, unresolved P1–P4 qualifications, L10, source anchor and nine retained WU6 changes. Avoid reruns without concrete reason. New prototype artifacts remain `TEMP_LOCAL_ONLY` until separately authorized durable disposition.
+
+Planning acceptance does **not** authorize production implementation, source changes, branch mutation, runtime/DB/recovery actions, package deployment, release, or normative Contract promotion. `Alternative C Controlled Contract Breach: ACTIVE / OPEN`; `IMPLEMENTATION READY: NO`; `PRODUCTION IMPLEMENTATION: HOLD`. Normative amendment remains sequenced after Alternative C closure.
