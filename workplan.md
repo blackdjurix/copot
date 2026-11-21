@@ -1504,7 +1504,7 @@ Sequencing rules and boundary:
 #### C3-B — Lifecycle Continuity & Handoff (Planning Concept)
 
 Class: USER-DIRECTED NON-NORMATIVE CONCEPT / ALTERNATIVE C C3-B; NOT A NEW WORKSTREAM
-Status: CONCEPT RECORDED / OWNERSHIP & FENCING STANDALONE CONTRACT DRAFT SUPERSEDED / IMPLEMENTATION NOT READY / NO CONTRACT PROMOTION
+Status: DETAILED WORKPLAN P0–P6 USER-ACCEPTED / NON-NORMATIVE / OWNERSHIP & FENCING STANDALONE CONTRACT DRAFT SUPERSEDED / IMPLEMENTATION NOT READY / NO CONTRACT PROMOTION
 Sources:
 - `concepts/copot_lifecycle_continuity_handoff_concept.md` [PRIMARY C3-B CONTINUITY CONCEPT]
 - `concepts/copot_v3_simplification_foundation_concept.md` [EXISTING ALTERNATIVE C FOUNDATION]
@@ -1513,7 +1513,7 @@ Scope: self-update continuity across Package Lifecycle Core, Maintenance Guard, 
 
 Portability: platform-neutral capability requirements with shared-hosting support as a product target; Windows/XAMPP evidence is environment-specific. Guard controls application-writer admission/drain, not MariaDB freeze. Existing legacy database-quiescence call paths require separate disposition and are not adopted as self-update prerequisites.
 
-Execution boundary: existing isolated Codex atomicity validation and other authorized work continue unchanged; no automatic source/branch/runtime/DB/recovery/Material Store mutation or architecture scope expansion. Normative contract amendment/reconciliation stays sequenced after Alternative C closure, while applicable existing obligations remain. Next gate: evaluate the complete continuity/handoff concept against incoming technical evidence and portability qualifications.
+Execution boundary: existing isolated Codex atomicity validation and other authorized work continue unchanged; no automatic source/branch/runtime/DB/recovery/Material Store mutation or architecture scope expansion. Normative contract amendment/reconciliation stays sequenced after Alternative C closure, while applicable existing obligations remain. Accepted detailed planning: P0 evidence/scope reconciliation → P1 portability capability reconciliation → P2 parent continuity architecture → P3 Ownership & Fencing readiness (existing I1) and P4 Maintenance Guard/BnR continuity (parallel where proven interfaces permit) → P5 adaptive handoff/execution integration → P6 integrated readiness. Full task, deliverable, dependency and exit criteria are in the PRIMARY C3-B CONTINUITY CONCEPT, section 9. Next recommended gate: P0 evidence/scope reconciliation, with separately gated exact proof-file durability. Planning acceptance is not implementation authorization.
 
 #### C3 — Cumulative Patch Resulting-State Design (2026-11-15)
 
