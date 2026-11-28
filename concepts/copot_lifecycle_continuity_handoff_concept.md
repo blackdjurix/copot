@@ -108,6 +108,15 @@ Status: **USER-ACCEPTED PLANNING / NON-NORMATIVE / NOT AN IMPLEMENTATION AUTHORI
 - **P2.2 State model:** operation, protected execution, handoff prepared/transferred/resumed, recovery, terminal/cleanup; conceptual states do not automatically create production phases.
 - **P2.3 Adaptive handoff:** durable state, monotonic valid executor authority, multi-handoff in same operation, no parallel mutating owners or accidental committed-state advancement.
 - **P2.4 Self-replacement trust:** bootstrap and reentry when Package Lifecycle, Guard, BnR, Handler/Executor or direct dependencies are mutation targets; independent recovery path.
+**P2.4 accepted architectural criteria (2026-11-28 WIB):** USER ACCEPTED / NON-NORMATIVE PLANNING. User explicitly accepted the following four mandatory architectural criteria and authorized their durable persistence; reevaluation is permitted if material drift, conflicting evidence, feasibility issues, or changed dependencies arise, preserving decision provenance.
+
+1. **Trusted Bootstrap:** establish a trusted execution entry and independently verifiable operation context when execution-critical implementation is a replacement target.
+2. **Protected Replacement:** preserve operation identity, authorized mutation scope, valid exclusive executor authority, protection and recovery continuity throughout replacement.
+3. **Trusted Re-entry:** qualify replacement implementation and reconcile actual durable operation state before authorized execution resumes; loading replacement code alone is insufficient.
+4. **Independent Recovery:** retain an authorized, independently verifiable recovery path that does not depend on successful execution of the failed replacement.
+
+All four capabilities must be covered by the architecture and qualification; actual activation is conditional on the operation and its failure disposition. Successful replacement does not require executing recovery. These criteria do not select a concrete implementation, establish technical qualification, close P2.4, confirm NRP, or authorize implementation. P2.3 unresolved fencing/authority and downstream qualification dependencies remain open. Six exploratory evaluation scenarios proposed separately are not accepted by this decision and are not incorporated as deliverables.
+
 - **P2.5 Failure matrix:** crash before/during/after takeover, partial apply, corrupted Guard state, failed new-version bootstrap, missing BnR evidence, repeated retries, terminal interruption.
 
 **Deliverables:** responsibility/interface matrix, continuity state and handoff protocol, critical-replacement strategy and failure/recovery matrix. **Exit:** every critical transition has verified authority prerequisite, durable evidence, postcondition, and safe failure disposition; do not mistake proposed sequence for implemented behavior.
