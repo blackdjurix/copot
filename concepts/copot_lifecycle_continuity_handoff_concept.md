@@ -117,6 +117,24 @@ Status: **USER-ACCEPTED PLANNING / NON-NORMATIVE / NOT AN IMPLEMENTATION AUTHORI
 
 All four capabilities must be covered by the architecture and qualification; actual activation is conditional on the operation and its failure disposition. Successful replacement does not require executing recovery. These criteria do not select a concrete implementation, establish technical qualification, close P2.4, confirm NRP, or authorize implementation. P2.3 unresolved fencing/authority and downstream qualification dependencies remain open. Six exploratory evaluation scenarios proposed separately are not accepted by this decision and are not incorporated as deliverables.
 
+**P2.4 subsequent acceptance and conceptual refinement (2026-11-28 WIB):** USER ACCEPTED / NON-NORMATIVE PLANNING. The earlier four-criteria decision did not itself accept the six scenarios; subsequent explicit user acceptance supersedes their proposal status (Devlog at main `ad5a9328953386929f4d6db25cd4d46ad49680bd`).
+
+Accepted conceptual evaluation scenarios:
+- Successful Self-Replacement — MANDATORY.
+- Failed Re-entry — MANDATORY.
+- Process Interruption — MANDATORY.
+- Trusted Entry Replacement — CONDITIONALLY MANDATORY when trusted entry is a mutation target.
+- Recovery Dependency Replacement — CONDITIONALLY MANDATORY when a recovery dependency is a mutation target.
+- Interrupted Retirement — MANDATORY for a mechanism with a retirement/cleanup stage.
+
+Mandatory denotes relevant evaluation coverage, not unconditional activation or runtime testing in P2.4; this is not an exhaustive P2.5 Failure Matrix.
+
+User subsequently accepted and authorized persistence of the two conceptual refinements proposed in Devlog at `ea99c7dc48a1bc9c59adbb86962a7c0720adbb56`:
+- **Protected Trust Transition:** qualify an alternate trusted route before replacing the old route; protect it relative to the current mutation scope, maintain exclusive valid authority under P2.3, preserve rediscovery and durable operation state through interruption, and fail closed when no trusted route is available. A minimum trusted boundary must remain available relative to the mutation scope, but no permanent immutable implementation, exact file/class, or concrete execution environment is selected.
+- **Terminal Disposition:** distinguish Operation Finalization (durable verified outcome), Authority Disposition (valid return/transfer/termination), and Environment Retirement (only when no longer required for continuation, recovery or finalization). A verified outcome must not trigger repeated replacement solely because cleanup was interrupted; retirement must be recoverable/idempotent, and an environment still needed when outcome is uncertain must be retained.
+
+These are refinements of the four accepted criteria, not additional criteria or scenarios, and do not automatically accept the earlier seven-stage mechanism or temporary environment implementation. Conceptual maturity: SUFFICIENT / USER ACCEPTED for these refinements; exact trust anchor, interruption-safe transition and terminal evidence, P2.3 fencing, P4 protection/recovery and downstream qualification remain unproven. Technical qualification NOT ESTABLISHED; P2.4 OPEN pending formal closure evaluation; implementation HOLD; no contract promotion or NRP confirmation.
+
 - **P2.5 Failure matrix:** crash before/during/after takeover, partial apply, corrupted Guard state, failed new-version bootstrap, missing BnR evidence, repeated retries, terminal interruption.
 
 **Deliverables:** responsibility/interface matrix, continuity state and handoff protocol, critical-replacement strategy and failure/recovery matrix. **Exit:** every critical transition has verified authority prerequisite, durable evidence, postcondition, and safe failure disposition; do not mistake proposed sequence for implemented behavior.
